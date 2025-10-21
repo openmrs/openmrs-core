@@ -260,7 +260,18 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	public Date getDateStopped() {
 		return dateStopped;
 	}
-	
+
+
+	/**
+	 * Set the dateStopped
+	 *  
+	 * @since 2.7.8, 2.8.2, 2.9.0
+	 * @param dateStopped
+	 */
+	public void setDateStopped(Date dateStopped) {
+		this.dateStopped = dateStopped;
+	}
+
 	/**
 	 * @return Returns the orderReason.
 	 */
@@ -633,7 +644,17 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	public String getOrderNumber() {
 		return orderNumber;
 	}
-	
+
+	/**
+	 * Sets the orderNumber
+	 * 
+	 * @since 2.7.8, 2.8.2, 2.9.0
+	 * @param orderNumber
+	 */
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+
 	/**
 	 * Gets the previous related order.
 	 * 

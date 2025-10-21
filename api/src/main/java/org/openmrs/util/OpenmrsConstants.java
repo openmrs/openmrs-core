@@ -585,6 +585,13 @@ public final class OpenmrsConstants {
 	public static final String GP_NEXT_ORDER_NUMBER_SEED = "order.nextOrderNumberSeed";
 	
 	public static final String GP_ORDER_NUMBER_GENERATOR_BEAN_ID = "order.orderNumberGeneratorBeanId";
+
+	/**
+	 *  @since 2.7.8, 2.8.2, 2.9.0
+	 */
+	public static final String GP_ALLOW_SETTING_ORDER_NUMBER = "order.allowManuallySettingOrderNumber";
+	
+	public static final String GP_IGNORE_ATTEMPTS_TO_STOP_INACTIVE_ORDERS = "order.ignoreAttemptsToStopInactiveOrders";
 	
 	/**
 	 * Specifies the uuid of the concept set where its members represent the possible drug routes
@@ -1052,6 +1059,11 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_ORDER_NUMBER_GENERATOR_BEAN_ID, "",
 		        "Specifies spring bean id of the order generator to use when assigning order numbers"));
+
+		props.add(new GlobalProperty(GP_ALLOW_SETTING_ORDER_NUMBER, "false",
+			"Specifies whether the order number can be set (otherwise can only be set by configured order number generator)"));
+		
+		props.add(new GlobalProperty(GP_IGNORE_ATTEMPTS_TO_STOP_INACTIVE_ORDERS, "false", "Specifies whether attempts to stop inactive orders should be ignored or throw an exception"));
 		
 		props.add(new GlobalProperty(GP_DRUG_ROUTES_CONCEPT_UUID, "",
 		        "Specifies the uuid of the concept set where its members represent the possible drug routes"));

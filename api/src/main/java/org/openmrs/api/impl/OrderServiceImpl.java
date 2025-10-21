@@ -327,8 +327,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private Order saveOrderInternal(Order order, OrderContext orderContext) {
 		if (order.getOrderId() == null) {
-			setProperty(order, "orderNumber", getOrderNumberGenerator().getNewOrderNumber(orderContext));
 			
+			if (order.getOrderNumber() == null || !Context.getAdministrationService().getGlobalPropertyValue(
+				OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, false)) {
+				setProperty(order, "orderNumber", getOrderNumberGenerator().getNewOrderNumber(orderContext));
+			}
+				
 			//DC orders should auto expire upon creating them
 			if (DISCONTINUE == order.getAction()) {
 				order.setAutoExpireDate(order.getDateActivated());
@@ -858,16 +862,25 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		if (isRetrospective && orderToStop.getDateStopped() != null) {
-			throw new CannotStopInactiveOrderException();
+			throwCannotStopInactiveOrderExceptionUnlessDisabled();
+			return;
 		}
 		if (!isRetrospective && !orderToStop.isActive()) {
-			throw new CannotStopInactiveOrderException();
+			throwCannotStopInactiveOrderExceptionUnlessDisabled();
+			return;
 		} else if (isRetrospective && !orderToStop.isActive(discontinueDate)) {
-			throw new CannotStopInactiveOrderException();
+			throwCannotStopInactiveOrderExceptionUnlessDisabled();
+			return;
 		}
 		
 		setProperty(orderToStop, "dateStopped", discontinueDate);
 		saveOrderInternal(orderToStop, null);
+	}
+	
+	private void throwCannotStopInactiveOrderExceptionUnlessDisabled() {
+		if (!Context.getAdministrationService().getGlobalPropertyValue(OpenmrsConstants.GP_IGNORE_ATTEMPTS_TO_STOP_INACTIVE_ORDERS, false)) {
+			throw new CannotStopInactiveOrderException();
+		}
 	}
 	
 	/**
