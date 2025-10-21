@@ -3,7 +3,7 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- *
+ * <p>
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
@@ -35,21 +35,15 @@ import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class OrderSetServiceTest extends BaseContextSensitiveTest {
-	
-	protected OrderService orderService;
-	
-	protected OrderSetService orderSetService;
-	
-	protected ConceptService conceptService;
-	
+
 	protected static final String AUDIT_DATE = "Audit Date";
 	protected static final String INVALID_AUDIT_DATE = "Non existent name";
-	
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
-	
 	protected static final String ORDER_SET_ATTRIBUTES = "org/openmrs/api/include/OrderSetServiceTest-attributes.xml";
-	
-	
+	protected OrderService orderService;
+	protected OrderSetService orderSetService;
+	protected ConceptService conceptService;
+
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
@@ -68,124 +62,124 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 			conceptService = Context.getConceptService();
 		}
 	}
-	
+
 	@Test
 	public void shouldSaveOrderSet() {
 		executeDataSet(ORDER_SET);
 		Integer initialNumberOfOrderSets = orderSetService.getOrderSets(false).size();
-		
+
 		OrderSet orderSet = orderSetBuilder(false, false);
 		OrderSet orderSetObj = orderSetService.saveOrderSet(orderSet);
 		Context.flushSession();
-		
+
 		List<OrderSet> orderSets = orderSetService.getOrderSets(false);
-		
+
 		assertEquals(initialNumberOfOrderSets + 1, orderSets.size(), "A new order set was saved to the exisiting list of order sets");
 		assertNotNull(orderSetObj.getId(), "OrderSet has a order_set_id");
 	}
-	
+
 	@Test
 	public void shouldSaveAndUpdateOrderSet() {
 		executeDataSet(ORDER_SET);
-		
+
 		OrderSet orderSet = orderSetBuilder(false, false);
-		
+
 		OrderSet orderSetObj = orderSetService.saveOrderSet(orderSet);
-		
+
 		orderSetObj.setOperator(OrderSet.Operator.ONE);
 		orderSetObj.setDescription("Test Order Set Description Updated");
-		
+
 		assertNull(orderSetObj.getChangedBy(), "OrderSet is new and is not changed");
 		assertNull(orderSetObj.getDateChanged(), "OrderSet is new and has no change date");
-		
+
 		orderSetService.saveOrderSet(orderSetObj);
 		Context.flushSession();
-		
+
 		assertNotNull(orderSetObj.getId(), "OrderSet has a order_set_id");
 		assertEquals("Test Order Set Description Updated", orderSetObj.getDescription(), "OrderSet has updated description");
 		assertEquals("ONE", orderSetObj.getOperator().toString(), "OrderSet has updated operator");
-		
+
 		assertNotNull(orderSetObj.getChangedBy(), "OrderSet has been changed");
 		assertNotNull(orderSetObj.getDateChanged(), "OrderSet has been changed on some date");
-		
+
 	}
-	
+
 	@Test
 	public void shouldRetrieveOrderSetMembersOfAnOrderSet() {
 		executeDataSet(ORDER_SET);
 		OrderSet orderSet = orderSetService.getOrderSet(2001);
-		
+
 		assertEquals(2, orderSet.getOrderSetMembers().size(), "OrderSet should contain orderSetmembers");
-		
+
 		OrderSet orderSet1 = orderSetService.getOrderSet(2000);
-		
+
 		assertEquals(2, orderSet1.getOrderSetMembers().size(), "OrderSet should not contain retired orderSetMembers");
 	}
-	
+
 	@Test
 	public void shouldNotAutomaticallyPropagateToSetMembersIfExcludingOrderSet() {
 		executeDataSet(ORDER_SET);
-		
+
 		List<OrderSet> orderSets = orderSetService.getOrderSets(false);
 		Integer numberOfOrderSetMembers = 0;
 		for (OrderSet oS : orderSets) {
 			numberOfOrderSetMembers = numberOfOrderSetMembers + oS.getOrderSetMembers().size();
 		}
-		assertEquals(new Integer(4), numberOfOrderSetMembers);
+		assertEquals(Integer.valueOf(4), numberOfOrderSetMembers);
 	}
-	
+
 	@Test
 	public void shouldAddOrderSetMemberAtLastPositionInsideAnExistingOrderSetIfPositionIsNull() {
 		executeDataSet(ORDER_SET);
-		
+
 		OrderSet orderSet = orderSetService.getOrderSet(2001);
 		Integer initialSize = orderSet.getOrderSetMembers().size();
-		
+
 		OrderSetMember newOrderSetMember = new OrderSetMember();
 		newOrderSetMember.setOrderType(orderService.getOrderType(100));
 		newOrderSetMember.setConcept(conceptService.getConcept(1002));
 		newOrderSetMember.setCreator(new User(1));
 		newOrderSetMember.setDateCreated(new Date());
 		newOrderSetMember.setRetired(false);
-		
+
 		orderSet.addOrderSetMember(newOrderSetMember, null);
-		
+
 		Context.getOrderSetService().saveOrderSet(orderSet);
-		
+
 		Context.flushSession();
-		
+
 		OrderSet savedOrderSet = Context.getOrderSetService().getOrderSetByUuid(orderSet.getUuid());
-		
+
 		assertEquals(initialSize + 1, savedOrderSet.getOrderSetMembers().size(), "Size of the orderSetMembers got updated");
 		assertEquals(newOrderSetMember.getUuid(), savedOrderSet.getOrderSetMembers().get(initialSize).getUuid(), "New OrderSetMember got added at last position");
 	}
-	
+
 	@Test
 	public void shouldAddOrderSetMemberAtSomePositionInsideAnExistingOrderSet() {
 		executeDataSet(ORDER_SET);
-		
+
 		OrderSet orderSet = orderSetService.getOrderSet(2001);
 		Integer initialSize = orderSet.getOrderSetMembers().size();
-		
+
 		OrderSetMember newOrderSetMember = new OrderSetMember();
 		newOrderSetMember.setOrderType(orderService.getOrderType(100));
 		newOrderSetMember.setConcept(conceptService.getConcept(1002));
 		newOrderSetMember.setCreator(new User(1));
 		newOrderSetMember.setDateCreated(new Date());
 		newOrderSetMember.setRetired(false);
-		
+
 		Integer position = 2;
 		orderSet.addOrderSetMember(newOrderSetMember, position);
-		
+
 		Context.getOrderSetService().saveOrderSet(orderSet);
-		
+
 		Context.flushSession();
-		
+
 		OrderSet savedOrderSet = Context.getOrderSetService().getOrderSetByUuid(orderSet.getUuid());
-		
+
 		assertEquals(initialSize + 1, savedOrderSet.getOrderSetMembers().size(), "Size of the orderSetMembers got updated");
-		assertEquals( newOrderSetMember.getUuid(), savedOrderSet.getOrderSetMembers().get(position).getUuid(), "New OrderSetMember got added at given position");
-		
+		assertEquals(newOrderSetMember.getUuid(), savedOrderSet.getOrderSetMembers().get(position).getUuid(), "New OrderSetMember got added at given position");
+
 		Integer newPosition = savedOrderSet.getOrderSetMembers().size() + 1;
 		OrderSetMember orderSetMemberToBeAddedAtPosition = new OrderSetMember();
 		orderSetMemberToBeAddedAtPosition.setOrderType(orderService.getOrderType(100));
@@ -193,79 +187,79 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSetMemberToBeAddedAtPosition.setCreator(new User(1));
 		orderSetMemberToBeAddedAtPosition.setDateCreated(new Date());
 		orderSetMemberToBeAddedAtPosition.setRetired(false);
-		
+
 		APIException exception = assertThrows(APIException.class, () -> orderSet.addOrderSetMember(orderSetMemberToBeAddedAtPosition, newPosition));
 		assertThat(exception.getMessage(), is("Cannot add a member which is out of range of the list"));
 	}
-	
+
 	@Test
 	public void shouldReturnInTheSameArrangementInWhichTheOrderSetMembersAreSaved() {
 		executeDataSet(ORDER_SET);
-		
+
 		OrderSet newOrderSet = new OrderSet();
 		newOrderSet.setOperator(OrderSet.Operator.ALL);
 		newOrderSet.setName("NewOrderSet");
 		newOrderSet.setDescription("New Order Set");
-		
+
 		OrderSetMember firstOrderSetMember = new OrderSetMember();
 		firstOrderSetMember.setOrderType(orderService.getOrderType(100));
 		firstOrderSetMember.setConcept(conceptService.getConcept(1000));
 		firstOrderSetMember.setCreator(new User(1));
 		firstOrderSetMember.setDateCreated(new Date());
 		firstOrderSetMember.setRetired(false);
-		
+
 		OrderSetMember secondOrderSetMember = new OrderSetMember();
 		secondOrderSetMember.setOrderType(orderService.getOrderType(100));
 		secondOrderSetMember.setConcept(conceptService.getConcept(1001));
 		secondOrderSetMember.setCreator(new User(1));
 		secondOrderSetMember.setDateCreated(new Date());
 		secondOrderSetMember.setRetired(false);
-		
+
 		OrderSetMember thirdOrderSetMember = new OrderSetMember();
 		thirdOrderSetMember.setOrderType(orderService.getOrderType(100));
 		thirdOrderSetMember.setConcept(conceptService.getConcept(1001));
 		thirdOrderSetMember.setCreator(new User(1));
 		thirdOrderSetMember.setDateCreated(new Date());
 		thirdOrderSetMember.setRetired(false);
-		
+
 		List<OrderSetMember> orderSetMembers = new ArrayList<>(Arrays.asList(firstOrderSetMember,
-		    thirdOrderSetMember, secondOrderSetMember));
+			thirdOrderSetMember, secondOrderSetMember));
 		newOrderSet.setOrderSetMembers(orderSetMembers);
-		
+
 		OrderSet savedOrderSet = orderSetService.saveOrderSet(newOrderSet);
 		Context.flushSession();
-		
+
 		assertEquals(firstOrderSetMember.getUuid(), savedOrderSet.getOrderSetMembers().get(0).getUuid());
 		assertEquals(thirdOrderSetMember.getUuid(), savedOrderSet.getOrderSetMembers().get(1).getUuid());
 		assertEquals(secondOrderSetMember.getUuid(), savedOrderSet.getOrderSetMembers().get(2).getUuid());
 	}
-	
+
 	@Test
 	public void shouldAddOrderSetMemberFromTheEndOfTheListIfNegativePositionIsGiven() {
 		executeDataSet(ORDER_SET);
-		
+
 		OrderSet orderSet = orderSetService.getOrderSet(2001);
 		Integer initialSize = orderSet.getOrderSetMembers().size();
-		
+
 		OrderSetMember newOrderSetMember = new OrderSetMember();
 		newOrderSetMember.setOrderType(orderService.getOrderType(100));
 		newOrderSetMember.setConcept(conceptService.getConcept(1002));
 		newOrderSetMember.setCreator(new User(1));
 		newOrderSetMember.setDateCreated(new Date());
 		newOrderSetMember.setRetired(false);
-		
+
 		Integer position = -2;
 		orderSet.addOrderSetMember(newOrderSetMember, position);
-		
+
 		Context.getOrderSetService().saveOrderSet(orderSet);
-		
+
 		Context.flushSession();
-		
+
 		OrderSet savedOrderSet = Context.getOrderSetService().getOrderSetByUuid(orderSet.getUuid());
-		
+
 		assertEquals(initialSize + 1, savedOrderSet.getOrderSetMembers().size(), "Size of the orderSetMembers got updated");
 		assertEquals(newOrderSetMember.getUuid(), savedOrderSet.getOrderSetMembers().get(position + initialSize + 1).getUuid(), "New OrderSetMember got added at given position");
-		
+
 	}
 
 	@Test
@@ -286,7 +280,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 
 		//Fetching the unRetired members
 		int finalSize = savedOrderSet.getUnRetiredOrderSetMembers().size();
-		assertEquals(initialCountOfMembers-1, finalSize, "Count of orderSetMembers gets modified if we filter out the retired members");
+		assertEquals(initialCountOfMembers - 1, finalSize, "Count of orderSetMembers gets modified if we filter out the retired members");
 	}
 
 	@Test
@@ -303,7 +297,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 
 		OrderSet savedOrderSet = orderSetService.getOrderSetByUuid(orderSet.getUuid());
-		assertEquals(initialCountOfMembers-1, savedOrderSet.getOrderSetMembers().size(), "Count of orderSetMembers changes after removing a member from the orderSet");
+		assertEquals(initialCountOfMembers - 1, savedOrderSet.getOrderSetMembers().size(), "Count of orderSetMembers changes after removing a member from the orderSet");
 	}
 
 	@Test
@@ -326,7 +320,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 
 		int numberOfOrderSetsAfterRetire = orderSetService.getOrderSets(false).size();
-		assertEquals(initialNumberOfOrderSets-1,numberOfOrderSetsAfterRetire);
+		assertEquals(initialNumberOfOrderSets - 1, numberOfOrderSetsAfterRetire);
 
 		OrderSet retiredOrderSet = orderSetService.getOrderSet(2001);
 		assertTrue(retiredOrderSet.getRetired());
@@ -342,7 +336,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSet.setName("Test Order Set");
 		orderSet.setDescription("Test Order Set Description");
 		orderSet.setOperator(OrderSet.Operator.ALL);
-		
+
 		OrderSetMember orderSetMember = new OrderSetMember();
 		orderSetMember.setOrderType(orderService.getOrderType(100));
 		orderSetMember.setConcept(conceptService.getConcept(1000));
@@ -358,7 +352,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSet.setRetired(orderSetRetired);
 		return orderSet;
 	}
-	
+
 
 	/**
 	 * @see OrderSetService#getOrderSetAttributeByUuid(String)
@@ -367,7 +361,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	public void getOrderSetAttributeByUuid_shouldGetTheOrderSetAttributeWithTheGivenUuid() {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
 		OrderSetService service = Context.getOrderSetService();
-		assertEquals("2011-04-25",service.getOrderSetAttributeByUuid("3a4bdb18-6faa-22e0-8414-001e376eb68e").getValueReference());
+		assertEquals("2011-04-25", service.getOrderSetAttributeByUuid("3a4bdb18-6faa-22e0-8414-001e376eb68e").getValueReference());
 	}
 
 	/**
@@ -387,7 +381,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	public void getOrderSetAttributeTypeByUuid_shouldReturnTheOrderSetAttributeTypeWithTheGivenUuid() {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
 		assertEquals(AUDIT_DATE, Context.getOrderSetService().getOrderSetAttributeTypeByUuid(
-		    "8516cc50-6f9f-33e0-8414-001e648eb67e").getName());
+			"8516cc50-6f9f-33e0-8414-001e648eb67e").getName());
 	}
 
 	/**
@@ -411,7 +405,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see OrderSetService#retireOrderSetAttributeType(OrderSetAttributeType,String)
+	 * @see OrderSetService#retireOrderSetAttributeType(OrderSetAttributeType, String)
 	 */
 	@Test
 	public void retireOrderSetAttributeType_shouldRetireAOrderSetAttributeType() {
@@ -479,12 +473,12 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see OrderSetService#getOrderSetAttributeTypeByName(String) 
+	 * @see OrderSetService#getOrderSetAttributeTypeByName(String)
 	 */
 	@Test
 	public void getOrderSetAttributeTypeByName_shouldGetMatchingOrderSetAttributeType() {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
-		
+
 		OrderSetAttributeType attributeType = orderSetService.getOrderSetAttributeTypeByName(AUDIT_DATE);
 
 		assertNotNull(attributeType, "The fetched OrderSetAttributeType should not be null");
