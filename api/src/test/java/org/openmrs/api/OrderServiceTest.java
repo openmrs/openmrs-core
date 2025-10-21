@@ -103,14 +103,17 @@ import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.parameter.OrderSearchCriteriaBuilder;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.scheduler.TaskDefinition;
+import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -4172,13 +4175,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrderGroup_shouldSaveOrderGroupWithOrderContext() {
 		executeDataSet(ORDER_SET);
 		Encounter encounter = encounterService.getEncounter(3);
+		Patient patient = encounter.getPatient();
 		OrderSet orderSet = Context.getOrderSetService().getOrderSet(1);
 		OrderGroup orderGroup = new OrderGroup();
 		orderGroup.setOrderSet(orderSet);
 		orderGroup.setPatient(encounter.getPatient());
 		orderGroup.setEncounter(encounter);
 
-		Order firstOrder = new OrderBuilder().withAction(Order.Action.NEW).withPatient(1).withConcept(10).withOrderer(1)
+		Order firstOrder = new OrderBuilder().withAction(Order.Action.NEW).withPatient(patient.getPatientId()).withConcept(10).withOrderer(1)
 			.withEncounter(3).withDateActivated(new Date()).withOrderType(17)
 			.withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).build();
 

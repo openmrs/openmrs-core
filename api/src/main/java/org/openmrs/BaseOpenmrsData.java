@@ -34,9 +34,9 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
 public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements OpenmrsData {
 	
 	//***** Properties *****
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "creator", updatable = false)
-	protected User creator;
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "creator")
+	private User creator;
 	
 	@Column(name = "date_created", nullable = false, updatable = false)
 	private Date dateCreated;
