@@ -866,7 +866,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
-	public void saveOrder_shouldNotFailIfPreviousOrderHasAlreadyBeenDiscontinuedAndIgnoreStoppingInactiveOrdersSetTrue() throws ParseException {
+	public void saveOrder_shouldNotFailIfPreviousOrderHasAlreadyBeenDiscontinuedAndGlobalPropertyIgnoreAttemptsToStopInactiveOrdersSetTrue() throws ParseException {
 
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_IGNORE_ATTEMPTS_TO_STOP_INACTIVE_ORDERS,
 			"true");
@@ -1640,7 +1640,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void saveOrder_shouldAllowManuallySettingOrderNumberIfGlobalPropertyForManualOverrideSetToTrue() {
+	public void saveOrder_shouldAllowManuallySettingOrderNumberIfGlobalPropertyAllowSettingOrderNumberTrue() {
 		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID,
 			"orderEntry.OrderNumberGenerator");
 		Context.getAdministrationService().saveGlobalProperty(gp1);
@@ -1662,7 +1662,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void saveOrder_shouldNotAllowManuallySettingOrderNumberIfGlobalPropertyForManualOverrideSetToFalse() {
+	public void saveOrder_shouldNotAllowManuallySettingOrderNumberIfGlobalPropertyAllowSettingOrderNumberFalse() {
 		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID,
 			"orderEntry.OrderNumberGenerator");
 		Context.getAdministrationService().saveGlobalProperty(gp1);
