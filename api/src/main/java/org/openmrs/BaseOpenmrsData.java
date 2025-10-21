@@ -35,7 +35,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	
 	//***** Properties *****
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "creator")
+	@JoinColumn(name = "creator", updatable = false)
 	protected User creator;
 	
 	@Column(name = "date_created", nullable = false, updatable = false)
