@@ -4175,14 +4175,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrderGroup_shouldSaveOrderGroupWithOrderContext() {
 		executeDataSet(ORDER_SET);
 		Encounter encounter = encounterService.getEncounter(3);
-		Patient patient = encounter.getPatient();
 		OrderSet orderSet = Context.getOrderSetService().getOrderSet(1);
 		OrderGroup orderGroup = new OrderGroup();
 		orderGroup.setOrderSet(orderSet);
 		orderGroup.setPatient(encounter.getPatient());
 		orderGroup.setEncounter(encounter);
 
-		Order firstOrder = new OrderBuilder().withAction(Order.Action.NEW).withPatient(patient.getPatientId()).withConcept(10).withOrderer(1)
+		Order firstOrder = new OrderBuilder().withAction(Order.Action.NEW).withConcept(10).withOrderer(1)
 			.withEncounter(3).withDateActivated(new Date()).withOrderType(17)
 			.withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).build();
 
