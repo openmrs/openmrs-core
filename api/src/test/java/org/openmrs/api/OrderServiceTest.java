@@ -15,6 +15,7 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -170,6 +171,17 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	public class SomeTestOrder extends TestOrder {}
+	
+	@BeforeEach
+	public void beforeEach() {
+		// make sure we set any cached values of these variables to false
+		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_IGNORE_ATTEMPTS_TO_STOP_INACTIVE_ORDERS,
+			"false");
+		Context.getAdministrationService().saveGlobalProperty(gp1);
+
+		GlobalProperty gp2 = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, "false");
+		Context.getAdministrationService().saveGlobalProperty(gp2);
+	}
 	
 
 	/**
@@ -1659,6 +1671,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderNumber("Manually Set");
 		order = orderService.saveOrder(order, null);
 		assertEquals("Manually Set", order.getOrderNumber());
+
 	}
 
 	@Test
@@ -1666,10 +1679,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID,
 			"orderEntry.OrderNumberGenerator");
 		Context.getAdministrationService().saveGlobalProperty(gp1);
-
-		GlobalProperty gp2 = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, "false");
-		Context.getAdministrationService().saveGlobalProperty(gp2);
-
+		
 		Order order = new TestOrder();
 		order.setPatient(patientService.getPatient(7));
 		order.setConcept(conceptService.getConcept(5497));

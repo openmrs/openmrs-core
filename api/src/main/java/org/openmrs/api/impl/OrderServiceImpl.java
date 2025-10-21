@@ -51,6 +51,7 @@ import org.openmrs.api.db.OrderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.parameter.OrderSearchCriteria;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -328,8 +329,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	private Order saveOrderInternal(Order order, OrderContext orderContext) {
 		if (order.getOrderId() == null) {
 			
-			if (order.getOrderNumber() == null || !Context.getAdministrationService().getGlobalPropertyValue(
-				OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, false)) {
+			if (order.getOrderNumber() == null || !Boolean.parseBoolean(ConfigUtil.getProperty(
+				OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, "false"))) {
 				setProperty(order, "orderNumber", getOrderNumberGenerator().getNewOrderNumber(orderContext));
 			}
 				
@@ -878,7 +879,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	private void throwCannotStopInactiveOrderExceptionUnlessDisabled() {
-		if (!Context.getAdministrationService().getGlobalPropertyValue(OpenmrsConstants.GP_IGNORE_ATTEMPTS_TO_STOP_INACTIVE_ORDERS, false)) {
+		if (!Boolean.parseBoolean(ConfigUtil.getProperty(OpenmrsConstants.GP_IGNORE_ATTEMPTS_TO_STOP_INACTIVE_ORDERS, "false"))) {
 			throw new CannotStopInactiveOrderException();
 		}
 	}

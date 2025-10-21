@@ -260,8 +260,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	public Date getDateStopped() {
 		return dateStopped;
 	}
-
-
+	
 	/**
 	 * Set the dateStopped
 	 *  
