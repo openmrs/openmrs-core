@@ -13,6 +13,7 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,7 +47,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	@Column(name = "description", columnDefinition = "TEXT", length = 65535)
 	private String description;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
@@ -56,7 +57,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	@Column(name = "voided", nullable = false)
 	private Boolean voided = false;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 	
@@ -66,7 +67,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	@Column(name = "void_reason", length = 255)
 	private String voidReason;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	

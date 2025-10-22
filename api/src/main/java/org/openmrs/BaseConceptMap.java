@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Date;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -28,11 +29,11 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	@JoinColumn(name = "a_is_to_b_id", nullable = false)
 	private ConceptMapType conceptMapType;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
