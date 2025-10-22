@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
@@ -120,7 +121,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@Column(name = "retired", nullable = false, length = 1)
 	private Boolean retired = false;
 	
-	@ManyToOne
+	@ManyToOne (fetch = FetchType.LAZY)
 	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 	
@@ -134,14 +135,14 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@KeywordField(
 		valueBridge = @ValueBridgeRef(type = OpenmrsObjectValueBridge.class)
 	)
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "datatype_id", nullable = false)
 	private ConceptDatatype datatype;
 
 	@KeywordField(
 		valueBridge = @ValueBridgeRef(type = OpenmrsObjectValueBridge.class)
 	)
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "class_id", nullable = false)
 	private ConceptClass conceptClass;
 	
@@ -151,7 +152,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@Column(name = "version", length = 50)
 	private String version;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
@@ -159,7 +160,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
-	@ManyToOne
+	@ManyToOne (fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
@@ -169,22 +170,22 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	@AllowDirectAccess
 	@AssociationInverseSide(inversePath = @ObjectPath({@PropertyValue(propertyName = "concept")}))
-	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@BatchSize(size = 25)
 	private Collection<ConceptName> names;
 	
 	@AllowDirectAccess
-	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@OrderBy("sortWeight ASC, conceptAnswerId ASC")
 	@BatchSize(size = 25)
 	private Collection<ConceptAnswer> answers;
 	
-	@OneToMany(mappedBy = "conceptSet", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "conceptSet", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@OrderBy("sortWeight ASC")
 	@BatchSize(size = 25)
 	private Collection<ConceptSet> conceptSets;
 	
-	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@OrderBy("conceptDescriptionId")
 	@BatchSize(size = 25)
 	private Collection<ConceptDescription> descriptions;
@@ -193,7 +194,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@AssociationInverseSide(inversePath = @ObjectPath({
 		@PropertyValue(propertyName = "concept")
 	}))
-	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@BatchSize(size = 25)
 	private Collection<ConceptMap> conceptMappings;
 	
@@ -204,7 +205,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@Transient
 	private Map<Locale, List<ConceptName>> compatibleCache;
 	
-	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@BatchSize(size = 100)
 	@OrderBy("voided ASC")
 	private Set<ConceptAttribute> attributes = new LinkedHashSet<>();
