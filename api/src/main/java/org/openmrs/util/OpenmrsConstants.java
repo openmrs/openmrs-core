@@ -1061,7 +1061,7 @@ public final class OpenmrsConstants {
 		        "Specifies spring bean id of the order generator to use when assigning order numbers"));
 
 		props.add(new GlobalProperty(GP_ALLOW_SETTING_ORDER_NUMBER, "false",
-			"Specifies whether the order number can be set. If false, order number generator will always assign an identifier."));
+			"Specifies whether the order number can be set. If false, order number generator, if configured will always assign an order number."));
 		
 		props.add(new GlobalProperty(GP_IGNORE_CANNOT_STOP_INACTIVE_ORDER_EXCEPTION, "false", "Don't throw exception when trying to stop an that is already inactive order. May be necessary when importing orders from another system."));
 		
