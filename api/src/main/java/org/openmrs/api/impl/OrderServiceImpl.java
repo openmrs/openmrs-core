@@ -37,7 +37,6 @@ import org.openmrs.api.CannotDeleteObjectInUseException;
 import org.openmrs.api.CannotStopDiscontinuationOrderException;
 import org.openmrs.api.CannotStopInactiveOrderException;
 import org.openmrs.api.CannotUnvoidOrderException;
-import org.openmrs.api.CannotUpdateObjectInUseException;
 import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.MissingRequiredPropertyException;
@@ -861,27 +860,20 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (DISCONTINUE == orderToStop.getAction()) {
 			throw new CannotStopDiscontinuationOrderException();
 		}
-		
-		if (isRetrospective && orderToStop.getDateStopped() != null) {
-			throwCannotStopInactiveOrderExceptionUnlessDisabled();
-			return;
-		}
-		if (!isRetrospective && !orderToStop.isActive()) {
-			throwCannotStopInactiveOrderExceptionUnlessDisabled();
-			return;
-		} else if (isRetrospective && !orderToStop.isActive(discontinueDate)) {
-			throwCannotStopInactiveOrderExceptionUnlessDisabled();
-			return;
+
+		if (!Boolean.parseBoolean(ConfigUtil.getProperty(OpenmrsConstants.GP_IGNORE_CANNOT_STOP_INACTIVE_ORDER_EXCEPTION, "false"))) {
+			if (isRetrospective && orderToStop.getDateStopped() != null) {
+				throw new CannotStopInactiveOrderException();
+			}
+			if (!isRetrospective && !orderToStop.isActive()) {
+				throw new CannotStopInactiveOrderException();
+			} else if (isRetrospective && !orderToStop.isActive(discontinueDate)) {
+				throw new CannotStopInactiveOrderException();
+			}
 		}
 		
 		setProperty(orderToStop, "dateStopped", discontinueDate);
 		saveOrderInternal(orderToStop, null);
-	}
-	
-	private void throwCannotStopInactiveOrderExceptionUnlessDisabled() {
-		if (!Boolean.parseBoolean(ConfigUtil.getProperty(OpenmrsConstants.GP_IGNORE_ATTEMPTS_TO_STOP_INACTIVE_ORDERS, "false"))) {
-			throw new CannotStopInactiveOrderException();
-		}
 	}
 	
 	/**

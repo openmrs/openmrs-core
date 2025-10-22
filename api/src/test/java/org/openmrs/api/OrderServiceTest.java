@@ -15,7 +15,6 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -175,7 +174,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@BeforeEach
 	public void beforeEach() {
 		// make sure we set any cached values of these variables to false
-		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_IGNORE_ATTEMPTS_TO_STOP_INACTIVE_ORDERS,
+		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_IGNORE_CANNOT_STOP_INACTIVE_ORDER_EXCEPTION,
 			"false");
 		Context.getAdministrationService().saveGlobalProperty(gp1);
 
@@ -880,7 +879,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrder_shouldNotFailIfPreviousOrderHasAlreadyBeenDiscontinuedAndGlobalPropertyIgnoreAttemptsToStopInactiveOrdersSetTrue() throws ParseException {
 
-		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_IGNORE_ATTEMPTS_TO_STOP_INACTIVE_ORDERS,
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_IGNORE_CANNOT_STOP_INACTIVE_ORDER_EXCEPTION,
 			"true");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		
@@ -914,7 +913,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(order, null);
 		assertEquals(order.getDateActivated(), order.getAutoExpireDate());
-		assertEquals(previousOrder.getDateStopped(), discontinueDate);
+		assertEquals(truncateToSeconds(aMomentBefore(order.getDateActivated())), truncateToSeconds(previousOrder.getDateStopped()));
 	}
 
 	/**
@@ -4332,5 +4331,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getOrderAttributeTypeByName_shouldReturnNullForMismatchedName() {
 		assertNull(orderService.getOrderAttributeTypeByName("InvalidName"));
+	}
+
+	private Date aMomentBefore(Date date) {
+		return DateUtils.addSeconds(date, -1);
+	}
+	
+	private Date truncateToSeconds(Date date) {
+		return DateUtils.truncate(date, Calendar.SECOND);
 	}
 }
