@@ -24,6 +24,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -369,6 +370,10 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 */
 	@Override
 	public void purgeProviderRole(ProviderRole providerRole) {
+		List<Provider> providersWithRole = getProvidersByRoles(Collections.singletonList(providerRole));
+		if (!providersWithRole.isEmpty()) {
+			throw new APIException("Cannot purge a provider role that is assigned to one or more providers");
+		}
 		dao.deleteProviderRole(providerRole);
 	}
 }
