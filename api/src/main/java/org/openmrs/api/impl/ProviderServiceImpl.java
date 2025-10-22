@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
@@ -28,6 +24,11 @@ import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Default implementation of the {@link ProviderService}. This class should not be used on its own.
@@ -335,10 +336,48 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 		return dao.getProvidersByRoles(roles, false);
 	}
 
+	/**
+	 * @see ProviderService#getAllProviderRoles(boolean)
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
 		return dao.getAllProviderRoles(includeRetired);
 	}
-	
+
+	/**
+	 * @see ProviderService#saveProviderRole(ProviderRole)
+	 */
+	@Override
+	public ProviderRole saveProviderRole(ProviderRole providerRole) {
+		return dao.saveProviderRole(providerRole);
+	}
+
+	/**
+	 * @see ProviderService#retireProviderRole(ProviderRole, String)
+	 */
+	@Override
+	public ProviderRole retireProviderRole(ProviderRole providerRole, String reason) {
+		return Context.getProviderService().saveProviderRole(providerRole);
+	}
+
+	/**
+	 * @see ProviderService#unretireProviderRole(ProviderRole)
+	 */
+	@Override
+	public ProviderRole unretireProviderRole(ProviderRole providerRole) {
+		return Context.getProviderService().saveProviderRole(providerRole);
+	}
+
+	/**
+	 * @see ProviderService#purgeProviderRole(ProviderRole)
+	 */
+	@Override
+	public void purgeProviderRole(ProviderRole providerRole) {
+		List<Provider> providersWithRole = getProvidersByRoles(Collections.singletonList(providerRole));
+		if (!providersWithRole.isEmpty()) {
+			throw new APIException("Cannot purge a provider role that is assigned to one or more providers");
+		}
+		dao.deleteProviderRole(providerRole);
+	}
 }
