@@ -589,9 +589,9 @@ public final class OpenmrsConstants {
 	/**
 	 *  @since 2.7.8, 2.8.2, 2.9.0
 	 */
-	public static final String GP_ALLOW_SETTING_ORDER_NUMBER = "order.allowManuallySettingOrderNumber";
+	public static final String GP_ALLOW_SETTING_ORDER_NUMBER = "order.allowSettingOrderNumber";
 	
-	public static final String GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS = "order.allowSettingStopDateOnInactiveOrder";
+	public static final String GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS = "order.allowSettingStopDateOnInactiveOrders";
 	
 	/**
 	 * Specifies the uuid of the concept set where its members represent the possible drug routes
