@@ -591,7 +591,7 @@ public final class OpenmrsConstants {
 	 */
 	public static final String GP_ALLOW_SETTING_ORDER_NUMBER = "order.allowManuallySettingOrderNumber";
 	
-	public static final String GP_IGNORE_CANNOT_STOP_INACTIVE_ORDER_EXCEPTION = "order.ignoreCannotStopInactiveOrderException";
+	public static final String GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS = "order.allowSettingStopDateOnInactiveOrder";
 	
 	/**
 	 * Specifies the uuid of the concept set where its members represent the possible drug routes
@@ -1063,7 +1063,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_ALLOW_SETTING_ORDER_NUMBER, "false",
 			"Specifies whether the order number can be set. If false, order number generator, if configured will always assign an order number."));
 		
-		props.add(new GlobalProperty(GP_IGNORE_CANNOT_STOP_INACTIVE_ORDER_EXCEPTION, "false", "Don't throw exception when trying to stop an that is already inactive order. May be necessary when importing orders from another system."));
+		props.add(new GlobalProperty(GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS, "false", "Don't throw exception when trying to set a stop date an that is already inactive order. May be necessary when importing orders from another system."));
 		
 		props.add(new GlobalProperty(GP_DRUG_ROUTES_CONCEPT_UUID, "",
 		        "Specifies the uuid of the concept set where its members represent the possible drug routes"));

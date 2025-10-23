@@ -174,7 +174,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@BeforeEach
 	public void beforeEach() {
 		// make sure we set any cached values of these variables to false
-		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_IGNORE_CANNOT_STOP_INACTIVE_ORDER_EXCEPTION,
+		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS,
 			"false");
 		Context.getAdministrationService().saveGlobalProperty(gp1);
 
@@ -879,7 +879,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrder_shouldNotFailIfPreviousOrderHasAlreadyBeenDiscontinuedAndGlobalPropertyIgnoreAttemptsToStopInactiveOrdersSetTrue() throws ParseException {
 
-		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_IGNORE_CANNOT_STOP_INACTIVE_ORDER_EXCEPTION,
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS,
 			"true");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		

@@ -327,9 +327,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private Order saveOrderInternal(Order order, OrderContext orderContext) {
 		if (order.getOrderId() == null) {
-			
-			if (order.getOrderNumber() == null || !Boolean.parseBoolean(ConfigUtil.getProperty(
-				OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, "false"))) {
+			if (order.getOrderNumber() == null) {
 				setProperty(order, "orderNumber", getOrderNumberGenerator().getNewOrderNumber(orderContext));
 			}
 				
@@ -861,7 +859,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			throw new CannotStopDiscontinuationOrderException();
 		}
 
-		if (!Boolean.parseBoolean(ConfigUtil.getProperty(OpenmrsConstants.GP_IGNORE_CANNOT_STOP_INACTIVE_ORDER_EXCEPTION, "false"))) {
+		if (!Boolean.parseBoolean(ConfigUtil.getProperty(OpenmrsConstants.GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS, "false"))) {
 			if (isRetrospective && orderToStop.getDateStopped() != null) {
 				throw new CannotStopInactiveOrderException();
 			}
