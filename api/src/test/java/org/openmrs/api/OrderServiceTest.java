@@ -86,6 +86,7 @@ import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ClobDatatypeStorage;
+import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.SerializedObject;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
 import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
@@ -2792,6 +2793,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(LocationTag.class)
 			    .addAnnotatedClass(org.openmrs.Field.class)
 				.addAnnotatedClass(Privilege.class)
+				.addAnnotatedClass(LoginCredential.class)
+				.addAnnotatedClass(ConceptDatatype.class)
 				.getMetadataBuilder().build();
 
 
@@ -4177,7 +4180,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroup.setPatient(encounter.getPatient());
 		orderGroup.setEncounter(encounter);
 
-		Order firstOrder = new OrderBuilder().withAction(Order.Action.NEW).withPatient(1).withConcept(10).withOrderer(1)
+		Order firstOrder = new OrderBuilder().withAction(Order.Action.NEW).withConcept(10).withOrderer(1)
 			.withEncounter(3).withDateActivated(new Date()).withOrderType(17)
 			.withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).build();
 

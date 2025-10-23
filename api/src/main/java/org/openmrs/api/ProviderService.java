@@ -9,10 +9,6 @@
  */
 package org.openmrs.api;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
@@ -21,6 +17,10 @@ import org.openmrs.ProviderRole;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This service contains methods relating to providers.
@@ -339,7 +339,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @return {@link ProviderRole}
 	 * @since 2.8.0
 	 */
-	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDER_ROLES })
 	ProviderRole getProviderRole(Integer providerRoleId);
 
 	/**
@@ -350,7 +350,7 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @since 2.8.1
 	 */
-	@Authorized({PrivilegeConstants.GET_PROVIDERS})
+	@Authorized({PrivilegeConstants.GET_PROVIDER_ROLES})
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
 
 	/**
@@ -359,7 +359,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @return {@link ProviderRole}
 	 * @since 2.8.0
 	 */
-	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDER_ROLES })
 	ProviderRole getProviderRoleByUuid(String uuid);
 
 	/**
@@ -370,5 +370,38 @@ public interface ProviderService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	List<Provider> getProvidersByRoles(List<ProviderRole> roles);
-	
+
+	/**
+	 * Saves/updates a provider role
+	 * @param providerRole the provider role to save
+	 * @return the saved provider role
+	 * @since 2.8.2
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_PROVIDER_ROLES })
+	ProviderRole saveProviderRole(ProviderRole providerRole);
+
+	/**
+	 * Retires a provider role
+	 * @param providerRole the role to retire
+	 * @param reason the reason the role is being retired
+	 * @since 2.8.2   
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_PROVIDER_ROLES })
+	ProviderRole retireProviderRole(ProviderRole providerRole, String reason);
+
+	/**
+	 * Unretires a provider role
+	 * @param providerRole the role to unretire
+	 * @since 2.8.2   
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_PROVIDER_ROLES })
+	ProviderRole unretireProviderRole(ProviderRole providerRole);
+
+	/**
+	 * Deletes a provider role entirely from the database
+	 * @param providerRole the provider role to delete
+	 * @since 2.8.2   
+	 */
+	@Authorized( { PrivilegeConstants.PURGE_PROVIDER_ROLES })
+	void purgeProviderRole(ProviderRole providerRole);
 }

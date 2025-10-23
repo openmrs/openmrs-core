@@ -11,6 +11,15 @@ package org.openmrs.api.db;
 
 import java.util.Date;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
@@ -23,22 +32,35 @@ import org.openmrs.util.Security;
  * 
  * @since 1.5
  */
+@Entity
+@Table(name = "users")
 public class LoginCredential extends BaseOpenmrsObject implements OpenmrsObject {
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "user_id")
 	private Integer userId;
 	
+	@Column(name = "password", length = 128)
 	private String hashedPassword;
 	
+	@Column(name = "salt", length = 128)
 	private String salt;
 	
+	@Column(name = "secret_question", length = 255)
 	private String secretQuestion;
 	
+	@Column(name = "secret_answer", length = 255)
 	private String secretAnswer;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed")
 	private Date dateChanged;
 	
+	@Column(name = "activation_key", length = 255)
 	private String activationKey;
 	
 	public LoginCredential() {
@@ -173,7 +195,7 @@ public class LoginCredential extends BaseOpenmrsObject implements OpenmrsObject 
 		return activationKey;
 	}
 	
- 	/**
+	/**
 	 * @param activationKey the activation key to set.
 	 */
 	public void setActivationKey(String activationKey) {

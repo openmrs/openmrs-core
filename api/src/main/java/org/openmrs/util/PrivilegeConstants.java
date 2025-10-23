@@ -159,6 +159,14 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to get Provider")
 	public static final String GET_PROVIDERS = "Get Providers";
 	
+	@AddOnStartup(description = "Able to get Provider Roles")
+	public static final String GET_PROVIDER_ROLES = "Get Provider Roles";
+	
+	@AddOnStartup(description = "Able to add/edit/retire Provider Roles")
+	public static final String MANAGE_PROVIDER_ROLES = "Manage Provider Roles";
+	
+	public static final String PURGE_PROVIDER_ROLES = "Purge Provider Roles";
+	
 	@AddOnStartup(description = "Able to get encounter roles")
 	public static final String GET_ENCOUNTER_ROLES = "Get Encounter Roles";
 	
