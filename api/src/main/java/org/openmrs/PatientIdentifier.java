@@ -3,27 +3,21 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- *
+ * <p>
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Comparator;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.FetchType;
-
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -42,6 +36,11 @@ import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Comparator;
 
 /**
  * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s). PatientIdentifiers
@@ -68,8 +67,8 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 */
 	@DocumentId
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "patient_identifier_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "patient_identifier_id")
 	private Integer patientIdentifierId;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
@@ -77,7 +76,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 		@PropertyValue(propertyName = "identifiers")
 	}))
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id", nullable = false)
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 
 	@FullTextField(name = "identifierPhrase", analyzer = SearchAnalysis.PHRASE_ANALYZER)
@@ -91,15 +90,15 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-    @JoinColumn(name = "identifier_type_id", nullable = false)
-    private PatientIdentifierType identifierType;
+	@JoinColumn(name = "identifier_type", nullable = false)
+	private PatientIdentifierType identifierType;
 
 	@ManyToOne
-    @JoinColumn(name = "location_id")
+	@JoinColumn(name = "location_id")
 	private Location location;
 
-    @ManyToOne
-    @JoinColumn(name = "patient_program_id")
+	@ManyToOne
+	@JoinColumn(name = "patient_program_id")
 	private PatientProgram patientProgram;
 
 	@GenericField
@@ -136,7 +135,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 		boolean returnValue = true;
 
 		// these are the methods to compare.
-		String[] methods = { "getIdentifier", "getIdentifierType", "getLocation" };
+		String[] methods = {"getIdentifier", "getIdentifierType", "getLocation"};
 
 		Class<? extends PatientIdentifier> identifierClass = this.getClass();
 
@@ -152,11 +151,9 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 					returnValue &= otherValue.equals(thisValue);
 				}
 
-			}
-			catch (NoSuchMethodException e) {
+			} catch (NoSuchMethodException e) {
 				log.warn("No such method for comparison " + methodName, e);
-			}
-			catch (IllegalAccessException | InvocationTargetException e) {
+			} catch (IllegalAccessException | InvocationTargetException e) {
 				log.error("Error while comparing identifiers", e);
 			}
 
@@ -312,8 +309,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	public Object clone() {
 		try {
 			return super.clone();
-		}
-		catch (CloneNotSupportedException e) {
+		} catch (CloneNotSupportedException e) {
 			throw new InternalError("PatientIdentifier should be cloneable");
 		}
 	}
@@ -348,7 +344,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 				}
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifierType().getPatientIdentifierTypeId(),
-					    pi2.getIdentifierType().getPatientIdentifierTypeId());
+						pi2.getIdentifierType().getPatientIdentifierTypeId());
 				}
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifier(), pi2.getIdentifier());
