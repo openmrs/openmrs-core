@@ -3,7 +3,7 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- * <p>
+ *
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
@@ -105,7 +105,9 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@Column(name = "preferred")
 	private Boolean preferred = false;
 
-	/** default constructor */
+	/**
+	 * default constructor
+	 */
 	public PatientIdentifier() {
 	}
 
@@ -113,8 +115,8 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 * Convenience constructor for creating a basic identifier
 	 *
 	 * @param identifier String identifier
-	 * @param type PatientIdentifierType
-	 * @param location Location of the identifier
+	 * @param type       PatientIdentifierType
+	 * @param location   Location of the identifier
 	 */
 	public PatientIdentifier(String identifier, PatientIdentifierType type, Location location) {
 		this.identifier = identifier;
@@ -241,7 +243,6 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	/**
 	 * @return the preferred status
-	 *
 	 * @deprecated as of 2.0, use {@link #getPreferred()}
 	 */
 	@Deprecated
@@ -264,8 +265,8 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	}
 
 	/**
-	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
+	 * @since 1.5
 	 */
 	@Override
 	public Integer getId() {
@@ -273,8 +274,8 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	}
 
 	/**
-	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 * @since 1.5
 	 */
 	@Override
 	public void setId(Integer id) {
@@ -282,16 +283,16 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	}
 
 	/**
-	 * @since 1.5
 	 * @return the patientIdentifierId
+	 * @since 1.5
 	 */
 	public Integer getPatientIdentifierId() {
 		return patientIdentifierId;
 	}
 
 	/**
-	 * @since 1.5
 	 * @param patientIdentifierId the patientIdentifierId to set
+	 * @since 1.5
 	 */
 	public void setPatientIdentifierId(Integer patientIdentifierId) {
 		this.patientIdentifierId = patientIdentifierId;
@@ -315,8 +316,9 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	}
 
 	/**
-	 Provides a default comparator.
-	 @since 1.12
+	 * Provides a default comparator.
+	 *
+	 * @since 1.12
 	 **/
 	public static class DefaultComparator implements Comparator<PatientIdentifier>, Serializable {
 
@@ -365,8 +367,9 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	/**
 	 * Gets patient program associated to the identifier in context
-	 * @since 2.6.0
+	 *
 	 * @return patientProgram the patient program associated to an identifier
+	 * @since 2.6.0
 	 */
 	public PatientProgram getPatientProgram() {
 		return patientProgram;
@@ -374,8 +377,9 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	/**
 	 * This method sets the patient program on a patient Identifier
-	 * @since 2.6.0
+	 *
 	 * @param patientProgram The patientProgram to set.
+	 * @since 2.6.0
 	 */
 	public void setPatientProgram(PatientProgram patientProgram) {
 		this.patientProgram = patientProgram;
