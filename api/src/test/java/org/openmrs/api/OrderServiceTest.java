@@ -171,6 +171,17 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	public class SomeTestOrder extends TestOrder {}
 	
+	@BeforeEach
+	public void beforeEach() {
+		// make sure we set any cached values of these variables to false
+		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS,
+			"false");
+		Context.getAdministrationService().saveGlobalProperty(gp1);
+
+		GlobalProperty gp2 = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, "false");
+		Context.getAdministrationService().saveGlobalProperty(gp2);
+	}
+	
 
 	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
@@ -860,6 +871,49 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(order, null);
 		assertEquals(order.getDateActivated(), order.getAutoExpireDate());
 		assertNotNull(previousOrder.getDateStopped(), "previous order should be discontinued");
+	}
+
+	/**
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldNotFailIfPreviousOrderHasAlreadyBeenDiscontinuedAndGlobalPropertyIgnoreAttemptsToStopInactiveOrdersSetTrue() throws ParseException {
+
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS,
+			"true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		// first, discontinue order in the 111
+		Date discontinueDate = TestUtil.createDateTime("2014-08-03");
+		Order previousOrder = orderService.getOrder(111);
+		orderService.discontinueOrder(previousOrder, "Discontinue this", discontinueDate, Context.getProviderService().getProvider(1), encounterService.getEncounter(5));
+		assertFalse(OrderUtilTest.isActiveOrder(previousOrder, null));
+		
+		// Now try to discontinue order 111 in the test dataset
+		DrugOrder order = new DrugOrder();
+		order.setAction(Order.Action.DISCONTINUE);
+		order.setOrderReasonNonCoded("Discontinue this");
+		order.setDrug(conceptService.getDrug(3));
+		order.setEncounter(encounterService.getEncounter(5));
+		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setOrderType(orderService.getOrderType(1));
+		order.setDateActivated(new Date());
+		order.setDosingType(SimpleDosingInstructions.class);
+		order.setDose(500.0);
+		order.setDoseUnits(conceptService.getConcept(50));
+		order.setFrequency(orderService.getOrderFrequency(1));
+		order.setRoute(conceptService.getConcept(22));
+		order.setNumRefills(10);
+		order.setQuantity(20.0);
+		order.setQuantityUnits(conceptService.getConcept(51));
+		order.setPreviousOrder(previousOrder);
+
+		orderService.saveOrder(order, null);
+		assertEquals(order.getDateActivated(), order.getAutoExpireDate());
+		assertEquals(truncateToSeconds(aMomentBefore(order.getDateActivated())), truncateToSeconds(previousOrder.getDateStopped()));
 	}
 
 	/**
@@ -1596,6 +1650,46 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertTrue(order.getOrderNumber().startsWith(TimestampOrderNumberGenerator.ORDER_NUMBER_PREFIX));
 	}
 
+	@Test
+	public void saveOrder_shouldAllowManuallySettingOrderNumberIfGlobalPropertyAllowSettingOrderNumberTrue() {
+		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID,
+			"orderEntry.OrderNumberGenerator");
+		Context.getAdministrationService().saveGlobalProperty(gp1);
+		
+		GlobalProperty gp2 = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, "true");
+		Context.getAdministrationService().saveGlobalProperty(gp2);
+		
+		Order order = new TestOrder();
+		order.setPatient(patientService.getPatient(7));
+		order.setConcept(conceptService.getConcept(5497));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order.setOrderType(orderService.getOrderType(2));
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setDateActivated(new Date());
+		order.setOrderNumber("Manually Set");
+		order = orderService.saveOrder(order, null);
+		assertEquals("Manually Set", order.getOrderNumber());
+
+	}
+
+	@Test
+	public void orderNumberSetter_shouldNotAllowSettingOrderNumberIfGlobalPropertyAllowSettingOrderNumberFalse() {
+		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, "false");
+		Context.getAdministrationService().saveGlobalProperty(gp1);
+		Order order = new TestOrder();
+		assertThrows(APIException.class, () ->  { order.setOrderNumber("Manually Set"); });
+	}
+	
+	@Test
+	public void orderNumberSetter_shouldNotAllowChangingOrderNumberEvenIfGlobalPropertyAllowSettingOrderNumberTrue() {
+		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, "true");
+		Context.getAdministrationService().saveGlobalProperty(gp1);
+		Order order = new TestOrder();
+		order.setOrderNumber("Manually Set");
+		assertThrows(APIException.class, () ->  { order.setOrderNumber("Manually Changed"); });
+	}
+	
 	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
@@ -4235,5 +4329,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getOrderAttributeTypeByName_shouldReturnNullForMismatchedName() {
 		assertNull(orderService.getOrderAttributeTypeByName("InvalidName"));
+	}
+
+	private Date aMomentBefore(Date date) {
+		return DateUtils.addSeconds(date, -1);
+	}
+	
+	private Date truncateToSeconds(Date date) {
+		return DateUtils.truncate(date, Calendar.SECOND);
 	}
 }
