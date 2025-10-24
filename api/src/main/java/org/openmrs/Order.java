@@ -12,13 +12,10 @@ package org.openmrs;
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
-import org.openmrs.api.impl.OrderServiceImpl;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -38,8 +35,6 @@ import java.util.Date;
  */
 @Audited
 public class Order extends BaseCustomizableData<OrderAttribute> implements FormRecordable {
-
-	private static final Logger log = LoggerFactory.getLogger(Order.class);
 	
 	public static final long serialVersionUID = 4334343L;
 
