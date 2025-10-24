@@ -859,7 +859,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			throw new CannotStopDiscontinuationOrderException();
 		}
 
-		if (!Boolean.parseBoolean(ConfigUtil.getProperty(OpenmrsConstants.GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS, "false"))) {
+		if (!ConfigUtil.getProperty(OpenmrsConstants.GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS, false)) {
 			if (isRetrospective && orderToStop.getDateStopped() != null) {
 				throw new CannotStopInactiveOrderException();
 			}

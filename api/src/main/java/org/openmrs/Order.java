@@ -658,12 +658,14 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * @param orderNumber
 	 */
 	public void setOrderNumber(String orderNumber) {
-		if (Boolean.parseBoolean(ConfigUtil.getProperty(
-			OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, "false"))) {
-			this.orderNumber = orderNumber;	
-		} else {
-			log.warn("Not setting orderNumber because GP_ALLOW_SETTING_ORDER_NUMBER is set to false");
+		if (this.orderNumber != null && !orderNumber.equals(this.orderNumber)) {
+			throw new APIException("Unable to modify order number");
 		}
+		if (!ConfigUtil.getProperty(OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, false) 
+			&& this.orderNumber == null && orderNumber != null) {
+			throw new APIException("Unable to set order number because GP_ALLOW_SETTING_ORDER_NUMBER is set to false");
+		} 
+		this.orderNumber = orderNumber;
 	}
 	
 	/**

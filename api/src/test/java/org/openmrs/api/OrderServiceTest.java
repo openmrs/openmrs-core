@@ -1674,22 +1674,20 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void saveOrder_shouldNotAllowManuallySettingOrderNumberIfGlobalPropertyAllowSettingOrderNumberFalse() {
-		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID,
-			"orderEntry.OrderNumberGenerator");
+	public void orderNumberSetter_shouldNotAllowSettingOrderNumberIfGlobalPropertyAllowSettingOrderNumberFalse() {
+		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, "false");
 		Context.getAdministrationService().saveGlobalProperty(gp1);
-		
 		Order order = new TestOrder();
-		order.setPatient(patientService.getPatient(7));
-		order.setConcept(conceptService.getConcept(5497));
-		order.setOrderer(providerService.getProvider(1));
-		order.setCareSetting(orderService.getCareSetting(1));
-		order.setOrderType(orderService.getOrderType(2));
-		order.setEncounter(encounterService.getEncounter(3));
-		order.setDateActivated(new Date());
+		assertThrows(APIException.class, () ->  { order.setOrderNumber("Manually Set"); });
+	}
+	
+	@Test
+	public void orderNumberSetter_shouldNotAllowChangingOrderNumberEvenIfGlobalPropertyAllowSettingOrderNumberTrue() {
+		GlobalProperty gp1 = new GlobalProperty(OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, "true");
+		Context.getAdministrationService().saveGlobalProperty(gp1);
+		Order order = new TestOrder();
 		order.setOrderNumber("Manually Set");
-		order = orderService.saveOrder(order, null);
-		assertTrue(order.getOrderNumber().startsWith(TimestampOrderNumberGenerator.ORDER_NUMBER_PREFIX));  // anything manually set overwritten by generator
+		assertThrows(APIException.class, () ->  { order.setOrderNumber("Manually Changed"); });
 	}
 	
 	/**

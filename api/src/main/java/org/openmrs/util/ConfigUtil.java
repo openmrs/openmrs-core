@@ -95,6 +95,21 @@ public class ConfigUtil implements GlobalPropertyListener {
 		}
 		return value;
 	}
+
+	/**
+	 * Operates as above but returns the Boolean value of the property
+	 * 
+	 * @param propertyName
+	 * @param defaultValue
+	 * @return
+	 */
+	public static boolean getProperty(String propertyName, boolean defaultValue) {
+		String value = getProperty(propertyName);
+		if (StringUtils.isBlank(value)) {
+			return defaultValue;
+		}
+		return Boolean.parseBoolean(value);
+	}
 	
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
