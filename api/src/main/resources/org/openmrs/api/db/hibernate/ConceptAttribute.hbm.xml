@@ -24,7 +24,6 @@
 			</generator>
         </id>
 
-        <discriminator column="concept_attribute_id" insert="false" />
         
         <many-to-one name="concept" class="Concept" not-null="true" column="concept_id" />
         
