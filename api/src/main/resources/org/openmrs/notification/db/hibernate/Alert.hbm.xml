@@ -23,7 +23,6 @@
 			</generator>
 		</id>
 		
-		<discriminator column="alert_id" insert="false" />
 		
 		<property name="text" type="java.lang.String" not-null="true" length="512" />
 		
