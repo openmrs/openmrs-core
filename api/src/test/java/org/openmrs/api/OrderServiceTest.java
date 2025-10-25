@@ -18,8 +18,6 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import org.openmrs.ConceptStopWord;
 import org.openmrs.Allergy;
 import org.openmrs.AllergyReaction;
 import org.openmrs.CareSetting;
@@ -34,17 +32,19 @@ import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStateConversion;
-import org.openmrs.ConceptReferenceTermMap;
+import org.openmrs.ConceptStopWord;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
-import org.openmrs.DrugReferenceMap;
 import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
+import org.openmrs.DrugReferenceMap;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
+import org.openmrs.FormResource;
 import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -79,9 +79,8 @@ import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.Visit;
-import org.openmrs.VisitType;
 import org.openmrs.VisitAttributeType;
-import org.openmrs.FormResource;
+import org.openmrs.VisitType;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
@@ -188,12 +187,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	private VisitService visitService;
 
 	@BeforeEach
-	public void setUp(){
+	public void setUp() {
 		executeDataSet(ORDER_ATTRIBUTES);
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
 	}
 
-	public class SomeTestOrder extends TestOrder {}
+	public class SomeTestOrder extends TestOrder {
+	}
 
 
 	/**
@@ -2744,58 +2744,58 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.configure().applySettings(configuration.getProperties()).build();
 
 		Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
-				.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
-				.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
-				.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
-				.addAnnotatedClass(MedicationDispense.class)
-				.addAnnotatedClass(ProviderAttributeType.class)
-				.addAnnotatedClass(ConceptMapType.class)
-				.addAnnotatedClass(Relationship.class)
-				.addAnnotatedClass(Location.class)
-				.addAnnotatedClass(PersonAddress.class)
-				.addAnnotatedClass(PersonAttributeType.class)
-				.addAnnotatedClass(User.class)
-				.addAnnotatedClass(LocationAttributeType.class)
-				.addAnnotatedClass(SerializedObject.class)
-				.addAnnotatedClass(PatientState.class)
-				.addAnnotatedClass(DrugIngredient.class)
-				.addAnnotatedClass(DrugReferenceMap.class)
-				.addAnnotatedClass(AlertRecipient.class)
-				.addAnnotatedClass(PatientIdentifierType.class)
-				.addAnnotatedClass(ProgramAttributeType.class)
-				.addAnnotatedClass(HL7InError.class)
-				.addAnnotatedClass(OrderType.class)
-			    .addAnnotatedClass(ConceptReferenceTermMap.class)
-			    .addAnnotatedClass(ConceptReferenceTerm.class)
-				.addAnnotatedClass(ConceptAnswer.class)
-				.addAnnotatedClass(ConceptClass.class)
-			    .addAnnotatedClass(ConceptMap.class)
-				.addAnnotatedClass(ConceptStopWord.class)
-				.addAnnotatedClass(FormResource.class)
-				.addAnnotatedClass(VisitType.class)
-				.addAnnotatedClass(ProviderRole.class)
-				.addAnnotatedClass(EncounterRole.class)
-				.addAnnotatedClass(PatientProgram.class)
-				.addAnnotatedClass(HL7InArchive.class)
-				.addAnnotatedClass(PersonMergeLog.class)
-				.addAnnotatedClass(ClobDatatypeStorage.class)
-				.addAnnotatedClass(ConceptSource.class)
-        		.addAnnotatedClass(TaskDefinition.class)
-				.addAnnotatedClass(ConceptStateConversion.class)
-				.addAnnotatedClass(OrderGroup.class)
-				.addAnnotatedClass(Template.class)
-		    	.addAnnotatedClass(Drug.class)
-			    .addAnnotatedClass(AllergyReaction.class)
-				.addAnnotatedClass(ConceptAttributeType.class)
-				.addAnnotatedClass(Program.class)
-				.addAnnotatedClass(ConceptNameTag.class)
-			    .addAnnotatedClass(CareSetting.class)
-				.addAnnotatedClass(LocationTag.class)
-			    .addAnnotatedClass(org.openmrs.Field.class)
-				.addAnnotatedClass(Privilege.class)
-				.addAnnotatedClass(LoginCredential.class)
-				.addAnnotatedClass(ConceptDatatype.class)
-				.getMetadataBuilder().build();
+			.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
+			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
+			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+			.addAnnotatedClass(MedicationDispense.class)
+			.addAnnotatedClass(ProviderAttributeType.class)
+			.addAnnotatedClass(ConceptMapType.class)
+			.addAnnotatedClass(Relationship.class)
+			.addAnnotatedClass(Location.class)
+			.addAnnotatedClass(PersonAddress.class)
+			.addAnnotatedClass(PersonAttributeType.class)
+			.addAnnotatedClass(User.class)
+			.addAnnotatedClass(LocationAttributeType.class)
+			.addAnnotatedClass(SerializedObject.class)
+			.addAnnotatedClass(PatientState.class)
+			.addAnnotatedClass(DrugIngredient.class)
+			.addAnnotatedClass(DrugReferenceMap.class)
+			.addAnnotatedClass(AlertRecipient.class)
+			.addAnnotatedClass(PatientIdentifierType.class)
+			.addAnnotatedClass(ProgramAttributeType.class)
+			.addAnnotatedClass(HL7InError.class)
+			.addAnnotatedClass(OrderType.class)
+			.addAnnotatedClass(ConceptReferenceTermMap.class)
+			.addAnnotatedClass(ConceptReferenceTerm.class)
+			.addAnnotatedClass(ConceptAnswer.class)
+			.addAnnotatedClass(ConceptClass.class)
+			.addAnnotatedClass(ConceptMap.class)
+			.addAnnotatedClass(ConceptStopWord.class)
+			.addAnnotatedClass(FormResource.class)
+			.addAnnotatedClass(VisitType.class)
+			.addAnnotatedClass(ProviderRole.class)
+			.addAnnotatedClass(EncounterRole.class)
+			.addAnnotatedClass(PatientProgram.class)
+			.addAnnotatedClass(HL7InArchive.class)
+			.addAnnotatedClass(PersonMergeLog.class)
+			.addAnnotatedClass(ClobDatatypeStorage.class)
+			.addAnnotatedClass(ConceptSource.class)
+			.addAnnotatedClass(TaskDefinition.class)
+			.addAnnotatedClass(ConceptStateConversion.class)
+			.addAnnotatedClass(OrderGroup.class)
+			.addAnnotatedClass(Template.class)
+			.addAnnotatedClass(Drug.class)
+			.addAnnotatedClass(AllergyReaction.class)
+			.addAnnotatedClass(ConceptAttributeType.class)
+			.addAnnotatedClass(Program.class)
+			.addAnnotatedClass(ConceptNameTag.class)
+			.addAnnotatedClass(CareSetting.class)
+			.addAnnotatedClass(LocationTag.class)
+			.addAnnotatedClass(org.openmrs.Field.class)
+			.addAnnotatedClass(Privilege.class)
+			.addAnnotatedClass(LoginCredential.class)
+			.addAnnotatedClass(ConceptDatatype.class)
+			.getMetadataBuilder().build();
 
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
@@ -4036,13 +4036,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getOrderGroupAttributeTypeByUuid_shouldReturnOrderGroupAttributeTypeByUuid() {
 		OrderGroupAttributeType orderGroupAttributeType = orderService
-		        .getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
+			.getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
 		assertEquals("Bacteriology", orderGroupAttributeType.getName());
 	}
 
 	@Test
 	public void saveOrderGroupAttributeType_shouldSaveOrderGroupAttributeTypeGivenOrderGroupAttributeType()
-	        throws ParseException {
+		throws ParseException {
 		int initialGroupOrderAttributeTypeCount = orderService.getAllOrderGroupAttributeTypes().size();
 		OrderGroupAttributeType orderGroupAttributeType = new OrderGroupAttributeType();
 		orderGroupAttributeType.setName("Surgery");
@@ -4114,7 +4114,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getOrderGroupAttributeByUuid_shouldReturnOrderGroupAttributeGivenUuid() {
 		OrderGroupAttribute orderGroupAttribute = orderService
-		        .getOrderGroupAttributeByUuid("86bdcc12-d18d-11ea-87d0-0242ac130003");
+			.getOrderGroupAttributeByUuid("86bdcc12-d18d-11ea-87d0-0242ac130003");
 		orderGroupAttribute.getValueReference();
 		assertEquals("Test 1", orderGroupAttribute.getValueReference());
 		assertEquals(1, orderGroupAttribute.getId());
@@ -4244,7 +4244,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getOrderAttributeTypeByUuid_shouldReturnOrderAttributeTypeUsingProvidedUuid() {
 		assertEquals("Referral", orderService.getOrderAttributeTypeByUuid(
-				"9758d106-79b0-4f45-8d8c-ae8b3f25d72a").getName());
+			"9758d106-79b0-4f45-8d8c-ae8b3f25d72a").getName());
 	}
 
 	@Test

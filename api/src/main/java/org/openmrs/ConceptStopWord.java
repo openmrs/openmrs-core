@@ -9,17 +9,17 @@
  */
 package org.openmrs;
 
-import java.util.Locale;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+
+import java.util.Locale;
 
 
 /**
@@ -37,15 +37,15 @@ public class ConceptStopWord extends BaseOpenmrsObject {
 	private static final long serialVersionUID = 3671020002642184656L;
 
 	// Fields
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "concept_stop_word_id")
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "concept_stop_word_id")
 	private Integer conceptStopWordId;
 
-    @Column(name = "value", nullable = false, length = 255)
+	@Column(name = "word", nullable = false, length = 255)
 	private String value;
 
-    @Column(name = "locale", nullable = false, length = 50)
+	@Column(name = "locale", nullable = false, length = 50)
 	private Locale locale;
 
 	// Constructors
