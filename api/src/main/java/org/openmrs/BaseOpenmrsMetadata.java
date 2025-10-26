@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
@@ -44,14 +45,14 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Lob
 	private String description;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator")
 	private User creator;
 	
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
@@ -65,7 +66,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Column(name = "date_retired")
 	private Date dateRetired;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 	
