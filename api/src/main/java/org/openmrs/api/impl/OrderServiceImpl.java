@@ -37,7 +37,6 @@ import org.openmrs.api.CannotDeleteObjectInUseException;
 import org.openmrs.api.CannotStopDiscontinuationOrderException;
 import org.openmrs.api.CannotStopInactiveOrderException;
 import org.openmrs.api.CannotUnvoidOrderException;
-import org.openmrs.api.CannotUpdateObjectInUseException;
 import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.MissingRequiredPropertyException;
@@ -51,6 +50,7 @@ import org.openmrs.api.db.OrderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.parameter.OrderSearchCriteria;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -332,8 +332,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private Order saveOrderInternal(Order order, OrderContext orderContext) {
 		if (order.getOrderId() == null) {
-			setProperty(order, "orderNumber", getOrderNumberGenerator().getNewOrderNumber(orderContext));
-			
+			if (order.getOrderNumber() == null) {
+				setProperty(order, "orderNumber", getOrderNumberGenerator().getNewOrderNumber(orderContext));
+			}
+				
 			//DC orders should auto expire upon creating them
 			if (DISCONTINUE == order.getAction()) {
 				order.setAutoExpireDate(order.getDateActivated());
@@ -861,14 +863,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (DISCONTINUE == orderToStop.getAction()) {
 			throw new CannotStopDiscontinuationOrderException();
 		}
-		
-		if (isRetrospective && orderToStop.getDateStopped() != null) {
-			throw new CannotStopInactiveOrderException();
-		}
-		if (!isRetrospective && !orderToStop.isActive()) {
-			throw new CannotStopInactiveOrderException();
-		} else if (isRetrospective && !orderToStop.isActive(discontinueDate)) {
-			throw new CannotStopInactiveOrderException();
+
+		if (!ConfigUtil.getProperty(OpenmrsConstants.GP_ALLOW_SETTING_STOP_DATE_ON_INACTIVE_ORDERS, false)) {
+			if (isRetrospective && orderToStop.getDateStopped() != null) {
+				throw new CannotStopInactiveOrderException();
+			}
+			if (!isRetrospective && !orderToStop.isActive()) {
+				throw new CannotStopInactiveOrderException();
+			} else if (isRetrospective && !orderToStop.isActive(discontinueDate)) {
+				throw new CannotStopInactiveOrderException();
+			}
 		}
 		
 		setProperty(orderToStop, "dateStopped", discontinueDate);
