@@ -31,6 +31,7 @@ import org.openmrs.api.db.FullTextSessionFactory;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,12 +192,16 @@ public class HibernateContextDAO implements ContextDAO {
 
 				int allowedFailedLoginCount = 7;
 				try {
+					Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 					allowedFailedLoginCount = Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
 						OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
 				}
 				catch (Exception ex) {
 					log.error("Unable to convert the global property {} to a valid integer. Using default value of 7.",
 						OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT);
+				}
+				finally {
+					Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 				}
 
 				if (attempts > allowedFailedLoginCount) {
@@ -225,13 +230,18 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 	
 	private Long getUnlockTimeMs() {
-		String unlockTimeGPValue = Context.getAdministrationService().getGlobalProperty(
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			String unlockTimeGPValue = Context.getAdministrationService().getGlobalProperty(
 				OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME);
-		if (StringUtils.isNotBlank(unlockTimeGPValue)) {
-			return convertUnlockAccountWaitingTimeGP(unlockTimeGPValue);
+			if (StringUtils.isNotBlank(unlockTimeGPValue)) {
+				return convertUnlockAccountWaitingTimeGP(unlockTimeGPValue);
+			} else {
+				return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+			}
 		}
-		else {
-			return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 	}
 	
@@ -570,10 +580,16 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void setupSearchIndex() {
-		String gp = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION, "");
-		
-		if (!OpenmrsConstants.SEARCH_INDEX_VERSION.toString().equals(gp)) {
-			updateSearchIndex();
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			String gp = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION, "");
+
+			if (!OpenmrsConstants.SEARCH_INDEX_VERSION.toString().equals(gp)) {
+				updateSearchIndex();
+			}
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 	}
 	
@@ -585,6 +601,7 @@ public class HibernateContextDAO implements ContextDAO {
 		try {
 			log.info("Updating the search index... It may take a few minutes.");
 			fullTextSessionFactory.getFullTextSession().createIndexer().startAndWait();
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
 			    OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			if (gp == null) {
@@ -596,6 +613,9 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Failed to update the search index", e);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 	}
 
