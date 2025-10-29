@@ -75,22 +75,6 @@
          <groupId>org.springframework</groupId>
          <artifactId>spring-oxm</artifactId>
        </dependency>
-       <dependency>
-           <groupId>taglibs</groupId>
-           <artifactId>request</artifactId>
-       </dependency>
-       <dependency>
-           <groupId>taglibs</groupId>
-           <artifactId>response</artifactId>
-       </dependency>
-       <dependency>
-           <groupId>taglibs</groupId>
-           <artifactId>standard</artifactId>
-       </dependency>
-       <dependency>
-           <groupId>taglibs</groupId>
-           <artifactId>page</artifactId>
-       </dependency>
       <dependency>
          <groupId>org.liquibase</groupId>
          <artifactId>liquibase-core</artifactId>
