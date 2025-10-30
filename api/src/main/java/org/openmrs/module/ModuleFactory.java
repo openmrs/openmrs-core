@@ -691,8 +691,10 @@ public class ModuleFactory {
 					Context.removeProxyPrivilege("");
 				}
 				
-				// run module's optional liquibase.xml immediately after sqldiff.xml
-				runLiquibase(module);
+				if (Context.getAdministrationService().isModuleSetupOnVersionChangeNeeded(module.getModuleId())) {
+					log.info("Detected version change for module {}. Running setup hooks and module Liquibase.", module.getModuleId());
+					Context.getAdministrationService().runModuleSetupOnVersionChange(module);
+				}
 				
 				// effectively mark this module as started successfully
 				getStartedModulesMap().put(moduleId, module);
@@ -938,6 +940,13 @@ public class ModuleFactory {
 			
 		}
 		
+	}
+
+	/**
+	 * This is a convenience method that exposes the private {@link #runLiquibase(Module)} method.
+	 */
+	public static void runLiquibaseForModule(Module module) {
+		runLiquibase(module);
 	}
 	
 	/**
