@@ -97,7 +97,6 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@JoinColumn(name = "location_id")
 	private Location location;
 
-
 	@ManyToOne
 	@JoinColumn(name = "patient_program_id")
 	private PatientProgram patientProgram;
