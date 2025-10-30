@@ -36,6 +36,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
+import org.hibernate.validator.constraints.Length;
 import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -78,12 +79,12 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	}))
 	private Patient patient;
 
-	@Column(name = "identifier", nullable = false)
 	@FullTextField(name = "identifierPhrase", analyzer = SearchAnalysis.PHRASE_ANALYZER)
 	@FullTextField(name = "identifierExact", analyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "identifierStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "identifierAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@KeywordField(name = "identifierExact_sort", sortable = Sortable.YES)
+	@Column(name = "identifier", length = 50, nullable = false)
 	private String identifier;
 
 	@ManyToOne
