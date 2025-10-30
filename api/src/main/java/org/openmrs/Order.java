@@ -68,7 +68,8 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		EXCEPTION,
 		ON_HOLD,
 		DECLINED,
-		COMPLETED
+		COMPLETED,
+		DRAFT
 	}
 	
 	private Integer orderId;
