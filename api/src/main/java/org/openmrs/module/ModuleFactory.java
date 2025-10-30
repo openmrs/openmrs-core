@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,7 +53,12 @@ import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.Advisor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
 
 import liquibase.Contexts;
@@ -60,7 +66,10 @@ import liquibase.Contexts;
 /**
  * Methods for loading, starting, stopping, and storing OpenMRS modules
  */
+@Component
 public class ModuleFactory {
+	
+	private static TransactionManager txManager;
 	
 	private ModuleFactory() {
 	}
@@ -87,6 +96,11 @@ public class ModuleFactory {
 	private static final Cache<String, DaemonToken> daemonTokens = CacheBuilder.newBuilder().softValues().build();
 	
 	private static final Set<String> actualStartupOrder = new LinkedHashSet<>();
+	
+	@Autowired
+	public void setTransactionManager(TransactionManager transactionManager) {
+		ModuleFactory.txManager = transactionManager;
+	}
 	
 	/**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an error
@@ -272,6 +286,7 @@ public class ModuleFactory {
 					notifySuperUsersAboutModuleFailure(mod);
 				}
 			}
+			storeCoreVersion();
 		}
 	}
 	
@@ -694,9 +709,32 @@ public class ModuleFactory {
 					Context.removeProxyPrivilege("");
 				}
 				
-				// run module's optional liquibase.xml immediately after sqldiff.xml
-				log.debug("Run module liquibase: {}", module.getModuleId());
-				runLiquibase(module);
+				// Run version-change hooks + liquibase if necessary
+				String prevCoreVersion = getStoredCoreVersion() != null ? getStoredCoreVersion() : OpenmrsConstants.OPENMRS_VERSION_SHORT;
+				String currentCoreVersion = OpenmrsConstants.OPENMRS_VERSION_SHORT;
+
+				boolean forceSetup = Boolean.parseBoolean(
+					Context.getAdministrationService().getGlobalProperty("force.setup", "false"));
+
+				String prevModuleVersion = getStoredModuleVersion(module);
+				String currentModuleVersion = module.getVersion();
+
+				boolean versionChanged = forceSetup
+					|| versionChanged(prevCoreVersion, currentCoreVersion, prevModuleVersion, currentModuleVersion);
+				
+				if (versionChanged) {
+					runInSingleTransaction(() -> {
+						module.getModuleActivator().setupOnVersionChangeBeforeSchemaChanges(prevCoreVersion, prevModuleVersion);
+
+						// run module's optional liquibase.xml immediately after sqldiff.xml
+						log.debug("Run module liquibase: {}", module.getModuleId());
+						runLiquibase(module);
+
+						module.getModuleActivator().setupOnVersionChange(prevCoreVersion, prevModuleVersion);
+					});
+					
+					storeModuleVersion(module.getModuleId(), currentModuleVersion);
+				}
 				
 				// effectively mark this module as started successfully
 				getStartedModulesMap().put(moduleId, module);
@@ -1623,5 +1661,59 @@ public class ModuleFactory {
 			}
 		}
 		return dependentModules;
+	}
+	
+	private static boolean versionChanged(String prevCore, String currentCore, String prevModule, String currentModule) {
+		return !Objects.equals(prevCore, currentCore) || !Objects.equals(prevModule, currentModule);
+	}
+	
+	protected static String getStoredCoreVersion() {
+		return Context.getAdministrationService().getGlobalProperty("core.version");
+	}
+
+	protected static String getStoredModuleVersion(Module mod) {
+		return Context.getAdministrationService().getGlobalProperty("module." + mod.getModuleId() + ".version");
+	}
+	
+	protected static void storeCoreVersion() {
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+			
+			Context.getAdministrationService().setGlobalProperty("core.version", OpenmrsConstants.OPENMRS_VERSION_SHORT);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		}
+	}
+
+	protected static void storeModuleVersion(String moduleId, String version) {
+		// Clear session so that the first-level cache is empty
+		Context.flushSession();
+		Context.clearSession();
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+			String propertyName = "module." + moduleId + ".version";
+
+			AdministrationService adminService = Context.getAdministrationService();
+			GlobalProperty gp = adminService.getGlobalPropertyObject(propertyName);
+
+			if (gp == null) {
+				gp = new GlobalProperty(propertyName, version);
+			} else {
+				gp.setPropertyValue(version);
+			}
+
+			adminService.saveGlobalProperty(gp);
+
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		}
+	}
+	
+	private static void runInSingleTransaction(Runnable action) {
+		TransactionTemplate txTemplate = new TransactionTemplate((PlatformTransactionManager) txManager);
+		txTemplate.execute(status -> {
+			action.run();
+			return null;
+		});
 	}
 }
