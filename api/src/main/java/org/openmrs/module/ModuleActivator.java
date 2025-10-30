@@ -56,4 +56,14 @@ public interface ModuleActivator {
 	 */
 	public void stopped();
 	
+	/**
+	 * Called before Liquibase runs, but only if core or this module version changed.
+	 */
+	default void setupOnVersionChangeBeforeSchemaChanges(String previousCoreVersion, String previousModuleVersion) {}
+	
+	/**
+	 * Called after Liquibase runs, but only if core or this module version changed.
+	 */
+	default void setupOnVersionChange(String previousCoreVersion, String previousModuleVersion) {}
+	
 }
