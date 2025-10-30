@@ -14,6 +14,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -28,6 +36,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
+import org.hibernate.validator.constraints.Length;
 import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -43,6 +52,8 @@ import org.slf4j.LoggerFactory;
  */
 @Indexed
 @Audited
+@Entity
+@Table(name = "patient_identifier")
 public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
 	
 	public static final long serialVersionUID = 1123121L;
@@ -55,29 +66,42 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 * @since 1.5
 	 */
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "patient_identifier_id")
 	private Integer patientIdentifierId;
 
+	@ManyToOne
+	@JoinColumn(name = "patient_id", nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@AssociationInverseSide(inversePath = @ObjectPath({
 		@PropertyValue(propertyName = "identifiers")
 	}))
 	private Patient patient;
-	
+
 	@FullTextField(name = "identifierPhrase", analyzer = SearchAnalysis.PHRASE_ANALYZER)
 	@FullTextField(name = "identifierExact", analyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "identifierStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "identifierAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@KeywordField(name = "identifierExact_sort", sortable = Sortable.YES)
+	@Column(name = "identifier", length = 50, nullable = false)
 	private String identifier;
 
+	@ManyToOne
+	@JoinColumn(name = "identifier_type")
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private PatientIdentifierType identifierType;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "location_id")
 	private Location location;
 
+	@ManyToOne
+	@JoinColumn(name = "patient_program_id")
 	private PatientProgram patientProgram;
 
+	@Column(name = "preferred")
 	@GenericField
 	private Boolean preferred = false;
 	

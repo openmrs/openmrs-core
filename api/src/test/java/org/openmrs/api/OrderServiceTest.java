@@ -62,6 +62,7 @@ import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.OrderSet;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
@@ -2855,6 +2856,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(DrugReferenceMap.class)
 				.addAnnotatedClass(AlertRecipient.class)
 				.addAnnotatedClass(PatientIdentifierType.class)
+			    .addAnnotatedClass(PatientIdentifier.class)
 				.addAnnotatedClass(ProgramAttributeType.class)
 				.addAnnotatedClass(HL7InError.class)
 				.addAnnotatedClass(OrderType.class)
