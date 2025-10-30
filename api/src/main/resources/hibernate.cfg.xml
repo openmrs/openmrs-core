@@ -77,6 +77,6 @@
 		<!-- These mappings are required because of references in Obs & Concept -->
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
-    </session-factory>
+  </session-factory>
 
 </hibernate-configuration>
