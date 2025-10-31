@@ -25,7 +25,6 @@
 	</bean>
 
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-		<property name="order" value="0"/>
 		<property name="mappings">
 			<props>
 				<prop key="/**">staticResourceDispatcher</prop>
