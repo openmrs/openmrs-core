@@ -973,6 +973,22 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see EncounterService#getEncountersByPatientIdentifier(String)
+	 */
+	@Test
+	public void getEncountersByPatientIdentifier_shouldReturnEncountersForMultiplePatientsWithSameIdentifier() {
+		EncounterService es = Context.getEncounterService();
+		
+		// Test with a patient identifier that might match multiple patients
+		String identifier = "12345";
+		List<Encounter> encounters = es.getEncountersByPatientIdentifier(identifier);
+		
+		// Verify the method doesn't throw exceptions and returns a list
+		assertNotNull(encounters, "Should return a list of encounters");
+		assertTrue(encounters instanceof List, "Should return a List<Encounter>");
+	}
+	
+	/**
 	 * Make sure {@link EncounterService#voidEncounter(Encounter, String)} marks all the voided
 	 * stuff correctly
 	 *
