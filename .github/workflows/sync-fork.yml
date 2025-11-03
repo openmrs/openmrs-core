@@ -1,0 +1,37 @@
+name: Sync Fork with Upstream
+
+on:
+  schedule:
+    # Runs once a day at midnight UTC — adjust as you wish
+    - cron: '0 0 * * *'
+  workflow_dispatch: # allows manual triggering
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the forked repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/openmrs/openmrs-core.git
+          git fetch upstream
+
+      - name: Merge upstream changes into fork
+        run: |
+          git checkout master
+          git merge upstream/master --no-edit || echo "Merge conflicts — please resolve manually"
+          git push origin master
