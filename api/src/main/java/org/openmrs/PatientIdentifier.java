@@ -36,7 +36,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
-import org.hibernate.validator.constraints.Length;
 import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
