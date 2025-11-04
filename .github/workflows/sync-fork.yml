@@ -32,5 +32,6 @@ jobs:
       - name: Rebase upstream changes into fork
         run: |
           git fetch upstream
-          git rebase upstream/master || git rebase --abort
+          git checkout master
+          git rebase upstream/master || git rebase --continue
           git push origin master
