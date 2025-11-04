@@ -10,11 +10,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup GitHub CLI
-        uses: cli/cli@v4
-        with:
-          version: latest
-
       - name: Authenticate GitHub CLI
         run: gh auth login --with-token <<< "$GITHUB_TOKEN"
         env:
