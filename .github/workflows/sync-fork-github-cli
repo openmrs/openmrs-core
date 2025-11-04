@@ -1,7 +1,7 @@
 name: Test GitHub CLI
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # allows manual triggering
 
 jobs:
   use-gh-cli:
