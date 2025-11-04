@@ -1,0 +1,24 @@
+name: Test GitHub CLI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  use-gh-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup GitHub CLI
+        uses: cli/cli@v4
+        with:
+          version: latest
+
+      - name: Authenticate GitHub CLI
+        run: gh auth login --with-token <<< "$GITHUB_TOKEN"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List pull requests
+        run: gh pr list
