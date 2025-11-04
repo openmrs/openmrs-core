@@ -18,7 +18,7 @@ jobs:
       - name: Authenticate GitHub CLI
         run: gh auth login --with-token <<< "$GITHUB_TOKEN"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: List pull requests
         run: gh pr list
