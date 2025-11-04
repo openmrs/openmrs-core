@@ -27,11 +27,10 @@ jobs:
 
       - name: Add upstream remote
         run: |
-          git remote add upstream https://github.com/openmrs/openmrs-core.git
-          git fetch upstream
+          git remote add upstream https://github.com/openmrs/openmrs-core.git          
 
-      - name: Merge upstream changes into fork
+      - name: Rebase upstream changes into fork
         run: |
-          git checkout master
-          git merge upstream/master --allow-unrelated-histories --no-edit || echo "Merge conflicts — please resolve manually"
+          git fetch upstream
+          git rebase upstream/master || git rebase --abort
           git push origin master
