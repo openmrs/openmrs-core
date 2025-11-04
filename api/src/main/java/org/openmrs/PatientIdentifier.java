@@ -100,7 +100,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@JoinColumn(name = "patient_program_id")
 	private PatientProgram patientProgram;
 
-	@Column(name = "preferred")
+	@Column(name = "preferred", nullable = false)
 	@GenericField
 	private Boolean preferred = false;
 	
