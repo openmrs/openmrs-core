@@ -10,6 +10,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
       - name: Sync master branch
-        run: gh repo sync ReposForDemos/openmrs-core -b master
+        run: gh repo sync openmrs/openmrs-core -b master
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
