@@ -33,5 +33,5 @@ jobs:
       - name: Merge upstream changes into fork
         run: |
           git checkout master
-          git merge upstream/master --no-edit || echo "Merge conflicts — please resolve manually"
+          git merge upstream/master --allow-unrelated-histories --no-edit || echo "Merge conflicts — please resolve manually"
           git push origin master
