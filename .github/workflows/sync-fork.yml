@@ -25,13 +25,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Add upstream remote
-        run: |
-          git remote add upstream https://github.com/openmrs/openmrs-core.git          
-
-      - name: Rebase upstream changes into fork
+      - name: Synch upstream changes into fork
         run: |
           git fetch upstream
           git checkout master
-          git rebase upstream/master || git rebase --continue
-          git push origin master
+          git merge upstream/master
+          # git push origin master
