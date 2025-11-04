@@ -7,13 +7,7 @@ jobs:
   use-gh-cli:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Authenticate GitHub CLI
-        run: gh auth login --with-token <<< "$GITHUB_TOKEN"
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
       - name: List pull requests
         run: gh pr list
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
