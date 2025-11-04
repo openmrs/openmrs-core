@@ -113,24 +113,9 @@
 				<version>3.0.2</version>
 			</dependency>
 			<dependency>
-				<groupId>taglibs</groupId>
-				<artifactId>request</artifactId>
-				<version>1.0.1</version>
-			</dependency>
-			<dependency>
-				<groupId>taglibs</groupId>
-				<artifactId>response</artifactId>
-				<version>1.0.1</version>
-			</dependency>
-			<dependency>
-				<groupId>taglibs</groupId>
-				<artifactId>standard</artifactId>
-				<version>1.1.2</version>
-			</dependency>
-			<dependency>
-				<groupId>taglibs</groupId>
-				<artifactId>page</artifactId>
-				<version>1.0.1</version>
+				<groupId>org.glassfish.web</groupId>
+				<artifactId>jakarta.servlet.jsp.jstl</artifactId>
+				<version>3.0.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
@@ -1349,7 +1334,7 @@
 		<luceneVersion>10.3.1</luceneVersion>
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.2.Final</infinispanVersion>
-		<aspectjVersion>1.9.24</aspectjVersion>
+		<aspectjVersion>1.9.25</aspectjVersion>
 		<jacksonVersion>2.19.2</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
 		<mockitoVersion>5.20.0</mockitoVersion>
