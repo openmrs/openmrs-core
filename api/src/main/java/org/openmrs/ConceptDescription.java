@@ -9,6 +9,14 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 
 import java.util.Date;
@@ -18,25 +26,40 @@ import java.util.Locale;
  * ConceptDescription is the localized description of a concept.
  */
 @Audited
+@Entity
+@Table(name = "concept_description")
 public class ConceptDescription extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
 	
 	private static final long serialVersionUID = -7223075113369136584L;
 	
 	// Fields
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "concept_description_id")
 	private Integer conceptDescriptionId;
-	
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
-	
+
+	@Column(name = "description", nullable = false, length = 65535, columnDefinition = "text")
 	private String description;
-	
+
+	@Column(name = "locale", nullable = false, length = 50)
 	private Locale locale;
-	
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
-	
+
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
-	
+
+	@Column(name = "date_changed")
 	private Date dateChanged;
 	
 	// Constructors
