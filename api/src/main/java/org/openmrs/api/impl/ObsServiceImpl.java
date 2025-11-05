@@ -95,9 +95,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		if(obs.getId() != null && changeMessage == null){
 			throw new APIException("Obs.error.ChangeMessage.required", (Object[]) null);
 		}
-
-		handleExistingObsWithComplexConcept(obs);
-
+		
 		ensureRequirePrivilege(obs);
 
 		//Should allow updating a voided Obs, it seems to be pointless to restrict it,
@@ -152,7 +150,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		Obs newObs = Obs.newInstance(obs);
 
 		unsetVoidedAndCreationProperties(newObs,obs);
-		
+		handleObsWithComplexConcept(newObs);
 		Obs.Status originalStatus = dao.getSavedStatus(obs);
 		updateStatusIfNecessary(newObs, originalStatus);
 
@@ -209,6 +207,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	private Obs saveNewOrVoidedObs(Obs obs, String changeMessage) {
+		handleObsWithComplexConcept(obs);
 		Obs ret = dao.saveObs(obs);
 		saveObsGroup(ret,changeMessage);
 		return ret;
@@ -239,7 +238,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		}
 	}
 
-	private void handleExistingObsWithComplexConcept(Obs obs) {
+	private void handleObsWithComplexConcept(Obs obs) {
 		ComplexData complexData = obs.getComplexData();
 		Concept concept = obs.getConcept();
 		if (null != concept && concept.isComplex()
