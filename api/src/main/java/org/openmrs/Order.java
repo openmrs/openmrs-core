@@ -62,7 +62,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * Aligned with FHIR Task Status: https://hl7.org/fhir/codesystem-task-status.html
 	 * @since 2.2.0
 	 * @since 2.6.1 added ON_HOLD & DECLINED
-	 * @since 3.0.0 added DRAFT, REQUESTED, ACCEPTED, REJECTED, READY, CANCELLED, FAILED, ENTERED_IN_ERROR
+	 * @since 2.8.x added DRAFT, REQUESTED, ACCEPTED, REJECTED, READY, CANCELLED, FAILED, ENTERED_IN_ERROR
 	 */
 	public enum FulfillerStatus {
 		RECEIVED,
