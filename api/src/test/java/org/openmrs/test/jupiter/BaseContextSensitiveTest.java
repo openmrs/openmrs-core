@@ -355,7 +355,7 @@ public abstract class BaseContextSensitiveTest {
 		}
 		
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
-		if (appDataDir == null || appDataDir.contains("appdir-for-unit-tests-")) {
+		if (appDataDir == null || !appDataDir.contains("appdir-for-unit-tests-")) {
 			try {
 				File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
 				tempappdir.delete(); // so we can make it into a directory
