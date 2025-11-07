@@ -67,7 +67,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@DocumentId
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "patient_identifier_id")
+	@Column(name = "patient_identifier_id", nullable = false)
 	private Integer patientIdentifierId;
 
 	@ManyToOne
@@ -87,7 +87,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	private String identifier;
 
 	@ManyToOne
-	@JoinColumn(name = "identifier_type")
+	@JoinColumn(name = "identifier_type", nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private PatientIdentifierType identifierType;
