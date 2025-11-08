@@ -39,7 +39,7 @@ public class ConceptStopWord extends BaseOpenmrsObject {
 	// Fields
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "concept_stop_word_id")
+	@Column(name = "concept_stop_word_id", nullable = false)
 	private Integer conceptStopWordId;
 
 	@Column(name = "word", nullable = false)
