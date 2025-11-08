@@ -694,6 +694,67 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		}
 		
 	}
+
+	@Test
+	public void updateObs_shouldUpdateAComplexObs() throws IOException {
+		executeDataSet(COMPLEX_OBS_XML);
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+
+		Obs obs = null;
+		Obs updatedObs = null;
+		
+		File obsFile = null;
+		File updatedObsFile = null;
+		
+		try {
+			// the complex data to put onto an obs that will be saved
+			Reader input2 = new CharArrayReader("some string".toCharArray());
+			ComplexData complexData = new ComplexData("nameOfFile", input2);
+
+			// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
+			// this is a concept mapped to the text handler
+			Concept questionConcept = cs.getConcept(8474);
+
+			obs = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+
+			obs.setComplexData(complexData);
+			os.saveObs(obs, null);
+
+			// sanity check, confirm the file exists
+			obs = os.getObs(obs.getObsId());
+			obsFile = new File(OpenmrsUtil.getApplicationDataDirectory() + File.separator + "storage" + File.separator + obs.getValueComplex().split("\\|")[1]);
+			assertTrue(obsFile.exists());
+			
+			// now change the obs
+			// NOTE: this really should change an actual field instead of voidReason; I originally had this change
+			// the comment field but, somewhat disconcertingly, this caused an UnchangeableObjectException because it
+			// tries to flush the original obs (before it is cloned) when it attempts to do a "getGlobalProperty" call.
+			// This exception doesn't occur in real life, and getGlobalProperty is set to transactional=readOnly, so
+			// not sure why it causes a flush when testing.
+			obs.setVoidReason("some comment");
+			updatedObs = os.saveObs(obs, "updating obs");
+			
+			// confirm old file has been removed and new one exists
+			updatedObsFile = new File(OpenmrsUtil.getApplicationDataDirectory() + File.separator + "storage" + File.separator + updatedObs.getValueComplex().split("\\|")[1]);
+			assertTrue(updatedObsFile.exists());
+			assertFalse(obsFile.exists());
+
+		}
+		finally {
+			if (obsFile != null && obsFile.exists()) {
+				obsFile.delete();
+			}
+			if (updatedObsFile != null && updatedObsFile.exists()) {
+				updatedObsFile.delete();
+			}
+		}
+	}
+	
+	private void confirmFileWithNameExists(File[] files, String name) {
+		assertTrue(Arrays.stream(files).anyMatch(f -> f.getName().equals(name)));
+	}
+	
 	
 	/**
 	 * @see ObsService#setHandlers(Map)}
