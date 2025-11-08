@@ -622,6 +622,11 @@
 				<artifactId>jboss-logging</artifactId>
 				<version>3.6.1.Final</version>
 			</dependency>
+			<dependency>
+				<groupId>org.sejda.imageio</groupId>
+				<artifactId>webp-imageio</artifactId>
+				<version>0.1.6</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
