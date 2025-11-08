@@ -778,16 +778,61 @@ public class Context {
 	 * </pre>
 	 * <p/>
 	 *
+	 * @param privilege privileges to add in string form
+	 * @see #hasPrivilege(String)
+	 * @see #removeProxyPrivilege(String)
+	 */
+	public static void addProxyPrivilege(String privilege) {
+		getUserContext().addProxyPrivilege(privilege);
+	}
+	
+	/**
+	 * Adds one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is useful for situations where a system process may need access to some piece of data that the
+	 * user would not otherwise have access to, like a GlobalProperty. <strong>This facility should not be
+	 * used to return data to the user that they otherwise would be unable to see.</strong>
+	 * <p/>
+	 * The expected usage is:
+	 * <p/>
+	 * <pre>{@code
+	 * try {
+	 *   Context.addProxyPrivilege(&quot;AAA&quot;);
+	 *   Context.get*Service().methodRequiringAAAPrivilege();
+	 * }
+	 * finally {
+	 *   Context.removeProxyPrivilege(&quot;AAA&quot;);
+	 * }}
+	 * </pre>
+	 * <p/>
+	 *
 	 * @param privileges privileges to add in string form
 	 * @see #hasPrivilege(String)
 	 * @see #removeProxyPrivilege(String...)
+	 * @since 3.0.0, 2.8.2, 2.7.8
 	 */
 	public static void addProxyPrivilege(String... privileges) {
 		getUserContext().addProxyPrivilege(privileges);
 	}
-	
+
 	/**
-	 * Removes one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * Removes one or more privileges from the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is the compliment for {@link #addProxyPrivilege(String...)} to clean-up the context.
+	 * <p/>
+	 *
+	 * @param privilege privileges to remove in string form
+	 * @see #hasPrivilege(String)
+	 * @see #addProxyPrivilege(String)
+	 */
+	public static void removeProxyPrivilege(String privilege) {
+		getUserContext().removeProxyPrivilege(privilege);
+	}
+
+	/**
+	 * Removes a privilege from the list of privileges that that {@link #hasPrivilege(String)} will
 	 * regard as available regardless of whether the user would otherwise have the privilege.
 	 * <p/>
 	 * This is the compliment for {@link #addProxyPrivilege(String...)} to clean-up the context.
@@ -796,6 +841,7 @@ public class Context {
 	 * @param privileges privileges to remove in string form
 	 * @see #hasPrivilege(String)
 	 * @see #addProxyPrivilege(String...)
+	 * * @since 3.0.0, 2.8.2, 2.7.8
 	 */
 	public static void removeProxyPrivilege(String... privileges) {
 		getUserContext().removeProxyPrivilege(privileges);
