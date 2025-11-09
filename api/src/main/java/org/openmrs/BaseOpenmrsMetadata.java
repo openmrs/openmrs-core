@@ -41,6 +41,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	private String name;
 	
 	@Column(name = "description", length = 255)
+	@Lob
 	private String description;
 	
 	@ManyToOne(optional = false)
