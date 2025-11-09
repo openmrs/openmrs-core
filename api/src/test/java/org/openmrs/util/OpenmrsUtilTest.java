@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verify;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -55,6 +56,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
@@ -1076,4 +1078,50 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 
 		assertEquals("", result);
 	}
+	
+	@Test
+	public void folderContains_shouldReturnTrueWhenFileIsInTheFolder(@TempDir File tempDir) throws IOException {
+		File file = new File(tempDir, "test.txt");
+		assertTrue(file.createNewFile());
+		
+		assertTrue(OpenmrsUtil.folderContains(tempDir, file.getName()), "Should return true when file is in the folder");
+	}
+	
+	@Test
+	public void folderContains_shouldReturnFalseWhenFileIsNotInTheFolder(@TempDir File tempDir) throws IOException {
+		File file = new File(tempDir, "test.txt");
+		assertTrue(file.createNewFile());
+		
+		assertFalse(OpenmrsUtil.folderContains(tempDir, "anotherFile.txt"), "Should return false when file is not in the folder");
+	}
+	
+	@Test
+	public void folderContains_shouldReturnFalseWhenFolderIsEmpty(@TempDir File tempDir) {
+		assertFalse(OpenmrsUtil.folderContains(tempDir, "test"), "Should return false when folder is empty");
+	}
+	
+	@Test
+	public void folderContains_shouldReturnFalseWhenFolderIsNull() {
+		assertFalse(OpenmrsUtil.folderContains(null, "test"), "Should return false when folder is null");
+	}
+	
+	@Test
+	public void folderContains_shouldReturnTrueWhenFilenameIsSubfolder(@TempDir File tempDir) {
+		File subfolder = new File(tempDir, "subFolder");
+		assertTrue(subfolder.mkdir());
+		
+		boolean result = OpenmrsUtil.folderContains(tempDir, "subFolder");
+		
+		assertTrue(result, "Should return true because subfolder exists with that name");
+	}
+	
+	@Test
+	public void folderContains_shouldReturnFalseWhenFolderIsAFile(@TempDir File tempDir) throws IOException {
+		File file = new File(tempDir, "file.txt");
+		assertTrue(file.createNewFile());
+		
+		boolean result = OpenmrsUtil.folderContains(file, "file.txt");
+		assertFalse(result, "Should return false when file is passed in as folder");
+	}
+	
 }
