@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verify;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,6 +35,8 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,6 +58,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
@@ -1075,5 +1079,30 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		);
 
 		assertEquals("", result);
+	}
+	
+	@Test
+	public void getFileAsString_shouldReadAndReturnCorrectContent(@TempDir Path tempDir) throws IOException {
+		Path tempFilePath = tempDir.resolve("test.txt");
+		Files.writeString(tempFilePath, "File content");
+		
+		String content = OpenmrsUtil.getFileAsString(tempFilePath.toFile());
+		
+		assertEquals("File content", content);		
+	}
+	
+	@Test
+	public void getFileAsString_shouldReturnIOExceptionForMissingFiles() {
+		File missingFile = new File("missingFile");
+		
+		assertThrows(IOException.class, () -> OpenmrsUtil.getFileAsString(missingFile));
+	}
+	
+	@Test
+	public void getFileAsString_shouldReturnEmptyStringForEmptyFiles(@TempDir File tempDir) throws IOException {
+		File emptyFile = new File(tempDir, "emptyFile.txt");
+		emptyFile.createNewFile();
+		
+		assertEquals("", OpenmrsUtil.getFileAsString(emptyFile));
 	}
 }
