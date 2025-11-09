@@ -2020,8 +2020,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderContext orderContext = new OrderContext();
 		orderContext.setCareSetting(careSetting);
 		
-		Exception exception = assertThrows(OrderEntryException.class, () -> orderService.saveOrder(drugOrder, orderContext));
-		assertThat(exception.getMessage(), containsString("required for out patient drug orders"));
+		Exception exception = assertThrows(ValidationException.class, () -> orderService.saveOrder(drugOrder, orderContext));
+		assertThat(exception.getMessage(), containsString("Field error in object 'order' on field 'numRefills'"));
+		assertThat(exception.getMessage(), containsString("Field error in object 'order' on field 'quantity'"));
 		
 	}
 

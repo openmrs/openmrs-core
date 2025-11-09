@@ -46,6 +46,7 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UnchangeableObjectException;
+import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
@@ -61,6 +62,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -169,7 +173,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		ensureOrderTypeIsSet(order,orderContext);
 		ensureCareSettingIsSet(order,orderContext);
 		failOnOrderTypeMismatch(order);
-		validateFieldsForOrderContextOutPatientCareSettingType(order, orderContext);
 		
 		// If isRetrospective is false, but the dateActivated is prior to the current date, set isRetrospective to true
 		if (!isRetrospective) {
@@ -304,28 +307,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		order.setCareSetting(careSetting);
 	}
 
-	private void validateFieldsForOrderContextOutPatientCareSettingType(Order order, OrderContext orderContext) {
-		if (!isDrugOrder(order) || orderContext == null) {
-			return;
-		}
-
-		if (orderContext.getCareSetting() != null && orderContext.getCareSetting().getCareSettingType().equals(CareSetting.CareSettingType.OUTPATIENT)) {
-			DrugOrder drugOrder = (DrugOrder) order;
-			boolean requireQuantity = Context.getAdministrationService().getGlobalPropertyValue(
-				OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_OUTPATIENT_QUANTITY, true);
-			if (requireQuantity) {
-				if (drugOrder.getNumRefills() == null) {
-					throw new OrderEntryException(
-						Context.getMessageSourceService().getMessage("DrugOrder.error.numRefillsIsNullForOutPatient"));
-				}
-				if (drugOrder.getQuantity() == null) {
-					throw new OrderEntryException(
-						Context.getMessageSourceService().getMessage("DrugOrder.error.quantityIsNullForOutPatient"));
-				}
-			}
-		}
-	}
-
 	private void failOnOrderTypeMismatch(Order order) {
 		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
 			throw new OrderEntryException("Order.type.class.does.not.match", new Object[] {
@@ -384,6 +365,21 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 					order.setAutoExpireDate(cal.getTime());
 				}
 			}
+		}
+
+		if (orderContext != null) {
+				Errors errors = new BeanPropertyBindingResult(order, "order");
+				Validator orderValidator = Context.getRegisteredComponent("orderValidator", Validator.class);
+				orderValidator.validate(order, errors);
+
+				if (order instanceof DrugOrder) {
+					Validator drugOrderValidator = Context.getRegisteredComponent("drugOrderValidator", Validator.class);
+					drugOrderValidator.validate(order, errors);
+				}
+
+				if (errors.hasErrors()) {
+					throw new ValidationException(errors.toString());
+				}
 		}
 		
 		return dao.saveOrder(order);
