@@ -69,7 +69,7 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
+	public void saveObs_shouldRetrieveCorrectMimetypeAndTitle() throws IOException {
 		String mimetype = "image/png";
 		String filename = "TestingComplexObsSaving.png";
 		File sourceFile = Paths.get("src", "test", "resources", "ComplexObsTestImage.png").toFile();
@@ -96,7 +96,9 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 		Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 		
 		assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
+		assertEquals(complexObs1.getComplexData().getTitle(), filename);
 		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+		assertEquals(complexObs2.getComplexData().getTitle(), filename);
 	}
 	
 	@Test
@@ -110,5 +112,38 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
 		        "obs"));
 		handler.saveObs(obs);
+	}
+
+	@Test
+	public void saveObs_shouldNotDuplicateKeyWhenUpdating() throws IOException {
+		String filename = "TestingComplexObsSaving.png";
+		File sourceFile = Paths.get("src", "test", "resources", "ComplexObsTestImage.png").toFile();
+
+		BufferedImage img = ImageIO.read(sourceFile);
+
+		ComplexData complexData = new ComplexData(filename, img);
+		
+		Obs obs = new Obs();
+		obs.setComplexData(complexData);
+		
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+			"obs"));
+
+		handler.saveObs(obs);;
+
+		// Get observation
+		Obs complexObs = handler.getObs(obs, "RAW_VIEW");
+
+		String initialKey = complexObs.getValueComplex().split("\\|")[1];
+		Integer initialKeyLength = initialKey.length();
+		assertTrue(initialKey.endsWith("TestingComplexObsSaving.png"));
+		
+		// update
+		handler.saveObs(obs);;
+		complexObs = handler.getObs(obs, "RAW_VIEW");
+		String updatedKey = complexObs.getValueComplex().split("\\|")[1];
+		Integer updatedKeyLength = updatedKey.length();
+		assertTrue(updatedKey.endsWith("TestingComplexObsSaving.png"));
+		assertEquals(initialKeyLength, updatedKeyLength);
 	}
 }
