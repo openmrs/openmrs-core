@@ -2911,8 +2911,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			    .addAnnotatedClass(ConceptReferenceTermMap.class)
 			    .addAnnotatedClass(ConceptReferenceTerm.class)
 				.addAnnotatedClass(ConceptAnswer.class)
-			    .addAnnotatedClass(ConceptDescription.class)
-			    .addAnnotatedClass(ConceptClass.class)
+				.addAnnotatedClass(ConceptClass.class)
 			    .addAnnotatedClass(ConceptMap.class)
 				.addAnnotatedClass(FormResource.class)
 				.addAnnotatedClass(VisitType.class)
@@ -2939,6 +2938,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(LoginCredential.class)
 				.addAnnotatedClass(ConceptDatatype.class)
 				.addAnnotatedClass(ProviderAttribute.class)
+				.addAnnotatedClass(OrderSet.class)
 				.getMetadataBuilder().build();
 
 
