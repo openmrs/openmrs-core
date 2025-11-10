@@ -10,6 +10,8 @@
 package org.openmrs;
 
 
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.MapsId;
 import org.hibernate.envers.Audited;
 
 import jakarta.persistence.Column;
@@ -31,14 +33,17 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	public static final long serialVersionUID = 94023L;
 	
 	// Fields
+	@EmbeddedId
+	private DrugIngredientId id = new DrugIngredientId();
+
 	@ManyToOne
-	@JoinColumn(name = "drug_id", updatable = false, insertable = false)
-	@Id
+	@MapsId("drugId")
+	@JoinColumn(name = "drug_id", nullable = false)
 	private Drug drug;
 
 	@ManyToOne
-	@JoinColumn(name = "ingredient_id", updatable = false, insertable = false)
-	@Id
+	@MapsId("ingredientId")
+	@JoinColumn(name = "ingredient_id", nullable = false)
 	private Concept ingredient;
 
 	@Column(name = "strength")
