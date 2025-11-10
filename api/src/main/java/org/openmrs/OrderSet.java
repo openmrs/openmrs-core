@@ -25,6 +25,7 @@ import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.AssociationOverride;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Parameter;
@@ -41,6 +42,10 @@ import org.openmrs.api.APIException;
 @Entity
 @Table(name = "order_set")
 @Audited
+@AssociationOverride(
+	name = "attributes",
+	joinColumns = @JoinColumn(name = "order_set_id")
+)
 public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 	
 	public static final long serialVersionUID = 72232L;
