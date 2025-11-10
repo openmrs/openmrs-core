@@ -295,7 +295,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//since we used a set we should have the size as N indicating that there were no duplicates
 		assertEquals(N, uniqueOrderNumbers.size());
 	}
-*/
+
 	/**
 	 * @see OrderService#getOrderByOrderNumber(String)
 	 */
