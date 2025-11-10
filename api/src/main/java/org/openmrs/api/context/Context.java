@@ -782,7 +782,6 @@ public class Context {
 	 * @param privileges privileges to add in string form
 	 * @see #hasPrivilege(String)
 	 * @see #removeProxyPrivilege(String...)
-	 * @since 2.7.8, 2.8.2, 3.0.0
 	 */
 	public static void addProxyPrivilege(String... privileges) {
 		getUserContext().addProxyPrivilege(privileges);
@@ -798,7 +797,6 @@ public class Context {
 	 * @param privileges privileges to remove in string form
 	 * @see #hasPrivilege(String)
 	 * @see #addProxyPrivilege(String...)
-	 * @since 2.7.8, 2.8.2, 3.0.0
 	 */
 	public static void removeProxyPrivilege(String... privileges) {
 		getUserContext().removeProxyPrivilege(privileges);

@@ -248,7 +248,6 @@ public class UserContext implements Serializable {
 	 * @param privileges privileges to add in string form
 	 * @see #hasPrivilege(String)
 	 * @see #removeProxyPrivilege(String...)
-	 * @since 2.7.8, 2.8.2, 3.0.0
 	 */
 	public void addProxyPrivilege(String... privileges) {
 		if (privileges == null || Arrays.stream(privileges).anyMatch(Objects::isNull)) {
@@ -271,7 +270,6 @@ public class UserContext implements Serializable {
 	 * @param privileges privileges to remove in string form
 	 * @see #hasPrivilege(String)
 	 * @see #addProxyPrivilege(String...)
-	 * @since 2.7.8, 2.8.2, 3.0.0
 	 */
 	public void removeProxyPrivilege(String... privileges) {
 		if (privileges == null || Arrays.stream(privileges).allMatch(Objects::isNull)) {
