@@ -204,9 +204,9 @@ public interface OrderDAO {
 	public OrderType getOrderTypeByConceptClass(ConceptClass conceptClass);
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String)
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
 	 */
-	public List<OrderType> getOrderTypesByClassName(String javaClassName) throws DAOException;
+	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeRetired) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)

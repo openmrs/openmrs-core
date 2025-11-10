@@ -1074,12 +1074,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String)
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<OrderType> getOrderTypesByClassName(String javaClassName) throws APIException {
-		return dao.getOrderTypesByClassName(javaClassName);
+	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeRetired) throws APIException {
+		return dao.getOrderTypesByClassName(javaClassName, includeRetired);
 	}
 	
 	/**
@@ -1088,12 +1088,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeSubclasses, boolean includeRetired) throws APIException {
-		if (!includeSubclasses) {
-			return getOrderTypesByClassName(javaClassName);
-		}
-
 		if (!StringUtils.hasText(javaClassName)) {
 			throw new APIException("javaClassName cannot be null");
+		}
+		
+		if (!includeSubclasses) {
+			return getOrderTypesByClassName(javaClassName, includeRetired);
 		}
 
 		Class<?> superClass;

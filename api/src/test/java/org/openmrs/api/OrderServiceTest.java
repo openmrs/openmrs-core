@@ -2763,17 +2763,17 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String)
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
 	 */
 	@Test
 	public void getOrderTypesByClassName_shouldReturnOrderTypesForTheGivenJavaClassName() {
-		List<OrderType> drugOrderTypes = orderService.getOrderTypesByClassName(DrugOrder.class.getName());
+		List<OrderType> drugOrderTypes = orderService.getOrderTypesByClassName(DrugOrder.class.getName(), false);
 
 		assertNotNull(drugOrderTypes);
 		assertEquals(1, drugOrderTypes.size());
 		assertEquals("Drug order", drugOrderTypes.get(0).getName());
 
-		List<OrderType> testOrderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getName());
+		List<OrderType> testOrderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getName(), false);
 
 		assertNotNull(testOrderTypes);
 		assertEquals(2, testOrderTypes.size());
@@ -2802,11 +2802,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String)
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
 	 */
 	@Test
 	public void getOrderTypesByClassName_shouldThrowAPIExceptionForNullJavaClassName() {
-		assertThrows(APIException.class, () -> orderService.getOrderTypesByClassName(null));
+		assertThrows(APIException.class, () -> orderService.getOrderTypesByClassName(null, false));
 	}
 
 	/**
