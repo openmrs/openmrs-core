@@ -729,13 +729,25 @@ public interface OrderService extends OpenmrsService {
 	 * Get order types by java class name
 	 *
 	 * @param javaClassName the class name used to get the order types
-	 * @since 2.7.0
+	 * @since 3.0.0
 	 * @return return the order types associated with given class name
 	 * <strong>Should</strong> find order types with the specified class name
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
 	public List<OrderType> getOrderTypesByClassName(String javaClassName) throws APIException;
-	
+
+	/**
+	 * Get order types by java class name
+	 * 
+	 * @param javaClassName the class name used to get the order types
+	 * @param includeSubclasses boolean flag for include subclasses or not
+	 * @since 3.0.0
+	 * @return return the order types associated with given class name
+	 * <strong>Should</strong> find order types with the specified class name
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeSubclasses) throws APIException;
+
 	/**
 	 * Gets the possible drug routes, i.e the set members for the concept that matches the uuid
 	 * specified as the value for the global property

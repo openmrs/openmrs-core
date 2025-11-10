@@ -207,6 +207,11 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String)
 	 */
 	public List<OrderType> getOrderTypesByClassName(String javaClassName) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
+	 */
+	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeSubclasses) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)

@@ -270,10 +270,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			orderType = getOrderTypeByConcept(order.getConcept());
 		}
 		if (orderType == null && order instanceof DrugOrder) {
-			orderType = Context.getOrderService().getOrderTypeByName(OpenmrsConstants.DRUG_ORDER_TYPE_NAME);
+			List<OrderType> types = Context.getOrderService().getOrderTypesByClassName(DrugOrder.class.getName(), true);
+			orderType = !types.isEmpty() ? types.get(0) : null;
 		}
 		if (orderType == null && order instanceof TestOrder) {
-			orderType = Context.getOrderService().getOrderTypeByName(OpenmrsConstants.TEST_ORDER_TYPE_NAME);
+			List<OrderType> types = Context.getOrderService().getOrderTypesByClassName(TestOrder.class.getName(), true);
+			orderType = !types.isEmpty() ? types.get(0) : null;
 		}
 		if (orderType == null && order instanceof ReferralOrder) {
 			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.REFERRAL_ORDER_TYPE_UUID);
@@ -312,10 +314,20 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 
 	private boolean areDrugOrdersOfSameOrderableAndOverlappingSchedule(Order firstOrder, Order secondOrder) {
 		return firstOrder.hasSameOrderableAs(secondOrder)
-		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
-		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
-		        && firstOrder.getOrderType().equals(
-		            Context.getOrderService().getOrderTypeByName(OpenmrsConstants.DRUG_ORDER_TYPE_NAME));
+			&& !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
+			&& OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
+			&& firstOrder.getOrderType().equals(getDefaultDrugOrderType());
+	}
+
+	private OrderType getDefaultDrugOrderType() {
+		OrderType type = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
+		if (type == null) {
+			List<OrderType> types = Context.getOrderService().getOrderTypesByClassName(DrugOrder.class.getName(), true);
+			if (types.size() == 1) {
+				type = types.get(0);
+			}
+		}
+		return type;
 	}
 
 	private boolean isDrugOrder(Order order) {
@@ -1069,6 +1081,15 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Transactional(readOnly = true)
 	public List<OrderType> getOrderTypesByClassName(String javaClassName) throws APIException {
 		return dao.getOrderTypesByClassName(javaClassName);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeSubclasses) throws APIException {
+		return dao.getOrderTypesByClassName(javaClassName, includeSubclasses);
 	}
 	
 	/**

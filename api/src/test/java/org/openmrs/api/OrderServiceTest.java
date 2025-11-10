@@ -2771,13 +2771,34 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		assertNotNull(drugOrderTypes);
 		assertEquals(1, drugOrderTypes.size());
-		assertEquals(drugOrderTypes.get(0).getName(), OpenmrsConstants.DRUG_ORDER_TYPE_NAME);
+		assertEquals("Drug order", drugOrderTypes.get(0).getName());
 
 		List<OrderType> testOrderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getName());
 
 		assertNotNull(testOrderTypes);
 		assertEquals(2, testOrderTypes.size());
-		assertEquals(testOrderTypes.get(0).getName(), OpenmrsConstants.TEST_ORDER_TYPE_NAME);
+		assertEquals("Test order", testOrderTypes.get(0).getName());
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
+	 */
+	@Test
+	public void getOrderTypesByClassName_shouldReturnOrderTypesForTestOrderAndItsSubclasses() {
+		// create and save a new OrderType for MyTestOrder
+		OrderType myTestOrderType = new OrderType();
+		myTestOrderType.setName("My Test Order");
+		myTestOrderType.setJavaClassName(MyTestOrder.class.getName());
+		Context.getOrderService().saveOrderType(myTestOrderType);
+		
+		List<OrderType> polymorphicTestOrderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getName(), true);
+		
+		assertNotNull(polymorphicTestOrderTypes);
+
+		// should include the original TestOrder types + the new subclass
+		assertEquals(3, polymorphicTestOrderTypes.size());
+		assertTrue(polymorphicTestOrderTypes.stream()
+			.anyMatch(ot -> MyTestOrder.class.getName().equals(ot.getJavaClassName())));
 	}
 
 	/**
@@ -3352,7 +3373,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(drugOrder, null);
 		assertNotNull(drugOrder.getOrderType());
-		assertEquals(orderService.getOrderTypeByName(OpenmrsConstants.DRUG_ORDER_TYPE_NAME), drugOrder.getOrderType());
+		assertEquals(orderService.getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID), drugOrder.getOrderType());
 	}
 
 	/**
@@ -3378,7 +3399,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(testOrder, null);
 		assertNotNull(testOrder.getOrderType());
-		assertEquals(orderService.getOrderTypeByName(OpenmrsConstants.TEST_ORDER_TYPE_NAME), testOrder.getOrderType());
+		assertEquals(orderService.getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID), testOrder.getOrderType());
 	}
 
 	@Test
@@ -4447,4 +4468,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	private Date truncateToSeconds(Date date) {
 		return DateUtils.truncate(date, Calendar.SECOND);
 	}
+
+	// Test-only subclass
+	public static class MyTestOrder extends TestOrder { }
 }
