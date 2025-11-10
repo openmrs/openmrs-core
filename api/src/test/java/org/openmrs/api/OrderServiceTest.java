@@ -267,8 +267,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @throws InterruptedException
 	 * @see OrderNumberGenerator#getNewOrderNumber(OrderContext)
 	 */
-	//@Test
-	/*public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
+	@Test
+	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
 		throws InterruptedException {
 
 		int N = 50;
