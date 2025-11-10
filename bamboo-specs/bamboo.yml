@@ -23,8 +23,8 @@ stages:
           jobs:
               - Deploy to maven
               - Deploy to docker
+              - Deploy to docker JDK 8
               - Deploy to docker JDK 11
-              - Deploy to docker JDK 17
     - Release:
           manual: true
           final: false
@@ -34,8 +34,8 @@ stages:
           manual: false
           final: false
           jobs:
+              - Release JDK 8 image
               - Release JDK 11 image
-              - Release JDK 17 image
 Build:
     key: BUIL
     tasks:
@@ -160,8 +160,8 @@ Deploy to docker:
                           --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE_NIGHTLY}  .
               description: Deploy to docker
     artifact-subscriptions: []
-Deploy to docker JDK 11:
-    key: DTD11
+Deploy to docker JDK 8:
+    key: DTD8
     tasks:
         - checkout:
               force-clean-build: 'false'
@@ -174,8 +174,8 @@ Deploy to docker JDK 11:
                       
                       set +x
                       
-                      export JDK_IMAGE="amazoncorretto-11"
-                      export RUNTIME_JDK="jdk11-corretto"
+                      export JDK_IMAGE="amazoncorretto-8"
+                      export RUNTIME_JDK="jdk8-corretto"
                       
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
                       export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev-${JDK_IMAGE}
@@ -201,8 +201,8 @@ Deploy to docker JDK 11:
                         -t ${IMAGE_NIGHTLY} .
               description: Deploy to docker
     artifact-subscriptions: []
-Deploy to docker JDK 17:
-    key: DTD17
+Deploy to docker JDK 11:
+    key: DTD11
     tasks:
         - checkout:
               force-clean-build: 'false'
@@ -215,8 +215,8 @@ Deploy to docker JDK 17:
                       
                       set +x
                       
-                      export JDK_IMAGE="amazoncorretto-17"
-                      export RUNTIME_JDK="jdk17-corretto"
+                      export JDK_IMAGE="amazoncorretto-11"
+                      export RUNTIME_JDK="jdk11-corretto"
                       
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
                       export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev-${JDK_IMAGE}
@@ -324,8 +324,8 @@ Release:
                   variableScope: PLAN
               description: Save next release version
     artifact-subscriptions: []
-Release JDK 11 image:
-    key: RTD11
+Release JDK 8 image:
+    key: RTD8
     tasks:
         - checkout:
               force-clean-build: 'false'
@@ -338,8 +338,8 @@ Release JDK 11 image:
                       
                       set +x
 
-                      export JDK_IMAGE="amazoncorretto-11"
-                      export RUNTIME_JDK="jdk11-corretto"
+                      export JDK_IMAGE="amazoncorretto-8"
+                      export RUNTIME_JDK="jdk8-corretto"
                       
                       export OMRS_VERSION=${bamboo.maven.release.version}
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
@@ -365,10 +365,10 @@ Release JDK 11 image:
                       --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
                       --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE}-${JDK_IMAGE} .
               
-              description: Build and push JDK 11 images
+              description: Build and push JDK 8 images
     artifact-subscriptions: []
-Release JDK 17 image:
-    key: RTD17
+Release JDK 11 image:
+    key: RTD11
     tasks:
         - checkout:
               force-clean-build: 'false'
@@ -380,8 +380,8 @@ Release JDK 17 image:
                       #!/bin/bash -eux
                       
                       set +x
-                      export JDK_IMAGE="amazoncorretto-17"
-                      export RUNTIME_JDK="jdk17-corretto"
+                      export JDK_IMAGE="amazoncorretto-11"
+                      export RUNTIME_JDK="jdk11-corretto"
                       
                       export OMRS_VERSION=${bamboo.maven.release.version}
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
@@ -407,7 +407,7 @@ Release JDK 17 image:
                       --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
                       --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE}-${JDK_IMAGE} .
               
-              description: Build and push JDK 17 images
+              description: Build and push JDK 11 images
     artifact-subscriptions: []
 variables:
     docker.image.name: openmrs/openmrs-core
