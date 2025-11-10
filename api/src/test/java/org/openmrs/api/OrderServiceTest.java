@@ -2781,7 +2781,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean, boolean)
 	 */
 	@Test
 	public void getOrderTypesByClassName_shouldReturnOrderTypesForTestOrderAndItsSubclasses() {
@@ -2791,7 +2791,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		myTestOrderType.setJavaClassName(MyTestOrder.class.getName());
 		Context.getOrderService().saveOrderType(myTestOrderType);
 		
-		List<OrderType> polymorphicTestOrderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getName(), true);
+		List<OrderType> polymorphicTestOrderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getName(), true, false);
 		
 		assertNotNull(polymorphicTestOrderTypes);
 

@@ -270,15 +270,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			orderType = getOrderTypeByConcept(order.getConcept());
 		}
 		if (orderType == null && order instanceof DrugOrder) {
-			List<OrderType> types = Context.getOrderService().getOrderTypesByClassName(DrugOrder.class.getName(), true);
-			orderType = !types.isEmpty() ? types.get(0) : null;
+			orderType = getDefaultOrderType(DrugOrder.class, OrderType.DRUG_ORDER_TYPE_UUID);
 		}
 		if (orderType == null && order instanceof TestOrder) {
-			List<OrderType> types = Context.getOrderService().getOrderTypesByClassName(TestOrder.class.getName(), true);
-			orderType = !types.isEmpty() ? types.get(0) : null;
+			orderType = getDefaultOrderType(TestOrder.class, OrderType.TEST_ORDER_TYPE_UUID);
 		}
 		if (orderType == null && order instanceof ReferralOrder) {
-			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.REFERRAL_ORDER_TYPE_UUID);
+			orderType = getDefaultOrderType(ReferralOrder.class, OrderType.REFERRAL_ORDER_TYPE_UUID);
 		}
 		if (orderType == null) {
 			throw new OrderEntryException("Order.type.cannot.determine");
@@ -316,13 +314,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return firstOrder.hasSameOrderableAs(secondOrder)
 			&& !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
 			&& OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
-			&& firstOrder.getOrderType().equals(getDefaultDrugOrderType());
+			&& firstOrder.getOrderType().equals(getDefaultOrderType(DrugOrder.class, OrderType.DRUG_ORDER_TYPE_UUID));
 	}
 
-	private OrderType getDefaultDrugOrderType() {
-		OrderType type = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
+	private OrderType getDefaultOrderType(Class<? extends Order> orderSubclass, String fallbackUuid) {
+		OrderType type = getOrderTypeByUuid(fallbackUuid);
+		
 		if (type == null) {
-			List<OrderType> types = Context.getOrderService().getOrderTypesByClassName(DrugOrder.class.getName(), true);
+			List<OrderType> types = getOrderTypesByClassName(orderSubclass.getName(), true, false);
 			if (types.size() == 1) {
 				type = types.get(0);
 			}
@@ -1084,12 +1083,35 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean, boolean)
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeSubclasses) throws APIException {
-		return dao.getOrderTypesByClassName(javaClassName, includeSubclasses);
+	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeSubclasses, boolean includeRetired) throws APIException {
+		if (!includeSubclasses) {
+			return getOrderTypesByClassName(javaClassName);
+		}
+
+		if (!StringUtils.hasText(javaClassName)) {
+			throw new APIException("javaClassName cannot be null");
+		}
+
+		Class<?> superClass;
+		try {
+			superClass = Context.loadClass(javaClassName);
+		} catch (ClassNotFoundException e) {
+			throw new APIException("Invalid javaClassName: " + javaClassName, e);
+		}
+
+		return getOrderTypes(includeRetired).stream()
+			.filter(ot -> {
+				try {
+					Class<?> c = Context.loadClass(ot.getJavaClassName());
+					return superClass.isAssignableFrom(c);
+				} catch (Exception ignore) {
+					return false;
+				}
+			}).toList();
 	}
 	
 	/**

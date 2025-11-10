@@ -746,7 +746,7 @@ public interface OrderService extends OpenmrsService {
 	 * <strong>Should</strong> find order types with the specified class name
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
-	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeSubclasses) throws APIException;
+	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeSubclasses, boolean includeRetired) throws APIException;
 
 	/**
 	 * Gets the possible drug routes, i.e the set members for the concept that matches the uuid
