@@ -158,7 +158,7 @@
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>2.20.0</version>
+				<version>2.21.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -223,7 +223,7 @@
 			<dependency>
 				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>9.0.1.Final</version>
+				<version>9.1.0.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate.search</groupId>
@@ -295,7 +295,7 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper</artifactId>
-				<version>11.0.13</version>
+				<version>11.0.14</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -615,7 +615,7 @@
 			<dependency>
 				<groupId>com.adobe.testing</groupId>
 				<artifactId>s3mock-testcontainers</artifactId>
-				<version>4.9.1</version>
+				<version>4.10.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.logging</groupId>
@@ -738,7 +738,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>3.1.1</version>
+					<version>3.2.0</version>
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
@@ -853,7 +853,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.2.0.4988</version>
+					<version>5.3.0.6276</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
