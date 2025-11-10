@@ -11,7 +11,6 @@ package org.openmrs.api.context;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SessionFactory;
 import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
@@ -725,9 +724,7 @@ public class Context {
 	}
 
 	/**
-	 * Convenience method. Passes through to userContext.hasPrivilege(String)
-	 *
-	 * <strong>Should</strong> give daemon user full privileges
+	 * Tests whether the currently authenticated user has a particular privilege
 	 */
 	public static boolean hasPrivilege(String privilege) {
 		// the daemon threads have access to all things
@@ -759,19 +756,49 @@ public class Context {
 			throw new ContextAuthenticationException(errorMessage);
 		}
 	}
-
+	
 	/**
-	 * Convenience method. Passes through to {@link UserContext#addProxyPrivilege(String)}
+	 * Adds one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is useful for situations where a system process may need access to some piece of data that the
+	 * user would not otherwise have access to, like a GlobalProperty. <strong>This facility should not be
+	 * used to return data to the user that they otherwise would be unable to see.</strong>
+	 * <p/>
+	 * The expected usage is:
+	 * <p/>
+	 * <pre>{@code
+	 * try {
+	 *   Context.addProxyPrivilege(&quot;AAA&quot;);
+	 *   Context.get*Service().methodRequiringAAAPrivilege();
+	 * }
+	 * finally {
+	 *   Context.removeProxyPrivilege(&quot;AAA&quot;);
+	 * }}
+	 * </pre>
+	 * <p/>
+	 *
+	 * @param privileges privileges to add in string form
+	 * @see #hasPrivilege(String)
+	 * @see #removeProxyPrivilege(String...)
 	 */
-	public static void addProxyPrivilege(String privilege) {
-		getUserContext().addProxyPrivilege(privilege);
+	public static void addProxyPrivilege(String... privileges) {
+		getUserContext().addProxyPrivilege(privileges);
 	}
-
+	
 	/**
-	 * Convenience method. Passes through to {@link UserContext#removeProxyPrivilege(String)}
+	 * Removes one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is the compliment for {@link #addProxyPrivilege(String...)} to clean-up the context.
+	 * <p/>
+	 *
+	 * @param privileges privileges to remove in string form
+	 * @see #hasPrivilege(String)
+	 * @see #addProxyPrivilege(String...)
 	 */
-	public static void removeProxyPrivilege(String privilege) {
-		getUserContext().removeProxyPrivilege(privilege);
+	public static void removeProxyPrivilege(String... privileges) {
+		getUserContext().removeProxyPrivilege(privileges);
 	}
 
 	/**

@@ -353,4 +353,80 @@ public class ContextTest extends BaseContextSensitiveTest {
 		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
 		assertFalse(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
 	}
+
+	/**
+	 * @see Context#addProxyPrivilege(String...)
+	 */
+	@Test
+	public void addProxyPrivilege_shouldAddMultiplePrivileges() {
+		Context.logout(); // logout to ensure user doesn't have privileges through roles
+		try {
+			// arrange - verify user doesn't have these privileges
+			assertFalse(Context.hasPrivilege("Some Privilege"));
+			assertFalse(Context.hasPrivilege("Another Privilege"));
+
+			// act
+			Context.addProxyPrivilege("Some Privilege", "Another Privilege");
+
+			// assert
+			assertTrue(Context.hasPrivilege("Some Privilege"));
+			assertTrue(Context.hasPrivilege("Another Privilege"));
+		} finally {
+			Context.removeProxyPrivilege("Some Privilege", "Another Privilege");
+			authenticate(); // restore authenticated state
+		}
+	}
+
+	/**
+	 * @see Context#addProxyPrivilege(String...)
+	 */
+	@Test
+	public void addProxyPrivilege_shouldThrowExceptionForNullArray() {
+		// act & assert
+		assertThrows(IllegalArgumentException.class, () -> Context.addProxyPrivilege((String[]) null));
+	}
+
+	/**
+	 * @see Context#removeProxyPrivilege(String...)
+	 */
+	@Test
+	public void removeProxyPrivilege_shouldRemoveMultiplePrivileges() {
+		Context.logout();
+		try {
+			// arrange
+			Context.addProxyPrivilege("Privilege A", "Privilege B", "Privilege C");
+
+			// act
+			Context.removeProxyPrivilege("Privilege A", "Privilege C");
+
+			// assert
+			assertFalse(Context.hasPrivilege("Privilege A"));
+			assertTrue(Context.hasPrivilege("Privilege B"));
+			assertFalse(Context.hasPrivilege("Privilege C"));
+		} finally {
+			Context.removeProxyPrivilege("Privilege B");
+			authenticate();
+		}
+	}
+
+	/**
+	 * @see Context#removeProxyPrivilege(String...)
+	 */
+	@Test
+	public void removeProxyPrivilege_shouldHandleNullArrayGracefully() {
+		Context.logout();
+		try {
+			// arrange
+			Context.addProxyPrivilege("Some Test Privilege");
+
+			// act
+			Context.removeProxyPrivilege((String[]) null);
+
+			// assert - should still have the privilege since null was passed
+			assertTrue(Context.hasPrivilege("Some Test Privilege"));
+		} finally {
+			Context.removeProxyPrivilege("Some Test Privilege");
+			authenticate();
+		}
+	}
 }
