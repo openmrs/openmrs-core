@@ -12,6 +12,7 @@ package org.openmrs.liquibase;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -185,5 +186,18 @@ public class SchemaOnlyTunerTest {
 			// when
 			schemaOnlyTuner.assertLongtextNodes(nodes);
 		});
+	}
+
+	@Test
+	public void shouldRemoveEmptyOrNullDefaultValues() {
+		XPath xPath = DocumentHelper.createXPath(
+				"//dbchangelog:column[@defaultValue=\"\"] | //dbchangelog:column[@defaultValueComputed=\"NULL\"]"
+		);
+		xPath.setNamespaceURIs(namespaceUris);
+		List<Node> nodes = xPath.selectNodes(document);
+		assertFalse(nodes.isEmpty());
+		schemaOnlyTuner.removeEmptyOrNullDefaultValues(document);
+		nodes = xPath.selectNodes(document);
+		assertTrue(nodes.isEmpty());
 	}
 }
