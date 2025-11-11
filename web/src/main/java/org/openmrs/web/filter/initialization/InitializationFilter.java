@@ -993,14 +993,13 @@ public class InitializationFilter extends StartupFilter {
 	 *
 	 * @param httpRequest the http request object
 	 */
-	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
-		Locale locale = httpRequest.getLocale();
-		if (CustomResourceLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
-			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, locale.toString());
-		} else {
-			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, Locale.ENGLISH.toString());
-		}
-	}
+public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
+    CustomResourceLoader resourceLoader = CustomResourceLoader.getInstance(httpRequest);
+
+    Locale bestLocale = resourceLoader.findBestLocale(httpRequest);
+
+    httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, bestLocale.toString());
+}
 	
 	/**
 	 * Verify the database connection works.
