@@ -12,6 +12,7 @@ package org.openmrs.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.verify;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,6 +36,8 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,6 +59,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
@@ -1075,5 +1080,30 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		);
 
 		assertEquals("", result);
+	}
+	
+	@Test
+	public void getFileAsBytes_shouldReadAndReturnCorrectContent(@TempDir Path tempDir) throws IOException {
+		Path tempFilePath = tempDir.resolve("test.txt");
+		Files.write(tempFilePath, "Bytes to read".getBytes());
+		
+		byte[] actual = OpenmrsUtil.getFileAsBytes(tempFilePath.toFile());
+		
+		assertArrayEquals("Bytes to read".getBytes(), actual,"Should read and return correct content");
+	}
+	
+	@Test
+	public void getFileAsBytes_shouldReturnIOExceptionForMissingFiles() throws IOException {
+		File missingFile = new File("missingFile");
+		
+		assertNull(OpenmrsUtil.getFileAsBytes(missingFile), "Should return null when file does not exist");
+	}
+	
+	@Test
+	public void getFileAsBytes_shouldReturnEmptyStringForEmptyFiles(@TempDir File tempDir) throws IOException {
+		File emptyFile = new File(tempDir, "emptyFile.txt");
+		emptyFile.createNewFile();
+		
+		assertArrayEquals(new byte[0], OpenmrsUtil.getFileAsBytes(emptyFile), "Should return empty byte array for empty file");
 	}
 }
