@@ -61,12 +61,7 @@ public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 	}
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_set_id_seq")
-	@GenericGenerator(
-		name = "order_set_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "order_set_order_set_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name ="order_set_id" )
 	private Integer orderSetId;
 	
