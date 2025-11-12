@@ -22,8 +22,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -166,6 +164,44 @@ public class UserContextTest extends BaseContextSensitiveTest {
 		userContext.removeProxyPrivilege((String[]) null);
 
 		// assert - should still have the privilege since null was passed
+		assertThat(userContext.hasPrivilege("Privilege1"), is(true));
+	}
+
+	@Test
+	void removeProxyPrivilege_shouldHandleNonExistentPrivilegeGracefully() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+
+		// act
+		userContext.removeProxyPrivilege("Privilege 1");
+
+		// assert - no error thrown
+	}
+	
+	@Test
+	void proxyPrivileges_shouldStackCorrectly() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+		
+		// act - deep nesting
+		userContext.addProxyPrivilege("Privilege1");
+		try {
+			userContext.addProxyPrivilege("Privilege1");
+			try {
+				userContext.addProxyPrivilege("Privilege1");
+				try {
+					userContext.addProxyPrivilege("Privilege1");
+				} finally {
+					userContext.removeProxyPrivilege("Privilege1");
+				}
+			} finally {
+				userContext.removeProxyPrivilege("Privilege1");
+			}
+		} finally {
+			userContext.removeProxyPrivilege("Privilege1");
+		}
+		
+		// assert
 		assertThat(userContext.hasPrivilege("Privilege1"), is(true));
 	}
 }
