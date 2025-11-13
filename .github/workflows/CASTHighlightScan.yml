@@ -24,7 +24,7 @@ jobs:
 
       - name: get company and application ids
         run: |
-          cat .github/workflows/hl.env >> $GITHUB_ENV
+          cat .github/workflows/Highlight.env >> $GITHUB_ENV
 
       - name: scan project source code 
         run: |
