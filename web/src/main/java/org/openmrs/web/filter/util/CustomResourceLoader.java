@@ -14,12 +14,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.openmrs.util.LocaleUtility;
@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class is responsible for loading messages resources from file system
@@ -135,33 +136,31 @@ public class CustomResourceLoader {
 	 * @return the best matching available locale based on the requests 'Accept-Language' header
 	 */
 	public Locale findBestLocale(HttpServletRequest request) {
-		Set<Locale> availableLocales = getAvailablelocales();
 
-		if (availableLocales.isEmpty()) {
+		Set<Locale> availableLocales = getAvailablelocales();
+		if (availableLocales == null || availableLocales.isEmpty()) {
 			return Locale.ENGLISH;
-		} else if (availableLocales.size() == 1) {
+		}
+		if (availableLocales.size() == 1) {
 			return availableLocales.iterator().next();
 		}
-
 		String acceptedLanguages = request.getHeader("Accept-Language");
-
-		if (acceptedLanguages == null || acceptedLanguages.isEmpty()) {
-			return Locale.ENGLISH;
+		if (acceptedLanguages != null && !acceptedLanguages.isEmpty()) {
+			try {
+				List<Locale.LanguageRange> priorityList = Locale.LanguageRange.parse(acceptedLanguages);
+				List<Locale> prioritizedLocales = Locale.filter(priorityList, availableLocales);
+				if (prioritizedLocales != null && !prioritizedLocales.isEmpty()) {
+					return prioritizedLocales.get(0);				}
+			} catch (IllegalArgumentException ignore) {
+			}
 		}
-
-		List<Locale.LanguageRange> priorityList;
-		try {
-			priorityList = Locale.LanguageRange.parse(acceptedLanguages);
-		} catch (IllegalArgumentException e) {
-			return Locale.ENGLISH;
+		String systemDefaultLocaleString = FilterUtil.readSystemDefaultLocale(null);
+		if (StringUtils.isNotBlank(systemDefaultLocaleString)) {
+			Locale systemDefaultLocale = Locale.forLanguageTag(systemDefaultLocaleString);
+			if (availableLocales.contains(systemDefaultLocale)) {
+				return systemDefaultLocale;
+			}
 		}
-
-		List<Locale> prioritizedLocales = Locale.filter(priorityList, availableLocales);
-
-		if (prioritizedLocales == null || prioritizedLocales.isEmpty()) {
-			return Locale.ENGLISH;
-		}
-
-		return prioritizedLocales.get(0);
+		return Locale.ENGLISH;
 	}
 }
