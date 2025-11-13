@@ -63,7 +63,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		// Raw view (i.e. the file as is)
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
 			try (InputStream in = storageService.getData(key)){
-				complexData = new ComplexData(parseFilename(obs,"file"), IOUtils.toByteArray(in));
+				complexData = new ComplexData(parseFilename(obs, "file"), IOUtils.toByteArray(in));
 			}
 			catch (IOException e) {
 				log.error("Trying to read file: {}", key, e);

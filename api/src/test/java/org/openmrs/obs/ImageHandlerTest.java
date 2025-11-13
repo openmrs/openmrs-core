@@ -166,14 +166,14 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 
 		String initialKey = complexObs.getValueComplex().split("\\|")[1];
 		Integer initialKeyLength = initialKey.length();
-		assertTrue(initialKey.endsWith("TestingComplexObsSaving.png"));
+		assertTrue(initialKey.endsWith(filename));
 		
 		// update
 		handler.saveObs(obs);;
 		complexObs = handler.getObs(obs, "RAW_VIEW");
 		String updatedKey = complexObs.getValueComplex().split("\\|")[1];
 		Integer updatedKeyLength = updatedKey.length();
-		assertTrue(updatedKey.endsWith("TestingComplexObsSaving.png"));
+		assertTrue(updatedKey.endsWith(filename));
 		assertEquals(initialKeyLength, updatedKeyLength);
 	}
 }
