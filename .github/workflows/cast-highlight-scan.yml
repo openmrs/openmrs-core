@@ -7,9 +7,9 @@ branding:
 description: Run CAST Highlight scans on your code to get Software Intelligence insights (vulnerabilities, cloud maturity, etc.)
 
 on: # action triggers, here every two weeks (days 5 and 15 of the month) at 6am
-    workflow_dispatch:
-    branches:
-      - master
+  workflow_dispatch:
+  branches:
+    - master
 
 jobs:
   scan:
