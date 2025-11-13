@@ -1,8 +1,8 @@
 name: CAST Highlight Scan
 
 branding:
-  icon: "code"
-  color: "yellow"
+  icon: 'code'
+  color: 'yellow'
 
 description: Run CAST Highlight scans on your code to get Software Intelligence insights (vulnerabilities, cloud maturity, etc.)
 
