@@ -126,7 +126,7 @@ public class AbstractHandler {
 	public String parseDataKey(Obs obs) {
 		String[] names = obs.getValueComplex().split("\\|");
 		String key = names.length < 2 ? names[0] : names[names.length - 1];
-		
+		key = StringUtils.trim(key);
 		if (!storageService.exists(key)) {
 			// prepend legacy storage location
 			key = getObsDir() + '/' + key;
