@@ -63,8 +63,9 @@ public class TextHandlerTest extends BaseContextSensitiveTest {
     }
     
 	@Test
-	public void saveObs_shouldRetrieveCorrectMimetype() {
-		ComplexData complexData = new ComplexData("TestingComplexObsSaving.txt", "Teststring");
+	public void saveObs_shouldRetrieveCorrectMimetypeAndTitle() throws Exception {
+		String filename = "TestingComplexObsSaving.txt";
+		ComplexData complexData = new ComplexData(filename, "Teststring");
 		
 		// Construct 2 Obs to also cover the case where the filename exists already
 		Obs obs1 = new Obs();
@@ -83,6 +84,8 @@ public class TextHandlerTest extends BaseContextSensitiveTest {
 		Obs complexObs1 = handler.getObs(obs1, "RAW_VIEW");
 		Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 		assertEquals(complexObs1.getComplexData().getMimeType(), "text/plain");
+		assertEquals(complexObs1.getComplexData().getTitle(), filename);
 		assertEquals(complexObs2.getComplexData().getMimeType(), "text/plain");
+		assertEquals(complexObs2.getComplexData().getTitle(), filename);
 	}
 }
