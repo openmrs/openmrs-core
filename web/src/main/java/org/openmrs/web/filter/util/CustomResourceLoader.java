@@ -14,12 +14,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.Set;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.openmrs.util.LocaleUtility;
@@ -27,32 +27,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class is responsible for loading messages resources from file system
  */
 public class CustomResourceLoader {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(CustomResourceLoader.class);
-	
+
 	/** */
 	public static final String PREFIX = "messages";
-	
+
 	/** the map that contains resource bundles for each locale */
 	private Map<Locale, ResourceBundle> resources;
-	
+
 	/** the set of languages, which is currently supported */
 	private Set<Locale> availablelocales;
-	
+
 	private static CustomResourceLoader instance = null;
-	
+
 	/**
 	 * default constructor that initializes inner map of resources
 	 */
 	private CustomResourceLoader(HttpServletRequest httpRequest) {
 		this.resources = new HashMap<>();
 		this.availablelocales = new HashSet<>();
-		
+
 		try {
 			PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
 			Resource[] localResources = patternResolver.getResources("classpath*:messages*.properties");
@@ -67,7 +68,7 @@ public class CustomResourceLoader {
 			log.error(ex.getMessage(), ex);
 		}
 	}
-	
+
 	/**
 	 * Returns singleton instance of custom resource loader
 	 *
@@ -82,7 +83,7 @@ public class CustomResourceLoader {
 		}
 		return instance;
 	}
-	
+
 	/**
 	 * Utility method for deriving a locale from a filename.
 	 *
@@ -92,13 +93,13 @@ public class CustomResourceLoader {
 	private Locale parseLocaleFrom(String filename, String basename) {
 		Locale result;
 		String tempFilename = filename;
-		
+
 		if (filename.startsWith(basename)) {
 			tempFilename = filename.substring(basename.length());
 		}
-		
+
 		String localespec = tempFilename.substring(0, tempFilename.indexOf('.'));
-		
+
 		if ("".equals(localespec)) {
 			result = Locale.ENGLISH;
 		} else {
@@ -107,7 +108,7 @@ public class CustomResourceLoader {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @param locale the locale for which will be retrieved resource bundle
 	 * @return resource bundle for specified locale
@@ -115,7 +116,7 @@ public class CustomResourceLoader {
 	public ResourceBundle getResourceBundle(Locale locale) {
 		return resources.get(locale);
 	}
-	
+
 	/**
 	 * @return the map object, which contains locale as key and resources bundle for each locale as
 	 *         value
@@ -123,11 +124,43 @@ public class CustomResourceLoader {
 	public Map<Locale, ResourceBundle> getResource() {
 		return resources;
 	}
-	
+
 	/**
 	 * @return the set of locales which are currently supported by OpenMRS
 	 */
 	public Set<Locale> getAvailablelocales() {
 		return availablelocales;
+	}
+	/**
+	 * @param request the incoming HTTP request containing the Accept-Language header
+	 * @return the best matching available locale based on the requests 'Accept-Language' header
+	 */
+	public Locale findBestLocale(HttpServletRequest request) {
+
+		Set<Locale> availableLocales = getAvailablelocales();
+		if (availableLocales == null || availableLocales.isEmpty()) {
+			return Locale.ENGLISH;
+		}
+		if (availableLocales.size() == 1) {
+			return availableLocales.iterator().next();
+		}
+		String acceptedLanguages = request.getHeader("Accept-Language");
+		if (acceptedLanguages != null && !acceptedLanguages.isEmpty()) {
+			try {
+				List<Locale.LanguageRange> priorityList = Locale.LanguageRange.parse(acceptedLanguages);
+				List<Locale> prioritizedLocales = Locale.filter(priorityList, availableLocales);
+				if (prioritizedLocales != null && !prioritizedLocales.isEmpty()) {
+					return prioritizedLocales.get(0);				}
+			} catch (IllegalArgumentException ignore) {
+			}
+		}
+		String systemDefaultLocaleString = FilterUtil.readSystemDefaultLocale(null);
+		if (StringUtils.isNotBlank(systemDefaultLocaleString)) {
+			Locale systemDefaultLocale = Locale.forLanguageTag(systemDefaultLocaleString);
+			if (availableLocales.contains(systemDefaultLocale)) {
+				return systemDefaultLocale;
+			}
+		}
+		return Locale.ENGLISH;
 	}
 }

@@ -289,18 +289,10 @@ public class UpdateFilter extends StartupFilter {
 	 * @param httpRequest the http request object
 	 */
 	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
-		Locale locale = httpRequest.getLocale();
-		String systemDefaultLocale = FilterUtil.readSystemDefaultLocale(null);
-		if (CustomResourceLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
-			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, locale.toString());
-			log.info("Used client's locale " + locale.toString());
-		} else if (StringUtils.isNotBlank(systemDefaultLocale)) {
-			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, systemDefaultLocale);
-			log.info("Used system default locale " + systemDefaultLocale);
-		} else {
-			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, Locale.ENGLISH.toString());
-			log.info("Used default locale " + Locale.ENGLISH.toString());
-		}
+		CustomResourceLoader loader = CustomResourceLoader.getInstance(httpRequest);
+		Locale bestLocale = loader.findBestLocale(httpRequest);
+		httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, bestLocale.toString());
+		log.info("Resolved and set best locale: {}", bestLocale);
 	}
 	
 	/**
