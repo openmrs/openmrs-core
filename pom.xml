@@ -1033,7 +1033,8 @@
 			<properties>
 				<maven.test.skip>true</maven.test.skip>
 			</properties>
-			<build>
+			
+		<build>
 				<plugins>
 					<plugin>
 						<groupId>com.mycila</groupId>
