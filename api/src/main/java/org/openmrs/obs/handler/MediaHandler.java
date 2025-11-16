@@ -57,15 +57,12 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 		// Raw media
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
 			try {
-				String[] names = obs.getValueComplex().split("\\|");
-				String originalFilename = names[0];
-				originalFilename = originalFilename.replace(",", "")
-					.replace(" ", "");
-
-				InputStream in = storageService.getData(key);
-				ComplexData complexData = new ComplexData(originalFilename, in);
 				
-				complexData.setMimeType(mimetypes.getContentType(originalFilename));
+				String filename = parseFilename(obs, "");
+				
+				InputStream in = storageService.getData(key);
+				ComplexData complexData = new ComplexData(filename, in);
+				complexData.setMimeType(mimetypes.getContentType(filename));
 				
 				// Get the Mime Type and set it
 				injectMissingMetadata(key, complexData);

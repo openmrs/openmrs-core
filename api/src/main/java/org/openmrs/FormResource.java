@@ -11,6 +11,7 @@ package org.openmrs;
 
 import java.util.Date;
 
+import jakarta.persistence.FetchType;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -93,7 +94,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	private transient Object typedValue;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	

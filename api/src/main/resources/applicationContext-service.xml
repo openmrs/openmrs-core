@@ -93,7 +93,7 @@
 	</bean>
 
 	<!--  **************************  DATA ACCESS OBJECTS  *************************  -->
-    <!-- All DAOs are  now migrated to constructor injection -->
+  <!-- All DAOs are  now migrated to constructor injection -->
 	<!--  **************************  SESSION FACTORY  *************************  -->
 
 	<util:list id="moduleTestingMappingJarLocations">

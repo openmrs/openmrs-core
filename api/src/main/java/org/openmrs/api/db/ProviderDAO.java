@@ -9,16 +9,16 @@
  */
 package org.openmrs.api.db;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderRole;
 import org.openmrs.api.ProviderService;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Data Access function for Provider
@@ -151,4 +151,14 @@ public interface ProviderDAO {
 	 * @see ProviderService#getAllProviderRoles(boolean)
 	 */
 	List<ProviderRole> getAllProviderRoles(boolean includeRetired);
+
+	/**
+	 * @see ProviderService#saveProviderRole(ProviderRole)
+	 */
+	ProviderRole saveProviderRole(ProviderRole providerRole);
+
+	/**
+	 * @see ProviderService#purgeProviderRole(ProviderRole)
+	 */
+	void deleteProviderRole(ProviderRole providerRole);
 }

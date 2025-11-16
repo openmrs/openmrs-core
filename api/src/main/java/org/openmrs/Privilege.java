@@ -11,6 +11,8 @@ package org.openmrs;
 
 import jakarta.persistence.Cacheable;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -29,6 +31,9 @@ import org.hibernate.envers.Audited;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 @Table(name = "privilege")
+@AttributeOverrides({
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
+})
 public class Privilege extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 312L;
