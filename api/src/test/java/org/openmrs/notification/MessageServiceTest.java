@@ -98,10 +98,11 @@ try {
     // ✅ Mock only for this test
     userService = mock(UserService.class);
    ServiceContext mockServiceContext = mock(ServiceContext.class);
-   Context.setServiceContext(mockServiceContext); // ✅ use this built-in method
-
-
-    mockedUserList = new ArrayList<>();
+	Context context = new Context();
+	context.setServiceContext(mockServiceContext);
+	
+	
+	mockedUserList = new ArrayList<>();
     User user1 = new User();
     user1.setEmail("user@example.com");
     mockedUserList.add(user1);

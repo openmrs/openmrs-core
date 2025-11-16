@@ -65,9 +65,11 @@
 		<property name="preInterceptors" ref="serviceInterceptors"/>
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
-	<!--  Mock MailMessageSender to fix test error -->
+	<!-- Mock MailMessageSender to fix test error -->
 	<bean id="mailMessageSender" class="org.mockito.Mockito" factory-method="mock">
-		<constructor-arg value="org.openmrs.notification.mail.MailMessageSender" />
+		<constructor-arg>
+			<value type="java.lang.Class">org.openmrs.notification.mail.MailMessageSender</value>
+		</constructor-arg>
 	</bean>
 </beans>
 
