@@ -19,69 +19,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import org.openmrs.Allergy;
-import org.openmrs.AllergyReaction;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.ConceptAnswer;
-import org.openmrs.ConceptAttributeType;
-import org.openmrs.ConceptClass;
-import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptDescription;
-import org.openmrs.ConceptMap;
-import org.openmrs.ConceptMapType;
-import org.openmrs.ConceptName;
-import org.openmrs.ConceptNameTag;
-import org.openmrs.ConceptReferenceTerm;
-import org.openmrs.ConceptSource;
-import org.openmrs.ConceptStateConversion;
-import org.openmrs.ConceptReferenceTermMap;
-import org.openmrs.Condition;
-import org.openmrs.Diagnosis;
-import org.openmrs.Drug;
-import org.openmrs.DrugReferenceMap;
-import org.openmrs.DrugIngredient;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterRole;
-import org.openmrs.FreeTextDosingInstructions;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Location;
-import org.openmrs.LocationAttributeType;
-import org.openmrs.LocationTag;
-import org.openmrs.MedicationDispense;
-import org.openmrs.Obs;
-import org.openmrs.Order;
+import org.openmrs.*;
 import org.openmrs.Order.Action;
-import org.openmrs.OrderAttribute;
-import org.openmrs.OrderAttributeType;
-import org.openmrs.OrderFrequency;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderGroupAttribute;
-import org.openmrs.OrderGroupAttributeType;
-import org.openmrs.OrderSet;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientProgram;
-import org.openmrs.PatientState;
-import org.openmrs.PersonAddress;
-import org.openmrs.PersonAttributeType;
-import org.openmrs.Privilege;
-import org.openmrs.Program;
-import org.openmrs.ProgramAttributeType;
-import org.openmrs.Provider;
-import org.openmrs.ProviderAttributeType;
-import org.openmrs.ProviderRole;
-import org.openmrs.Relationship;
-import org.openmrs.SimpleDosingInstructions;
-import org.openmrs.TestOrder;
-import org.openmrs.User;
-import org.openmrs.Visit;
-import org.openmrs.VisitType;
-import org.openmrs.VisitAttributeType;
-import org.openmrs.FormResource;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
@@ -2936,6 +2875,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(Privilege.class)
 				.addAnnotatedClass(LoginCredential.class)
 				.addAnnotatedClass(ConceptDatatype.class)
+			.addAnnotatedClass(ProviderAttribute.class)
 				.getMetadataBuilder().build();
 
 
