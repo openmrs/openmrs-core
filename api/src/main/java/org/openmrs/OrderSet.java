@@ -12,7 +12,23 @@ package org.openmrs;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.AssociationOverride;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
+import org.hibernate.type.SqlTypes;
 import org.openmrs.api.APIException;
 
 /**
@@ -21,7 +37,13 @@ import org.openmrs.api.APIException;
  * 
  * @since 1.12
  */
+@Entity
+@Table(name = "order_set")
 @Audited
+@AssociationOverride(
+	name = "attributes",
+	joinColumns = @JoinColumn(name = "order_set_id")
+)
 public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 	
 	public static final long serialVersionUID = 72232L;
@@ -36,12 +58,23 @@ public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 		ALL, ONE, ANY
 	}
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name ="order_set_id" )
 	private Integer orderSetId;
 	
+	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "operator", nullable = false)
 	private Operator operator;
-	
+
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "order_set_id", nullable = false)
+	@OrderColumn(name = "sequence_number")
 	private List<OrderSetMember> orderSetMembers;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "category")
 	private Concept category;
 
 	/**
