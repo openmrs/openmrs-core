@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -1389,7 +1390,41 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		
 	}
-	
+
+	@Test
+	public void purgeObs_shouldStillDeleteObsEvenIfPurgeComplexDataFails() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+
+		ObsService os = Context.getObsService();
+		AdministrationService adminService = Context.getAdministrationService();
+
+		// Get a complex obs (44 is complex, from XML fixture)
+		Obs complexObs = os.getObs(44);
+		assertNotNull(complexObs);
+		assertTrue(complexObs.isComplex());
+
+		// Ensure the backing file is MISSING so purgeComplexData() returns false
+		File complexDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(
+			adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+
+		// Delete the backing file if it exists
+		String filename = complexObs.getValueComplex().split("\\|")[1];
+		File backingFile = new File(complexDir, filename);
+		if (backingFile.exists()) {
+			backingFile.delete();
+		}
+		assertFalse(backingFile.exists(), "Backing complex file must not exist for this test.");
+
+		Integer obsId = complexObs.getObsId();
+
+		// Act → Should NOT throw even though file is missing
+		os.purgeObs(complexObs);
+
+		// Assert → Obs has been deleted from the DB
+		assertNull(os.getObs(obsId));
+	}
+
+
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
 	 */
