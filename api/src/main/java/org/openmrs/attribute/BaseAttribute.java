@@ -36,11 +36,11 @@ import org.openmrs.util.OpenmrsUtil;
 public abstract class BaseAttribute<AT extends AttributeType, OwningType extends Customizable<?>> extends BaseChangeableOpenmrsData implements Attribute<AT, OwningType>, Comparable<Attribute> {
 	
 	@ManyToOne()
-	@JoinColumn(name = "provider_id",nullable = false)
+	@JoinColumn(name = "provider_id", nullable = false)
 	private OwningType owner;
 	
 	@ManyToOne()
-	@JoinColumn(name = "attribute_type_id",nullable = false)
+	@JoinColumn(name = "attribute_type_id", nullable = false)
 	private AT attributeType;
 	
 	// value pulled from the database
