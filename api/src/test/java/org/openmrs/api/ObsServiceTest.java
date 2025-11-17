@@ -44,6 +44,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
@@ -1396,32 +1397,67 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COMPLEX_OBS_XML);
 
 		ObsService os = Context.getObsService();
-		AdministrationService adminService = Context.getAdministrationService();
 
-		// Get a complex obs (44 is complex, from XML fixture)
-		Obs complexObs = os.getObs(44);
-		assertNotNull(complexObs);
-		assertTrue(complexObs.isComplex());
+		// Store the original handler so we can restore it after the test.
+		ComplexObsHandler originalHandler = os.getHandler("ImageHandler");
 
-		// Ensure the backing file is MISSING so purgeComplexData() returns false
-		File complexDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(
-			adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		/**
+		 * Define a custom handler that simulates failure by always returning false
+		 * from purgeComplexData(). This mimics the scenario where the backing file
+		 * is missing on disk.
+		 */
+		ComplexObsHandler failingHandler = new ComplexObsHandler() {
 
-		// Delete the backing file if it exists
-		String filename = complexObs.getValueComplex().split("\\|")[1];
-		File backingFile = new File(complexDir, filename);
-		if (backingFile.exists()) {
-			backingFile.delete();
+			@Override
+			public Obs saveObs(Obs obs) {
+				return obs; // Not used in this test
+			}
+
+			@Override
+			public Obs getObs(Obs obs, String view) {
+				return obs; // Not used in this test
+			}
+
+			@Override
+			public boolean purgeComplexData(Obs obs) {
+				return false; // Force failure
+			}
+
+			@Override
+			public String[] getSupportedViews() {
+				return new String[0]; // Not used in this test
+			}
+
+			@Override
+			public boolean supportsView(String view) {
+				return false; // Not used in this test
+			}
+		};
+		
+		try {
+			// Override the ImageHandler with our failing version for this test scenario.
+			os.registerHandler("ImageHandler", failingHandler);
+
+			// Retrieve the known complex obs from the XML dataset.
+			Obs complexObs = os.getObs(44);
+			assertNotNull(complexObs);
+			assertTrue(complexObs.isComplex());
+
+			Integer obsId = complexObs.getObsId();
+
+			// Ensure purgeComplexData() returns false
+			assertFalse(failingHandler.purgeComplexData(complexObs));
+
+			// After the fix, purgeObs should NOT throw even when purgeComplexData fails.
+			assertDoesNotThrow(() -> os.purgeObs(complexObs));
+
+			// The obs should still be deleted from the database.
+			assertNull(os.getObs(obsId));
+
+		} finally {
+			// Ensure global state is restored so other tests are not affected.
+			os.registerHandler("ImageHandler", originalHandler);
 		}
-		assertFalse(backingFile.exists(), "Backing complex file must not exist for this test.");
-
-		Integer obsId = complexObs.getObsId();
-
-		// Act → Should NOT throw even though file is missing
-		os.purgeObs(complexObs);
-
-		// Assert → Obs has been deleted from the DB
-		assertNull(os.getObs(obsId));
 	}
 
 
