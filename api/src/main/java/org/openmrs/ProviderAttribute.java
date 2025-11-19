@@ -9,12 +9,7 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
@@ -28,6 +23,10 @@ import org.openmrs.attribute.BaseAttribute;
 @Audited
 @Entity
 @Table(name="provider_attribute")
+@AssociationOverride(
+	name="owner",
+	joinColumns = @JoinColumn(name="provider_id", nullable = false)
+)
 public class ProviderAttribute extends BaseAttribute<ProviderAttributeType, Provider> implements Attribute<ProviderAttributeType, Provider> {
 	
 	@Id
