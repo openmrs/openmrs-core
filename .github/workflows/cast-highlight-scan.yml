@@ -34,5 +34,5 @@ jobs:
                                                    --companyId ${{ env.companyId }} \
                                                    --applicationId ${{ env.applicationId }} \
                                                    --serverUrl ${{ env.serverUrl }} \
-                                                   --ignoreDirectories ${{ env.ignoreDirectories }}
+                                                   --ignoreDirectories ${{ env.ignoreDirectories }} \
                                                    --technologies ${{ env.technologies }}
