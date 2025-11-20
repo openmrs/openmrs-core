@@ -1,4 +1,4 @@
-name: CAST Highlight Scan
+name: "🔎CAST Highlight Code Scan - Demo NBI"
 
 description: Run CAST Highlight scans on your code to get Software Intelligence insights (vulnerabilities, cloud maturity, etc.)
 
@@ -16,11 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: get company and application ids
+      - name: "🏭Get company and application ids"
         run: |
-          cat .github/workflows/Highlight.env >> $GITHUB_ENV
+          if [ -f .github/workflows/Highlight.env ]; then
+            cat .github/workflows/Highlight.env >> $GITHUB_ENV
+          else
+            echo "Highlight.env file not found!"
+            exit 1
+          fi
 
-      - name: scan project source code 
+      - name: "⛏️Scan repository source code with CAST Highlight Code Reader" 
         run: |
           docker run --rm -v $(pwd):/s -v /tmp:/w  casthighlight/cli \
                                                    --sourceDir /s \
@@ -30,3 +35,4 @@ jobs:
                                                    --applicationId ${{ env.applicationId }} \
                                                    --serverUrl ${{ env.serverUrl }} \
                                                    --ignoreDirectories ${{ env.ignoreDirectories }}
+                                                   --technologies ${{ env.technologies }}
