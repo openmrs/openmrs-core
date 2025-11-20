@@ -275,6 +275,14 @@
 			<artifactId>javax.mail</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.graalvm.js</groupId>
+			<artifactId>js</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.graalvm.js</groupId>
+			<artifactId>js-scriptengine</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<resources>

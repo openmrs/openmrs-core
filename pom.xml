@@ -610,6 +610,16 @@
 				<artifactId>postgresql</artifactId>
 				<version>1.21.3</version>
 			</dependency>
+			<dependency>
+				<groupId>org.graalvm.js</groupId>
+				<artifactId>js</artifactId>
+				<version>${graalJsVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.graalvm.js</groupId>
+				<artifactId>js-scriptengine</artifactId>
+				<version>${graalJsVersion}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -1240,6 +1250,7 @@
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.22.1</log4jVersion>
 		<owaspCsrfGuardVersion>4.2.1</owaspCsrfGuardVersion>
+		<graalJsVersion>20.3.17</graalJsVersion>
 
 		<customArgLineForTesting />
 
