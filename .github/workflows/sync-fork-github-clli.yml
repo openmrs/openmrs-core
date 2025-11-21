@@ -3,7 +3,7 @@ name: "🔄Syncing a fork branch with the GitHub CLI"
 on:
   workflow_dispatch: # Allows manual triggering
   schedule:
-    - cron: "0 23 * * 5"
+    - cron: "0 23 * * 5" # Every Friday at 11pm
 
 jobs:
   sync-with-gh-cli:
