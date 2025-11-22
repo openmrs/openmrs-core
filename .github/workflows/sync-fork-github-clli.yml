@@ -14,4 +14,4 @@ jobs:
       - name: Synchronize master Branch
         run: gh repo sync ReposForDemos/openmrs-core -b master
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN_4_ACTIONS }}
