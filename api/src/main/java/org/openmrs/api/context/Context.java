@@ -748,7 +748,7 @@ public class Context {
 			String errorMessage;
 			if (StringUtils.isNotBlank(privilege)) {
 				errorMessage = Context.getMessageSourceService().getMessage("error.privilegesRequired",
-						new Object[] { privilege }, null);
+						new Object[] { privilege }, Locale.getDefault());
 			} else {
 				//Should we even be here if the privilege is blank?
 				errorMessage = Context.getMessageSourceService().getMessage("error.privilegesRequiredNoArgs");
