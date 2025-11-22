@@ -12,7 +12,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Synchronize workflows
-        run: gh auth refresh -s workflow
+        run: gh auth refresh -s workflow -h ReposForDemos/openmrs-core
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Synchronize master Branch
