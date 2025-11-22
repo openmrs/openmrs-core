@@ -9,11 +9,6 @@
  */
 package org.openmrs.notification.impl;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -24,7 +19,6 @@ import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.Template;
-import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +27,17 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 @Service("messageService")
 @Transactional
 public class MessageServiceImpl implements MessageService {
 
 	private static final Logger log = LoggerFactory.getLogger(MessageServiceImpl.class);
-	
+
 	@Autowired
 	private TemplateDAO templateDAO;
 
@@ -46,11 +45,9 @@ public class MessageServiceImpl implements MessageService {
 
 	private MessagePreparator messagePreparator; // Prepares message for delivery
 
-    @Autowired
-    @Lazy
-    private MessageService self;
-
-
+	@Autowired
+	@Lazy
+	private MessageService self;
 
 	public void setTemplateDAO(TemplateDAO dao) {
 		this.templateDAO = dao;
@@ -63,6 +60,7 @@ public class MessageServiceImpl implements MessageService {
 	public MessageServiceImpl() {
 
 	}
+
 	/**
 	 * Set the message preparator.
 	 *
@@ -77,7 +75,6 @@ public class MessageServiceImpl implements MessageService {
 	public MessagePreparator getMessagePreparator() {
 		return this.messagePreparator;
 	}
-
 
 	/**
 	 * Set the message sender.
@@ -104,8 +101,7 @@ public class MessageServiceImpl implements MessageService {
 	public void sendMessage(Message message) throws MessageException {
 		try {
 			messageSender.send(message);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Message could not be sent due to " + e.getMessage(), e);
 			throw new MessageException(e);
 		}
@@ -154,7 +150,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	public Message createMessage(String recipients, String sender, String subject, String content, String attachment,
-	        String attachmentContentType, String attachmentFileName) throws MessageException {
+								 String attachmentContentType, String attachmentFileName) throws MessageException {
 		Message message = new Message();
 		message.setRecipients(recipients);
 		message.setSender(sender);
@@ -232,7 +228,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	/**
-         * Sends a message to a group of users identifier by their role.
+	 * Sends a message to a group of users identifier by their role.
 	 */
 	@Override
 	public void sendMessage(Message message, Role role) throws MessageException {
@@ -275,8 +271,7 @@ public class MessageServiceImpl implements MessageService {
 			template.setData(data);
 			return self.prepareMessage(template);
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new MessageException("Could not prepare message with template " + templateName, e);
 		}
 	}
@@ -291,6 +286,7 @@ public class MessageServiceImpl implements MessageService {
 	public List getAllTemplates() throws MessageException {
 		return templateDAO.getTemplates();
 	}
+
 	/**
 	 * Get template by identifier.
 	 *

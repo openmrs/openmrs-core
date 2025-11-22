@@ -7,120 +7,103 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-
 package org.openmrs.notification;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ServiceContext;
-import org.openmrs.api.db.TemplateDAO;
-import org.openmrs.api.UserService;
-import org.openmrs.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import java.lang.reflect.Field;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.openmrs.Role;
+import org.openmrs.User;
+import org.openmrs.api.UserService;
+import org.openmrs.api.db.TemplateDAO;
 import org.openmrs.notification.impl.MessageServiceImpl;
 import org.openmrs.notification.mail.MailMessageSender;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.lenient;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
 
+/**
+ * Unit tests for the MessageService.
+ */
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
 public class MessageServiceTest extends BaseContextSensitiveTest {
 
+
 	@Mock
-	private MessageSender mockSender;
+	private MailMessageSender mailMessageSender;
 
 	@InjectMocks
-    private MessageServiceImpl messageService;
+	private MessageServiceImpl messageService;
 
+	@Mock
 	private UserService userService;
-    private List<User> mockedUserList;
 
-	private UserService originalUserService;
+	private List<User> mockedUserList;
+
+	@Mock
 	private MessagePreparator messagePreparator;
 
+	@Mock
 	private TemplateDAO mockTemplateDAO;
 
-	private MessagePreparator mockMessagePreparator;
+	/**
+	 * Initializes mocks and test data before each test method is run.
+	 * It sets up the message service with mock dependencies and configures the
+	 * test user context and template DAO.
+	 */
+	@BeforeEach
+	public void runBeforeEachTest() {
+		MockitoAnnotations.openMocks(this);
+		messageService.setMessageSender(mailMessageSender);
 
-	private Object mockMailSender;
-
-    /**
-     * Initializes mocks and test data before each test method is run.
-     * It sets up the message service with mock dependencies and configures the
-     * test user context and template DAO.
-     */
-@BeforeEach
-public void runBeforeEachTest() {
-    MockitoAnnotations.openMocks(this);
-    mockSender = mock(MessageSender.class);
-	messagePreparator = mock(MessagePreparator.class);
-    mockTemplateDAO = mock(TemplateDAO.class);
-
-    messageService = new MessageServiceImpl();
-    messageService.setMessageSender(mockSender);
-	messageService.setMessagePreparator(messagePreparator);
-	((MessageServiceImpl) messageService).setTemplateDAO(mockTemplateDAO);
-
-// ✅ Set 'self' via reflection without modifying production code
-try {
-	Field selfField = MessageServiceImpl.class.getDeclaredField("self");
-    selfField.setAccessible(true);
-    selfField.set(messageService, messageService);
- } catch (NoSuchFieldException | IllegalAccessException e) {
-     throw new RuntimeException("Failed to set 'self' field via reflection", e);
- }
-    // ✅ Store the original service (defensive)
-    originalUserService = Context.getService(UserService.class);
-
-    // ✅ Mock only for this test
-    userService = mock(UserService.class);
-   ServiceContext mockServiceContext = mock(ServiceContext.class);
-	Context context = new Context();
-	context.setServiceContext(mockServiceContext);
-	
-	
-	mockedUserList = new ArrayList<>();
-    User user1 = new User();
-    user1.setEmail("user@example.com");
-    mockedUserList.add(user1);
-
-      lenient().when(userService.getUsers(any(), anyList(), anyBoolean()))
-    .thenReturn(mockedUserList);
+		messageService = new MessageServiceImpl();
+		messageService.setMessageSender(mailMessageSender);
+		messageService.setMessagePreparator(messagePreparator);
+		messageService.setTemplateDAO(mockTemplateDAO);
 
 
-    executeDataSet("org/openmrs/notification/include/MessageServiceTest-initial.xml");
-}
+		mockedUserList = new ArrayList<>();
+		User user1 = new User();
+		user1.setEmail("user@example.com");
+		mockedUserList.add(user1);
 
-    /**
-     * Verifies that a message is correctly created with all its fields populated.
-     *
-     * @throws MessageException if message creation fails
-     */
+		lenient().when(userService.getUsers(any(), anyList(), anyBoolean()))
+			.thenReturn(mockedUserList);
+
+
+		executeDataSet("org/openmrs/notification/include/MessageServiceTest-initial.xml");
+	}
+
+	/**
+	 * Verifies that a message is correctly created with all its fields populated.
+	 *
+	 * @throws MessageException if message creation fails
+	 */
 	@Test
-	public void createMessage_shouldCreateMessageWithAllFields() throws MessageException {
+	public void createMessage_shouldCreateMessage() throws MessageException {
 		// Arrange
 		String recipients = "foo@bar.com, marco@polo.com";
 		String sender = "me@mydomain.com";
@@ -145,156 +128,305 @@ try {
 		assertEquals(attachmentFileName, message.getAttachmentFileName());
 	}
 
-    /**
-     * Tests that the message sender successfully sends a basic message.
-     *
-     * @throws Exception if sending fails
-     */
-    @Test
-    public void sendMessage_shouldSendMessageSuccessfully() throws Exception {
-        // Arrange
-        Message message = new Message();
-        message.setRecipients("recipient@example.com");
-        message.setSender("sender@example.com");
-        message.setSubject("Test Subject");
-        message.setContent("Test Content");
-
-        // Act
-        messageService.sendMessage(message);
-
-        // Assert
-        verify(mockSender, times(1)).send(message);
-    }
-
-    /**
-     * Tests sending a message to a user and verifies that the mock sender is invoked.
-     *
-     * @throws Exception if sending fails
-     */
 	@Test
-    public void sendMessage_shouldSendMessageToUser() throws Exception {
-       // Arrange
-      Message message = new Message();
-      message.setRecipients("recipient@example.com");
-      message.setSender("sender@example.com");
-      message.setSubject("Hello");
-      message.setContent("Test message");
+	public void createMessage_shouldCreateMessageWithAllFields() throws MessageException {
+		Message message = messageService.createMessage(
+			"foo@bar.com",
+			"me@domain.com",
+			"Subject",
+			"Content",
+			"filedata",
+			"text/plain",
+			"a.txt"
+		);
 
-    // Act
-    messageService.sendMessage(message);
+		assertNotNull(message);
+		assertEquals("foo@bar.com", message.getRecipients());
+		assertEquals("me@domain.com", message.getSender());
+		assertEquals("Subject", message.getSubject());
+		assertEquals("Content", message.getContent());
+		assertEquals("filedata", message.getAttachment());
+		assertEquals("text/plain", message.getAttachmentContentType());
+		assertEquals("a.txt", message.getAttachmentFileName());
+	}
 
-    // Assert: verify that the mock sender was used
-    verify(mockSender, times(1)).send(message);
-}
-
- /**
-     * Ensures that the message service can prepare a message from a given template.
-     *
-     * @throws Exception if preparation fails
-     */
-@Test
-public void prepareMessage_shouldPrepareMessageFromTemplate() throws Exception {
-    Template template = new Template();
-
-    when(messagePreparator.prepare(any(Template.class)))
-         .thenAnswer(invocation -> new Message());
-
-
-    template.setName("Test Template");
-
-    Message expectedMessage = new Message();
-    expectedMessage.setRecipients("user@example.com");
-
-    // ✅ Tell the mock what to return
-    when(messagePreparator.prepare(template)).thenReturn(expectedMessage);
-
-    Message message = messageService.prepareMessage(template);
-    assertNotNull(message);
-    assertEquals("user@example.com", message.getRecipients());
-}
-
-   /**
-     * Verifies that template variables are substituted correctly when preparing a message
-     * with dynamic data.
-     *
-     * @throws MessageException if message preparation fails
-     */
-@Test
-public void prepareMessageWithData_shouldPrepareMessageWithVariableSubstitution() throws MessageException {
-    // Arrange
-    Template template = new Template();
-    template.setName("Test Template");
-    template.setContent("Hello, $user");
-
-
-
-    when(mockTemplateDAO.getTemplatesByName("Test Template"))
-        .thenReturn(Collections.singletonList(template));
-
-    when(messagePreparator.prepare(any(Template.class)))
-
-        .thenAnswer(invocation -> {
-            Template t = invocation.getArgument(0);
-            String content = t.getContent().replace("$user", (String) t.getData().get("user"));
-            Message m = new Message();
-            m.setContent(content);
-            return m;
-        });
-
-    Map<String, String> data = new HashMap<>();
-    data.put("user", "John");
-	template.setData(data);
-
-    // Act
-    Message message = messageService.prepareMessage("Test Template", data);
-
-    // Assert
-    assertNotNull(message);
-    assertEquals("Hello, John", message.getContent());
-}
-
-     /**
-     * Tests that the message service correctly retrieves a template by its ID.
-     *
-     * @throws MessageException if retrieval fails
-     */
-	 @Test
-public void getTemplate_shouldReturnTemplateById() throws MessageException {
-    // Arrange
-    Integer templateId = 1;
-    Template expectedTemplate = new Template();
-    expectedTemplate.setId(templateId);
-    expectedTemplate.setName("Test Template");
-
-    when(mockTemplateDAO.getTemplate(templateId)).thenReturn(expectedTemplate);
-
-    // Act
-    Template template = messageService.getTemplate(templateId);
-
-    // Assert
-    assertNotNull(template);
-    assertEquals(templateId, template.getId());
-}
-
-     /**
-     * Ensures that templates can be retrieved by name using the message service.
-     *
-     * @throws MessageException if retrieval fails
-     */
 	@Test
-public void getTemplatesByName_shouldReturnTemplatesByName() throws MessageException {
-    // Arrange
-    Template template = new Template();
-    template.setName("Welcome Template");
+	public void createMessage_shouldCreateMessageWithRecipientsSenderSubjectAndContent() throws MessageException {
+		Message msg = messageService.createMessage("foo@bar.com", "me@domain.com", "Subject", "Content");
 
-    when(mockTemplateDAO.getTemplatesByName("Welcome Template"))
-        .thenReturn(Collections.singletonList(template));
+		assertNotNull(msg);
+		assertEquals("foo@bar.com", msg.getRecipients());
+		assertEquals("me@domain.com", msg.getSender());
+		assertEquals("Subject", msg.getSubject());
+		assertEquals("Content", msg.getContent());
 
-    // Act
-    List<Template> templates = messageService.getTemplatesByName("Welcome Template");
+		// these should be null because this overload does not accept attachments
+		assertNull(msg.getAttachment());
+		assertNull(msg.getAttachmentContentType());
+		assertNull(msg.getAttachmentFileName());
+	}
 
-    // Assert
-    assertEquals(1, templates.size());
-    assertEquals("Welcome Template", templates.get(0).getName());
-  }
+	@Test
+	public void createMessage_shouldCreateMessageWithSenderSubjectAndContent() throws MessageException {
+		Message msg = messageService.createMessage("me@domain.com", "Subject", "Content");
+
+		assertNotNull(msg);
+		assertEquals("me@domain.com", msg.getSender());
+		assertEquals("Subject", msg.getSubject());
+		assertEquals("Content", msg.getContent());
+
+		// defaults
+		assertNull(msg.getRecipients());
+		assertNull(msg.getAttachment());
+	}
+
+	@Test
+	public void createMessage_shouldCreateMessageWithSubjectAndContent() throws MessageException {
+		Message msg = messageService.createMessage("Subject", "Content");
+
+		assertNotNull(msg);
+		assertEquals("Subject", msg.getSubject());
+		assertEquals("Content", msg.getContent());
+
+		// defaults
+		assertNull(msg.getSender());
+		assertNull(msg.getRecipients());
+		assertNull(msg.getAttachment());
+	}
+
+	/**
+	 * @throws MessageException
+	 * @see MessageService#sendMessage(Message)
+	 */
+	@Test
+	public void sendMessage_shouldSendMessageSuccessfully() throws MessageException {
+		// Arrange
+		Message message = new Message();
+		message.setRecipients("recipient@example.com");
+		message.setSender("sender@example.com");
+		message.setSubject("Test Subject");
+		message.setContent("Test Content");
+
+		// Act
+		messageService.sendMessage(message);
+
+		// Assert
+		verify(mailMessageSender, times(1)).send(message);
+	}
+
+	/**
+	 * Tests sending a message to a user and verifies that the mock sender is invoked.
+	 *
+	 * @throws Exception if sending fails
+	 */
+	@Test
+	public void sendMessage_shouldSendMessageToRecipientId() throws MessageException {
+		// Arrange
+		Message message = new Message();
+		message.setSender("sender@example.com");
+		message.setSubject("Test Subject");
+		message.setContent("Test Content");
+
+		Integer recipientId = 5;
+		User mockUser = new User();
+		mockUser.setUserId(recipientId);
+
+		when(userService.getUser(recipientId)).thenReturn(mockUser);
+
+		// Act
+		messageService.sendMessage(message, recipientId);
+
+		// Assert
+		verify(mailMessageSender, times(1)).send(message);
+		verify(userService).getUser(recipientId);
+	}
+
+	@Test
+	public void sendMessage_shouldSendMessageToUserObject() throws MessageException {
+		// Arrange
+		User mockUser = new User();
+		mockUser.setUserId(10);
+
+		Message message = new Message();
+		message.setSender("sender@example.com");
+		message.setSubject("Hello User");
+		message.setContent("Test message to user");
+
+		// Act
+		messageService.sendMessage(message, mockUser);
+
+		// Assert
+		verify(mailMessageSender, times(1)).send(message);
+	}
+
+	@Test
+	public void sendMessage_shouldSendMessageToMultipleUsers() throws MessageException {
+		// Arrange
+		User user1 = new User();
+		user1.setUserId(1);
+		User user2 = new User();
+		user2.setUserId(2);
+
+		Collection<User> users = Arrays.asList(user1, user2);
+
+		Message message = new Message();
+		message.setSender("sender@example.com");
+		message.setSubject("Group Message");
+		message.setContent("Test multicast");
+
+		// Act
+		messageService.sendMessage(message, users);
+
+		// Assert
+		verify(mailMessageSender, times(1)).send(message);
+	}
+
+	@Test
+	public void sendMessage_shouldSendToRoleName() throws MessageException {
+		// Arrange
+		String roleName = "Provider";
+
+		Role mockRole = new Role(roleName);
+
+		Message message = new Message();
+		message.setSender("sender@example.com");
+		message.setSubject("Role Message");
+		message.setContent("Message to role users");
+
+		when(userService.getRole(roleName)).thenReturn(mockRole);
+
+		// Act
+		messageService.sendMessage(message, roleName);
+
+		// Assert
+		verify(mailMessageSender, times(1)).send(message);
+		verify(userService).getRole(roleName);
+	}
+
+	@Test
+	public void sendMessage_shouldSendToRoleObject() throws MessageException {
+		// Arrange
+		Role mockRole = new Role("Clinician");
+
+		Message message = new Message();
+		message.setSender("sender@example.com");
+		message.setSubject("Role Object Message");
+		message.setContent("Test for role object");
+
+		// Act
+		messageService.sendMessage(message, mockRole);
+
+		// Assert
+		verify(mailMessageSender, times(1)).send(message);
+	}
+
+
+	/**
+	 * Ensures that the message service can prepare a message from a given template.
+	 *
+	 * @throws Exception if preparation fails
+	 */
+	@Test
+	public void prepareMessage_shouldDelegateToMessagePreparator() throws MessageException {
+		// Arrange
+		Template template = new Template();
+		template.setName("Test Template");
+
+		Message expectedMessage = new Message();
+		expectedMessage.setRecipients("user@example.com");
+
+		when(messagePreparator.prepare(template)).thenReturn(expectedMessage);
+
+		// Act
+		Message actualMessage = messageService.prepareMessage(template);
+
+		// Assert
+		assertNotNull(actualMessage);
+		assertEquals("user@example.com", actualMessage.getRecipients());
+		verify(messagePreparator, times(1)).prepare(template);
+	}
+
+	/**
+	 * Verifies that template variables are substituted correctly when preparing a message
+	 * with dynamic data.
+	 *
+	 * @throws MessageException if message preparation fails
+	 */
+	@Test
+	public void prepareMessageWithData_shouldPrepareMessageWithVariableSubstitution() throws MessageException {
+		// Arrange
+		Template template = new Template();
+		template.setName("Test Template");
+		template.setContent("Hello, $user");
+
+
+		when(mockTemplateDAO.getTemplatesByName("Test Template"))
+			.thenReturn(Collections.singletonList(template));
+
+		when(messagePreparator.prepare(any(Template.class)))
+
+			.thenAnswer(invocation -> {
+				Template t = invocation.getArgument(0);
+				String content = t.getContent().replace("$user", (String) t.getData().get("user"));
+				Message m = new Message();
+				m.setContent(content);
+				return m;
+			});
+
+		Map<String, String> data = new HashMap<>();
+		data.put("user", "John");
+		template.setData(data);
+
+		// Act
+		Message message = messageService.prepareMessage("Test Template", data);
+
+		// Assert
+		assertNotNull(message);
+		assertEquals("Hello, John", message.getContent());
+	}
+
+	/**
+	 * Tests that the message service correctly retrieves a template by its ID.
+	 *
+	 * @throws MessageException if retrieval fails
+	 */
+	@Test
+	public void getTemplate_shouldReturnTemplateById() throws MessageException {
+		// Arrange
+		Integer templateId = 1;
+		Template expectedTemplate = new Template();
+		expectedTemplate.setId(templateId);
+		expectedTemplate.setName("Test Template");
+
+		when(mockTemplateDAO.getTemplate(templateId)).thenReturn(expectedTemplate);
+
+		// Act
+		Template template = messageService.getTemplate(templateId);
+
+		// Assert
+		assertNotNull(template);
+		assertEquals(templateId, template.getId());
+	}
+
+	/**
+	 * Ensures that templates can be retrieved by name using the message service.
+	 *
+	 * @throws MessageException if retrieval fails
+	 */
+	@Test
+	public void getTemplatesByName_shouldReturnTemplatesByName() throws MessageException {
+		// Arrange
+		Template template = new Template();
+		template.setName("Welcome Template");
+
+		when(mockTemplateDAO.getTemplatesByName("Welcome Template"))
+			.thenReturn(Collections.singletonList(template));
+
+		// Act
+		List<Template> templates = messageService.getTemplatesByName("Welcome Template");
+
+		// Assert
+		assertEquals(1, templates.size());
+		assertEquals("Welcome Template", templates.get(0).getName());
+	}
 }
