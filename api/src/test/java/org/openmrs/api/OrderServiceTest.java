@@ -62,6 +62,7 @@ import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.OrderSet;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
@@ -72,6 +73,7 @@ import org.openmrs.Program;
 import org.openmrs.ProgramAttributeType;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderRole;
 import org.openmrs.Relationship;
 import org.openmrs.SimpleDosingInstructions;
@@ -2762,6 +2764,53 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
+	 */
+	@Test
+	public void getOrderTypesByClassName_shouldReturnOrderTypesForTheGivenJavaClassName() {
+		List<OrderType> drugOrderTypes = orderService.getOrderTypesByClassName(DrugOrder.class.getName(), false);
+
+		assertNotNull(drugOrderTypes);
+		assertEquals(1, drugOrderTypes.size());
+		assertEquals("Drug order", drugOrderTypes.get(0).getName());
+
+		List<OrderType> testOrderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getName(), false);
+
+		assertNotNull(testOrderTypes);
+		assertEquals(2, testOrderTypes.size());
+		assertEquals("Test order", testOrderTypes.get(0).getName());
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean, boolean)
+	 */
+	@Test
+	public void getOrderTypesByClassName_shouldReturnOrderTypesForTestOrderAndItsSubclasses() {
+		// create and save a new OrderType for MyTestOrder
+		OrderType myTestOrderType = new OrderType();
+		myTestOrderType.setName("My Test Order");
+		myTestOrderType.setJavaClassName(MyTestOrder.class.getName());
+		Context.getOrderService().saveOrderType(myTestOrderType);
+		
+		List<OrderType> polymorphicTestOrderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getName(), true, false);
+		
+		assertNotNull(polymorphicTestOrderTypes);
+
+		// should include the original TestOrder types + the new subclass
+		assertEquals(3, polymorphicTestOrderTypes.size());
+		assertTrue(polymorphicTestOrderTypes.stream()
+			.anyMatch(ot -> MyTestOrder.class.getName().equals(ot.getJavaClassName())));
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
+	 */
+	@Test
+	public void getOrderTypesByClassName_shouldThrowAPIExceptionForNullJavaClassName() {
+		assertThrows(APIException.class, () -> orderService.getOrderTypesByClassName(null, false));
+	}
+
+	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
@@ -2855,6 +2904,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(DrugReferenceMap.class)
 				.addAnnotatedClass(AlertRecipient.class)
 				.addAnnotatedClass(PatientIdentifierType.class)
+			    .addAnnotatedClass(PatientIdentifier.class)
 				.addAnnotatedClass(ProgramAttributeType.class)
 				.addAnnotatedClass(HL7InError.class)
 				.addAnnotatedClass(OrderType.class)
@@ -2887,6 +2937,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(Privilege.class)
 				.addAnnotatedClass(LoginCredential.class)
 				.addAnnotatedClass(ConceptDatatype.class)
+				.addAnnotatedClass(ProviderAttribute.class)
 				.getMetadataBuilder().build();
 
 
@@ -4419,4 +4470,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	private Date truncateToSeconds(Date date) {
 		return DateUtils.truncate(date, Calendar.SECOND);
 	}
+
+	// Test-only subclass
+	public static class MyTestOrder extends TestOrder { }
 }
