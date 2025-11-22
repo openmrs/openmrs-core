@@ -72,7 +72,6 @@
 		
 		<!-- Provider -->
 		<mapping resource="org/openmrs/api/db/hibernate/Provider.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ProviderAttribute.hbm.xml" />
 		
 		<!-- These mappings are required because of references in Obs & Concept -->
 		<mapping class="org.openmrs.ObsReferenceRange"/>

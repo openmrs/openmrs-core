@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -43,6 +44,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
@@ -1389,7 +1391,76 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		
 	}
-	
+
+	@Test
+	public void purgeObs_shouldStillDeleteObsEvenIfPurgeComplexDataFails() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+
+		ObsService os = Context.getObsService();
+
+		// Store the original handler so we can restore it after the test.
+		ComplexObsHandler originalHandler = os.getHandler("ImageHandler");
+
+		/**
+		 * Define a custom handler that simulates failure by always returning false
+		 * from purgeComplexData(). This mimics the scenario where the backing file
+		 * is missing on disk.
+		 */
+		ComplexObsHandler failingHandler = new ComplexObsHandler() {
+
+			@Override
+			public Obs saveObs(Obs obs) {
+				return obs; // Not used in this test
+			}
+
+			@Override
+			public Obs getObs(Obs obs, String view) {
+				return obs; // Not used in this test
+			}
+
+			@Override
+			public boolean purgeComplexData(Obs obs) {
+				return false; // Force failure
+			}
+
+			@Override
+			public String[] getSupportedViews() {
+				return new String[0]; // Not used in this test
+			}
+
+			@Override
+			public boolean supportsView(String view) {
+				return false; // Not used in this test
+			}
+		};
+		
+		try {
+			// Override the ImageHandler with our failing version for this test scenario.
+			os.registerHandler("ImageHandler", failingHandler);
+
+			// Retrieve the known complex obs from the XML dataset.
+			Obs complexObs = os.getObs(44);
+			assertNotNull(complexObs);
+			assertTrue(complexObs.isComplex());
+
+			Integer obsId = complexObs.getObsId();
+
+			// Ensure purgeComplexData() returns false
+			assertFalse(failingHandler.purgeComplexData(complexObs));
+
+			// After the fix, purgeObs should NOT throw even when purgeComplexData fails.
+			assertDoesNotThrow(() -> os.purgeObs(complexObs));
+
+			// The obs should still be deleted from the database.
+			assertNull(os.getObs(obsId));
+
+		} finally {
+			// Ensure global state is restored so other tests are not affected.
+			os.registerHandler("ImageHandler", originalHandler);
+		}
+	}
+
+
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
 	 */

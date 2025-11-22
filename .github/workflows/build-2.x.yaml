@@ -28,7 +28,7 @@ jobs:
           - 8
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup JDK
         uses: actions/setup-java@v5
         with:
