@@ -724,7 +724,35 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
 	public OrderType getOrderTypeByConcept(Concept concept);
-	
+
+	/**
+	 * Get order types by java class name
+	 *
+	 * @param javaClassName the class name used to get the order types
+	 * @param includeRetired boolean flag for include retired or not   
+	 * @since 3.0.0
+	 * @return return the order types associated with given class name
+	 * <strong>Should</strong> find order types with the specified class name
+	 * <strong>Should</strong> get include retired order types if includeRetired is set to true
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeRetired) throws APIException;
+
+	/**
+	 * Get order types by java class name
+	 * 
+	 * @param javaClassName the class name used to get the order types
+	 * @param includeSubclasses boolean flag for include subclasses or not
+	 * @param includeRetired boolean flag for include retired or not
+	 * @since 3.0.0
+	 * @return return the order types associated with given class name
+	 * <strong>Should</strong> find order types with the specified class name
+	 * <strong>Should</strong> get include order types subclasses if includeSubclasses is set to true
+	 * <strong>Should</strong> get include retired order types if includeRetired is set to true
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeSubclasses, boolean includeRetired) throws APIException;
+
 	/**
 	 * Gets the possible drug routes, i.e the set members for the concept that matches the uuid
 	 * specified as the value for the global property

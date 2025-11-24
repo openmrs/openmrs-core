@@ -67,16 +67,11 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 		ComplexData complexData = null;
 		
 		if (ComplexObsHandler.TEXT_VIEW.equals(view) || ComplexObsHandler.RAW_VIEW.equals(view)) {
-			// to handle problem with downloading/saving files with blank spaces or commas in their names
-			// also need to remove the "file" text appended to the end of the file name
-			String[] names = obs.getValueComplex().split("\\|");
-			String originalFilename = names[0];
-			originalFilename = originalFilename.replaceAll(",", "")
-				.replaceAll(" ", "").replaceAll("file$", "");
+			String filename = parseFilename(obs, "file");
 			
 			try (InputStream is = storageService.getData(key)){
-				complexData = ComplexObsHandler.RAW_VIEW.equals(view) ? new ComplexData(originalFilename, 
-					IOUtils.toByteArray(is)) : new ComplexData(originalFilename, 
+				complexData = ComplexObsHandler.RAW_VIEW.equals(view) ? new ComplexData(filename, 
+					IOUtils.toByteArray(is)) : new ComplexData(filename, 
 					IOUtils.toString(is, StandardCharsets.UTF_8));
 			}
 			catch (IOException e) {
