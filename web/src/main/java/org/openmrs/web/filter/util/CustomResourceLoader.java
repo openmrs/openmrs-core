@@ -12,9 +12,12 @@ package org.openmrs.web.filter.util;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Locale.LanguageRange;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -66,6 +69,19 @@ public class CustomResourceLoader {
 		catch (IOException ex) {
 			log.error(ex.getMessage(), ex);
 		}
+	}
+
+	/**
+	 * Protected constructor for testing purposes that allows injecting a specific
+	 * set of available locales.
+	 * This enables unit testing of locale matching logic without file system
+	 * dependencies.
+	 *
+	 * @param availableLocales the set of locales to be used as available locales
+	 */
+	protected CustomResourceLoader(Set<Locale> availableLocales) {
+		this.resources = new HashMap<>();
+		this.availablelocales = availableLocales != null ? availableLocales : new HashSet<>();
 	}
 	
 	/**
@@ -129,5 +145,42 @@ public class CustomResourceLoader {
 	 */
 	public Set<Locale> getAvailablelocales() {
 		return availablelocales;
+	}
+
+	/**
+	 * Finds the best matching locale from the available locales based on the
+	 * Accept-Language header.
+	 * Uses RFC 4647 language range matching to find the best match.
+	 *
+	 * @param acceptLanguageHeader the Accept-Language header value from the HTTP
+	 *                             request
+	 *                             (e.g., "fr-BE,fr;q=0.9,en;q=0.8")
+	 * @return the best matching locale from available locales, or Locale.ENGLISH if
+	 *         no match is found
+	 *         or if the header is null/empty
+	 */
+	public Locale findBestMatchLocale(String acceptLanguageHeader) {
+		// Return default locale if header is null or empty
+		if (acceptLanguageHeader == null || acceptLanguageHeader.trim().isEmpty()) {
+			return Locale.ENGLISH;
+		}
+
+		try {
+			// Parse the Accept-Language header into language ranges
+			List<LanguageRange> languageRanges = LanguageRange.parse(acceptLanguageHeader);
+
+			// Convert available locales set to list for Locale.lookup()
+			List<Locale> availableLocalesList = new ArrayList<>(getAvailablelocales());
+
+			// Use RFC 4647 lookup to find the best match
+			Locale matchedLocale = Locale.lookup(languageRanges, availableLocalesList);
+
+			// Return matched locale or default to English if no match found
+			return matchedLocale != null ? matchedLocale : Locale.ENGLISH;
+		} catch (IllegalArgumentException ex) {
+			// If parsing fails (malformed header), log and return default
+			log.warn("Failed to parse Accept-Language header: {}", acceptLanguageHeader, ex);
+			return Locale.ENGLISH;
+		}
 	}
 }
