@@ -135,7 +135,6 @@ import java.util.concurrent.Future;
  */
 public class Context {
 
-	private static final Logger log = LoggerFactory.getLogger(Context.class);
 
 	// Global resources
 	private static ContextDAO contextDAO;
@@ -153,6 +152,8 @@ public class Context {
 	private static Properties configProperties = new Properties();
 
 	private static AuthenticationScheme authenticationScheme;
+
+	private static final Logger log = LoggerFactory.getLogger(Context.class);
 
 	/**
 	 * Default public constructor
@@ -273,13 +274,10 @@ public class Context {
 		if (serviceContext == null) {
 			synchronized (Context.class) {
 				if (serviceContext == null) {
-					log.info("Creating new service context");
 					serviceContext = ServiceContext.getInstance();
 				}
 			}
 		}
-		log.trace("serviceContext: {}", serviceContext);
-
 		return ServiceContext.getInstance();
 	}
 
@@ -384,11 +382,10 @@ public class Context {
 	 * @return copy of the runtime properties
 	 */
 	public static Properties getRuntimeProperties() {
-		log.trace("getting runtime properties. size: {}", runtimeProperties.size());
-
 		Properties props = new Properties();
-		props.putAll(runtimeProperties);
-
+		if( runtimeProperties != null ) {
+			props.putAll(runtimeProperties);
+		}
 		return props;
 	}
 
