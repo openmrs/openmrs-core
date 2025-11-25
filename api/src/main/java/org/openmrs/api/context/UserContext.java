@@ -225,6 +225,35 @@ public class UserContext implements Serializable {
 	}
 	
 	/**
+	 * Gives the given privilege to all calls to hasPrivilege. This method was visualized as being
+	 * used as follows (try/finally is important):
+	 *
+	 * <pre>
+	 * try {
+	 *   Context.addProxyPrivilege(&quot;AAA&quot;);
+	 *   Context.get*Service().methodRequiringAAAPrivilege();
+	 * }
+	 * finally {
+	 *   Context.removeProxyPrivilege(&quot;AAA&quot;);
+	 * }
+	 * </pre>
+	 *
+	 * @param privilege to give to users
+	 */
+	public void addProxyPrivilege(String privilege) {
+		addProxyPrivilege(new String[] {privilege});
+	}
+	
+	/**
+	 * Will remove one instance of privilege from the privileges that are currently proxied
+	 *
+	 * @param privilege Privilege to remove in string form
+	 */
+	public void removeProxyPrivilege(String privilege) {
+		removeProxyPrivilege(new String[] {privilege});
+	}
+	
+	/**
 	 * Adds one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
 	 * regard as available regardless of whether the user would otherwise have the privilege.
 	 * <p/>
