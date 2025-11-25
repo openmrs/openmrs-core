@@ -75,8 +75,6 @@
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
 		
-		<!-- Mapping for ConceptStopWord domain switched to annotations -->
-		<mapping class="org.openmrs.ConceptStopWord"/>
 	</session-factory>
 
 </hibernate-configuration>
