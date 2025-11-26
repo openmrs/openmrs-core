@@ -42,10 +42,10 @@ public class ConceptStopWord extends BaseOpenmrsObject {
 	@Column(name = "concept_stop_word_id", nullable = false)
 	private Integer conceptStopWordId;
 
-	@Column(name = "word", nullable = false)
+	@Column(name = "word", nullable = false, length = 50)
 	private String value;
 
-	@Column(name = "locale", nullable = false)
+	@Column(name = "locale", nullable = false, length = 20)
 	private Locale locale;
 	
 	// Constructors
