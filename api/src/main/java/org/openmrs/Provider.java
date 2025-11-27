@@ -9,31 +9,66 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import org.hibernate.envers.Audited;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents a person who may provide care to a patient during an encounter
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "provider")
 @Audited
+@AttributeOverride(name = "id", column = @Column(name = "provider_id"))
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	private static final Logger log = LoggerFactory.getLogger(Provider.class);
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "provider_id")
 	private Integer providerId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "person_id")
 	private Person person;
-	
+
+	@Column(name = "name", length = 255)
+	private String name;
+
+	@Column(name = "identifier", length = 255)
 	private String identifier;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "role_id")
 	private Concept role;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "speciality_id")
 	private Concept speciality;
 
+	@ManyToOne
+	@JoinColumn(name = "provider_role_id")
 	private ProviderRole providerRole;
+
+	@OneToMany(mappedBy = "provider")
+	private Set<ProviderAttribute> attributes = new HashSet<>();
 	
 	public Provider() {
 	}
@@ -68,8 +103,19 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	/**
 	 * @return the providerId
 	 */
+
+
 	public Integer getProviderId() {
 		return providerId;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Transient
+	public String getMappedName() {
+		return this.name;
 	}
 	
 	/**
@@ -118,6 +164,14 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	 */
 	public Concept getRole() {
 		return role;
+	}
+
+	public Set<ProviderAttribute> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Set<ProviderAttribute> attributes) {
+		this.attributes = attributes;
 	}
 	
 	/**
@@ -172,6 +226,7 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	 */
 	
 	@Override
+	@Transient
 	public String getName() {
 		if (getPerson() != null && getPerson().getPersonName() != null) {
 			return getPerson().getPersonName().getFullName();
