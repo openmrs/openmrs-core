@@ -42,7 +42,7 @@ public class DatabaseDetective {
 		Connection connection = null;
 		
 		try {
-			DatabaseUtil.loadDatabaseDriver(props.getProperty(CONNECTION_URL), props.getProperty(CONNECTION_DRIVER_CLASS));
+			DatabaseUtil.loadDatabaseDriver(props.getProperty(CONNECTION_URL), props.getProperty(CONNECTION_DRIVER_CLASS,null));
 			
 			connection = DriverManager.getConnection(props.getProperty(CONNECTION_URL),
 			    props.getProperty(CONNECTION_USERNAME), props.getProperty(CONNECTION_PASSWORD));
