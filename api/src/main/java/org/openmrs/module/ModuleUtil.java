@@ -858,7 +858,7 @@ public class ModuleUtil {
 					module.getModuleActivator().willRefreshContext();
 				}
 			}
-			catch (Exception e) {
+			catch (Error e) {
 				log.warn("Unable to call willRefreshContext() method in the module's activator", e);
 			}
 		}
@@ -933,14 +933,14 @@ public class ModuleUtil {
 							}
 							log.debug("Done running module started: {}", module.getModuleId());
 						}
-						catch (Exception e) {
+						catch (Error e) {
 							log.warn("Unable to invoke started() method on the module's activator", e);
 							ModuleFactory.stopModule(module, true, true);
 						}
 					}
 					
 				}
-				catch (Exception e) {
+				catch (Error e) {
 					log.warn("Unable to invoke method on the module's activator ", e);
 				}
 			}
