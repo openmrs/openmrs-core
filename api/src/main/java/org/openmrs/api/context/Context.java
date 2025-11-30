@@ -61,6 +61,7 @@ import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.LuceneIndexUpgrader;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -1016,6 +1017,16 @@ public class Context {
 		// this should be first in the startup routines so that the application
 		// data directory can be set from the runtime properties
 		OpenmrsUtil.startup(props);
+
+		// Upgrade Lucene indexes if needed before any database operations
+		// This addresses TRUNK-5731 by ensuring old Lucene410 indexes are upgraded
+		// before Hibernate Search tries to read them
+		try {
+			LuceneIndexUpgrader.upgradeLuceneIndexesIfNeeded(props);
+		} catch (Exception e) {
+			log.warn("Failed to upgrade Lucene indexes during startup: {}", e.getMessage());
+			// Don't fail startup for Lucene index upgrade issues, but log the warning
+		}
 
 		openSession();
 		clearSession();
