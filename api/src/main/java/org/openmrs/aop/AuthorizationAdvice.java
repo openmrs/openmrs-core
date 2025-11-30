@@ -11,6 +11,7 @@ package org.openmrs.aop;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.User;
@@ -122,7 +123,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private void throwUnauthorized(User user, Method method, Collection<String> attrs) {
 		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
-		    new Object[] { StringUtils.join(attrs, ",") }, null));
+		    new Object[] { StringUtils.join(attrs, ",") }, Locale.getDefault()));
 	}
 	
 	/**
@@ -135,7 +136,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private void throwUnauthorized(User user, Method method, String attr) {
 		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
-		    new Object[] { attr }, null));
+		    new Object[] { attr }, Locale.getDefault()));
 	}
 	
 	/**

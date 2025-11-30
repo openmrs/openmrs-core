@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -43,6 +44,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
@@ -694,6 +696,67 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		}
 		
 	}
+
+	@Test
+	public void updateObs_shouldUpdateAComplexObs() throws IOException {
+		executeDataSet(COMPLEX_OBS_XML);
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+
+		Obs obs = null;
+		Obs updatedObs = null;
+		
+		File obsFile = null;
+		File updatedObsFile = null;
+		
+		try {
+			// the complex data to put onto an obs that will be saved
+			Reader input2 = new CharArrayReader("some string".toCharArray());
+			ComplexData complexData = new ComplexData("nameOfFile", input2);
+
+			// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
+			// this is a concept mapped to the text handler
+			Concept questionConcept = cs.getConcept(8474);
+
+			obs = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+
+			obs.setComplexData(complexData);
+			os.saveObs(obs, null);
+
+			// sanity check, confirm the file exists
+			obs = os.getObs(obs.getObsId());
+			obsFile = new File(OpenmrsUtil.getApplicationDataDirectory() + File.separator + "storage" + File.separator + obs.getValueComplex().split("\\|")[1]);
+			assertTrue(obsFile.exists());
+			
+			// now change the obs
+			// NOTE: this really should change an actual field instead of voidReason; I originally had this change
+			// the comment field but, somewhat disconcertingly, this caused an UnchangeableObjectException because it
+			// tries to flush the original obs (before it is cloned) when it attempts to do a "getGlobalProperty" call.
+			// This exception doesn't occur in real life, and getGlobalProperty is set to transactional=readOnly, so
+			// not sure why it causes a flush when testing.
+			obs.setVoidReason("some comment");
+			updatedObs = os.saveObs(obs, "updating obs");
+			
+			// confirm old file has been removed and new one exists
+			updatedObsFile = new File(OpenmrsUtil.getApplicationDataDirectory() + File.separator + "storage" + File.separator + updatedObs.getValueComplex().split("\\|")[1]);
+			assertTrue(updatedObsFile.exists());
+			assertFalse(obsFile.exists());
+
+		}
+		finally {
+			if (obsFile != null && obsFile.exists()) {
+				obsFile.delete();
+			}
+			if (updatedObsFile != null && updatedObsFile.exists()) {
+				updatedObsFile.delete();
+			}
+		}
+	}
+	
+	private void confirmFileWithNameExists(File[] files, String name) {
+		assertTrue(Arrays.stream(files).anyMatch(f -> f.getName().equals(name)));
+	}
+	
 	
 	/**
 	 * @see ObsService#setHandlers(Map)}
@@ -1328,7 +1391,76 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		
 	}
-	
+
+	@Test
+	public void purgeObs_shouldStillDeleteObsEvenIfPurgeComplexDataFails() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+
+		ObsService os = Context.getObsService();
+
+		// Store the original handler so we can restore it after the test.
+		ComplexObsHandler originalHandler = os.getHandler("ImageHandler");
+
+		/**
+		 * Define a custom handler that simulates failure by always returning false
+		 * from purgeComplexData(). This mimics the scenario where the backing file
+		 * is missing on disk.
+		 */
+		ComplexObsHandler failingHandler = new ComplexObsHandler() {
+
+			@Override
+			public Obs saveObs(Obs obs) {
+				return obs; // Not used in this test
+			}
+
+			@Override
+			public Obs getObs(Obs obs, String view) {
+				return obs; // Not used in this test
+			}
+
+			@Override
+			public boolean purgeComplexData(Obs obs) {
+				return false; // Force failure
+			}
+
+			@Override
+			public String[] getSupportedViews() {
+				return new String[0]; // Not used in this test
+			}
+
+			@Override
+			public boolean supportsView(String view) {
+				return false; // Not used in this test
+			}
+		};
+		
+		try {
+			// Override the ImageHandler with our failing version for this test scenario.
+			os.registerHandler("ImageHandler", failingHandler);
+
+			// Retrieve the known complex obs from the XML dataset.
+			Obs complexObs = os.getObs(44);
+			assertNotNull(complexObs);
+			assertTrue(complexObs.isComplex());
+
+			Integer obsId = complexObs.getObsId();
+
+			// Ensure purgeComplexData() returns false
+			assertFalse(failingHandler.purgeComplexData(complexObs));
+
+			// After the fix, purgeObs should NOT throw even when purgeComplexData fails.
+			assertDoesNotThrow(() -> os.purgeObs(complexObs));
+
+			// The obs should still be deleted from the database.
+			assertNull(os.getObs(obsId));
+
+		} finally {
+			// Ensure global state is restored so other tests are not affected.
+			os.registerHandler("ImageHandler", originalHandler);
+		}
+	}
+
+
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
 	 */
