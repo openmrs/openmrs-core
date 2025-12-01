@@ -103,14 +103,25 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @return a concept id.
 	 * @throws CustomChangeException
 	 */
-	private Integer findConceptByName(JdbcConnection connection, Map<String, String[]> names) throws CustomChangeException {
+	private Integer findConceptByName(JdbcConnection connection, Map<String, String[]> names)
+		throws CustomChangeException {
 		for (Map.Entry<String, String[]> e : names.entrySet()) {
 			String locale = e.getKey();
+
 			for (String name : e.getValue()) {
-				Integer ret = getInt(connection, "select concept_id from concept_name where name = '" + name
-				        + "' and locale like '" + locale + "%'");
-				if (ret != null) {
-					return ret;
+				String sql = "select concept_id from concept_name where name = ? and locale like ?";
+
+				try (PreparedStatement ps = connection.prepareStatement(sql)) {
+					ps.setString(1, name);
+					ps.setString(2, locale + "%");
+
+					try (ResultSet rs = ps.executeQuery()) {
+						if (rs.next()) {
+							return rs.getInt(1);
+						}
+					}
+				} catch (Exception ex) {
+					throw new CustomChangeException("Error querying concept by name", ex);
 				}
 			}
 		}
