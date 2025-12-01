@@ -51,7 +51,7 @@ public class StartupPerformanceIT {
 
 	@Test
 	public void shouldFailIfStartupTimeOfCoreIncreases() throws SQLException {
-		compareStartupPerformance("openmrs/openmrs-core:2.8.0", "opemrs/openmrs-core:nightly");
+		compareStartupPerformance("openmrs/openmrs-core:2.8.0", "opemrs/openmrs-core:2.9.x");
 	}
 
 	private void compareStartupPerformance(String fromImage, String toImage) throws SQLException {
@@ -66,7 +66,7 @@ public class StartupPerformanceIT {
 
 		//TODO: Use an image created on the fly from code with ImageFromDockerfile instead of a tagged version
 		// It's not possible right now, because of some issue with building an image this way and no easy way to debug
-		GenericContainer<?> nightlyVersion = newOpenMRSContainer("openmrs/openmrs-core:nightly", logConsumer);
+		GenericContainer<?> nightlyVersion = newOpenMRSContainer("openmrs/openmrs-core:2.9.x", logConsumer);
 		// Do not measure initial setup
 		nightlyVersion.start();
 		nightlyVersion.stop();
@@ -84,7 +84,7 @@ public class StartupPerformanceIT {
 	@Test
 	@Disabled("Modules do not run on openmrs-core 3.0.0 yet")
 	public void shouldFailIfStartupTimeOfPlatformIncreases() throws SQLException{
-		compareStartupPerformance("openmrs/openmrs-platform:2.8.0", "opemrs/openmrs-platform:nightly");
+		compareStartupPerformance("openmrs/openmrs-platform:2.8.0", "opemrs/openmrs-platform:2.9.x");
 	}
 
 	private long measureMeanStartupTime(GenericContainer<?> releasedVersion) {
