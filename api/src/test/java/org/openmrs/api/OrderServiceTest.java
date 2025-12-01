@@ -83,6 +83,7 @@ import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.FormResource;
+import org.openmrs.ConceptAttribute;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
@@ -2939,6 +2940,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(LoginCredential.class)
 				.addAnnotatedClass(ConceptDatatype.class)
 				.addAnnotatedClass(ProviderAttribute.class)
+				.addAnnotatedClass(ConceptAttribute.class)
 				.getMetadataBuilder().build();
 
 
