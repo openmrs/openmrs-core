@@ -82,7 +82,6 @@ public class StartupPerformanceIT {
 	}
 
 	@Test
-	@Disabled("Modules do not run on openmrs-core 3.0.0 yet")
 	public void shouldFailIfStartupTimeOfPlatformIncreases() throws SQLException{
 		compareStartupPerformance("openmrs/openmrs-platform:2.8.0", "opemrs/openmrs-platform:2.9.x");
 	}
