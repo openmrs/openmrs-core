@@ -51,7 +51,7 @@ public class StartupPerformanceIT {
 
 	@Test
 	public void shouldFailIfStartupTimeOfCoreIncreases() throws SQLException {
-		compareStartupPerformance("openmrs/openmrs-core:2.9.0", "opemrs/openmrs-core:nightly");
+		compareStartupPerformance("openmrs/openmrs-core:2.9.0", "openmrs/openmrs-core:nightly");
 	}
 
 	private void compareStartupPerformance(String fromImage, String toImage) throws SQLException {
