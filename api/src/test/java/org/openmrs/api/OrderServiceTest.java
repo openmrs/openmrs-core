@@ -74,6 +74,7 @@ import org.openmrs.Program;
 import org.openmrs.ProgramAttributeType;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderRole;
 import org.openmrs.Relationship;
 import org.openmrs.SimpleDosingInstructions;
@@ -2911,7 +2912,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			    .addAnnotatedClass(ConceptReferenceTermMap.class)
 			    .addAnnotatedClass(ConceptReferenceTerm.class)
 				.addAnnotatedClass(ConceptAnswer.class)
-				.addAnnotatedClass(ConceptClass.class)
+			    .addAnnotatedClass(ConceptDescription.class)
+			    .addAnnotatedClass(ConceptClass.class)
 			    .addAnnotatedClass(ConceptMap.class)
 				.addAnnotatedClass(FormResource.class)
 			    .addAnnotatedClass(FormField.class)
@@ -2938,6 +2940,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(Privilege.class)
 				.addAnnotatedClass(LoginCredential.class)
 				.addAnnotatedClass(ConceptDatatype.class)
+				.addAnnotatedClass(ProviderAttribute.class)
 				.getMetadataBuilder().build();
 
 
