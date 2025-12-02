@@ -140,7 +140,7 @@ Deploy to docker:
                       
                       export IMAGE=${bamboo.docker.image.id}
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
-					  export IMAGE_VERSION=${bamboo.docker.image.name}:${bamboo.docker.image.tag.version}
+                      export IMAGE_VERSION=${bamboo.docker.image.name}:${bamboo.docker.image.tag.version}
                       export IMAGE_DEV=${bamboo.docker.image.name}:dev
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
