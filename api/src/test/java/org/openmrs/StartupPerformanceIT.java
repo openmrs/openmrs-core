@@ -51,7 +51,7 @@ public class StartupPerformanceIT {
 
 	@Test
 	public void shouldFailIfStartupTimeOfCoreIncreases() throws SQLException {
-		compareStartupPerformance("openmrs/openmrs-core:2.9.0", "openmrs/openmrs-core:nightly");
+		compareStartupPerformance("openmrs/openmrs-core:2.9.x", "openmrs/openmrs-core:nightly");
 	}
 
 	private void compareStartupPerformance(String fromImage, String toImage) throws SQLException {
@@ -84,7 +84,7 @@ public class StartupPerformanceIT {
 	@Test
 	@Disabled("Platform modules do not run on openmrs-core 3.0.0 yet")
 	public void shouldFailIfStartupTimeOfPlatformIncreases() throws SQLException{
-		compareStartupPerformance("openmrs/openmrs-platform:2.9.0", "openmrs/openmrs-platform:nightly");
+		compareStartupPerformance("openmrs/openmrs-platform:2.9.x", "openmrs/openmrs-platform:nightly");
 	}
 
 	@Test
