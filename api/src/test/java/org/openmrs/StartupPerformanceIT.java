@@ -51,13 +51,13 @@ public class StartupPerformanceIT {
 
 	@Test
 	public void shouldFailIfStartupTimeOfCoreIncreases() throws SQLException {
-		compareStartupPerformance("openmrs/openmrs-core:2.8.0", "opemrs/openmrs-core:nightly");
+		compareStartupPerformance("openmrs/openmrs-core:2.9.0", "openmrs/openmrs-core:nightly");
 	}
 
 	private void compareStartupPerformance(String fromImage, String toImage) throws SQLException {
 		clearDB();
 		Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(logger);
-		GenericContainer<?> releasedVersion = newOpenMRSContainer("openmrs/openmrs-core:2.8.0", logConsumer);
+		GenericContainer<?> releasedVersion = newOpenMRSContainer(fromImage, logConsumer);
 		// Do not measure initial setup
 		releasedVersion.start();
 		releasedVersion.stop();
@@ -82,9 +82,17 @@ public class StartupPerformanceIT {
 	}
 
 	@Test
-	@Disabled("Modules do not run on openmrs-core 3.0.0 yet")
+	@Disabled("Platform modules do not run on openmrs-core 3.0.0 yet")
 	public void shouldFailIfStartupTimeOfPlatformIncreases() throws SQLException{
-		compareStartupPerformance("openmrs/openmrs-platform:2.8.0", "opemrs/openmrs-platform:nightly");
+		compareStartupPerformance("openmrs/openmrs-platform:2.9.0", "openmrs/openmrs-platform:nightly");
+	}
+
+	@Test
+	@Disabled("O3 do not run on openmrs-core 3.0.0 yet")
+	public void shouldFailIfStartupTimeOfO3Increases() throws SQLException{
+		//O3 3.6.x is running on openmrs-core 2.8.x
+		compareStartupPerformance("openmrs/openmrs-reference-application-3-backend:3.6.x", 
+				"openmrs/openmrs-reference-application-3-backend:nightly");
 	}
 
 	private long measureMeanStartupTime(GenericContainer<?> releasedVersion) {
