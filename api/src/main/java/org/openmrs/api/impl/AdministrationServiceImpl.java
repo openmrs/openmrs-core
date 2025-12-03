@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
@@ -59,6 +60,8 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.person.PersonMergeLogData;
+import org.openmrs.util.DatabaseUpdateException;
+import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -1010,4 +1013,99 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
         return Arrays.asList(GlobalProperty.class);
     }
 
+	/**
+	 * @see org.openmrs.api.AdministrationService#isCoreSetupOnVersionChangeNeeded() 
+	 */
+	@Override
+	public boolean isCoreSetupOnVersionChangeNeeded() {
+		String stored = getStoredCoreVersion();
+		String current = OpenmrsConstants.OPENMRS_VERSION_SHORT;
+		boolean forceSetup = Boolean.parseBoolean(getGlobalProperty("force.setup", "false"));
+		
+		return forceSetup || !Objects.equals(stored, current);
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#isModuleSetupOnVersionChangeNeeded(String)
+	 */
+	@Override
+	public boolean isModuleSetupOnVersionChangeNeeded(String moduleId) {
+		String stored = getStoredModuleVersion(moduleId);
+		Module module = ModuleFactory.getModuleById(moduleId);
+		if (module == null) {
+			return false;
+		}
+		String current = module.getVersion();
+		boolean forceSetup = Boolean.parseBoolean(getGlobalProperty("force.setup", "false"));
+		
+		return forceSetup || !Objects.equals(stored, current);
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#runCoreSetupOnVersionChange() 
+	 */
+	@Override
+	@Transactional
+	public void runCoreSetupOnVersionChange() throws DatabaseUpdateException {
+		DatabaseUpdater.executeChangelog();
+		storeCoreVersion();
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#runModuleSetupOnVersionChange(Module)
+	 */
+	@Override
+	@Transactional
+	public void runModuleSetupOnVersionChange(Module module) {
+		if (module == null) {
+			return;
+		}
+
+		String moduleId = module.getModuleId();
+		String prevCoreVersion = getStoredCoreVersion() != null ? getStoredCoreVersion() : OpenmrsConstants.OPENMRS_VERSION_SHORT;
+		String prevModuleVersion = getStoredModuleVersion(moduleId);
+
+		module.getModuleActivator().setupOnVersionChangeBeforeSchemaChanges(prevCoreVersion, prevModuleVersion);
+		ModuleFactory.runLiquibaseForModule(module);
+		module.getModuleActivator().setupOnVersionChange(prevCoreVersion, prevModuleVersion);
+		
+		storeModuleVersion(moduleId, module.getVersion());
+	}
+
+	protected String getStoredCoreVersion() {
+		return getGlobalProperty("core.version");
+	}
+
+	protected String getStoredModuleVersion(String moduleId) {
+		return getGlobalProperty("module." + moduleId + ".version");
+	}
+
+	protected void storeCoreVersion() {
+		saveGlobalProperty("core.version", OpenmrsConstants.OPENMRS_VERSION_SHORT, "Saved the state of this core version for future restarts");
+	}
+
+	protected void storeModuleVersion(String moduleId, String version) {
+		String propertyName = "module." + moduleId + ".version";
+		saveGlobalProperty(propertyName, version, "Saved the state of this module version for future restarts");
+	}
+
+	/**
+	 * Convenience method to save a global property with the given value. Proxy privileges are added so
+	 * that this can occur at startup.
+	 */
+	protected void saveGlobalProperty(String key, String value, String desc) {
+		try {
+			GlobalProperty gp = getGlobalPropertyObject(key);
+			if (gp == null) {
+				gp = new GlobalProperty(key, value, desc);
+			} else {
+				gp.setPropertyValue(value);
+			}
+
+			saveGlobalProperty(gp);
+		}
+		catch (Exception e) {
+			log.warn("Unable to save the global property", e);
+		}
+	}
 }

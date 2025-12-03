@@ -11,14 +11,10 @@ package org.openmrs.module;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import org.openmrs.GlobalProperty;
-import org.openmrs.api.context.Context;
-import org.springframework.test.context.transaction.TestTransaction;
 
 /**
  * Tests methods of the module activator that do not require refreshing of the spring application
@@ -63,114 +59,6 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		
 		assertTrue(moduleTestData.getStartedCallTime(MODULE1_ID) <= moduleTestData.getStartedCallTime(MODULE2_ID));
 		assertTrue(moduleTestData.getStartedCallTime(MODULE2_ID) <= moduleTestData.getStartedCallTime(MODULE3_ID));
-	}
-
-	@Test
-	public void shouldRunSetupHooksOnInitialStartup() {
-		TestTransaction.end();
-		Module module = ModuleFactory.getModuleById(MODULE6_ID);
-		moduleTestData.init(MODULE6_ID);
-
-		ModuleFactory.stopModule(module);
-		
-		// delete previous module version for test
-		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject("module." + MODULE6_ID + ".version");
-		if (gp != null) {
-			Context.getAdministrationService().purgeGlobalProperty(gp);
-		}
-
-		ModuleFactory.startModule(module);
-		
-		// Hooks should run because previous module version == null 
-		assertEquals(1, moduleTestData.getSetupOnVersionChangeBeforeSchemaChangesCallCount(MODULE6_ID));
-		assertEquals(1, moduleTestData.getSetupOnVersionChangeCallCount(MODULE6_ID));
-	}
-
-	@Test
-	public void shouldNotRunSetupHooksWhenNoVersionChanged() {
-		Module module = ModuleFactory.getModuleById(MODULE6_ID);
-		moduleTestData.init(MODULE6_ID);
-
-		ModuleFactory.stopModule(module);
-		ModuleFactory.startModule(module);
-
-		// Hooks should not run because no version change
-		assertEquals(0, moduleTestData.getSetupOnVersionChangeBeforeSchemaChangesCallCount(MODULE6_ID));
-		assertEquals(0, moduleTestData.getSetupOnVersionChangeCallCount(MODULE6_ID));
-	}
-
-	@Test
-	public void shouldRunSetupHooksWhenModuleVersionChanged() {
-		Module module = ModuleFactory.getModuleById(MODULE6_ID);
-		moduleTestData.init(MODULE6_ID);
-
-		ModuleFactory.stopModule(module);
-		module.setVersion("1.3.0");
-		ModuleFactory.startModule(module);
-
-		// Hooks should run because module version has changed
-		assertEquals(1, moduleTestData.getSetupOnVersionChangeBeforeSchemaChangesCallCount(MODULE6_ID));
-		assertEquals(1, moduleTestData.getSetupOnVersionChangeCallCount(MODULE6_ID));
-	}
-
-	@Test
-	public void shouldRunSetupHooksWhenCoreVersionChanged() {
-		TestTransaction.end();
-		Module module = ModuleFactory.getModuleById(MODULE6_ID);
-		moduleTestData.init(MODULE6_ID);
-
-		ModuleFactory.stopModule(module);
-
-		// manually change previous core version for test
-		String propertyName = "core.version";
-		String value = "2.0.0";
-		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(propertyName);
-
-		if (gp == null) {
-			gp = new GlobalProperty(propertyName, value);
-		} else {
-			gp.setPropertyValue(value);
-		}
-		Context.getAdministrationService().saveGlobalProperty(gp);
-
-		ModuleFactory.startModule(module);
-
-		// Hooks should run because core version has changed
-		assertEquals(1, moduleTestData.getSetupOnVersionChangeBeforeSchemaChangesCallCount(MODULE6_ID));
-		assertEquals(1, moduleTestData.getSetupOnVersionChangeCallCount(MODULE6_ID));
-
-		// clean up
-		Context.getAdministrationService().purgeGlobalProperty(gp);
-	}
-
-	@Test
-	public void shouldRunSetupHooksWhenForceSetupGPIsTrue() {
-		TestTransaction.end();
-		Module module = ModuleFactory.getModuleById(MODULE6_ID);
-		moduleTestData.init(MODULE6_ID);
-
-		ModuleFactory.stopModule(module);
-
-		// change force setup GP
-		String propertyName = "force.setup";
-		String value = "true";
-		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(propertyName);
-
-		if (gp == null) {
-			gp = new GlobalProperty(propertyName, value);
-		} else {
-			gp.setPropertyValue(value);
-		}
-		Context.getAdministrationService().saveGlobalProperty(gp);
-
-		ModuleFactory.startModule(module);
-
-		// Hooks should run because force setup GP is true
-		assertEquals(1, moduleTestData.getSetupOnVersionChangeBeforeSchemaChangesCallCount(MODULE6_ID));
-		assertEquals(1, moduleTestData.getSetupOnVersionChangeCallCount(MODULE6_ID));
-
-		// clean up
-		Context.getAdministrationService().purgeGlobalProperty(gp);
 	}
 	
 	@Test

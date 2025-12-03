@@ -63,17 +63,4 @@ public class TestModuleActivator extends BaseModuleActivator {
 		log.info("Test Module stopped");
 	}
 	
-	/**
-	 * @see ModuleActivator#setupOnVersionChangeBeforeSchemaChanges(String, String)
-	 */
-	public void setupOnVersionChangeBeforeSchemaChanges(String previousCoreVersion, String previousModuleVersion) {
-		log.info("Preparing upgrade for module from: " + previousModuleVersion);
-	}
-
-	/**
-	 * @see ModuleActivator#setupOnVersionChange(String, String)
-	 */
-	public void setupOnVersionChange(String previousCoreVersion, String previousModuleVersion) {
-		log.info("Running post-schema setup after upgrade");
-	}
 }
