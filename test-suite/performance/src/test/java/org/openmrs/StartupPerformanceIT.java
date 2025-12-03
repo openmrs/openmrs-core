@@ -10,16 +10,22 @@ package org.openmrs;
  */
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.notNullValue;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.Containers;
@@ -32,67 +38,97 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
 
 
 /**
- * Tests the startup performance using a released version of the application and comparing against the nightly image.
- * <p>
- * Ideally we would build an image from code instead of using nightly in order to not rely on building externally before
- * running the test.
+ * Tests the startup performance using a previous version of the application and comparing against the nightly image.
  */
 @Testcontainers(disabledWithoutDocker = true)
 public class StartupPerformanceIT {
 	
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	private static final List<String> CORE_MINOR_VERSIONS = Arrays.asList("2.5", "2.6", "2.7", "2.8", "2.9", "3.0");
+	private static final String PROJECT_VERSION = System.getProperty("project.version");
+	private static final String TO_VERSION = prepareToVersion(PROJECT_VERSION);
+	private static final String FROM_VERSION = prepareFromVersion(PROJECT_VERSION);
+	
 	@Container
 	private static final MariaDBContainer<?> dbContainer = Containers.newMariaDBContainer().withNetwork(Network.newNetwork())
 			.withNetworkAliases("mariadb");
 
 	@Test
-	public void shouldFailIfStartupTimeOfCoreIncreases() throws SQLException {
-		compareStartupPerformance("openmrs/openmrs-core:2.9.x", "openmrs/openmrs-core:nightly");
+	public void shouldFailIfStartupTimeOfCoreIncreases() throws Exception {
+		compareStartupPerformance("openmrs/openmrs-core:" + FROM_VERSION, 
+			"openmrs/openmrs-core:" + TO_VERSION, Duration.ofSeconds(10));
 	}
 
-	private void compareStartupPerformance(String fromImage, String toImage) throws SQLException {
+	private static @NotNull String prepareToVersion(String projectVersion) {
+		return projectVersion.substring(0, projectVersion.lastIndexOf(".")) + ".x";
+	}
+
+	private static @NotNull String prepareFromVersion(String projectVersion) {
+		String projectMinorVersion =  projectVersion.substring(0, projectVersion.lastIndexOf("."));
+		String prevVersion = null;
+		boolean versionFound = false;
+		for (String version : CORE_MINOR_VERSIONS) {
+			if (version.equals(projectMinorVersion)) {
+				versionFound = true;
+				break;
+			}
+			prevVersion = version;
+		}
+		assertThat("Please make sure that " + projectMinorVersion + " is in the list of CORE_MINOR_VERSIONS", 
+			true, is(versionFound));
+		return prevVersion + ".x";
+	}
+
+	private void compareStartupPerformance(String fromImage, String toImage, Duration timeDiffAccepted) throws SQLException {
 		clearDB();
 		Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(logger);
-		GenericContainer<?> releasedVersion = newOpenMRSContainer(fromImage, logConsumer);
+		GenericContainer<?> fromContainer = newOpenMRSContainer(fromImage, logConsumer);
 		// Do not measure initial setup
-		releasedVersion.start();
-		releasedVersion.stop();
+		fromContainer.start();
+		fromContainer.stop();
 
-		long releasedVersionStartupTime = measureMeanStartupTime(releasedVersion);
+		long fromContainerStartupTime = measureMeanStartupTime(fromContainer);
 
-		//TODO: Use an image created on the fly from code with ImageFromDockerfile instead of a tagged version
-		// It's not possible right now, because of some issue with building an image this way and no easy way to debug
-		GenericContainer<?> nightlyVersion = newOpenMRSContainer("openmrs/openmrs-core:nightly", logConsumer);
+		// Overwrite the war file from the image to the one that was just built instead of using an image created 
+		// on the fly from code with ImageFromDockerfile.
+		// ImageFromDockerfile runs into some issue when building an image and there is no easy way to debug.
+		GenericContainer<?> toContainer = newOpenMRSContainer(toImage, logConsumer);
+		assertThat("The test must run after webapp is packaged", 
+			Files.exists(Path.of("../../webapp/target/openmrs.war")), is(true));
+		toContainer.withCopyFileToContainer(MountableFile.forHostPath("../../webapp/target/openmrs.war"), 
+			"/openmrs/distribution/openmrs_core/openmrs.war");
 		// Do not measure initial setup
-		nightlyVersion.start();
-		nightlyVersion.stop();
+		toContainer.start();
+		toContainer.stop();
 
-		long nightlyVersionStartupTime = measureMeanStartupTime(nightlyVersion);
+		long toContainerStartupTime = measureMeanStartupTime(toContainer);
 
-		long diff = Duration.ofNanos(releasedVersionStartupTime - nightlyVersionStartupTime).getSeconds();
-
-		logger.info("{} started up in {}s, while {} started up in {}s", fromImage, 
-			Duration.ofNanos(releasedVersionStartupTime).getSeconds(), toImage, 
-			Duration.ofNanos(nightlyVersionStartupTime).getSeconds());
-		assertThat(diff, lessThan(10L));
+		long diff = Duration.ofNanos(fromContainerStartupTime - toContainerStartupTime).getSeconds();
+		logger.info("{} started up in {}s, while {} started up in {}s with the difference of {}s", fromImage, 
+			Duration.ofNanos(fromContainerStartupTime).getSeconds(), toImage, 
+			Duration.ofNanos(toContainerStartupTime).getSeconds(), diff);
+		
+		assertThat(diff, lessThan(timeDiffAccepted.getSeconds()));
 	}
 
 	@Test
 	@Disabled("Platform modules do not run on openmrs-core 3.0.0 yet")
 	public void shouldFailIfStartupTimeOfPlatformIncreases() throws SQLException{
-		compareStartupPerformance("openmrs/openmrs-platform:2.9.x", "openmrs/openmrs-platform:nightly");
+		compareStartupPerformance("openmrs/openmrs-platform:" + FROM_VERSION, 
+			"openmrs/openmrs-platform:" + TO_VERSION, Duration.ofSeconds(10));
 	}
 
 	@Test
 	@Disabled("O3 do not run on openmrs-core 3.0.0 yet")
 	public void shouldFailIfStartupTimeOfO3Increases() throws SQLException{
-		//O3 3.6.x is running on openmrs-core 2.8.x
+		//Using O3 3.6.x as a reference, which is running on openmrs-core 2.8.x
 		compareStartupPerformance("openmrs/openmrs-reference-application-3-backend:3.6.x", 
-				"openmrs/openmrs-reference-application-3-backend:nightly");
+				"openmrs/openmrs-reference-application-3-backend:nightly", Duration.ofSeconds(10));
 	}
 
 	private long measureMeanStartupTime(GenericContainer<?> releasedVersion) {
