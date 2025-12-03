@@ -15,6 +15,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -32,9 +34,11 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.test.Containers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.SelinuxContext;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
@@ -45,10 +49,11 @@ import org.testcontainers.utility.MountableFile;
 /**
  * Tests the startup performance using a previous version of the application and comparing against the nightly image.
  */
-@Testcontainers(disabledWithoutDocker = true)
+@Testcontainers
 public class StartupPerformanceIT {
 	
 	private static final Logger logger = LoggerFactory.getLogger(StartupPerformanceIT.class);
+	private static final Logger containerLogger = LoggerFactory.getLogger("containerLogger");
 
 	private static final List<String> CORE_MINOR_VERSIONS = Arrays.asList("2.5", "2.6", "2.7", "2.8", "2.9", "3.0");
 	private static final String PROJECT_VERSION = System.getProperty("project.version");
@@ -60,10 +65,24 @@ public class StartupPerformanceIT {
 			.withNetworkAliases("mariadb");
 
 	@Test
-	public void shouldFailIfStartupTimeOfCoreIncreases() throws Exception {
+	public void shouldFailIfStartupTimeOfCoreIncreases() throws SQLException, IOException  {
 		compareStartupPerformance("openmrs/openmrs-core:" + FROM_VERSION, 
 			"openmrs/openmrs-core:" + TO_VERSION, Duration.ofSeconds(0));
 	}
+
+	@Test
+	public void shouldFailIfStartupTimeOfPlatformIncreases() throws SQLException, IOException {
+		compareStartupPerformance("openmrs/openmrs-platform:" + FROM_VERSION,
+				"openmrs/openmrs-platform:" + TO_VERSION, Duration.ofSeconds(0));
+	}
+
+	@Test
+	public void shouldFailIfStartupTimeOfO3Increases() throws SQLException, IOException {
+		//Using O3 3.6.x as a reference, which is running on openmrs-core 2.8.x
+		compareStartupPerformance("openmrs/openmrs-reference-application-3-backend:3.6.x",
+				"openmrs/openmrs-reference-application-3-backend:nightly", Duration.ofSeconds(0));
+	}
+
 
 	private static @NotNull String prepareToVersion(String projectVersion) {
 		return projectVersion.substring(0, projectVersion.lastIndexOf(".")) + ".x";
@@ -105,51 +124,51 @@ public class StartupPerformanceIT {
 	 * @param timeDiffAccepted set to expected speed-up or slow-down between versions
 	 * @throws SQLException if fails to access DB
 	 */
-	private void compareStartupPerformance(String fromImage, String toImage, Duration timeDiffAccepted) throws SQLException {
+	private void compareStartupPerformance(String fromImage, String toImage, Duration timeDiffAccepted) throws IOException, SQLException {
 		clearDB();
-		Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(logger);
-		GenericContainer<?> fromContainer = newOpenMRSContainer(fromImage, logConsumer);
-		// Do not measure initial setup
-		fromContainer.start();
-		fromContainer.stop();
+		Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(containerLogger).withSeparateOutputStreams();
+		long fromContainerStartupTime;
+		long toContainerStartupTime;
+		File tempDirectory = Files.createTempDirectory("test").toFile();
+		try (GenericContainer<?> fromContainer = newOpenMRSContainer(fromImage, logConsumer)) {
+			fromContainer.addFileSystemBind(tempDirectory.getAbsolutePath(), "/openmrs/data/", BindMode.READ_WRITE, 
+					SelinuxContext.SHARED);
+			
+			// Do not measure initial setup
+			fromContainer.start();
+			fromContainer.stop();
 
-		long fromContainerStartupTime = measureMeanStartupTime(fromContainer);
+			fromContainerStartupTime = measureMeanStartupTime(fromContainer);
 
-		// Overwrite the war file from the image to the one that was just built instead of using an image created 
-		// on the fly from code with ImageFromDockerfile.
-		// ImageFromDockerfile runs into some issue when building an image and there is no easy way to debug.
-		GenericContainer<?> toContainer = newOpenMRSContainer(toImage, logConsumer);
-		assertThat("The test must run after webapp is packaged", 
-			Files.exists(Path.of("../../webapp/target/openmrs.war")), is(true));
-		toContainer.withCopyFileToContainer(MountableFile.forHostPath("../../webapp/target/openmrs.war"), 
-			"/openmrs/distribution/openmrs_core/openmrs.war");
-		// Do not measure initial setup
-		toContainer.start();
-		toContainer.stop();
+			// Overwrite the war file from the image to the one that was just built instead of using an image created 
+			// on the fly from code with ImageFromDockerfile.
+			// ImageFromDockerfile runs into some issue when building an image and there is no easy way to debug.
+			try (GenericContainer<?> toContainer = newOpenMRSContainer(toImage, logConsumer)) {
+				//toContainer is re-using DB and OpenMRS application data to do upgrade instead of fresh install
+				toContainer.addFileSystemBind(tempDirectory.getAbsolutePath(), "/openmrs/data/", BindMode.READ_WRITE,
+						SelinuxContext.SHARED);
+				assertThat("The test must run after webapp is packaged",
+						Files.exists(Path.of("../../webapp/target/openmrs.war")), is(true));
+				toContainer.withCopyFileToContainer(MountableFile.forHostPath("../../webapp/target/openmrs.war"),
+						"/openmrs/distribution/openmrs_core/openmrs.war");
+				// Do not measure initial setup
+				toContainer.start();
+				toContainer.stop();
 
-		long toContainerStartupTime = measureMeanStartupTime(toContainer);
+				toContainerStartupTime = measureMeanStartupTime(toContainer);
+			}
+		} finally {
+			tempDirectory.delete();
+		}
 
-		long diff = Duration.ofNanos(fromContainerStartupTime - toContainerStartupTime).getSeconds();
-		logger.info("{} started up in {}s, while {} started up in {}s with the difference of {}s", fromImage, 
+		long diff = Duration.ofNanos(toContainerStartupTime - fromContainerStartupTime).getSeconds();
+		logger.info("{} started up in {}s, while {} started up in {}s with the latter starting {} by {}s", fromImage, 
 			Duration.ofNanos(fromContainerStartupTime).getSeconds(), toImage, 
-			Duration.ofNanos(toContainerStartupTime).getSeconds(), diff);
+			Duration.ofNanos(toContainerStartupTime).getSeconds(), diff < 0 ? "faster" : "slower", Math.abs(diff));
 		
 		assertThat(diff, lessThan(timeDiffAccepted.getSeconds() + 10)); //10s is an accepted variation between runs
 	}
-
-	@Test
-	public void shouldFailIfStartupTimeOfPlatformIncreases() throws SQLException{
-		compareStartupPerformance("openmrs/openmrs-platform:" + FROM_VERSION, 
-			"openmrs/openmrs-platform:" + TO_VERSION, Duration.ofSeconds(0));
-	}
-
-	@Test
-	public void shouldFailIfStartupTimeOfO3Increases() throws SQLException{
-		//Using O3 3.6.x as a reference, which is running on openmrs-core 2.8.x
-		compareStartupPerformance("openmrs/openmrs-reference-application-3-backend:3.6.x", 
-				"openmrs/openmrs-reference-application-3-backend:nightly", Duration.ofSeconds(0));
-	}
-
+	
 	private long measureMeanStartupTime(GenericContainer<?> releasedVersion) {
 		List<Long> times = new ArrayList<>();
 		for (int i = 0; i < 3; i++) {
@@ -182,7 +201,7 @@ public class StartupPerformanceIT {
 				.withEnv("OMRS_DB_USERNAME", dbContainer.getUsername())
 				.withEnv("OMRS_DB_PASSWORD", dbContainer.getPassword())
 				.withEnv("OMRS_DB_PORT", "3306")
-				.waitingFor(Wait.forHttp("/openmrs/health/started").withStartupTimeout(Duration.ofMinutes(5)))
+				.waitingFor(Wait.forHttp("/openmrs/health/started").withStartupTimeout(Duration.ofMinutes(30)))
 				.withLogConsumer(logConsumer);
 	}
 }
