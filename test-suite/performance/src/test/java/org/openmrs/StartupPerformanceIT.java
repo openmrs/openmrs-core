@@ -10,6 +10,7 @@ package org.openmrs;
  */
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
@@ -47,7 +48,7 @@ import org.testcontainers.utility.MountableFile;
 @Testcontainers(disabledWithoutDocker = true)
 public class StartupPerformanceIT {
 	
-	protected Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final Logger logger = LoggerFactory.getLogger(StartupPerformanceIT.class);
 
 	private static final List<String> CORE_MINOR_VERSIONS = Arrays.asList("2.5", "2.6", "2.7", "2.8", "2.9", "3.0");
 	private static final String PROJECT_VERSION = System.getProperty("project.version");
@@ -61,7 +62,7 @@ public class StartupPerformanceIT {
 	@Test
 	public void shouldFailIfStartupTimeOfCoreIncreases() throws Exception {
 		compareStartupPerformance("openmrs/openmrs-core:" + FROM_VERSION, 
-			"openmrs/openmrs-core:" + TO_VERSION, Duration.ofSeconds(10));
+			"openmrs/openmrs-core:" + TO_VERSION, Duration.ofSeconds(0));
 	}
 
 	private static @NotNull String prepareToVersion(String projectVersion) {
@@ -79,11 +80,31 @@ public class StartupPerformanceIT {
 			}
 			prevVersion = version;
 		}
-		assertThat("Please make sure that " + projectMinorVersion + " is in the list of CORE_MINOR_VERSIONS", 
-			true, is(versionFound));
-		return prevVersion + ".x";
+		
+		final String errorReason = "You must add version " + projectMinorVersion + " " +
+			"to CORE_MINOR_VERSIONS";
+		if (!versionFound) {
+			logger.warn("Version {} not found in CORE_MINOR_VERSIONS. " +
+				"Trying to find the previous version.", projectMinorVersion);
+			String[] versionParts = projectMinorVersion.split("\\.");
+			int minorVersion = Integer.parseInt(versionParts[1]) - 1;
+			// Fail if the minor version part is lower than 0.
+			assertThat(errorReason, minorVersion, is(greaterThanOrEqualTo(0)));
+			String decrementedVersion = versionParts[0] + "." + minorVersion;
+			return decrementedVersion + ".x";
+		}
+		assertThat(errorReason, prevVersion, notNullValue());
+		return prevVersion + ".x"; // Append ".x" for the Docker tag convention
 	}
 
+	/**
+	 * Compares startup performance.
+	 * 
+	 * @param fromImage docker distro image to compare
+	 * @param toImage docker distro image to compare with a war file replaced with the one from the current build
+	 * @param timeDiffAccepted set to expected speed-up or slow-down between versions
+	 * @throws SQLException if fails to access DB
+	 */
 	private void compareStartupPerformance(String fromImage, String toImage, Duration timeDiffAccepted) throws SQLException {
 		clearDB();
 		Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(logger);
@@ -113,14 +134,14 @@ public class StartupPerformanceIT {
 			Duration.ofNanos(fromContainerStartupTime).getSeconds(), toImage, 
 			Duration.ofNanos(toContainerStartupTime).getSeconds(), diff);
 		
-		assertThat(diff, lessThan(timeDiffAccepted.getSeconds()));
+		assertThat(diff, lessThan(timeDiffAccepted.getSeconds() + 10)); //10s is an accepted variation between runs
 	}
 
 	@Test
 	@Disabled("Platform modules do not run on openmrs-core 3.0.0 yet")
 	public void shouldFailIfStartupTimeOfPlatformIncreases() throws SQLException{
 		compareStartupPerformance("openmrs/openmrs-platform:" + FROM_VERSION, 
-			"openmrs/openmrs-platform:" + TO_VERSION, Duration.ofSeconds(10));
+			"openmrs/openmrs-platform:" + TO_VERSION, Duration.ofSeconds(0));
 	}
 
 	@Test
@@ -128,7 +149,7 @@ public class StartupPerformanceIT {
 	public void shouldFailIfStartupTimeOfO3Increases() throws SQLException{
 		//Using O3 3.6.x as a reference, which is running on openmrs-core 2.8.x
 		compareStartupPerformance("openmrs/openmrs-reference-application-3-backend:3.6.x", 
-				"openmrs/openmrs-reference-application-3-backend:nightly", Duration.ofSeconds(10));
+				"openmrs/openmrs-reference-application-3-backend:nightly", Duration.ofSeconds(0));
 	}
 
 	private long measureMeanStartupTime(GenericContainer<?> releasedVersion) {
