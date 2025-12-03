@@ -57,7 +57,7 @@
 		<module>web</module>
 		<module>webapp</module>
 		<module>liquibase</module>
-		<module>test-module</module>
+		<module>test-suite</module>
 	</modules>
 
 	<dependencyManagement>
@@ -645,6 +645,11 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.1.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.14.0</version>
 					<configuration>
@@ -975,6 +980,9 @@
 					<systemProperties>
 						<log4j2.disable.jmx>true</log4j2.disable.jmx>
 					</systemProperties>
+					<systemPropertyVariables>
+						<project.version>${project.version}</project.version>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>
