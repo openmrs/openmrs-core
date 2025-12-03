@@ -26,8 +26,6 @@ public abstract class BaseModuleActivatorTest extends BaseContextSensitiveTest {
 	protected static final String MODULE4_ID = "test4";
 	
 	protected static final String MODULE5_ID = "test5";
-
-	protected static final String MODULE6_ID = "test6";
 	
 	protected ModuleTestData moduleTestData;
 	
@@ -41,8 +39,7 @@ public abstract class BaseModuleActivatorTest extends BaseContextSensitiveTest {
 		
 		String modulesToLoad = "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod "
 		        + "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod org/openmrs/module/include/test2-1.0-SNAPSHOT.omod "
-		        + "org/openmrs/module/include/test4-1.0-SNAPSHOT.omod org/openmrs/module/include/test5-1.0-SNAPSHOT.omod "
-		        + "org/openmrs/module/include/test6-1.0-SNAPSHOT.omod";
+		        + "org/openmrs/module/include/test4-1.0-SNAPSHOT.omod org/openmrs/module/include/test5-1.0-SNAPSHOT.omod";
 		runtimeProperties.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD, modulesToLoad);
 		ModuleUtil.startup(runtimeProperties);
 	}
@@ -53,6 +50,5 @@ public abstract class BaseModuleActivatorTest extends BaseContextSensitiveTest {
 		moduleTestData.init(MODULE3_ID);
 		moduleTestData.init(MODULE4_ID);
 		moduleTestData.init(MODULE5_ID);
-		moduleTestData.init(MODULE6_ID);
 	}
 }
