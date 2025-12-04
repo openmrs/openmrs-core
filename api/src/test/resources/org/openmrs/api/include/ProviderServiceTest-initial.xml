@@ -28,7 +28,7 @@
 	<provider_role provider_role_id="1011" name="Accompagnateur" creator="1" date_created="2005-09-22 00:00:00.0" 
 				   retired="true" retired_by="1" date_retired="2005-10-22 00:00:00.0" retire_reason="Unused" uuid="da7f623f-37ce-5bb2-86d6-6d1d05312bd5"/>
 
-	<provider provider_id="1" provider_role_id="1001" name="RobertClive" identifier="8A760" creator="1" date_created="2005-01-01 00:00:00.0"
+	<provider provider_id="1" provider_role_id="1001" name="RobertClive" person_id="1" identifier="8A760" creator="1" date_created="2005-01-01 00:00:00.0"
 			  retired="0" uuid="a2c3868a-6b90-11e0-93c3-18a905e044dc"/>
 	<provider provider_id="2" provider_role_id="1001" name="Roger" person_id="2" identifier="8A761" creator="1"
 			  date_created="2005-01-01 00:00:00.0" retired="0" uuid="a3a5913e-6b94-11e0-93c3-18a905e044dc"/>
@@ -46,6 +46,8 @@
 			  date_created="2005-01-01 00:00:00.0" retired="0" uuid="1f9e8336-6b95-11e0-93c3-18a905e044dc"/>
 	<provider provider_id="9" name="provider8" person_id="2" identifier="8C763" creator="1"
 			  date_created="2005-01-01 00:00:00.0" retired="1" uuid="1f9e8336-6b95-11e0-93c3-18a905e044dn"/>
+	<person person_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" gender="M"
+	        uuid="b3a5913e-6b94-11e0-93c3-18a905e044d1"/>
 	<person person_id="2" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" gender="M"
 	        uuid="a3a5913e-6b94-11e0-93c3-18a905e044d2"/>
 	<person person_id="6" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" gender="M"
