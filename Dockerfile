@@ -36,9 +36,11 @@ COPY liquibase/pom.xml liquibase/
 COPY api/pom.xml api/
 COPY web/pom.xml web/
 COPY webapp/pom.xml webapp/
-COPY test-module/pom.xml test-module/
-COPY test-module/api/pom.xml test-module/api/
-COPY test-module/omod/pom.xml test-module/omod/
+COPY test-suite/pom.xml test-suite/
+COPY test-suite/module/pom.xml test-suite/module/
+COPY test-suite/module/api/pom.xml test-suite/module/api/
+COPY test-suite/module/omod/pom.xml test-suite/module/omod/
+COPY test-suite/performance/pom.xml test-suite/performance/
 
 # Install dependencies
 # Commenting out as it fails with:
