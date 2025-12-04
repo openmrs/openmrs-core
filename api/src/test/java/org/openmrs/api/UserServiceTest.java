@@ -1750,4 +1750,34 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.getPerson().setGender("M");
 		return userService.createUser(u, "Openmr5xy");
 	}
+	
+	@Test
+	public void purgeRole_shouldUpdateParentRoleCacheWhenChildRoleIsDeleted() {
+		
+		Role parent = new Role("Parent Role", "Parent Description");
+		userService.saveRole(parent);
+
+		Context.flushSession();
+		Context.clearSession();
+		
+		Role parentRef = userService.getRole("Parent Role");
+
+		Role child = new Role("Child Role", "Child Description");
+		if (child.getInheritedRoles() == null) {
+			child.setInheritedRoles(new HashSet<>());
+		}
+		child.getInheritedRoles().add(parentRef);
+		userService.saveRole(child);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		Role parentToCache = userService.getRole("Parent Role");
+		assertEquals(1, parentToCache.getChildRoles().size()); 
+		
+		Role childToDelete = userService.getRole("Child Role");
+		userService.purgeRole(childToDelete);
+
+		assertEquals(0, parentToCache.getChildRoles().size());
+	}
 }
