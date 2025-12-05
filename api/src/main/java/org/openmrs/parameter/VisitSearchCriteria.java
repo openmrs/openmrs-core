@@ -42,6 +42,21 @@ public class VisitSearchCriteria {
 	private boolean includeVoided = false;
 	
 	/**
+	 * Pagination: index of first result to return (0-based)
+	 */
+	private Integer start;
+	
+	/**
+	 * Pagination: maximum number of results to return
+	 */
+	private Integer length;
+	
+	/**
+	 * Whether to eagerly fetch encounters for each visit to avoid N+1 queries
+	 */
+	private boolean fetchEncounters = false;
+
+	/**
 	 * Constructs a VisitSearchCriteria with the specified parameters. 
 	 * Instead of calling this constructor directly, it is recommended to use {@link VisitSearchCriteriaBuilder}.
 	 *
@@ -249,5 +264,50 @@ public class VisitSearchCriteria {
 	 */
 	public void setIncludeVoided(boolean includeVoided) {
 		this.includeVoided = includeVoided;
+	}
+
+    // --- ADD THESE GETTERS AND SETTERS ---
+    public Integer getStart() {
+        return start;
+    }
+
+	/**
+	 * Sets the starting index for pagination (0-based)
+	 * @param start the first result index to return
+	 */
+	public void setStart(Integer start) {
+		this.start = start;
+	}
+
+	/**
+	 * Gets the maximum number of results to return
+	 * @return the maximum number of results
+	 */
+	public Integer getLength() {
+		return length;
+	}
+
+	/**
+	 * Sets the maximum number of results to return
+	 * @param length the maximum number of results
+	 */
+	public void setLength(Integer length) {
+		this.length = length;
+	}
+
+	/**
+	 * Gets whether to eagerly fetch encounters for each visit
+	 * @return true if encounters should be eagerly fetched to avoid N+1 queries
+	 */
+	public boolean isFetchEncounters() {
+		return fetchEncounters;
+	}
+
+	/**
+	 * Sets whether to eagerly fetch encounters for each visit
+	 * @param fetchEncounters true to eagerly fetch encounters and avoid N+1 queries
+	 */
+	public void setFetchEncounters(boolean fetchEncounters) {
+		this.fetchEncounters = fetchEncounters;
 	}
 }
