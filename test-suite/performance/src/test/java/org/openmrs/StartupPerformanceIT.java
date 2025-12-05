@@ -51,7 +51,7 @@ import org.testcontainers.utility.MountableFile;
 /**
  * Tests the startup performance using a previous version of the application and comparing against the nightly image.
  */
-@Testcontainers(disabledWithoutDocker = true)
+@Testcontainers
 public class StartupPerformanceIT {
 	
 	private static final Logger logger = LoggerFactory.getLogger(StartupPerformanceIT.class);
