@@ -17,7 +17,6 @@ stages:
           jobs:
               - Unit Test
               - Integration Test
-              #- Performance Test
     - Deploy:
           manual: false
           final: false
@@ -104,26 +103,6 @@ Integration Test:
                       
                       docker run -v m2-repo:/root/.m2/repository --rm ${IMAGE} mvn test -Pskip-default-test -Pintegration-test
               description: Run integration tests
-    artifact-subscriptions: []
-Performance Test:
-    key: PIT
-    tasks:
-        # Checkout Task for default repository will be added implicitly during Specs import
-        - script:
-              interpreter: SHELL
-              scripts:
-                  - |-
-                      #!/bin/bash -eu
-                      
-                      set -x
-                      
-                      export IMAGE=${bamboo.docker.image.id}
-                      
-                      docker pull ${IMAGE}
-
-                      # docker.sock added so that tests have access to docker
-                      docker run -v /var/run/docker.sock:/var/run/docker.sock -v m2-repo:/root/.m2/repository --rm ${IMAGE} mvn test -Pskip-default-test -Pperformance-test
-              description: Run performance tests
     artifact-subscriptions: []
 Deploy to maven:
     key: DTM
