@@ -1047,6 +1047,16 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@Transactional
 	public void runCoreSetupOnVersionChange() throws DatabaseUpdateException {
+		if (!ModuleFactory.getLoadedModules().isEmpty()) {
+			String prevCoreVersion = getStoredCoreVersion() != null ? getStoredCoreVersion() : OpenmrsConstants.OPENMRS_VERSION_SHORT;
+			
+			for (Module module : ModuleFactory.getLoadedModules()) {
+				String prevModuleVersion = getStoredModuleVersion(module.getModuleId());
+				
+				module.getModuleActivator().setupOnVersionChangeBeforeSchemaChanges(prevCoreVersion, prevModuleVersion);
+			}
+		}
+		
 		DatabaseUpdater.executeChangelog();
 		storeCoreVersion();
 	}
@@ -1064,8 +1074,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		String moduleId = module.getModuleId();
 		String prevCoreVersion = getStoredCoreVersion() != null ? getStoredCoreVersion() : OpenmrsConstants.OPENMRS_VERSION_SHORT;
 		String prevModuleVersion = getStoredModuleVersion(moduleId);
-
-		module.getModuleActivator().setupOnVersionChangeBeforeSchemaChanges(prevCoreVersion, prevModuleVersion);
+		
 		ModuleFactory.runLiquibaseForModule(module);
 		module.getModuleActivator().setupOnVersionChange(prevCoreVersion, prevModuleVersion);
 		
