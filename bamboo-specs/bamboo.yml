@@ -120,8 +120,9 @@ Performance Test:
                       export IMAGE=${bamboo.docker.image.id}
                       
                       docker pull ${IMAGE}
-                      
-                      docker run -v m2-repo:/root/.m2/repository --rm ${IMAGE} mvn test -Pskip-default-test -Pperformance-test
+
+					  # docker.sock added so that tests have access to docker
+                      docker run -v /var/run/docker.sock:/var/run/docker.sock -v m2-repo:/root/.m2/repository --rm ${IMAGE} mvn test -Pskip-default-test -Pperformance-test
               description: Run performance tests
     artifact-subscriptions: []
 Deploy to maven:
