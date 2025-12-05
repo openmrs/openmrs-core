@@ -57,7 +57,7 @@
 		<module>web</module>
 		<module>webapp</module>
 		<module>liquibase</module>
-		<module>test-module</module>
+		<module>test-suite</module>
 	</modules>
 
 	<dependencyManagement>
@@ -615,12 +615,26 @@
 			<dependency>
 				<groupId>com.adobe.testing</groupId>
 				<artifactId>s3mock-testcontainers</artifactId>
-				<version>4.10.0</version>
+				<version>4.11.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.logging</groupId>
 				<artifactId>jboss-logging</artifactId>
 				<version>3.6.1.Final</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.graalvm.js</groupId>
+				<artifactId>js</artifactId>
+				<version>${graalJsVersion}</version>
+				<type>pom</type>
+			</dependency>
+
+			<dependency>
+				<groupId>org.graalvm.js</groupId>
+				<artifactId>js-scriptengine</artifactId>
+				<version>${graalJsVersion}</version>
+				<type>pom</type>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -636,7 +650,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.3.1</version>
+					<version>3.4.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.1.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -672,7 +691,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>3.5.0</version>
+					<version>3.5.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -738,7 +757,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>3.3.0</version>
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
@@ -853,7 +872,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.3.0.6276</version>
+					<version>5.4.0.6343</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -942,7 +961,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.7.1</version>
+					<version>3.8.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.liquibase</groupId>
@@ -995,6 +1014,9 @@
 					<systemProperties>
 						<log4j2.disable.jmx>true</log4j2.disable.jmx>
 					</systemProperties>
+					<systemPropertyVariables>
+						<project.version>${project.version}</project.version>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -1193,12 +1215,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.1</version>
+						<version>1.18.2</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.1</version>
+						<version>1.18.2</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1219,12 +1241,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.1</version>
+						<version>1.18.2</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.1</version>
+						<version>1.18.2</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1245,12 +1267,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.1</version>
+						<version>1.18.2</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.1</version>
+						<version>1.18.2</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1343,6 +1365,7 @@
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.25.2</log4jVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
+		<graalJsVersion>25.0.1</graalJsVersion>
 
 		<customArgLineForTesting />
 

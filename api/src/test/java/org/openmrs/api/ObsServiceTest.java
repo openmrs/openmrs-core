@@ -1459,7 +1459,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 			os.registerHandler("ImageHandler", originalHandler);
 		}
 	}
-
+	
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
 	 */
