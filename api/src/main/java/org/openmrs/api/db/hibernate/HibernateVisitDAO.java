@@ -11,6 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -116,7 +118,7 @@ public class HibernateVisitDAO implements VisitDAO {
 		CriteriaQuery<VisitType> cq = cb.createQuery(VisitType.class);
 		Root<VisitType> root = cq.from(VisitType.class);
 		
-		cq.where(cb.like(cb.lower(root.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(fuzzySearchPhrase)));
+		cq.where(cb.like(cb.lower(root.get("name")), "%" + fuzzySearchPhrase.toLowerCase() + "%"));
 		cq.orderBy(cb.asc(root.get("name")));
 		
 		return session.createQuery(cq).getResultList();
@@ -293,15 +295,26 @@ public class HibernateVisitDAO implements VisitDAO {
 			predicates.add(cb.isFalse(root.get("voided")));
 		}
 		
-		cq.where(predicates.toArray(new Predicate[]{}))
+		if (criteria.isFetchEncounters()) {
+			root.fetch("encounters", JoinType.LEFT);
+			cq.distinct(true);
+		}		cq.where(predicates.toArray(new Predicate[]{}))
 			.orderBy(cb.desc(root.get("startDatetime")), cb.desc(root.get("visitId")));
 		
-		List<Visit> visits = session.createQuery(cq).getResultList();
+		Query<Visit> query = session.createQuery(cq);
 		
-		if (criteria.getSerializedAttributeValues() != null) {
-			CollectionUtils.filter(visits, new AttributeMatcherPredicate<Visit, VisitAttributeType>(
-				criteria.getSerializedAttributeValues()));
+		if (criteria.getStart() != null) {
+			query.setFirstResult(criteria.getStart());
 		}
+
+		if (criteria.getLength() != null) {
+			query.setMaxResults(criteria.getLength());
+		}        List<Visit> visits = query.getResultList();
+
+        if (criteria.getSerializedAttributeValues() != null) {
+            CollectionUtils.filter(visits, new AttributeMatcherPredicate<Visit, VisitAttributeType>(
+                criteria.getSerializedAttributeValues()));
+        }
 		
 		return visits;
 	}
