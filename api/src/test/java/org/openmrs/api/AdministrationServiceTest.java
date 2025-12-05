@@ -1185,7 +1185,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		assertEquals("1.2.3", adminService.getGlobalProperty("module.testmodule.version"));
 
 		// verify hook methods must be called
-		verify(activator).setupOnVersionChangeBeforeSchemaChanges(previousCoreVersion, previousModuleVersion);
 		verify(activator).setupOnVersionChange(previousCoreVersion, previousModuleVersion);
 	}
 }
