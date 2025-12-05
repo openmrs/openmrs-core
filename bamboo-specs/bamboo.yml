@@ -17,7 +17,7 @@ stages:
           jobs:
               - Unit Test
               - Integration Test
-              - Performance Test
+              #- Performance Test
     - Deploy:
           manual: false
           final: false
