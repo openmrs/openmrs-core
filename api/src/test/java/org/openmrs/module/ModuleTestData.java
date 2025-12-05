@@ -27,6 +27,10 @@ public class ModuleTestData {
 	
 	private Map<String, Integer> stoppedCallCount = new HashMap<>();
 	
+	private Map<String, Integer> setupOnVersionChangeBeforeSchemaChangesCallCount = new HashMap<>();
+
+	private Map<String, Integer> setupOnVersionChangeCallCount = new HashMap<>();
+	
 	private Map<String, Long> willRefreshContextCallTime = new HashMap<>();
 	
 	private Map<String, Long> contextRefreshedCallTime = new HashMap<>();
@@ -38,6 +42,10 @@ public class ModuleTestData {
 	private Map<String, Long> willStopCallTime = new HashMap<>();
 	
 	private Map<String, Long> stoppedCallTime = new HashMap<>();
+	
+	private Map<String, Long> setupOnVersionChangeBeforeSchemaChangesCallTime = new HashMap<>();
+
+	private Map<String, Long> setupOnVersionChangeCallTime = new HashMap<>();
 	
 	private ModuleTestData() {
 		
@@ -59,6 +67,8 @@ public class ModuleTestData {
 		startedCallCount.put(moduleId, 0);
 		willStopCallCount.put(moduleId, 0);
 		stoppedCallCount.put(moduleId, 0);
+		setupOnVersionChangeBeforeSchemaChangesCallCount.put(moduleId, 0);
+		setupOnVersionChangeCallCount.put(moduleId, 0);
 		
 		willRefreshContextCallTime.put(moduleId, 0L);
 		contextRefreshedCallTime.put(moduleId, 0L);
@@ -66,6 +76,8 @@ public class ModuleTestData {
 		startedCallTime.put(moduleId, 0L);
 		willStopCallTime.put(moduleId, 0L);
 		stoppedCallTime.put(moduleId, 0L);
+		setupOnVersionChangeBeforeSchemaChangesCallTime.put(moduleId, 0L);
+		setupOnVersionChangeCallTime.put(moduleId, 0L);
 	}
 	
 	public synchronized Integer getWillRefreshContextCallCount(String moduleId) {
@@ -110,6 +122,22 @@ public class ModuleTestData {
 	
 	public synchronized Integer getStoppedCallCount(String moduleId) {
 		Integer count = stoppedCallCount.get(moduleId);
+		if (count == null) {
+			count = 0;
+		}
+		return count;
+	}
+	
+	public synchronized Integer getSetupOnVersionChangeBeforeSchemaChangesCallCount(String moduleId) {
+		Integer count = setupOnVersionChangeBeforeSchemaChangesCallCount.get(moduleId);
+		if (count == null) {
+			count = 0;
+		}
+		return count;
+	}
+
+	public synchronized Integer getSetupOnVersionChangeCallCount(String moduleId) {
+		Integer count = setupOnVersionChangeCallCount.get(moduleId);
 		if (count == null) {
 			count = 0;
 		}
@@ -176,6 +204,26 @@ public class ModuleTestData {
 		stoppedCallCount.put(moduleId, count + 1);
 	}
 	
+	public synchronized void setupOnVersionChangeBeforeSchemaChanges(String moduleId) {
+		setupOnVersionChangeBeforeSchemaChangesCallTime.put(moduleId, new Date().getTime());
+
+		Integer count = setupOnVersionChangeBeforeSchemaChangesCallCount.get(moduleId);
+		if (count == null) {
+			count = 0;
+		}
+		setupOnVersionChangeBeforeSchemaChangesCallCount.put(moduleId, count + 1);
+	}
+
+	public synchronized void setupOnVersionChange(String moduleId) {
+		setupOnVersionChangeCallTime.put(moduleId, new Date().getTime());
+
+		Integer count = setupOnVersionChangeCallCount.get(moduleId);
+		if (count == null) {
+			count = 0;
+		}
+		setupOnVersionChangeCallCount.put(moduleId, count + 1);
+	}
+	
 	public synchronized Long getWillRefreshContextCallTime(String moduleId) {
 		return willRefreshContextCallTime.get(moduleId);
 	}
@@ -198,5 +246,13 @@ public class ModuleTestData {
 	
 	public synchronized Long getStoppedCallTime(String moduleId) {
 		return stoppedCallTime.get(moduleId);
+	}
+	
+	public synchronized Long getSetupOnVersionChangeBeforeSchemaChangesCallTime(String moduleId) {
+		return setupOnVersionChangeBeforeSchemaChangesCallTime.get(moduleId);
+	}
+
+	public synchronized Long getSetupOnVersionChangeCallTime(String moduleId) {
+		return setupOnVersionChangeCallTime.get(moduleId);
 	}
 }
