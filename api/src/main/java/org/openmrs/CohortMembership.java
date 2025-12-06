@@ -12,25 +12,45 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Objects;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * @since 2.1.0
  */
+@Entity
+@Table (name = "cohort_member")
 @Audited
 public class CohortMembership extends BaseChangeableOpenmrsData implements Comparable<CohortMembership> {
 	
 	public static final long serialVersionUID = 0L;
 
+	@Id
+	@Column (name = "cohort_member_id")
+	@GeneratedValue (generator = "native")
+	@GenericGenerator(
+		name = "native",
+		strategy = "native",
+		parameters = {
+			@Parameter(name = "sequence", value = "cohort_member_cohort_member_id_seq")
+	}
+	)
 	private Integer cohortMemberId;
 	
+	@ManyToOne
+	@JoinColumn (name = "cohort_id", nullable = false)
 	private Cohort cohort;
 	
+	@Column (name = "patient_id", nullable = false)
 	private Integer patientId;
 	
+	@Column (name = "start_date", nullable = false, length = 19)
 	private Date startDate;
 	
+	@Column (name = "end_date", length = 19)
 	private Date endDate;
 	
 	// Constructor
