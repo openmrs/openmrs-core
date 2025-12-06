@@ -1,3 +1,4 @@
+#set( $progressPercent = 20 )
 #parse($HEADER_TEMPLATE)
 <div class="page-container">
     <div class="content-container">

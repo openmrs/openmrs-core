@@ -1,5 +1,5 @@
+#set($progressPercent = 80)
 #parse($HEADER_TEMPLATE)
-
 <div class="content-container">
     <form method="post" class="setup-form">
         <input type="hidden" name="page" value="wizardcomplete.vm" />
