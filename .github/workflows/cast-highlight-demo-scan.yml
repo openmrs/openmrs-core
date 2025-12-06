@@ -4,7 +4,7 @@ description: Run CAST Highlight scans on your code to get Software Intelligence 
 
 on: # action triggers, here every two weeks (days 5 and 15 of the month) at 6am
   schedule:
-    - cron: "0 23 * * 0" # Sunday Friday at 11pm
+    - cron: "0 23 * * 6" # Every Saturday at 11pm
   workflow_dispatch:
     branches:
       - master
