@@ -14,15 +14,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.openmrs</groupId>
-		<artifactId>openmrs</artifactId>
+		<groupId>org.openmrs.test-suite</groupId>
+		<artifactId>openmrs-test-suite</artifactId>
 		<version>3.0.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.openmrs.module</groupId>
-	<artifactId>openmrs-test-module</artifactId>
+	<artifactId>openmrs-test-suite-module</artifactId>
 	<packaging>pom</packaging>
-	<name>openmrs-test-module</name>
+	<name>openmrs-test-suite-module</name>
 	<description>
 		Test Module is used to verify the OpenMRS testing framework for modules against the current version of openmrs-core. 
 		It is not intended to be used as a generic module archetype as it runs in the maven context of openmrs-core.
@@ -150,7 +150,7 @@
 				<groupId>com.mycila</groupId>
 				<artifactId>license-maven-plugin</artifactId>
 				<configuration>
-					<header>${project.basedir}/../license-header.txt</header>
+					<header>${project.parent.basedir}/../license-header.txt</header>
 				</configuration>
 			</plugin>
 			<plugin>
