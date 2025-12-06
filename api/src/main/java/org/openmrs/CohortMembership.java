@@ -12,25 +12,61 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AssociationOverride;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * @since 2.1.0
  */
+@Entity
+@Table(name = "cohort_member")
 @Audited
+/**
+ * The cohort_member table does not track modification details (date_changed, changed_by),
+ * but this class extends BaseChangeableOpenmrsData which requires them.
+ * We map these inherited fields to the creation fields (date_created, creator) as read-only
+ * to satisfy Hibernate validation without altering the legacy schema.
+ */
+@AttributeOverride(name = "dateChanged", column = @Column(name = "date_created", insertable = false, updatable = false))
+@AssociationOverride(name = "changedBy", joinColumns = @JoinColumn(name = "creator", insertable = false, updatable = false))
 public class CohortMembership extends BaseChangeableOpenmrsData implements Comparable<CohortMembership> {
 	
 	public static final long serialVersionUID = 0L;
 
+	@Id
+	@Column(name = "cohort_member_id")
+	@GeneratedValue(generator = "native")
+	@GenericGenerator(
+		name = "native",
+		strategy = "native",
+		parameters = {
+			@Parameter(name = "sequence", value = "cohort_member_cohort_member_id_seq")
+	}
+	)
 	private Integer cohortMemberId;
 	
+	@ManyToOne
+	@JoinColumn(name = "cohort_id", nullable = false)
 	private Cohort cohort;
 	
+	@Column (name = "patient_id", nullable = false)
 	private Integer patientId;
 	
+	@Column (name = "start_date", nullable = false, length = 19)
 	private Date startDate;
 	
+	@Column (name = "end_date", length = 19)
 	private Date endDate;
 	
 	// Constructor
