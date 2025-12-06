@@ -9,9 +9,13 @@
  */
 package org.openmrs.util;
 
+
+import org.apache.commons.io.FileUtils;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -24,6 +28,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+
+import java.io.File;
+// import org.openmrs.util.OpenmrsUtil;
+// import org.apache.commons.io.FileUtils;
+
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -151,6 +161,67 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		
 		assertTrue(OpenmrsUtil.collectionContains(identifiers, pi), "Just because the date is null, doesn't make it not in the list anymore");
 	}
+
+
+	/*
+	 Adding JUnit tests  for OpenmrsUtil.getFileAsBytes()
+	*/
+
+	@Test
+	public void getFileAsBytes_shouldReturnByteArrayForValidFile() throws Exception {
+    	// Create temporary file
+    	File temp = File.createTempFile("openmrs-test-", ".txt");
+    	String content = "Hello OpenMRS";
+    	FileUtils.writeStringToFile(temp, content, StandardCharsets.UTF_8);
+
+    	// Call method
+    	byte[] result = OpenmrsUtil.getFileAsBytes(temp);
+
+    	// Verify
+    	assertNotNull(result);
+    	assertArrayEquals(content.getBytes(StandardCharsets.UTF_8), result);
+
+    	temp.delete();
+	}
+
+	@Test
+	public void getFileAsBytes_shouldReturnEmptyArrayForEmptyFile() throws Exception {
+    	File temp = File.createTempFile("openmrs-test-empty-", ".txt");
+
+    	byte[] result = OpenmrsUtil.getFileAsBytes(temp);
+
+    	assertNotNull(result);
+    	assertEquals(0, result.length);
+
+    	temp.delete();
+	}
+
+	@Test
+	public void getFileAsBytes_shouldReturnNullForNullInput() throws Exception {
+    	byte[] result = OpenmrsUtil.getFileAsBytes(null);
+    	assertNull(result);
+	}
+
+	@Test
+	public void getFileAsBytes_shouldReturnNullForNonExistentFile() throws Exception {
+    	File fake = new File("this/path/does/not/exist.txt");
+
+    	byte[] result = null;
+    	try {
+        	result = OpenmrsUtil.getFileAsBytes(fake);
+    	} catch (Exception ignored) {
+        	// Method should NOT throw — it handles exceptions internally
+    	}
+
+    	assertNull(result);
+	}
+
+	
+
+	// -----------------------------------------------------------------------------------------------------------
+
+
+
 	
 	/**
 	 * When given a null parameter, the {@link OpenmrsUtil#url2file(java.net.URL)} method should
