@@ -34,7 +34,16 @@ import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+import org.openmrs.api.OpenmrsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -884,6 +893,10 @@ public class ModuleUtil {
 		ServiceContext.getInstance().startRefreshingContext();
 		try {
 			ctx.refresh();
+			// TRUNK-6421: warn if XML-declared services also use annotations like @Autowired
+			if (isOpenmrsStartup) {
+				logWarningsForAnnotatedXmlServices(ctx);
+			}
 		}
 		finally {
 			ServiceContext.getInstance().doneRefreshingContext();
@@ -950,6 +963,74 @@ public class ModuleUtil {
 		}
 		
 		return ctx;
+	}
+	private static void logWarningsForAnnotatedXmlServices(AbstractRefreshableApplicationContext ctx) {
+
+		if (!(ctx instanceof ConfigurableApplicationContext)) {
+			return;
+		}
+
+		ConfigurableListableBeanFactory factory =
+			((ConfigurableApplicationContext) ctx).getBeanFactory();
+
+		for (String beanName : factory.getBeanDefinitionNames()) {
+			BeanDefinition def = factory.getBeanDefinition(beanName);
+			String beanClassName = def.getBeanClassName();
+
+			if (beanClassName == null) {
+				continue;
+			}
+
+			Class<?> beanClass;
+			try {
+				beanClass = Class.forName(beanClassName);
+			}
+			catch (ClassNotFoundException e) {
+				log.debug("Unable to load class {} for bean {}", beanClassName, beanName, e);
+				continue;
+			}
+
+			if (!OpenmrsService.class.isAssignableFrom(beanClass)) {
+				continue;
+			}
+
+			boolean hasAutowired = false;
+			
+			for (Field field : beanClass.getDeclaredFields()) {
+				if (AnnotationUtils.getAnnotation(field, Autowired.class) != null) {
+					hasAutowired = true;
+					break;
+				}
+			}
+			
+			if (!hasAutowired) {
+				for (Constructor<?> ctor : beanClass.getDeclaredConstructors()) {
+					if (AnnotationUtils.getAnnotation(ctor, Autowired.class) != null) {
+						hasAutowired = true;
+						break;
+					}
+				}
+			}
+			
+			if (!hasAutowired) {
+				for (Method method : beanClass.getDeclaredMethods()) {
+					if (AnnotationUtils.getAnnotation(method, Autowired.class) != null) {
+						hasAutowired = true;
+						break;
+					}
+				}
+			}
+
+			if (!hasAutowired) {
+				continue;
+			}
+			
+			log.warn("TRUNK-6421: Service bean '{}' ({}) appears to be declared via XML " +
+					"and also uses @Autowired annotations. This combination can lead to " +
+					"slow context refresh when mixing XML-declared services with " +
+					"annotation-based injection. See TRUNK-6363.",
+				beanName, beanClassName);
+		}
 	}
 	
 	/**
