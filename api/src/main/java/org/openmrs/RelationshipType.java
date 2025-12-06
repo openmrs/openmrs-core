@@ -9,7 +9,10 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.*;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
@@ -33,21 +36,32 @@ import org.hibernate.envers.Audited;
  * In English, we run into a tricky RelationshipType with aunts and uncles. We have chosen to define
  * them as aunt/uncle-niece/nephew.
  */
+@Entity
+@Table (name = "relationship_type")
 @Audited
+@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
 public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	
 	public static final long serialVersionUID = 4223L;
 	
 	// Fields
-	
+	@Id
+	@Column(name = "relationship_type_id")
+	@GeneratedValue(generator = "native")
+	@GenericGenerator(name = "native", strategy = "native", parameters = {
+	        @Parameter(name = "sequence", value = "relationship_type_relationship_type_id_seq") })
 	private Integer relationshipTypeId;
 	
+	@Column(name = "a_is_to_b", nullable = false, length = 50) 
 	private String aIsToB;
 	
+	@Column (name = "b_is_to_a", nullable = false, length = 50)
 	private String bIsToA;
 	
+	@Column (nullable = false)
 	private Integer weight = 0;
 	
+	@Column (nullable = false)
 	private Boolean preferred = false;
 	
 	// Constructors
