@@ -11,6 +11,7 @@ package org.openmrs;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.Date;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -89,7 +90,10 @@ public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.
 
 	@Column(name = "sort_weight")
 	protected Float sortWeight;
-	
+
+	@Column(name = "date_retired")
+	private Date dateRetired;
+
 	// Constructors
 	
 	/** default constructor */
