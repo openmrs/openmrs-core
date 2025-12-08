@@ -31,6 +31,8 @@ jobs:
           #- platform: windows-latest
           #  java-version: 24
     runs-on: ${{ matrix.platform }}
+    # Do not run performance tests on PRs
+    if: ${{ matrix.test-profile != 'Pperformance-test -Pskip-default-test' || (github.ref == 'refs/heads/main' && github.event_name != 'pull_request') }}
     steps:
       - uses: actions/checkout@v6
       - name: Setup JDK
