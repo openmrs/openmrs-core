@@ -24,7 +24,7 @@ jobs:
           - 21
 #          Current spring version only supports up to java 21
 #          - 24
-        test-profile: ["", "-Pskip-default-test -Pintegration-test", "-Pskip-default-test -Pperformance-test"]
+        test-profile: ["", "-Pintegration-test -Pskip-default-test", "-Pperformance-test -Pskip-default-test"]
         exclude:
           - platform: windows-latest
             java-version: 21
