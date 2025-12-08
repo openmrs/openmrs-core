@@ -327,52 +327,52 @@ public class PersonMergeLogData {
 	 * @return hash value
 	 */
 	public int computeHashValue() {
-		String str = "";
+		StringBuilder str = new StringBuilder();
 		if (getCreatedAddresses() != null) {
-			str += getCreatedAddresses().toString();
+			str.append(getCreatedAddresses().toString());
 		}
 		if (getCreatedAttributes() != null) {
-			str += getCreatedAttributes().toString();
+			str.append(getCreatedAttributes().toString());
 		}
 		if (getCreatedIdentifiers() != null) {
-			str += getCreatedIdentifiers().toString();
+			str.append(getCreatedIdentifiers().toString());
 		}
 		if (getCreatedNames() != null) {
-			str += getCreatedNames().toString();
+			str.append(getCreatedNames().toString());
 		}
 		if (getCreatedOrders() != null) {
-			str += getCreatedOrders().toString();
+			str.append(getCreatedOrders().toString());
 		}
 		if (getCreatedPrograms() != null) {
-			str += getCreatedPrograms().toString();
+			str.append(getCreatedPrograms().toString());
 		}
 		if (getMovedPrograms() != null) {
-			str += getMovedPrograms().toString();
+			str.append(getMovedPrograms().toString());
 		}
 		if (getCreatedRelationships() != null) {
-			str += getCreatedRelationships().toString();
+			str.append(getCreatedRelationships().toString());
 		}
 		if (getVoidedRelationships() != null) {
-			str += getVoidedRelationships().toString();
+			str.append(getVoidedRelationships().toString());
 		}
 		if (getMovedVisits() != null) {
-			str += getMovedVisits().toString();
+			str.append(getMovedVisits().toString());
 		}
 		if (getMovedEncounters() != null) {
-			str += getMovedEncounters().toString();
+			str.append(getMovedEncounters().toString());
 		}
 		if (getMovedIndependentObservations() != null) {
-			str += getMovedIndependentObservations().toString();
+			str.append(getMovedIndependentObservations().toString());
 		}
 		if (getMovedUsers() != null) {
-			str += getMovedUsers().toString();
+			str.append(getMovedUsers().toString());
 		}
-		str += getPriorCauseOfDeath();
-		str += getPriorGender();
-		str += (getPriorDateOfBirth() != null) ? getPriorDateOfBirth().toString() : getPriorDateOfBirth();
-		str += (getPriorDateOfBirth() != null) ? getPriorDateOfDeath().toString() : getPriorDateOfDeath();
-		str += isPriorDateOfBirthEstimated();
-		return str.hashCode();
+		str.append(getPriorCauseOfDeath());
+		str.append(getPriorGender());
+		str.append((getPriorDateOfBirth() != null) ? getPriorDateOfBirth().toString() : getPriorDateOfBirth());
+		str.append((getPriorDateOfBirth() != null) ? getPriorDateOfDeath().toString() : getPriorDateOfDeath());
+		str.append(isPriorDateOfBirthEstimated());
+		return str.toString().hashCode();
 	}
 	
 }
