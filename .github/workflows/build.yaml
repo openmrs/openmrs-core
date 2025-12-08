@@ -43,9 +43,13 @@ jobs:
             java-version: 21
           #- platform: windows-latest
           #  java-version: 24
-          # Do not run performance tests on PRs
+          # Do not run performance tests on PRs and older Java versions
           - test-profile: '-Pperformance-test -Pskip-default-test'
             isPR: true
+          - test-profile: '-Pperformance-test -Pskip-default-test'
+            java-version: 8
+          - test-profile: '-Pperformance-test -Pskip-default-test'
+            java-version: 11
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
