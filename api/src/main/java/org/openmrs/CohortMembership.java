@@ -15,14 +15,13 @@ import java.util.Objects;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AssociationOverride;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -46,14 +45,7 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 
 	@Id
 	@Column(name = "cohort_member_id")
-	@GeneratedValue(generator = "native")
-	@GenericGenerator(
-		name = "native",
-		strategy = "native",
-		parameters = {
-			@Parameter(name = "sequence", value = "cohort_member_cohort_member_id_seq")
-	}
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer cohortMemberId;
 	
 	@ManyToOne
