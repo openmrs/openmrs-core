@@ -13,11 +13,10 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
@@ -59,9 +58,7 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	// Fields
 	@Id
 	@Column(name = "relationship_type_id")
-	@GeneratedValue(generator = "native")
-	@GenericGenerator(name = "native", strategy = "native", parameters = {
-	        @Parameter(name = "sequence", value = "relationship_type_relationship_type_id_seq") })
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer relationshipTypeId;
 	
 	@Column(name = "a_is_to_b", nullable = false, length = 50) 
