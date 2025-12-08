@@ -24,8 +24,8 @@ jobs:
           - 21
 #          Current spring version only supports up to java 21
 #          - 24
-        isMaster:
-            - ${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' }}
+        isPR:
+            - ${{ github.event_name == 'pull_request' }}
         test-profile: ["", "-Pintegration-test -Pskip-default-test", "-Pperformance-test -Pskip-default-test"]
         exclude:
           - platform: windows-latest
@@ -34,7 +34,7 @@ jobs:
           #  java-version: 24
           # Do not run performance tests on PRs
           - test-profile: '-Pperformance-test -Pskip-default-test'
-            isMaster: false
+            isPR: true
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
