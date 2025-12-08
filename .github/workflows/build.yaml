@@ -24,12 +24,17 @@ jobs:
           - 21
 #          Current spring version only supports up to java 21
 #          - 24
+        isNotPR:
+            - ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
         test-profile: ["", "-Pintegration-test -Pskip-default-test", "-Pperformance-test -Pskip-default-test"]
         exclude:
           - platform: windows-latest
             java-version: 21
           #- platform: windows-latest
           #  java-version: 24
+          # Do not run performance tests on PRs
+          - test-profile: '-Pperformance-test -Pskip-default-test'
+            isNotPR: false
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
@@ -42,8 +47,6 @@ jobs:
       - name: Install dependencies
         run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --file pom.xml
       - name: Test
-        # Do not run performance tests on PRs
-        if: ${{ matrix.test-profile != 'Pperformance-test -Pskip-default-test' || (github.ref == 'refs/heads/main' && github.event_name != 'pull_request') }}
         run: mvn test ${{ matrix.test-profile }} --batch-mode --file pom.xml
       # this is necessary to populate the environment variables for Coveralls properly
       - name: Set branch name and PR number
