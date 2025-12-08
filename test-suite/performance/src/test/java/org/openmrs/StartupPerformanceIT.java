@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -27,9 +27,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.Containers;
 import org.slf4j.Logger;
@@ -39,6 +39,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.SelinuxContext;
+import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
@@ -53,7 +54,7 @@ import org.testcontainers.utility.MountableFile;
 public class StartupPerformanceIT {
 	
 	private static final Logger logger = LoggerFactory.getLogger(StartupPerformanceIT.class);
-	private static final Logger containerLogger = LoggerFactory.getLogger("containerLogger");
+	private static final Logger containerLogger = LoggerFactory.getLogger("testContainersLogger");
 
 	private static final List<String> CORE_MINOR_VERSIONS = Arrays.asList("2.5", "2.6", "2.7", "2.8", "2.9", "3.0");
 	private static final String PROJECT_VERSION = System.getProperty("project.version");
@@ -79,8 +80,8 @@ public class StartupPerformanceIT {
 	@Test
 	public void shouldFailIfStartupTimeOfO3Increases() throws SQLException, IOException {
 		//Using O3 3.6.x as a reference, which is running on openmrs-core 2.8.x
-		compareStartupPerformance("openmrs/openmrs-reference-application-3-backend:3.6.x",
-				"openmrs/openmrs-reference-application-3-backend:nightly", Duration.ofSeconds(0));
+		compareStartupPerformance("openmrs/openmrs-reference-application-3-backend:3.6.x-no-demo",
+				"openmrs/openmrs-reference-application-3-backend:3.6.x-no-demo", Duration.ofSeconds(0));
 	}
 
 
@@ -117,6 +118,32 @@ public class StartupPerformanceIT {
 	}
 
 	/**
+	 * Consumes only lines starting with a level according to the OpenMRS Log4j2 configuration.
+	 * It won't accept Tomcat or startup bash script logs, which do not match the pattern and are 
+	 * wrongly interpreted as errors.
+	 */
+	public static class OpenMRSLogConsumer extends Slf4jLogConsumer {
+
+		public OpenMRSLogConsumer(Logger logger) {
+			super(logger);
+		}
+
+		public OpenMRSLogConsumer(Logger logger, boolean separateOutputStreams) {
+			super(logger, separateOutputStreams);
+		}
+		
+		@Override
+		public void accept(OutputFrame outputFrame) {
+			if (!outputFrame.getUtf8String().startsWith("ERROR") || !outputFrame.getUtf8String().startsWith("WARN")
+				|| !outputFrame.getUtf8String().startsWith("INFO")  || !outputFrame.getUtf8String().startsWith("DEBUG") 
+				|| !outputFrame.getUtf8String().startsWith("TRACE")) {
+				return;
+			}
+			super.accept(outputFrame);
+		}
+	} 
+
+	/**
 	 * Compares startup performance.
 	 * 
 	 * @param fromImage docker distro image to compare
@@ -126,7 +153,7 @@ public class StartupPerformanceIT {
 	 */
 	private void compareStartupPerformance(String fromImage, String toImage, Duration timeDiffAccepted) throws IOException, SQLException {
 		clearDB();
-		Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(containerLogger).withSeparateOutputStreams();
+		Consumer<OutputFrame> logConsumer = new OpenMRSLogConsumer(containerLogger).withSeparateOutputStreams();
 		long fromContainerStartupTime;
 		long toContainerStartupTime;
 		File tempDirectory = Files.createTempDirectory("test").toFile();
@@ -148,7 +175,7 @@ public class StartupPerformanceIT {
 				toContainer.addFileSystemBind(tempDirectory.getAbsolutePath(), "/openmrs/data/", BindMode.READ_WRITE,
 						SelinuxContext.SHARED);
 				assertThat("The test must run after webapp is packaged",
-						Files.exists(Path.of("../../webapp/target/openmrs.war")), is(true));
+						Files.exists(Paths.get("../../webapp/target/openmrs.war")), is(true));
 				toContainer.withCopyFileToContainer(MountableFile.forHostPath("../../webapp/target/openmrs.war"),
 						"/openmrs/distribution/openmrs_core/openmrs.war");
 				// Do not measure initial setup
@@ -169,13 +196,13 @@ public class StartupPerformanceIT {
 		assertThat(diff, lessThan(timeDiffAccepted.getSeconds() + 10)); //10s is an accepted variation between runs
 	}
 	
-	private long measureMeanStartupTime(GenericContainer<?> releasedVersion) {
+	private long measureMeanStartupTime(GenericContainer<?> container) {
 		List<Long> times = new ArrayList<>();
 		for (int i = 0; i < 3; i++) {
 			long start = System.nanoTime();
-			releasedVersion.start();
+			container.start();
 			times.add(System.nanoTime() - start);
-			releasedVersion.stop();
+			container.stop();
 		}
 		return (long) times.stream().mapToLong(Long::longValue).average().orElse(0);
 	}
@@ -191,7 +218,7 @@ public class StartupPerformanceIT {
 		}
 	}
 
-	private GenericContainer<?> newOpenMRSContainer(String image, Slf4jLogConsumer logConsumer) {
+	private GenericContainer<?> newOpenMRSContainer(String image, Consumer<OutputFrame> logConsumer) {
 		return new GenericContainer<>(image)
 				.withExposedPorts(8080)
 				.withNetwork(dbContainer.getNetwork())
