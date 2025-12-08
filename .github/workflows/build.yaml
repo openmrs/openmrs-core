@@ -6,10 +6,12 @@ on:
   push:
     branches:
       - master
+      - 2.9.x
       - 2.8.x
   pull_request:
     branches:
       - master
+      - 2.9.x
       - 2.8.x
   workflow_dispatch:
 
@@ -29,8 +31,8 @@ jobs:
           - 21
           # Infinispan 13.x is not compatible with Java 24. It can only be upgraded with Hibernate 6.x
           #- 24
-        isMaster:
-          - ${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' }}
+        isPR:
+          - ${{ github.event_name == 'pull_request' }}
         test-profile: ["", "-Pintegration-test -Pskip-default-test", "-Pperformance-test -Pskip-default-test"]
         exclude:
           - platform: windows-latest
@@ -43,7 +45,7 @@ jobs:
           #  java-version: 24
           # Do not run performance tests on PRs
           - test-profile: '-Pperformance-test -Pskip-default-test'
-            isMaster: false
+            isPR: true
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
