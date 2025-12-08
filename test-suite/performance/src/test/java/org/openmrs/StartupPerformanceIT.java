@@ -55,7 +55,7 @@ import org.testcontainers.utility.MountableFile;
 public class StartupPerformanceIT {
 	
 	private static final Logger logger = LoggerFactory.getLogger(StartupPerformanceIT.class);
-	private static final Logger containerLogger = LoggerFactory.getLogger("containerLogger");
+	private static final Logger containerLogger = LoggerFactory.getLogger("testContainersLogger");
 
 	private static final List<String> CORE_MINOR_VERSIONS = Arrays.asList("2.5", "2.6", "2.7", "2.8", "2.9", "3.0");
 	private static final String PROJECT_VERSION = System.getProperty("project.version");
@@ -121,6 +121,32 @@ public class StartupPerformanceIT {
 	}
 
 	/**
+	 * Consumes only lines starting with a level according to the OpenMRS Log4j2 configuration.
+	 * It won't accept Tomcat or startup bash script logs, which do not match the pattern and are 
+	 * wrongly interpreted as errors.
+	 */
+	public static class OpenMRSLogConsumer extends Slf4jLogConsumer {
+
+		public OpenMRSLogConsumer(Logger logger) {
+			super(logger);
+		}
+
+		public OpenMRSLogConsumer(Logger logger, boolean separateOutputStreams) {
+			super(logger, separateOutputStreams);
+		}
+		
+		@Override
+		public void accept(OutputFrame outputFrame) {
+			if (!outputFrame.getUtf8String().startsWith("ERROR") || !outputFrame.getUtf8String().startsWith("WARN")
+				|| !outputFrame.getUtf8String().startsWith("INFO")  || !outputFrame.getUtf8String().startsWith("DEBUG") 
+				|| !outputFrame.getUtf8String().startsWith("TRACE")) {
+				return;
+			}
+			super.accept(outputFrame);
+		}
+	} 
+
+	/**
 	 * Compares startup performance.
 	 * 
 	 * @param fromImage docker distro image to compare
@@ -130,7 +156,7 @@ public class StartupPerformanceIT {
 	 */
 	private void compareStartupPerformance(String fromImage, String toImage, Duration timeDiffAccepted) throws IOException, SQLException {
 		clearDB();
-		Consumer<OutputFrame> logConsumer = new Slf4jLogConsumer(containerLogger).withSeparateOutputStreams();
+		Consumer<OutputFrame> logConsumer = new OpenMRSLogConsumer(containerLogger).withSeparateOutputStreams();
 		long fromContainerStartupTime;
 		long toContainerStartupTime;
 		File tempDirectory = Files.createTempDirectory("test").toFile();
