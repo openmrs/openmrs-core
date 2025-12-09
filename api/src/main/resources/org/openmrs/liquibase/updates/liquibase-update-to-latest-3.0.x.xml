@@ -82,9 +82,11 @@
 		<comment>Changing concept_reference_range.criteria from VARCHAR(255) to TEXT</comment>
 		<modifyDataType tableName="concept_reference_range" columnName="criteria" newDataType="TEXT" />
 	</changeSet>
-	
-	<changeSet id="TRUNK-5822-add-date-retired-to-form-field" author="pidson">
+
+	<changeSet id="TRUNK-5822-add-columns-to-form-field" author="pidson">
 		<addColumn tableName="form_field">
+			<column name="name" type="varchar(255)"/>
+			<column name="description" type="varchar(255)"/>
 			<column name="date_retired" type="datetime"/>
 		</addColumn>
 	</changeSet>
