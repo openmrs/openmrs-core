@@ -1171,7 +1171,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		assertEquals("1.0.0", adminService.getGlobalProperty("module.testmodule.version"));
 		
 		String previousModuleVersion = "1.0.0";
-		String previousCoreVersion = OpenmrsConstants.OPENMRS_VERSION_SHORT;
+		String previousCoreVersion = null;
 		
 		Module module = new Module("Test Module");
 		module.setModuleId("testmodule");

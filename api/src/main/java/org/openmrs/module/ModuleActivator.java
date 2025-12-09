@@ -58,11 +58,19 @@ public interface ModuleActivator {
 	
 	/**
 	 * Called before Liquibase runs, but only if core or this module version changed.
+	 * 
+	 * @param previousCoreVersion previous core version or <code>null</code> if first install
+	 * @param previousModuleVersion previous module version or <code>null</code> if first install   
+	 * @since 2.9.0
 	 */
 	default void setupOnVersionChangeBeforeSchemaChanges(String previousCoreVersion, String previousModuleVersion) {}
 	
 	/**
 	 * Called after Liquibase runs, but only if core or this module version changed.
+	 * 
+	 * @param previousCoreVersion previous core version or <code>null</code> if first install
+	 * @param previousModuleVersion previous module version or <code>null</code> if first install   
+	 * @since 2.9.0
 	 */
 	default void setupOnVersionChange(String previousCoreVersion, String previousModuleVersion) {}
 	

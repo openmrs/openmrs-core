@@ -426,29 +426,33 @@ public interface AdministrationService extends OpenmrsService {
 	/**
 	 * Checks whether a core setup needs to be run due to a version change.
 	 *
+	 * @since 2.9.0
 	 * @return true if core setup should be executed because of a version change, false otherwise
 	 */
-	public boolean isCoreSetupOnVersionChangeNeeded();
+	boolean isCoreSetupOnVersionChangeNeeded();
 
 	/**
 	 * Checks whether a module setup needs to be run due to a version change.
 	 *
+	 * @since 2.9.0
 	 * @param moduleId the identifier of the module to check
 	 * @return true if the module setup should be executed because of a version change, false otherwise
 	 */
-	public boolean isModuleSetupOnVersionChangeNeeded(String moduleId);
+	boolean isModuleSetupOnVersionChangeNeeded(String moduleId);
 
 	/**
 	 * Executes the core setup procedures required after a core version change.
 	 *
-	 * @throws DatabaseUpdateException
+	 * @since 2.9.0
+	 * @throws DatabaseUpdateException if the core setup fails
 	 */
-	public void runCoreSetupOnVersionChange() throws DatabaseUpdateException;
+	void runCoreSetupOnVersionChange() throws DatabaseUpdateException;
 
 	/**
 	 * Executes the setup procedures required for a module after a module version change.
 	 *
+	 * @since 2.9.0
 	 * @param module the module for which the setup should be executed
 	 */
-	public void runModuleSetupOnVersionChange(Module module);
+	void runModuleSetupOnVersionChange(Module module);
 }

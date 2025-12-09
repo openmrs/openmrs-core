@@ -702,42 +702,45 @@ public class UpdateFilter extends StartupFilter {
 							}
 							
 						}
+
 						
 						try {
-							setMessage("Updating the database to the latest version");
-							
-							ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
-							ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
-							
-							List<String> changelogs = new ArrayList<>();
-							List<String> warnings = new ArrayList<>();
-							
-							String version = changeLogDetective.getInitialLiquibaseSnapshotVersion(DatabaseUpdater.CONTEXT,
-							    new DatabaseUpdaterLiquibaseProvider());
-							
-							log.debug(
-							    "updating the database with versions of liquibase-update-to-latest files greater than '{}'",
-							    version);
-							
-							changelogs.addAll(changeLogVersionFinder
-							        .getUpdateFileNames(changeLogVersionFinder.getUpdateVersionsGreaterThan(version)));
-							
-							log.debug("found applicable Liquibase update change logs: {}", changelogs);
-							
-							for (String changelog : changelogs) {
-								log.debug("applying Liquibase changelog '{}'", changelog);
-								
-								List<String> currentWarnings = DatabaseUpdater.executeChangelog(changelog,
-								    new PrintingChangeSetExecutorCallback("executing Liquibase changelog :" + changelog));
-								
-								if (currentWarnings != null) {
-									warnings.addAll(currentWarnings);
+							if (DatabaseUpdater.updatesRequired()) {
+								setMessage("Updating the database to the latest version");
+
+								ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
+								ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
+
+								List<String> changelogs = new ArrayList<>();
+								List<String> warnings = new ArrayList<>();
+
+								String version = changeLogDetective.getInitialLiquibaseSnapshotVersion(DatabaseUpdater.CONTEXT,
+									new DatabaseUpdaterLiquibaseProvider());
+
+								log.debug(
+									"updating the database with versions of liquibase-update-to-latest files greater than '{}'",
+									version);
+
+								changelogs.addAll(changeLogVersionFinder
+									.getUpdateFileNames(changeLogVersionFinder.getUpdateVersionsGreaterThan(version)));
+
+								log.debug("found applicable Liquibase update change logs: {}", changelogs);
+
+								for (String changelog : changelogs) {
+									log.debug("applying Liquibase changelog '{}'", changelog);
+
+									List<String> currentWarnings = DatabaseUpdater.executeChangelog(changelog,
+										new PrintingChangeSetExecutorCallback("executing Liquibase changelog :" + changelog));
+
+									if (currentWarnings != null) {
+										warnings.addAll(currentWarnings);
+									}
 								}
-							}
-							executingChangesetId = null; // clear out the last changeset
-							
-							if (CollectionUtils.isNotEmpty(warnings)) {
-								reportWarnings(warnings);
+								executingChangesetId = null; // clear out the last changeset
+
+								if (CollectionUtils.isNotEmpty(warnings)) {
+									reportWarnings(warnings);
+								}
 							}
 						}
 						catch (InputRequiredException inputRequired) {
