@@ -28,6 +28,7 @@
 			not-null="true" column="concept_id" unique="true" />
 		<property name="frequencyPerDay" type="double" column="frequency_per_day"
 			length="22" />
+		<property name="sortWeight" column="sort_weight" type="integer" />
 		<many-to-one name="creator" class="org.openmrs.User"
 			not-null="true" />
 		<property name="dateCreated" type="java.util.Date" column="date_created"
