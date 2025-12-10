@@ -190,8 +190,8 @@ public class StartupPerformanceIT {
 		} finally {
 			tempDirectory.delete();
 		}
-
-		long diff = Duration.ofNanos(toContainerStartupTime - fromContainerStartupTime).getSeconds();
+		
+		long diff = Duration.ofNanos(toContainerStartupTime).getSeconds() - Duration.ofNanos(fromContainerStartupTime).getSeconds();
 		logger.info("{} started up in {}s, while {} started up in {}s with the latter starting {} by {}s", fromImage, 
 			Duration.ofNanos(fromContainerStartupTime).getSeconds(), toImage, 
 			Duration.ofNanos(toContainerStartupTime).getSeconds(), diff < 0 ? "faster" : "slower", Math.abs(diff));
