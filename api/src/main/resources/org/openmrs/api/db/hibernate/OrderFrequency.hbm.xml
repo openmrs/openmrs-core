@@ -21,9 +21,7 @@
 				<param name="sequence">order_frequency_order_frequency_id_seq</param>
 			</generator>
 		</id>
-
 		
-
 		<many-to-one name="concept" class="org.openmrs.Concept"
 			not-null="true" column="concept_id" unique="true" />
 		<property name="frequencyPerDay" type="double" column="frequency_per_day"
@@ -43,10 +41,7 @@
 			length="255" />
 		<property name="uuid" type="java.lang.String" column="uuid"
 			length="38" unique="true" />
-
         <many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
-
         <property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
-
 	</class>
 </hibernate-mapping>
