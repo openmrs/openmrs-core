@@ -295,7 +295,7 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper</artifactId>
-				<version>11.0.14</version>
+				<version>11.0.15</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -872,7 +872,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.4.0.6343</version>
+					<version>5.5.0.6356</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -1115,6 +1115,7 @@
 									</includes>
 									<excludes>
 										<exclude>**/*DatabaseIT.java</exclude>
+										<exclude>**/*PerformanceIT.java</exclude>
 									</excludes>
 								</configuration>
 							</execution>
@@ -1133,6 +1134,31 @@
 								<configuration>
 									<includes>
 										<include>**/*DatabaseIT.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>performance-test</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>performance-test</id>
+								<phase>test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/*PerformanceIT.java</include>
 									</includes>
 								</configuration>
 							</execution>
@@ -1210,7 +1236,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.20.0</version>
+						<version>5.21.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1236,7 +1262,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.20.0</version>
+						<version>5.21.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1262,7 +1288,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.20.0</version>
+						<version>5.21.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1359,7 +1385,7 @@
 		<aspectjVersion>1.9.25</aspectjVersion>
 		<jacksonVersion>2.19.2</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
-		<mockitoVersion>5.20.0</mockitoVersion>
+		<mockitoVersion>5.21.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
