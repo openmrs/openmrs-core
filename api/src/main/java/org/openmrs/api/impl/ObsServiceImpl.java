@@ -327,20 +327,17 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		if (cascade) {
 			// Delete any related objects here before deleting the obs
 			if (obs.hasGroupMembers(true)) {
-				// Create a copy of the list to prevent ConcurrentModificationException during iteration
 				for (Obs member : new ArrayList<>(obs.getGroupMembers(true))) {
 					purgeObs(member, true);
 				}
 			}
 		}
-
-		// Sever link from a parent ObsGroup, if it exists
+		
 		if (obs.getObsGroup() != null) {
 			obs.getObsGroup().removeGroupMember(obs);
 			obs.setObsGroup(null);
 		}
 		
-		// Sever link from a parent Order, if it exists
 		if (obs.getOrder() != null) {
 			obs.setOrder(null);
 		}

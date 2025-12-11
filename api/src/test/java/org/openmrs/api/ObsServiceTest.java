@@ -1459,7 +1459,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 			os.registerHandler("ImageHandler", originalHandler);
 		}
 	}
-	
+
+
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
 	 */
@@ -1467,18 +1468,14 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void purgeObs_shouldPurgeObsAndChildrenIfGivenTrueCascade() {
 		executeDataSet(INITIAL_OBS_XML);
 		ObsService obsService = Context.getObsService();
-
-		// Obs #2 is a parent with group members (Obs #9, Obs #10) in the test dataset
 		Obs obs = obsService.getObs(2);
+		
 		assertNotNull(obs);
 		assertTrue(obs.hasGroupMembers());
-
-		// Perform purge with cascade=true
+		
 		obsService.purgeObs(obs, true);
-
-		// Verify parent is deleted
+		
 		assertNull(obsService.getObs(2));
-		// Verify children are deleted
 		assertNull(obsService.getObs(9));
 		assertNull(obsService.getObs(10));
 	}
