@@ -311,10 +311,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @return Properties runtime
 	 */
 	public Properties getRuntimeProperties() {
-
-		System.err.println("DEBUG: getRuntimeProperties() ENTER; runtimeProperties=" + runtimeProperties);
-
-		
+	
 		// cache the properties for subsequent calls
 		if (runtimeProperties == null)
 			runtimeProperties = TestUtil.getRuntimeProperties(getWebappName());
