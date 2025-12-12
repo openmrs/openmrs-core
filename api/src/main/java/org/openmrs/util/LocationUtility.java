@@ -47,10 +47,24 @@ public class LocationUtility implements GlobalPropertyListener {
 	 *
 	 * <strong>Should</strong> return the user specified location if any is set
 	 */
-	public static Location getUserDefaultLocation() {
-		return Context.getUserContext().getLocation();
-	}
-	
+	public static Location getDefaultLocation() {
+
+    // Refresh only when session is open
+    if (Context.isSessionOpen()) {
+        // fetch the current default location
+        Location freshLocation = Context.getLocationService().getDefaultLocation();
+
+        // update cache only if:
+        // 1. cache is empty OR
+        // 2. new value differs from the cached value
+        if (defaultLocation == null || (freshLocation != null && !freshLocation.equals(defaultLocation))) {
+            defaultLocation = freshLocation;
+        }
+    }
+
+    return defaultLocation;
+}
+
 	public static void setDefaultLocation(Location defaultLocation) {
 		LocationUtility.defaultLocation = defaultLocation;
 	}
