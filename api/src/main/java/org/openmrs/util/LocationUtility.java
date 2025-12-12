@@ -34,10 +34,20 @@ public class LocationUtility implements GlobalPropertyListener {
 	 * <strong>Should</strong> return the updated defaultLocation when the value of the global property is changed
 	 */
 	public static Location getDefaultLocation() {
-		if (defaultLocation == null && Context.isSessionOpen()) {
-			defaultLocation = Context.getLocationService().getDefaultLocation();
+
+		// Refresh only when session is open
+		if (Context.isSessionOpen()) {
+			// fetch the current default location
+			Location freshLocation = Context.getLocationService().getDefaultLocation();
+
+			// update cache only if:
+			// 1. cache is empty OR
+			// 2. new value differs from the cached value
+			if (defaultLocation == null || (freshLocation != null && !freshLocation.equals(defaultLocation))) {
+				defaultLocation = freshLocation;
+			}
 		}
-		
+
 		return defaultLocation;
 	}
 	
@@ -60,7 +70,7 @@ public class LocationUtility implements GlobalPropertyListener {
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		// reset the value
+		// reset the cache
 		setDefaultLocation(null);
 	}
 	
@@ -69,7 +79,7 @@ public class LocationUtility implements GlobalPropertyListener {
 	 */
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		// reset the value
+		// reset the cache
 		setDefaultLocation(null);
 	}
 	
@@ -80,5 +90,4 @@ public class LocationUtility implements GlobalPropertyListener {
 	public boolean supportsPropertyName(String propertyName) {
 		return propertyName.equals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME);
 	}
-	
 }
