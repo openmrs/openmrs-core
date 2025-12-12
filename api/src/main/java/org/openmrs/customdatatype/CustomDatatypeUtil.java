@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -51,6 +52,15 @@ public class CustomDatatypeUtil {
 	 * @return a configured datatype with the given classname and configuration
 	 */
 	public static CustomDatatype<?> getDatatype(String datatypeClassname, String datatypeConfig) {
+		if (StringUtils.isBlank(datatypeClassname) || String.class.getName().equals(datatypeClassname)) {
+			return getDatatype(OpenmrsConstants.DEFAULT_CUSTOM_DATATYPE, null);
+		}
+		if (Concept.class.getName().equals(datatypeClassname)) {
+			if (!Context.isAuthenticated()) {
+				return getDatatype(OpenmrsConstants.DEFAULT_CUSTOM_DATATYPE, null);
+			}
+			return getDatatype(org.openmrs.customdatatype.datatype.ConceptDatatype.class.getName(), datatypeConfig);
+		}
 		try {
 			Class dtClass = Context.loadClass(datatypeClassname);
 			CustomDatatype<?> ret = (CustomDatatype<?>) Context.getDatatypeService().getDatatype(dtClass, datatypeConfig);
