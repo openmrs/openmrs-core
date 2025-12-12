@@ -33,13 +33,25 @@ public class LocationUtility implements GlobalPropertyListener {
 	 * @return default location object.
 	 * <strong>Should</strong> return the updated defaultLocation when the value of the global property is changed
 	 */
-	public static Location getDefaultLocation() {
-		if (defaultLocation == null && Context.isSessionOpen()) {
-			defaultLocation = Context.getLocationService().getDefaultLocation();
-		}
-		
-		return defaultLocation;
-	}
+	public static synchronized Location getDefaultLocation() {
+
+    if (Context.isSessionOpen()) {
+        Location freshLocation = Context.getLocationService().getDefaultLocation();
+
+        // Case 1: cache empty → set it
+        // Case 2: fresh != cached → update it
+        // Case 3: fresh == null but cached != null → clear it
+        if (defaultLocation == null
+                || (freshLocation != null && !freshLocation.equals(defaultLocation))
+                || (freshLocation == null && defaultLocation != null)) {
+
+            defaultLocation = freshLocation;
+        }
+    }
+
+    return defaultLocation;
+}
+
 	
 	/**
 	 * Convenience method that returns the default location of the authenticated user. It should
