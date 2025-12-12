@@ -298,7 +298,9 @@ public class HibernateVisitDAO implements VisitDAO {
 		if (criteria.isFetchEncounters()) {
 			root.fetch("encounters", JoinType.LEFT);
 			cq.distinct(true);
-		}		cq.where(predicates.toArray(new Predicate[]{}))
+		}		
+		
+		cq.where(predicates.toArray(new Predicate[]{}))
 			.orderBy(cb.desc(root.get("startDatetime")), cb.desc(root.get("visitId")));
 		
 		Query<Visit> query = session.createQuery(cq);
