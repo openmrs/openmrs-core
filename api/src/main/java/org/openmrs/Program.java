@@ -38,12 +38,13 @@ import org.openmrs.annotation.AllowDirectAccess;
 @Audited
 @AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", length = 100, nullable = true)) })
 public class Program extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final long serialVersionUID = 3214567L;
-	
+
 	// ******************
 	// Properties
 	// ******************
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "program_id")
@@ -52,7 +53,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	@ManyToOne
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
-	
+
 	/**
 	 * Represents the possible outcomes for this program. The concept should have answers or a
 	 * memberSet.
@@ -60,38 +61,39 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	@ManyToOne
 	@JoinColumn(name = "outcomes_concept_id")
 	private Concept outcomesConcept;
-	
+
 	@AllowDirectAccess
 	@OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	@OrderBy("dateCreated asc")
 	private Set<ProgramWorkflow> allWorkflows = new HashSet<>();
-	
+
 	// ******************
 	// Constructors
 	// ******************
-	
+
 	/** Default Constructor */
 	public Program() {
 	}
-	
+
 	/** Constructor with id */
 	public Program(Integer programId) {
 		setProgramId(programId);
 	}
-	
+
 	/**
 	 * Constructor with name
 	 *
 	 * @since 1.10
 	 */
-	public Program(String name) {
+	public Program(String name, Concept concept) {
 		setName(name);
+		this.concept = concept;
 	}
-	
+
 	// ******************
 	// Instance methods
 	// ******************
-	
+
 	/**
 	 * Adds a new {@link ProgramWorkflow} to this Program
 	 *
@@ -101,7 +103,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 		workflow.setProgram(this);
 		getAllWorkflows().add(workflow);
 	}
-	
+
 	/**
 	 * Removes a {@link ProgramWorkflow} from this Program
 	 *
@@ -113,7 +115,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 			workflow.setProgram(null);
 		}
 	}
-	
+
 	/**
 	 * Retires a {@link ProgramWorkflow}
 	 *
@@ -122,7 +124,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	public void retireWorkflow(ProgramWorkflow workflow) {
 		workflow.setRetired(true);
 	}
-	
+
 	/**
 	 * Returns a {@link ProgramWorkflow} whose {@link Concept} has any {@link ConceptName} that matches
 	 * the given <code>name</code>
@@ -138,41 +140,41 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 		}
 		return null;
 	}
-	
+
 	/** @see Object#toString() */
 	@Override
 	public String toString() {
 		return "Program(id=" + getProgramId() + ", concept=" + getConcept() + ", workflows=" + getWorkflows() + ")";
 	}
-	
+
 	// ******************
 	// Property Access
 	// ******************
-	
+
 	public Concept getConcept() {
 		return concept;
 	}
-	
+
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-	
+
 	public Concept getOutcomesConcept() {
 		return outcomesConcept;
 	}
-	
+
 	public void setOutcomesConcept(Concept concept) {
 		this.outcomesConcept = concept;
 	}
-	
+
 	public Integer getProgramId() {
 		return programId;
 	}
-	
+
 	public void setProgramId(Integer programId) {
 		this.programId = programId;
 	}
-	
+
 	/**
 	 * Get only the non-retired workflows
 	 *
@@ -187,7 +189,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Get the workflow with the specified ID
 	 *
@@ -204,7 +206,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Get all workflows...including the retired ones
 	 *
@@ -216,21 +218,21 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 		}
 		return allWorkflows;
 	}
-	
+
 	public void setAllWorkflows(Set<ProgramWorkflow> allWorkflows) {
 		this.allWorkflows = allWorkflows;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override
 	public Integer getId() {
-		
+
 		return getProgramId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -238,6 +240,6 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	@Override
 	public void setId(Integer id) {
 		setProgramId(id);
-		
+
 	}
 }
