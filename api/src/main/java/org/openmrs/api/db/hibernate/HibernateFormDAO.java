@@ -318,6 +318,9 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public FormField saveFormField(FormField formField) throws DAOException {
+		if (formField.getField() != null) {
+			sessionFactory.getCurrentSession().saveOrUpdate(formField.getField());
+		}
 		sessionFactory.getCurrentSession().saveOrUpdate(formField);
 		return formField;
 	}

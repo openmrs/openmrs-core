@@ -645,6 +645,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		field.setName("This is a new field");
 		field.setDescription("It should be saved along with the formField");
 		field.setFieldType(new FieldType(1));
+		
+		field = Context.getFormService().saveField(field);
 
 		// put that field on a new FormField.
 		FormField formField = new FormField();
@@ -918,6 +920,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		field.setName("neighbor");
 		field.setConcept(concept);
 		field.setFieldType(new FieldType(1));
+		field = Context.getFormService().saveField(field);
 
 		FormField formField = new FormField();
 		formField.setField(field);
@@ -928,6 +931,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		List<FormField> originalFormFields = fs.getAllFormFields();
 		int initialFormFieldCount = originalFormFields.size();
 		formField = fs.saveFormField(formField);
+		formField = fs.getFormField(formField.getFormFieldId());
 		List<FormField> updatedFormFields = fs.getAllFormFields();
 		//should have this and the two form fields from the handler
 		assertEquals(initialFormFieldCount += 3, updatedFormFields.size());
@@ -1098,6 +1102,28 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		createFormsLockedGPAndSetValue("false");
 
 		Form form = fs.getForm(1);
+
+		for (FormField ff : new ArrayList<>(form.getFormFields())) {
+			Field realField = fs.getField(1);   
+			ff.setField(realField);
+			fs.saveFormField(ff);
+			fs.purgeFormField(ff);
+			form.removeFormField(ff);
+		}
+		
+		Field field = new Field();
+		field.setName("purge-test-field");
+		field.setDescription("Field created for purge test");
+		field.setFieldType(new FieldType(1));
+		field = fs.saveField(field);
+
+		FormField formField = new FormField();
+		formField.setForm(form);
+		formField.setField(field);
+		formField.setFieldNumber(0);
+
+		fs.saveFormField(formField);
+		
 		fs.purgeForm(form);
 
 		assertNull(fs.getForm(1));
