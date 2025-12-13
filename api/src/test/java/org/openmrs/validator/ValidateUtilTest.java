@@ -9,6 +9,7 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -207,5 +208,17 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		
 		ValidationException exception = assertThrows(ValidationException.class, () -> ValidateUtil.validate(drug));
 		assertTrue(exception.getMessage().contains("failed to validate with reason: name: This value exceeds the maximum length of 255 permitted for this field."));
+	}
+
+	@Test
+	public void validate_shouldExposeExactValidationMessage() {
+    	Location loc = new Location();  // invalid: name missing
+    	BindException errors = new BindException(loc, "location");
+
+    	ValidationException ex = assertThrows(ValidationException.class,
+            	() -> ValidateUtil.validate(loc));
+
+    	assertTrue(ex.getErrors().hasFieldErrors("name"));
+    	assertEquals("error.name", ex.getErrors().getFieldError("name").getCode());
 	}
 }
