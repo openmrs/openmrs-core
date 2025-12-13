@@ -210,20 +210,15 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		assertTrue(exception.getMessage().contains("failed to validate with reason: name: This value exceeds the maximum length of 255 permitted for this field."));
 	}
 
-	//fixed :validating a location
 	@Test
 	public void validate_shouldExposeExactValidationMessage() {
-    	// Arrange
     	Location loc = new Location();  // invalid: name missing
     	BindException errors = new BindException(loc, "location");
 
-    	// Act
     	ValidationException ex = assertThrows(ValidationException.class,
             	() -> ValidateUtil.validate(loc));
 
-    	// Assert
     	assertTrue(ex.getErrors().hasFieldErrors("name"));
     	assertEquals("error.name", ex.getErrors().getFieldError("name").getCode());
 	}
-
 }
