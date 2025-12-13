@@ -29,11 +29,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-
 import java.io.File;
-// import org.openmrs.util.OpenmrsUtil;
-// import org.apache.commons.io.FileUtils;
-
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -163,21 +159,14 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 
 
-	/*
-	 Adding JUnit tests  for OpenmrsUtil.getFileAsBytes()
-	*/
-
 	@Test
 	public void getFileAsBytes_shouldReturnByteArrayForValidFile() throws Exception {
-    	// Create temporary file
     	File temp = File.createTempFile("openmrs-test-", ".txt");
     	String content = "Hello OpenMRS";
     	FileUtils.writeStringToFile(temp, content, StandardCharsets.UTF_8);
 
-    	// Call method
     	byte[] result = OpenmrsUtil.getFileAsBytes(temp);
 
-    	// Verify
     	assertNotNull(result);
     	assertArrayEquals(content.getBytes(StandardCharsets.UTF_8), result);
 
@@ -209,18 +198,10 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
     	byte[] result = null;
     	try {
         	result = OpenmrsUtil.getFileAsBytes(fake);
-    	} catch (Exception ignored) {
-        	// Method should NOT throw — it handles exceptions internally
-    	}
+    	} catch (Exception ignored) { }
 
     	assertNull(result);
 	}
-
-	
-
-	// -----------------------------------------------------------------------------------------------------------
-
-
 
 	
 	/**
