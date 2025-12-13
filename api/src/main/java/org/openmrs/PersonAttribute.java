@@ -29,12 +29,16 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
+import org.openmrs.attribute.Attribute;
+import org.openmrs.attribute.BaseAttribute;
+import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.openmrs.customdatatype.NotYetPersistedException;
 
 /**
  * A PersonAttribute is meant as way for implementations to add arbitrary information about a
@@ -51,7 +55,7 @@ import org.slf4j.LoggerFactory;
 @Audited
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class PersonAttribute extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PersonAttribute> {
+public class PersonAttribute extends BaseAttribute<PersonAttributeType, Person> implements Attribute<PersonAttributeType, Person>, java.io.Serializable {
 	
 	public static final long serialVersionUID = 11231211232111L;
 	
@@ -61,22 +65,6 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	@DocumentId
 	private Integer personAttributeId;
 
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
-	@AssociationInverseSide(inversePath = @ObjectPath({
-		@PropertyValue(propertyName = "attributes")
-	}))
-	private Person person;
-
-	@IndexedEmbedded
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	private PersonAttributeType attributeType;
-	
-	@FullTextField(name="valuePhrase", analyzer = SearchAnalysis.PHRASE_ANALYZER)
-	@FullTextField(name = "valueExact", analyzer = SearchAnalysis.EXACT_ANALYZER)
-	@FullTextField(name = "valueStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
-	@FullTextField(name = "valueAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
-	private String value;
-	
 	/** default constructor */
 	public PersonAttribute() {
 	}
@@ -92,8 +80,8 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * @param value String
 	 */
 	public PersonAttribute(PersonAttributeType type, String value) {
-		this.attributeType = type;
-		this.value = value;
+		setAttributeType(type);
+		setValue(value);
 	}
 	
 	/**
@@ -176,43 +164,58 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	/**
 	 * @return Returns the person.
 	 */
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@AssociationInverseSide(inversePath = @ObjectPath({
+		@PropertyValue(propertyName = "attributes")
+	}))
 	public Person getPerson() {
-		return person;
+		return getOwner();
 	}
-	
+
 	/**
 	 * @param person The person to set.
 	 */
 	public void setPerson(Person person) {
-		this.person = person;
+		setOwner(person);
 	}
-	
-	/**
-	 * @return the attributeType
-	 */
+
+	@Override
+	@IndexedEmbedded
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	public PersonAttributeType getAttributeType() {
-		return attributeType;
+		return super.getAttributeType();
 	}
-	
-	/**
-	 * @param attributeType the attributeType to set
-	 */
-	public void setAttributeType(PersonAttributeType attributeType) {
-		this.attributeType = attributeType;
-	}
-	
-	/**
-	 * @return the value
-	 */
+
+	@Override
+	@FullTextField(name="valuePhrase", analyzer = SearchAnalysis.PHRASE_ANALYZER)
+	@FullTextField(name = "valueExact", analyzer = SearchAnalysis.EXACT_ANALYZER)
+	@FullTextField(name = "valueStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
+	@FullTextField(name = "valueAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
+	@IndexingDependency(derivedFrom = {
+		@ObjectPath(@PropertyValue(propertyName = "valueReference")),
+		@ObjectPath(@PropertyValue(propertyName = "attributeType"))
+	})
 	public String getValue() {
-		return value;
+		try {
+			Object value = super.getValue();
+			return value == null ? null : value.toString();
+		}
+		catch (InvalidCustomValueException e) {
+			throw new RuntimeException(e);
+		}
+		catch (NotYetPersistedException e) {
+			return null;
+		}
 	}
-	
-	/**
-	 * @param value the value to set
-	 */
+
 	public void setValue(String value) {
-		this.value = value;
+		try {
+			setValueReferenceInternal(value);
+			super.setValue(value);
+		}
+		catch (InvalidCustomValueException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	/**
@@ -228,7 +231,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 			return o.toString();
 		}
 		
-		return this.value;
+		return getValue();
 	}
 	
 	/**
@@ -312,7 +315,6 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * <strong>Should</strong> not throw exception if attribute type is null
 	 * Note: this comparator imposes orderings that are inconsistent with equals
 	 */
-	@Override
 	public int compareTo(PersonAttribute other) {
 		DefaultComparator paDComparator = new DefaultComparator();
 		return paDComparator.compare(this, other);
