@@ -1311,13 +1311,18 @@ public class Context {
 
 		// this must be the first thing run in case it changes database mappings
 		if (updatesRequired) {
-			if (DatabaseUpdater.allowAutoUpdate()) {
-				DatabaseUpdater.executeChangelog();
-			} else {
+			if (!DatabaseUpdater.allowAutoUpdate()) {
 				throw new DatabaseUpdateException(
 						"Database updates are required.  Call Context.updateDatabase() before .startup() to continue.");
 			}
 		}
+		
+		if (getAdministrationService().isCoreSetupOnVersionChangeNeeded()) {
+			log.info("Detected core version change. Running core setup hooks and Liquibase.");
+			getAdministrationService().runCoreSetupOnVersionChange();
+		}
+		
+		log.info("Database update check completed.");
 	}
 
 	/**
