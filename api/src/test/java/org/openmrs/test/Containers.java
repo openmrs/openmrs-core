@@ -27,11 +27,13 @@ public class Containers {
 	private static final String USERNAME =  "test";
 	private static final String  PASSWORD = "test";
 	private static final String  DATABASE = "openmrs";
+	
+	private static boolean schemaCreated = false;
 
 	
 	public static void ensureDatabaseRunning() {
-		
-		if (mysql != null || postgres != null) {
+
+		if(mysql != null || postgres != null) {
 			return;
 		}
 		
@@ -51,9 +53,18 @@ public class Containers {
         }
         
         if (!mysql.isRunning()) {
-        	
-        	mysql.start();
-        	
+        	try {
+        		mysql.start();
+        	} catch (Exception e) {
+        		String msg = "Failed to start MySQL container. This usually means Docker is not available or not running. "
+        				+ "Please ensure Docker is installed and running, or use -DuseInMemoryDatabase=true to use in-memory database. "
+        				+ "Original error: " + e.getMessage();
+        		throw new IllegalStateException(msg, e);
+        	}
+        }
+        
+        // Always set system properties if container is running, not just when starting
+        if (mysql.isRunning()) {
         	System.setProperty("databaseUrl", mysql.getJdbcUrl());
     		System.setProperty("databaseName", DATABASE);
     		System.setProperty("databaseUsername", USERNAME);
@@ -62,7 +73,13 @@ public class Containers {
     		System.setProperty("databaseDialect", MySQLDialect.class.getName());
 			System.setProperty("database", "mysql");
     		
-    		createSchema();
+    		// Only create schema once
+    		if (!schemaCreated) {
+    			createSchema();
+    			schemaCreated = true;
+    		}
+        } else {
+        	throw new IllegalStateException("MySQL container failed to start. Please check Docker configuration.");
         }
     }
 
@@ -100,9 +117,18 @@ public class Containers {
 		}
         
         if (!postgres.isRunning()) {
-        	
-            postgres.start();
-            
+        	try {
+        		postgres.start();
+        	} catch (Exception e) {
+        		String msg = "Failed to start PostgreSQL container. This usually means Docker is not available or not running. "
+        				+ "Please ensure Docker is installed and running, or use -DuseInMemoryDatabase=true to use in-memory database. "
+        				+ "Original error: " + e.getMessage();
+        		throw new IllegalStateException(msg, e);
+        	}
+        }
+        
+        // Always set system properties if container is running, not just when starting
+        if (postgres.isRunning()) {
             System.setProperty("databaseUrl", postgres.getJdbcUrl());
     		System.setProperty("databaseName", DATABASE);
     		System.setProperty("databaseUsername", USERNAME);
@@ -110,7 +136,13 @@ public class Containers {
     		System.setProperty("databaseDriver", postgres.getDriverClassName());
     		System.setProperty("databaseDialect", PostgreSQLDialect.class.getName());
 			
-    		createSchema();
+    		// Only create schema once
+    		if (!schemaCreated) {
+    			createSchema();
+    			schemaCreated = true;
+    		}
+        } else {
+        	throw new IllegalStateException("PostgreSQL container failed to start. Please check Docker configuration.");
         }
     }
 
