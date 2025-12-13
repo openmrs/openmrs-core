@@ -36,6 +36,7 @@ import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.ConceptReferenceTermMap;
+import org.openmrs.ConceptStopWord;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
@@ -2914,6 +2915,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			    .addAnnotatedClass(ConceptDescription.class)
 			    .addAnnotatedClass(ConceptClass.class)
 			    .addAnnotatedClass(ConceptMap.class)
+			    .addAnnotatedClass(ConceptStopWord.class)
 				.addAnnotatedClass(FormResource.class)
 				.addAnnotatedClass(VisitType.class)
 				.addAnnotatedClass(ProviderRole.class)
