@@ -61,7 +61,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
+import java.util.Comparator;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -805,7 +805,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired) {
-		return dao.getOrderFrequencies(includeRetired);
+		List<OrderFrequency> frequencies = dao.getOrderFrequencies(includeRetired);
+		
+		if (frequencies != null) {
+			frequencies.sort(Comparator.comparing(
+				f -> f.getSortWeight() == null ? 0 : f.getSortWeight()
+			));
+		}
+		return frequencies;
 	}
 	
 	/**
@@ -817,7 +824,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (searchPhrase == null) {
 			throw new IllegalArgumentException("searchPhrase is required");
 		}
-		return dao.getOrderFrequencies(searchPhrase, locale, exactLocale, includeRetired);
+
+		List<OrderFrequency> frequencies = dao.getOrderFrequencies(searchPhrase, locale, exactLocale, includeRetired);
+
+		if (frequencies != null) {
+			frequencies.sort(Comparator.comparing(
+				f -> f.getSortWeight() == null ? 0 : f.getSortWeight()
+			));
+		}
+		
+		return frequencies;
 	}
 	
 	/**

@@ -83,4 +83,10 @@
 		<modifyDataType tableName="concept_reference_range" columnName="criteria" newDataType="TEXT" />
 	</changeSet>
 
+	<changeSet id="TRUNK-6212-2025-12-09" author="raufbyrmv8">
+		<addColumn tableName="order_frequency">
+			<column name="sort_weight" type="INT" defaultValueNumeric="0"/>
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
