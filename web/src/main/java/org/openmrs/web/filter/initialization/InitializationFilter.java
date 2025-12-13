@@ -260,7 +260,9 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			PrintWriter writer = httpResponse.getWriter();
-			writer.write(toJSONString(result));
+			String jsonText = toJSONString(result);
+			jsonText = org.apache.commons.text.StringEscapeUtils.escapeHtml4(jsonText);
+			writer.write(jsonText);
 			writer.close();
 		} else if (InitializationWizardModel.INSTALL_METHOD_AUTO.equals(wizardModel.installMethod)
 			|| httpRequest.getServletPath().equals("/" + AUTO_RUN_OPENMRS)) {
@@ -1039,6 +1041,10 @@ public class InitializationFilter extends StartupFilter {
 		
 		String pathName = OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME);
 		if (pathName != null) {
+			// Block path traversal attempts
+			if (pathName.contains("..") || pathName.contains("/") || pathName.contains("\\")) {
+				throw new IllegalArgumentException("Unsafe path detected: " + pathName);
+			}
 			file = new File(pathName);
 		} else {
 			file = new File(OpenmrsUtil.getApplicationDataDirectory(), getRuntimePropertiesFileName());
