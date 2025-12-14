@@ -422,7 +422,30 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		}
 		return orders;
 	}
+
 	
+	/**
+	 * Gets the set of orders for this encounter with optional filtering of voided orders.
+	 * 
+	 * @param includeVoided - Specifies whether or not to include voided orders.
+	 * @return The set of orders, or an empty set if there are no orders to return.
+	 * @since 3.0.0
+	 */
+	public Set<Order> getOrders(boolean includeVoided) {
+		if (orders == null) {
+			return new LinkedHashSet<>();
+		}
+		
+		if (includeVoided) {
+			return getOrders();
+		}
+		
+		return orders.stream()
+			.filter(o -> !o.getVoided())
+			.collect(Collectors.toSet());
+	}
+	
+
 	/**
 	 * @param orders The orders to set.
 	 */
@@ -486,6 +509,28 @@ public class Encounter extends BaseChangeableOpenmrsData {
 			diagnoses = new LinkedHashSet<>();
 		}
 		return diagnoses;
+	}
+
+	
+	/**
+	 * Gets the set of diagnoses for this encounter with optional filtering of voided diagnoses.
+	 * 
+	 * @param includeVoided - Specifies whether or not to include voided diagnoses.
+	 * @return The set of diagnoses, or an empty set if there are no diagnoses to return.
+	 * @since 3.0.0
+	 */
+	public Set<Diagnosis> getDiagnoses(boolean includeVoided) {
+		if (diagnoses == null) {
+			return new LinkedHashSet<>();
+		}
+		
+		if (includeVoided) {
+			return getDiagnoses();
+		}
+		
+		return diagnoses.stream()
+			.filter(d -> !d.getVoided())
+			.collect(Collectors.toSet());
 	}
 	
 	/**
