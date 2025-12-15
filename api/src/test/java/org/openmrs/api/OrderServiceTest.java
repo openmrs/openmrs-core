@@ -76,6 +76,7 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderRole;
 import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.User;
@@ -2893,6 +2894,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ProviderAttributeType.class)
 				.addAnnotatedClass(ConceptMapType.class)
 				.addAnnotatedClass(Relationship.class)
+		        .addAnnotatedClass(RelationshipType.class)
 				.addAnnotatedClass(Location.class)
 				.addAnnotatedClass(PersonAddress.class)
 				.addAnnotatedClass(PersonAttributeType.class)
