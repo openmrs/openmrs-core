@@ -1389,7 +1389,7 @@
 		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.25.2</log4jVersion>
+		<log4jVersion>2.25.3</log4jVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<graalJsVersion>25.0.1</graalJsVersion>
 
