@@ -691,8 +691,10 @@ public class ModuleFactory {
 					Context.removeProxyPrivilege("");
 				}
 				
-				// run module's optional liquibase.xml immediately after sqldiff.xml
-				runLiquibase(module);
+				if (Context.getAdministrationService().isModuleSetupOnVersionChangeNeeded(module.getModuleId())) {
+					log.info("Module {} changed, running setup.", module.getModuleId());
+					Context.getAdministrationService().runModuleSetupOnVersionChange(module);
+				}
 				
 				// effectively mark this module as started successfully
 				getStartedModulesMap().put(moduleId, module);
@@ -750,7 +752,7 @@ public class ModuleFactory {
 				module.clearStartupError();
 			}
 			catch (Exception e) {
-				log.warn("Error while trying to start module: " + moduleId, e);
+				log.error("Error while trying to start module: {}", moduleId, e);
 				module.setStartupErrorMessage("Error while trying to start module", e);
 				notifySuperUsersAboutModuleFailure(module);
 				// undo all of the actions in startup
@@ -766,7 +768,7 @@ public class ModuleFactory {
 				catch (Exception e2) {
 					// this will probably occur about the same place as the
 					// error in startup
-					log.debug("Error while stopping module: " + moduleId, e2);
+					log.debug("Error while stopping module: {}", moduleId, e2);
 				}
 			}
 			
@@ -938,6 +940,14 @@ public class ModuleFactory {
 			
 		}
 		
+	}
+
+	/**
+	 * This is a convenience method that exposes the private {@link #runLiquibase(Module)} method.
+	 * @since 2.9.0
+	 */
+	public static void runLiquibaseForModule(Module module) {
+		runLiquibase(module);
 	}
 	
 	/**
