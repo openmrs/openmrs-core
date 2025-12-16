@@ -129,6 +129,14 @@ public class Reflect {
 				}
 			}
 			return false;
+		}
+		else if (t instanceof ParameterizedType) {
+			Type rawType = ((ParameterizedType) t).getRawType();
+			if (rawType instanceof Class<?>) {
+				return isSuperClass((Class<?>) rawType);
+			} else {
+				throw new IllegalArgumentException("Raw type is not a Class<?>: " + rawType.getClass());
+			}
 		} else if (t instanceof Class<?>) {
 			return isSuperClass((Class<?>) t);
 		} else {
