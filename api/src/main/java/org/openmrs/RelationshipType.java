@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -62,9 +64,11 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	private Integer relationshipTypeId;
 	
 	@Column(name = "a_is_to_b", nullable = false, length = 50) 
+	@Access(AccessType.FIELD)
 	private String aIsToB;
 	
 	@Column (name = "b_is_to_a", nullable = false, length = 50)
+	@Access(AccessType.FIELD)
 	private String bIsToA;
 	
 	@Column (nullable = false)
