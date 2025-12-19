@@ -75,7 +75,6 @@
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
 		
-		<mapping class="org.openmrs.RelationshipType"/>
   </session-factory>
 
 </hibernate-configuration>
