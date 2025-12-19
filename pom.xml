@@ -403,7 +403,7 @@
 			<dependency>
 				<groupId>org.mariadb.jdbc</groupId>
 				<artifactId>mariadb-java-client</artifactId>
-				<version>3.5.6</version>
+				<version>3.5.7</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>
@@ -585,27 +585,27 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>testcontainers</artifactId>
-				<version>2.0.2</version>
+				<version>2.0.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>junit-jupiter</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>mysql</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>mariadb</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>software.amazon.awssdk</groupId>
@@ -757,7 +757,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>3.3.0</version>
+					<version>3.3.1</version>
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
@@ -1382,14 +1382,14 @@
 		<luceneVersion>10.3.2</luceneVersion>
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.2.Final</infinispanVersion>
-		<aspectjVersion>1.9.25</aspectjVersion>
+		<aspectjVersion>1.9.25.1</aspectjVersion>
 		<jacksonVersion>2.19.2</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
 		<mockitoVersion>5.21.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.25.2</log4jVersion>
+		<log4jVersion>2.25.3</log4jVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<graalJsVersion>25.0.1</graalJsVersion>
 
