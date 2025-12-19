@@ -90,16 +90,7 @@ public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.
 
 	@Column(name = "sort_weight")
 	protected Float sortWeight;
-
-	@Column(name = "name")
-	private String name;
-
-	@Column(name = "description")
-	private String description;
-
-	@Column(name = "date_retired")
-	private Date dateRetired;
-
+	
 	// Constructors
 	
 	/** default constructor */
