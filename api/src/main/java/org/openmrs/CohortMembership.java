@@ -20,8 +20,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AssociationOverride;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -31,14 +29,6 @@ import org.openmrs.util.OpenmrsUtil;
 @Entity
 @Table(name = "cohort_member")
 @Audited
-/**
- * The cohort_member table does not track modification details (date_changed, changed_by),
- * but this class extends BaseChangeableOpenmrsData which requires them.
- * We map these inherited fields to the creation fields (date_created, creator) as read-only
- * to satisfy Hibernate validation without altering the legacy schema.
- */
-@AttributeOverride(name = "dateChanged", column = @Column(name = "date_created", insertable = false, updatable = false))
-@AssociationOverride(name = "changedBy", joinColumns = @JoinColumn(name = "creator", insertable = false, updatable = false))
 public class CohortMembership extends BaseChangeableOpenmrsData implements Comparable<CohortMembership> {
 	
 	public static final long serialVersionUID = 0L;

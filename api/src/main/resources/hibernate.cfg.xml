@@ -75,8 +75,6 @@
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
 		
-		<!-- This mapping is required because of reference in Cohort -->
-		<mapping class="org.openmrs.CohortMembership"/>
   </session-factory>
 
 </hibernate-configuration>
