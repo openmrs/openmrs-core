@@ -31,7 +31,7 @@
 		<Logger name="org.openmrs.test" level="OFF" />
 		<Logger name="org.hibernate.SQL" level="OFF" />
 		<Logger name="org.openmrs.StartupPerformanceIT" level="INFO" />
-		<Logger name="containerLogger" level="ERROR" />
+		<Logger name="testContainersLogger" level="ERROR" />
 		<Root level="OFF">
 			<AppenderRef ref="CONSOLE" />
 		</Root>
