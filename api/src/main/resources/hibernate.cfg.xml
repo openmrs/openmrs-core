@@ -21,7 +21,6 @@
 		
 		<!-- API -->
 		<mapping resource="org/openmrs/api/db/hibernate/Concept.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptProposal.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptSet.hbm.xml" />
@@ -49,7 +48,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderGroupAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderGroupAttributeType.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/LocationAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/EncounterType.hbm.xml" />
         <mapping resource="org/openmrs/api/db/hibernate/EncounterProvider.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflow.hbm.xml" />
