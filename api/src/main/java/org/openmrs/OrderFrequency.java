@@ -30,7 +30,7 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	private String uuid;
 	
 	private Concept concept;
-	
+	private Integer sortWeight;
 	/**
 	 * Get the orderFrequencyId
 	 */
@@ -102,6 +102,22 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	/**
+	 * Gets the sort weight used to order this frequency in dropdowns.
+	 */
+	public Integer getSortWeight() {
+		return sortWeight;
+	}
+
+	/**
+	 * Sets the sort weight used to order this frequency in dropdowns.
+	 *
+	 * @param sortWeight the sort order value
+	 */
+	public void setSortWeight(Integer sortWeight) {
+		this.sortWeight = sortWeight;
+	}
+	
+	/**
 	 * @see BaseOpenmrsMetadata#getDescription()
 	 */
 	@Override
@@ -127,4 +143,6 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	public String toString() {
 		return getName();
 	}
+	
+	
 }
