@@ -2943,7 +2943,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ProviderAttribute.class)
 				.addAnnotatedClass(ConceptAttribute.class)
 				.addAnnotatedClass(LocationAttribute.class)
-				.getMetadataBuilder().build();
+			    .addAnnotatedClass(OrderFrequency.class)
+			    .getMetadataBuilder().build();
 
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
