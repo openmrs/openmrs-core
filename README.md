@@ -44,7 +44,7 @@ The mission of OpenMRS is to improve health care delivery in resource-constraine
 
 OpenMRS is a Java application which is why you need to install a Java JDK.
 
-If you want to build the master branch you will need a Java JDK of minimum version 8.
+If you want to build the master branch you will need a Java JDK of minimum version 8 or newer.
 
 #### Maven
 
@@ -70,16 +70,15 @@ git clone https://github.com/openmrs/openmrs-core.git
 
 ### Build Command
 
-After you have taken care of the [Prerequisites](#prerequisites)
-
-Execute the following
+After you have taken care of the [Prerequisites](#prerequisites), execute the following:
 
 ```bash
 cd openmrs-core
 mvn clean package
 ```
 
-This will generate the OpenMRS application in `webapp/target/openmrs.war` which you will have to deploy into an application server like for example [tomcat](https://tomcat.apache.org/) or [jetty](http://www.eclipse.org/jetty/).
+This will generate the OpenMRS application in `webapp/target/openmrs.war` which you will have to deploy into an application server like for example [tomcat](https://tomcat.apache.org/) or [jetty](https://www.eclipse.org/jetty/).
+If the build is successful, you should see `BUILD SUCCESS` in the console output.
 
 ### Deploy
 
@@ -108,66 +107,87 @@ To run Cargo on a custom port, use the `cargo.servlet.port` property:
 mvn -Dcargo.servlet.port=8081 cargo:run
 ```
 
-If all goes well (check the console output) you can access the OpenMRS application at `localhost:8080/openmrs`.
-
+If all goes well (check the console output), you can access the OpenMRS application at http://localhost:8080/openmrs.
+To stop Jetty, press `Ctrl + C` in the terminal where it is running.
 Refer to [Getting Started as a Developer - Maven](https://wiki.openmrs.org/display/docs/Maven) for some more information
 on useful Maven commands and build options.
 
 ## Docker build
+OpenMRS can be built and run using Docker for both development and production use cases.
 
-Docker builds are still work in progress. We appreciate any feedback and improvements to the process.
+### Development Image
+The development image is intended for local development and testing.
 
-The only prerequisite needed is Docker. 
+It uses Jetty as the application server and includes development tooling such as
+remote debugging support. Use this image when you are actively making code changes.
 
-In order to build a development version run:
-```bash 
+#### Prerequisites
+-Docker
+
+Build the development image
+```bash
 docker compose build
 ```
-It calls `mvn install` by default. If you would like to customize mvn build arguments you can do so by running:
+
+By default, this runs:
+```bash
+mvn install
+```
+To customize Maven build arguments (for example, to skip tests):
 ```bash
 docker compose build --build-arg MVN_ARGS='install -DskipTests'
 ```
-It is also possible to use the built dev image to run jetty:
+
+Run the development image
 ```bash
 docker compose up
 ```
+The application will be available at:
+```bash
+http://localhost:8080/openmrs
+```
+Port 8000 is exposed by default for remote debugging.
+Currently, code changes require rebuilding and restarting the container.
 
-In order to build a production version run:
+To speed up development iterations:
+```bash
+docker compose build --build-arg MVN_ARGS='install -DskipTests'
+docker compose up
+```
+###Production Image
+The production image is optimized for deployment and does not include any
+development dependencies.
+
+It packages the OpenMRS WAR file into a Tomcat-based image.
+
+Build the production image
 ```bash
 docker compose -f docker-compose.yml build
 ```
-It first builds the dev image and then an image with Tomcat and openmrs.war. 
-It has no dev dependencies.
-
-The production version can be run with:
+This command builds the development image first and then produces the production image.
+Run the production image
 ```bash
 docker compose -f docker-compose.yml up
 ```
-If you want to debug, you need to run a development version and connect your debugger to port 8000, which is exposed by default.
+The production image does not support hot reloading.
+Any code changes require rebuilding the Docker image.
 
-Unfortunately, at this point any code changes require full restart and rebuild of the docker container. To speed up the process,
-please use:
-```bash
-docker compose build --build-arg MVN_ARGS='install -DskipTests'
-docker compose up
-```
-We are working towards providing support for Spring Boot auto-reload feature, which will be documented here once ready.
+###Prebuilt Images
+Prebuilt images are published to Docker Hub:
 
-It is also possible to deploy an image built by our CI, which is published at 
-https://hub.docker.com/r/openmrs/openmrs-core
+-Docker Hub: https://hub.docker.com/r/openmrs/openmrs-core
 
-You can run any tag available with:
+Run a specific image tag
 ```bash
 TAG=nightly docker compose -f docker-compose.yml up
 ```
-It is also possible to run a development version of an image with:
-```bash
+
+Run a development image
 TAG=dev docker compose up
-```
-All development versions contain dev suffix. The cache suffix is for use by our CI.
+All development images include the dev suffix.
+The cache suffix is used internally by CI.
 
 ### Running with ElasticSearch
-
 OpenMRS can run with ElasticSearch backend instead of the in-built Lucene index. You can run it with:
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.es.yml up
@@ -178,28 +198,14 @@ If you change backend, you need to rebuild the search index by going to Legacy U
 
 The project tree is set up as follows:
 
-<table>
- <tr>
-  <td>api/</td>
-  <td>Java and resource files for building the java api jar file.</td>
- </tr>
- <tr>
-  <td>tools/</td>
-  <td>Meta code used during compiling and testing. Does not go into any released binary (like doclets).</td>
- </tr>
- <tr>
-  <td>web/</td>
-  <td>Java and resource files that are used in the webapp/war file.</td>
- </tr>
- <tr>
-  <td>webapp/</td>
-  <td>files used in building the war file (contains JSP files on older versions).</td>
- </tr>
- <tr>
-  <td>pom.xml</td>
-  <td>The main maven file used to build and package OpenMRS.</td>
- </tr>  
-</table>
+| Path      | Description |
+|----------|-------------|
+| api/     | Java and resource files for building the API JAR |
+| tools/   | Meta code used during compiling and testing |
+| web/     | Java and resources for the web layer |
+| webapp/  | WAR packaging files |
+| pom.xml  | Main Maven build file |
+
 
 ## Software Development Kit
 
@@ -246,7 +252,10 @@ Contributions are very welcome, we can definitely use your help!
 
 OpenMRS organizes the privileges of its contributors in developer stages which
 are documented [here](https://wiki.openmrs.org/display/RES/OpenMRS+Developer+Stages).
-
+Before submitting a PR, please:
+- Run `mvn clean verify`
+- Ensure no formatting or checkstyle issues
+- Reference a Jira ticket where applicable
 Read the following sections to find out where you could help.
 
 ### Code
@@ -307,5 +316,5 @@ Talk to us on [OpenMRS Talk](https://talk.openmrs.org/)
 
 ## License
 
-[MPL 2.0 w/ HD](http://openmrs.org/license/) © [OpenMRS Inc.](http://www.openmrs.org/)
+[MPL 2.0 w/ HD](https://openmrs.org/license/) © [OpenMRS Inc.](https://www.openmrs.org/)
 
