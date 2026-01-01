@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.collection.spi.PersistentCollection;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -34,6 +35,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
+import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +52,7 @@ import org.springframework.util.StringUtils;
 @Audited
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Person extends BaseChangeableOpenmrsData {
+public class Person extends BaseCustomizableData<PersonAttribute> implements Customizable<PersonAttribute> {
 	
 	public static final long serialVersionUID = 2L;
 	
@@ -62,8 +64,6 @@ public class Person extends BaseChangeableOpenmrsData {
 	private Set<PersonAddress> addresses = null;
 	
 	private Set<PersonName> names = null;
-	
-	private Set<PersonAttribute> attributes = null;
 	
 	@GenericField
 	private String gender;
@@ -142,7 +142,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		setUuid(person.getUuid());
 		addresses = person.getAddresses();
 		names = person.getNames();
-		attributes = person.getAttributes();
+		setAttributes(person.getAttributes());
 		
 		gender = person.getGender();
 		birthdate = person.getBirthdate();
@@ -418,11 +418,17 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> not get voided attributes
 	 * <strong>Should</strong> not fail with null attributes
 	 */
+	@Override
 	public Set<PersonAttribute> getAttributes() {
-		if (attributes == null) {
-			attributes = new TreeSet<>();
+		Set<PersonAttribute> attrs = super.getAttributes();
+		if (attrs == null) {
+			attrs = new TreeSet<>();
+			super.setAttributes(attrs);
+		} else if (!(attrs instanceof PersistentCollection) && !(attrs instanceof java.util.SortedSet)) {
+			attrs = new TreeSet<>(attrs);
+			super.setAttributes(attrs);
 		}
-		return this.attributes;
+		return attrs;
 	}
 	
 	/**
@@ -432,6 +438,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> not get voided attributes
 	 * <strong>Should</strong> not fail with null attributes
 	 */
+	@Override
 	public List<PersonAttribute> getActiveAttributes() {
 		List<PersonAttribute> attrs = new ArrayList<>();
 		for (PersonAttribute attr : getAttributes()) {
@@ -446,8 +453,15 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @param attributes update all known attributes for person
 	 * @see org.openmrs.PersonAttribute
 	 */
+	@Override
 	public void setAttributes(Set<PersonAttribute> attributes) {
-		this.attributes = attributes;
+		if (attributes == null) {
+			super.setAttributes(null);
+		} else if (attributes instanceof PersistentCollection || attributes instanceof java.util.SortedSet) {
+			super.setAttributes(attributes);
+		} else {
+			super.setAttributes(new TreeSet<>(attributes));
+		}
 		attributeMap = null;
 		allAttributeMap = null;
 	}
@@ -471,6 +485,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> not save an attribute with a blank string value
 	 * <strong>Should</strong> void old attribute when a null or blank string value is added
 	 */
+	@Override
 	public void addAttribute(PersonAttribute newAttribute) {
 		newAttribute.setPerson(this);
 		boolean newIsNull = !StringUtils.hasText(newAttribute.getValue());
@@ -500,8 +515,9 @@ public class Person extends BaseChangeableOpenmrsData {
 		}
 		attributeMap = null;
 		allAttributeMap = null;
-		if (!OpenmrsUtil.collectionContains(attributes, newAttribute) && !newIsNull) {
-			attributes.add(newAttribute);
+		Set<PersonAttribute> attrs = getAttributes();
+		if (!OpenmrsUtil.collectionContains(attrs, newAttribute) && !newIsNull) {
+			attrs.add(newAttribute);
 		}
 	}
 	
@@ -515,7 +531,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> remove attribute when exist
 	 */
 	public void removeAttribute(PersonAttribute attribute) {
-		if (attributes != null && attributes.remove(attribute)) {
+		Set<PersonAttribute> attrs = super.getAttributes();
+		if (attrs != null && attrs.remove(attribute)) {
 			attributeMap = null;
 			allAttributeMap = null;
 		}
