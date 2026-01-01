@@ -37,18 +37,10 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_frequency_id_seq")
-	@GenericGenerator(
-		name = "order_frequency_id_seq",
-		strategy = "native",
-		parameters = @Parameter(
-			name = "sequence",
-			value = "order_frequency_order_frequency_id_seq"
-		)
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "order_frequency_id")
 	private Integer orderFrequencyId;
-
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false, unique = true)
 	private Concept concept;
