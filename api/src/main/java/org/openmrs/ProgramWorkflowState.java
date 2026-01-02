@@ -9,12 +9,34 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
  * ProgramWorkflowState
  */
 @Audited
+@Entity
+@Table(name = "program_workflow_state")
+/**
+ * The parent class (BaseOpenmrsMetadata) enforces mandatory 'name' fields.
+ * However, ProgramWorkflowState derives its name dynamically from the associated 'Concept', 
+ * so we relax the constraint to allow 'name' to be nullable.
+ */
+@AttributeOverrides({
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
+})
 public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
@@ -23,14 +45,30 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	// Properties
 	// ******************
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(
+		name = "native",
+		strategy = "native",
+		parameters = {
+			@Parameter(name = "sequence", value = "program_workflow_state_program_workflow_state_id_seq")
+		}
+	)
+	@Column(name = "program_workflow_state_id")
 	private Integer programWorkflowStateId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "program_workflow_id", nullable = false)
 	private ProgramWorkflow programWorkflow;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
+	@Column(name = "initial", nullable = false)
 	private Boolean initial;
 	
+	@Column(name = "terminal", nullable = false)
 	private Boolean terminal;
 	
 	// ******************
