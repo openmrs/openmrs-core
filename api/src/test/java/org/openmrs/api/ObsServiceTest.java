@@ -2004,7 +2004,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Date newDate = new Date();
 		//Update the entire Obs Tree obsDateTime
 		Obs obs = Context.getObsService().getObs(2);
-		obs.setObsDatetime(new Date());
+		obs.setObsDatetime(newDate);
 		Obs child = null;
 		for(Obs member : obs.getGroupMembers()) {
 			member.setObsDatetime(newDate);
