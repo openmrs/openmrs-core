@@ -2913,6 +2913,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(OrderType.class)
 				.addAnnotatedClass(OrderAttributeType.class)
 				.addAnnotatedClass(OrderSetAttributeType.class)
+				.addAnnotatedClass(OrderGroupAttributeType.class)
 			    .addAnnotatedClass(ConceptReferenceTermMap.class)
 			    .addAnnotatedClass(ConceptReferenceTerm.class)
 				.addAnnotatedClass(ConceptAnswer.class)
