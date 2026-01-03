@@ -636,6 +636,32 @@
 				<version>${graalJsVersion}</version>
 				<type>pom</type>
 			</dependency>
+
+			<!-- Kotlin -->
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-bom</artifactId>
+				<version>${kotlin.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-reflect</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<!-- MockK for Kotlin testing -->
+			<dependency>
+				<groupId>io.mockk</groupId>
+				<artifactId>mockk-jvm</artifactId>
+				<version>1.13.13</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -967,6 +993,38 @@
 					<groupId>org.liquibase</groupId>
 					<artifactId>liquibase-maven-plugin</artifactId>
 					<version>4.33.0</version>
+				</plugin>
+				<!-- Kotlin Maven Plugin -->
+				<plugin>
+					<groupId>org.jetbrains.kotlin</groupId>
+					<artifactId>kotlin-maven-plugin</artifactId>
+					<version>${kotlin.version}</version>
+					<configuration>
+						<jvmTarget>${kotlin.compiler.jvmTarget}</jvmTarget>
+						<compilerPlugins>
+							<plugin>all-open</plugin>
+							<plugin>no-arg</plugin>
+							<plugin>jpa</plugin>
+							<plugin>spring</plugin>
+						</compilerPlugins>
+						<pluginOptions>
+							<option>all-open:annotation=jakarta.persistence.Entity</option>
+							<option>all-open:annotation=jakarta.persistence.MappedSuperclass</option>
+							<option>all-open:annotation=jakarta.persistence.Embeddable</option>
+						</pluginOptions>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.jetbrains.kotlin</groupId>
+							<artifactId>kotlin-maven-allopen</artifactId>
+							<version>${kotlin.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.jetbrains.kotlin</groupId>
+							<artifactId>kotlin-maven-noarg</artifactId>
+							<version>${kotlin.version}</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -1392,6 +1450,10 @@
 		<log4jVersion>2.25.3</log4jVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<graalJsVersion>25.0.1</graalJsVersion>
+
+		<!-- Kotlin -->
+		<kotlin.version>2.1.0</kotlin.version>
+		<kotlin.compiler.jvmTarget>21</kotlin.compiler.jvmTarget>
 
 		<customArgLineForTesting />
 
