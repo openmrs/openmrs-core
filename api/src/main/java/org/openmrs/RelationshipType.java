@@ -9,6 +9,13 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 
@@ -33,21 +40,37 @@ import org.hibernate.envers.Audited;
  * In English, we run into a tricky RelationshipType with aunts and uncles. We have chosen to define
  * them as aunt/uncle-niece/nephew.
  */
+@Entity
+@Table(name = "relationship_type")
 @Audited
+/**
+ * The 'name' property is inherited from BaseChangeableOpenmrsMetadata, but the 
+ * relationship_type table does not have a 'name' column. It uses 'a_is_to_b' 
+ * and 'b_is_to_a' instead.
+ * * We map 'name' to 'a_is_to_b' (read-only) to satisfy the Hibernate requirement 
+ * for the inherited field without breaking the legacy schema.
+ */
+@AttributeOverride(name = "name", column = @Column(name = "a_is_to_b", length = 50, insertable = false, updatable = false))
 public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	
 	public static final long serialVersionUID = 4223L;
 	
 	// Fields
-	
+	@Id
+	@Column(name = "relationship_type_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer relationshipTypeId;
 	
+	@Column(name = "a_is_to_b", nullable = false, length = 50) 
 	private String aIsToB;
 	
+	@Column (name = "b_is_to_a", nullable = false, length = 50)
 	private String bIsToA;
 	
+	@Column (nullable = false)
 	private Integer weight = 0;
 	
+	@Column (nullable = false)
 	private Boolean preferred = false;
 	
 	// Constructors
