@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class PatientProgramTest {
@@ -187,5 +188,31 @@ public class PatientProgramTest {
 		// then
 		assertEquals(3, sortedStates.size());
 		
+	}
+	/**
+	 * @see PatientState#compareTo(PatientState)
+	 * @verifies use patientStateId as tie breaker when dates are identical
+	 */
+	@Test
+	public void compareTo_shouldUseIdAsTieBreakerWhenDatesAndUuidOrderConflict() {
+		// Setup: Two states with the EXACT same time
+		Date now = new Date();
+
+		// State 1: Created first (Lower ID), but UUID sorts last alphabetically
+		PatientState oldState = new PatientState(1);
+		oldState.setStartDate(now);
+		oldState.setUuid("ZZZ-UUID");
+
+		// State 2: Created later (Higher ID), but UUID sorts first alphabetically
+		PatientState newState = new PatientState(2);
+		newState.setStartDate(now);
+		newState.setUuid("AAA-UUID");
+
+		// Action: Compare them
+		int result = oldState.compareTo(newState);
+
+		// Assertion: oldState (1) is "older" than newState (2), so result must be negative.
+		Assertions.assertTrue(result < 0,
+			"Should sort by ID (1 < 2) even if UUIDs are in reverse order");
 	}
 }
