@@ -10,28 +10,29 @@
 package org.openmrs;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.*;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
  * The frequency at which an Order's action should be repeated, e.g. TWICE DAILY or EVERY 6 HOURS.
- * This class is backed by a Concept for i18n, synonyms, mappings, etc.
+ * This class is backed by a Concept for i18n, synonyms, mappings, etc, but it contains additional
+ * details an electronic system can use to understand its meaning.
  *
- * @since 2.5.0
+ * @since 1.10
  */
+@Audited
 @Entity
 @Table(name = "order_frequency")
-@Audited
+@AttributeOverride(
+	name = "name",
+	column = @Column(name = "name", insertable = false, updatable = false)
+)
+@AttributeOverride(
+	name = "description",
+	column = @Column(name = "description", insertable = false, updatable = false)
+)
 public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 
 	private static final long serialVersionUID = 1L;
@@ -40,47 +41,36 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "order_frequency_id")
 	private Integer orderFrequencyId;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "concept_id", nullable = false, unique = true)
-	private Concept concept;
 
-	@Column(name = "frequency_per_day", precision = 22)
+	@Column(name = "frequency_per_day")
 	private Double frequencyPerDay;
 
 	@Column(name = "uuid", length = 38, unique = true)
 	private String uuid;
 
-	/** Default constructor */
-	public OrderFrequency() {
-	}
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false, unique = true)
+	private Concept concept;
 
-	@Override
-	public Integer getId() {
-		return getOrderFrequencyId();
-	}
-
-	@Override
-	public void setId(Integer id) {
-		setOrderFrequencyId(id);
-	}
-
+	/**
+	 * Get the orderFrequencyId
+	 */
 	public Integer getOrderFrequencyId() {
 		return orderFrequencyId;
 	}
 
+	/**
+	 * Sets the orderFrequencyId
+	 *
+	 * @param orderFrequencyId
+	 */
 	public void setOrderFrequencyId(Integer orderFrequencyId) {
 		this.orderFrequencyId = orderFrequencyId;
 	}
 
-	public Concept getConcept() {
-		return concept;
-	}
-
-	public void setConcept(Concept concept) {
-		this.concept = concept;
-	}
-
+	/**
+	 * Get the frequencyPerDay
+	 */
 	public Double getFrequencyPerDay() {
 		return frequencyPerDay;
 	}
@@ -89,6 +79,9 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 		this.frequencyPerDay = frequencyPerDay;
 	}
 
+	/**
+	 * Get the uuid
+	 */
 	@Override
 	public String getUuid() {
 		return uuid;
@@ -99,7 +92,41 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 		this.uuid = uuid;
 	}
 
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
 	@Override
+	public Integer getId() {
+		return getOrderFrequencyId();
+	}
+
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	@Override
+	public void setId(Integer id) {
+		setOrderFrequencyId(id);
+	}
+
+	/**
+	 * Get the concept for the drugFrequency
+	 */
+	public Concept getConcept() {
+		return concept;
+	}
+
+	/**
+	 * Sets the concept for the drugFrequency
+	 */
+	public void setConcept(Concept concept) {
+		this.concept = concept;
+	}
+
+	/**
+	 * @see BaseOpenmrsMetadata#getDescription()
+	 */
+	@Override
+	@Transient
 	public String getName() {
 		if (getConcept() != null && getConcept().getName() != null) {
 			return getConcept().getName().toString();
@@ -107,7 +134,11 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 		return null;
 	}
 
+	/**
+	 * @see org.openmrs.BaseOpenmrsMetadata#getName()
+	 */
 	@Override
+	@Transient
 	public String getDescription() {
 		if (getConcept() != null && getConcept().getDescription() != null) {
 			return getConcept().getDescription().getDescription();
@@ -117,6 +148,6 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 
 	@Override
 	public String toString() {
-		return getName() != null ? getName() : super.toString();
+		return getName();
 	}
 }
