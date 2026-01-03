@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -945,6 +946,24 @@ public class EncounterTest extends BaseContextMockTest {
 		
 		assertEquals(1, encounter.getOrders().size());
 	}
+
+	/**
+	 * @see Encounter#getOrders(boolean)
+	 */
+	@Test
+	public void getOrders_shouldExcludeVoidedOrdersWhenIncludeVoidedIsFalse() {
+		Encounter encounter = new Encounter();
+		Order active = new Order();
+		Order voided = new Order();
+		voided.setVoided(true);
+		
+		encounter.addOrder(active);
+		encounter.addOrder(voided);
+		
+		assertEquals(1, encounter.getOrders(false).size());
+		assertEquals(2, encounter.getOrders(true).size());
+	}
+
 	
 	/**
 	 * @see Encounter#removeOrder(Order)
@@ -1420,6 +1439,25 @@ public class EncounterTest extends BaseContextMockTest {
 		encounter.setDiagnoses(diagnoses);
 
 		assertFalse(encounter.hasDiagnosis(diagnosis));
+	}
+
+	/**
+	 * @see Encounter#getDiagnoses(boolean)
+	 */
+	@Test
+	public void getDiagnoses_shouldExcludeVoidedDiagnosesWhenIncludeVoidedIsFalse() {
+		Encounter encounter = new Encounter();
+		Diagnosis active = new Diagnosis();
+		Diagnosis voided = new Diagnosis();
+		voided.setVoided(true);
+		
+		Set<Diagnosis> diagnoses = new LinkedHashSet<>();
+		diagnoses.add(active);
+		diagnoses.add(voided);
+		encounter.setDiagnoses(diagnoses);
+		
+		assertEquals(1, encounter.getDiagnoses(false).size());
+		assertEquals(2, encounter.getDiagnoses(true).size());
 	}
 
 	/**
