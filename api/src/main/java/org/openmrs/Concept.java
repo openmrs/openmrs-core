@@ -170,6 +170,18 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
+	 * Constructs a Concept with all required fields for persistence.
+	 *
+	 * @param datatype     the datatype of the concept (required)
+	 * @param conceptClass the concept class (required)
+	 */
+	public Concept(ConceptDatatype datatype, ConceptClass conceptClass) {
+		this();
+		this.datatype = datatype;
+		this.conceptClass = conceptClass;
+	}
+
+	/**
 	 * @return Returns all answers (including retired answers).
 	 * <strong>Should</strong> return retired and non-retired answers
 	 * <strong>Should</strong> not return null if answers is null or empty

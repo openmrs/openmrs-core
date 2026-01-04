@@ -128,6 +128,20 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		this.encounterId = encounterId;
 	}
 	
+	/**
+	 * Required values constructor for Encounter
+	 *
+	 * @param encounterDatetime the date/time of the encounter
+	 * @param patient the patient involved in the encounter
+	 * @param encounterType the type of the encounter
+	 */
+	public Encounter(Patient patient, EncounterType encounterType, Date encounterDatetime, Location location) {
+		this.encounterDatetime = encounterDatetime;
+		this.patient = patient;
+		this.encounterType = encounterType;
+		this.location = location;
+	}
+	
 	// Property accessors
 	
 	/**

@@ -274,8 +274,8 @@ public class ContextTest extends BaseContextSensitiveTest {
 	@Test
 	public void becomeUser_shouldChangeLocaleWhenBecomeAnotherUser() {
 		UserService userService = Context.getUserService();
-		
-		User user = new User(new Person());
+
+		User user = new User(new Person(), "contextUser");
 		user.addName(new PersonName("givenName", "middleName", "familyName"));
 		user.getPerson().setGender("M");
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, "pt_BR");

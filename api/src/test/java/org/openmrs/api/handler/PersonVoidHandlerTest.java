@@ -126,7 +126,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 		//given
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = Context.getPersonService().getPerson(2);
-		User user = new User(person);
+		User user = new User(person, "voidHandlerUser");
 		Context.getUserService().createUser(user, "Admin123");
 		assertFalse(Context.getUserService().getUsersByPerson(person, false).isEmpty());
 		

@@ -2068,7 +2068,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void unvoidPerson_shouldNotUnretireUsers() throws Exception {
 		//given
 		Person person = personService.getPerson(2);
-		User user = new User(person);
+		User user = new User(person,"testuser");
 		Context.getUserService().createUser(user, "Admin123");
 		personService.voidPerson(person, "reason");
 		
@@ -2102,7 +2102,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void voidPerson_shouldRetireUsers() throws Exception {
 		//given
 		Person person = personService.getPerson(2);
-		User user = new User(person);
+		User user = new User(person,"testuser2" );
 		Context.getUserService().createUser(user, "Admin123");
 		assertFalse(Context.getUserService().getUsersByPerson(person, false).isEmpty());
 		
