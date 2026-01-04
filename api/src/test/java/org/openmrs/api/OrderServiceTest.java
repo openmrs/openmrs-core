@@ -38,6 +38,7 @@ import org.openmrs.ConceptStateConversion;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
+import org.openmrs.DiagnosisAttributeType;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
 import org.openmrs.DrugIngredient;
@@ -2892,6 +2893,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
 				.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
 				.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+				.addAnnotatedClass(DiagnosisAttributeType.class)
 				.addAnnotatedClass(MedicationDispense.class)
 				.addAnnotatedClass(ProviderAttributeType.class)
 				.addAnnotatedClass(ConceptMapType.class)
