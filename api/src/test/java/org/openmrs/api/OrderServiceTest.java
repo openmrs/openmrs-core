@@ -55,6 +55,7 @@ import org.openmrs.Order;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderAttribute;
 import org.openmrs.OrderAttributeType;
+import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderGroupAttribute;
@@ -2911,6 +2912,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(HL7InError.class)
 				.addAnnotatedClass(OrderType.class)
 				.addAnnotatedClass(OrderAttributeType.class)
+				.addAnnotatedClass(OrderSetAttributeType.class)
 				.addAnnotatedClass(OrderGroupAttributeType.class)
 			    .addAnnotatedClass(ConceptReferenceTermMap.class)
 			    .addAnnotatedClass(ConceptReferenceTerm.class)
