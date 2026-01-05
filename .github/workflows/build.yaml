@@ -24,14 +24,20 @@ jobs:
           - 21
 #          Current spring version only supports up to java 21
 #          - 24
+        isPR:
+            - ${{ github.event_name == 'pull_request' }}
+        test-profile: ["", "-Pintegration-test -Pskip-default-test", "-Pperformance-test -Pskip-default-test"]
         exclude:
           - platform: windows-latest
             java-version: 21
           #- platform: windows-latest
           #  java-version: 24
+          # Do not run performance tests on PRs
+          - test-profile: '-Pperformance-test -Pskip-default-test'
+            isPR: true
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup JDK
         uses: actions/setup-java@v5
         with:
@@ -40,10 +46,11 @@ jobs:
           cache: 'maven'
       - name: Install dependencies
         run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --file pom.xml
-      - name: Build with Maven
-        run: mvn clean install --batch-mode && mvn test -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
+      - name: Test
+        run: mvn test ${{ matrix.test-profile }} --batch-mode --file pom.xml
       # this is necessary to populate the environment variables for Coveralls properly
       - name: Set branch name and PR number
+        if: ${{ matrix.test-profile == '' }}
         id: refs
         env:
           BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
@@ -52,7 +59,7 @@ jobs:
           echo "::set-output name=pr_number::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")"
       - name: Update coverage data
         # only send coverage data for Java 21
-        if: ${{ steps.refs.outcome == 'success' }}
+        if: ${{  matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' && steps.refs.outcome == 'success' }}
         continue-on-error: true
         env:
           CI_NAME: Github

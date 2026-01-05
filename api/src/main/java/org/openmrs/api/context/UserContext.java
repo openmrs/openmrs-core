@@ -11,10 +11,12 @@ package org.openmrs.api.context;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,7 +61,7 @@ public class UserContext implements Serializable {
 	/**
 	 * User's permission proxies
 	 */
-	private List<String> proxies = Collections.synchronizedList(new ArrayList<>());
+	private final List<String> proxies = Collections.synchronizedList(new ArrayList<>());
 	
 	/**
 	 * User's locale
@@ -239,14 +241,7 @@ public class UserContext implements Serializable {
 	 * @param privilege to give to users
 	 */
 	public void addProxyPrivilege(String privilege) {
-		
-		if (privilege == null) {
-			throw new IllegalArgumentException("UserContext.addProxyPrivilege does not accept null privileges");
-		}
-		
-		log.debug("Adding proxy privilege: {}", privilege);
-		
-		proxies.add(privilege);
+		addProxyPrivilege(new String[] {privilege});
 	}
 	
 	/**
@@ -255,8 +250,67 @@ public class UserContext implements Serializable {
 	 * @param privilege Privilege to remove in string form
 	 */
 	public void removeProxyPrivilege(String privilege) {
-		log.debug("Removing proxy privilege: {}", privilege);
-		proxies.remove(privilege);
+		removeProxyPrivilege(new String[] {privilege});
+	}
+	
+	/**
+	 * Adds one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is useful for situations where a system process may need access to some piece of data that the
+	 * user would not otherwise have access to, like a GlobalProperty. <strong>This facility should not be
+	 * used to return data to the user that they otherwise would be unable to see.</strong>
+	 * <p/>
+	 * The expected usage is:
+	 * <p/>
+	 * <pre>{@code
+	 * try {
+	 *   Context.addProxyPrivilege(&quot;AAA&quot;);
+	 *   Context.get*Service().methodRequiringAAAPrivilege();
+	 * }
+	 * finally {
+	 *   Context.removeProxyPrivilege(&quot;AAA&quot;);
+	 * }}
+	 * </pre>
+	 * <p/>
+	 *
+	 * @param privileges privileges to add in string form
+	 * @see #hasPrivilege(String)
+	 * @see #removeProxyPrivilege(String...)
+	 */
+	public void addProxyPrivilege(String... privileges) {
+		if (privileges == null || Arrays.stream(privileges).anyMatch(Objects::isNull)) {
+			throw new IllegalArgumentException("UserContext.addProxyPrivilege does not accept null privileges");
+		}
+		
+		for (String privilege : privileges) {
+			log.debug("Adding proxy privilege: {}", privilege);
+			proxies.add(privilege);
+		}
+	}
+	
+	/**
+	 * Removes one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is the compliment for {@link #addProxyPrivilege(String...)} to clean-up the context.
+	 * <p/>
+	 *
+	 * @param privileges privileges to remove in string form
+	 * @see #hasPrivilege(String)
+	 * @see #addProxyPrivilege(String...)
+	 */
+	public void removeProxyPrivilege(String... privileges) {
+		if (privileges == null || Arrays.stream(privileges).allMatch(Objects::isNull)) {
+			return;
+		}
+		
+		for (String privilege : privileges) {
+			if (privilege != null) {
+				log.debug("Removing privilege: {}", privilege);
+				proxies.remove(privilege);
+			}
+		}
 	}
 	
 	/**
@@ -315,9 +369,9 @@ public class UserContext implements Serializable {
 	}
 	
 	/**
-	 * Tests whether currently authenticated user has a particular privilege
+	 * Tests whether the currently authenticated user has a particular privilege
 	 *
-	 * @param privilege
+	 * @param privilege The privilege to check if it's available
 	 * @return true if authenticated user has given privilege
 	 * <strong>Should</strong> authorize if authenticated user has specified privilege
 	 * <strong>Should</strong> authorize if authenticated role has specified privilege

@@ -29,6 +29,7 @@ public class SchemaOnlyTuner extends AbstractSnapshotTuner {
 		document = replaceBitWithBoolean(document);
 		document = replaceLongtextWithClob(document);
 		document = detachLiquibaseTables( document );
+		document = removeEmptyOrNullDefaultValues(document);
 		return document;
 	}
 	
@@ -70,6 +71,24 @@ public class SchemaOnlyTuner extends AbstractSnapshotTuner {
 			}
 		}
 		
+		return document;
+	}
+
+	Document removeEmptyOrNullDefaultValues(Document document) {
+		XPath xPath = DocumentHelper.createXPath(
+				"//dbchangelog:column[@defaultValue=\"\"] | //dbchangelog:column[@defaultValueComputed=\"NULL\"]"
+		);
+		xPath.setNamespaceURIs(getNamespaceUris());
+		xPath.selectNodes(document).forEach(node -> {
+			Node defaultValueAttr = node.selectSingleNode("@defaultValue");
+			if (defaultValueAttr != null) {
+				defaultValueAttr.detach();
+			}
+			Node defaultValueComputedAttr = node.selectSingleNode("@defaultValueComputed");
+			if (defaultValueComputedAttr != null) {
+				defaultValueComputedAttr.detach();
+			}
+		});
 		return document;
 	}
 	

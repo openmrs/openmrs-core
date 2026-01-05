@@ -23,7 +23,6 @@
             </generator>
         </id>
 
-        <discriminator column="order_set_member_id" insert="false" />
 
         <many-to-one name="orderType" class="OrderType" not-null="true">
             <column name="order_type"/>
