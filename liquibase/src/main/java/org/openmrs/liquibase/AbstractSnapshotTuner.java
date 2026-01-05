@@ -9,11 +9,7 @@
  */
 package org.openmrs.liquibase;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -157,16 +153,17 @@ public abstract class AbstractSnapshotTuner {
 		return document;
 	}
 	
-	Document readChangeLogResource(String resourceName) throws DocumentException {
-		File file = new File(getClass().getClassLoader().getResource(resourceName).getFile());
+	Document readChangeLogResource(String resourceName) throws DocumentException, IOException {
+		Document document;
+		try (InputStream is = getResourceAsStream(resourceName)) {
 		SAXReader reader = new SAXReader();
-		Document document = null;
 		try {
-			document = reader.read(file);
+				document = reader.read(is);
 		}
 		catch (DocumentException e) {
-			log.error(String.format("processing the resource '{}' raised an exception", resourceName), e);
+				log.error("processing the resource '{}' raised an exception", resourceName, e);
 			throw e;
+		}
 		}
 		return document;
 	}
@@ -189,7 +186,12 @@ public abstract class AbstractSnapshotTuner {
 		}
 		return buffer.toString();
 	}
-	
+
+	private InputStream getResourceAsStream(String resourceName) {
+		return getClass().getClassLoader().getResourceAsStream(resourceName);
+	}
+
+
 	String readFile(String path) throws FileNotFoundException {
 		File file = Paths.get(path).toFile();
 		return readFile(file);
