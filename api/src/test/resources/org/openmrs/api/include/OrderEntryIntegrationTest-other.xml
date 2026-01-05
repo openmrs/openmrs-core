@@ -21,7 +21,7 @@
     <concept_name concept_name_id="2002" concept_id="1002" name="Day(s)" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="83f24a00-7869-11e3-981f-0800200c9a68"/>
     <concept_name concept_name_id="2003" concept_id="1003" name="Once Daily" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="73f24a00-7869-11e3-981f-0800200c9a67"/>
 
-    <order_frequency order_frequency_id="3000" concept_id="1001" creator="1" date_created="2008-08-15 13:52:53.0" retired="0" uuid="38090760-7c38-11e4-baa7-0800200c9a67" />
+    <order_frequency order_frequency_id="3000" concept_id="1001" name="Twice daily" creator="1" date_created="2008-08-15 13:52:53.0" retired="0" uuid="38090760-7c38-11e4-baa7-0800200c9a67" />
     <encounter encounter_id="6" encounter_type="1" patient_id="2" location_id="2" form_id="1" encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e89d123r"/>
     <encounter_provider encounter_provider_id="4" encounter_id="5" provider_id="1" encounter_role_id="1" creator="1" date_created="2008-08-19 00:00:00.0" voided="false" uuid="4527c6c5-77a4-41b0-b7eb-564e163e55e5" />
 </dataset>
