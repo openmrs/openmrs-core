@@ -204,7 +204,86 @@ mvn clean compile -DskipTests -pl api -am
 
 ### Step 1.1: Create Kotlin Extensions File
 
-*TODO: Document after implementation*
+**File**: `api/src/main/kotlin/org/openmrs/util/OpenmrsExtensions.kt`
+
+Created idiomatic Kotlin extension functions to replace static utility methods from `OpenmrsUtil.java`.
+
+#### Extension Functions Created
+
+**Null-Safe Comparison Extensions**:
+```kotlin
+fun Any?.nullSafeEquals(other: Any?): Boolean
+fun String?.nullSafeEqualsIgnoreCase(other: String?): Boolean
+```
+
+**Date Extensions**:
+```kotlin
+fun Date.compareDates(other: Date): Int          // Handles Timestamp nanoseconds
+fun Date?.compareWithNullAsEarliest(other: Date?): Int
+fun Date?.compareWithNullAsLatest(other: Date?): Int
+fun Date?.firstMomentOfDay(): Date?              // 00:00:00.000
+fun Date?.lastMomentOfDay(): Date?               // 23:59:59.999
+fun Date.safeCopy(): Date
+fun Date?.isYesterday(): Boolean
+```
+
+**Collection Extensions**:
+```kotlin
+fun <T> Collection<T>?.safeContains(element: T?): Boolean  // Uses equals() not compareTo()
+fun <T> Collection<T>.containsAny(elements: Collection<T>): Boolean
+fun <K, V> MutableMap<K, MutableSet<V>>.addToSet(key: K, value: V)
+fun <K, V> MutableMap<K, MutableList<V>>.addToList(key: K, value: V)
+```
+
+**String Extensions**:
+```kotlin
+fun String?.isInArray(array: Array<String>?): Boolean
+fun String.startsWithAny(vararg prefixes: String): Boolean
+fun String?.containsUpperAndLowerCase(): Boolean
+fun String?.containsOnlyDigits(): Boolean
+fun String?.containsDigit(): Boolean
+fun String?.shortenedStackTrace(): String?       // Removes Spring/reflection frames
+fun String?.parseParameterList(): Map<String, String>  // "key=val|key2=val2"
+fun String.toIntList(delimiter: String = ","): List<Int>
+```
+
+**Comparable Extensions**:
+```kotlin
+fun <T : Comparable<T>> T?.compareWithNullAsLowest(other: T?): Int
+fun <T : Comparable<T>> T?.compareWithNullAsGreatest(other: T?): Int
+```
+
+**Number Extensions**:
+```kotlin
+fun Long.toIntSafe(): Int  // Throws if value doesn't fit
+```
+
+#### Usage Examples
+
+```kotlin
+// Before (Java static methods):
+OpenmrsUtil.nullSafeEquals(a, b)
+OpenmrsUtil.collectionContains(collection, obj)
+OpenmrsUtil.getLastMomentOfDay(date)
+
+// After (Kotlin extensions):
+a.nullSafeEquals(b)
+collection.safeContains(obj)
+date.lastMomentOfDay()
+```
+
+### Step 1.2: Verify Build
+
+```bash
+export JAVA_HOME=/path/to/java/21
+mvn clean compile -DskipTests -pl api -am
+# Result: BUILD SUCCESS
+```
+
+**Files Added**:
+- `api/src/main/kotlin/org/openmrs/util/OpenmrsExtensions.kt` (+394 lines)
+
+**Commit**: `[Phase 1] Add Kotlin extension functions for OpenmrsUtil`
 
 ---
 
@@ -213,7 +292,7 @@ mvn clean compile -DskipTests -pl api -am
 | Phase | Files Converted | Lines Removed | Lines Added | Net Change |
 |-------|-----------------|---------------|-------------|------------|
 | Phase 0 | 0 | 0 | 139 | +139 |
-| Phase 1 | - | - | - | - |
+| Phase 1 | 1 | 0 | 394 | +394 |
 | Phase 2 | - | - | - | - |
 | Phase 3 | - | - | - | - |
 | Phase 4 | - | - | - | - |
