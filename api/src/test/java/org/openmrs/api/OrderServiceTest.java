@@ -38,6 +38,7 @@ import org.openmrs.ConceptStateConversion;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
+import org.openmrs.DiagnosisAttributeType;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
 import org.openmrs.DrugIngredient;
@@ -55,6 +56,7 @@ import org.openmrs.Order;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderAttribute;
 import org.openmrs.OrderAttributeType;
+import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderGroupAttribute;
@@ -2891,6 +2893,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
 				.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
 				.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+				.addAnnotatedClass(DiagnosisAttributeType.class)
 				.addAnnotatedClass(MedicationDispense.class)
 				.addAnnotatedClass(ProviderAttributeType.class)
 				.addAnnotatedClass(ConceptMapType.class)
@@ -2911,6 +2914,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(HL7InError.class)
 				.addAnnotatedClass(OrderType.class)
 				.addAnnotatedClass(OrderAttributeType.class)
+				.addAnnotatedClass(OrderSetAttributeType.class)
 				.addAnnotatedClass(OrderGroupAttributeType.class)
 			    .addAnnotatedClass(ConceptReferenceTermMap.class)
 			    .addAnnotatedClass(ConceptReferenceTerm.class)
