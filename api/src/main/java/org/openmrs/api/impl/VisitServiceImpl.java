@@ -324,6 +324,111 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 
 		return visitLocation.equals(visit.getLocation());
 	}
+	
+	/**
+ 	* @see org.openmrs.api.VisitService#isSuitableVisitIgnoringTime(Visit, Location, Date)
+ 	*/
+	@Override
+	@Transactional(readOnly = true)
+	public boolean isSuitableVisitIgnoringTime(Visit visit, Location location, Date when) {
+
+	if (visit == null || visit.getStartDatetime() == null || when == null) {
+		return false;
+	}
+
+	// Compare only the date (ignore time)
+	Date visitDate = org.apache.commons.lang3.time.DateUtils.truncate(
+			visit.getStartDatetime(), java.util.Calendar.DAY_OF_MONTH);
+	Date whenDate = org.apache.commons.lang3.time.DateUtils.truncate(
+			when, java.util.Calendar.DAY_OF_MONTH);
+
+	if (!visitDate.equals(whenDate)) {
+		return false;
+	}
+
+	return isSuitableVisit(visit, location, when);
+	}
+
+	/**
+ * @see org.openmrs.api.VisitService#ensureActiveVisit(Patient, Location)
+ */
+@Override
+@Transactional
+public Visit ensureActiveVisit(Patient patient, Location location) {
+
+	if (patient == null || location == null) {
+		throw new IllegalArgumentException("Patient and location are required");
+	}
+
+	List<Visit> activeVisits = Context.getVisitService()
+			.getVisitsByPatient(patient, false, false);
+
+	Date now = new Date();
+
+	for (Visit visit : activeVisits) {
+		if (isSuitableVisit(visit, location, now)) {
+			return visit;
+		}
+	}
+
+	// No suitable visit → create one
+	Visit visit = new Visit();
+	visit.setPatient(patient);
+	visit.setStartDatetime(now);
+
+	// Find nearest parent that supports visits
+	Location visitLocation = location;
+	while (visitLocation != null && !Boolean.TRUE.equals(visitLocation.getSupportsVisits())) {
+		visitLocation = visitLocation.getParentLocation();
+	}
+
+	if (visitLocation == null) {
+		throw new IllegalArgumentException("No visit-supporting location found");
+	}
+
+	visit.setLocation(visitLocation);
+
+	return Context.getVisitService().saveVisit(visit);
+	}
+
+	/**
+ * @see org.openmrs.api.VisitService#ensureVisit(Patient, Date, Location)
+ */
+@Override
+@Transactional
+public Visit ensureVisit(Patient patient, Date when, Location location) {
+
+	if (patient == null || when == null || location == null) {
+		throw new IllegalArgumentException("Patient, date, and location are required");
+	}
+
+	List<Visit> visits = Context.getVisitService()
+			.getVisitsByPatient(patient, true, false);
+
+	for (Visit visit : visits) {
+		if (isSuitableVisitIgnoringTime(visit, location, when)) {
+			return visit;
+		}
+	}
+
+	// Create new visit
+	Visit visit = new Visit();
+	visit.setPatient(patient);
+	visit.setStartDatetime(when);
+
+	Location visitLocation = location;
+	while (visitLocation != null && !Boolean.TRUE.equals(visitLocation.getSupportsVisits())) {
+		visitLocation = visitLocation.getParentLocation();
+	}
+
+	if (visitLocation == null) {
+		throw new IllegalArgumentException("No visit-supporting location found");
+	}
+
+	visit.setLocation(visitLocation);
+
+	return Context.getVisitService().saveVisit(visit);
+	}
 
 	/**
 	 * @see org.openmrs.api.VisitService#getAllVisitAttributeTypes()

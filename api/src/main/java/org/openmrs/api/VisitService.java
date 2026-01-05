@@ -395,7 +395,7 @@ public interface VisitService extends OpenmrsService {
 	public void stopVisits(Date maximumStartDate);
 
 	boolean isSuitableVisit(Visit visit, Location location, Date when);
-
+	
 	boolean isSuitableVisitIgnoringTime(Visit visit, Location location, Date when);
 
 	Visit ensureActiveVisit(Patient patient, Location location, Date when);
