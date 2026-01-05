@@ -134,6 +134,15 @@ public interface LocationService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getAllLocations(boolean includeRetired) throws APIException;
+
+		/**
+	 * Returns all locations that support visits.
+	 *
+	 * @return all locations where supportsVisits = true
+	 * @since 3.1.0
+	 */
+	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	List<Location> getAllLocationsThatSupportVisits();
 	
 	/**
 	 * Returns locations that match the beginning of the given string. A null list will never be
