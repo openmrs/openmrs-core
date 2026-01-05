@@ -12,6 +12,8 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Objects;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,6 +42,7 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	
 	@ManyToOne
 	@JoinColumn(name = "cohort_id", nullable = false)
+	@Access(AccessType.FIELD)
 	private Cohort cohort;
 	
 	@Column (name = "patient_id", nullable = false)
