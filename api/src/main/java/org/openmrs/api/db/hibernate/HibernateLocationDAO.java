@@ -117,6 +117,29 @@ public class HibernateLocationDAO implements LocationDAO {
 
 		return session.createQuery(cq).getResultList();
 	}
+
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getAllLocationsThatSupportVisits()
+	 */
+	@Override
+	public List<Location> getAllLocationsThatSupportVisits() {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Location> cq = cb.createQuery(Location.class);
+		Root<Location> locationRoot = cq.from(Location.class);
+
+		cq.where(
+			cb.and(
+				cb.isFalse(locationRoot.get("retired")),
+				cb.isTrue(locationRoot.get("supportsVisits"))
+			)
+		);
+
+		cq.orderBy(cb.asc(locationRoot.get("name")));
+
+		return session.createQuery(cq).getResultList();
+	}
+
 	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#deleteLocation(org.openmrs.Location)
