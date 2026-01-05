@@ -468,6 +468,74 @@ mvn clean compile -DskipTests -pl api -am
 
 ---
 
+## Phase 4: Domain Entities (In Progress)
+
+**Date**: 2026-01-05
+
+### Step 4.1: Migrate Supporting Interfaces and Classes
+
+| Java File | Kotlin File | Notes |
+|-----------|-------------|-------|
+| `Address.java` | `Address.kt` | Interface with 22 address properties |
+| `Attributable.java` | `Attributable.kt` | Generic interface for PersonAttribute values |
+| `BaseChangeableOpenmrsMetadata.java` | `BaseChangeableOpenmrsMetadata.kt` | Marker class for mutable metadata |
+
+### Step 4.2: Migrate Location Entity
+
+**File**: `Location.java` (857 lines) → `Location.kt` (~280 lines) = **67% reduction**
+
+Location is a JPA entity representing physical places (hospitals, rooms, clinics). Key Kotlin improvements:
+
+**1. Properties Replace Getter/Setter Pairs**:
+```kotlin
+// Java: 22 address fields × 2 methods = 44 methods
+// Kotlin: Just properties with JPA annotations
+@Column(name = "address1")
+override var address1: String? = null
+```
+
+**2. Idiomatic Collection Operations**:
+```kotlin
+// Java:
+Set<Location> ret = new HashSet<>();
+for (Location l : getChildLocations()) {
+    if (!l.getRetired()) { ret.add(l); }
+}
+return ret;
+
+// Kotlin:
+fun getChildLocations(includeRetired: Boolean): Set<Location> =
+    if (includeRetired) childLocations ?: emptySet()
+    else childLocations?.filterNot { it.retired == true }?.toSet() ?: emptySet()
+```
+
+**3. Safe Exception Handling with runCatching**:
+```kotlin
+// Java:
+try { return Context.getLocationService().getLocations(searchText); }
+catch (Exception e) { return Collections.emptyList(); }
+
+// Kotlin:
+override fun findPossibleValues(searchText: String): List<Location> =
+    runCatching { Context.getLocationService().getLocations(searchText) }
+        .getOrDefault(emptyList())
+```
+
+**4. Companion Object for Static Members**:
+```kotlin
+companion object {
+    const val serialVersionUID: Long = 455634L
+    const val LOCATION_UNKNOWN: Int = 1
+
+    @JvmStatic
+    fun isInHierarchy(location: Location?, root: Location?): Boolean { ... }
+}
+```
+
+**Note**: `BaseCustomizableMetadata` and `Customizable` remain in Java due to complex recursive generic type bounds (`Attribute<AT extends AttributeType, OT extends Customizable<?>>`) that violate Kotlin's Finite Bound Restriction.
+
+---
+
 ## Migration Statistics
 
 | Phase | Files Converted | Lines Removed | Lines Added | Net Change |
@@ -476,7 +544,7 @@ mvn clean compile -DskipTests -pl api -am
 | Phase 1 | 1 | 0 | 394 | +394 |
 | Phase 2 | 7 | 243 | 363 | +120 |
 | Phase 3 | 11 | 609 | 425 | -184 |
-| Phase 4 | - | - | - | - |
+| Phase 4 | 4 | 1057 | ~350 | ~-700 |
 
 ---
 
