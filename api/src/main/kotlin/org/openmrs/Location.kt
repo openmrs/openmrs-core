@@ -297,11 +297,11 @@ class Location() : BaseCustomizableMetadata<LocationAttribute>(), Serializable, 
 
     @Deprecated("Data provided by this method can be better achieved from appropriate service at point of use")
     override fun getPossibleValues(): List<Location> =
-        runCatching { Context.getLocationService().allLocations }
+        runCatching { Context.getLocationService().getAllLocations() }
             .getOrDefault(emptyList())
 
     override fun hydrate(s: String): Location =
-        runCatching { Context.getLocationService().getLocation(s.toInt()) }
+        runCatching { Context.getLocationService().getLocation(s.toInt()) ?: Location() }
             .getOrDefault(Location())
 
     override fun serialize(): String = locationId?.toString() ?: ""
