@@ -7,25 +7,24 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api;
-
-import java.util.List;
+package org.openmrs.api
 
 /**
  * Interface for Openmrs services supporting
  * fetching domain objects by UUID.
- * 
+ *
  * @since 3.0.0
  */
-public interface DomainService extends OpenmrsService {
+interface DomainService : OpenmrsService {
 
     /**
      * Returns a domain object by UUID, or null if not found.
-     * 
+     *
+     * @param type the class type to retrieve
      * @param uuid the UUID string of the domain object
      * @return an instance of the requested type
      */
-    public <T> T fetchByUuid(Class<T> type, String uuid);
+    fun <T> fetchByUuid(type: Class<T>, uuid: String): T?
 
     /**
      * Returns a list of all domain types that are currently registered and
@@ -33,6 +32,5 @@ public interface DomainService extends OpenmrsService {
      *
      * @return a list of registered domain classes
      */
-    public List<Class<?>> getDomainTypes();
-
+    fun getDomainTypes(): List<Class<*>>
 }

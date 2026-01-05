@@ -41,11 +41,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeService, RefByUuid {
 	
-	private List<Class<? extends CustomDatatype>> datatypeClasses;
-	
-	private List<Class<? extends CustomDatatypeHandler>> handlerClasses;
-	
-	private transient Map<Class<? extends CustomDatatype>, Class<? extends CustomDatatypeHandler>> prioritizedHandlerClasses;
+	private List<Class<? extends CustomDatatype<?>>> datatypeClasses;
+
+	private List<Class<? extends CustomDatatypeHandler<?, ?>>> handlerClasses;
+
+	private transient Map<Class<? extends CustomDatatype<?>>, Class<? extends CustomDatatypeHandler<?, ?>>> prioritizedHandlerClasses;
 	
 	@Autowired
 	private DatatypeDAO dao;
@@ -83,20 +83,21 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 		return new LinkedHashSet(handlerClasses);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private synchronized void populateBeanListsFromContext() {
 		if (datatypeClasses == null) {
 			List<CustomDatatype> datatypeBeans = Context.getRegisteredComponents(CustomDatatype.class);
 			datatypeClasses = new ArrayList<>();
 			for (CustomDatatype<?> dt : datatypeBeans) {
-				datatypeClasses.add(dt.getClass());
+				datatypeClasses.add((Class<? extends CustomDatatype<?>>) dt.getClass());
 			}
-			
+
 		}
 		if (handlerClasses == null) {
 			List<CustomDatatypeHandler> handlerBeans = Context.getRegisteredComponents(CustomDatatypeHandler.class);
 			handlerClasses = new ArrayList<>();
 			for (CustomDatatypeHandler<?, ?> h : handlerBeans) {
-				handlerClasses.add(h.getClass());
+				handlerClasses.add((Class<? extends CustomDatatypeHandler<?, ?>>) h.getClass());
 			}
 		}
 	}
@@ -122,8 +123,9 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Class<? extends CustomDatatypeHandler>> getHandlerClasses(Class<? extends CustomDatatype<?>> datatype) {
-		List<Class<? extends CustomDatatypeHandler>> ret = new ArrayList<>();
+	@SuppressWarnings("unchecked")
+	public List<Class<? extends CustomDatatypeHandler<?, ?>>> getHandlerClasses(Class<? extends CustomDatatype<?>> datatype) {
+		List<Class<? extends CustomDatatypeHandler<?, ?>>> ret = new ArrayList<>();
 		for (Class<? extends CustomDatatypeHandler<?, ?>> candidate : getAllHandlerClasses()) {
 			if (datatypeClassHandled(candidate).equals(datatype)) {
 				ret.add(candidate);
@@ -174,7 +176,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 		if (prioritizedHandlerClasses == null) {
 			prioritizeHandlers();
 		}
-		Class<? extends CustomDatatypeHandler> clazz = prioritizedHandlerClasses.get(datatype.getClass());
+		Class<? extends CustomDatatypeHandler<?, ?>> clazz = prioritizedHandlerClasses.get(datatype.getClass());
 		if (clazz == null) {
 			return null;
 		}
@@ -193,11 +195,12 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 * private method that prioritizes all registered handlers so we can quickly determine which to use for
 	 * each datatype
 	 */
+	@SuppressWarnings("unchecked")
 	private synchronized void prioritizeHandlers() {
 		if (prioritizedHandlerClasses == null) {
 			prioritizedHandlerClasses = new LinkedHashMap<>();
-			for (Class dt : getAllDatatypeClasses()) {
-				List<Class<? extends CustomDatatypeHandler>> handlerClasses = getHandlerClasses(dt);
+			for (Class<? extends CustomDatatype<?>> dt : getAllDatatypeClasses()) {
+				List<Class<? extends CustomDatatypeHandler<?, ?>>> handlerClasses = getHandlerClasses(dt);
 				if (handlerClasses == null || handlerClasses.isEmpty()) {
 					prioritizedHandlerClasses.put(dt, null);
 				} else {
