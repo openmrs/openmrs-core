@@ -62,7 +62,10 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@Column(name = "location_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer locationId;
-	
+
+	@Column(name = "supports_visits", nullable = false)
+	private Boolean supportsVisits = false;
+
 	@ManyToOne
 	@JoinColumn(name = "location_type_concept_id")
 	private Concept type;
@@ -854,4 +857,11 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	public void setAddress15(String address15) {
 		this.address15 = address15;
 	}
+	
+	public Boolean getSupportsVisits() {
+		return supportsVisits;
+	}
+	public void setSupportsVisits(Boolean supportsVisits) {
+		this.supportsVisits = supportsVisits;
+	}	
 }
