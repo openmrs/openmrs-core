@@ -418,6 +418,11 @@
 				<version>8.0.30</version>
 			</dependency>
 			<dependency>
+				<groupId>com.mysql</groupId>
+				<artifactId>mysql-connector-mxj</artifactId>
+				<version>5.0.11</version>
+			</dependency>
+			<dependency>
 				<groupId>org.mariadb.jdbc</groupId>
 				<artifactId>mariadb-java-client</artifactId>
 				<version>3.5.4</version>
