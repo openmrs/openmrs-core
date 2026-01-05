@@ -287,13 +287,96 @@ mvn clean compile -DskipTests -pl api -am
 
 ---
 
+## Phase 2: Enums & Simple Types
+
+**Date**: 2026-01-05
+
+### Step 2.1: Migrate Enums to Idiomatic Kotlin
+
+Converted 7 Java enum files to idiomatic Kotlin with:
+- KDoc documentation for all enum values
+- `companion object` with `@JvmStatic fromString()` method for safe parsing
+- Proper `@Deprecated` annotations with `ReplaceWith` hints
+
+#### Files Migrated
+
+| Java File | Kotlin File | Values | Notes |
+|-----------|-------------|--------|-------|
+| `AllergenType.java` | `AllergenType.kt` | 4 | Simple enum |
+| `AllergySeverity.java` | `AllergySeverity.kt` | 5 | Simple enum |
+| `ConditionClinicalStatus.java` | `ConditionClinicalStatus.kt` | 7 | Has deprecated `HISTORY_OF` |
+| `ConditionVerificationStatus.java` | `ConditionVerificationStatus.kt` | 2 | Simple enum |
+| `ConceptNameType.java` | `ConceptNameType.kt` | 3 | API package |
+| `MatchMode.java` | `MatchMode.kt` | 4 | Has pattern methods |
+| `PatientSearchMode.java` | `PatientSearchMode.kt` | 4 | Hibernate package |
+
+#### Idiomatic Kotlin Patterns Applied
+
+**1. Safe Parsing with `fromString()`**:
+```kotlin
+companion object {
+    @JvmStatic
+    fun fromString(value: String?): AllergenType? =
+        value?.uppercase()?.let { name ->
+            entries.firstOrNull { it.name == name }
+        }
+}
+```
+
+**2. Kotlin Deprecation with ReplaceWith**:
+```kotlin
+@Deprecated("as of 2.6.0", ReplaceWith("REMISSION"))
+HISTORY_OF,
+```
+
+**3. Idiomatic String Templates (MatchMode)**:
+```kotlin
+// Java switch statement → Kotlin when expression
+return when (this) {
+    START -> "$processedStr%"
+    END -> "%$processedStr"
+    ANYWHERE -> "%$processedStr%"
+    EXACT -> processedStr
+}
+```
+
+### Step 2.2: Verify Build
+
+```bash
+export JAVA_HOME=/path/to/java/21
+mvn clean compile -DskipTests -pl api -am
+# Result: BUILD SUCCESS (767 Java + 8 Kotlin source files)
+```
+
+**Files Removed** (Java):
+- `api/src/main/java/org/openmrs/AllergenType.java`
+- `api/src/main/java/org/openmrs/AllergySeverity.java`
+- `api/src/main/java/org/openmrs/ConditionClinicalStatus.java`
+- `api/src/main/java/org/openmrs/ConditionVerificationStatus.java`
+- `api/src/main/java/org/openmrs/api/ConceptNameType.java`
+- `api/src/main/java/org/openmrs/api/db/hibernate/MatchMode.java`
+- `api/src/main/java/org/openmrs/api/db/hibernate/PatientSearchMode.java`
+
+**Files Added** (Kotlin):
+- `api/src/main/kotlin/org/openmrs/AllergenType.kt`
+- `api/src/main/kotlin/org/openmrs/AllergySeverity.kt`
+- `api/src/main/kotlin/org/openmrs/ConditionClinicalStatus.kt`
+- `api/src/main/kotlin/org/openmrs/ConditionVerificationStatus.kt`
+- `api/src/main/kotlin/org/openmrs/api/ConceptNameType.kt`
+- `api/src/main/kotlin/org/openmrs/api/db/hibernate/MatchMode.kt`
+- `api/src/main/kotlin/org/openmrs/api/db/hibernate/PatientSearchMode.kt`
+
+**Commit**: `[Phase 2] Migrate enums to idiomatic Kotlin`
+
+---
+
 ## Migration Statistics
 
 | Phase | Files Converted | Lines Removed | Lines Added | Net Change |
 |-------|-----------------|---------------|-------------|------------|
 | Phase 0 | 0 | 0 | 139 | +139 |
 | Phase 1 | 1 | 0 | 394 | +394 |
-| Phase 2 | - | - | - | - |
+| Phase 2 | 7 | 243 | 363 | +120 |
 | Phase 3 | - | - | - | - |
 | Phase 4 | - | - | - | - |
 
