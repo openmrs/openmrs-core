@@ -148,34 +148,6 @@ Added kotlin-maven-plugin for mixed compilation:
 </plugin>
 ```
 
-Configured Java compiler to run after Kotlin:
-```xml
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-compiler-plugin</artifactId>
-    <executions>
-        <execution>
-            <id>default-compile</id>
-            <phase>none</phase>
-        </execution>
-        <execution>
-            <id>default-testCompile</id>
-            <phase>none</phase>
-        </execution>
-        <execution>
-            <id>java-compile</id>
-            <phase>compile</phase>
-            <goals><goal>compile</goal></goals>
-        </execution>
-        <execution>
-            <id>java-test-compile</id>
-            <phase>test-compile</phase>
-            <goals><goal>testCompile</goal></goals>
-        </execution>
-    </executions>
-</plugin>
-```
-
 ### Step 0.4: Create Kotlin Source Directories
 ```bash
 mkdir -p api/src/main/kotlin
@@ -247,31 +219,6 @@ fun String?.parseParameterList(): Map<String, String>  // "key=val|key2=val2"
 fun String.toIntList(delimiter: String = ","): List<Int>
 ```
 
-**Comparable Extensions**:
-```kotlin
-fun <T : Comparable<T>> T?.compareWithNullAsLowest(other: T?): Int
-fun <T : Comparable<T>> T?.compareWithNullAsGreatest(other: T?): Int
-```
-
-**Number Extensions**:
-```kotlin
-fun Long.toIntSafe(): Int  // Throws if value doesn't fit
-```
-
-#### Usage Examples
-
-```kotlin
-// Before (Java static methods):
-OpenmrsUtil.nullSafeEquals(a, b)
-OpenmrsUtil.collectionContains(collection, obj)
-OpenmrsUtil.getLastMomentOfDay(date)
-
-// After (Kotlin extensions):
-a.nullSafeEquals(b)
-collection.safeContains(obj)
-date.lastMomentOfDay()
-```
-
 ### Step 1.2: Verify Build
 
 ```bash
@@ -329,42 +276,13 @@ companion object {
 HISTORY_OF,
 ```
 
-**3. Idiomatic String Templates (MatchMode)**:
-```kotlin
-// Java switch statement → Kotlin when expression
-return when (this) {
-    START -> "$processedStr%"
-    END -> "%$processedStr"
-    ANYWHERE -> "%$processedStr%"
-    EXACT -> processedStr
-}
-```
-
 ### Step 2.2: Verify Build
 
 ```bash
 export JAVA_HOME=/path/to/java/21
 mvn clean compile -DskipTests -pl api -am
-# Result: BUILD SUCCESS (767 Java + 8 Kotlin source files)
+# Result: BUILD SUCCESS
 ```
-
-**Files Removed** (Java):
-- `api/src/main/java/org/openmrs/AllergenType.java`
-- `api/src/main/java/org/openmrs/AllergySeverity.java`
-- `api/src/main/java/org/openmrs/ConditionClinicalStatus.java`
-- `api/src/main/java/org/openmrs/ConditionVerificationStatus.java`
-- `api/src/main/java/org/openmrs/api/ConceptNameType.java`
-- `api/src/main/java/org/openmrs/api/db/hibernate/MatchMode.java`
-- `api/src/main/java/org/openmrs/api/db/hibernate/PatientSearchMode.java`
-
-**Files Added** (Kotlin):
-- `api/src/main/kotlin/org/openmrs/AllergenType.kt`
-- `api/src/main/kotlin/org/openmrs/AllergySeverity.kt`
-- `api/src/main/kotlin/org/openmrs/ConditionClinicalStatus.kt`
-- `api/src/main/kotlin/org/openmrs/ConditionVerificationStatus.kt`
-- `api/src/main/kotlin/org/openmrs/api/ConceptNameType.kt`
-- `api/src/main/kotlin/org/openmrs/api/db/hibernate/MatchMode.kt`
-- `api/src/main/kotlin/org/openmrs/api/db/hibernate/PatientSearchMode.kt`
 
 **Commit**: `[Phase 2] Migrate enums to idiomatic Kotlin`
 
@@ -393,158 +311,381 @@ Converted 8 Java interfaces to idiomatic Kotlin with interface properties.
 
 Converted 3 Java abstract classes to Kotlin with JPA annotations preserved.
 
-| Java Class | Kotlin Class | Lines (Java→Kotlin) | Notes |
-|------------|--------------|---------------------|-------|
-| `BaseOpenmrsObject.java` | `BaseOpenmrsObject.kt` | 119→66 | 45% reduction |
-| `BaseOpenmrsData.java` | `BaseOpenmrsData.kt` | 222→68 | 69% reduction |
-| `BaseOpenmrsMetadata.java` | `BaseOpenmrsMetadata.kt` | 268→79 | 70% reduction |
-
-#### Idiomatic Kotlin Patterns Applied
-
-**1. Interface Properties (replaces getter/setter pairs)**:
-```kotlin
-// Java: public String getUuid(); public void setUuid(String uuid);
-// Kotlin:
-interface OpenmrsObject {
-    var uuid: String
-}
-```
-
-**2. Default Interface Implementation with `get()`**:
-```kotlin
-interface Voidable : OpenmrsObject {
-    @get:JsonIgnore
-    @Deprecated("as of 2.0, use voided property")
-    val isVoided: Boolean?
-        get() = voided  // Default implementation
-
-    var voided: Boolean?
-}
-```
-
-**3. Kotlin Properties with JPA Annotations**:
-```kotlin
-@MappedSuperclass
-@Audited
-abstract class BaseOpenmrsObject : Serializable, OpenmrsObject {
-    @Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false)
-    override var uuid: String = UUID.randomUUID().toString()
-}
-```
-
-**4. Idiomatic equals/hashCode**:
-```kotlin
-override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (other !is BaseOpenmrsObject) return false
-
-    val thisClass = Hibernate.getClass(this)
-    val otherClass = Hibernate.getClass(other)
-
-    if (!(thisClass.isAssignableFrom(otherClass) || otherClass.isAssignableFrom(thisClass))) {
-        return false
-    }
-    return this.uuid == other.uuid
-}
-```
-
-### Step 3.3: Verify Build
-
-```bash
-export JAVA_HOME=/path/to/java/21
-mvn clean compile -DskipTests -pl api -am
-# Result: BUILD SUCCESS
-```
-
-**Files Removed** (Java - 11 files):
-- Interfaces: `OpenmrsObject.java`, `Creatable.java`, `Changeable.java`, `Auditable.java`, `Voidable.java`, `Retireable.java`, `OpenmrsData.java`, `OpenmrsMetadata.java`
-- Classes: `BaseOpenmrsObject.java`, `BaseOpenmrsData.java`, `BaseOpenmrsMetadata.java`
-
-**Files Added** (Kotlin - 11 files):
-- Interfaces: `OpenmrsObject.kt`, `Creatable.kt`, `Changeable.kt`, `Auditable.kt`, `Voidable.kt`, `Retireable.kt`, `OpenmrsData.kt`, `OpenmrsMetadata.kt`
-- Classes: `BaseOpenmrsObject.kt`, `BaseOpenmrsData.kt`, `BaseOpenmrsMetadata.kt`
+| Java Class | Kotlin Class | Lines (Java→Kotlin) | Reduction |
+|------------|--------------|---------------------|-----------|
+| `BaseOpenmrsObject.java` | `BaseOpenmrsObject.kt` | 119→66 | 45% |
+| `BaseOpenmrsData.java` | `BaseOpenmrsData.kt` | 222→68 | 69% |
+| `BaseOpenmrsMetadata.java` | `BaseOpenmrsMetadata.kt` | 268→79 | 70% |
 
 **Commit**: `[Phase 3] Migrate base classes and interfaces to Kotlin`
 
 ---
 
-## Phase 4: Domain Entities (In Progress)
+## Phase 4: Domain Entities
 
 **Date**: 2026-01-05
 
-### Step 4.1: Migrate Supporting Interfaces and Classes
+### Tier 1: Core Entities (No Dependencies)
+
+#### Step 4.1.1: Migrate Supporting Types
 
 | Java File | Kotlin File | Notes |
 |-----------|-------------|-------|
 | `Address.java` | `Address.kt` | Interface with 22 address properties |
 | `Attributable.java` | `Attributable.kt` | Generic interface for PersonAttribute values |
 | `BaseChangeableOpenmrsMetadata.java` | `BaseChangeableOpenmrsMetadata.kt` | Marker class for mutable metadata |
+| `BaseChangeableOpenmrsData.java` | `BaseChangeableOpenmrsData.kt` | Marker class for mutable data |
 
-### Step 4.2: Migrate Location Entity
+**Note**: `BaseCustomizableMetadata`, `BaseCustomizableData`, and `Customizable` remain in Java due to complex recursive generic type bounds that violate Kotlin's Finite Bound Restriction.
+
+#### Step 4.1.2: Migrate Location
 
 **File**: `Location.java` (857 lines) → `Location.kt` (~280 lines) = **67% reduction**
 
-Location is a JPA entity representing physical places (hospitals, rooms, clinics). Key Kotlin improvements:
-
-**1. Properties Replace Getter/Setter Pairs**:
+Key patterns:
 ```kotlin
-// Java: 22 address fields × 2 methods = 44 methods
-// Kotlin: Just properties with JPA annotations
+// Properties replace getter/setter pairs
 @Column(name = "address1")
 override var address1: String? = null
-```
 
-**2. Idiomatic Collection Operations**:
-```kotlin
-// Java:
-Set<Location> ret = new HashSet<>();
-for (Location l : getChildLocations()) {
-    if (!l.getRetired()) { ret.add(l); }
-}
-return ret;
-
-// Kotlin:
+// Collection operations with Kotlin stdlib
 fun getChildLocations(includeRetired: Boolean): Set<Location> =
     if (includeRetired) childLocations ?: emptySet()
     else childLocations?.filterNot { it.retired == true }?.toSet() ?: emptySet()
-```
 
-**3. Safe Exception Handling with runCatching**:
-```kotlin
-// Java:
-try { return Context.getLocationService().getLocations(searchText); }
-catch (Exception e) { return Collections.emptyList(); }
-
-// Kotlin:
+// Safe exception handling
 override fun findPossibleValues(searchText: String): List<Location> =
     runCatching { Context.getLocationService().getLocations(searchText) }
         .getOrDefault(emptyList())
 ```
 
-**4. Companion Object for Static Members**:
-```kotlin
-companion object {
-    const val serialVersionUID: Long = 455634L
-    const val LOCATION_UNKNOWN: Int = 1
+#### Step 4.1.3: Migrate User
 
-    @JvmStatic
-    fun isInHierarchy(location: Location?, root: Location?): Boolean { ... }
+**File**: `User.java` (764 lines) → `User.kt` (~280 lines) = **63% reduction**
+
+Key patterns:
+```kotlin
+// Computed property
+val isSuperUser: Boolean
+    get() = containsRole(RoleConstants.SUPERUSER)
+
+// Collection operations
+val allRoles: Set<Role>
+    get() {
+        val baseRoles = roles?.toMutableSet() ?: mutableSetOf()
+        val totalRoles = baseRoles.toMutableSet()
+        baseRoles.forEach { role -> totalRoles.addAll(role.allParentRoles) }
+        return totalRoles
+    }
+
+// Privilege check
+fun hasPrivilege(privilege: String?): Boolean {
+    if (privilege.isNullOrEmpty()) return true
+    if (isSuperUser) return true
+    return allRoles.any { it.hasPrivilege(privilege) }
 }
 ```
 
-**Note**: `BaseCustomizableMetadata` and `Customizable` remain in Java due to complex recursive generic type bounds (`Attribute<AT extends AttributeType, OT extends Customizable<?>>`) that violate Kotlin's Finite Bound Restriction.
+#### Step 4.1.4: Migrate Person
+
+**File**: `Person.java` (1181 lines) → `Person.kt` (~530 lines) = **55% reduction**
+
+Key patterns:
+```kotlin
+// Age calculation
+val age: Int?
+    get() = getAge(null)
+
+fun getAge(onDate: Date?): Int? {
+    if (birthdate == null) return null
+    val today = Calendar.getInstance().apply {
+        if (onDate != null) time = onDate
+        if (deathDate != null && time.after(deathDate)) time = deathDate
+    }
+    // ... calculation
+}
+
+// Preferred name/address with null safety
+val personName: PersonName?
+    get() = names.firstOrNull { it.preferred == true && it.voided != true }
+        ?: names.firstOrNull { it.voided != true }
+```
+
+#### Step 4.1.5: Migrate Concept
+
+**File**: `Concept.java` (1705 lines) → `Concept.kt` (~680 lines) = **60% reduction**
+
+Key patterns:
+```kotlin
+// Name lookup with locale fallback
+fun getName(): ConceptName? {
+    if (names.isEmpty()) return null
+    for (currentLocale in LocaleUtility.getLocalesInOrder()) {
+        getPreferredName(currentLocale)?.let { return it }
+        getFullySpecifiedName(currentLocale)?.let { return it }
+    }
+    return names.firstOrNull { it.isFullySpecifiedName }
+        ?: synonyms.firstOrNull()
+}
+
+// Grouped providers
+fun getProvidersByRoles(includeVoided: Boolean = false): Map<EncounterRole, Set<Provider>> =
+    encounterProviders
+        .filter { includeVoided || it.voided != true }
+        .groupBy({ it.encounterRole!! }, { it.provider!! })
+        .mapValues { it.value.toSet() }
+```
+
+**Tier 1 Commit**: `Phase 4: Migrate Tier 1 entities to Kotlin (Person, Concept, User)`
+
+### Tier 1 Summary
+
+| Entity | Java Lines | Kotlin Lines | Reduction |
+|--------|-----------|--------------|-----------|
+| Location.kt | 857 | ~280 | 67% |
+| User.kt | 764 | ~280 | 63% |
+| Person.kt | 1181 | ~530 | 55% |
+| Concept.kt | 1705 | ~680 | 60% |
+| **Total** | **4507** | **~1770** | **61%** |
 
 ---
 
-## Migration Statistics
+### Tier 2: Dependent Entities (Depend on Tier 1)
 
-| Phase | Files Converted | Lines Removed | Lines Added | Net Change |
-|-------|-----------------|---------------|-------------|------------|
-| Phase 0 | 0 | 0 | 139 | +139 |
-| Phase 1 | 1 | 0 | 394 | +394 |
-| Phase 2 | 7 | 243 | 363 | +120 |
-| Phase 3 | 11 | 609 | 425 | -184 |
-| Phase 4 | 4 | 1057 | ~350 | ~-700 |
+#### Step 4.2.1: Migrate Patient
+
+**File**: `Patient.java` (413 lines) → `Patient.kt` (~180 lines) = **56% reduction**
+
+Key patterns:
+```kotlin
+// Extends Person, syncs patientId with personId
+class Patient() : Person() {
+    private var _patientId: Int? = null
+
+    fun setPatientId(patientId: Int?) {
+        super.setPersonId(patientId)
+        this._patientId = patientId
+    }
+
+    // Preferred identifier with null safety
+    val patientIdentifier: PatientIdentifier?
+        get() = identifiers.firstOrNull { it.preferred == true && it.voided != true }
+            ?: identifiers.firstOrNull { it.voided != true }
+}
+```
+
+#### Step 4.2.2: Migrate Provider
+
+**File**: `Provider.java` (183 lines) → `Provider.kt` (~60 lines) = **67% reduction**
+
+Key patterns:
+```kotlin
+@Audited
+class Provider() : BaseCustomizableMetadata<ProviderAttribute>() {
+    var providerId: Int? = null
+    var person: Person? = null
+    var identifier: String? = null
+    var role: Concept? = null
+    var speciality: Concept? = null
+    var providerRole: ProviderRole? = null
+
+    override var name: String?
+        get() = person?.personName?.fullName
+        set(value) { super.name = value }
+}
+```
+
+#### Step 4.2.3: Migrate Encounter
+
+**File**: `Encounter.java` (974 lines) → `Encounter.kt` (~330 lines) = **66% reduction**
+
+Key patterns:
+```kotlin
+// Recursive obs traversal
+var obs: MutableSet<Obs>
+    get() {
+        val ret = LinkedHashSet<Obs>()
+        _obs?.forEach { o -> ret.addAll(getObsLeaves(o)) }
+        return ret
+    }
+    set(value) { _obs = value }
+
+private fun getObsLeaves(obsParent: Obs): List<Obs> {
+    val leaves = mutableListOf<Obs>()
+    if (obsParent.hasGroupMembers()) {
+        for (child in obsParent.groupMembers ?: emptySet()) {
+            if (child.voided != true) {
+                if (!child.isObsGrouping) leaves.add(child)
+                else leaves.addAll(getObsLeaves(child))
+            }
+        }
+    } else if (obsParent.voided != true) {
+        leaves.add(obsParent)
+    }
+    return leaves
+}
+
+// Add obs with attribute propagation using ArrayDeque
+fun addObs(observation: Obs?) {
+    observation ?: return
+    _obs!!.add(observation)
+
+    val obsToUpdate = ArrayDeque<Obs>()
+    obsToUpdate.add(observation)
+    val seenIt = LinkedHashSet<Obs>()
+
+    while (obsToUpdate.isNotEmpty()) {
+        val o = obsToUpdate.removeFirst()
+        if (o in seenIt) continue
+        seenIt.add(o)
+        o.encounter = this
+        o.obsDatetime = o.obsDatetime ?: encounterDatetime
+        o.person = o.person ?: patient
+        o.location = o.location ?: location
+        o.getGroupMembers(true)?.let { obsToUpdate.addAll(it) }
+    }
+}
+```
+
+#### Step 4.2.4: Migrate Visit
+
+**File**: `Visit.java` (276 lines) → `Visit.kt` (~110 lines) = **60% reduction**
+
+Key patterns:
+```kotlin
+@Entity
+@Table(name = "visit")
+@Audited
+class Visit() : BaseCustomizableData<VisitAttribute>(), Auditable, Customizable<VisitAttribute> {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "visit_id")
+    var visitId: Int? = null
+
+    var patient: Patient? = null
+    var visitType: VisitType? = null
+    var startDatetime: Date? = null
+    var stopDatetime: Date? = null
+
+    val nonVoidedEncounters: List<Encounter>
+        get() = encounters.filterNot { it.voided == true }
+
+    fun addEncounter(encounter: Encounter?) {
+        encounter?.apply {
+            visit = this@Visit
+            encounters.add(this)
+        }
+    }
+}
+```
+
+**Tier 2 Commit**: `Phase 4: Migrate Tier 2 entities to Kotlin (Patient, Provider, Encounter, Visit)`
+
+### Tier 2 Summary
+
+| Entity | Java Lines | Kotlin Lines | Reduction |
+|--------|-----------|--------------|-----------|
+| Patient.kt | 413 | ~180 | 56% |
+| Provider.kt | 183 | ~60 | 67% |
+| Encounter.kt | 974 | ~330 | 66% |
+| Visit.kt | 276 | ~110 | 60% |
+| **Total** | **1846** | **~680** | **63%** |
+
+---
+
+### Tier 3: Complex Entities (In Progress)
+
+Entities to migrate:
+- `Obs.java`
+- `Order.java`
+- `DrugOrder.java`
+- `Diagnosis.java`
+
+---
+
+## Overall Migration Statistics
+
+| Phase | Files Converted | Java Lines Removed | Kotlin Lines Added | Net Reduction |
+|-------|-----------------|--------------------|--------------------|---------------|
+| Phase 0 | 0 (config) | 0 | 139 | - |
+| Phase 1 | 1 | 0 | 394 | - |
+| Phase 2 | 7 | 243 | 363 | 0% (added features) |
+| Phase 3 | 11 | 609 | 213 | 65% |
+| Phase 4 Tier 1 | 4 | 4507 | ~1770 | 61% |
+| Phase 4 Tier 2 | 4 | 1846 | ~680 | 63% |
+| **Total** | **27** | **7205** | **~3559** | **51%** |
+
+---
+
+## Idiomatic Kotlin Patterns Reference
+
+### 1. Properties Replace Getter/Setter Pairs
+```kotlin
+// Java: private String name; + getName() + setName()
+// Kotlin:
+var name: String? = null
+```
+
+### 2. Null-Safe Operators
+```kotlin
+// ?. - Safe call
+patient?.name
+
+// ?: - Elvis operator
+name ?: "Unknown"
+
+// ?.let - Execute if non-null
+name?.let { println(it) }
+```
+
+### 3. Collection Operations
+```kotlin
+// filter, filterNot, map, firstOrNull, any, all
+identifiers.filterNot { it.voided == true }
+names.firstOrNull { it.preferred == true }
+allRoles.any { it.hasPrivilege(privilege) }
+```
+
+### 4. Scope Functions
+```kotlin
+// apply - configure object
+encounter.apply {
+    encounterType = type
+    patient = pat
+}
+
+// let - transform value
+person?.let { it.givenName + " " + it.familyName }
+```
+
+### 5. runCatching for Exception Handling
+```kotlin
+runCatching { Context.getService().doSomething() }
+    .getOrDefault(emptyList())
+```
+
+### 6. Backing Field Pattern for JPA
+```kotlin
+private var _personId: Int? = null
+
+fun getPersonId(): Int? = _personId
+fun setPersonId(personId: Int?) { _personId = personId }
+```
+
+---
+
+## Build Commands
+
+```bash
+# Set Java 21 (required, Kotlin 2.1.0 doesn't support Java 25)
+export JAVA_HOME=/path/to/java/21
+
+# Compile API module
+mvn clean compile -DskipTests -pl api -am
+
+# Full build with tests
+mvn clean verify -pl api -am
+```
 
 ---
 
