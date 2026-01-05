@@ -294,6 +294,38 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	}
 	
 	/**
+	 * @see org.openmrs.api.VisitService#isSuitableVisit(Visit, Location, Date)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public boolean isSuitableVisit(Visit visit, Location location, Date when) {
+
+		if (visit == null || visit.getVoided()) {
+			return false;
+		}
+
+		if (visit.getStartDatetime() == null || visit.getStartDatetime().after(when)) {
+			return false;
+		}
+
+		if (visit.getStopDatetime() != null && visit.getStopDatetime().before(when)) {
+			return false;
+		}
+
+		// walk up the location hierarchy to find a location that supports visits
+		Location visitLocation = location;
+		while (visitLocation != null && !Boolean.TRUE.equals(visitLocation.getSupportsVisits())) {
+			visitLocation = visitLocation.getParentLocation();
+		}
+
+		if (visitLocation == null) {
+			return false;
+		}
+
+		return visitLocation.equals(visit.getLocation());
+	}
+
+	/**
 	 * @see org.openmrs.api.VisitService#getAllVisitAttributeTypes()
 	 */
 	@Override
