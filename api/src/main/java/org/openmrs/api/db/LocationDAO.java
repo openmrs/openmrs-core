@@ -56,6 +56,13 @@ public interface LocationDAO {
 	 *         retired locations
 	 */
 	public List<Location> getAllLocations(boolean includeRetired);
+
+	/**
+	 * Get all locations that support visits.
+	 *
+	 * @return list of locations that support visits
+	 */
+	List<Location> getAllLocationsThatSupportVisits();
 	
 	/**
 	 * Gets the locations matching the specified arguments
