@@ -370,6 +370,104 @@ mvn clean compile -DskipTests -pl api -am
 
 ---
 
+## Phase 3: Base Classes & Interfaces
+
+**Date**: 2026-01-05
+
+### Step 3.1: Migrate Core Interfaces
+
+Converted 8 Java interfaces to idiomatic Kotlin with interface properties.
+
+| Java Interface | Kotlin Interface | Extends | Properties |
+|----------------|------------------|---------|------------|
+| `OpenmrsObject.java` | `OpenmrsObject.kt` | - | `id`, `uuid` |
+| `Creatable.java` | `Creatable.kt` | OpenmrsObject | `creator`, `dateCreated` |
+| `Changeable.java` | `Changeable.kt` | OpenmrsObject | `changedBy`, `dateChanged` |
+| `Auditable.java` | `Auditable.kt` | Creatable, Changeable | (marker) |
+| `Voidable.java` | `Voidable.kt` | OpenmrsObject | `voided`, `voidedBy`, `dateVoided`, `voidReason` |
+| `Retireable.java` | `Retireable.kt` | OpenmrsObject | `retired`, `retiredBy`, `dateRetired`, `retireReason` |
+| `OpenmrsData.java` | `OpenmrsData.kt` | Auditable, Voidable | (deprecated changeBy/dateChanged) |
+| `OpenmrsMetadata.java` | `OpenmrsMetadata.kt` | Auditable, Retireable | `name`, `description` |
+
+### Step 3.2: Migrate Abstract Base Classes
+
+Converted 3 Java abstract classes to Kotlin with JPA annotations preserved.
+
+| Java Class | Kotlin Class | Lines (Java→Kotlin) | Notes |
+|------------|--------------|---------------------|-------|
+| `BaseOpenmrsObject.java` | `BaseOpenmrsObject.kt` | 119→66 | 45% reduction |
+| `BaseOpenmrsData.java` | `BaseOpenmrsData.kt` | 222→68 | 69% reduction |
+| `BaseOpenmrsMetadata.java` | `BaseOpenmrsMetadata.kt` | 268→79 | 70% reduction |
+
+#### Idiomatic Kotlin Patterns Applied
+
+**1. Interface Properties (replaces getter/setter pairs)**:
+```kotlin
+// Java: public String getUuid(); public void setUuid(String uuid);
+// Kotlin:
+interface OpenmrsObject {
+    var uuid: String
+}
+```
+
+**2. Default Interface Implementation with `get()`**:
+```kotlin
+interface Voidable : OpenmrsObject {
+    @get:JsonIgnore
+    @Deprecated("as of 2.0, use voided property")
+    val isVoided: Boolean?
+        get() = voided  // Default implementation
+
+    var voided: Boolean?
+}
+```
+
+**3. Kotlin Properties with JPA Annotations**:
+```kotlin
+@MappedSuperclass
+@Audited
+abstract class BaseOpenmrsObject : Serializable, OpenmrsObject {
+    @Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false)
+    override var uuid: String = UUID.randomUUID().toString()
+}
+```
+
+**4. Idiomatic equals/hashCode**:
+```kotlin
+override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is BaseOpenmrsObject) return false
+
+    val thisClass = Hibernate.getClass(this)
+    val otherClass = Hibernate.getClass(other)
+
+    if (!(thisClass.isAssignableFrom(otherClass) || otherClass.isAssignableFrom(thisClass))) {
+        return false
+    }
+    return this.uuid == other.uuid
+}
+```
+
+### Step 3.3: Verify Build
+
+```bash
+export JAVA_HOME=/path/to/java/21
+mvn clean compile -DskipTests -pl api -am
+# Result: BUILD SUCCESS
+```
+
+**Files Removed** (Java - 11 files):
+- Interfaces: `OpenmrsObject.java`, `Creatable.java`, `Changeable.java`, `Auditable.java`, `Voidable.java`, `Retireable.java`, `OpenmrsData.java`, `OpenmrsMetadata.java`
+- Classes: `BaseOpenmrsObject.java`, `BaseOpenmrsData.java`, `BaseOpenmrsMetadata.java`
+
+**Files Added** (Kotlin - 11 files):
+- Interfaces: `OpenmrsObject.kt`, `Creatable.kt`, `Changeable.kt`, `Auditable.kt`, `Voidable.kt`, `Retireable.kt`, `OpenmrsData.kt`, `OpenmrsMetadata.kt`
+- Classes: `BaseOpenmrsObject.kt`, `BaseOpenmrsData.kt`, `BaseOpenmrsMetadata.kt`
+
+**Commit**: `[Phase 3] Migrate base classes and interfaces to Kotlin`
+
+---
+
 ## Migration Statistics
 
 | Phase | Files Converted | Lines Removed | Lines Added | Net Change |
@@ -377,7 +475,7 @@ mvn clean compile -DskipTests -pl api -am
 | Phase 0 | 0 | 0 | 139 | +139 |
 | Phase 1 | 1 | 0 | 394 | +394 |
 | Phase 2 | 7 | 243 | 363 | +120 |
-| Phase 3 | - | - | - | - |
+| Phase 3 | 11 | 609 | 425 | -184 |
 | Phase 4 | - | - | - | - |
 
 ---

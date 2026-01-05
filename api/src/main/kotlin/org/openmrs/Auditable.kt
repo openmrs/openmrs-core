@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs;
+package org.openmrs
 
 /**
  * In OpenMRS, the convention is to track basic audit information for each object related to who
@@ -15,9 +15,7 @@ package org.openmrs;
  * to check, for example, when a patient record was created, or when a person address was last
  * updated in the system. Any object that needs to keep track of this information should implement
  * this interface.
- * 
+ *
  * @since 1.5
  */
-public interface Auditable extends Creatable, Changeable {
-	
-}
+interface Auditable : Creatable, Changeable

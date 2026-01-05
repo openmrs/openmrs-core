@@ -7,35 +7,25 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs;
+package org.openmrs
 
-import java.util.Date;
+import java.util.Date
 
 /**
  * Base interface for domain objects that need to track information related to when they were
- * changed and the user that last changed them.
- * 
+ * created and the user that created them.
+ *
  * @since 2.2
  */
-public interface Changeable extends OpenmrsObject {
-	
-	/**
-	 * @return User - the user who last changed the object
-	 */
-	User getChangedBy();
-	
-	/**
-	 * @param changedBy - the user who last changed the object
-	 */
-	void setChangedBy(User changedBy);
-	
-	/**
-	 * @return Date - the date the object was last changed
-	 */
-	Date getDateChanged();
-	
-	/**
-	 * @param dateChanged - the date the object was last changed
-	 */
-	void setDateChanged(Date dateChanged);
+interface Creatable : OpenmrsObject {
+
+    /**
+     * The user who created the object.
+     */
+    var creator: User?
+
+    /**
+     * The date the object was created.
+     */
+    var dateCreated: Date?
 }
