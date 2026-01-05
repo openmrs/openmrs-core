@@ -40,6 +40,8 @@ import org.openmrs.validator.ValidateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Calendar;
+import org.apache.commons.lang3.time.DateUtils;
 
 /**
  * Default implementation of the {@link VisitService}. This class should not be used on its own. The
@@ -350,53 +352,27 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	}
 
 	/**
- * @see org.openmrs.api.VisitService#ensureActiveVisit(Patient, Location)
- */
-@Override
-@Transactional
-public Visit ensureActiveVisit(Patient patient, Location location) {
+ 	* @see org.openmrs.api.VisitService#ensureActiveVisit(Patient, Location)
+ 	*/
+	@Override
+	@Transactional
+	public Visit ensureActiveVisit(Patient patient, Location location) {
 
 	if (patient == null || location == null) {
 		throw new IllegalArgumentException("Patient and location are required");
 	}
 
-	List<Visit> activeVisits = Context.getVisitService()
-			.getVisitsByPatient(patient, false, false);
-
-	Date now = new Date();
-
-	for (Visit visit : activeVisits) {
-		if (isSuitableVisit(visit, location, now)) {
-			return visit;
-		}
+	// Delegate to ensureVisit using current time
+	return ensureVisit(patient, new Date(), location);
 	}
 
-	// No suitable visit → create one
-	Visit visit = new Visit();
-	visit.setPatient(patient);
-	visit.setStartDatetime(now);
-
-	// Find nearest parent that supports visits
-	Location visitLocation = location;
-	while (visitLocation != null && !Boolean.TRUE.equals(visitLocation.getSupportsVisits())) {
-		visitLocation = visitLocation.getParentLocation();
-	}
-
-	if (visitLocation == null) {
-		throw new IllegalArgumentException("No visit-supporting location found");
-	}
-
-	visit.setLocation(visitLocation);
-
-	return Context.getVisitService().saveVisit(visit);
-	}
 
 	/**
- * @see org.openmrs.api.VisitService#ensureVisit(Patient, Date, Location)
- */
-@Override
-@Transactional
-public Visit ensureVisit(Patient patient, Date when, Location location) {
+ 	* @see org.openmrs.api.VisitService#ensureVisit(Patient, Date, Location)
+ 	*/
+	@Override
+	@Transactional
+	public Visit ensureVisit(Patient patient, Date when, Location location) {
 
 	if (patient == null || when == null || location == null) {
 		throw new IllegalArgumentException("Patient, date, and location are required");
@@ -428,7 +404,8 @@ public Visit ensureVisit(Patient patient, Date when, Location location) {
 	visit.setLocation(visitLocation);
 
 	return Context.getVisitService().saveVisit(visit);
-	}
+}
+
 
 	/**
 	 * @see org.openmrs.api.VisitService#getAllVisitAttributeTypes()
