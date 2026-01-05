@@ -165,7 +165,6 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * Constructs a Location with the required name.
 	 *
 	 * @param name the name of the location
-	 * @since 1.9
 	 */
 	public Location(String name) {
 		this.setName(name);
