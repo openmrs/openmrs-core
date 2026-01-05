@@ -83,4 +83,34 @@
 		<modifyDataType tableName="concept_reference_range" columnName="criteria" newDataType="TEXT" />
 	</changeSet>
 
+<changeSet id="TRUNK-5466-add-supports-visits-to-location" author="vimla01">
+
+    <preConditions onFail="MARK_RAN">
+        <not>
+            <columnExists tableName="location" columnName="supports_visits"/>
+        </not>
+    </preConditions>
+
+    <addColumn tableName="location">
+        <column name="supports_visits" type="BOOLEAN" defaultValueBoolean="false">
+            <constraints nullable="false"/>
+        </column>
+    </addColumn>
+
+    <update tableName="location">
+        <column name="supports_visits" valueBoolean="true"/>
+        <where>
+            location_id IN (
+                SELECT ltm.location_id
+                FROM location_tag_map ltm
+                JOIN location_tag lt
+                  ON lt.location_tag_id = ltm.location_tag_id
+                WHERE lt.name = 'Visit Location'
+            )
+        </where>
+    </update>
+
+</changeSet>
+
+
 </databaseChangeLog>
