@@ -27,6 +27,8 @@ import org.apache.velocity.runtime.log.Log4JLogChute;
 import org.joda.time.LocalTime;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.PatientProgram;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -290,7 +292,7 @@ public class ConceptReferenceRangeUtility {
 	 * Gets the number of days between two given dates
 	 * 
 	 * @param fromDate the date from which to start counting
-	 * @param dateDate the date up to which to stop counting
+	 * @param toDate the date up to which to stop counting
 	 * @return the number of days between
 	 * @since 2.7.8
 	 */
@@ -305,7 +307,7 @@ public class ConceptReferenceRangeUtility {
 	 * Gets the number of weeks between two given dates
 	 * 
 	 * @param fromDate the date from which to start counting
-	 * @param dateDate the date up to which to stop counting
+	 * @param toDate the date up to which to stop counting
 	 * @return the number of weeks between
 	 * @since 2.7.8
 	 */
@@ -320,7 +322,7 @@ public class ConceptReferenceRangeUtility {
 	 * Gets the number of months between two given dates
 	 * 
 	 * @param fromDate the date from which to start counting
-	 * @param dateDate the date up to which to stop counting
+	 * @param toDate the date up to which to stop counting
 	 * @return the number of months between
 	 * @since 2.7.8
 	 */
@@ -335,7 +337,7 @@ public class ConceptReferenceRangeUtility {
 	 * Gets the number of years between two given dates
 	 * 
 	 * @param fromDate the date from which to start counting
-	 * @param dateDate the date up to which to stop counting
+	 * @param toDate the date up to which to stop counting
 	 * @return the number of years between
 	 * @since 2.7.8
 	 */
@@ -398,5 +400,12 @@ public class ConceptReferenceRangeUtility {
 	 */
 	private LocalDate toLocalDate(Date date) {
 		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	}
+	
+	private List<PatientProgram> getPatientPrograms(Patient patient, Date onDate) {
+		if (onDate == null) {
+			onDate = new Date();
+		}
+		return Context.getProgramWorkflowService().getPatientPrograms(patient, null, null, onDate, onDate, null, false);
 	}
 }
