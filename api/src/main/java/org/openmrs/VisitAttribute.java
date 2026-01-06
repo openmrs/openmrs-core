@@ -9,6 +9,14 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
@@ -19,8 +27,17 @@ import org.openmrs.attribute.BaseAttribute;
  * @since 1.9
  */
 @Audited
+@Entity
+@Table(name = "visit_attribute")
+@AssociationOverride(
+	name="owner",
+	joinColumns = @JoinColumn(name="visit_id", nullable = false)
+)
 public class VisitAttribute extends BaseAttribute<VisitAttributeType, Visit> implements Attribute<VisitAttributeType, Visit> {
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "visit_attribute_id")
 	private Integer visitAttributeId;
 	
 	// BaseAttribute<Visit> has an "owner" property of type Visit, which we re-expose as "visit"
