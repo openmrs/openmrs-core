@@ -420,6 +420,8 @@ public class ConceptReferenceRangeUtility {
 	 * @param person the patient to test
 	 * @param onDate the date to test whether the patient is in the program
 	 * @return true if the patient is in the program on the specified date, false otherwise
+	 * 
+	 *  @since 2.8.3
 	 */
 	public boolean isEnrolledInProgram(String uuid, Person person, Date onDate) {
 		if (!(person.getIsPatient())) {
@@ -440,6 +442,8 @@ public class ConceptReferenceRangeUtility {
 	 * @param person  the patient to test
 	 * @param onDate the date to test whether the patient is in the program state
 	 * @return true if the patient is in the program state on the specified date, false otherwise
+	 * 
+	 * @since 2.8.3
 	 */
 	public boolean isInProgramState(String uuid, Person person, Date onDate) {
 		if (!(person.getIsPatient())) {
