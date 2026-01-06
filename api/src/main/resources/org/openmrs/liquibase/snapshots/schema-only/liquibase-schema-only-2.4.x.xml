@@ -1622,6 +1622,8 @@
                 <constraints nullable="false"/>
             </column>
             <column defaultValueComputed="NULL" name="frequency_per_day" type="DOUBLE"/>
+			<column name="name" type="varchar(255)"/>
+			<column name="description" type="text"/>
             <column name="creator" type="INT">
                 <constraints nullable="false"/>
             </column>

@@ -1049,6 +1049,36 @@
 			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
 		</modifySql>
 	</changeSet>
+	<changeSet author="wolf (generated)" id="1571577697387-62">
+		<createTable tableName="order_frequency">
+			<column autoIncrement="true" name="order_frequency_id" type="INT">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="concept_id" type="INT">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="frequency_per_day" type="DOUBLE"/>
+			<column name="name" type="varchar(255)"/>
+			<column name="description" type="text"/>
+			<column name="creator" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="INT"/>
+			<column name="date_retired" type="datetime"/>
+			<column name="retire_reason" type="VARCHAR(255)"/>
+			<column name="changed_by" type="INT"/>
+			<column name="date_changed" type="datetime"/>
+			<column name="uuid" type="CHAR(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+	</changeSet>
 	<changeSet author="ben (generated)" id="1227303685425-44">
 		<createTable tableName="order_type">
 			<column autoIncrement="true" name="order_type_id" type="int">
