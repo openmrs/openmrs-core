@@ -11,12 +11,13 @@ package org.openmrs;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
@@ -45,14 +46,6 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(name = "relationship_type")
 @Audited
-/**
- * The 'name' property is inherited from BaseChangeableOpenmrsMetadata, but the 
- * relationship_type table does not have a 'name' column. It uses 'a_is_to_b' 
- * and 'b_is_to_a' instead.
- * * We map 'name' to 'a_is_to_b' (read-only) to satisfy the Hibernate requirement 
- * for the inherited field without breaking the legacy schema.
- */
-@AttributeOverride(name = "name", column = @Column(name = "a_is_to_b", length = 50, insertable = false, updatable = false))
 public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	
 	public static final long serialVersionUID = 4223L;
@@ -179,11 +172,21 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	}
 	
 	/**
-	 * @see java.lang.Object#toString()
+	 * @see org.openmrs.BaseOpenmrsMetadata#getName()
 	 */
 	@Override
-	public String toString() {
-		return getaIsToB() + "/" + getbIsToA();
+	public String toString() { return this.getName(); }
+	
+	/**
+	 * Automatically updates the name property based on the A and B roles.
+	 * This ensures the 'name' column is always a concatenation of the roles.
+	 */
+	@PrePersist
+	@PreUpdate
+	protected void updateName() {
+		if (getaIsToB() != null && getbIsToA() != null) {
+			setName(getaIsToB() + "/" + getbIsToA());
+		}
 	}
 	
 	/**
