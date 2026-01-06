@@ -13,6 +13,7 @@ import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -390,6 +392,52 @@ public class ConceptReferenceRangeUtility {
 	 */
 	public long getYears(Date fromDate) {
 		return getYearsBetween(fromDate, new Date());
+	}
+	
+	/**
+	 * Returns whether the patient is the specified program on the specified date
+	 * 
+	 * @param uuid of program
+	 * @param person the patient to test
+	 * @param onDate the date to test whether the patient is in the program
+	 * @return true if the patient is in the program on the specified date, false otherwise
+	 * 
+	 *  @since 2.8.3
+	 */
+	public boolean isEnrolledInProgram(String uuid, Person person, Date onDate) {
+		if (!(person.getIsPatient())) {
+			return false;
+		}
+		return getPatientPrograms((Patient) person, onDate).stream().anyMatch(pp -> pp.getProgram().getUuid().equals(uuid));
+	}
+	
+	/**
+	 * Returns whether the patient is the specified program state on the specified date
+	 *
+	 * @param uuid of program state
+	 * @param person  the patient to test
+	 * @param onDate the date to test whether the patient is in the program state
+	 * @return true if the patient is in the program state on the specified date, false otherwise
+	 * 
+	 * @since 2.8.3
+	 */
+	public boolean isInProgramState(String uuid, Person person, Date onDate) {
+		if (!(person.getIsPatient())) {
+			return false;
+		}
+	
+		List<PatientProgram> patientPrograms = getPatientPrograms((Patient) person, onDate);
+		List<PatientState> patientStates = new ArrayList<>();
+		
+		for (PatientProgram pp : patientPrograms) {
+			for (PatientState state : pp.getStates()) {
+				if (state.getActive(onDate)) {
+					patientStates.add(state);
+				}
+			}
+		}
+		
+		return patientStates.stream().anyMatch(ps -> ps.getState().getUuid().equals(uuid));
 	}
 	
 	/**
