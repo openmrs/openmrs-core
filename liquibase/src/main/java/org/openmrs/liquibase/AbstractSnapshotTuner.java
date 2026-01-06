@@ -8,8 +8,11 @@
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.liquibase;
-
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.HashMap;
