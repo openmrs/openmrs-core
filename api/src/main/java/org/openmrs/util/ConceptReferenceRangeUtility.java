@@ -412,7 +412,7 @@ public class ConceptReferenceRangeUtility {
 	public long getYears(Date fromDate) {
 		return getYearsBetween(fromDate, new Date());
 	}
-
+	
 	/**
 	 * Returns whether the patient is the specified program on the specified date
 	 * 
@@ -427,14 +427,9 @@ public class ConceptReferenceRangeUtility {
 		if (!(person.getIsPatient())) {
 			return false;
 		}
-		if (onDate == null) {
-			onDate = new Date();
-		}
-		Patient patient = (Patient) person;
-		List<PatientProgram> patientPrograms = Context.getProgramWorkflowService().getPatientPrograms(patient, null, null, onDate, onDate, null, false);
-		return patientPrograms.stream().anyMatch(pp -> pp.getProgram().getUuid().equals(uuid));
+		return getPatientPrograms((Patient) person, onDate).stream().anyMatch(pp -> pp.getProgram().getUuid().equals(uuid));
 	}
-
+	
 	/**
 	 * Returns whether the patient is the specified program state on the specified date
 	 *
@@ -449,12 +444,8 @@ public class ConceptReferenceRangeUtility {
 		if (!(person.getIsPatient())) {
 			return false;
 		}
-		if (onDate == null) {
-			onDate = new Date();
-		}
-		Patient patient = (Patient) person;
-		List<PatientProgram> patientPrograms = Context.getProgramWorkflowService().getPatientPrograms(patient, null, null, onDate, onDate, null, false);
-		
+	
+		List<PatientProgram> patientPrograms = getPatientPrograms((Patient) person, onDate);
 		List<PatientState> patientStates = new ArrayList<>();
 		
 		for (PatientProgram pp : patientPrograms) {
@@ -476,5 +467,12 @@ public class ConceptReferenceRangeUtility {
 	 */
 	private LocalDate toLocalDate(Date date) {
 		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	}
+	
+	private List<PatientProgram> getPatientPrograms(Patient patient, Date onDate) {
+		if (onDate == null) {
+			onDate = new Date();
+		}
+		return Context.getProgramWorkflowService().getPatientPrograms(patient, null, null, onDate, onDate, null, false);
 	}
 }

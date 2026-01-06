@@ -695,7 +695,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
 		obs.setPerson(patient);
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient,$obs.obsDatetime)", obs));  // uuid of HIV program which patient 2 is enrolled in
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, $obs.obsDatetime)", obs));  // uuid of HIV program which patient 2 is enrolled in
 	}
 
 	@Test
@@ -704,7 +704,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setObsDatetime(new DateTime(2006, 1, 1, 1,1).toDate());
 		obs.setPerson(patient);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient,$obs.obsDatetime)", obs));  // uuid of HIV program which patient 2 is enrolled in, but not until 2008
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, $obs.obsDatetime)", obs));  // uuid of HIV program which patient 2 is enrolled in, but not until 2008
 	}
 	
 	@Test
@@ -712,7 +712,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
 		obs.setPerson(patient);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('f386c3d2-dd75-441f-a582-2237824edfb0', $patient,$obs.obsDatetime)", obs));  // uuid of the Malaria program which patient 2 is enrolled in
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('f386c3d2-dd75-441f-a582-2237824edfb0', $patient, $obs.obsDatetime)", obs));  // uuid of the Malaria program which patient 2 is not enrolled in
 	}
 
 	@Test
@@ -722,7 +722,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		assertFalse(person.getIsPatient());
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('f386c3d2-dd75-441f-a582-2237824edfb0', $patient,$obs.obsDatetime)", obs));  // uuid of the Malaria program which patient 2 is enrolled in
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('f386c3d2-dd75-441f-a582-2237824edfb0', $patient, $obs.obsDatetime)", obs));  
 	}
 
 
@@ -731,24 +731,24 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
 		obs.setPerson(patient);
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient,$obs.obsDatetime)", obs));  // uuid from standard test dataset, patient is in this state
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  // uuid from standard test dataset, patient is in this state
 	}
 
 	@Test
-	public void isInProgramState_shouldReturnFalseIfPatientIsNotEnrolledInProgramOnDate() {
+	public void isInProgramState_shouldReturnFalseIfPatientIsNotInStateOnDate() {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
 		obs.setObsDatetime(new DateTime(2006, 1, 1, 1,1).toDate());
 		obs.setPerson(patient);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient,$obs.obsDatetime)", obs));  // uuid from standard test dataset, patient is in this state
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  // uuid from standard test dataset, patient is in this state, but not until 2008
 	}
 
 	@Test
-	public void isInProgramState_shouldReturnFalseIfPatientIsNotEnrolledInProgram() {
+	public void isInProgramState_shouldReturnFalseIfPatientIsNotInState() {
 		Patient patient = Context.getPatientService().getPatient(6); // from standard test dataset, different patient that is not in this state
 		Obs obs = buildObs();
 		obs.setPerson(patient);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient,$obs.obsDatetime)", obs));  // uuid from standard test dataset, patient is in this state
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  
 	}
 
 	@Test
@@ -758,7 +758,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		assertFalse(person.getIsPatient());
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient,$obs.obsDatetime)", obs));  // uuid from standard test dataset, patient is in this state
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  
 	}
 	private Obs buildObs() {
 		Concept concept = new Concept(5089);
