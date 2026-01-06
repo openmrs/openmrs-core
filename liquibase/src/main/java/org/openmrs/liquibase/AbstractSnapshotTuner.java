@@ -10,6 +10,7 @@
 package org.openmrs.liquibase;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -205,23 +206,24 @@ public abstract class AbstractSnapshotTuner {
 	void writeChangeLogFile(Document document, String path) throws IOException {
 		XMLWriter xmlWriter = null;
 		try {
-			File file = Paths.get(path).toFile();
-			FileWriter fileWriter = new FileWriter(file);
-			OutputFormat format = OutputFormat.createPrettyPrint();
-			xmlWriter = new XMLWriter(fileWriter, format);
-			xmlWriter.write(document);
+			try (OutputStreamWriter out = new OutputStreamWriter (new FileOutputStream (path), StandardCharsets.UTF_8);) {
+				OutputFormat format = OutputFormat.createPrettyPrint();
+				xmlWriter = new XMLWriter(out, format);
+				xmlWriter.write(document);
+			}
 		}
-		catch (IOException e) {
-			log.error(String.format("writing the updated changelog file to '%s' raised an exception", path), e);
+		catch (IOException | UnsupportedOperationException e) {
+			log.error("writing the updated changelog file to '{}' raised an exception", path, e);
 			throw e;
 		}
 		finally {
 			try {
+				if (xmlWriter != null) {
 				xmlWriter.close();
 			}
+			}
 			catch (IOException e) {
-				log.error(String.format("closing the xml writer for '%s' raised an exception", path), e);
-				throw e;
+				log.error("closing the xml writer for '{}' raised an exception", path, e);
 			}
 		}
 	}
