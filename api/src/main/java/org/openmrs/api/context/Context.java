@@ -1514,4 +1514,19 @@ public class Context {
 	public static Connection getDatabaseConnection() {
 		return getContextDAO().getDatabaseConnection();
 	}
+
+	/**
+	 * It is used to shorten startup time by e.g. not running Liquibase checks, if versions did not change or 
+	 * re-using expanded jars between restarts. If you want to force a standard startup
+	 * procedure without optimization, please set the <code>optimized.startup</code> runtime property to <code>false</code>.
+	 * (<code>true</code> by default) 
+	 * <p>
+	 * See <a href="https://issues.openmrs.org/browse/TRUNK-6417">TRUNK-6417</a>
+	 * 
+	 * @return <code>true</code> (default) or <code>false</code>
+	 * @since 2.9.0
+	 */
+	public static boolean isOptimizedStartup() {
+		return Boolean.parseBoolean(Context.getRuntimeProperties().getProperty("optimized.startup", "true"));
+	}
 }

@@ -282,7 +282,7 @@ public class DatabaseUpdater {
 	
 	/**
 	 * Determine if Liquibase updates are required. If OpenMRS Core version did not change, then do not run any checks
-	 * unless <b>force.setup</b> runtime property is set to <b>true</b>.
+	 * unless <b>optimized.startup</b> runtime property is set to <b>false</b>.
 	 *
 	 * @return true/false whether database updates are required
 	 * @throws Exception when an exception is raised while processing Liquibase changelog files
@@ -301,9 +301,9 @@ public class DatabaseUpdater {
 			}
 		}
 		String currentCoreVersion = OpenmrsConstants.OPENMRS_VERSION_SHORT;
-		boolean forceSetup = Boolean.parseBoolean(Context.getRuntimeProperties().getProperty("force.setup", "false"));
+		boolean optimizedStartup = Context.isOptimizedStartup();
 
-		if (!forceSetup && Objects.equals(storedCoreVersion, currentCoreVersion)) {
+		if (optimizedStartup && Objects.equals(storedCoreVersion, currentCoreVersion)) {
 			log.info("No core version changed. Skipping database updates.");
 			return false;
 		}

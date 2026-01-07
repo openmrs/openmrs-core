@@ -991,8 +991,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Override
 	public boolean isCoreSetupOnVersionChangeNeeded() {
-		boolean forceSetup = Boolean.parseBoolean(Context.getRuntimeProperties().getProperty("force.setup", "false"));
-		if (forceSetup) {
+		if (!Context.isOptimizedStartup()) {
 			return true;
 		}
 		

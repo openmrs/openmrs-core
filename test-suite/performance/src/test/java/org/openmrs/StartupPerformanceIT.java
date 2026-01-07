@@ -79,16 +79,17 @@ public class StartupPerformanceIT {
 
 	@Test
 	public void shouldFailIfStartupTimeOfPlatformIncreases() throws SQLException, IOException {
+		// 2.9.x should start at least 30% faster thanks to TRUNK-6417
 		compareStartupPerformance("openmrs/openmrs-platform:" + FROM_VERSION,
-				"openmrs/openmrs-platform:" + TO_VERSION, 0);
+				"openmrs/openmrs-platform:" + TO_VERSION, -30);
 	}
 
 	@Test
 	public void shouldFailIfStartupTimeOfO3Increases() throws SQLException, IOException {
-		// Using O3 3.6.x as a reference, which is running on openmrs-core 2.8.x
-		// 2.9.x should start at least 10% faster than 2.8.x
-		compareStartupPerformance("openmrs/openmrs-reference-application-3-backend:3.6.x-no-demo",
-				"openmrs/openmrs-reference-application-3-backend:3.6.x-no-demo", -10);
+		// Using O3 3.6.x as a reference, which is running on openmrs-core 2.8.x and webservices.rest 2.51.x
+		// 2.9.x with webservices.rest 3.1.x should start at least 15% faster than 2.8.x thanks to TRUNK-6417
+		compareStartupPerformance("openmrs/openmrs-reference-application-3-backend:3.6.x-no-demo-46c47a6",
+				"openmrs/openmrs-reference-application-3-backend:3.6.x-core-2.9-no-demo", -15);
 	}
 
 
@@ -262,7 +263,7 @@ public class StartupPerformanceIT {
 			.withCreateContainerCmdModifier(cmd -> {
 				cmd.getHostConfig() // Simulate lower specs
 					.withMemory(DataSize.of(2, DataUnit.GIGABYTES).toBytes())
-					.withCpuCount(1L);
+					.withCpuCount(2L);
 			})
 			.waitingFor(Wait.forHttp("/openmrs/health/started").withStartupTimeout(Duration.ofMinutes(30)))
 			.withLogConsumer(logConsumer);
