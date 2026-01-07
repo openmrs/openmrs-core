@@ -61,4 +61,17 @@ public abstract class BaseModuleActivator implements ModuleActivator {
 	public void willStop() {
 	}
 	
+	/**
+	 * @see org.openmrs.module.ModuleActivator#setupOnVersionChangeBeforeSchemaChanges(String, String)
+	 */
+	@Override
+	public void setupOnVersionChangeBeforeSchemaChanges(String previousCoreVersion, String previousModuleVersion) {
+	}
+
+	/**
+	 * @see org.openmrs.module.ModuleActivator#setupOnVersionChange(String, String)
+	 */
+	@Override
+	public void setupOnVersionChange(String previousCoreVersion, String previousModuleVersion) {
+	}
 }
