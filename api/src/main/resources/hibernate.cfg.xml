@@ -36,7 +36,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Role.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Patient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientProgramAttribute.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/RelationshipType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Order.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSet.hbm.xml" />
