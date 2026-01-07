@@ -77,7 +77,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	private Set<Encounter> encounters;
 	
 	@Access(AccessType.PROPERTY)
-	@OneToMany(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("voided asc")
 	@BatchSize(size = 100)
 	private Set<VisitAttribute> attributes = new LinkedHashSet<>();
