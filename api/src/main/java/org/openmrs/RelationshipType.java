@@ -11,13 +11,12 @@ package org.openmrs;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
@@ -46,6 +45,7 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(name = "relationship_type")
 @Audited
+@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true, length = 255))
 public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	
 	public static final long serialVersionUID = 4223L;
@@ -172,21 +172,11 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	}
 	
 	/**
-	 * @see org.openmrs.BaseOpenmrsMetadata#getName()
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public String toString() { return this.getName(); }
-	
-	/**
-	 * Automatically updates the name property based on the A and B roles.
-	 * This ensures the 'name' column is always a concatenation of the roles.
-	 */
-	@PrePersist
-	@PreUpdate
-	protected void updateName() {
-		if (getaIsToB() != null && getbIsToA() != null) {
-			setName(getaIsToB() + "/" + getbIsToA());
-		}
+	public String toString() {
+		return getaIsToB() + "/" + getbIsToA();
 	}
 	
 	/**
