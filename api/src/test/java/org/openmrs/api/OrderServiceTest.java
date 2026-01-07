@@ -88,6 +88,7 @@ import org.openmrs.VisitAttributeType;
 import org.openmrs.FormResource;
 import org.openmrs.ConceptAttribute;
 import org.openmrs.LocationAttribute;
+import org.openmrs.DiagnosisAttribute;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
