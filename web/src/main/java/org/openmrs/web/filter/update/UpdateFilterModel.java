@@ -9,9 +9,12 @@
  */
 package org.openmrs.web.filter.update;
 
+import javax.xml.crypto.Data;
+import java.util.Collections;
 import java.util.List;
 
 import org.openmrs.liquibase.LiquibaseProvider;
+import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.OpenmrsConstants;
@@ -68,13 +71,12 @@ public class UpdateFilterModel {
 		this.liquibaseProvider = liquibaseProvider;
 		this.databaseUpdaterWrapper = databaseUpdaterWrapper;
 		
-		updateChanges();
-		
 		try {
-			if (changes != null && !changes.isEmpty()) {
-				updateRequired = true;
-			} else {
-				updateRequired = databaseUpdaterWrapper.updatesRequired();
+			updateRequired = databaseUpdaterWrapper.updatesRequired();
+			
+			if (updateRequired) {
+				updateChanges();
+				updateRequired = changes != null;
 			}
 		}
 		catch (Exception e) {
@@ -89,11 +91,13 @@ public class UpdateFilterModel {
 	public void updateChanges() {
 		log.debug("executing updateChanges()...");
 		try {
-			changes = databaseUpdaterWrapper.getUnrunDatabaseChanges(liquibaseProvider);
-			
-			// not sure why this is necessary...
-			if (changes == null && databaseUpdaterWrapper.isLocked()) {
+			if (updateRequired) {
 				changes = databaseUpdaterWrapper.getUnrunDatabaseChanges(liquibaseProvider);
+
+				// not sure why this is necessary...
+				if (changes == null && databaseUpdaterWrapper.isLocked()) {
+					changes = databaseUpdaterWrapper.getUnrunDatabaseChanges(liquibaseProvider);
+				}
 			}
 		}
 		catch (Exception e) {
