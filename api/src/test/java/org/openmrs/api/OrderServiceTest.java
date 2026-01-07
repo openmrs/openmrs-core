@@ -79,6 +79,7 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderRole;
 import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.User;
@@ -88,6 +89,7 @@ import org.openmrs.VisitAttributeType;
 import org.openmrs.FormResource;
 import org.openmrs.ConceptAttribute;
 import org.openmrs.LocationAttribute;
+import org.openmrs.VisitAttribute;
 import org.openmrs.DiagnosisAttribute;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
@@ -2900,6 +2902,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ProviderAttributeType.class)
 				.addAnnotatedClass(ConceptMapType.class)
 				.addAnnotatedClass(Relationship.class)
+		        .addAnnotatedClass(RelationshipType.class)
 				.addAnnotatedClass(Location.class)
 				.addAnnotatedClass(PersonAddress.class)
 				.addAnnotatedClass(PersonAttributeType.class)
@@ -2952,6 +2955,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ProviderAttribute.class)
 				.addAnnotatedClass(ConceptAttribute.class)
 				.addAnnotatedClass(LocationAttribute.class)
+				.addAnnotatedClass(VisitAttribute.class)
 				.addAnnotatedClass(DiagnosisAttribute.class)
 				.getMetadataBuilder().build();
 
