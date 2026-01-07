@@ -73,7 +73,8 @@ public class StartupPerformanceIT {
 	@Test
 	public void shouldFailIfStartupTimeOfCoreIncreases() throws SQLException, IOException  {
 		compareStartupPerformance("openmrs/openmrs-core:" + FROM_VERSION, 
-			"openmrs/openmrs-core:" + TO_VERSION, 10); //some improvements not yet committed to master, thus degradation
+			"openmrs/openmrs-core:" + TO_VERSION, 10); //degraded performance, 
+		// need to look into why, if it affects platform and O3
 	}
 
 	@Test
@@ -262,7 +263,7 @@ public class StartupPerformanceIT {
 			.withCreateContainerCmdModifier(cmd -> {
 				cmd.getHostConfig() // Simulate lower specs
 					.withMemory(DataSize.of(2, DataUnit.GIGABYTES).toBytes())
-					.withCpuCount(1L);
+					.withCpuCount(2L);
 			})
 			.waitingFor(Wait.forHttp("/openmrs/health/started").withStartupTimeout(Duration.ofMinutes(30)))
 			.withLogConsumer(logConsumer);

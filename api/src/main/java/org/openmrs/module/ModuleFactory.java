@@ -1164,15 +1164,6 @@ public class ModuleFactory {
 			ModuleClassLoader cl = removeClassLoader(mod);
 			if (cl != null) {
 				cl.dispose();
-				// remove files from lib cache
-				File folder = OpenmrsClassLoader.getLibCacheFolder();
-				File tmpModuleDir = new File(folder, moduleId);
-				try {
-					OpenmrsUtil.deleteDirectory(tmpModuleDir);
-				}
-				catch (IOException e) {
-					log.warn("Unable to delete libcachefolder for " + moduleId);
-				}
 			}
 		}
 		
