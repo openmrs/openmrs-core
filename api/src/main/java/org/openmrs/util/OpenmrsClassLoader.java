@@ -52,9 +52,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	
 	private static Logger log = LoggerFactory.getLogger(OpenmrsClassLoader.class);
 	
-	private static File libCacheFolder;
+	private static volatile File libCacheFolder;
 	
-	private static boolean libCacheFolderInitialized = false;
+	private static final Object libCacheFolderLock = new Object();
 	
 	// placeholder to hold mementos to restore
 	private static Map<String, OpenmrsMemento> mementos = new WeakHashMap<>();
@@ -658,40 +658,46 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	
 	/**
 	 * Get the temporary "work" directory for expanded jar files
+	 * <p>
+	 * If the <code>optimized.startup</code> runtime property is set to <code>false</code>,
+	 * the cache folder is deleted upon startup, if it exists.
 	 *
 	 * @return temporary location for storing the libraries
 	 */
 	public static File getLibCacheFolder() {
-		// cache the location for all calls until OpenMRS is restarted
+		// Cache the location for all calls until OpenMRS is restarted
 		if (libCacheFolder != null) {
-			return libCacheFolderInitialized ? libCacheFolder : null;
+			return libCacheFolder;
 		}
 		
-		synchronized (ModuleClassLoader.class) {
-			libCacheFolder = new File(OpenmrsUtil.getApplicationDataDirectory(), LIBCACHESUFFIX);
+		synchronized (libCacheFolderLock) {
+			if (libCacheFolder != null) {
+				return libCacheFolder;
+			}
 			
-			log.debug("libraries cache folder is {}", libCacheFolder);
+			File newLibCacheFolder = new File(OpenmrsUtil.getApplicationDataDirectory(), LIBCACHESUFFIX);
 			
-			if (libCacheFolder.exists()) {
-				// clean up and empty the folder if it exists (and is not locked)
-				try {
-					OpenmrsUtil.deleteDirectory(libCacheFolder);
-					
-					libCacheFolder.mkdirs();
-				}
-				catch (IOException io) {
-					log.warn("Unable to delete: {}", libCacheFolder.getName());
+			log.debug("Libraries cache folder is {}", newLibCacheFolder);
+			
+			if (newLibCacheFolder.exists()) {
+				if (Context.isOptimizedStartup()) {
+					log.debug("Optimized startup enabled, using lib cache folder from last run {}", newLibCacheFolder);
+				} else {
+					log.debug("Optimized startup disabled, cleaning up lib cache folder {}", newLibCacheFolder);
+					try {
+						OpenmrsUtil.deleteDirectory(newLibCacheFolder);
+
+						newLibCacheFolder.mkdirs();
+					} catch (IOException io) {
+						log.warn("Unable to delete: {}", newLibCacheFolder.getName());
+					}
 				}
 			} else {
 				// otherwise just create the dir structure
-				libCacheFolder.mkdirs();
+				newLibCacheFolder.mkdirs();
 			}
 			
-			// mark the lock and entire library cache to be deleted when the jvm exits
-			libCacheFolder.deleteOnExit();
-			
-			// mark the lib cache folder as ready
-			libCacheFolderInitialized = true;
+			libCacheFolder = newLibCacheFolder;
 		}
 		
 		return libCacheFolder;
