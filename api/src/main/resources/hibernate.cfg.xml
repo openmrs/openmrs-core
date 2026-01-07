@@ -59,9 +59,6 @@
 		<!-- Notification -->
 		<mapping resource="org/openmrs/notification/db/hibernate/Alert.hbm.xml" />
 		
-
-		<!-- Visit -->
-		<mapping resource="org/openmrs/api/db/hibernate/VisitAttribute.hbm.xml" />
 		
 		<!-- Provider -->
 		<mapping resource="org/openmrs/api/db/hibernate/Provider.hbm.xml" />
