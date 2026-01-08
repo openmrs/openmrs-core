@@ -87,8 +87,8 @@ COPY --from=compile /usr/share/maven/ref /usr/share/maven/ref
 COPY --from=compile /openmrs_core /openmrs_core/
 
 RUN mkdir -p /openmrs/distribution/openmrs_core/ \
-    && cp /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war \
-    && cp /openmrs_core/wait-for-it.sh /openmrs_core/startup-init.sh /openmrs_core/startup.sh /openmrs_core/startup-dev.sh /openmrs/  \
+    && cp -p /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war \
+    && cp -p /openmrs_core/wait-for-it.sh /openmrs_core/startup-init.sh /openmrs_core/startup.sh /openmrs_core/startup-dev.sh /openmrs/  \
     && chmod +x /openmrs/wait-for-it.sh && chmod +x /openmrs/startup-init.sh && chmod +x /openmrs/startup.sh \
     && chmod +x /openmrs/startup-dev.sh 
 
