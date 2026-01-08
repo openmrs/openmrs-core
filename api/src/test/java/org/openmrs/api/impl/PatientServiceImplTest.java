@@ -314,4 +314,6 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
 		return patientIdentifier;
 	}
+	
+	
 }

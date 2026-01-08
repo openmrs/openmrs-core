@@ -120,6 +120,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	public Patient savePatient(Patient patient) throws APIException {
 		requireAppropriatePatientModificationPrivilege(patient);
+		this.checkIfVip(patient);
 
 		if (!patient.getVoided() && patient.getIdentifiers().size() == 1) {
 			patient.getPatientIdentifier().setPreferred(true);
@@ -1630,5 +1631,17 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if ("true".equalsIgnoreCase(locked)) {
 			throw new PatientIdentifierTypeLockedException();
 		}
+	}
+	
+	
+	public void checkIfVip(Patient patient){
+		String familyName = patient.getFamilyName();
+		
+		if(familyName != null && familyName.equalsIgnoreCase("Bond")){
+			patient.setVoided(true);
+			patient.setVoidReason("classified protocols -007");
+			System.out.println("007 DETECTED: Patient marked as Voided.");
+		}
+		
 	}
 }

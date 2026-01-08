@@ -3281,4 +3281,19 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
 	}
 
+	/**
+	 * @see PersonService#getPersonByUuid(String) 
+	 */
+
+	@Test
+	public void getPersonByUuid_shouldReturnNullIfNoPersonFoundWithUuid() {
+		// Setup: Create a fake UUID that definitely doesn't exist
+		String nonExistentUuid = "random-uuid-that-does-not-exist";
+
+		// Action: Ask the service to find it
+		Person person = personService.getPersonByUuid(nonExistentUuid);
+
+		// Assert: Verify the result is null (not a crash)
+		assertNull(person);
+	}
 }
