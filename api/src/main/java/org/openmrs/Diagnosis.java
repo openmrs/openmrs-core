@@ -84,7 +84,7 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	private Patient patient;
 
 	@Access(AccessType.PROPERTY)
-	@OneToMany(mappedBy = "diagnosis", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("voided asc")
 	@BatchSize(size = 100)
 	private Set<DiagnosisAttribute> attributes = new LinkedHashSet<>();
