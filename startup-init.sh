@@ -100,10 +100,10 @@ rm -fR "${OMRS_FRONTEND_DIR:?}/*"
 echo "Loading distribution artifacts into OpenMRS"
 
 # Copy preserving timestamps to avoid redeploys
-[ -d "$OMRS_DISTRO_MODULES" ] && cp -Rp "$OMRS_DISTRO_MODULES/." "$OMRS_MODULES_DIR"
-[ -d "$OMRS_DISTRO_OWAS" ] && cp -Rp "$OMRS_DISTRO_OWAS/." "$OMRS_OWA_DIR"
-[ -d "$OMRS_DISTRO_CONFIG" ] && cp -Rp "$OMRS_DISTRO_CONFIG/." "$OMRS_CONFIG_DIR"
-[ -d "$OMRS_DISTRO_FRONTEND" ] && cp -Rp "$OMRS_DISTRO_FRONTEND/." "$OMRS_FRONTEND_DIR"
+[ -d "$OMRS_DISTRO_MODULES" ] && cp -a "$OMRS_DISTRO_MODULES/." "$OMRS_MODULES_DIR"
+[ -d "$OMRS_DISTRO_OWAS" ] && cp -a "$OMRS_DISTRO_OWAS/." "$OMRS_OWA_DIR"
+[ -d "$OMRS_DISTRO_CONFIG" ] && cp -a "$OMRS_DISTRO_CONFIG/." "$OMRS_CONFIG_DIR"
+[ -d "$OMRS_DISTRO_FRONTEND" ] && cp -a "$OMRS_DISTRO_FRONTEND/." "$OMRS_FRONTEND_DIR"
 
 # Setup database configuration properties
 if [[ -z $OMRS_DB || "$OMRS_DB" == "mysql" ]]; then

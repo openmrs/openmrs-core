@@ -57,7 +57,7 @@ rm -fR "${TOMCAT_TEMP_DIR:?}/*"
 echo "Loading WAR into appropriate location"
 
 # Copy preserving timestamps to avoid redeploys
-cp -Rp "${OMRS_DISTRO_CORE}/." "${TOMCAT_WEBAPPS_DIR}"
+cp -a "${OMRS_DISTRO_CORE}/." "${TOMCAT_WEBAPPS_DIR}"
 
 echo "Writing out $TOMCAT_SETENV_FILE file"
 
