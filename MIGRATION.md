@@ -593,13 +593,81 @@ class Visit() : BaseCustomizableData<VisitAttribute>(), Auditable, Customizable<
 
 ---
 
-### Tier 3: Complex Entities (In Progress)
+### Tier 3: Complex Entities
 
-Entities to migrate:
-- `Obs.java`
-- `Order.java`
-- `DrugOrder.java`
-- `Diagnosis.java`
+**Date**: 2026-01-09
+
+Migrated 4 complex entity classes:
+- `Obs.java` → `Obs.kt`
+- `Order.java` → `Order.kt`
+- `DrugOrder.java` → `DrugOrder.kt`
+- `Diagnosis.java` → `Diagnosis.kt`
+
+**Tier 3 Commit**: `Phase 4: Migrate Tier 3 entities to Kotlin (Obs, Order, DrugOrder, Diagnosis)`
+
+---
+
+### Tier 4: Concept & Allergy Entities + Service Interfaces
+
+**Date**: 2026-01-09
+
+#### Step 4.4.1: Migrate Concept-Related Entities
+
+Migrated 19 Concept-related entity classes:
+- `BaseConceptMap.java` → `BaseConceptMap.kt`
+- `ConceptAnswer.java` → `ConceptAnswer.kt`
+- `ConceptAttribute.java` → `ConceptAttribute.kt`
+- `ConceptAttributeType.java` → `ConceptAttributeType.kt`
+- `ConceptClass.java` → `ConceptClass.kt`
+- `ConceptComplex.java` → `ConceptComplex.kt`
+- `ConceptDatatype.java` → `ConceptDatatype.kt`
+- `ConceptDescription.java` → `ConceptDescription.kt`
+- `ConceptMap.java` → `ConceptMap.kt`
+- `ConceptMapType.java` → `ConceptMapType.kt`
+- `ConceptName.java` → `ConceptName.kt`
+- `ConceptNameTag.java` → `ConceptNameTag.kt`
+- `ConceptNumeric.java` → `ConceptNumeric.kt`
+- `ConceptProposal.java` → `ConceptProposal.kt`
+- `ConceptReferenceTerm.java` → `ConceptReferenceTerm.kt`
+- `ConceptReferenceTermMap.java` → `ConceptReferenceTermMap.kt`
+- `ConceptSet.java` → `ConceptSet.kt`
+- `ConceptSource.java` → `ConceptSource.kt`
+- `ConceptStopWord.java` → `ConceptStopWord.kt`
+
+#### Step 4.4.2: Migrate Allergy Entities
+
+Migrated 6 Allergy-related entity classes:
+- `Allergen.java` → `Allergen.kt`
+- `Allergies.java` → `Allergies.kt`
+- `Allergy.java` → `Allergy.kt`
+- `AllergyConstants.java` → `AllergyConstants.kt`
+- `AllergyProperties.java` → `AllergyProperties.kt`
+- `AllergyReaction.java` → `AllergyReaction.kt`
+
+#### Step 4.4.3: Migrate Service Interfaces
+
+Migrated 10 service interface classes:
+- `AdministrationService.java` → `AdministrationService.kt`
+- `ConceptService.java` → `ConceptService.kt`
+- `EncounterService.java` → `EncounterService.kt`
+- `FormService.java` → `FormService.kt`
+- `ObsService.java` → `ObsService.kt`
+- `OrderService.java` → `OrderService.kt`
+- `PatientService.java` → `PatientService.kt`
+- `PersonService.java` → `PersonService.kt`
+- `ProgramWorkflowService.java` → `ProgramWorkflowService.kt`
+- `UserService.java` → `UserService.kt`
+
+**Tier 4 Commit**: `Phase 4: Migrate Concept-related entities, Allergy entities, and service interfaces to Kotlin`
+
+### Tier 4 Summary
+
+| Type | Files Migrated | Notes |
+|------|----------------|-------|
+| Concept entities | 19 | Supporting entities for Concept.kt |
+| Allergy entities | 6 | Complete allergy subsystem |
+| Service interfaces | 10 | Core service APIs |
+| **Total** | **35** | 72 files changed: 13,473 deletions, 10,038 additions (25% reduction) |
 
 ---
 
@@ -613,7 +681,9 @@ Entities to migrate:
 | Phase 3 | 11 | 609 | 213 | 65% |
 | Phase 4 Tier 1 | 4 | 4507 | ~1770 | 61% |
 | Phase 4 Tier 2 | 4 | 1846 | ~680 | 63% |
-| **Total** | **27** | **7205** | **~3559** | **51%** |
+| Phase 4 Tier 3 | 4 | TBD | TBD | TBD |
+| Phase 4 Tier 4 | 35 | 13473 | 10038 | 25% |
+| **Total** | **66** | **~27887** | **~14267** | **49%** |
 
 ---
 
