@@ -425,8 +425,8 @@ open class Obs() : BaseFormRecordableOpenmrsData() {
         val datatype = concept?.datatype
         if (datatype?.isBoolean == true) {
             valueCoded = when (valueBoolean) {
-                true -> Context.getConceptService().trueConcept
-                false -> Context.getConceptService().falseConcept
+                true -> Context.getConceptService().getTrueConcept()
+                false -> Context.getConceptService().getFalseConcept()
                 null -> null
             }
         }
@@ -437,8 +437,8 @@ open class Obs() : BaseFormRecordableOpenmrsData() {
         get() {
             valueCoded?.let { coded ->
                 return when (coded) {
-                    Context.getConceptService().trueConcept -> true
-                    Context.getConceptService().falseConcept -> false
+                    Context.getConceptService().getTrueConcept() -> true
+                    Context.getConceptService().getFalseConcept() -> false
                     else -> null
                 }
             }
@@ -456,7 +456,7 @@ open class Obs() : BaseFormRecordableOpenmrsData() {
     val valueBoolean: Boolean?
         get() {
             if (concept?.datatype?.isBoolean == true && valueCoded != null) {
-                val trueConcept = Context.getConceptService().trueConcept
+                val trueConcept = Context.getConceptService().getTrueConcept()
                 return trueConcept != null && valueCoded?.id == trueConcept.id
             }
             return null

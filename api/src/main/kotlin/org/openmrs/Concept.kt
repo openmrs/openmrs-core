@@ -607,7 +607,7 @@ open class Concept() : BaseOpenmrsObject(), Auditable, Retireable, Serializable,
         newConceptMap?.concept = this
         if (newConceptMap != null && newConceptMap !in conceptMappings) {
             if (newConceptMap.conceptMapType == null) {
-                newConceptMap.conceptMapType = Context.getConceptService().defaultConceptMapType
+                newConceptMap.conceptMapType = Context.getConceptService().getDefaultConceptMapType()
             }
             conceptMappings.add(newConceptMap)
         }
@@ -668,7 +668,7 @@ open class Concept() : BaseOpenmrsObject(), Auditable, Retireable, Serializable,
             .getOrDefault(emptyList())
 
     override fun hydrate(s: String): Concept =
-        runCatching { Context.getConceptService().getConceptByReference(s) }
+        runCatching { Context.getConceptService().getConceptByReference(s) ?: Concept() }
             .getOrDefault(Concept())
 
     override fun serialize(): String = _conceptId?.toString() ?: ""

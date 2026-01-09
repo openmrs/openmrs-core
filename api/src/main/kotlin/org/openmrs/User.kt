@@ -275,11 +275,11 @@ class User() : BaseOpenmrsObject(), Serializable, Attributable<User>, Auditable,
 
     @Deprecated("Data provided by this method can be better achieved from appropriate service at point of use")
     override fun getPossibleValues(): List<User> =
-        runCatching { Context.getUserService().allUsers }
+        runCatching { Context.getUserService().getAllUsers() }
             .getOrDefault(emptyList())
 
     override fun hydrate(s: String): User =
-        runCatching { Context.getUserService().getUser(s.toInt()) }
+        runCatching { Context.getUserService().getUser(s.toInt()) ?: User() }
             .getOrDefault(User())
 
     override fun serialize(): String = userId?.toString() ?: ""
