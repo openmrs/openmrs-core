@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Allergy;
 import org.openmrs.AllergyReaction;
 import org.openmrs.CareSetting;
+import org.openmrs.CohortMembership;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttributeType;
@@ -38,6 +39,7 @@ import org.openmrs.ConceptStateConversion;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
+import org.openmrs.DiagnosisAttributeType;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
 import org.openmrs.DrugIngredient;
@@ -55,6 +57,7 @@ import org.openmrs.Order;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderAttribute;
 import org.openmrs.OrderAttributeType;
+import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderGroupAttribute;
@@ -76,6 +79,7 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderRole;
 import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.User;
@@ -85,6 +89,8 @@ import org.openmrs.VisitAttributeType;
 import org.openmrs.FormResource;
 import org.openmrs.ConceptAttribute;
 import org.openmrs.LocationAttribute;
+import org.openmrs.VisitAttribute;
+import org.openmrs.DiagnosisAttribute;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
@@ -2891,10 +2897,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
 				.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
 				.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+				.addAnnotatedClass(DiagnosisAttributeType.class)
 				.addAnnotatedClass(MedicationDispense.class)
 				.addAnnotatedClass(ProviderAttributeType.class)
 				.addAnnotatedClass(ConceptMapType.class)
 				.addAnnotatedClass(Relationship.class)
+		        .addAnnotatedClass(RelationshipType.class)
 				.addAnnotatedClass(Location.class)
 				.addAnnotatedClass(PersonAddress.class)
 				.addAnnotatedClass(PersonAttributeType.class)
@@ -2911,7 +2919,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(HL7InError.class)
 				.addAnnotatedClass(OrderFrequency.class)
 				.addAnnotatedClass(OrderType.class)
+				.addAnnotatedClass(CohortMembership.class)
 				.addAnnotatedClass(OrderAttributeType.class)
+				.addAnnotatedClass(OrderSetAttributeType.class)
+				.addAnnotatedClass(OrderGroupAttributeType.class)
 			    .addAnnotatedClass(ConceptReferenceTermMap.class)
 			    .addAnnotatedClass(ConceptReferenceTerm.class)
 				.addAnnotatedClass(ConceptAnswer.class)
@@ -2945,6 +2956,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ProviderAttribute.class)
 				.addAnnotatedClass(ConceptAttribute.class)
 				.addAnnotatedClass(LocationAttribute.class)
+				.addAnnotatedClass(VisitAttribute.class)
+				.addAnnotatedClass(DiagnosisAttribute.class)
 				.getMetadataBuilder().build();
 
 
