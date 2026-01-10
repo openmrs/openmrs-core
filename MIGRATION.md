@@ -671,6 +671,141 @@ Migrated 10 service interface classes:
 
 ---
 
+### Tier 5: Person & Patient Related Entities
+
+**Date**: 2026-01-10
+
+Migrated 9 entity classes:
+
+Person entities:
+- `PersonName.java` → `PersonName.kt` - Name with Hibernate Search, obscure patients support
+- `PersonAddress.java` → `PersonAddress.kt` - 15 address fields with date-based activation
+- `PersonAttribute.java` → `PersonAttribute.kt` - Generic attribute with reflection-based hydration
+- `PersonAttributeType.java` → `PersonAttributeType.kt` - Attribute type metadata
+
+Patient entities:
+- `PatientIdentifier.java` → `PatientIdentifier.kt` - Full-text searchable identifier
+- `PatientIdentifierType.java` → `PatientIdentifierType.kt` - Type with nested enums
+- `PatientProgram.java` → `PatientProgram.kt` - Program enrollment with state management
+- `PatientProgramAttribute.java` → `PatientProgramAttribute.kt` - Attribute extension
+- `PatientState.java` → `PatientState.kt` - Workflow state tracking
+
+**Tier 5 Commit**: `Phase 4 Tier 5: Migrate Person & Patient related entities to Kotlin`
+
+**Summary**: 18 files changed: 3,407 deletions, 1,935 additions (43% reduction)
+
+---
+
+### Tier 6: Program & Workflow Entities
+
+**Date**: 2026-01-10
+
+Migrated 4 entity classes:
+- `Program.java` → `Program.kt` - Program with workflow management
+- `ProgramAttributeType.java` → `ProgramAttributeType.kt` - Attribute type metadata
+- `ProgramWorkflow.java` → `ProgramWorkflow.kt` - Workflow with state transitions
+- `ProgramWorkflowState.java` → `ProgramWorkflowState.kt` - Workflow states
+
+**Tier 6 Commit**: `Phase 4 Tier 6: Migrate Program & Workflow entities to Kotlin`
+
+**Summary**: 8 files changed: 726 deletions, 517 additions (29% reduction)
+
+---
+
+### Tier 7: Provider & Location Related Entities
+
+**Date**: 2026-01-10
+
+Migrated 6 entity classes:
+
+Provider entities:
+- `ProviderAttribute.java` → `ProviderAttribute.kt`
+- `ProviderAttributeType.java` → `ProviderAttributeType.kt`
+- `ProviderRole.java` → `ProviderRole.kt`
+
+Location entities:
+- `LocationAttribute.java` → `LocationAttribute.kt`
+- `LocationAttributeType.java` → `LocationAttributeType.kt`
+- `LocationTag.java` → `LocationTag.kt`
+
+**Tier 7 Commit**: `Phase 4 Tier 7: Migrate Provider & Location related entities to Kotlin`
+
+**Summary**: 12 files changed: 471 deletions, 324 additions (31% reduction)
+
+---
+
+### Tier 8: Role, Privilege & Relationship Entities
+
+**Date**: 2026-01-10
+
+Migrated 5 entity classes:
+- `Role.java` → `Role.kt` - User role with privilege inheritance
+- `Privilege.java` → `Privilege.kt` - System privilege
+- `PrivilegeListener.java` → `PrivilegeListener.kt` - Event listener interface
+- `Relationship.java` → `Relationship.kt` - Person-to-person relationship
+- `RelationshipType.java` → `RelationshipType.kt` - Relationship type metadata
+
+**Tier 8 Commit**: `Phase 4 Tier 8: Migrate Role, Privilege & Relationship entities to Kotlin`
+
+**Summary**: 9 files changed: 866 deletions, 539 additions (38% reduction)
+
+---
+
+### Tier 9: Encounter Related Entities
+
+**Date**: 2026-01-10
+
+Migrated 3 entity classes:
+- `EncounterProvider.java` → `EncounterProvider.kt` - Provider participation in encounters
+- `EncounterRole.java` → `EncounterRole.kt` - Provider roles in encounters
+- `EncounterType.java` → `EncounterType.kt` - Encounter type metadata
+
+**Tier 9 Commit**: `Phase 4 Tier 9: Migrate Encounter-related entities to Kotlin`
+
+**Summary**: 6 files changed: 351 deletions, 210 additions (40% reduction)
+
+---
+
+### Tier 10: Core Entities (CareSetting, Cohort, Condition, Drug)
+
+**Date**: 2026-01-10
+
+Migrated 5 entity classes:
+- `CareSetting.java` → `CareSetting.kt` - Care setting with nested enum
+- `Cohort.java` → `Cohort.kt` - Patient group with set operations
+- `CohortMembership.java` → `CohortMembership.kt` - Membership with date activation
+- `Condition.java` → `Condition.kt` - Patient condition tracking
+- `Drug.java` → `Drug.kt` - Drug/medication definition
+
+**Tier 10 Commit**: `Phase 4 Tier 10: Migrate CareSetting, Cohort, Condition, and Drug entities to Kotlin`
+
+**Summary**: 10 files changed: 1,460 deletions, 910 additions (38% reduction)
+
+---
+
+### Tier 11: Form & Field Entities
+
+**Date**: 2026-01-10
+
+Migrated 7 entity classes:
+
+Form entities:
+- `Form.java` → `Form.kt` - Form definition with field management
+- `FormField.java` → `FormField.kt` - Form field relationship with ordering
+- `FormResource.java` → `FormResource.kt` - Custom data resource for forms
+- `FormRecordable.java` → `FormRecordable.kt` - Interface for form-recordable objects
+
+Field entities:
+- `Field.java` → `Field.kt` - Field definition
+- `FieldAnswer.java` → `FieldAnswer.kt` - Field answer with composite key
+- `FieldType.java` → `FieldType.kt` - Field type metadata
+
+**Tier 11 Commit**: `Phase 4 Tier 11: Migrate Form and Field entities to Kotlin`
+
+**Summary**: 13 files changed: 1,387 deletions, 739 additions (47% reduction)
+
+---
+
 ## Overall Migration Statistics
 
 | Phase | Files Converted | Java Lines Removed | Kotlin Lines Added | Net Reduction |
@@ -683,7 +818,14 @@ Migrated 10 service interface classes:
 | Phase 4 Tier 2 | 4 | 1846 | ~680 | 63% |
 | Phase 4 Tier 3 | 4 | TBD | TBD | TBD |
 | Phase 4 Tier 4 | 35 | 13473 | 10038 | 25% |
-| **Total** | **66** | **~27887** | **~14267** | **49%** |
+| Phase 4 Tier 5 | 9 | 3407 | 1935 | 43% |
+| Phase 4 Tier 6 | 4 | 726 | 517 | 29% |
+| Phase 4 Tier 7 | 6 | 471 | 324 | 31% |
+| Phase 4 Tier 8 | 5 | 866 | 539 | 38% |
+| Phase 4 Tier 9 | 3 | 351 | 210 | 40% |
+| Phase 4 Tier 10 | 5 | 1460 | 910 | 38% |
+| Phase 4 Tier 11 | 7 | 1387 | 739 | 47% |
+| **Total** | **105** | **~36845** | **~19537** | **47%** |
 
 ---
 
