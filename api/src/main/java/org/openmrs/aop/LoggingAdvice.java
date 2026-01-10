@@ -12,6 +12,8 @@ package org.openmrs.aop;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -44,7 +46,8 @@ public class LoggingAdvice implements MethodInterceptor {
 	 * log4j2.xml configuration
 	 */
 	private final Logger log = LoggerFactory.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
-	
+	private static final Marker PERFORMANCE_MARKER = MarkerFactory.getMarker("performance");
+
 	/**
 	 * This method prints out trace statements for getters and debug statements for everything else
 	 * ("setters"). If debugging is turned on, execution time for each method is printed as well.
@@ -156,10 +159,14 @@ public class LoggingAdvice implements MethodInterceptor {
 				// print the string as either trace or debug
 				if (logGetter) {
 					log.trace(output.toString());
-				} else if (logSetter) {
-					log.debug(output.toString());
+				}
+			} else if (logSetter) {
+				if (log.isDebugEnabled()) {
+					log.debug(PERFORMANCE_MARKER, output.toString());
 				}
 			}
+
+		}
 		}
 		
 	}
