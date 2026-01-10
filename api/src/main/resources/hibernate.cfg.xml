@@ -43,13 +43,11 @@
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderGroupAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/EncounterType.hbm.xml" />
-    <mapping resource="org/openmrs/api/db/hibernate/EncounterProvider.hbm.xml" />
+    	<mapping resource="org/openmrs/api/db/hibernate/EncounterProvider.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflow.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflowState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Cohort.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/CohortMembership.hbm.xml"/>
-		<mapping resource="org/openmrs/api/db/hibernate/OrderFrequency.hbm.xml" />
-
 
 		<!-- HL7 -->
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7Source.hbm.xml" />
@@ -57,7 +55,7 @@
 
 		<!-- Notification -->
 		<mapping resource="org/openmrs/notification/db/hibernate/Alert.hbm.xml" />
-		
+
 		
 		<!-- Provider -->
 		<mapping resource="org/openmrs/api/db/hibernate/Provider.hbm.xml" />
