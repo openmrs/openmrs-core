@@ -7,13 +7,12 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs;
+package org.openmrs
 
-import java.util.Date;
-import java.util.Locale;
-
-import org.openmrs.api.APIException;
-import org.springframework.validation.Errors;
+import org.openmrs.api.APIException
+import org.springframework.validation.Errors
+import java.util.Date
+import java.util.Locale
 
 /**
  * The instructions for different drug prescriptions can vary greatly. Implementations of this class
@@ -22,12 +21,13 @@ import org.springframework.validation.Errors;
  * implementation would cover
  * "200mg for the first week, then up to 400mg for the rest of the prescription". Implementations of
  * this class should store their data in the appropriate fields on the DrugOrder and Order object.
- * In some cases they could store JSON in the dosing instructions field. <br>
+ * In some cases they could store JSON in the dosing instructions field.
+ * 
  * NOTE: Any class that implements this interface should have a default constructor.
  * 
  * @since 1.10
  */
-public interface DosingInstructions {
+interface DosingInstructions {
 	
 	/**
 	 * Get human-readable version of dosing instructions for a particular locale All dosing
@@ -35,18 +35,18 @@ public interface DosingInstructions {
 	 * original language. In general, it's expect that most implementations will write orders in a
 	 * single language and then want to translate instructions to the patient's preferred language
 	 * when printing orders for the patient. In all other cases, it will want to call this method
-	 * with the user's locale (i.e., <tt>context.getLocale()</tt>).
+	 * with the user's locale (i.e., `context.getLocale()`).
 	 * 
 	 * @return localized drug instructions string
 	 */
-	public String getDosingInstructionsAsString(Locale locale);
+	fun getDosingInstructionsAsString(locale: Locale): String
 	
 	/**
 	 * Serialize dosing instructions into order
 	 * 
 	 * @param order DrugOrder to set dosing instructions
 	 */
-	public void setDosingInstructions(DrugOrder order);
+	fun setDosingInstructions(order: DrugOrder)
 	
 	/**
 	 * Get dosing instructions from order
@@ -56,14 +56,14 @@ public interface DosingInstructions {
 	 * @throws APIException if dosing type of passing order is not matched with dosing type of
 	 *             implementing dosing instruction
 	 */
-	public DosingInstructions getDosingInstructions(DrugOrder order);
+	fun getDosingInstructions(order: DrugOrder): DosingInstructions
 	
-	public void validate(DrugOrder order, Errors errors);
+	fun validate(order: DrugOrder, errors: Errors)
 	
 	/**
 	 * Implementations of this interface may be able to infer the auto-expiration date from other
 	 * fields on the DrugOrder. If the expiration date cannot be determined, then this method may
 	 * return null (i.e., null means duration of order is unknown).
 	 */
-	public Date getAutoExpireDate(DrugOrder order);
+	fun getAutoExpireDate(order: DrugOrder): Date?
 }

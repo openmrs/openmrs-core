@@ -1,0 +1,57 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
+package org.openmrs
+
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
+import org.hibernate.envers.Audited
+import java.io.Serializable
+
+/**
+ * DrugIngredient
+ */
+@Entity
+@Table(name = "drug_ingredient")
+@Audited
+open class DrugIngredient : BaseOpenmrsObject(), Serializable, OpenmrsObject {
+	
+	@ManyToOne
+	@JoinColumn(name = "drug_id", updatable = false, insertable = false)
+	@Id
+	var drug: Drug? = null
+
+	@ManyToOne
+	@JoinColumn(name = "ingredient_id", updatable = false, insertable = false)
+	@Id
+	var ingredient: Concept? = null
+
+	@Column(name = "strength")
+	var strength: Double? = null
+	
+	@JoinColumn(name = "units")
+	@ManyToOne
+	var units: Concept? = null
+	
+	override fun getId(): Int? {
+		throw UnsupportedOperationException()
+	}
+	
+	override fun setId(id: Int?) {
+		throw UnsupportedOperationException()
+	}
+	
+	companion object {
+		const val serialVersionUID = 94023L
+	}
+}

@@ -1,0 +1,45 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
+package org.openmrs
+
+import org.hibernate.envers.Audited
+
+/**
+ * @since 1.12
+ * OrderSetMember
+ */
+@Audited
+open class OrderSetMember : BaseChangeableOpenmrsMetadata() {
+	
+	var orderSetMemberId: Int? = null
+	
+	var orderType: OrderType? = null
+	
+	var orderSet: OrderSet? = null
+	
+	var orderTemplate: String? = null
+	
+	/**
+	 * It takes in a name of a handler, which defines the schema of orderTemplate to be generated
+	 */
+	var orderTemplateType: String? = null
+	
+	var concept: Concept? = null
+	
+	override fun getId(): Int? = orderSetMemberId
+	
+	override fun setId(id: Int?) {
+		orderSetMemberId = id
+	}
+	
+	companion object {
+		const val serialVersionUID = 72232L
+	}
+}
