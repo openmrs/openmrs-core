@@ -7,9 +7,9 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs;
+package org.openmrs
 
-import org.hibernate.envers.Audited;
+import org.hibernate.envers.Audited
 
 /**
  * This is a type of order that adds referral specific attributes.
@@ -17,38 +17,23 @@ import org.hibernate.envers.Audited;
  * @since 2.5.0
  */
 @Audited
-public class ReferralOrder extends ServiceOrder {
-
-	private static final long serialVersionUID = 1L;
+class ReferralOrder : ServiceOrder() {
 	
-	/**
-	 * Default Constructor
-	 */
-	public ReferralOrder() {
-		
-	}
-	
-	/**
-	 * @see org.openmrs.ServiceOrder#copy()
-	 */
-	@Override
-	public ReferralOrder copy() {
-		ReferralOrder newOrder = new ReferralOrder();
-		super.copyHelper(newOrder);
-		return newOrder;
+	override fun copy(): ReferralOrder {
+		val newOrder = ReferralOrder()
+		copyHelper(newOrder)
+		return newOrder
 	}
 	
 	/**
 	 * Creates a discontinuation order for this.
 	 * 
-	 * @see org.openmrs.ServiceOrder#cloneForDiscontinuing()
 	 * @return the newly created order
 	 */
-	@Override
-	public ReferralOrder cloneForDiscontinuing() {
-		ReferralOrder newOrder = new ReferralOrder();
-		super.cloneForDiscontinuingHelper(newOrder);
-		return newOrder;
+	override fun cloneForDiscontinuing(): ReferralOrder {
+		val newOrder = ReferralOrder()
+		cloneForDiscontinuingHelper(newOrder)
+		return newOrder
 	}
 	
 	/**
@@ -57,10 +42,13 @@ public class ReferralOrder extends ServiceOrder {
 	 * 
 	 * @return the newly created order
 	 */
-	@Override
-	public ReferralOrder cloneForRevision() {
-		ReferralOrder newOrder = new ReferralOrder();
-		super.cloneForRevisionHelper(newOrder);
-		return newOrder;
+	override fun cloneForRevision(): ReferralOrder {
+		val newOrder = ReferralOrder()
+		cloneForRevisionHelper(newOrder)
+		return newOrder
+	}
+	
+	companion object {
+		private const val serialVersionUID = 1L
 	}
 }
