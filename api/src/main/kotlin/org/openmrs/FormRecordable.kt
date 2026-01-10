@@ -7,14 +7,14 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs;
+package org.openmrs
 
 /**
  * Defines the methods to make a bridge between an OpenMrsObject and is position in the form.
  * 
  * @since 2.4.0
  */
-public interface FormRecordable {
+interface FormRecordable {
 	
 	/**
 	 * Gets the namespace for the form field that was used to capture the obs details in the form
@@ -24,7 +24,7 @@ public interface FormRecordable {
 	 *        <strong>Should</strong> return the correct namespace for a form field with a path
 	 *        <strong>Should</strong> return null if the namespace is not specified
 	 */
-	String getFormFieldNamespace();
+	fun getFormFieldNamespace(): String?
 	
 	/**
 	 * Gets the path for the form field that was used to capture the obs details in the form
@@ -34,7 +34,7 @@ public interface FormRecordable {
 	 *        <strong>Should</strong> return the correct path for a form field with a namespace
 	 *        <strong>Should</strong> return null if the path is not specified
 	 */
-	String getFormFieldPath();
+	fun getFormFieldPath(): String?
 	
 	/**
 	 * Sets the namespace and path of the form field that was used to capture the obs details in the
@@ -55,5 +55,5 @@ public interface FormRecordable {
 	 *        a non null value <strong>Should</strong> mark the obs as dirty when the value is
 	 *        changed from a non null to a null value
 	 */
-	void setFormField(String namespace, String formFieldPath);
+	fun setFormField(namespace: String?, formFieldPath: String?)
 }
