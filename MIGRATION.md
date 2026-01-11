@@ -806,6 +806,159 @@ Field entities:
 
 ---
 
+### Tier 12: Order & Visit Entities
+
+**Date**: 2026-01-10
+
+Migrated 10 entity classes:
+
+Order entities:
+- `OrderAttribute.java` → `OrderAttribute.kt`
+- `OrderAttributeType.java` → `OrderAttributeType.kt`
+- `OrderFrequency.java` → `OrderFrequency.kt` - Frequency with concept delegation
+- `OrderGroup.java` → `OrderGroup.kt` - Order group with collection management
+- `OrderGroupAttribute.java` → `OrderGroupAttribute.kt`
+- `OrderGroupAttributeType.java` → `OrderGroupAttributeType.kt`
+- `OrderType.java` → `OrderType.kt` - Type with parent hierarchy
+
+Visit entities:
+- `VisitAttribute.java` → `VisitAttribute.kt`
+- `VisitAttributeType.java` → `VisitAttributeType.kt`
+
+Test entity:
+- `TestOrder.java` → `TestOrder.kt`
+
+**Tier 12 Commit**: `Phase 4 Tier 12: Migrate Order and Visit entities to Kotlin`
+
+**Summary**: 20 files changed: 1,172 deletions, 654 additions (44% reduction)
+
+---
+
+### Tier 13: OrderSet, Dosing, Drug, and ReferenceRange Entities
+
+**Date**: 2026-01-10
+
+Migrated 13 entity classes:
+
+OrderSet entities (4 files):
+- `OrderSet.java` → `OrderSet.kt` - With nested Operator enum
+- `OrderSetAttribute.java` → `OrderSetAttribute.kt`
+- `OrderSetAttributeType.java` → `OrderSetAttributeType.kt`
+- `OrderSetMember.java` → `OrderSetMember.kt`
+
+Dosing entities (4 files):
+- `DosingInstructions.java` → `DosingInstructions.kt` - Interface
+- `BaseDosingInstructions.java` → `BaseDosingInstructions.kt` - Abstract base
+- `SimpleDosingInstructions.java` → `SimpleDosingInstructions.kt` - With buildString DSL
+- `FreeTextDosingInstructions.java` → `FreeTextDosingInstructions.kt`
+
+Drug entities (2 files):
+- `DrugIngredient.java` → `DrugIngredient.kt`
+- `DrugReferenceMap.java` → `DrugReferenceMap.kt`
+
+ReferenceRange entities (3 files):
+- `BaseReferenceRange.java` → `BaseReferenceRange.kt` - Abstract base
+- `ConceptReferenceRange.java` → `ConceptReferenceRange.kt`
+- `ObsReferenceRange.java` → `ObsReferenceRange.kt`
+
+**Tier 13 Commit**: `Phase 4 Tier 13: Migrate OrderSet, Dosing, Drug, and ReferenceRange entities to Kotlin`
+
+**Summary**: 25 files changed: 1,564 deletions, 771 additions (51% reduction)
+
+---
+
+### Tier 14: Miscellaneous Entities
+
+**Date**: 2026-01-10
+
+Migrated 10 entity classes:
+
+Core entities (5 files):
+- `CodedOrFreeText.java` → `CodedOrFreeText.kt` - Embeddable
+- `ConceptSearchResult.java` → `ConceptSearchResult.kt`
+- `ConceptStateConversion.java` → `ConceptStateConversion.kt`
+- `Duration.java` → `Duration.kt` - With SNOMED CT code support
+- `GlobalProperty.java` → `GlobalProperty.kt` - System configuration
+
+Diagnosis entities (2 files):
+- `DiagnosisAttribute.java` → `DiagnosisAttribute.kt`
+- `DiagnosisAttributeType.java` → `DiagnosisAttributeType.kt`
+
+Order entities (2 files):
+- `ServiceOrder.java` → `ServiceOrder.kt` - Abstract with Laterality enum
+- `ReferralOrder.java` → `ReferralOrder.kt`
+
+Visit entities (1 file):
+- `VisitType.java` → `VisitType.kt`
+
+**Tier 14 Commit**: `Phase 4 Tier 14: Migrate miscellaneous entities to Kotlin`
+
+**Summary**: 19 files changed: 1,398 deletions, 649 additions (54% reduction)
+
+---
+
+## Phase 5: Utility Classes
+
+**Date**: 2026-01-10
+
+### Tier 1: Simple Utility Classes (10 files)
+
+Migrated simple utility classes (18-47 lines):
+
+Constants:
+- `FormConstants.java` → `FormConstants.kt`
+- `RoleConstants.java` → `RoleConstants.kt`
+
+Comparators:
+- `UserByNameComparator.java` → `UserByNameComparator.kt`
+- `MetadataComparator.java` → `MetadataComparator.kt`
+- `ProviderByPersonNameComparator.java` → `ProviderByPersonNameComparator.kt`
+
+Exceptions:
+- `CycleException.java` → `CycleException.kt`
+
+Utility objects:
+- `DateUtil.java` → `DateUtil.kt`
+- `ExceptionUtil.java` → `ExceptionUtil.kt`
+- `HttpUrl.java` → `HttpUrl.kt`
+
+Abstract classes:
+- `OpenmrsMemento.java` → `OpenmrsMemento.kt`
+
+**Tier 1 Commit**: `Phase 5 Tier 1: Migrate simple utility classes to Kotlin`
+
+**Summary**: 12 files changed: 199 deletions, 168 additions (16% reduction)
+
+---
+
+### Tier 2: More Utility Classes (10 files)
+
+Migrated utility classes (46-66 lines):
+
+Exception classes:
+- `DatabaseUpdateException.java` → `DatabaseUpdateException.kt`
+- `InputRequiredException.java` → `InputRequiredException.kt`
+
+Comparators:
+- `ConceptMapTypeComparator.java` → `ConceptMapTypeComparator.kt`
+- `DrugsByNameComparator.java` → `DrugsByNameComparator.kt`
+
+Utility objects:
+- `VelocityExceptionHandler.java` → `VelocityExceptionHandler.kt`
+- `XmlUtils.java` → `XmlUtils.kt`
+- `MemoryLeakUtil.java` → `MemoryLeakUtil.kt`
+- `OpenmrsSecurityManager.java` → `OpenmrsSecurityManager.kt`
+
+Specialized classes:
+- `OpenmrsDateFormat.java` → `OpenmrsDateFormat.kt`
+- `TestTypeFilter.java` → `TestTypeFilter.kt`
+
+**Tier 2 Commit**: `Phase 5 Tier 2: Migrate 10 more utility classes to Kotlin`
+
+**Summary**: 20 files changed: 565 deletions, 507 additions (10% reduction)
+
+---
+
 ## Overall Migration Statistics
 
 | Phase | Files Converted | Java Lines Removed | Kotlin Lines Added | Net Reduction |
@@ -825,7 +978,12 @@ Field entities:
 | Phase 4 Tier 9 | 3 | 351 | 210 | 40% |
 | Phase 4 Tier 10 | 5 | 1460 | 910 | 38% |
 | Phase 4 Tier 11 | 7 | 1387 | 739 | 47% |
-| **Total** | **105** | **~36845** | **~19537** | **47%** |
+| Phase 4 Tier 12 | 10 | 1172 | 654 | 44% |
+| Phase 4 Tier 13 | 13 | 1564 | 771 | 51% |
+| Phase 4 Tier 14 | 10 | 1398 | 649 | 54% |
+| Phase 5 Tier 1 | 10 | 199 | 168 | 16% |
+| Phase 5 Tier 2 | 10 | 565 | 507 | 10% |
+| **Total** | **167** | **~43715** | **~23084** | **47%** |
 
 ---
 
