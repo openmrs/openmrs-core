@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.util;
+package org.openmrs.util
 
 /**
  * Constants relating to forms
@@ -18,21 +18,17 @@ package org.openmrs.util;
  * @see org.openmrs.FieldType
  * @see org.openmrs.FieldAnswer
  */
-public class FormConstants {
+object FormConstants {
 	
-	private FormConstants() {
-	}
+	const val FIELD_TYPE_CONCEPT: Int = 1
 	
-	public static final Integer FIELD_TYPE_CONCEPT = 1;
+	const val FIELD_TYPE_DATABASE: Int = 2
 	
-	public static final Integer FIELD_TYPE_DATABASE = 2;
+	const val FIELD_TYPE_TERM_SET: Int = 3
 	
-	public static final Integer FIELD_TYPE_TERM_SET = 3;
+	const val FIELD_TYPE_MISC_SET: Int = 4
 	
-	public static final Integer FIELD_TYPE_MISC_SET = 4;
+	const val FIELD_TYPE_SECTION: Int = 5
 	
-	public static final Integer FIELD_TYPE_SECTION = 5;
-	
-	public static final int INDENT_SIZE = 2;
-	
+	const val INDENT_SIZE: Int = 2
 }

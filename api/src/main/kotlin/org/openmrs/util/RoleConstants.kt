@@ -7,9 +7,9 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.util;
+package org.openmrs.util
 
-import org.openmrs.annotation.AddOnStartup;
+import org.openmrs.annotation.AddOnStartup
 
 /**
  * Contains all role names and their descriptions. Some of role names may be marked with
@@ -18,21 +18,17 @@ import org.openmrs.annotation.AddOnStartup;
  * @see org.openmrs.annotation.AddOnStartup
  * @since 1.8
  */
-public class RoleConstants {
-
-	private RoleConstants() {
-	}
+object RoleConstants {
 
 	@AddOnStartup(description = "Assigned to Administrators of OpenMRS. Gives additional access to change core aspects of the system.")
-	public static final String SUPERUSER = "System Developer";
+	const val SUPERUSER: String = "System Developer"
 	
 	@AddOnStartup(description = "Privileges for non-authenticated users.")
-	public static final String ANONYMOUS = "Anonymous";
+	const val ANONYMOUS: String = "Anonymous"
 	
 	@AddOnStartup(description = "Privileges gained once authentication has been established.")
-	public static final String AUTHENTICATED = "Authenticated";
+	const val AUTHENTICATED: String = "Authenticated"
 	
 	@AddOnStartup(description = "All users with the 'Provider' role will appear as options in the default Infopath ")
-	public static final String PROVIDER = "Provider";
-	
+	const val PROVIDER: String = "Provider"
 }

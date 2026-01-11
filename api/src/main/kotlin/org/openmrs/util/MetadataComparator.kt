@@ -7,13 +7,11 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.util;
+package org.openmrs.util
 
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.Locale;
-
-import org.openmrs.OpenmrsMetadata;
+import org.openmrs.OpenmrsMetadata
+import java.io.Serializable
+import java.util.Locale
 
 /**
  * A comparator that sorts first based on non-retired, and second based on name. (Locale is
@@ -21,27 +19,24 @@ import org.openmrs.OpenmrsMetadata;
  *
  * @since 1.7
  */
-public class MetadataComparator implements Comparator<OpenmrsMetadata>, Serializable {
-
-	private static final long serialVersionUID = 1L;
+class MetadataComparator(locale: Locale?) : Comparator<OpenmrsMetadata>, Serializable {
 	
-	/**
-	 * @param locale
-	 */
-	public MetadataComparator(Locale locale) {
+	init {
 		// locale is currently not used
 	}
 	
 	/**
-	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 * @see Comparator.compare
 	 */
-	@Override
-	public int compare(OpenmrsMetadata left, OpenmrsMetadata right) {
-		int temp = OpenmrsUtil.compareWithNullAsLowest(left.getRetired(), right.getRetired());
+	override fun compare(left: OpenmrsMetadata, right: OpenmrsMetadata): Int {
+		var temp = OpenmrsUtil.compareWithNullAsLowest(left.retired, right.retired)
 		if (temp == 0) {
-			temp = OpenmrsUtil.compareWithNullAsLowest(left.getName(), right.getName());
+			temp = OpenmrsUtil.compareWithNullAsLowest(left.name, right.name)
 		}
-		return temp;
+		return temp
 	}
 	
+	companion object {
+		private const val serialVersionUID = 1L
+	}
 }

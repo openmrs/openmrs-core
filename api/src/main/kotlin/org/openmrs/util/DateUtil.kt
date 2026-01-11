@@ -7,23 +7,25 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.util;
+package org.openmrs.util
 
-public class CycleException extends Exception {
+import java.time.temporal.ChronoUnit
+import java.util.Date
+
+/**
+ * Utility classes that provide date-related methods
+ * 
+ * @since 2.0
+ */
+object DateUtil {
 	
-	private static final long serialVersionUID = 1L;
-	
-	private Object extraData;
-	
-	public CycleException() {
-	}
-	
-	public CycleException(String message, Object extraData) {
-		super(message);
-		this.extraData = extraData;
-	}
-	
-	public Object getExtraData() {
-		return extraData;
+	/**
+	 * @param date
+	 * @return date truncated to second precision (e.g. with milliseconds dropped)
+	 */
+	@JvmStatic
+	fun truncateToSeconds(date: Date): Date {
+		val instant = date.toInstant().truncatedTo(ChronoUnit.SECONDS)
+		return Date.from(instant)
 	}
 }

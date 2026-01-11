@@ -7,12 +7,10 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.util;
+package org.openmrs.util
 
-import java.io.Serializable;
-import java.util.Comparator;
-
-import org.openmrs.User;
+import org.openmrs.User
+import java.io.Serializable
 
 /**
  * A simple user comparator for sorting users by personName. Sorts names based on the following
@@ -20,25 +18,25 @@ import org.openmrs.User;
  *
  * @since 1.8
  */
-public class UserByNameComparator implements Comparator<User>, Serializable {
-
-	private static final long serialVersionUID = 1L;
+class UserByNameComparator : Comparator<User>, Serializable {
 	
 	/**
-	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 * @see Comparator.compare
 	 * <strong>Should</strong> sort users by personNames
 	 */
-	@Override
-	public int compare(User user1, User user2) {
-		
+	override fun compare(user1: User?, user2: User?): Int {
 		// test for null cases (sorting them to be last in a list)
-		if (user1 == null) {
-			return 1;
-		} else if (user2 == null) {
-			return -1;
+		return when {
+			user1 == null -> 1
+			user2 == null -> -1
+			else -> {
+				// delegate to the personByNameComparator to sort by person names
+				PersonByNameComparator.comparePersonsByName(user1.person, user2.person)
+			}
 		}
-		
-		// delegate to the personByNameComparator to sort by person names
-		return PersonByNameComparator.comparePersonsByName(user1.getPerson(), user2.getPerson());
+	}
+	
+	companion object {
+		private const val serialVersionUID = 1L
 	}
 }
