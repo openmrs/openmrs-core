@@ -32,6 +32,8 @@ import org.owasp.csrfguard.CsrfGuard;
 import org.owasp.csrfguard.CsrfGuardServletContextListener;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
@@ -82,6 +84,8 @@ import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 public final class Listener extends ContextLoader implements ServletContextListener, HttpSessionListener {
 	
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
+
+	private static final Marker PERFORMANCE_MARKER = MarkerFactory.getMarker("performance");
 	
 	private static boolean runtimePropertiesFound = false;
 	
@@ -247,11 +251,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				 * This logic is from ContextLoader.initWebApplicationContext. Copied here instead
 				 * of calling that so that the context is not cached and hence not garbage collected
 				 */
-				log.debug("Refreshing WAC");
+				log.debug(PERFORMANCE_MARKER, "Refreshing WAC");
 				XmlWebApplicationContext context = (XmlWebApplicationContext) createWebApplicationContext(servletContext);
 				configureAndRefreshWebApplicationContext(context, servletContext);
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
-				log.debug("Done refreshing WAC");
+				log.debug(PERFORMANCE_MARKER, "Done refreshing WAC");
 				
 				WebDaemon.startOpenmrs(event.getServletContext());
 			} else {
@@ -343,7 +347,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// start openmrs
 		try {
 			// load bundled modules that are packaged into the webapp
-			log.debug("Loading bundled modules");
+			log.debug(PERFORMANCE_MARKER, "Loading bundled modules");
 			Listener.loadBundledModules(servletContext);
 			
 			Context.startup(getRuntimeProperties());
@@ -703,7 +707,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		
 		boolean someModuleNeedsARefresh = false;
 		for (Module mod : startedModules) {
-			log.debug("Staring module: {}", mod.getModuleId());
+			log.debug(PERFORMANCE_MARKER, "Staring module: {}", mod.getModuleId());
 			try {
 				boolean thisModuleCausesRefresh = WebModuleUtil.startModule(mod, servletContext,
 				    /* delayContextRefresh */true);
@@ -716,9 +720,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		
 		if (someModuleNeedsARefresh) {
 			try {
-				log.debug("Refreshing WAC as required by some module");
+				log.debug(PERFORMANCE_MARKER, "Refreshing WAC as required by some module");
 				WebModuleUtil.refreshWAC(servletContext, true, null);
-				log.debug("Done refreshing WAC as required by some module");
+				log.debug(PERFORMANCE_MARKER, "Done refreshing WAC as required by some module");
 			}
 			catch (ModuleMustStartException | BeanCreationException ex) {
 				// pass this up to the calling method so that openmrs loading stops
@@ -748,9 +752,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 							}
 						}
 					}
-					log.debug("Retrying refreshing WebApplicationContext");
+					log.debug(PERFORMANCE_MARKER, "Retrying refreshing WebApplicationContext");
 					WebModuleUtil.refreshWAC(servletContext, true, null);
-					log.debug("Done refreshing WebApplicationContext");
+					log.debug(PERFORMANCE_MARKER, "Done refreshing WebApplicationContext");
 				}
 				catch (MandatoryModuleException ex) {
 					// pass this up to the calling method so that openmrs loading stops
@@ -769,7 +773,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// because we delayed the refresh, we need to load+start all servlets and filters now
 		// (this is to protect servlets/filters that depend on their module's spring xml config being available)
 		for (Module mod : ModuleFactory.getStartedModulesInOrder()) {
-			log.debug("Loading servlets and filters for module: {}", mod.getModuleId());
+			log.debug(PERFORMANCE_MARKER, "Loading servlets and filters for module: {}", mod.getModuleId());
 			WebModuleUtil.loadServlets(mod, servletContext);
 			WebModuleUtil.loadFilters(mod, servletContext);
 		}
