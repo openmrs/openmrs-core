@@ -28,10 +28,9 @@ jobs:
             - ${{ github.event_name == 'pull_request' }}
         test-profile: ["", "-Pintegration-test -Pskip-default-test", "-Pperformance-test -Pskip-default-test"]
         exclude:
-          - platform: windows-latest
-            java-version: 21
-          #- platform: windows-latest
-          #  java-version: 24
+          # Do not run performance tests on Windows
+          - test-profile: '-Pperformance-test -Pskip-default-test'
+            platform: windows-latest
           # Do not run performance tests on PRs
           - test-profile: '-Pperformance-test -Pskip-default-test'
             isPR: true
