@@ -7,19 +7,17 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.validator;
+package org.openmrs.validator
 
-import org.openmrs.TestOrder;
-import org.openmrs.annotation.Handler;
-import org.springframework.stereotype.Component;
+import org.openmrs.TestOrder
+import org.openmrs.annotation.Handler
+import org.springframework.stereotype.Component
 
 /**
- * Validates the {@link org.openmrs.TestOrder} class.
- * 
+ * Validates the [org.openmrs.TestOrder] class.
+ *
  * @since 1.10
  */
-@Handler(supports = { TestOrder.class }, order = 50)
+@Handler(supports = [TestOrder::class], order = 50)
 @Component("testOrderValidator")
-public class TestOrderValidator extends ServiceOrderValidator {
-
-}
+class TestOrderValidator : ServiceOrderValidator()
