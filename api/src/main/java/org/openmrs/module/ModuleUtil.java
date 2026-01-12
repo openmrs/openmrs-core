@@ -60,8 +60,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
 /**
@@ -73,7 +71,6 @@ public class ModuleUtil {
 	}
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
-	private static final Marker PERFORMANCE_MARKER = MarkerFactory.getMarker("performance");
 	
 	/**
 	 * Start up the module system with the given properties.
@@ -869,7 +866,7 @@ public class ModuleUtil {
 		for (Module module : startedModules) {
 			try {
 				if (module.getModuleActivator() != null) {
-					log.debug(PERFORMANCE_MARKER, "Run module willRefreshContext: {}", module.getModuleId());
+					log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Run module willRefreshContext: {}", module.getModuleId());
 					Thread.currentThread().setContextClassLoader(ModuleFactory.getModuleClassLoader(module));
 					module.getModuleActivator().willRefreshContext();
 				}
@@ -896,7 +893,7 @@ public class ModuleUtil {
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 
-		log.debug(PERFORMANCE_MARKER, "Refreshing context");
+		log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Refreshing context");
 		ServiceContext.getInstance().startRefreshingContext();
 		try {
 			ctx.refresh();
@@ -907,13 +904,13 @@ public class ModuleUtil {
 		finally {
 			ServiceContext.getInstance().doneRefreshingContext();
 		}
-		log.debug(PERFORMANCE_MARKER, "Done refreshing context");
+		log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Done refreshing context");
 		
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		OpenmrsClassLoader.restoreState();
-		log.debug(PERFORMANCE_MARKER, "Startup scheduler");
+		log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Startup scheduler");
 		SchedulerUtil.startup(Context.getRuntimeProperties());
 		
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
@@ -937,20 +934,20 @@ public class ModuleUtil {
 					ModuleFactory.passDaemonToken(module);
 					
 					if (module.getModuleActivator() != null) {
-						log.debug(PERFORMANCE_MARKER, "Run module contextRefreshed: {}", module.getModuleId());
+						log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Run module contextRefreshed: {}", module.getModuleId());
 						module.getModuleActivator().contextRefreshed();
 						try {
 							//if it is system start up, call the started method for all started modules
 							if (isOpenmrsStartup) {
-								log.debug(PERFORMANCE_MARKER, "Run module started: {}", module.getModuleId());
+								log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Run module started: {}", module.getModuleId());
 								module.getModuleActivator().started();
 							}
 							//if refreshing the context after a user started or uploaded a new module
 							else if (!isOpenmrsStartup && module.equals(startedModule)) {
-								log.debug(PERFORMANCE_MARKER, "Run module started: {}", module.getModuleId());
+								log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Run module started: {}", module.getModuleId());
 								module.getModuleActivator().started();
 							}
-							log.debug(PERFORMANCE_MARKER, "Done running module started: {}", module.getModuleId());
+							log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Done running module started: {}", module.getModuleId());
 						}
 						catch (Error e) {
 							log.warn("Unable to invoke started() method on the module's activator", e);

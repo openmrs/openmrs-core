@@ -33,6 +33,8 @@ import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import static java.util.Arrays.asList;
 
@@ -45,6 +47,13 @@ import static java.util.Arrays.asList;
 public final class OpenmrsConstants {
 	
 	private static final Logger log = LoggerFactory.getLogger(OpenmrsConstants.class);
+
+	/**
+	 * Marker used for performance-related log entries.
+	 * To filter log files: grep "performance" openmrs.log
+	 * To find usages in source: Get-ChildItem -Recurse -Filter *.java | Select-String "PERFORMANCE_MARKER"
+	 */
+	public static final Marker PERFORMANCE_MARKER = MarkerFactory.getMarker("performance");
 	
 	public static String KEY_OPENMRS_APPLICATION_DATA_DIRECTORY = "OPENMRS_APPLICATION_DATA_DIRECTORY";
 	

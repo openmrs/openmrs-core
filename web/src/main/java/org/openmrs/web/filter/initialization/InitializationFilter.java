@@ -78,8 +78,6 @@ import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.openmrs.web.filter.util.SessionModelUtils;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 
@@ -96,8 +94,6 @@ public class InitializationFilter extends StartupFilter {
 	
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(InitializationFilter.class);
 
-	private static final Marker PERFORMANCE_MARKER = MarkerFactory.getMarker("performance");
-	
 	private static final String DATABASE_POSTGRESQL = "postgresql";
 	
 	private static final String DATABASE_MYSQL = "mysql";
@@ -217,7 +213,7 @@ public class InitializationFilter extends StartupFilter {
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
 		throws IOException {
-		log.debug(PERFORMANCE_MARKER, "Entered initialization filter");
+		log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Entered initialization filter");
 		
 		SessionModelUtils.loadFromSession(httpRequest.getSession(), wizardModel);
 		initializeWizardFromResolvedPropertiesIfPresent();
@@ -1349,7 +1345,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 		
 		public synchronized void setMessage(String message) {
-			log.debug(PERFORMANCE_MARKER, message);
+			log.debug(OpenmrsConstants.PERFORMANCE_MARKER, message);
 			this.message = message;
 			setStepsComplete(getStepsComplete() + 1);
 		}
@@ -1599,7 +1595,7 @@ public class InitializationFilter extends StartupFilter {
 						}
 						
 						if (wizardModel.createTables) {
-							log.debug(PERFORMANCE_MARKER, "Creating tables");
+							log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Creating tables");
 							// use liquibase to create core data + tables
 							try {
 								String liquibaseSchemaFileName = changeLogVersionFinder.getLatestSchemaSnapshotFilename()
@@ -1728,10 +1724,10 @@ public class InitializationFilter extends StartupFilter {
 						// start spring
 						// after this point, all errors need to also call: contextLoader.closeWebApplicationContext(event.getServletContext())
 						// logic copied from org.springframework.web.context.ContextLoaderListener
-						log.debug(PERFORMANCE_MARKER, "Initializing WAC");
+						log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Initializing WAC");
 						ContextLoader contextLoader = new ContextLoader();
 						contextLoader.initWebApplicationContext(filterConfig.getServletContext());
-						log.debug(PERFORMANCE_MARKER, "Done initializing WAC");
+						log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Done initializing WAC");
 						
 						// output properties to the openmrs runtime properties file so that this wizard is not run again
 						FileOutputStream fos = null;
