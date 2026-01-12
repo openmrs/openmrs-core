@@ -33,7 +33,6 @@ import org.owasp.csrfguard.CsrfGuardServletContextListener;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
