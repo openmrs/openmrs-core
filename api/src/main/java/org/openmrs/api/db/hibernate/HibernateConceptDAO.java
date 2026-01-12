@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Comparator;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -415,8 +416,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 			return Collections.emptyList();
 		}
 		
-		return drugQuery.fetchAllHits();
-	}
+	List<Drug> results = drugQuery.fetchAllHits();
+
+    results.sort(Comparator.comparingInt(drug -> {
+        if (drug.getIngredients() != null) {
+            return drug.getIngredients().size();
+        }
+        return 1;
+    }));
+
+    return results;
+}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptClass(java.lang.Integer)
