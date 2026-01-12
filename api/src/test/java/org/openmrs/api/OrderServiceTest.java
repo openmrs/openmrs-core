@@ -2917,6 +2917,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			    .addAnnotatedClass(PatientIdentifier.class)
 				.addAnnotatedClass(ProgramAttributeType.class)
 				.addAnnotatedClass(HL7InError.class)
+				.addAnnotatedClass(OrderFrequency.class)
 				.addAnnotatedClass(OrderType.class)
 				.addAnnotatedClass(CohortMembership.class)
 				.addAnnotatedClass(OrderAttributeType.class)
