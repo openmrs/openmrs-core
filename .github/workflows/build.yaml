@@ -28,6 +28,9 @@ jobs:
             - ${{ github.event_name == 'pull_request' }}
         test-profile: ["", "-Pintegration-test -Pskip-default-test", "-Pperformance-test -Pskip-default-test"]
         exclude:
+          # Do not run integration tests on Windows
+          - test-profile: '-Pintegration-test -Pskip-default-test'
+            platform: windows-latest
           # Do not run performance tests on Windows
           - test-profile: '-Pperformance-test -Pskip-default-test'
             platform: windows-latest
