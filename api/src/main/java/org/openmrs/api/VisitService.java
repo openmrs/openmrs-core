@@ -393,4 +393,11 @@ public interface VisitService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.EDIT_VISITS)
 	public void stopVisits(Date maximumStartDate);
+
+	boolean isSuitableVisit(Visit visit, Location location, Date when);
+	
+	boolean isSuitableVisitIgnoringTime(Visit visit, Location location, Date when);
+	Visit ensureActiveVisit(Patient patient, Location location);
+	Visit ensureVisit(Patient patient, Date when, Location location);
+
 }

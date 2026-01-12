@@ -195,6 +195,15 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public List<Location> getAllLocations(boolean includeRetired) throws APIException {
 		return dao.getAllLocations(includeRetired);
 	}
+
+	/**
+	 * @see org.openmrs.api.LocationService#getAllLocationsThatSupportVisits()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Location> getAllLocationsThatSupportVisits() {
+		return dao.getAllLocationsThatSupportVisits();
+	}
 	
 	/**
 	 * @see org.openmrs.api.LocationService#getLocations(java.lang.String)

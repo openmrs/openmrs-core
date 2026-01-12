@@ -40,6 +40,8 @@ import org.openmrs.validator.ValidateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Calendar;
+import org.apache.commons.lang3.time.DateUtils;
 
 /**
  * Default implementation of the {@link VisitService}. This class should not be used on its own. The
@@ -293,6 +295,118 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		    includeInactive, includeVoided);
 	}
 	
+	/**
+	 * @see org.openmrs.api.VisitService#isSuitableVisit(Visit, Location, Date)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public boolean isSuitableVisit(Visit visit, Location location, Date when) {
+
+		if (visit == null || visit.getVoided()) {
+			return false;
+		}
+
+		if (visit.getStartDatetime() == null || visit.getStartDatetime().after(when)) {
+			return false;
+		}
+
+		if (visit.getStopDatetime() != null && visit.getStopDatetime().before(when)) {
+			return false;
+		}
+
+		// walk up the location hierarchy to find a location that supports visits
+		Location visitLocation = location;
+		while (visitLocation != null && !Boolean.TRUE.equals(visitLocation.getSupportsVisits())) {
+			visitLocation = visitLocation.getParentLocation();
+		}
+
+		if (visitLocation == null) {
+			return false;
+		}
+
+		return visitLocation.equals(visit.getLocation());
+	}
+	
+	/**
+ 	* @see org.openmrs.api.VisitService#isSuitableVisitIgnoringTime(Visit, Location, Date)
+ 	*/
+	@Override
+	@Transactional(readOnly = true)
+	public boolean isSuitableVisitIgnoringTime(Visit visit, Location location, Date when) {
+
+	if (visit == null || visit.getStartDatetime() == null || when == null) {
+		return false;
+	}
+
+	// Compare only the date (ignore time)
+	Date visitDate = org.apache.commons.lang3.time.DateUtils.truncate(
+			visit.getStartDatetime(), java.util.Calendar.DAY_OF_MONTH);
+	Date whenDate = org.apache.commons.lang3.time.DateUtils.truncate(
+			when, java.util.Calendar.DAY_OF_MONTH);
+
+	if (!visitDate.equals(whenDate)) {
+		return false;
+	}
+
+	return isSuitableVisit(visit, location, when);
+	}
+
+	/**
+ 	* @see org.openmrs.api.VisitService#ensureActiveVisit(Patient, Location)
+ 	*/
+	@Override
+	@Transactional
+	public Visit ensureActiveVisit(Patient patient, Location location) {
+
+	if (patient == null || location == null) {
+		throw new IllegalArgumentException("Patient and location are required");
+	}
+
+	// Delegate to ensureVisit using current time
+	return ensureVisit(patient, new Date(), location);
+	}
+
+
+	/**
+ 	* @see org.openmrs.api.VisitService#ensureVisit(Patient, Date, Location)
+ 	*/
+	@Override
+	@Transactional
+	public Visit ensureVisit(Patient patient, Date when, Location location) {
+
+	if (patient == null || when == null || location == null) {
+		throw new IllegalArgumentException("Patient, date, and location are required");
+	}
+
+	List<Visit> visits = Context.getVisitService()
+			.getVisitsByPatient(patient, true, false);
+
+	for (Visit visit : visits) {
+		if (isSuitableVisitIgnoringTime(visit, location, when)) {
+			return visit;
+		}
+	}
+
+	// Create new visit
+	Visit visit = new Visit();
+	visit.setPatient(patient);
+	visit.setStartDatetime(when);
+
+	Location visitLocation = location;
+	while (visitLocation != null && !Boolean.TRUE.equals(visitLocation.getSupportsVisits())) {
+		visitLocation = visitLocation.getParentLocation();
+	}
+
+	if (visitLocation == null) {
+		throw new IllegalArgumentException("No visit-supporting location found");
+	}
+
+	visit.setLocation(visitLocation);
+
+	return Context.getVisitService().saveVisit(visit);
+}
+
+
 	/**
 	 * @see org.openmrs.api.VisitService#getAllVisitAttributeTypes()
 	 */
