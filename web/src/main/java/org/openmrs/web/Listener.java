@@ -362,7 +362,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// TODO catch openmrs errors here and drop the user back out to the setup screen
 		
 		try {
-			log.debug("Performing start of modules");
+			log.debug(PERFORMANCE_MARKER, "Performing start of modules");
 			// web load modules
 			Listener.performWebStartOfModules(servletContext);
 			
