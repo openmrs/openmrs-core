@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -263,6 +264,30 @@ public class PersonTest extends BaseContextSensitiveTest {
 		assertThat(p.getAttributes(), hasSize(1));
 		p.removeAttribute(pa1);
 		assertThat(p.getAttributes(), hasSize(0));
+	}
+	@Test
+	public void getAttributes_shouldInitializeTreeSetWhenNull() {
+		Person person = new Person();
+		person.setAttributes(null);
+		Set<PersonAttribute> attrs = person.getAttributes();
+		assertNotNull(attrs);
+		assertTrue(attrs instanceof TreeSet);
+	}
+
+	@Test
+	public void addAttribute_shouldSetPersonOwnerAndValueReference() {
+		Person person = new Person();
+		PersonAttributeType type = new PersonAttributeType(1);
+		type.setFormat(String.class.getName());
+		PersonAttribute attribute = new PersonAttribute(type, "owner-value");
+		attribute.setVoided(false);
+		person.addAttribute(attribute);
+
+		assertThat(person.getAttributes(), hasSize(1));
+		PersonAttribute stored = person.getAttributes().iterator().next();
+		assertEquals(person, stored.getPerson());
+		assertEquals("owner-value", stored.getValueReference());
+		assertEquals("owner-value", stored.getValue());
 	}
 	
 	/**

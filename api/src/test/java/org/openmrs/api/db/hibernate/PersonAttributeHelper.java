@@ -79,7 +79,8 @@ public class PersonAttributeHelper {
 	
 	private PersonAttribute getPersonAttribute(List<PersonAttribute> personAttributeList, String personAttributeValue) {
 		for (PersonAttribute personAttribute : personAttributeList) {
-			if (personAttribute.getValue().equalsIgnoreCase(personAttributeValue)) {
+			String value = personAttribute.getValue();
+			if (value != null && value.equalsIgnoreCase(personAttributeValue)) {
 				return personAttribute;
 			}
 		}

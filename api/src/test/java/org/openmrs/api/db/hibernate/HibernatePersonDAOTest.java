@@ -17,12 +17,15 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
@@ -195,6 +198,29 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		
 		assertEquals(1, people.size());
 		assertEquals("Bilbo Odilon", people.get(0).getGivenName());
+	}
+
+	@Test
+	public void savePerson_shouldPersistStringPersonAttributeValue() {
+		PersonService ps = Context.getPersonService();
+		Person person = ps.getPerson(2);
+		PersonAttributeType type = ps.getPersonAttributeType(1);
+		assertNotNull(type);
+		PersonAttribute attribute = new PersonAttribute(type, "mapperTest");
+		attribute.setCreator(Context.getAuthenticatedUser());
+		attribute.setDateCreated(new Date());
+		attribute.setVoided(false);
+		person.addAttribute(attribute);
+
+		ps.savePerson(person);
+		sessionFactory.getCurrentSession().flush();
+		sessionFactory.getCurrentSession().clear();
+
+		Person reloaded = ps.getPerson(person.getId());
+		PersonAttribute reloadedAttribute = reloaded.getAttribute(type);
+		assertNotNull(reloadedAttribute);
+		assertEquals("mapperTest", reloadedAttribute.getValue());
+		assertEquals("mapperTest", reloadedAttribute.getValueReference());
 	}
 	
 	/**

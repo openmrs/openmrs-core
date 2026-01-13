@@ -17,12 +17,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.util.Comparator;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.openmrs.attribute.AttributeType;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -31,7 +33,7 @@ import org.openmrs.util.OpenmrsUtil;
 @Entity
 @Table(name = "person_attribute_type")
 @Audited
-public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Comparable<PersonAttributeType> {
+public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Comparable<PersonAttributeType>, AttributeType<Person> {
 	
 	public static final long serialVersionUID = 2112313431211L;
 	
@@ -115,6 +117,42 @@ public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implement
 	 */
 	public Integer getPersonAttributeTypeId() {
 		return personAttributeTypeId;
+	}
+
+	@Transient
+	@Override
+	public Integer getMinOccurs() {
+		return 0;
+	}
+
+	@Transient
+	@Override
+	public Integer getMaxOccurs() {
+		return null;
+	}
+
+	@Transient
+	@Override
+	public String getDatatypeClassname() {
+		return getFormat();
+	}
+
+	@Transient
+	@Override
+	public String getDatatypeConfig() {
+		return null;
+	}
+
+	@Transient
+	@Override
+	public String getPreferredHandlerClassname() {
+		return null;
+	}
+
+	@Transient
+	@Override
+	public String getHandlerConfig() {
+		return null;
 	}
 	
 	/**
