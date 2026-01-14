@@ -510,7 +510,13 @@ public class WebModuleUtil {
 				httpServlet.init(servletConfig);
 			}
 			catch (Exception e) {
-				log.warn("Unable to initialize servlet {}", name, e);
+				log.warn(
+    "Unable to initialize servlet '{}' because the servlet context is already initialized. "
+  + "This is expected during first startup due to servlet lifecycle limitations.",
+    name,
+    e
+);
+
 				throw new ModuleException("Unable to initialize servlet " + name, mod.getModuleId(), e);
 			}
 			
@@ -638,7 +644,12 @@ public class WebModuleUtil {
 				filter.init(config);
 			}
 			catch (Exception e) {
-				log.warn("Unable to initialize servlet {}", name, e);
+				log.warn(
+    "Unable to initialize filter '{}' because the servlet context is already initialized. "
+  + "This is expected during first startup due to servlet lifecycle limitations.",
+    name,
+    e
+);
 				throw new ModuleException("Unable to initialize servlet " + name, module.getModuleId(), e);
 			}
 			
