@@ -566,11 +566,6 @@
 				<version>33.5.0-jre</version>
 			</dependency>
 			<dependency>
-			    <groupId>jakarta.xml.bind</groupId>
-			    <artifactId>jakarta.xml.bind-api</artifactId>
-			    <version>4.0.4</version>
-			</dependency>
-			<dependency>
 				<groupId>com.sun.mail</groupId>
 				<artifactId>javax.mail</artifactId>
 				<version>1.6.2</version>
@@ -1241,12 +1236,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.3</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.3</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1267,12 +1262,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.3</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.3</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1293,12 +1288,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.3</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.3</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>

@@ -83,4 +83,24 @@
 		<modifyDataType tableName="concept_reference_range" columnName="criteria" newDataType="TEXT" />
 	</changeSet>
 
+	<changeSet id="TRUNK-5902-2026-01-05" author="shivvani-r">
+		<comment>Adding missing audit columns to cohort_member for TRUNK-5902</comment>
+		<addColumn tableName="cohort_member">
+			<column name="changed_by" type="INT"/>
+			<column name="date_changed" type="datetime"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5950-2026-01-06" author="shivvani-r">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="relationship_type" columnName="name"/>
+			</not>
+		</preConditions>
+		<comment>Adding missing name column to relationship_type for TRUNK-5950</comment>
+		<addColumn tableName="relationship_type">
+			<column name="name" type="VARCHAR(255)"/>
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>
