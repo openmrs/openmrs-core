@@ -93,6 +93,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	@Autowired
 	protected OrderDAO dao;
+
+	@Autowired
+	@Lazy
+	private OrderService orderService;
+
 	
 	private static OrderNumberGenerator orderNumberGenerator = null;
 
@@ -657,7 +662,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public String getNewOrderNumber(OrderContext orderContext) throws APIException {
-		return ORDER_NUMBER_PREFIX + Context.getOrderService().getNextOrderNumberSeedSequenceValue();
+		return ORDER_NUMBER_PREFIX + orderService.getNextOrderNumberSeedSequenceValue();
 	}
 	
 	/**
