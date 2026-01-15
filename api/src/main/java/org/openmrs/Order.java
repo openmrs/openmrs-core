@@ -29,6 +29,8 @@ import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
+import org.openmrs.util.ConfigUtil;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.util.Date;
@@ -52,7 +54,7 @@ import java.util.Date;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Audited
 public class Order extends BaseCustomizableData<OrderAttribute> implements FormRecordable {
-
+	
 	public static final long serialVersionUID = 4334343L;
 
 	/**
@@ -322,6 +324,16 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		return dateStopped;
 	}
 	
+	/**
+	 * Set the dateStopped
+	 *  
+	 * @since 2.7.8, 2.8.2
+	 * @param dateStopped
+	 */
+	public void setDateStopped(Date dateStopped) {
+		this.dateStopped = dateStopped;
+	}
+
 	/**
 	 * @return Returns the orderReason.
 	 */
@@ -693,6 +705,23 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 */
 	public String getOrderNumber() {
 		return orderNumber;
+	}
+
+	/**
+	 * Sets the orderNumber
+	 * 
+	 * @since 2.7.8, 2.8.2
+	 * @param orderNumber
+	 */
+	public void setOrderNumber(String orderNumber) {
+		if (this.orderNumber != null && !orderNumber.equals(this.orderNumber)) {
+			throw new APIException("Unable to modify order number");
+		}
+		if (!ConfigUtil.getProperty(OpenmrsConstants.GP_ALLOW_SETTING_ORDER_NUMBER, false) 
+			&& this.orderNumber == null && orderNumber != null) {
+			throw new APIException("Unable to set order number because GP_ALLOW_SETTING_ORDER_NUMBER is set to false");
+		} 
+		this.orderNumber = orderNumber;
 	}
 	
 	/**

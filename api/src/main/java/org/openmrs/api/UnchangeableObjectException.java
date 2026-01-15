@@ -11,7 +11,7 @@ package org.openmrs.api;
 
 /**
  * An instance of this exception is thrown if an attempt is made to update an unchangeable object
- *
+ * 
  * @since 2.1
  */
 public class UnchangeableObjectException extends InvalidOperationOnObjectException {

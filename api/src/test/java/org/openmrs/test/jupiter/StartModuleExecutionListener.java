@@ -71,14 +71,12 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 		
 		// if the developer listed some modules with the @StartModule annotation on the class
 		if (startModuleAnnotation != null) {
-			
 			if (!lastClassRun.equals(testContext.getTestClass().getSimpleName())) {
 				// mark this with our class so that the services are only restarted once
 				lastClassRun = testContext.getTestClass().getSimpleName();
 				
 				if (!Context.isSessionOpen())
 					Context.openSession();
-				
 				
 				ModuleUtil.shutdown();
 				

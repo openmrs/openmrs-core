@@ -9,9 +9,14 @@
  */
 package org.openmrs;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 
@@ -21,27 +26,38 @@ import org.hibernate.envers.Audited;
  * @version 1.0
  */
 @Audited
+@Entity
+@Table(name = "field")
 public class Field extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 4454L;
 	
 	// Fields
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "field_id")
 	private Integer fieldId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "field_type", nullable = false)
 	private FieldType fieldType;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id")
 	private Concept concept;
 	
+	@Column(name = "table_name", length = 50)
 	private String tableName;
 	
+	@Column(name = "attribute_name", length = 50)
 	private String attributeName;
 	
+	@Column(name = "default_value", length = 65535)
 	private String defaultValue;
 	
+	@Column(name = "select_multiple", nullable = false)
 	private Boolean selectMultiple = false;
-	
-	private Set<FieldAnswer> answers;
 	
 	// Constructors
 	
@@ -161,45 +177,6 @@ public class Field extends BaseChangeableOpenmrsMetadata {
 	 */
 	public void setSelectMultiple(Boolean selectMultiple) {
 		this.selectMultiple = selectMultiple;
-	}
-	
-	/**
-	 * @return Returns the fieldAnswers.
-	 */
-	public Set<FieldAnswer> getAnswers() {
-		return answers;
-	}
-	
-	/**
-	 * @param fieldAnswers The fieldAnswers to set.
-	 */
-	public void setAnswers(Set<FieldAnswer> fieldAnswers) {
-		this.answers = fieldAnswers;
-	}
-	
-	/**
-	 * Adds a field answer to the list of field answers
-	 *
-	 * @param fieldAnswer FieldAnswer to be added
-	 */
-	public void addAnswer(FieldAnswer fieldAnswer) {
-		if (answers == null) {
-			answers = new HashSet<>();
-		}
-		if (!answers.contains(fieldAnswer) && fieldAnswer != null) {
-			answers.add(fieldAnswer);
-		}
-	}
-	
-	/**
-	 * Removes a field answer from the list of field answers
-	 *
-	 * @param fieldAnswer FieldAnswer to be removed
-	 */
-	public void removeAnswer(FieldAnswer fieldAnswer) {
-		if (answers != null) {
-			answers.remove(fieldAnswer);
-		}
 	}
 	
 	/**

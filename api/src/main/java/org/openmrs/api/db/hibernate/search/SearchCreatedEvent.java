@@ -12,11 +12,11 @@ package org.openmrs.api.db.hibernate.search;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * Represents an event object raised whenever a {@link org.hibernate.search.mapper.orm.Search} object is created.
- * Events are fired via the spring application event mechanism, listeners have to implement
- * {@link org.springframework.context.ApplicationListener} and set the Type parameter value to
- * {@link SearchCreatedEvent}, it also implies that listeners MUST be registered as spring beans in order
- * to be discovered.
+ * Represents an event object raised whenever a {@link org.hibernate.search.mapper.orm.Search}
+ * object is created. Events are fired via the spring application event mechanism, listeners have to
+ * implement {@link org.springframework.context.ApplicationListener} and set the Type parameter
+ * value to {@link SearchCreatedEvent}, it also implies that listeners MUST be registered as spring
+ * beans in order to be discovered.
  * 
  * @see SearchAndEntityCollection
  * @since 2.8.0

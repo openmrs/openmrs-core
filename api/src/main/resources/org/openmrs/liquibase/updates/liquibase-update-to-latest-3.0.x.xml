@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+
+	<changeSet id="20200604-soundex_extension" author="aman" dbms="postgresql">
+		<comment> Soundex extension for PostgreSQL</comment>
+		<sql> CREATE EXTENSION IF NOT EXISTS fuzzystrmatch SCHEMA public;</sql>
+	</changeSet>
+
+	<changeSet id="20200715-uuid_ossp_extension" author="aman" dbms="postgresql">
+		<comment> Extension to use UUID functions with PostgreSQL and creating an alias similar to MySQL</comment>
+		<sql>
+			CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;
+			CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="TRUNK-5836-2025-10-09" author="Nethmi Rodrigo">
+		<addColumn tableName="concept_datatype" >
+			<column name="date_changed" type="DATETIME" />
+			<column name="changed_by" type="INT" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-6391-2025-07-29" author="Wikum Weerakutti">
+		<addColumn tableName="scheduler_task_config">
+			<column name="date_retired" type="DATETIME" />
+			<column name="retire_reason" type="VARCHAR(255)" />
+			<column name="retired" type="BOOLEAN" defaultValue="false"/>
+			<column name="creator" type="INT"/>
+			<column name="retired_by" type="INT" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="TRUNK-5749-2025-08-20" author="Jai Vora">
+		<addColumn tableName="drug">
+			<column name="description" type="VARCHAR(255)" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5809-2025-08-30" author="Deborah Nakamatte">
+		<addColumn tableName="program">
+			<column name="date_retired" type="DATETIME" />
+			<column name="retire_reason" type="VARCHAR(255)" />
+			<column name="retired_by" type="INT" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5890-2025-09-14" author="Deborah Nakamatte">
+		<addColumn tableName="privilege">
+			<column name="date_changed" type="datetime"/>
+			<column name="date_created" type="datetime"/>
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="VARCHAR(255)"/>
+			<column name="retired" type="BOOLEAN" defaultValue="false"/>
+			<column name="creator" type="INT"/>
+			<column name="retired_by" type="INT" />
+			<column name="changed_by" type="INT"/>
+			<column name="name" type="VARCHAR(255)"/>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="2025-09-30-TRUNK-6245" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="concept_reference_range" columnName="criteria"></columnExists>
+		</preConditions>
+		<comment>Changing concept_reference_range.criteria from VARCHAR(255) to TEXT</comment>
+		<modifyDataType tableName="concept_reference_range" columnName="criteria" newDataType="TEXT" />
+	</changeSet>
+
+	<changeSet id="TRUNK-5902-2026-01-05" author="shivvani-r">
+		<comment>Adding missing audit columns to cohort_member for TRUNK-5902</comment>
+		<addColumn tableName="cohort_member">
+			<column name="changed_by" type="INT"/>
+			<column name="date_changed" type="datetime"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5950-2026-01-06" author="shivvani-r">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="relationship_type" columnName="name"/>
+			</not>
+		</preConditions>
+		<comment>Adding missing name column to relationship_type for TRUNK-5950</comment>
+		<addColumn tableName="relationship_type">
+			<column name="name" type="VARCHAR(255)"/>
+		</addColumn>
+	</changeSet>
+	
+</databaseChangeLog>

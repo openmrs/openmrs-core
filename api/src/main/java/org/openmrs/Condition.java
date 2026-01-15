@@ -9,7 +9,9 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
+import org.hibernate.type.SqlTypes;
 import org.openmrs.util.OpenmrsUtil;
 
 import jakarta.persistence.AssociationOverride;
@@ -58,10 +60,12 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	private CodedOrFreeText condition;
 	
 	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "clinical_status")
 	private ConditionClinicalStatus clinicalStatus;
 	
 	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "verification_status")
 	private ConditionVerificationStatus verificationStatus;
 	

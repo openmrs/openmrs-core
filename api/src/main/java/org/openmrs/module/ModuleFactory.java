@@ -627,6 +627,7 @@ public class ModuleFactory {
 				}
 				
 				// fire up the classloader for this module
+				log.debug("Prepare module classloader: {}", module.getModuleId());
 				ModuleClassLoader moduleClassLoader = new ModuleClassLoader(module, ModuleFactory.class.getClassLoader());
 				getModuleClassLoaderMap().put(module, moduleClassLoader);
 				registerProvidedPackages(moduleClassLoader);
@@ -640,6 +641,7 @@ public class ModuleFactory {
 				// a spring context refresh anyway
 				
 				// map extension point to a list of extensions for this module only
+				log.debug("Prepare module extensions: {}", module.getModuleId());
 				Map<String, List<Extension>> moduleExtensionMap = new HashMap<>();
 				for (Extension ext : module.getExtensions()) {
 					
@@ -669,6 +671,7 @@ public class ModuleFactory {
 				// This and the property updates are the only things that can't
 				// be undone at startup, so put these calls after any other
 				// calls that might hinder startup
+				log.debug("Run module sql update script: {}", module.getModuleId());
 				SortedMap<String, String> diffs = SqlDiffFileParser.getSqlDiffs(module);
 				
 				try {
@@ -692,7 +695,10 @@ public class ModuleFactory {
 				}
 				
 				// run module's optional liquibase.xml immediately after sqldiff.xml
-				runLiquibase(module);
+				if (Context.getAdministrationService().isModuleSetupOnVersionChangeNeeded(module.getModuleId())) {
+					log.info("Module {} changed, running setup.", module.getModuleId());
+					Context.getAdministrationService().runModuleSetupOnVersionChange(module);
+				}
 				
 				// effectively mark this module as started successfully
 				getStartedModulesMap().put(moduleId, module);
@@ -731,6 +737,7 @@ public class ModuleFactory {
 				
 				// should be near the bottom so the module has all of its stuff
 				// set up for it already.
+				log.debug("Run module willStart: {}", module.getModuleId());
 				try {
 					if (module.getModuleActivator() != null) {
 						// if extends BaseModuleActivator
@@ -750,7 +757,7 @@ public class ModuleFactory {
 				module.clearStartupError();
 			}
 			catch (Exception e) {
-				log.warn("Error while trying to start module: " + moduleId, e);
+				log.error("Error while trying to start module: {}", moduleId, e);
 				module.setStartupErrorMessage("Error while trying to start module", e);
 				notifySuperUsersAboutModuleFailure(module);
 				// undo all of the actions in startup
@@ -766,13 +773,14 @@ public class ModuleFactory {
 				catch (Exception e2) {
 					// this will probably occur about the same place as the
 					// error in startup
-					log.debug("Error while stopping module: " + moduleId, e2);
+					log.debug("Error while stopping module: {}", moduleId, e2);
 				}
 			}
 			
 		}
 		
 		if (applicationContext != null) {
+			log.debug("Run module refresh application context: {}", module.getModuleId());
 			ModuleUtil.refreshApplicationContext(applicationContext, isOpenmrsStartup, module);
 		}
 		
@@ -938,6 +946,14 @@ public class ModuleFactory {
 			
 		}
 		
+	}
+
+	/**
+	 * This is a convenience method that exposes the private {@link #runLiquibase(Module)} method.
+	 * @since 2.9.0
+	 */
+	public static void runLiquibaseForModule(Module module) {
+		runLiquibase(module);
 	}
 	
 	/**
@@ -1148,15 +1164,6 @@ public class ModuleFactory {
 			ModuleClassLoader cl = removeClassLoader(mod);
 			if (cl != null) {
 				cl.dispose();
-				// remove files from lib cache
-				File folder = OpenmrsClassLoader.getLibCacheFolder();
-				File tmpModuleDir = new File(folder, moduleId);
-				try {
-					OpenmrsUtil.deleteDirectory(tmpModuleDir);
-				}
-				catch (IOException e) {
-					log.warn("Unable to delete libcachefolder for " + moduleId);
-				}
 			}
 		}
 		

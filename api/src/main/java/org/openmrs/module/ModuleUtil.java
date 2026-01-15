@@ -34,7 +34,19 @@ import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+import org.openmrs.api.OpenmrsService;
+import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -572,6 +584,7 @@ public class ModuleUtil {
 	 */
 	public static void expandJar(File fileToExpand, File tmpModuleDir, String name, boolean keepFullPath) throws IOException {
 		String docBase = tmpModuleDir.getAbsolutePath();
+		log.debug("Expanding jar {}", fileToExpand);
 		try (JarFile jarFile = new JarFile(fileToExpand)) {
 			Enumeration<JarEntry> jarEntries = jarFile.entries();
 			boolean foundName = (name == null);
@@ -853,11 +866,12 @@ public class ModuleUtil {
 		for (Module module : startedModules) {
 			try {
 				if (module.getModuleActivator() != null) {
+					log.debug("Run module willRefreshContext: {}", module.getModuleId());
 					Thread.currentThread().setContextClassLoader(ModuleFactory.getModuleClassLoader(module));
 					module.getModuleActivator().willRefreshContext();
 				}
 			}
-			catch (Exception e) {
+			catch (Error e) {
 				log.warn("Unable to call willRefreshContext() method in the module's activator", e);
 			}
 		}
@@ -879,18 +893,24 @@ public class ModuleUtil {
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
+		log.debug("Refreshing context");
 		ServiceContext.getInstance().startRefreshingContext();
 		try {
 			ctx.refresh();
+			// TRUNK-6421: warn if XML-declared services also use annotations like @Autowired
+			logWarningsForAnnotatedXmlServices(ctx);
+			
 		}
 		finally {
 			ServiceContext.getInstance().doneRefreshingContext();
 		}
+		log.debug("Done refreshing context");
 		
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		OpenmrsClassLoader.restoreState();
+		log.debug("Startup scheduler");
 		SchedulerUtil.startup(Context.getRuntimeProperties());
 		
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
@@ -914,25 +934,29 @@ public class ModuleUtil {
 					ModuleFactory.passDaemonToken(module);
 					
 					if (module.getModuleActivator() != null) {
+						log.debug("Run module contextRefreshed: {}", module.getModuleId());
 						module.getModuleActivator().contextRefreshed();
 						try {
 							//if it is system start up, call the started method for all started modules
 							if (isOpenmrsStartup) {
+								log.debug("Run module started: {}", module.getModuleId());
 								module.getModuleActivator().started();
 							}
 							//if refreshing the context after a user started or uploaded a new module
 							else if (!isOpenmrsStartup && module.equals(startedModule)) {
+								log.debug("Run module started: {}", module.getModuleId());
 								module.getModuleActivator().started();
 							}
+							log.debug("Done running module started: {}", module.getModuleId());
 						}
-						catch (Exception e) {
+						catch (Error e) {
 							log.warn("Unable to invoke started() method on the module's activator", e);
 							ModuleFactory.stopModule(module, true, true);
 						}
 					}
 					
 				}
-				catch (Exception e) {
+				catch (Error e) {
 					log.warn("Unable to invoke method on the module's activator ", e);
 				}
 			}
@@ -942,6 +966,88 @@ public class ModuleUtil {
 		}
 		
 		return ctx;
+	}
+	
+	private static void logWarningsForAnnotatedXmlServices(AbstractRefreshableApplicationContext ctx) {
+		ConfigurableListableBeanFactory factory = ctx.getBeanFactory();
+
+		for (String beanName : factory.getBeanDefinitionNames()) {
+			BeanDefinition def = factory.getBeanDefinition(beanName);
+			String beanClassName = def.getBeanClassName();
+
+			if ("org.springframework.transaction.interceptor.TransactionProxyFactoryBean".equals(beanClassName)) {
+				PropertyValue target = def.getPropertyValues().getPropertyValue("target");
+				if (target != null) {
+					if (target.getValue() instanceof BeanDefinitionHolder) {
+						def = ((BeanDefinitionHolder) target.getValue()).getBeanDefinition();
+						beanClassName = def.getBeanClassName();
+					} else if (target.getValue() instanceof RuntimeBeanReference) {
+						beanName = ((RuntimeBeanReference) target.getValue()).getBeanName();
+						def = factory.getBeanDefinition(beanName);
+						beanClassName = def.getBeanClassName();
+					}
+				}
+			} else {
+				continue;
+			}
+			
+			if (beanClassName == null) {
+				log.debug("No classname for bean {}", beanName);
+				continue;
+			}
+			
+			int proxySuffix = beanClassName.indexOf("$$");
+			if (proxySuffix != -1) {
+				// Get rid of proxy suffix
+				beanClassName = beanClassName.substring(0, proxySuffix);
+			}
+
+			Class<?> beanClass;
+			try {
+				beanClass = OpenmrsClassLoader.getInstance().loadClass(beanClassName);
+			}
+			catch (ClassNotFoundException e) {
+				log.debug("Unable to load class {} for bean {}", beanClassName, beanName, e);
+				continue;
+			}
+
+			boolean hasAutowired = false;
+			
+			for (Field field : beanClass.getDeclaredFields()) {
+				if (AnnotationUtils.getAnnotation(field, Autowired.class) != null) {
+					hasAutowired = true;
+					break;
+				}
+			}
+			
+			if (!hasAutowired) {
+				for (Constructor<?> ctor : beanClass.getDeclaredConstructors()) {
+					if (AnnotationUtils.getAnnotation(ctor, Autowired.class) != null) {
+						hasAutowired = true;
+						break;
+					}
+				}
+			}
+			
+			if (!hasAutowired) {
+				for (Method method : beanClass.getDeclaredMethods()) {
+					if (AnnotationUtils.getAnnotation(method, Autowired.class) != null) {
+						hasAutowired = true;
+						break;
+					}
+				}
+			}
+
+			if (!hasAutowired) {
+				continue;
+			}
+			
+			log.warn("Service bean '{}' ({}) appears to be declared via XML " +
+					"and also uses @Autowired annotations. This combination can lead to " +
+					"slow context refresh when mixing XML-declared services with " +
+					"annotation-based injection. Please remove @Autowired annotations from the bean. See TRUNK-6363.",
+				beanName, beanClassName);
+		}
 	}
 	
 	/**

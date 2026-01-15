@@ -20,6 +20,8 @@ import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.ConditionDAO;
 import org.openmrs.api.db.DAOException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import static org.openmrs.ConditionClinicalStatus.ACTIVE;
 import static org.openmrs.ConditionClinicalStatus.RECURRENCE;
@@ -30,19 +32,16 @@ import static org.openmrs.ConditionClinicalStatus.RELAPSE;
  *
  * @see ConditionDAO
  */
+@Repository("conditionDAO")
 public class HibernateConditionDAO implements ConditionDAO {
 	
 	/**
 	 * Hibernate session factory
 	 */
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
-	/**
-	 * Set session factory
-	 *
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateConditionDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	

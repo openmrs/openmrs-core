@@ -22,10 +22,13 @@ import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.scheduler.db.SchedulerDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.stereotype.Repository;
 
 /**
  */
+@Repository("schedulerDAO")
 public class HibernateSchedulerDAO implements SchedulerDAO {
 	
 	/**
@@ -33,23 +36,13 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 */
 	private static final Logger log = LoggerFactory.getLogger(HibernateSchedulerDAO.class);
 	
-	/**
-	 * Hibernate session factory
-	 */
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
 	/**
-	 * Default Public constructor
+	 * Constructor with SessionFactory injection
 	 */
-	public HibernateSchedulerDAO() {
-	}
-	
-	/**
-	 * Set session factory
-	 * 
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateSchedulerDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	

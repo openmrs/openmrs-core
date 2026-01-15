@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -34,6 +35,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CannotDeleteRoleWithChildrenException;
 import org.openmrs.api.InvalidActivationKeyException;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -50,7 +52,9 @@ import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -60,11 +64,13 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.api.UserService
  * @see org.openmrs.api.context.Context
  */
+@Service("userService")
 @Transactional
-public class UserServiceImpl extends BaseOpenmrsService implements UserService {
+public class UserServiceImpl extends BaseOpenmrsService implements UserService, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 	
+	@Autowired
 	protected UserDAO dao;
 	
 	private static final int MAX_VALID_TIME = 12 * 60 * 60 * 1000; //Period of 12 hours
@@ -105,7 +111,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		checkPrivileges(user);
 		
 		// if a password wasn't supplied, throw an error
-		if (password == null || password.length() < 1) {
+		if (password == null || password.isEmpty()) {
 			throw new APIException("User.creating.password.required", (Object[]) null);
 		}
 		
@@ -664,22 +670,26 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	@Override
+	@Logging(ignoredArgumentIndexes = { 1 })
 	public void changePassword(User user, String newPassword) {
-		updatePassword(user, newPassword);
-	}
-	
-	private void updatePassword(User user, String newPassword) {
-		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
-		dao.changePassword(user, newPassword);
+		Context.getUserService().changePassword(user, null, newPassword);
 	}
 	
 	@Override
+	@Logging(ignoredArgumentIndexes = { 1, 2 })
 	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException {
 		User user = Context.getAuthenticatedUser();
+		
 		if (!isSecretAnswer(user, secretAnswer)) {
 			throw new APIException("secret.answer.not.correct", (Object[]) null);
 		}
+		
 		updatePassword(user, pw);
+	}
+
+	private void updatePassword(User user, String newPassword) {
+		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
+		dao.changePassword(user, newPassword);
 	}
 	
 	@Override
@@ -818,4 +828,25 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public String getLastLoginTime(User user) {
 		return dao.getLastLoginTime(user);
 	}
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (Role.class.equals(type)) {
+            return (T) getRoleByUuid(uuid);
+        }
+        if (Privilege.class.equals(type)) {
+            return (T) getPrivilegeByUuid(uuid);
+        }
+        if (User.class.equals(type)) {
+            return (T) getUserByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(Role.class, Privilege.class, User.class);
+    }
+
 }

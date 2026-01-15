@@ -12,6 +12,21 @@ package org.openmrs;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -24,22 +39,39 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
  * @since 1.9
  */
 @Audited
+@Entity
+@Table(name = "concept_reference_term")
+@AttributeOverrides({
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
+})
 public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_reference_term_id_seq")
+	@GenericGenerator(
+		name = "concept_reference_term_id_seq",
+		parameters = @Parameter(name = "sequence", value = "concept_reference_term_concept_reference_term_id_seq")
+	)
+	@Column(name = "concept_reference_term_id")
 	private Integer conceptReferenceTermId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "concept_source_id", nullable = false)
 	private ConceptSource conceptSource;
 	
 	//The unique code used to identify the reference term in it's reference terminology
 	@GenericField
+	@Column(name = "code", nullable = false, length = 255)
 	private String code;
 	
+	@Column(name = "version", length = 50)
 	private String version;
 	
-	private Set<ConceptReferenceTermMap> conceptReferenceTermMaps;
+	@OneToMany(mappedBy = "termA", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private Set<ConceptReferenceTermMap> conceptReferenceTermMaps = new LinkedHashSet<>();
 	
 	/** default constructor */
 	public ConceptReferenceTerm() {

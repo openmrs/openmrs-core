@@ -30,36 +30,21 @@ import org.openmrs.api.db.SerializedObjectDAO;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.ExceptionUtil;
+import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Hibernate specific database access methods for serialized objects
  */
+@Repository("serializedObjectDAO")
 public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
-	
-	private static HibernateSerializedObjectDAO instance;
-	
-	//********* PROPERTIES **********
-	
-	private SessionFactory sessionFactory;
-	
-	private List<Class<? extends OpenmrsObject>> supportedTypes;
-	
-	/**
-	 * Private Constructor to support a singleton instance
-	 */
-	private HibernateSerializedObjectDAO() {
-	}
-	
-	/**
-	 * Singleton Factory method
-	 * 
-	 * @return a singleton instance of this class
-	 */
-	public static HibernateSerializedObjectDAO getInstance() {
-		if (instance == null) {
-			instance = new HibernateSerializedObjectDAO();
-		}
-		return instance;
+	private final SessionFactory sessionFactory;
+	private final List<Class<? extends OpenmrsObject>> supportedTypes;
+
+	@Autowired
+	public HibernateSerializedObjectDAO(SessionFactory sessionFactory, List<Class<? extends OpenmrsObject>> supportedTypes) {
+		this.sessionFactory = sessionFactory;
+		this.supportedTypes = supportedTypes != null ? supportedTypes : new ArrayList<>();
 	}
 	
 	/**
@@ -362,31 +347,16 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 * 
 	 * @param sessionFactory
 	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
 	
 	/**
 	 * @return the supportedTypes
 	 */
 	@Override
 	public List<Class<? extends OpenmrsObject>> getSupportedTypes() {
-		if (supportedTypes == null) {
-			supportedTypes = new ArrayList<>();
-		}
 		return supportedTypes;
 	}
 	
 	/**
 	 * @param supportedTypes the supportedTypes to set
 	 */
-	public void setSupportedTypes(List<Class<? extends OpenmrsObject>> supportedTypes) {
-		if (this.supportedTypes == null) {
-			this.supportedTypes = new ArrayList<>();
-		}
-		if (supportedTypes != null) {
-			this.supportedTypes.addAll(supportedTypes);
-		}
-		
-	}
 }

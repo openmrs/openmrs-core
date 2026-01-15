@@ -140,13 +140,14 @@ Deploy to docker:
                       
                       export IMAGE=${bamboo.docker.image.id}
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
+                      export IMAGE_VERSION=${bamboo.docker.image.name}:${bamboo.docker.image.tag.version}
                       export IMAGE_DEV=${bamboo.docker.image.name}:dev
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
                       docker pull $IMAGE
                       
-                      export JDK_IMAGE="amazoncorretto-21"
+                      export JDK_IMAGE="eclipse-temurin-21"
                       
                       docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
                         --target dev \
@@ -159,7 +160,7 @@ Deploy to docker:
                           --cache-to=type=registry,mode=max,ref=${IMAGE_NIGHTLY}-cache \
                           --cache-from=${IMAGE},${IMAGE_DEV}-cache,${IMAGE_NIGHTLY}-cache \
                           --build-arg MVN_ARGS="clean install -DskipTests" \
-                          -t ${IMAGE_NIGHTLY} -t ${IMAGE_NIGHTLY}-${JDK_IMAGE}  .
+                          -t ${IMAGE_NIGHTLY} -t ${IMAGE_NIGHTLY}-${JDK_IMAGE} -t ${IMAGE_VERSION} -t ${IMAGE_VERSION}-${JDK_IMAGE} .
               description: Deploy to docker
     artifact-subscriptions: []
 Release:
@@ -180,7 +181,7 @@ Release:
                       export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
                       export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
                       export BUILD_IMAGE=${bamboo.docker.image.id}
-                      export JDK_IMAGE="amazoncorretto-21"
+                      export JDK_IMAGE="eclipse-temurin-21"
                       
                       # Set to be able to push
                       git remote set-url origin git@github.com:openmrs/openmrs-core.git
@@ -248,7 +249,8 @@ Release:
 variables:
     docker.image.name: openmrs/openmrs-core
     docker.image.tag: nightly
-    maven.release.version: 2.8.0
+    docker.image.tag.version: 3.0.x
+    maven.release.version: 3.0.0
     build.release.type: release
 repositories:
     - openmrs-core:

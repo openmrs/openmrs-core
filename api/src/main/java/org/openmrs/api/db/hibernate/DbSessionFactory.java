@@ -12,11 +12,9 @@ package org.openmrs.api.db.hibernate;
 import org.hibernate.SessionFactory;
 
 /**
- * It should be used instead of SessionFactory for modules, which need to support
- * OpenMRS 1.12 and before. Please do not use it, if you only need to support
- * OpenMRS 1.12 and later.
- * 
- * See {@link DbSession} for more details.
+ * It should be used instead of SessionFactory for modules, which need to support OpenMRS 1.12 and
+ * before. Please do not use it, if you only need to support OpenMRS 1.12 and later. See
+ * {@link DbSession} for more details.
  * 
  * @since 1.12, 1.11.3, 1.10.2, 1.9.9
  */

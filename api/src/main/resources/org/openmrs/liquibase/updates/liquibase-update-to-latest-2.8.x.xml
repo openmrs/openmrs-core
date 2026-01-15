@@ -53,6 +53,27 @@
 		</createTable>
 	</changeSet>
 
+	<changeSet id="TRUNK-6354-2025-10-22" author="mseaton">
+		<preConditions onFail="MARK_RAN">
+			<and>
+				<tableExists tableName="providermanagement_provider_role" />
+				<sqlCheck expectedResult="0">select count(*) from provider_role</sqlCheck>
+			</and>
+		</preConditions>
+		<comment>
+			Populate provider role with contents of providermanagement provider role, if it exists
+		</comment>
+		<sql>
+			insert into provider_role 
+				(provider_role_id, name, description, creator, date_created, changed_by, date_changed, 
+				 retired, retired_by, date_retired, retire_reason, uuid)
+			select
+				provider_role_id, name, description, creator, date_created, changed_by, date_changed,
+				retired, retired_by, date_retired, retire_reason, uuid
+			from providermanagement_provider_role;
+		</sql>
+	</changeSet>
+
 	<changeSet id="TRUNK-6354-2025-06-09-2a" author="pgutkowski">
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
@@ -97,4 +118,5 @@
 			CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
 		</sql>
 	</changeSet>
+
 </databaseChangeLog>

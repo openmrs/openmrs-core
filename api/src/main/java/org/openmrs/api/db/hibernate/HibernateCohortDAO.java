@@ -24,6 +24,8 @@ import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.api.db.DAOException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate implementation of the CohortDAO
@@ -32,17 +34,15 @@ import org.openmrs.api.db.DAOException;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.CohortService
  */
+@Repository("cohortDAO")
 public class HibernateCohortDAO implements CohortDAO {
 	
 	private static final String VOIDED = "voided";
-	private SessionFactory sessionFactory;
 	
-	/**
-	 * Auto generated method comment
-	 *
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	private final SessionFactory sessionFactory;
+	
+	@Autowired
+	public HibernateCohortDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	

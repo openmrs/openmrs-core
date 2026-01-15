@@ -46,7 +46,7 @@ public class FilterUtil {
 	 * parameter as user's property. And next, if user's property is empty it tries to retrieve
 	 * default system locale (i.e system global property). If it also is empty it uses default value
 	 * for system locale
-	 *
+	 * 
 	 * @param username the name of the administrative user whose default locale property will be
 	 *            restored
 	 * @return string with stored location parameter or default OpenMRS locale property's value
@@ -124,7 +124,7 @@ public class FilterUtil {
 	/**
 	 * This method uses passed in connection to load system default locale. If connection is passed
 	 * as null it creates separate connection that should be closed before return from method
-	 *
+	 * 
 	 * @param connection (optional) the jdbc connection to be used for extracting default locale
 	 * @return the string that contains system default locale or null
 	 */
@@ -164,7 +164,7 @@ public class FilterUtil {
 	
 	/**
 	 * Stores selected by user locale into DB as admin's user property and as system default locale
-	 *
+	 * 
 	 * @param locale the selected by user language
 	 * @return true if locale was stored successfully
 	 */
@@ -248,7 +248,7 @@ public class FilterUtil {
 	/**
 	 * This is a utility method that can be used for retrieving user id by given user name and sql
 	 * connection
-	 *
+	 * 
 	 * @param userNameOrSystemId the name of user
 	 * @param connection the java sql connection to use
 	 * @return not null id of given user in case of success or null otherwise
@@ -274,7 +274,7 @@ public class FilterUtil {
 	 * Gets the value of a global Property as a string from the database using sql, this method is
 	 * useful when you want to get a value of a global property before the application context has
 	 * been setup
-	 *
+	 * 
 	 * @param globalPropertyName the name of the global property
 	 * @return the global property value
 	 */

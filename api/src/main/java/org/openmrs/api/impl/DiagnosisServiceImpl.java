@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import org.openmrs.CodedOrFreeText;
 import org.openmrs.Diagnosis;
 import org.openmrs.DiagnosisAttribute;
@@ -19,8 +21,11 @@ import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DiagnosisDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -28,9 +33,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+@Service("diagnosisService")
 @Transactional
-public class DiagnosisServiceImpl extends BaseOpenmrsService implements DiagnosisService {
+public class DiagnosisServiceImpl extends BaseOpenmrsService implements DiagnosisService, RefByUuid {
 	
+	@Autowired
 	private DiagnosisDAO diagnosisDAO;
 
 	/**
@@ -256,4 +263,25 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	public DiagnosisAttribute getDiagnosisAttributeByUuid(String uuid) throws APIException {
 		return diagnosisDAO.getDiagnosisAttributeByUuid(uuid);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (DiagnosisAttributeType.class.equals(type)) {
+            return (T) getDiagnosisAttributeTypeByUuid(uuid);
+        }
+        if (Diagnosis.class.equals(type)) {
+            return (T) getDiagnosisByUuid(uuid);
+        }
+        if (DiagnosisAttribute.class.equals(type)) {
+            return (T) getDiagnosisAttributeByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(DiagnosisAttributeType.class, Diagnosis.class, DiagnosisAttribute.class);
+    }
+
 }

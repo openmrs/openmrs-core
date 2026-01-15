@@ -13,13 +13,30 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 
 /**
  * Program
  */
+@Entity
+@Table(name = "program")
 @Audited
+@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", length = 100, nullable = true)) })
 public class Program extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 3214567L;
@@ -27,18 +44,26 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "program_id")
 	private Integer programId;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
 	/**
 	 * Represents the possible outcomes for this program. The concept should have answers or a
 	 * memberSet.
 	 */
+	@ManyToOne
+	@JoinColumn(name = "outcomes_concept_id")
 	private Concept outcomesConcept;
 	
 	@AllowDirectAccess
+	@OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OrderBy("dateCreated asc")
 	private Set<ProgramWorkflow> allWorkflows = new HashSet<>();
 	
 	// ******************
@@ -99,12 +124,11 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	/**
-	 * Returns a {@link ProgramWorkflow} whose {@link Concept} has any {@link ConceptName} that
-	 * matches the given <code>name</code>
+	 * Returns a {@link ProgramWorkflow} whose {@link Concept} has any {@link ConceptName} that matches
+	 * the given <code>name</code>
 	 *
 	 * @param name the {@link ProgramWorkflow} name, in any {@link Locale}
-	 * @return a {@link ProgramWorkflow} which has the passed <code>name</code> in any
-	 *         {@link Locale}
+	 * @return a {@link ProgramWorkflow} which has the passed <code>name</code> in any {@link Locale}
 	 */
 	public ProgramWorkflow getWorkflowByName(String name) {
 		for (ProgramWorkflow pw : getAllWorkflows()) {

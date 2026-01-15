@@ -46,7 +46,7 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptReferenceRangeId;
 
-	@Column(name = "criteria")
+	@Column(name = "criteria", length = 65535)
 	private String criteria;
 
 	@ManyToOne(fetch = FetchType.LAZY)

@@ -15,6 +15,8 @@ import org.openmrs.api.APIException;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.customdatatype.Customizable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -23,6 +25,8 @@ import org.springframework.validation.Validator;
  * @since 1.9
  */
 public abstract class BaseCustomizableValidator implements Validator {
+	
+	private static final Logger logger = LoggerFactory.getLogger(BaseCustomizableValidator.class);
 	
 	/**
 	 * Validate the attributes of the given Customizable, given the list of relevant attribute types
@@ -63,6 +67,7 @@ public abstract class BaseCustomizableValidator implements Validator {
 				ValidateUtil.validate(attr);
 			}
 			catch (APIException ex) {
+				logger.error(ex.getMessage(), ex);
 				errorsInAttributes = true;
 				break;
 			}

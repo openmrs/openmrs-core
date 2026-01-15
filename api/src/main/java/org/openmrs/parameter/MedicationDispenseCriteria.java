@@ -16,6 +16,7 @@ import org.openmrs.Patient;
 /**
  * The search parameter object for MedicationDispense. A convenience interface for building
  * instances is provided by {@link MedicationDispenseCriteriaBuilder}.
+ * 
  * @since 2.6.0
  * @see MedicationDispenseCriteriaBuilder
  */

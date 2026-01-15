@@ -9,6 +9,15 @@
  */
 package org.openmrs.hl7;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
@@ -17,13 +26,24 @@ import org.hibernate.envers.Audited;
  * @see HL7InQueue
  * @see HL7Service
  */
+@Entity
+@Table(name = "hl7_in_archive")
 @Audited
 public class HL7InArchive extends HL7QueueItem {
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hl7_in_archive_seq")
+	@GenericGenerator(
+			name = "hl7_in_archive_seq",
+			parameters = @Parameter(name = "sequence", value = "hl7_in_archive_hl7_in_archive_id_seq")
+	)
+	@Column(name = "hl7_in_archive_id")
 	private int hl7InArchiveId;
-	
+
+	@Column(name = "message_state")
 	private Integer messageState;
-	
+
+	@Transient
 	private boolean loaded = false;
 	
 	/**

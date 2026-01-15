@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Condition;
@@ -17,8 +19,11 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConditionService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConditionDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -29,9 +34,11 @@ import java.util.List;
  *
  * @since 2.2
  */
+@Service("conditionService")
 @Transactional
-public class ConditionServiceImpl extends BaseOpenmrsService implements ConditionService {
+public class ConditionServiceImpl extends BaseOpenmrsService implements ConditionService, RefByUuid {
 
+	@Autowired
 	private ConditionDAO conditionDAO;
 
 	public void setConditionDAO(ConditionDAO conditionDAO) {
@@ -179,4 +186,19 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	public void purgeCondition(Condition condition) {
 		conditionDAO.deleteCondition(condition);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (Condition.class.equals(type)) {
+            return (T) getConditionByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(Condition.class);
+    }
+
 }

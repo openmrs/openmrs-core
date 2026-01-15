@@ -36,6 +36,8 @@ import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific Provider related functions. This class should not be used directly. All calls
@@ -43,11 +45,13 @@ import org.openmrs.util.OpenmrsConstants;
  *
  * @since 1.9
  */
+@Repository("providerDAO")
 public class HibernateProviderDAO implements ProviderDAO {
 	
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateProviderDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -411,6 +415,9 @@ public class HibernateProviderDAO implements ProviderDAO {
 		return getByUuid(uuid, ProviderRole.class);
 	}
 
+	/**
+	 * @see ProviderDAO#getProvidersByRoles(List, boolean)  
+	 */
 	@Override
 	public List<Provider> getProvidersByRoles(List<ProviderRole> roles, boolean includeRetired) {
 		CriteriaBuilder cb = sessionFactory.getCurrentSession().getCriteriaBuilder();
@@ -430,4 +437,28 @@ public class HibernateProviderDAO implements ProviderDAO {
 		return sessionFactory.getCurrentSession().createQuery(cq).getResultList();
 	}
 
+	/**
+	 * @see ProviderDAO#getAllProviderRoles(boolean)
+	 */
+	@Override
+	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
+		return getAll(includeRetired, ProviderRole.class);
+	}
+
+	/**
+	 * @see ProviderDAO#saveProviderRole(ProviderRole)
+	 */
+	@Override
+	public ProviderRole saveProviderRole(ProviderRole providerRole) {
+		getSession().saveOrUpdate(providerRole);
+		return providerRole;
+	}
+
+	/**
+	 * @see ProviderDAO#deleteProviderRole(ProviderRole)
+	 */
+	@Override
+	public void deleteProviderRole(ProviderRole providerRole) {
+		getSession().delete(providerRole);
+	}
 }

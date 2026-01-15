@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -18,21 +20,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openmrs.api.APIException;
 import org.openmrs.api.DatatypeService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ClobDatatypeStorage;
 import org.openmrs.api.db.DatatypeDAO;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeException;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Standard implementation of {@link DatatypeService}
  * @since 1.9
  */
+@Service("datatypeService")
 @Transactional
-public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeService {
+public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeService, RefByUuid {
 	
 	private List<Class<? extends CustomDatatype>> datatypeClasses;
 	
@@ -40,6 +47,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	
 	private transient Map<Class<? extends CustomDatatype>, Class<? extends CustomDatatypeHandler>> prioritizedHandlerClasses;
 	
+	@Autowired
 	private DatatypeDAO dao;
 	
 	/**
@@ -233,4 +241,18 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 		dao.deleteClobDatatypeStorage(storage);
 	}
 	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (ClobDatatypeStorage.class.equals(type)) {
+            return (T) getClobDatatypeStorageByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(ClobDatatypeStorage.class);
+    }
+
 }

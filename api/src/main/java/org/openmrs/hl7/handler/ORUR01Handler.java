@@ -45,6 +45,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import ca.uhn.hl7v2.HL7Exception;
@@ -93,6 +94,7 @@ import ca.uhn.hl7v2.parser.PipeParser;
  *
  * @see HL7InQueueProcessor
  */
+@Component
 public class ORUR01Handler implements Application {
 	
 	private static final Logger log = LoggerFactory.getLogger(ORUR01Handler.class);

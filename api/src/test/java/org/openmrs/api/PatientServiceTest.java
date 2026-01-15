@@ -270,6 +270,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(createdPatient);
 		
 		assertNotNull(createdPatient.getPatientId());
+		assertNotNull(createdPatient.getDateCreated());
+		assertNotNull(createdPatient.getCreator());
 		
 		Patient createdPatientById = patientService.getPatient(createdPatient.getPatientId());
 		assertNotNull(createdPatientById);

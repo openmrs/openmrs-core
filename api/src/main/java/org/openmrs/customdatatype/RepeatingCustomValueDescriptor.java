@@ -10,21 +10,27 @@
 package org.openmrs.customdatatype;
 
 /**
- * Metadata describing how a custom value may repeat within an owning type, as well as how it is stored. (For example
- * a VisitAttributeType describes the behavior of the VisitAttributes within a Visit
- * @since 1.9 
+ * Metadata describing how a custom value may repeat within an owning type, as well as how it is
+ * stored. (For example a VisitAttributeType describes the behavior of the VisitAttributes within a
+ * Visit
+ * 
+ * @since 1.9
  */
 public interface RepeatingCustomValueDescriptor extends CustomValueDescriptor {
 	
 	/**
 	 * Implementations should never return null. Positive return values indicate a "required" value.
-	 * @return the minimum number of values of this type that must be present for the owner to be valid
+	 * 
+	 * @return the minimum number of values of this type that must be present for the owner to be
+	 *         valid
 	 */
 	Integer getMinOccurs();
 	
 	/**
 	 * Implementation should never return a number &lt;= 0.
-	 * @return the maximum number of values of this type that may be present for the owner to be valid
+	 * 
+	 * @return the maximum number of values of this type that may be present for the owner to be
+	 *         valid
 	 */
 	Integer getMaxOccurs();
 	

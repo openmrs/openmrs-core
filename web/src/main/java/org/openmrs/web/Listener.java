@@ -71,6 +71,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
+
 /**
  * Our Listener class performs the basic starting functions for our webapp. Basic needs for starting
  * the API: 1) Get the runtime properties 2) Start Spring 3) Start the OpenMRS APi (via
@@ -245,9 +247,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				 * This logic is from ContextLoader.initWebApplicationContext. Copied here instead
 				 * of calling that so that the context is not cached and hence not garbage collected
 				 */
+				log.debug("Refreshing WAC");
 				XmlWebApplicationContext context = (XmlWebApplicationContext) createWebApplicationContext(servletContext);
 				configureAndRefreshWebApplicationContext(context, servletContext);
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
+				log.debug("Done refreshing WAC");
 				
 				WebDaemon.startOpenmrs(event.getServletContext());
 			} else {
@@ -339,6 +343,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// start openmrs
 		try {
 			// load bundled modules that are packaged into the webapp
+			log.debug("Loading bundled modules");
 			Listener.loadBundledModules(servletContext);
 			
 			Context.startup(getRuntimeProperties());
@@ -353,7 +358,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// TODO catch openmrs errors here and drop the user back out to the setup screen
 		
 		try {
-			
+			log.debug("Performing start of modules");
 			// web load modules
 			Listener.performWebStartOfModules(servletContext);
 			
@@ -361,8 +366,13 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			SchedulerUtil.startup(getRuntimeProperties());
 		}
 		catch (Exception t) {
-			Context.shutdown();
-			WebModuleUtil.shutdownModules(servletContext);
+			try {
+				Context.shutdown();
+				WebModuleUtil.shutdownModules(servletContext);
+			}
+			catch (Throwable tw) {
+				//ignore shutdown error
+			}
 			throw new ServletException(t);
 		}
 		finally {
@@ -424,11 +434,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		File dwrFile = Paths.get(servletContext.getRealPath(""), "WEB-INF", "dwr-modules.xml").toFile();
 		
 		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			// When asked to resolve external entities (such as a DTD) we return an InputSource
-			// with no data at the end, causing the parser to ignore the DTD.
-			db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+			DocumentBuilder db = createDocumentBuilder();
+
 			Document doc = db.parse(dwrFile);
 			Element elem = doc.getDocumentElement();
 			elem.setTextContent("");
@@ -439,6 +446,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
 			log.debug("Error clearing dwr-modules.xml", e);
 			dwrFile.delete();
+			
 			OutputStreamWriter writer = null;
 			try {
 				writer = new OutputStreamWriter(new FileOutputStream(dwrFile), StandardCharsets.UTF_8);
@@ -446,9 +454,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
 			}
 			catch (IOException io) {
-				log.error(
-				    "Unable to clear out the " + dwrFile.getAbsolutePath() + " file.  Please redeploy the openmrs war file",
-				    io);
+				log.error("Unable to clear out the {} file.  Please redeploy the openmrs war file", dwrFile.getAbsolutePath(), io);
 			}
 			finally {
 				if (writer != null) {
@@ -456,7 +462,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 						writer.close();
 					}
 					catch (IOException io) {
-						log.warn("Couldn't close Writer: " + io);
+						log.warn("Couldn't close Writer: {}", String.valueOf(io));
 					}
 				}
 			}
@@ -697,6 +703,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		
 		boolean someModuleNeedsARefresh = false;
 		for (Module mod : startedModules) {
+			log.debug("Staring module: {}", mod.getModuleId());
 			try {
 				boolean thisModuleCausesRefresh = WebModuleUtil.startModule(mod, servletContext,
 				    /* delayContextRefresh */true);
@@ -709,7 +716,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		
 		if (someModuleNeedsARefresh) {
 			try {
+				log.debug("Refreshing WAC as required by some module");
 				WebModuleUtil.refreshWAC(servletContext, true, null);
+				log.debug("Done refreshing WAC as required by some module");
 			}
 			catch (ModuleMustStartException | BeanCreationException ex) {
 				// pass this up to the calling method so that openmrs loading stops
@@ -739,7 +748,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 							}
 						}
 					}
+					log.debug("Retrying refreshing WebApplicationContext");
 					WebModuleUtil.refreshWAC(servletContext, true, null);
+					log.debug("Done refreshing WebApplicationContext");
 				}
 				catch (MandatoryModuleException ex) {
 					// pass this up to the calling method so that openmrs loading stops
@@ -758,6 +769,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// because we delayed the refresh, we need to load+start all servlets and filters now
 		// (this is to protect servlets/filters that depend on their module's spring xml config being available)
 		for (Module mod : ModuleFactory.getStartedModulesInOrder()) {
+			log.debug("Loading servlets and filters for module: {}", mod.getModuleId());
 			WebModuleUtil.loadServlets(mod, servletContext);
 			WebModuleUtil.loadFilters(mod, servletContext);
 		}

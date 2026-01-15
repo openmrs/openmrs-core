@@ -644,6 +644,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Field field = new Field();
 		field.setName("This is a new field");
 		field.setDescription("It should be saved along with the formField");
+		field.setFieldType(new FieldType(1));
 
 		// put that field on a new FormField.
 		FormField formField = new FormField();
@@ -916,6 +917,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Field field = new Field();
 		field.setName("neighbor");
 		field.setConcept(concept);
+		field.setFieldType(new FieldType(1));
 
 		FormField formField = new FormField();
 		formField.setField(field);
@@ -945,10 +947,14 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		@Override
 		public Set<FormField> getFormFields() {
 			Set<FormField> formFields = new HashSet<>();
+			
 			Field firstName = new Field();
 			firstName.setName("firstName");
+			firstName.setFieldType(new FieldType(1));
+			
 			Field lastName = new Field();
 			lastName.setName("lastName");
+			lastName.setFieldType(new FieldType(1));
 
 			FormField firstNameFormField = new FormField();
 			firstNameFormField.setField(firstName);

@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Date;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -33,14 +34,14 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
 public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements OpenmrsData {
 	
 	//***** Properties *****
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", updatable = false)
 	protected User creator;
 	
 	@Column(name = "date_created", nullable = false, updatable = false)
 	private Date dateCreated;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
@@ -54,7 +55,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	@Column(name = "date_voided")
 	private Date dateVoided;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 	

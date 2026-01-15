@@ -56,7 +56,7 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 	}
 
 	@Test
-	public void resolveInitializationProperties_shouldPrioritizeSystemPropertiesOverEnvironmentAndScript() {
+	public void shouldPrioritizeSystemPropertiesOverEnvironmentAndScript() {
 		InitializationFilter spyFilter = spy(filter);
 		Map<String, String> fakeEnv = new HashMap<>();
 		fakeEnv.put("CONNECTION_URL", "jdbc:mysql://env-var:3306/openmrs");
@@ -67,60 +67,68 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		doReturn(installScriptProps).when(spyFilter).getInstallationScript();
 
 		System.setProperty("connection.url", "jdbc:mysql://system:3306/openmrs");
-		Properties mergedProps = spyFilter.resolveInitializationProperties();
 
-		assertEquals("jdbc:mysql://system:3306/openmrs", mergedProps.getProperty("connection.url"));
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+
+		assertEquals("jdbc:mysql://system:3306/openmrs", spyFilter.wizardModel.databaseConnection);
 	}
 
 	@Test
-	public void resolveInitializationProperties_shouldNormalizeEnvironmentVariablesCorrectly() {
+	public void initializeWizardFromResolvedPropertiesIfPresent_shouldNormalizeEnvironmentVariablesCorrectly() {
 		InitializationFilter spyFilter = spy(filter);
 		Map<String, String> fakeEnv = new HashMap<>();
 		fakeEnv.put("CONNECTION_URL", "jdbc:mysql://env-var:3306/openmrs");
 		doReturn(fakeEnv).when(spyFilter).getEnvironmentVariables();
 		doReturn(new Properties()).when(spyFilter).getInstallationScript();
 
-		Properties mergedProps = spyFilter.resolveInitializationProperties();
-		assertEquals("jdbc:mysql://env-var:3306/openmrs", mergedProps.getProperty("connection.url"));
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+
+		assertEquals("jdbc:mysql://env-var:3306/openmrs", spyFilter.wizardModel.databaseConnection);
 	}
 
+	/**
+	 * 
+	 */
 	@Test
-	public void resolveInitializationProperties_shouldKeepSpecialEnvironmentKeysWithoutNormalization() {
+	public void initializeWizardFromResolvedPropertiesIfPresent_shouldKeepSpecialEnvironmentKeysWithoutNormalization() {
 		InitializationFilter spyFilter = spy(filter);
 		Map<String, String> fakeEnv = new HashMap<>();
 		fakeEnv.put("INSTALL_METHOD", "env_auto");
 		doReturn(fakeEnv).when(spyFilter).getEnvironmentVariables();
 		doReturn(new Properties()).when(spyFilter).getInstallationScript();
 
-		Properties mergedProps = spyFilter.resolveInitializationProperties();
-		assertEquals("env_auto", mergedProps.getProperty("install_method"));
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+
+		assertEquals("env_auto", spyFilter.wizardModel.installMethod);
 	}
 
 	@Test
-	public void resolveInitializationProperties_shouldFallbackToInstallScriptWhenNotInSystemOrEnvironment() {
+	public void initializeWizardFromResolvedPropertiesIfPresent_shouldFallbackToInstallScriptWhenNotInSystemOrEnvironment() {
 		InitializationFilter spyFilter = spy(filter);
 		doReturn(new HashMap<String, String>()).when(spyFilter).getEnvironmentVariables();
 
 		Properties installScriptProps = new Properties();
 		installScriptProps.setProperty("database_name", "openmrs_file");
 		doReturn(installScriptProps).when(spyFilter).getInstallationScript();
+		
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
 
-		Properties mergedProps = spyFilter.resolveInitializationProperties();
-		assertEquals("openmrs_file", mergedProps.getProperty("database_name"));
+		assertEquals("openmrs_file", spyFilter.wizardModel.databaseName);
 	}
 
 	@Test
-	public void resolveInitializationProperties_shouldReturnNullForNonExistingProperties() {
+	public void initializeWizardFromResolvedPropertiesIfPresent_shouldReturnNullForNonExistingProperties() {
 		InitializationFilter spyFilter = spy(filter);
 		doReturn(new HashMap<String, String>()).when(spyFilter).getEnvironmentVariables();
 		doReturn(new Properties()).when(spyFilter).getInstallationScript();
 
-		Properties mergedProps = spyFilter.resolveInitializationProperties();
-		assertNull(mergedProps.getProperty("non_existing_key"));
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+
+		assertNull(spyFilter.wizardModel.additionalPropertiesFromInstallationScript.getProperty("non_existing_key"));
 	}
 
 	@Test
-	public void shouldMergePropertiesFromSystemEnvAndInstallScript() throws IOException {
+	public void initializeWizardFromResolvedPropertiesIfPresent_shouldMergePropertiesFromSystemEnvAndInstallScript() throws IOException {
 		InitializationFilter spyFilter = spy(filter);
 		System.setProperty("connection.url", "jdbc:mysql://system:3306/openmrs");
 
@@ -129,21 +137,25 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		doReturn(fakeEnv).when(spyFilter).getEnvironmentVariables();
 
 		File tempScript = File.createTempFile("openmrs-install", ".properties");
-		try (PrintWriter writer = new PrintWriter(tempScript)) {
-			writer.println("connection.url=jdbc:mysql://script:3306/openmrs");
-			writer.println("install_method=script_auto");
-			writer.println("database_name=openmrs_script");
+		try {
+			try (PrintWriter writer = new PrintWriter(tempScript)) {
+				writer.println("connection.url=jdbc:mysql://script:3306/openmrs");
+				writer.println("install_method=script_auto");
+				writer.println("database_name=openmrs_script");
+			}
+
+			System.setProperty("OPENMRS_INSTALLATION_SCRIPT", tempScript.getAbsolutePath());
+
+			spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+
+			assertEquals("jdbc:mysql://system:3306/openmrs", spyFilter.wizardModel.databaseConnection);
+			assertEquals("env_auto", spyFilter.wizardModel.installMethod);
+			assertEquals("openmrs_script", spyFilter.wizardModel.databaseName);
+		} finally {
+			if (!tempScript.delete()) {
+				tempScript.deleteOnExit();
+			}
 		}
-
-		System.setProperty("OPENMRS_INSTALLATION_SCRIPT", tempScript.getAbsolutePath());
-
-		Properties merged = spyFilter.resolveInitializationProperties();
-
-		assertEquals("jdbc:mysql://system:3306/openmrs", merged.getProperty("connection.url"));
-		assertEquals("env_auto", merged.getProperty("install_method"));
-		assertEquals("openmrs_script", merged.getProperty("database_name"));
-
-		tempScript.delete();
 	}
 
 

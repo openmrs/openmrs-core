@@ -11,7 +11,6 @@ package org.openmrs.api.context;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SessionFactory;
 import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
@@ -19,6 +18,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.aop.AOPConfig;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
@@ -136,7 +136,6 @@ import java.util.concurrent.Future;
  */
 public class Context {
 
-	private static final Logger log = LoggerFactory.getLogger(Context.class);
 
 	// Global resources
 	private static ContextDAO contextDAO;
@@ -154,6 +153,8 @@ public class Context {
 	private static Properties configProperties = new Properties();
 
 	private static AuthenticationScheme authenticationScheme;
+
+	private static final Logger log = LoggerFactory.getLogger(Context.class);
 
 	/**
 	 * Default public constructor
@@ -274,13 +275,10 @@ public class Context {
 		if (serviceContext == null) {
 			synchronized (Context.class) {
 				if (serviceContext == null) {
-					log.info("Creating new service context");
 					serviceContext = ServiceContext.getInstance();
 				}
 			}
 		}
-		log.trace("serviceContext: {}", serviceContext);
-
 		return ServiceContext.getInstance();
 	}
 
@@ -385,11 +383,10 @@ public class Context {
 	 * @return copy of the runtime properties
 	 */
 	public static Properties getRuntimeProperties() {
-		log.trace("getting runtime properties. size: {}", runtimeProperties.size());
-
 		Properties props = new Properties();
-		props.putAll(runtimeProperties);
-
+		if( runtimeProperties != null ) {
+			props.putAll(runtimeProperties);
+		}
 		return props;
 	}
 
@@ -725,9 +722,7 @@ public class Context {
 	}
 
 	/**
-	 * Convenience method. Passes through to userContext.hasPrivilege(String)
-	 *
-	 * <strong>Should</strong> give daemon user full privileges
+	 * Tests whether the currently authenticated user has a particular privilege
 	 */
 	public static boolean hasPrivilege(String privilege) {
 		// the daemon threads have access to all things
@@ -750,7 +745,7 @@ public class Context {
 			String errorMessage;
 			if (StringUtils.isNotBlank(privilege)) {
 				errorMessage = Context.getMessageSourceService().getMessage("error.privilegesRequired",
-						new Object[] { privilege }, null);
+						new Object[] { privilege }, Locale.getDefault());
 			} else {
 				//Should we even be here if the privilege is blank?
 				errorMessage = Context.getMessageSourceService().getMessage("error.privilegesRequiredNoArgs");
@@ -759,19 +754,95 @@ public class Context {
 			throw new ContextAuthenticationException(errorMessage);
 		}
 	}
-
+	
 	/**
-	 * Convenience method. Passes through to {@link UserContext#addProxyPrivilege(String)}
+	 * Adds one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is useful for situations where a system process may need access to some piece of data that the
+	 * user would not otherwise have access to, like a GlobalProperty. <strong>This facility should not be
+	 * used to return data to the user that they otherwise would be unable to see.</strong>
+	 * <p/>
+	 * The expected usage is:
+	 * <p/>
+	 * <pre>{@code
+	 * try {
+	 *   Context.addProxyPrivilege(&quot;AAA&quot;);
+	 *   Context.get*Service().methodRequiringAAAPrivilege();
+	 * }
+	 * finally {
+	 *   Context.removeProxyPrivilege(&quot;AAA&quot;);
+	 * }}
+	 * </pre>
+	 * <p/>
+	 *
+	 * @param privilege privileges to add in string form
+	 * @see #hasPrivilege(String)
+	 * @see #removeProxyPrivilege(String)
 	 */
 	public static void addProxyPrivilege(String privilege) {
 		getUserContext().addProxyPrivilege(privilege);
 	}
+	
+	/**
+	 * Adds one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is useful for situations where a system process may need access to some piece of data that the
+	 * user would not otherwise have access to, like a GlobalProperty. <strong>This facility should not be
+	 * used to return data to the user that they otherwise would be unable to see.</strong>
+	 * <p/>
+	 * The expected usage is:
+	 * <p/>
+	 * <pre>{@code
+	 * try {
+	 *   Context.addProxyPrivilege(&quot;AAA&quot;);
+	 *   Context.get*Service().methodRequiringAAAPrivilege();
+	 * }
+	 * finally {
+	 *   Context.removeProxyPrivilege(&quot;AAA&quot;);
+	 * }}
+	 * </pre>
+	 * <p/>
+	 *
+	 * @param privileges privileges to add in string form
+	 * @see #hasPrivilege(String)
+	 * @see #removeProxyPrivilege(String...)
+	 * @since 3.0.0, 2.8.2, 2.7.8
+	 */
+	public static void addProxyPrivilege(String... privileges) {
+		getUserContext().addProxyPrivilege(privileges);
+	}
 
 	/**
-	 * Convenience method. Passes through to {@link UserContext#removeProxyPrivilege(String)}
+	 * Removes one or more privileges from the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is the compliment for {@link #addProxyPrivilege(String...)} to clean-up the context.
+	 * <p/>
+	 *
+	 * @param privilege privileges to remove in string form
+	 * @see #hasPrivilege(String)
+	 * @see #addProxyPrivilege(String)
 	 */
 	public static void removeProxyPrivilege(String privilege) {
 		getUserContext().removeProxyPrivilege(privilege);
+	}
+
+	/**
+	 * Removes a privilege from the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is the compliment for {@link #addProxyPrivilege(String...)} to clean-up the context.
+	 * <p/>
+	 *
+	 * @param privileges privileges to remove in string form
+	 * @see #hasPrivilege(String)
+	 * @see #addProxyPrivilege(String...)
+	 * * @since 3.0.0, 2.8.2, 2.7.8
+	 */
+	public static void removeProxyPrivilege(String... privileges) {
+		getUserContext().removeProxyPrivilege(privileges);
 	}
 
 	/**
@@ -939,20 +1010,22 @@ public class Context {
 		// do any context database specific startup
 		getContextDAO().startup(props);
 
-		// find/set/check whether the current database version is compatible
-		checkForDatabaseUpdates(props);
+		if (getAdministrationService().isCoreSetupOnVersionChangeNeeded()) {
+			log.info("Detected core version change. Running core setup hooks and Liquibase.");
+			getAdministrationService().runCoreSetupOnVersionChange();
+		}
 
 		// this should be first in the startup routines so that the application
 		// data directory can be set from the runtime properties
 		OpenmrsUtil.startup(props);
-
+		
 		openSession();
 		clearSession();
 
 		// add any privileges/roles that /must/ exist for openmrs to work
 		// correctly.
 		checkCoreDataset();
-
+		
 		getContextDAO().setupSearchIndex();
 
 		// Loop over each module and startup each with these custom properties
@@ -1057,6 +1130,7 @@ public class Context {
 	 *
 	 * @param cls
 	 * @param advisor
+	 * @deprecated since 3.0.0 use {@link AOPConfig}
 	 */
 	public static void addAdvisor(Class cls, Advisor advisor) {
 		getServiceContext().addAdvisor(cls, advisor);
@@ -1069,6 +1143,7 @@ public class Context {
 	 *
 	 * @param cls
 	 * @param advice
+	 * @deprecated since 3.0.0 use {@link AOPConfig}
 	 */
 	public static void addAdvice(Class cls, Advice advice) {
 		getServiceContext().addAdvice(cls, advice);
@@ -1079,6 +1154,7 @@ public class Context {
 	 *
 	 * @param cls
 	 * @param advisor
+	 * @deprecated since 3.0.0 use {@link AOPConfig}
 	 */
 	public static void removeAdvisor(Class cls, Advisor advisor) {
 		getServiceContext().removeAdvisor(cls, advisor);
@@ -1089,6 +1165,7 @@ public class Context {
 	 *
 	 * @param cls
 	 * @param advice
+	 * @deprecated since 3.0.0 use {@link AOPConfig}
 	 */
 	public static void removeAdvice(Class cls, Advice advice) {
 		getServiceContext().removeAdvice(cls, advice);
@@ -1210,39 +1287,6 @@ public class Context {
 
 		Allergen.setOtherNonCodedConceptUuid(Context.getAdministrationService().getGlobalProperty(
 				OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));
-	}
-
-	/**
-	 * Runs any needed updates on the current database if the user has the allow_auto_update runtime
-	 * property set to true. If not set to true, then {@link #updateDatabase(Map)} must be called.<br>
-	 * <br>
-	 * If an {@link InputRequiredException} is thrown, a call to {@link #updateDatabase(Map)} is
-	 * required with a mapping from question prompt to user answer.
-	 *
-	 * @param props the runtime properties
-	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
-	 *             cannot continue without input from the user
-	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
-	 *      the required question/datatypes
-	 */
-	private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
-		boolean updatesRequired;
-		try {
-			updatesRequired = DatabaseUpdater.updatesRequired();
-		}
-		catch (Exception e) {
-			throw new DatabaseUpdateException("Unable to check if database updates are required", e);
-		}
-
-		// this must be the first thing run in case it changes database mappings
-		if (updatesRequired) {
-			if (DatabaseUpdater.allowAutoUpdate()) {
-				DatabaseUpdater.executeChangelog();
-			} else {
-				throw new DatabaseUpdateException(
-						"Database updates are required.  Call Context.updateDatabase() before .startup() to continue.");
-			}
-		}
 	}
 
 	/**
@@ -1474,5 +1518,20 @@ public class Context {
 	 */
 	public static Connection getDatabaseConnection() {
 		return getContextDAO().getDatabaseConnection();
+	}
+
+	/**
+	 * It is used to shorten startup time by e.g. not running Liquibase checks, if versions did not change or 
+	 * re-using expanded jars between restarts. If you want to force a standard startup
+	 * procedure without optimization, please set the <code>optimized.startup</code> runtime property to <code>false</code>.
+	 * (<code>true</code> by default) 
+	 * <p>
+	 * See <a href="https://issues.openmrs.org/browse/TRUNK-6417">TRUNK-6417</a>
+	 * 
+	 * @return <code>true</code> (default) or <code>false</code>
+	 * @since 2.9.0
+	 */
+	public static boolean isOptimizedStartup() {
+		return Boolean.parseBoolean(Context.getRuntimeProperties().getProperty("optimized.startup", "true"));
 	}
 }

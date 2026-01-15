@@ -101,6 +101,8 @@ public class InitializationFilter extends StartupFilter {
 	private static final String DATABASE_SQLSERVER = "sqlserver";
 	
 	private static final String DATABASE_H2 = "h2";
+
+	private static final String DATABASE_MARIADB = "mariadb";
 	
 	/**
 	 * The very first page of wizard, that asks user for select his preferred language
@@ -211,6 +213,8 @@ public class InitializationFilter extends StartupFilter {
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
 		throws IOException {
+		log.debug("Entered initialization filter");
+		
 		SessionModelUtils.loadFromSession(httpRequest.getSession(), wizardModel);
 		initializeWizardFromResolvedPropertiesIfPresent();
 		
@@ -325,7 +329,17 @@ public class InitializationFilter extends StartupFilter {
 	 * of the {@link InitializationWizardModel}.
 	 */
 	protected void initializeWizardFromResolvedPropertiesIfPresent() {
-		Properties script = resolveInitializationProperties();
+		Properties script = new Properties();
+
+		Properties installScript = getInstallationScript();
+		script.putAll(installScript);
+
+		getEnvironmentVariables().forEach((key, value) -> {
+			String normalizedKey = normalizeEnvVariableKey(key);
+			script.setProperty(normalizedKey, value);
+		});
+
+		System.getProperties().forEach((key, value) -> script.setProperty(key.toString(), value.toString()));
 
 		if (log.isDebugEnabled()) {
 			for (String key : script.stringPropertyNames()) {
@@ -339,6 +353,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			wizardModel.databaseConnection = script.getProperty("connection.url", wizardModel.databaseConnection);
 			wizardModel.databaseDriver = script.getProperty("connection.driver_class", wizardModel.databaseDriver);
+			wizardModel.databaseName = script.getProperty("database_name", wizardModel.databaseName);
 			wizardModel.currentDatabaseUsername = script.getProperty("connection.username",
 				wizardModel.currentDatabaseUsername);
 			wizardModel.currentDatabasePassword = script.getProperty("connection.password",
@@ -346,7 +361,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			String hasCurrentOpenmrsDatabase = script.getProperty("has_current_openmrs_database");
 			if (hasCurrentOpenmrsDatabase != null) {
-				wizardModel.hasCurrentOpenmrsDatabase = Boolean.valueOf(hasCurrentOpenmrsDatabase);
+				wizardModel.hasCurrentOpenmrsDatabase = Boolean.parseBoolean(hasCurrentOpenmrsDatabase);
 			}
 			wizardModel.createDatabaseUsername = script.getProperty("create_database_username",
 				wizardModel.createDatabaseUsername);
@@ -355,27 +370,33 @@ public class InitializationFilter extends StartupFilter {
 			
 			String createTables = script.getProperty("create_tables");
 			if (createTables != null) {
-				wizardModel.createTables = Boolean.valueOf(createTables);
+				wizardModel.createTables = Boolean.parseBoolean(createTables);
 			}
 			
 			String createDatabaseUser = script.getProperty("create_database_user");
 			if (createDatabaseUser != null) {
-				wizardModel.createDatabaseUser = Boolean.valueOf(createDatabaseUser);
+				wizardModel.createDatabaseUser = Boolean.parseBoolean(createDatabaseUser);
 			}
 			wizardModel.createUserUsername = script.getProperty("create_user_username", wizardModel.createUserUsername);
 			wizardModel.createUserPassword = script.getProperty("create_user_password", wizardModel.createUserPassword);
 			
 			String moduleWebAdmin = script.getProperty("module_web_admin");
 			if (moduleWebAdmin != null) {
-				wizardModel.moduleWebAdmin = Boolean.valueOf(moduleWebAdmin);
+				wizardModel.moduleWebAdmin = Boolean.parseBoolean(moduleWebAdmin);
 			}
 			
 			String autoUpdateDatabase = script.getProperty("auto_update_database");
 			if (autoUpdateDatabase != null) {
-				wizardModel.autoUpdateDatabase = Boolean.valueOf(autoUpdateDatabase);
+				wizardModel.autoUpdateDatabase = Boolean.parseBoolean(autoUpdateDatabase);
 			}
 			
 			wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
+			
+			for (Map.Entry<Object, Object> entry : installScript.entrySet()) {
+				if (entry.getKey() instanceof String && ((String) entry.getKey()).startsWith("property.")) {
+					wizardModel.additionalPropertiesFromInstallationScript.put(((String) entry.getKey()).substring(9), entry.getValue());
+				}
+			}
 		}
 	}
 	
@@ -995,11 +1016,9 @@ public class InitializationFilter extends StartupFilter {
 			// verify connection
 			//Set Database Driver using driver String
 			Class.forName(loadedDriverString).newInstance();
-			Connection tempConnection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername,
-				connectionPassword);
-			tempConnection.close();
-			return true;
-			
+			try (Connection ignored = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword)) {
+				return true;
+			}
 		}
 		catch (Exception e) {
 			errors.put("User account " + connectionUsername + " does not work. " + e.getMessage()
@@ -1167,6 +1186,8 @@ public class InitializationFilter extends StartupFilter {
 			// TODO how to get the driver for the other dbs...
 			if (isCurrentDatabase(DATABASE_MYSQL)) {
 				Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+			}else if(isCurrentDatabase(DATABASE_MARIADB)){
+				Class.forName("org.mariadb.jdbc.Driver").newInstance();
 			} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 				Class.forName("org.postgresql.Driver").newInstance();
 				replacedSql = replacedSql.replaceAll("`", "\"");
@@ -1324,6 +1345,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 		
 		public synchronized void setMessage(String message) {
+			log.debug(message);
 			this.message = message;
 			setStepsComplete(getStepsComplete() + 1);
 		}
@@ -1528,29 +1550,19 @@ public class InitializationFilter extends StartupFilter {
 						if (StringUtils.hasText(wizardModel.databaseDriver)) {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
 						}
-						if (finalDatabaseConnectionString.contains(DATABASE_POSTGRESQL)) {
-							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-						}
-						if (finalDatabaseConnectionString.contains(DATABASE_SQLSERVER)) {
-							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
-						}
-						if (finalDatabaseConnectionString.contains(DATABASE_H2)) {
-							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-						}
-						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
-						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
+						runtimeProperties.put("module.allow_web_admin", "" + wizardModel.moduleWebAdmin);
+						runtimeProperties.put("auto_update_database", "" + wizardModel.autoUpdateDatabase);
 						final Encoder base64 = Base64.getEncoder();
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY,
 							new String(base64.encode(Security.generateNewInitVector()), StandardCharsets.UTF_8));
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY,
 							new String(base64.encode(Security.generateNewSecretKey()), StandardCharsets.UTF_8));
 						
+						runtimeProperties.putAll(wizardModel.additionalPropertiesFromInstallationScript);
+						
 						Properties properties = Context.getRuntimeProperties();
 						properties.putAll(runtimeProperties);
 						runtimeProperties = properties;
-
-						Properties installationScript = getInstallationScript();
-						installationScript.forEach(runtimeProperties::putIfAbsent);
 
 						Context.setRuntimeProperties(runtimeProperties);
 						
@@ -1583,6 +1595,7 @@ public class InitializationFilter extends StartupFilter {
 						}
 						
 						if (wizardModel.createTables) {
+							log.debug("Creating tables");
 							// use liquibase to create core data + tables
 							try {
 								String liquibaseSchemaFileName = changeLogVersionFinder.getLatestSchemaSnapshotFilename()
@@ -1711,8 +1724,10 @@ public class InitializationFilter extends StartupFilter {
 						// start spring
 						// after this point, all errors need to also call: contextLoader.closeWebApplicationContext(event.getServletContext())
 						// logic copied from org.springframework.web.context.ContextLoaderListener
+						log.debug("Initializing WAC");
 						ContextLoader contextLoader = new ContextLoader();
 						contextLoader.initWebApplicationContext(filterConfig.getServletContext());
+						log.debug("Done initializing WAC");
 						
 						// output properties to the openmrs runtime properties file so that this wizard is not run again
 						FileOutputStream fos = null;
@@ -1927,29 +1942,6 @@ public class InitializationFilter extends StartupFilter {
 	private static boolean goBack(HttpServletRequest httpRequest) {
 		return "Back".equals(httpRequest.getParameter("back"))
 			|| (httpRequest.getParameter("back.x") != null && httpRequest.getParameter("back.y") != null);
-	}
-
-	/**
-	 * Resolves and merges initialization properties from multiple sources in the following order:
-	 * 1. install.properties (lowest priority)
-	 * 2. OS environment variables
-	 * 3. Java system properties (-Dkey=value) (highest priority)
-	 *
-	 * @return a merged {@link Properties} object with proper precedence.
-	 */
-	protected Properties resolveInitializationProperties() {
-		Properties merged = new Properties();
-
-		Properties installScript = getInstallationScript();
-		installScript.forEach((key, value) -> merged.setProperty(key.toString(), value.toString()));
-
-		getEnvironmentVariables().forEach((key, value) -> {
-			String normalizedKey = normalizeEnvVariableKey(key);
-			merged.setProperty(normalizedKey, value);
-		});
-
-		System.getProperties().forEach((key, value) -> merged.setProperty(key.toString(), value.toString()));
-		return merged;
 	}
 	
 	private String normalizeEnvVariableKey(String envVarKey) {

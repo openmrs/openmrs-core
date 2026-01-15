@@ -21,9 +21,9 @@ wait_for_es()
     while [ $EXIT_STATUS -ne 0 ]
     do
 		for es_uri in "${es_uris[@]}"; do
-			echo "Waiting for elastic search ${es_uri} to initialize..."
+			echo "Waiting for ES node ${es_uri} to initialize..."
 			ELASTIC_SEARCH_HOST_PORT=(${es_uri//// })
-			/openmrs/wait-for-it.sh -t 120 "${ELASTIC_SEARCH_HOST_PORT[1]}" 
+			/openmrs/wait-for-it.sh -t 15 "${ELASTIC_SEARCH_HOST_PORT[1]}" 
 			EXIT_STATUS=$?
 			if [ $EXIT_STATUS -eq 0 ]; then
             	break 
@@ -32,11 +32,12 @@ wait_for_es()
 		done
     done
     
-    return EXIT_STATUS
+    return 0
 }
 
 if [ "${OMRS_SEARCH}" = "elasticsearch" ]; then
 	set +e
+	echo "Waiting for ElasticSearch ${OMRS_SEARCH_ES_URIS} to initialize..."
 	wait_for_es
 	set -e
 fi
@@ -55,7 +56,8 @@ rm -fR "${TOMCAT_TEMP_DIR:?}/*"
 
 echo "Loading WAR into appropriate location"
 
-cp -r "${OMRS_DISTRO_CORE}/." "${TOMCAT_WEBAPPS_DIR}"
+# Copy preserving timestamps to avoid redeploys
+cp -a "${OMRS_DISTRO_CORE}/." "${TOMCAT_WEBAPPS_DIR}"
 
 echo "Writing out $TOMCAT_SETENV_FILE file"
 

@@ -13,6 +13,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.openmrs.BaseChangeableOpenmrsMetadata;
@@ -22,37 +35,60 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents the metadata for a task that can be scheduled.
  */
+@Entity
+@Table(name = "scheduler_task_config")
 @Audited
 public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	
 	private static final Logger log = LoggerFactory.getLogger(TaskDefinition.class);
 	
 	// Task metadata
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "scheduler_task_config_id_seq")
+	@GenericGenerator(
+			name = "scheduler_task_config_id_seq",
+			parameters = @Parameter(name = "sequence", value = "scheduler_task_config_task_config_id_seq")
+	)
+	@Column(name = "task_config_id")
 	private Integer id;
 	
 	// This class must implement the schedulable interface or it will fail to start
+	@Column(name = "schedulable_class", length = 1024)
 	private String taskClass;
-	
+
+	@Transient
 	private Task taskInstance = null;
 	
 	// Scheduling metadata
+	@Column(name = "start_time")
 	private Date startTime;
-	
+
+	@Column(name = "last_execution_time")
 	private Date lastExecutionTime;
-	
+
+	@Column(name = "repeat_interval")
 	private Long repeatInterval; // NOW in seconds to give us ability to
 	
 	// support longer intervals (years, decades,
 	// milleniums)
-	
+	@Column(name = "start_on_startup", nullable = false)
 	private Boolean startOnStartup;
-	
+
+	@Column(name = "start_time_pattern", length = 50)
 	private String startTimePattern;
-	
+
+	@Column(name = "started")
 	private Boolean started;
 	
 	// Relationships
 	@NotAudited
+	@ElementCollection
+	@CollectionTable(
+			name = "scheduler_task_config_property",
+			joinColumns = @JoinColumn(name = "task_config_id")
+	)
+	@MapKeyColumn(name = "name", length = 100)
+	@Column(name = "value", length = 1024)
 	private Map<String, String> properties;
 	
 	/**

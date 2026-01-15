@@ -59,6 +59,8 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific database methods for the PatientService
@@ -67,6 +69,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.api.db.PatientDAO
  * @see org.openmrs.api.PatientService
  */
+@Repository("patientDAO")
 public class HibernatePatientDAO implements PatientDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernatePatientDAO.class);
@@ -74,23 +77,16 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * Hibernate session factory
 	 */
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
-	private SearchSessionFactory searchSessionFactory;
+	private final SearchSessionFactory searchSessionFactory;
 	
-	/**
-	 * Set session factory
-	 *
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernatePatientDAO(SessionFactory sessionFactory, SearchSessionFactory searchSessionFactory) {
 		this.sessionFactory = sessionFactory;
-	}
-
-	public void setSearchSessionFactory(SearchSessionFactory searchSessionFactory) {
 		this.searchSessionFactory = searchSessionFactory;
 	}
-
+	
 	/**
      * @param patientId  internal patient identifier
      * @return           patient with given internal identifier
