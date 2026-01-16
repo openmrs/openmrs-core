@@ -971,6 +971,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * 
 	 * @param onDate (null defaults to today)
 	 * @return the age in months as an Integer   
+	 * 
+	 * @since 3.0.0
 	 */ 
 	public Integer getAgeInMonths(Date onDate){
 		return getAgeInChronoUnit(ChronoUnit.MONTHS, onDate);
@@ -992,6 +994,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	 *
 	 * @param onDate (null defaults to today)
 	 * @return the age in weeks as an Integer   
+	 * 
+	 * @since 3.0.0
 	 */
 	public Integer getAgeInWeeks(Date onDate){
 		return getAgeInChronoUnit(ChronoUnit.WEEKS, onDate);
@@ -1013,6 +1017,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	 *
 	 * @param onDate (null defaults to today)
 	 * @return the age in days as an Integer   
+	 * 
+	 * @since 3.0.0
 	 */
 	public Integer getAgeInDays(Date onDate){
 		return getAgeInChronoUnit(ChronoUnit.DAYS, onDate);
