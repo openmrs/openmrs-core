@@ -18,7 +18,6 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
 import org.openmrs.Allergy;
 import org.openmrs.AllergyReaction;
 import org.openmrs.CareSetting;
@@ -78,6 +77,7 @@ import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderRole;
+import org.openmrs.ReferralOrder;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.SimpleDosingInstructions;
@@ -134,7 +134,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
@@ -2957,6 +2956,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(LocationAttribute.class)
 				.addAnnotatedClass(VisitAttribute.class)
 				.addAnnotatedClass(DiagnosisAttribute.class)
+			.addAnnotatedClass(Order.class)
+			.addAnnotatedClass(DrugOrder.class)
+			.addAnnotatedClass(TestOrder.class)
+			.addAnnotatedClass(ReferralOrder.class)
 				.getMetadataBuilder().build();
 
 
