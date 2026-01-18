@@ -68,8 +68,9 @@ public class AOPConfig {
 	 * @param requiredDataAdvice
 	 * @param cacheInterceptor
 	 * @return serviceInterceptors
-	 * @deprecated since 3.0.0 use {@link Service} annotation instead
+	 * @deprecated since 3.0.0; use {@link Service} annotation instead.
 	 */
+	@Deprecated(since = "3.0.0", forRemoval = false)
 	@Bean 
 	public List<Advice> serviceInterceptors(AuthorizationAdvice authorizationAdvice,
 											LoggingAdvice loggingAdvice, RequiredDataAdvice requiredDataAdvice,
@@ -86,8 +87,9 @@ public class AOPConfig {
 	 * Added for backwards compatibility with services defined in xml with TransactionProxyFactoryBean
 	 * 
 	 * @return transactionAttributeSource
-	 * @deprecated since 3.0.0 use {@link Service} annotation instead
+	 * @deprecated since 3.0.0; use {@link Service} annotation instead.
 	 */
+	@Deprecated(since = "3.0.0", forRemoval = false)
 	@Bean
 	public TransactionAttributeSource transactionAttributeSource() {
 		return new AnnotationTransactionAttributeSource();
