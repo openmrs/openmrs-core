@@ -11,6 +11,14 @@ package org.openmrs;
 
 import static org.openmrs.Order.Action.DISCONTINUE;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
@@ -20,6 +28,9 @@ import org.openmrs.util.OpenmrsUtil;
  *
  * @version 1.0
  */
+@Entity
+@Table(name = "drug_order")
+@PrimaryKeyJoinColumn(name = "order_id")
 @Audited
 public class DrugOrder extends Order {
 
@@ -27,38 +38,61 @@ public class DrugOrder extends Order {
 
 	// Fields
 
+	@Column(name = "dose")
 	private Double dose;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "dose_units")
 	private Concept doseUnits;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 
+	@Column(name = "as_needed")
 	private Boolean asNeeded = false;
 
+	@Column(name = "quantity")
 	private Double quantity;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "quantity_units")
 	private Concept quantityUnits;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "drug_inventory_id")
 	private Drug drug;
 
+	@Column(name = "as_needed_condition")
 	private String asNeededCondition;
 
+	@Column(name = "dosing_type")
 	private Class<? extends DosingInstructions> dosingType = SimpleDosingInstructions.class;
 
+	@Column(name = "num_refills")
 	private Integer numRefills;
 
+	@Column(name = "dosing_instructions", length = 1000)
 	private String dosingInstructions;
 
+	@Column(name = "duration")
 	private Integer duration;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "duration_units")
 	private Concept durationUnits;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "route")
 	private Concept route;
 
+	@Column(name = "brand_name")
 	private String brandName;
 
+	@Column(name = "dispense_as_written")
 	private Boolean dispenseAsWritten = Boolean.FALSE;
 
+	@Column(name = "drug_non_coded")
 	private String drugNonCoded;
 
 	// Constructors

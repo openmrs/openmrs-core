@@ -9,12 +9,24 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
+
+import org.hibernate.envers.Audited;
+
+
 /**
  * Provides properties for several order types like TestOrder , ReferralOrder
  * and others depending on the openmrs implementation use case as need arises
  * 
  * @since 2.5.0
  */
+@Audited
+@MappedSuperclass
 public abstract class ServiceOrder extends Order {
 
 	public enum Laterality {
@@ -25,16 +37,26 @@ public abstract class ServiceOrder extends Order {
 
 	public static final long serialVersionUID = 1L;
 
+	@ManyToOne
+	@JoinColumn(name = "specimen_source")
 	public Concept specimenSource;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "laterality")
 	private Laterality laterality;
 
+	@Column(name = "clinical_history", columnDefinition = "TEXT")
 	private String clinicalHistory;
 
+	@ManyToOne
+	@JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 
+	@Column(name = "number_of_repeats")
 	private Integer numberOfRepeats;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "location")
 	private Concept location;
 
 	/**
