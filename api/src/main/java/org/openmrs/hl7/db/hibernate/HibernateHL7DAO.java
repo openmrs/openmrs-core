@@ -47,6 +47,7 @@ import org.springframework.stereotype.Repository;
 public class HibernateHL7DAO implements HL7DAO {
 
 	private final SessionFactory sessionFactory;
+	private static final String PARAM_STATE = "state";
 
 	@Autowired
 	public HibernateHL7DAO(SessionFactory sessionFactory) {
@@ -132,7 +133,7 @@ public class HibernateHL7DAO implements HL7DAO {
 				.createQuery(
 						"from HL7InQueue where messageState = :state order by hl7InQueueId",
 						HL7InQueue.class)
-				.setParameter("state", HL7Constants.HL7_STATUS_PENDING)
+				.setParameter(PARAM_STATE, HL7Constants.HL7_STATUS_PENDING)
 				.getResultList();
 
 	}
@@ -224,7 +225,7 @@ public class HibernateHL7DAO implements HL7DAO {
 				.createQuery(
 						"from HL7InQueue hiq where hiq.messageState = :state order by hiq.hl7InQueueId",
 						HL7InQueue.class)
-				.setParameter("state", HL7Constants.HL7_STATUS_PENDING)
+				.setParameter(PARAM_STATE, HL7Constants.HL7_STATUS_PENDING)
 				.setMaxResults(1);
 
 		if (query == null) {
@@ -274,7 +275,7 @@ public class HibernateHL7DAO implements HL7DAO {
 				.createQuery(
 						"from HL7InArchive where messageState = :state",
 						HL7InArchive.class)
-				.setParameter("state", state);
+				.setParameter(PARAM_STATE, state);
 
 		if (maxResults != null) {
 			q.setMaxResults(maxResults);
@@ -291,7 +292,7 @@ public class HibernateHL7DAO implements HL7DAO {
 				.createQuery(
 						"from HL7InQueue where messageState = :state",
 						HL7InQueue.class)
-				.setParameter("state", state)
+				.setParameter(PARAM_STATE, state)
 				.getResultList();
 
 	}
