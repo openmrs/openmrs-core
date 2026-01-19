@@ -55,7 +55,8 @@ public class RoleValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "role", "error.role");
 
 			// reject any role that has a leading or trailing space
-			if (role.getRole() != null && !role.getRole().equals(role.getRole().trim())) {
+			String roleName = role.getRole();
+			if (roleName != null && !roleName.equals(roleName.trim())) {
 				errors.rejectValue("role", "error.trailingSpaces");
 			}
 		}
