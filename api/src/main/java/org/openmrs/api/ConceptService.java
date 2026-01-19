@@ -2057,6 +2057,5 @@ public interface ConceptService extends OpenmrsService {
 	 * @param context the reference range evaluation context
  	 * @return the matching ConceptReferenceRange
  	 */
-	ConceptReferenceRange getConceptReferenceRange(
-        org.openmrs.api.context.ConceptReferenceRangeContext context);
+	ConceptReferenceRange getConceptReferenceRange(org.openmrs.api.context.ConceptReferenceRangeContext context);
 }
