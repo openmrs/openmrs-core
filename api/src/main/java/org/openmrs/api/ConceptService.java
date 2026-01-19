@@ -42,6 +42,8 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.api.context.ConceptReferenceRangeContext;
+
 
 /**
  * Contains methods pertaining to creating/updating/deleting/retiring Concepts, Drugs, Concept
@@ -2048,4 +2050,13 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPTS)
 	void purgeConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
+
+	/**
+ 	 * Gets the appropriate ConceptReferenceRange based on the given context.
+ 	 *
+	 * @param context the reference range evaluation context
+ 	 * @return the matching ConceptReferenceRange
+ 	 */
+	ConceptReferenceRange getConceptReferenceRange(
+        org.openmrs.api.context.ConceptReferenceRangeContext context);
 }

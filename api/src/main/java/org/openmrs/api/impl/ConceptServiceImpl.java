@@ -65,6 +65,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptStopWordException;
 import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.RefByUuid;
+import org.openmrs.api.context.ConceptReferenceRangeContext;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
@@ -2099,6 +2100,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		Obs obs = new Obs(person, concept, null, null);
 		return new ObsValidator().getReferenceRange(obs);
 	}
+
+	@Override
+	public ConceptReferenceRange getConceptReferenceRange(ConceptReferenceRangeContext context) {
+    // Draft PR: implementation will be added after design is confirmed
+    	return null;
+	}
+
 
 	/***
 	 * Determines if the passed string is in valid uuid format By OpenMRS standards, a uuid must be 36
