@@ -11,52 +11,73 @@ package org.openmrs.api.context;
 
 import java.util.Date;
 
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 
 /**
- * Context object used for evaluating concept reference ranges.
- * This allows reference range evaluation to be parameterized
- * by patient, encounter, obs, and date (e.g. for retrospective entries).
+ * Context used to evaluate concept reference ranges independently of a fully
+ * populated Obs.
+ *
+ * This allows reference range evaluation at times other than Obs persistence
+ * (e.g. retrospective entry), while preserving compatibility with existing
+ * criteria expressions.
  */
 public class ConceptReferenceRangeContext {
 
-    private Date date;
-    private Patient patient;
-    private Encounter encounter;
-    private Obs obs;
+    private final Patient patient;
+    private final Concept concept;
+    private final Date evaluationDate;
+    private final Obs obs;
 
+    /**
+     * Construct a context from an existing Obs.
+     */
     public ConceptReferenceRangeContext(Obs obs) {
         this.obs = obs;
-        this.encounter = obs.getEncounter();
-        this.patient = obs.getPerson() instanceof Patient ? (Patient) obs.getPerson() : null;
-        this.date = obs.getObsDatetime();
+        this.patient = obs.getPerson() instanceof Patient
+                ? (Patient) obs.getPerson()
+                : null;
+        this.concept = obs.getConcept();
+        this.evaluationDate = obs.getObsDatetime();
     }
 
-    public ConceptReferenceRangeContext(Encounter encounter) {
-        this.encounter = encounter;
-        this.patient = encounter.getPatient();
-        this.date = encounter.getEncounterDatetime();
-    }
-
-    public ConceptReferenceRangeContext(Patient patient, Date date) {
+    /**
+     * Construct a context from patient, concept, and date.
+     */
+    public ConceptReferenceRangeContext(Patient patient, Concept concept, Date evaluationDate) {
         this.patient = patient;
-        this.date = date;
+        this.concept = concept;
+        this.evaluationDate = evaluationDate;
+        this.obs = null;
     }
 
-    public Date getDate() {
-        return date;
+    /**
+     * Convenience constructor using an encounter.
+     */
+    public ConceptReferenceRangeContext(Encounter encounter, Concept concept) {
+        this.patient = encounter.getPatient();
+        this.concept = concept;
+        this.evaluationDate = encounter.getEncounterDatetime();
+        this.obs = null;
     }
 
     public Patient getPatient() {
         return patient;
     }
 
-    public Encounter getEncounter() {
-        return encounter;
+    public Concept getConcept() {
+        return concept;
     }
 
+    public Date getEvaluationDate() {
+        return evaluationDate;
+    }
+
+    /**
+     * Optional Obs, if this context was constructed from one.
+     */
     public Obs getObs() {
         return obs;
     }
