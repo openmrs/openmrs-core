@@ -2103,8 +2103,34 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 
 	@Override
 	public ConceptReferenceRange getConceptReferenceRange(ConceptReferenceRangeContext context) {
-    // Draft PR: implementation will be added after design is confirmed
-    	return null;
+    if (context == null) {
+        return null;
+    }
+
+    // If Obs is already available, reuse existing logic
+    if (context.getObs() != null) {
+        return new ObsValidator().getReferenceRange(context.getObs());
+    }
+
+    // Need at least patient and concept
+    if (context.getPatient() == null || context.getConcept() == null) {
+        return null;
+    }
+
+    Obs obs = new Obs();
+	obs.setPerson(context.getPatient());
+	obs.setConcept(context.getConcept());
+
+	if (context.getEncounter() != null) {
+    	obs.setEncounter(context.getEncounter());
+	}
+
+	if (context.getDate() != null) {
+    	obs.setObsDatetime(context.getDate());
+	}
+
+
+    return new ObsValidator().getReferenceRange(obs);
 	}
 
 

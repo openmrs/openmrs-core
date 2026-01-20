@@ -2040,6 +2040,14 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept);
+
+	/**
+ 	* Gets the appropriate ConceptReferenceRange based on the given context.
+ 	*
+ 	* @param context the reference range evaluation context
+ 	* @return the matching ConceptReferenceRange
+ 	* @since 2.7.0
+ 	*/
 	
 	/**
 	 * Completely purge a <code>ConceptReferenceRange</code> from the database.
