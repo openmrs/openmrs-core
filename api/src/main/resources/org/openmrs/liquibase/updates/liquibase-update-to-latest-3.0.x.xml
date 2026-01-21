@@ -102,6 +102,7 @@
 			<column name="name" type="VARCHAR(255)"/>
 		</addColumn>
 	</changeSet>
+	
 	<changeSet id="TRUNK-5881-2026-01-17" author="Chinmay7070">
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
@@ -114,5 +115,5 @@
 			<column name="changed_by" type="int"/>
 		</addColumn>
 	</changeSet>
-
+	
 </databaseChangeLog>

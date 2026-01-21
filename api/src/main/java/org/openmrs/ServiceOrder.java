@@ -41,7 +41,7 @@ public abstract class ServiceOrder extends Order {
 	@JoinColumn(name = "specimen_source")
 	public Concept specimenSource;
 
-	@Enumerated(EnumType.STRING) // Matches XML <type name="org.hibernate.type.EnumType">
+	@Enumerated(EnumType.STRING)
 	@Column(name = "laterality", length = 20)
 	private Laterality laterality;
 
