@@ -28,12 +28,17 @@ import org.openmrs.customdatatype.SingleCustomValue;
 @Audited
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@jakarta.persistence.Entity
+@jakarta.persistence.Table(name = "global_property")
 public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<GlobalProperty> {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@jakarta.persistence.Id
+	@jakarta.persistence.Column(name = "property", length = 255, nullable = false)
 	private String property = "";
 	
+	@jakarta.persistence.Lob
 	private String propertyValue = "";
 	
 	private transient Object typedValue;
@@ -41,24 +46,37 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	// if true, indicates that setValue has been called, and we need to invoke CustomDatatype's save
 	private boolean dirty = false;
 	
+	@jakarta.persistence.Lob
 	private String description = "";
 	
 	private String datatypeClassname;
 	
+	@jakarta.persistence.Lob
 	private String datatypeConfig;
 	
 	private String preferredHandlerClassname;
 	
+	@jakarta.persistence.Lob
 	private String handlerConfig;
 	
-	private User changedBy;
-	
+	@jakarta.persistence.ManyToOne
+  @jakarta.persistence.JoinColumn(name = "changed_by")
+  private User changedBy;
+
+	@jakarta.persistence.Temporal(jakarta.persistence.TemporalType.TIMESTAMP)
+  @jakarta.persistence.Column(name = "date_changed")
 	private Date dateChanged;
 	
+	@jakarta.persistence.ManyToOne  
+  @jakarta.persistence.JoinColumn(name = "view_privilege")
 	private Privilege viewPrivilege;
 	
+	@jakarta.persistence.ManyToOne
+	@jakarta.persistence.JoinColumn(name = "edit_privilege")
 	private Privilege editPrivilege;
 	
+	@jakarta.persistence.ManyToOne
+  @jakarta.persistence.JoinColumn(name = "delete_privilege")
 	private Privilege deletePrivilege;
 	
 	
