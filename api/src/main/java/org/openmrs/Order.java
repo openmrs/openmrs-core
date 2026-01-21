@@ -51,7 +51,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "orders")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED) 
 @Audited
 public class Order extends BaseCustomizableData<OrderAttribute> implements FormRecordable {
 	
@@ -90,46 +90,46 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		COMPLETED
 	}
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // Matches "native" generator
 	@Column(name = "order_id")
 	private Integer orderId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "order_type_id", nullable = false)
 	private OrderType orderType;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 
-	@Column(name = "instructions", length = 1024)
+	@Column(name = "instructions", columnDefinition = "TEXT")
 	private String instructions;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "date_activated")
+	@Column(name = "date_activated", nullable = false, length = 19)
 	private Date dateActivated;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "auto_expire_date")
+	@Column(name = "auto_expire_date", length = 19)
 	private Date autoExpireDate;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "encounter_id")
+	@ManyToOne
+	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "orderer")
+	@ManyToOne
+	@JoinColumn(name = "orderer", nullable = false)
 	private Provider orderer;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "date_stopped")
+	@Column(name = "date_stopped", length = 19)
 	private Date dateStopped;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "order_reason")
 	private Concept orderReason;
 
@@ -139,22 +139,22 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Column(name = "order_reason_non_coded")
 	private String orderReasonNonCoded;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "urgency")
+	@Enumerated(EnumType.STRING) 
+	@Column(name = "urgency", length = 50, nullable = false)
 	private Urgency urgency = Urgency.ROUTINE;
 
-	@Column(name = "order_number")
+	@Column(name = "order_number", length = 50, nullable = false)
 	private String orderNumber;
 
-	@Column(name = "comment_to_fulfiller")
+	@Column(name = "comment_to_fulfiller", length = 1024)
 	private String commentToFulfiller;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "care_setting")
+	@ManyToOne
+	@JoinColumn(name = "care_setting", nullable = false)
 	private CareSetting careSetting;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "scheduled_date")
+	@Column(name = "scheduled_date", length = 19)
 	private Date scheduledDate;
 
 	@Column(name = "form_namespace_and_path")
@@ -172,7 +172,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
 	 * to the original ampicillin order (the D/C gets its own order number)
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "previous_order_id")
 	private Order previousOrder;
 	
@@ -181,14 +181,14 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * 
 	 * @see org.openmrs.Order.Action
 	 */
-	@Enumerated(EnumType.STRING)
-	@Column(name = "order_action")
+	@Enumerated(EnumType.STRING) 
+	@Column(name = "order_action", length = 50, nullable = false)
 	private Action action = Action.NEW;
 	
 	/**
 	 * {@link org.openmrs.OrderGroup}
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "order_group_id")
 	private OrderGroup orderGroup;
 	
@@ -196,14 +196,14 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * Represents the status of an order received from a fulfiller 
 	 * @see FulfillerStatus
 	 */
-	@Enumerated(EnumType.STRING)
-	@Column(name = "fulfiller_status")
+	@Enumerated(EnumType.STRING) 
+	@Column(name = "fulfiller_status", length = 50)
 	private FulfillerStatus fulfillerStatus;
 	
 	/**
 	 * Represents the comment that goes along with with fulfiller status
 	 */
-	@Column(name = "fulfiller_comment")
+	@Column(name = "fulfiller_comment", length = 1024)
 	private String fulfillerComment;
 
 	// Constructors

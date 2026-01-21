@@ -20,6 +20,8 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -29,8 +31,9 @@ import org.openmrs.util.OpenmrsUtil;
  * @version 1.0
  */
 @Entity
-@Table(name = "drug_order")
-@PrimaryKeyJoinColumn(name = "order_id")
+@Table(name = "drug_order") 
+@PrimaryKeyJoinColumn(name = "order_id") 
+@OnDelete(action = OnDeleteAction.CASCADE) 
 @Audited
 public class DrugOrder extends Order {
 
@@ -41,25 +44,25 @@ public class DrugOrder extends Order {
 	@Column(name = "dose")
 	private Double dose;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "dose_units")
 	private Concept doseUnits;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 
-	@Column(name = "as_needed")
+	@Column(name = "as_needed", nullable = false)
 	private Boolean asNeeded = false;
 
 	@Column(name = "quantity")
 	private Double quantity;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "quantity_units")
 	private Concept quantityUnits;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "drug_inventory_id")
 	private Drug drug;
 
@@ -72,24 +75,24 @@ public class DrugOrder extends Order {
 	@Column(name = "num_refills")
 	private Integer numRefills;
 
-	@Column(name = "dosing_instructions", length = 1000)
+	@Column(name = "dosing_instructions", columnDefinition = "TEXT")
 	private String dosingInstructions;
 
 	@Column(name = "duration")
 	private Integer duration;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "duration_units")
 	private Concept durationUnits;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "route")
 	private Concept route;
 
 	@Column(name = "brand_name")
 	private String brandName;
 
-	@Column(name = "dispense_as_written")
+	@Column(name = "dispense_as_written", nullable = false)
 	private Boolean dispenseAsWritten = Boolean.FALSE;
 
 	@Column(name = "drug_non_coded")

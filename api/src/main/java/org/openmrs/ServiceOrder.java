@@ -25,8 +25,8 @@ import org.hibernate.envers.Audited;
  * 
  * @since 2.5.0
  */
+@MappedSuperclass 
 @Audited
-@MappedSuperclass
 public abstract class ServiceOrder extends Order {
 
 	public enum Laterality {
@@ -41,8 +41,8 @@ public abstract class ServiceOrder extends Order {
 	@JoinColumn(name = "specimen_source")
 	public Concept specimenSource;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "laterality")
+	@Enumerated(EnumType.STRING) // Matches XML <type name="org.hibernate.type.EnumType">
+	@Column(name = "laterality", length = 20)
 	private Laterality laterality;
 
 	@Column(name = "clinical_history", columnDefinition = "TEXT")
