@@ -308,6 +308,10 @@
 			<artifactId>js-scriptengine</artifactId>
 			<type>pom</type>
 		</dependency>
+		<dependency>
+			<groupId>org.sejda.imageio</groupId>
+			<artifactId>webp-imageio</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<resources>
