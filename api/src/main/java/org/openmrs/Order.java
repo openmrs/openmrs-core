@@ -13,7 +13,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,6 +23,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
@@ -139,7 +140,8 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Column(name = "order_reason_non_coded")
 	private String orderReasonNonCoded;
 
-	@Enumerated(EnumType.STRING) 
+	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(org.hibernate.type.SqlTypes.VARCHAR)
 	@Column(name = "urgency", length = 50, nullable = false)
 	private Urgency urgency = Urgency.ROUTINE;
 
@@ -181,7 +183,8 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * 
 	 * @see org.openmrs.Order.Action
 	 */
-	@Enumerated(EnumType.STRING) 
+	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(org.hibernate.type.SqlTypes.VARCHAR)
 	@Column(name = "order_action", length = 50, nullable = false)
 	private Action action = Action.NEW;
 	
@@ -196,7 +199,8 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * Represents the status of an order received from a fulfiller 
 	 * @see FulfillerStatus
 	 */
-	@Enumerated(EnumType.STRING) 
+	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(org.hibernate.type.SqlTypes.VARCHAR)
 	@Column(name = "fulfiller_status", length = 50)
 	private FulfillerStatus fulfillerStatus;
 	
