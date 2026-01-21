@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
+import org.openmrs.api.context.ConceptReferenceRangeContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -99,6 +100,34 @@ public class ConceptReferenceRangeUtility {
 		catch (Exception e) {
 			throw new APIException("An error occurred while evaluating criteria: ", e);
 		}
+	}
+
+	/**
+ 	* Evaluate reference range criteria using a context instead of a fully populated Obs.
+ 	*/
+	public boolean evaluateCriteria(String criteria, ConceptReferenceRangeContext context) {
+		if (context == null) {
+        	return false;
+    	}
+
+		// Backward compatibility: delegate if Obs exists
+    	if (context.getObs() != null) {
+        	return evaluateCriteria(criteria, context.getObs());
+    	}
+
+    	Obs obs = new Obs();
+    	obs.setConcept(context.getConcept());
+    	obs.setPerson(context.getPatient());
+
+    	if (context.getEncounter() != null) {
+        	obs.setEncounter(context.getEncounter());
+    	}
+
+    	if (context.getDate() != null) {
+        	obs.setObsDatetime(context.getDate());
+    	}
+		
+		return evaluateCriteria(criteria, obs);
 	}
 	
 	/**

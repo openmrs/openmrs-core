@@ -277,7 +277,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> 
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", 
-				null)
+				(Obs)null)
 		);
 
 		assertEquals("Failed to evaluate criteria with reason: Obs is null", thrown.getMessage());
