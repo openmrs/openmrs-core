@@ -13,6 +13,7 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.lookup.AbstractLookup;
 import org.apache.logging.log4j.core.lookup.StrLookup;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
@@ -76,18 +77,23 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 		if (adminService == null) {
 			return null;
 		}
-		
-		String value = adminService.getGlobalProperty(globalPropertyName);
-		if (value == null) {
-			return null;
-		} else {
-			value = value.trim();
+
+		try {
+			String value = adminService.getGlobalProperty(globalPropertyName);
+			if (value == null) {
+				return null;
+			} else {
+				value = value.trim();
+			}
+
+			if (value.isEmpty()) {
+				return null;
+			}
+
+			return value;
 		}
-		
-		if (value.isEmpty()) {
+		catch (APIAuthenticationException e) {
 			return null;
 		}
-		
-		return value;
 	}
 }
