@@ -91,7 +91,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		COMPLETED
 	}
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) // Matches "native" generator
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	@Column(name = "order_id")
 	private Integer orderId;
 
