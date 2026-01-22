@@ -70,7 +70,11 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 		if (interpretJstl) {
 			path += ".withjstl";
 		}
-		
+
+		if (path.startsWith("/")) {
+			path = path.substring(1);
+		}
+
 		return new ModelAndView(path);
 	}
 	
