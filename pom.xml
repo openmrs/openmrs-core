@@ -408,7 +408,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.7.8</version>
+				<version>42.7.9</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
@@ -696,7 +696,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>buildnumber-maven-plugin</artifactId>
-					<version>3.2.1</version>
+					<version>3.3.0</version>
 					<configuration>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
 						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
@@ -1236,12 +1236,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.3</version>
+						<version>1.18.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.3</version>
+						<version>1.18.4</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1262,12 +1262,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.3</version>
+						<version>1.18.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.3</version>
+						<version>1.18.4</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1288,12 +1288,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.3</version>
+						<version>1.18.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.3</version>
+						<version>1.18.4</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1386,7 +1386,7 @@
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.25.3</log4jVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
-		<graalJsVersion>25.0.1</graalJsVersion>
+		<graalJsVersion>25.0.2</graalJsVersion>
 
 		<customArgLineForTesting />
 
