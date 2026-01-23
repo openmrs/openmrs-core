@@ -11,9 +11,10 @@ package org.openmrs;
 
 import static org.openmrs.Order.Action.DISCONTINUE;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -64,6 +65,7 @@ public class DrugOrder extends Order {
 
 	@ManyToOne
 	@JoinColumn(name = "drug_inventory_id")
+	@Access(AccessType.FIELD)
 	private Drug drug;
 
 	@Column(name = "as_needed_condition")

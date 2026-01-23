@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
@@ -17,7 +19,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 
 import org.hibernate.envers.Audited;
-
 
 /**
  * Provides properties for several order types like TestOrder , ReferralOrder
@@ -42,6 +43,7 @@ public abstract class ServiceOrder extends Order {
 	public Concept specimenSource;
 
 	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "laterality", length = 20)
 	private Laterality laterality;
 

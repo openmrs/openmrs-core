@@ -9,6 +9,14 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import java.util.HashSet;
+import java.util.Set;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
@@ -111,11 +119,11 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	private String instructions;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "date_activated", nullable = false, length = 19)
+	@Column(name = "date_activated", nullable = false)
 	private Date dateActivated;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "auto_expire_date", length = 19)
+	@Column(name = "auto_expire_date")
 	private Date autoExpireDate;
 
 	@ManyToOne
@@ -127,7 +135,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	private Provider orderer;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "date_stopped", length = 19)
+	@Column(name = "date_stopped")
 	private Date dateStopped;
 
 	@ManyToOne
@@ -141,11 +149,12 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	private String orderReasonNonCoded;
 
 	@Enumerated(EnumType.STRING)
-	@JdbcTypeCode(org.hibernate.type.SqlTypes.VARCHAR)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "urgency", length = 50, nullable = false)
 	private Urgency urgency = Urgency.ROUTINE;
 
 	@Column(name = "order_number", length = 50, nullable = false)
+	@Access(AccessType.FIELD)
 	private String orderNumber;
 
 	@Column(name = "comment_to_fulfiller", length = 1024)
@@ -156,7 +165,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	private CareSetting careSetting;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "scheduled_date", length = 19)
+	@Column(name = "scheduled_date")
 	private Date scheduledDate;
 
 	@Column(name = "form_namespace_and_path")
@@ -184,7 +193,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * @see org.openmrs.Order.Action
 	 */
 	@Enumerated(EnumType.STRING)
-	@JdbcTypeCode(org.hibernate.type.SqlTypes.VARCHAR)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "order_action", length = 50, nullable = false)
 	private Action action = Action.NEW;
 	
@@ -200,14 +209,20 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * @see FulfillerStatus
 	 */
 	@Enumerated(EnumType.STRING)
-	@JdbcTypeCode(org.hibernate.type.SqlTypes.VARCHAR)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "fulfiller_status", length = 50)
 	private FulfillerStatus fulfillerStatus;
 	
 	/**
 	 * Represents the comment that goes along with with fulfiller status
 	 */
-	@Column(name = "fulfiller_comment", length = 1024)
+	@OneToMany(
+		mappedBy = "order",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		fetch = FetchType.LAZY
+	)
+	@OrderBy("voided ASC")
 	private String fulfillerComment;
 
 	// Constructors
