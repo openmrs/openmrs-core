@@ -216,6 +216,9 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	/**
 	 * Represents the comment that goes along with with fulfiller status
 	 */
+	@Column(name = "fulfiller_comment", length = 1024)
+	private String fulfillerComment;
+
 	@OneToMany(
 		mappedBy = "order",
 		cascade = CascadeType.ALL,
@@ -223,7 +226,18 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		fetch = FetchType.LAZY
 	)
 	@OrderBy("voided ASC")
-	private String fulfillerComment;
+	private Set<OrderAttribute> attributes = new HashSet<>();
+
+	@Override
+	public Set<OrderAttribute> getAttributes() {
+		return attributes;
+	}
+
+	@Override
+	public void setAttributes(Set<OrderAttribute> attributes) {
+		this.attributes = attributes;
+	}
+
 
 	// Constructors
 	
