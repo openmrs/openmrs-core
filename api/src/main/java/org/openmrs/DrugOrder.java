@@ -16,10 +16,11 @@ import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import org.hibernate.annotations.JdbcTypeCode;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
-
+import org.hibernate.type.SqlTypes;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -71,7 +72,8 @@ public class DrugOrder extends Order {
 	@Column(name = "as_needed_condition")
 	private String asNeededCondition;
 
-	@Column(name = "dosing_type")
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "dosing_type", length = 255)
 	private Class<? extends DosingInstructions> dosingType = SimpleDosingInstructions.class;
 
 	@Column(name = "num_refills")

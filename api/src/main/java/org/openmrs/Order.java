@@ -134,6 +134,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@JoinColumn(name = "orderer", nullable = false)
 	private Provider orderer;
 
+	@Access(AccessType.FIELD)
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "date_stopped")
 	private Date dateStopped;
