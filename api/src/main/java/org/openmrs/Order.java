@@ -229,16 +229,11 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	private Set<OrderAttribute> attributes = new HashSet<>();
 
 	@Override
-	public Set<OrderAttribute> getAttributes() {
-		return attributes;
-	}
+	public Set<OrderAttribute> getAttributes() {return attributes;}
 
 	@Override
-	public void setAttributes(Set<OrderAttribute> attributes) {
-		this.attributes = attributes;
-	}
-
-
+	public void setAttributes(Set<OrderAttribute> attributes) {this.attributes = attributes;}
+	
 	// Constructors
 	
 	/** default constructor */
