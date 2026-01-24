@@ -78,22 +78,18 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 			return null;
 		}
 
-		try {
-			String value = adminService.getGlobalProperty(globalPropertyName);
-			if (value == null) {
-				return null;
-			} else {
-				value = value.trim();
-			}
-
-			if (value.isEmpty()) {
-				return null;
-			}
-
-			return value;
+		String value = adminService.getGlobalProperty(globalPropertyName);
+		if (value == null) {
+			return null;
+		} else {
+			value = value.trim();
 		}
-		catch (APIAuthenticationException e) {
+
+		if (value.isEmpty()) {
 			return null;
 		}
+
+		return value;
+		
 	}
 }
