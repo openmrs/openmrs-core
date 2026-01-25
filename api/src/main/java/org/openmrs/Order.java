@@ -228,12 +228,6 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	)
 	@OrderBy("voided ASC")
 	private Set<OrderAttribute> attributes = new HashSet<>();
-
-	@Override
-	public Set<OrderAttribute> getAttributes() {return attributes;}
-
-	@Override
-	public void setAttributes(Set<OrderAttribute> attributes) {this.attributes = attributes;}
 	
 	// Constructors
 	
