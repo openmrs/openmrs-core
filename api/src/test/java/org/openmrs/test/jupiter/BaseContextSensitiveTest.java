@@ -953,7 +953,7 @@ public abstract class BaseContextSensitiveTest {
 			Context.openSession();
 		}
 		
-		// The skipBaseSetup flag is controlled by the @SkipBaseSetup annotation. 		if (useInMemoryDatabase()) {
+		// The skipBaseSetup flag is controlled by the @SkipBaseSetup annotation.
 		if (!skipBaseSetup) {
 			if (!isBaseSetup) {
 				

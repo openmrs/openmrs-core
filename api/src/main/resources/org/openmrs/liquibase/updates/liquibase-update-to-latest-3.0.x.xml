@@ -90,5 +90,17 @@
 			<column name="date_changed" type="datetime"/>
 		</addColumn>
 	</changeSet>
+
+	<changeSet id="TRUNK-5950-2026-01-06" author="shivvani-r">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="relationship_type" columnName="name"/>
+			</not>
+		</preConditions>
+		<comment>Adding missing name column to relationship_type for TRUNK-5950</comment>
+		<addColumn tableName="relationship_type">
+			<column name="name" type="VARCHAR(255)"/>
+		</addColumn>
+	</changeSet>
 	
 </databaseChangeLog>

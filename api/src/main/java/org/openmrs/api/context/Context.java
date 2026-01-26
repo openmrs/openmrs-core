@@ -1010,20 +1010,22 @@ public class Context {
 		// do any context database specific startup
 		getContextDAO().startup(props);
 
-		// find/set/check whether the current database version is compatible
-		checkForDatabaseUpdates(props);
+		if (getAdministrationService().isCoreSetupOnVersionChangeNeeded()) {
+			log.info("Detected core version change. Running core setup hooks and Liquibase.");
+			getAdministrationService().runCoreSetupOnVersionChange();
+		}
 
 		// this should be first in the startup routines so that the application
 		// data directory can be set from the runtime properties
 		OpenmrsUtil.startup(props);
-
+		
 		openSession();
 		clearSession();
 
 		// add any privileges/roles that /must/ exist for openmrs to work
 		// correctly.
 		checkCoreDataset();
-
+		
 		getContextDAO().setupSearchIndex();
 
 		// Loop over each module and startup each with these custom properties
@@ -1288,39 +1290,6 @@ public class Context {
 	}
 
 	/**
-	 * Runs any needed updates on the current database if the user has the allow_auto_update runtime
-	 * property set to true. If not set to true, then {@link #updateDatabase(Map)} must be called.<br>
-	 * <br>
-	 * If an {@link InputRequiredException} is thrown, a call to {@link #updateDatabase(Map)} is
-	 * required with a mapping from question prompt to user answer.
-	 *
-	 * @param props the runtime properties
-	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
-	 *             cannot continue without input from the user
-	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
-	 *      the required question/datatypes
-	 */
-	private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
-		boolean updatesRequired;
-		try {
-			updatesRequired = DatabaseUpdater.updatesRequired();
-		}
-		catch (Exception e) {
-			throw new DatabaseUpdateException("Unable to check if database updates are required", e);
-		}
-
-		// this must be the first thing run in case it changes database mappings
-		if (updatesRequired) {
-			if (DatabaseUpdater.allowAutoUpdate()) {
-				DatabaseUpdater.executeChangelog();
-			} else {
-				throw new DatabaseUpdateException(
-						"Database updates are required.  Call Context.updateDatabase() before .startup() to continue.");
-			}
-		}
-	}
-
-	/**
 	 * Updates the openmrs database to the latest. This is only needed if using the API alone. <br>
 	 * <br>
 	 * The typical use-case would be: Try to {@link #startup(String, String, String, Properties)},
@@ -1549,5 +1518,20 @@ public class Context {
 	 */
 	public static Connection getDatabaseConnection() {
 		return getContextDAO().getDatabaseConnection();
+	}
+
+	/**
+	 * It is used to shorten startup time by e.g. not running Liquibase checks, if versions did not change or 
+	 * re-using expanded jars between restarts. If you want to force a standard startup
+	 * procedure without optimization, please set the <code>optimized.startup</code> runtime property to <code>false</code>.
+	 * (<code>true</code> by default) 
+	 * <p>
+	 * See <a href="https://issues.openmrs.org/browse/TRUNK-6417">TRUNK-6417</a>
+	 * 
+	 * @return <code>true</code> (default) or <code>false</code>
+	 * @since 2.9.0
+	 */
+	public static boolean isOptimizedStartup() {
+		return Boolean.parseBoolean(Context.getRuntimeProperties().getProperty("optimized.startup", "true"));
 	}
 }
