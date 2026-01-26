@@ -43,7 +43,7 @@ public class DrugOrder extends Order {
 
 	// Fields
 
-	@Column(name = "dose")
+	@Column(name = "dose", length = 22)
 	private Double dose;
 
 	@ManyToOne
@@ -54,10 +54,10 @@ public class DrugOrder extends Order {
 	@JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 
-	@Column(name = "as_needed", nullable = false)
+	@Column(name = "as_needed", nullable = false, length = 1)
 	private Boolean asNeeded = false;
 
-	@Column(name = "quantity")
+	@Column(name = "quantity", length = 22)
 	private Double quantity;
 
 	@ManyToOne
@@ -69,7 +69,7 @@ public class DrugOrder extends Order {
 	@Access(AccessType.FIELD)
 	private Drug drug;
 
-	@Column(name = "as_needed_condition")
+	@Column(name = "as_needed_condition", length = 255)
 	private String asNeededCondition;
 
 	@JdbcTypeCode(SqlTypes.VARCHAR)
@@ -93,13 +93,13 @@ public class DrugOrder extends Order {
 	@JoinColumn(name = "route")
 	private Concept route;
 
-	@Column(name = "brand_name")
+	@Column(name = "brand_name", length = 255)
 	private String brandName;
 
-	@Column(name = "dispense_as_written", nullable = false)
+	@Column(name = "dispense_as_written", nullable = false, length = 1)
 	private Boolean dispenseAsWritten = Boolean.FALSE;
 
-	@Column(name = "drug_non_coded")
+	@Column(name = "drug_non_coded", length = 255)
 	private String drugNonCoded;
 
 	// Constructors

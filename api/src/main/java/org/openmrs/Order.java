@@ -143,10 +143,10 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@JoinColumn(name = "order_reason")
 	private Concept orderReason;
 
-	@Column(name = "accession_number")
+	@Column(name = "accession_number", length = 255)
 	private String accessionNumber;
 
-	@Column(name = "order_reason_non_coded")
+	@Column(name = "order_reason_non_coded", length = 255)
 	private String orderReasonNonCoded;
 
 	@Enumerated(EnumType.STRING)
@@ -169,7 +169,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Column(name = "scheduled_date")
 	private Date scheduledDate;
 
-	@Column(name = "form_namespace_and_path")
+	@Column(name = "form_namespace_and_path", length = 255)
 	private String formNamespaceAndPath;
 	
 	/**
