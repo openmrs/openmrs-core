@@ -219,15 +219,6 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 */
 	@Column(name = "fulfiller_comment", length = 1024)
 	private String fulfillerComment;
-
-	@OneToMany(
-		mappedBy = "order",
-		cascade = CascadeType.ALL,
-		orphanRemoval = true,
-		fetch = FetchType.LAZY
-	)
-	@OrderBy("voided ASC")
-	private Set<OrderAttribute> attributes = new HashSet<>();
 	
 	// Constructors
 	
