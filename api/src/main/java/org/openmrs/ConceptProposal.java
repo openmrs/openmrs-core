@@ -11,7 +11,16 @@ package org.openmrs;
 
 import java.util.Date;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -68,7 +77,7 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 
-	@Column(name = "date_created", nullable = false, length = 19)
+	@Column(name = "date_created", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateCreated;
 
@@ -76,7 +85,7 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 
-	@Column(name = "date_changed", length = 19)
+	@Column(name = "date_changed")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateChanged;
 	
