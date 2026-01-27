@@ -23,6 +23,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsConstants;
+import jakarta.persistence.CascadeType;
 
 /**
  * A ConceptProposal is a temporary holder for concept that should be in the system. When defining
@@ -53,7 +54,7 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	@JoinColumn(name = "obs_concept_id")
 	private Concept obsConcept;
 
-	@ManyToOne
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "obs_id")
 	private Obs obs;
 
