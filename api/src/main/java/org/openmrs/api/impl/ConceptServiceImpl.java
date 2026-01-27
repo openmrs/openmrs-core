@@ -2104,7 +2104,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	public ConceptReferenceRange getConceptReferenceRange(ConceptReferenceRangeContext context) {
     if (context == null) {
-        return null;
+        throw new IllegalArgumentException("ConceptReferenceRangeContext must not be null");
     }
 
     // If Obs is already available, reuse existing logic
