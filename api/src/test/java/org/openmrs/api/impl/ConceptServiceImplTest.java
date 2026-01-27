@@ -1043,9 +1043,9 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 
     	ConceptNumeric numericConcept = (ConceptNumeric) Context.getConceptService().getConcept(5089);
 
-    	Date evaluationDate = new Date();
+    	Date effectiveDate = new Date();
 
-    	ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(patient, numericConcept, evaluationDate);
+    	ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(patient, numericConcept, effectiveDate);
 
     	ConceptReferenceRange range = service.getConceptReferenceRange(context);
 
