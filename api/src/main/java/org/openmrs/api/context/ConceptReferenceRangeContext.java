@@ -18,8 +18,8 @@ import org.openmrs.Patient;
 
 /**
  * Context used to evaluate concept reference ranges independently of a fully populated Obs. This
- * allows reference range evaluation at times other than Obs persistence (e.g. retrospective entry),
- * while preserving compatibility with existing criteria expressions.
+ * allows reference range effectiveness at times other than Obs persistence (e.g. retrospective
+ * entry), while preserving compatibility with existing criteria expressions.
  */
 public class ConceptReferenceRangeContext {
 	
@@ -27,7 +27,7 @@ public class ConceptReferenceRangeContext {
 	
 	private final Concept concept;
 	
-	private final Date evaluationDate;
+	private final Date effectiveDate;
 	
 	private final Encounter encounter;
 	
@@ -40,17 +40,17 @@ public class ConceptReferenceRangeContext {
 		this.obs = obs;
 		this.patient = obs.getPerson() instanceof Patient ? (Patient) obs.getPerson() : null;
 		this.concept = obs.getConcept();
-		this.evaluationDate = obs.getObsDatetime();
+		this.effectiveDate = obs.getObsDatetime();
 		this.encounter = obs.getEncounter();
 	}
 	
 	/**
 	 * Construct a context from patient, concept, and date.
 	 */
-	public ConceptReferenceRangeContext(Patient patient, Concept concept, Date evaluationDate) {
+	public ConceptReferenceRangeContext(Patient patient, Concept concept, Date effectiveDate) {
 		this.patient = patient;
 		this.concept = concept;
-		this.evaluationDate = evaluationDate;
+		this.effectiveDate = effectiveDate;
 		this.encounter = null;
 		this.obs = null;
 	}
@@ -61,7 +61,7 @@ public class ConceptReferenceRangeContext {
 	public ConceptReferenceRangeContext(Encounter encounter, Concept concept) {
 		this.patient = encounter.getPatient();
 		this.concept = concept;
-		this.evaluationDate = encounter.getEncounterDatetime();
+		this.effectiveDate = encounter.getEncounterDatetime();
 		this.encounter = encounter;
 		this.obs = null;
 	}
@@ -80,7 +80,7 @@ public class ConceptReferenceRangeContext {
 	
 	/** Required by ConceptServiceImpl */
 	public Date getDate() {
-		return evaluationDate;
+		return effectiveDate;
 	}
 	
 	/**
