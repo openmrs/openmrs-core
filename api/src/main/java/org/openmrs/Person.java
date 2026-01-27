@@ -963,7 +963,19 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @since 2.7.0
 	 */
 	public Integer getAgeInMonths() {
-		return getAgeInChronoUnit(ChronoUnit.MONTHS);
+		return getAgeInMonths(null);
+	}
+
+	/**
+	 * Convenience method to get the age of a person in months on a given date 
+	 * 
+	 * @param onDate (null defaults to today)
+	 * @return the age in months as an Integer   
+	 * 
+	 * @since 3.0.0
+	 */ 
+	public Integer getAgeInMonths(Date onDate){
+		return getAgeInChronoUnit(ChronoUnit.MONTHS, onDate);
 	}
 
 	/**
@@ -974,7 +986,19 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @since 2.7.0
 	 */
 	public Integer getAgeInWeeks() {
-		return getAgeInChronoUnit(ChronoUnit.WEEKS);
+		return getAgeInWeeks(null);
+	}
+
+	/**
+	 * Convenience method to get the age of a person in weeks on a given date 
+	 *
+	 * @param onDate (null defaults to today)
+	 * @return the age in weeks as an Integer   
+	 * 
+	 * @since 3.0.0
+	 */
+	public Integer getAgeInWeeks(Date onDate){
+		return getAgeInChronoUnit(ChronoUnit.WEEKS, onDate);
 	}
 
 	/**
@@ -985,7 +1009,19 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @since 2.7.0
 	 */
 	public Integer getAgeInDays() {
-		return getAgeInChronoUnit(ChronoUnit.DAYS);
+		return getAgeInDays(null);
+	}
+
+	/**
+	 * Convenience method to get the age of a person in days on a given date 
+	 *
+	 * @param onDate (null defaults to today)
+	 * @return the age in days as an Integer   
+	 * 
+	 * @since 3.0.0
+	 */
+	public Integer getAgeInDays(Date onDate){
+		return getAgeInChronoUnit(ChronoUnit.DAYS, onDate);
 	}
 
 	/**
@@ -996,7 +1032,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 *
 	 * @since 2.7.0
 	 */
-	private Integer getAgeInChronoUnit(ChronoUnit chronoUnit) {
+	private Integer getAgeInChronoUnit(ChronoUnit chronoUnit, Date onDate) {
 		if (this.birthdate == null) {
 			return null;
 		}
@@ -1004,6 +1040,11 @@ public class Person extends BaseChangeableOpenmrsData {
 		LocalDate birthDate = new java.sql.Date(this.birthdate.getTime()).toLocalDate();
 		LocalDate endDate = LocalDate.now();
 
+		// If date is given then use that as end date
+		if(onDate != null){
+			endDate =  new java.sql.Date(onDate.getTime()).toLocalDate();
+		}
+		
 		// If date given is after date of death then use date of death as end date
 		if (this.deathDate != null) {
 			LocalDate deathDate = new java.sql.Date(this.deathDate.getTime()).toLocalDate();
