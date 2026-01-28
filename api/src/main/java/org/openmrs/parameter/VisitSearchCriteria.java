@@ -41,6 +41,12 @@ public class VisitSearchCriteria {
 	private boolean includeInactive = true;
 	private boolean includeVoided = false;
 	
+	private Integer start;
+	
+	private Integer length;
+	
+	private boolean fetchEncounters = false;
+
 	/**
 	 * Constructs a VisitSearchCriteria with the specified parameters. 
 	 * Instead of calling this constructor directly, it is recommended to use {@link VisitSearchCriteriaBuilder}.
@@ -249,5 +255,29 @@ public class VisitSearchCriteria {
 	 */
 	public void setIncludeVoided(boolean includeVoided) {
 		this.includeVoided = includeVoided;
+	}
+
+    public Integer getStart() {
+        return start;
+    }
+
+	public void setStart(Integer start) {
+		this.start = start;
+	}
+
+	public Integer getLength() {
+		return length;
+	}
+
+	public void setLength(Integer length) {
+		this.length = length;
+	}
+
+	public boolean isFetchEncounters() {
+		return fetchEncounters;
+	}
+
+	public void setFetchEncounters(boolean fetchEncounters) {
+		this.fetchEncounters = fetchEncounters;
 	}
 }
