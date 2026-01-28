@@ -65,7 +65,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	private Encounter encounter;
 
 	@Access(AccessType.PROPERTY)
-	@OneToMany(mappedBy = "orderGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("voided asc")
 	@BatchSize(size = 100)
 	private Set<OrderGroupAttribute> attributes = new LinkedHashSet<>();

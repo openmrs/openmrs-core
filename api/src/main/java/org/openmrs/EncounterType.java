@@ -9,6 +9,16 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 
 /**
@@ -16,15 +26,28 @@ import org.hibernate.envers.Audited;
  * 
  * @see Encounter
  */
+@Entity
+@Table(name = "encounter_type")
+@AttributeOverrides({
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, unique = true, length = 50)),
+	@AttributeOverride(name = "description", column = @Column(name = "description", length = 1024))
+})
 @Audited
 public class EncounterType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 789L;
 	
+	@Id
+	@Column(name = "encounter_type_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer encounterTypeId;
 	
+	@ManyToOne
+	@JoinColumn(name = "view_privilege", nullable = true)
 	private Privilege viewPrivilege;
 	
+	@ManyToOne
+	@JoinColumn(name = "edit_privilege", nullable = true)
 	private Privilege editPrivilege;
 	
 	// Constructors
