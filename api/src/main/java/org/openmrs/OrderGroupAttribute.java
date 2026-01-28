@@ -9,6 +9,14 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
@@ -19,8 +27,17 @@ import org.openmrs.attribute.BaseAttribute;
  * @since 2.4.0
  */
 @Audited
+@Entity
+@Table(name = "order_group_attribute")
+@AssociationOverride(
+	name="owner",
+	joinColumns = @JoinColumn(name="order_group_id", nullable = false)
+)
 public class OrderGroupAttribute extends BaseAttribute<OrderGroupAttributeType, OrderGroup> implements Attribute<OrderGroupAttributeType, OrderGroup> {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "order_group_attribute_id")
 	private Integer orderGroupAttributeId;
 	
 	/**
