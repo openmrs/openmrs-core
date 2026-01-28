@@ -80,6 +80,7 @@ import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderRole;
+import org.openmrs.ReferralOrder;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.SimpleDosingInstructions;
@@ -2960,6 +2961,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(LocationAttribute.class)
 				.addAnnotatedClass(VisitAttribute.class)
 				.addAnnotatedClass(DiagnosisAttribute.class)
+			    .addAnnotatedClass(Order.class)
+			    .addAnnotatedClass(DrugOrder.class)
+		    	.addAnnotatedClass(TestOrder.class)
+			    .addAnnotatedClass(ReferralOrder.class)
 				.addAnnotatedClass(ConceptProposal.class)
 				.getMetadataBuilder().build();
 
