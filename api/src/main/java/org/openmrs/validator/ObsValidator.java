@@ -25,6 +25,7 @@ import org.openmrs.ObsReferenceRange;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ConceptReferenceRangeContext;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.util.OpenmrsUtil;
@@ -285,39 +286,8 @@ public class ObsValidator implements Validator {
 	 * @since 2.7.0
 	 */
 	public ConceptReferenceRange getReferenceRange(Obs obs) {
-		Concept concept = HibernateUtil.getRealObjectFromProxy(obs.getConcept());
-		if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
-			return null;
-		}
-		
-		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
-
-		List<ConceptReferenceRange> referenceRanges = Context.getConceptService()
-			.getConceptReferenceRangesByConceptId(concept.getConceptId());
-
-		if (referenceRanges.isEmpty()) {
-			return getDefaultReferenceRange(conceptNumeric);
-		}
-
-		ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
-		List<ConceptReferenceRange> validRanges = new ArrayList<>();
-
-		for (ConceptReferenceRange referenceRange : referenceRanges) {
-			if (referenceRangeUtility.evaluateCriteria(StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()), obs)) {
-				validRanges.add(referenceRange);
-			}
-		}
-
-		if (validRanges.isEmpty()) {
-			ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
-			if (defaultReferenceRange != null) {
-				validRanges.add(defaultReferenceRange);
-			} else {
-				return null;
-			}
-		}
-		
-		return findStrictestReferenceRange(validRanges);
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(obs);
+    	return Context.getConceptService().getConceptReferenceRange(context);
 	}
 
 	/**

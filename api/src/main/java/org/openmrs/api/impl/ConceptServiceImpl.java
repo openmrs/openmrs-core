@@ -30,6 +30,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hibernate.Hibernate;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -57,6 +58,7 @@ import org.openmrs.DrugIngredient;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptInUseException;
@@ -64,6 +66,8 @@ import org.openmrs.api.ConceptNameInUseException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptStopWordException;
 import org.openmrs.api.ConceptsLockedException;
+import org.openmrs.api.context.ConceptReferenceRangeContext;
+import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.ConceptReferenceRangeContext;
 import org.openmrs.api.context.Context;
@@ -2107,30 +2111,43 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
         throw new IllegalArgumentException("ConceptReferenceRangeContext must not be null");
     }
 
-    // If Obs is already available, reuse existing logic
+    Obs obs = context.getObs();
+	// If Obs is already available, reuse existing logic
     if (context.getObs() != null) {
-        return new ObsValidator().getReferenceRange(context.getObs());
-    }
+        Concept concept = HibernateUtil.getRealObjectFromProxy(obs.getConcept());
+		if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
+			return null;
+		}
+		
+		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
 
-    // Need at least patient and concept
-    if (context.getPatient() == null || context.getConcept() == null) {
-        return null;
-    }
+		List<ConceptReferenceRange> referenceRanges = Context.getConceptService().getConceptReferenceRangesByConceptId(concept.getConceptId());
 
-    Obs obs = new Obs();
-	obs.setPerson(context.getPatient());
-	obs.setConcept(context.getConcept());
+		if (referenceRanges.isEmpty()) {
+			return getDefaultReferenceRange(conceptNumeric);
+		}
 
-	if (context.getEncounter() != null) {
-    	obs.setEncounter(context.getEncounter());
-	}
+		ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
+		List<ConceptReferenceRange> validRanges = new ArrayList<>();
 
-	if (context.getDate() != null) {
-    	obs.setObsDatetime(context.getDate());
-	}
+		for (ConceptReferenceRange referenceRange : referenceRanges) {
+			if (referenceRangeUtility.evaluateCriteria(StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()), obs)) {
+				validRanges.add(referenceRange);
+			}
+		}
 
-
-    return new ObsValidator().getReferenceRange(obs);
+		if (validRanges.isEmpty()) {
+			ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
+			if (defaultReferenceRange != null) {
+				validRanges.add(defaultReferenceRange);
+			} else {
+				return null;
+			}
+		}
+		
+		return findStrictestReferenceRange(validRanges);
+    	}
+		return null;
 	}
 
 
@@ -2258,5 +2275,91 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
     public List<Class<?>> getRefTypes() {
         return Arrays.asList(ConceptSource.class, ConceptAttributeType.class, DrugIngredient.class, ConceptSet.class, ConceptAttribute.class, ConceptName.class, ConceptDatatype.class, ConceptMapType.class, ConceptNumeric.class, ConceptProposal.class, Drug.class, ConceptDescription.class, ConceptNameTag.class, ConceptClass.class, ConceptAnswer.class, ConceptReferenceTerm.class, ConceptReferenceRange.class, Concept.class);
     }
+
+	/**
+	 * Loads the reference range from the ConceptNumeric if no reference ranges are associated with
+	 * this concept and person.
+	 * 
+	 * @param conceptNumeric A {@link ConceptNumeric} to extract the default values from
+	 * @return a {@link ConceptReferenceRange} containing the reference range from the concept
+	 */
+	private ConceptReferenceRange getDefaultReferenceRange(ConceptNumeric conceptNumeric) {
+		if (conceptNumeric == null || (
+			conceptNumeric.getHiAbsolute() == null &&
+			conceptNumeric.getHiCritical() == null &&
+			conceptNumeric.getHiNormal() == null &&
+			conceptNumeric.getLowAbsolute() == null &&
+			conceptNumeric.getLowCritical() == null &&
+			conceptNumeric.getLowNormal() == null
+		)) {
+			return null;
+		}
+		
+		ConceptReferenceRange defaultReferenceRange = new ConceptReferenceRange();
+		defaultReferenceRange.setConceptNumeric(conceptNumeric);
+		defaultReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+		defaultReferenceRange.setHiCritical(conceptNumeric.getHiCritical());
+		defaultReferenceRange.setHiNormal(conceptNumeric.getHiNormal());
+		defaultReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+		defaultReferenceRange.setLowCritical(conceptNumeric.getLowCritical());
+		defaultReferenceRange.setLowNormal(conceptNumeric.getLowNormal());
+		return defaultReferenceRange;
+	}
+
+	/**
+	 * Finds the strictest {@link ConceptReferenceRange} from a list of valid ranges.
+	 * The strictest range is determined separately for each value, e.g., the lowAbsolute will
+	 * be the highest lowAbsolute of any matching range, the lowCritical value will be the
+	 * highest lowCritical value of any matching range.
+	 * e.g.
+	 * If ConceptReferenceRange-1 has a range of 80-150.
+	 * and ConceptReferenceRange-2 has a range of 60-140,
+	 * the "strictest" range will be 80-140. 
+	 *
+	 * @param conceptReferenceRanges A list of valid {@link ConceptReferenceRange} objects
+	 * @return The strictest {@link ConceptReferenceRange} constructed from the strictest bounds
+	 */
+	private ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
+		if (conceptReferenceRanges.size() == 1) {
+			return conceptReferenceRanges.get(0);
+		}
+
+		ConceptReferenceRange strictestRange = new ConceptReferenceRange();
+		strictestRange.setConceptNumeric(conceptReferenceRanges.get(0).getConceptNumeric());
+
+		for (ConceptReferenceRange conceptReferenceRange : conceptReferenceRanges) {
+			if (conceptReferenceRange.getLowAbsolute() != null && 
+					(strictestRange.getLowAbsolute() == null || strictestRange.getLowAbsolute() < conceptReferenceRange.getLowAbsolute())) {
+				strictestRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
+			}
+			
+			if (conceptReferenceRange.getLowCritical() != null && 
+					(strictestRange.getLowCritical() == null || strictestRange.getLowCritical() < conceptReferenceRange.getLowCritical())) {
+				strictestRange.setLowCritical(conceptReferenceRange.getLowCritical());
+			}
+			
+			if (conceptReferenceRange.getLowNormal() != null &&
+					(strictestRange.getLowNormal() == null || strictestRange.getLowNormal() < conceptReferenceRange.getLowNormal())) {
+				strictestRange.setLowNormal(conceptReferenceRange.getLowNormal());
+			}
+			
+			if (conceptReferenceRange.getHiNormal() != null &&
+					(strictestRange.getHiNormal() == null || strictestRange.getHiNormal() > conceptReferenceRange.getHiNormal())) {
+				strictestRange.setHiNormal(conceptReferenceRange.getHiNormal());
+			}
+			
+			if (conceptReferenceRange.getHiCritical() != null &&
+					(strictestRange.getHiCritical() == null || strictestRange.getHiCritical() > conceptReferenceRange.getHiCritical())) {
+				strictestRange.setHiCritical(conceptReferenceRange.getHiCritical());
+			}
+			
+			if (conceptReferenceRange.getHiAbsolute() != null &&
+					(strictestRange.getHiAbsolute() == null || strictestRange.getHiAbsolute() > conceptReferenceRange.getHiAbsolute())) {
+				strictestRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
+			}
+		}
+		
+		return strictestRange;
+	}
 
 }
