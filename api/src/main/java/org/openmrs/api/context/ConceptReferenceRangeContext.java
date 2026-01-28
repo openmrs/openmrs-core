@@ -52,7 +52,13 @@ public class ConceptReferenceRangeContext {
 		this.concept = concept;
 		this.effectiveDate = effectiveDate;
 		this.encounter = null;
-		this.obs = null;
+		
+		Obs obs = new Obs();
+		obs.setPerson(patient);
+		obs.setConcept(concept);
+		obs.setObsDatetime(effectiveDate);
+		
+		this.obs = obs;
 	}
 	
 	/**
@@ -63,7 +69,14 @@ public class ConceptReferenceRangeContext {
 		this.concept = concept;
 		this.effectiveDate = encounter.getEncounterDatetime();
 		this.encounter = encounter;
-		this.obs = null;
+		
+		Obs obs = new Obs();
+		obs.setPerson(patient);
+		obs.setConcept(concept);
+		obs.setObsDatetime(effectiveDate);
+		obs.setEncounter(encounter);
+		
+		this.obs = obs;
 	}
 	
 	public Patient getPatient() {
