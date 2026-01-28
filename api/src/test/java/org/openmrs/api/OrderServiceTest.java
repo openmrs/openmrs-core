@@ -47,6 +47,7 @@ import org.openmrs.DrugReferenceMap;
 import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.FreeTextDosingInstructions;
@@ -2939,6 +2940,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ProviderRole.class)
 				.addAnnotatedClass(EncounterType.class)
 				.addAnnotatedClass(EncounterRole.class)
+				.addAnnotatedClass(EncounterProvider.class)
 				.addAnnotatedClass(PatientProgram.class)
 				.addAnnotatedClass(HL7InArchive.class)
 				.addAnnotatedClass(PersonMergeLog.class)
