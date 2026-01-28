@@ -505,4 +505,22 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		assertEquals("Order.error.orderPatientAndOrderGroupPatientMismatch", errors.getFieldError("patient")
 		        .getCode());
 	}
+	@Test
+	public void validate_shouldFailValidationIfCareSettingIsNull() {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setEncounter(Context.getEncounterService().getEncounter(3));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setUrgency(Order.Urgency.ROUTINE);
+		order.setAction(Order.Action.NEW);
+		order.setDateActivated(new Date());
+		order.setCareSetting(null);
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		assertTrue(errors.hasFieldErrors("careSetting"));
+	}
+
 }
