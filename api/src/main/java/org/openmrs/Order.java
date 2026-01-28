@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import jakarta.persistence.Access;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
@@ -27,7 +28,6 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
@@ -54,8 +54,9 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "orders")
-@Inheritance(strategy = InheritanceType.JOINED) 
 @Audited
+@Inheritance(strategy = InheritanceType.JOINED)
+@AttributeOverride(name = "attributes", column = @Column(name = "order_id"))
 public class Order extends BaseCustomizableData<OrderAttribute> implements FormRecordable {
 	
 	public static final long serialVersionUID = 4334343L;
