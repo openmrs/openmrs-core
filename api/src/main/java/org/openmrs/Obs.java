@@ -20,7 +20,25 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
@@ -63,6 +81,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @see Encounter
  */
+@Entity
+@Table(name = "obs")
+@BatchSize(size = 25)
 @Audited
 public class Obs extends BaseFormRecordableOpenmrsData {
 	
@@ -89,13 +110,21 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	public static final long serialVersionUID = 112342333L;
 	
 	private static final Logger log = LoggerFactory.getLogger(Obs.class);
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "obs_id")
 	protected Integer obsId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	protected Concept concept;
-	
+
+	@Column(name = "obs_datetime", nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
 	protected Date obsDatetime;
-	
+
+	@Column(name = "accession_number")
 	protected String accessionNumber;
 	
 	/**
@@ -105,55 +134,89 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 * 
 	 * @see #isObsGrouping() (??)
 	 */
+	@ManyToOne
+	@JoinColumn(name = "obs_group_id")
 	protected Obs obsGroup;
 	
 	/**
 	 * The list of obs grouped under this obs.
 	 */
+	@OneToMany(mappedBy = "obsGroup", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	@BatchSize(size = 25)
+	@Access(AccessType.FIELD)
 	@AllowDirectAccess
 	protected Set<Obs> groupMembers;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "value_coded")
 	protected Concept valueCoded;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "value_coded_name_id")
 	protected ConceptName valueCodedName;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "value_drug")
 	protected Drug valueDrug;
-	
+
+	@Column(name = "value_group_id")
 	protected Integer valueGroupId;
-	
+
+	@Column(name = "value_datetime")
+	@Temporal(TemporalType.TIMESTAMP)
 	protected Date valueDatetime;
-	
+
+	@Column(name = "value_numeric")
 	protected Double valueNumeric;
-	
+
+	@Column(name = "value_modifier", length = 2)
 	protected String valueModifier;
-	
+
+	@Column(name = "value_text", columnDefinition = "text")
 	protected String valueText;
-	
+
+	@Column(name = "value_complex", length = 1000)
 	protected String valueComplex;
 	
 	// ComplexData is not persisted in the database.
 	protected transient ComplexData complexData;
-	
+
+	@Column(name = "comments")
 	protected String comment;
 	
 	protected transient Integer personId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "person_id", nullable = false, insertable = false, updatable = false)
 	protected Person person;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "order_id")
 	protected Order order;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "location_id")
 	protected Location location;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "encounter_id")
 	protected Encounter encounter;
-	
+
+	@OneToOne
+	@JoinColumn(name = "previous_version", unique = true)
 	private Obs previousVersion;
 	
 	private Boolean dirty = Boolean.FALSE;
-	
+
+	@Column(name = "interpretation", length = 32)
+	@Enumerated(EnumType.STRING)
 	private Interpretation interpretation;
-	
+
+	@Column(name = "status", length = 16, nullable = false)
+	@Enumerated(EnumType.STRING)
 	private Status status = Status.FINAL;
 
+	@OneToOne(mappedBy = "obs", cascade = CascadeType.ALL)
 	private ObsReferenceRange referenceRange;
 
 	/** default constructor */
