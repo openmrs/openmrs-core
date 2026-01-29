@@ -1,0 +1,67 @@
+@startuml OpenMRS_Users,_Roles_and_Security_Domain
+!theme plain
+skinparam linetype ortho
+skinparam packageStyle rectangle
+title OpenMRS Users, Roles & Security Domain Model
+
+entity "privilege" {
+  description : TEXT
+}
+
+entity "provider" {
+  person_id : INT <<FK>>
+  role_id : INT <<FK>>
+  speciality_id : INT <<FK>>
+  provider_role_id : INT <<FK>>
+  name : VARCHAR(255)
+  identifier : VARCHAR(255)
+  changed_by : INT
+}
+
+entity "provider_attribute" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "provider_attribute_type" {
+  description : VARCHAR(1024)
+  datatype : VARCHAR(255)
+  datatype_config : TEXT
+  ... (additional columns)
+}
+
+entity "provider_role" {
+  description : VARCHAR(1000)
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "role" {
+  description : VARCHAR(255)
+}
+
+entity "role_privilege" {
+}
+
+entity "role_role" {
+}
+
+entity "user_property" {
+  property_value : CLOB
+}
+
+entity "user_role" {
+}
+
+entity "users" {
+  username : VARCHAR(50)
+  password : VARCHAR(128)
+  salt : VARCHAR(128)
+  ... (additional columns)
+}
+
+' Relationships
+provider }o--|| role : role_id
+provider }o--|| provider_role : provider_role_id
+
+@enduml
