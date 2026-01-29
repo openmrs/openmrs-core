@@ -448,15 +448,16 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldGetPatientsByIdegntifierAndIdentifierType() throws Exception {
+	public void shouldGetPatientsByIdentifierAndIdentifierType() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
 		updateSearchIndex();
 		
 		List<PatientIdentifierType> types = new ArrayList<>();
 		types.add(new PatientIdentifierType(1));
-		// make sure we get back only one patient
+
+		// We should not get back results for voided identifiers
 		List<Patient> patients = patientService.getPatients("4567", null, types, false);
-		assertEquals(1, patients.size());
+		assertEquals(0, patients.size()); 
 		
 		// make sure error cases are found & catched
 		patients = patientService.getPatients("4567", null, null, false);
@@ -497,8 +498,19 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<PatientIdentifierType> types = new ArrayList<>();
 		types.add(new PatientIdentifierType(1));
 		types.add(new PatientIdentifierType(2));
-		List<Patient> patients = patientService.getPatients("4567", null, types, false);
+		List<Patient> patients = patientService.getPatients("563422", null, types, false);
 		assertEquals(1, patients.size());
+	}
+
+	@Test
+	public void shouldNotGetPatientsByVoidedIdentifier() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		updateSearchIndex();
+
+		List<PatientIdentifierType> types = new ArrayList<>();
+		types.add(new PatientIdentifierType(1));
+		List<Patient> patients = patientService.getPatients(null, "4567", types, true);
+		assertEquals(0, patients.size());
 	}
 	
 	/**
