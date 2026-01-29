@@ -60,46 +60,17 @@ public class ConceptReferenceRangeUtility {
 		if (obs == null) {
 			throw new IllegalArgumentException("Failed to evaluate criteria with reason: Obs is null");
 		}
-		
+
 		if (obs.getPerson() == null) {
-			throw new IllegalArgumentException("Failed to evaluate criteria with reason: patient is null");
-		}
+        	throw new IllegalArgumentException("Failed to evaluate criteria with reason: patient is null");
+    	}
 		
 		if (StringUtils.isBlank(criteria)) {
-			throw new IllegalArgumentException("Failed to evaluate criteria with reason: criteria is empty");
-		}
-		
-		VelocityContext velocityContext = new VelocityContext();
-		velocityContext.put("fn", this);
-		velocityContext.put("obs", obs);
-		
-		velocityContext.put("patient", obs.getPerson());
-		
-		VelocityEngine velocityEngine = new VelocityEngine();
-		try {
-			Properties props = new Properties();
-			props.put("runtime.log.logsystem.class", Log4JLogChute.class.getName());
-			props.put("runtime.log.logsystem.log4j.category", "velocity");
-			props.put("runtime.log.logsystem.log4j.logger", "velocity");
-			velocityEngine.init(props);
-		}
-		catch (Exception e) {
-			throw new APIException("Failed to create the velocity engine: " + e.getMessage(), e);
-		}
-		
-		StringWriter writer = new StringWriter();
-		String wrappedCriteria = "#set( $criteria = " + criteria + " )$criteria";
-		
-		try {
-			velocityEngine.evaluate(velocityContext, writer, ConceptReferenceRangeUtility.class.getName(), wrappedCriteria);
-			return Boolean.parseBoolean(writer.toString());
-		}
-		catch (ParseErrorException e) {
-			throw new APIException("An error occurred while evaluating criteria. Invalid criteria: " + criteria, e);
-		}
-		catch (Exception e) {
-			throw new APIException("An error occurred while evaluating criteria: ", e);
-		}
+        	throw new IllegalArgumentException("Failed to evaluate criteria with reason: criteria is empty");
+    	}
+
+    	ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(obs);
+    	return evaluateCriteria(criteria, context);
 	}
 
 	/**
@@ -107,29 +78,66 @@ public class ConceptReferenceRangeUtility {
  	*/
 	public boolean evaluateCriteria(String criteria, ConceptReferenceRangeContext context) {
 		if (context == null) {
-        	return false;
+        throw new IllegalArgumentException("ConceptReferenceRangeContext must not be null");
     	}
 
-		// Backward compatibility: delegate if Obs exists
+    	if (StringUtils.isBlank(criteria)) {
+        throw new IllegalArgumentException("ConceptReferenceRangeContext criteria must not be empty");
+    	}
+
+    	VelocityContext velocityContext = new VelocityContext();
+    	velocityContext.put("fn", this);
+    	velocityContext.put("context", context);
+
     	if (context.getObs() != null) {
-        	return evaluateCriteria(criteria, context.getObs());
+        velocityContext.put("obs", context.getObs());
     	}
 
-    	Obs obs = new Obs();
-    	obs.setConcept(context.getConcept());
-    	obs.setPerson(context.getPatient());
+    	Person patient = context.getPatient();
+    	if (patient == null && context.getObs() != null) {
+        patient = context.getObs().getPerson();
+    	}
+
+    	if (patient != null) {
+        velocityContext.put("patient", patient);
+        velocityContext.put("person", patient);
+    	}
 
     	if (context.getEncounter() != null) {
-        	obs.setEncounter(context.getEncounter());
+        velocityContext.put("encounter", context.getEncounter());
     	}
 
     	if (context.getDate() != null) {
-        	obs.setObsDatetime(context.getDate());
+        velocityContext.put("date", context.getDate());
     	}
-		
-		return evaluateCriteria(criteria, obs);
+
+    	VelocityEngine velocityEngine = new VelocityEngine();
+    	try {
+        Properties props = new Properties();
+        props.put("runtime.log.logsystem.class", Log4JLogChute.class.getName());
+        props.put("runtime.log.logsystem.log4j.category", "velocity");
+        props.put("runtime.log.logsystem.log4j.logger", "velocity");
+        velocityEngine.init(props);
+    	}
+    	catch (Exception e) {
+        throw new APIException("Failed to create the velocity engine: " + e.getMessage(), e);
+    	}
+
+    	StringWriter writer = new StringWriter();
+    	String wrappedCriteria = "#set( $criteria = " + criteria + " )$criteria";
+
+    	try {
+        velocityEngine.evaluate(velocityContext, writer,ConceptReferenceRangeUtility.class.getName(), wrappedCriteria);
+        return Boolean.parseBoolean(writer.toString());
+    	}
+    	catch (ParseErrorException e) {
+        throw new APIException("An error occurred while evaluating criteria. Invalid criteria: " + criteria, e);
+    	}
+    	catch (Exception e) {
+        throw new APIException("An error occurred while evaluating criteria: ", e);
+    	}
 	}
-	
+
 	/**
 	 * Gets the latest Obs by concept.
 	 * 
@@ -139,6 +147,9 @@ public class ConceptReferenceRangeUtility {
 	 * @return Obs latest Obs
 	 */
 	public Obs getLatestObs(String conceptRef, Person person) {
+		if (person == null) {
+        return null;
+    	}
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
 
 		if (concept != null) {
@@ -434,6 +445,10 @@ public class ConceptReferenceRangeUtility {
 	 *  @since 2.8.3
 	 */
 	public boolean isEnrolledInProgram(String uuid, Person person, Date onDate) {
+		if (person == null) {
+        return false;
+    	}
+
 		if (!(person.getIsPatient())) {
 			return false;
 		}
@@ -451,6 +466,10 @@ public class ConceptReferenceRangeUtility {
 	 * @since 2.8.3
 	 */
 	public boolean isInProgramState(String uuid, Person person, Date onDate) {
+		if (person == null) {
+        return false;
+    	}
+
 		if (!(person.getIsPatient())) {
 			return false;
 		}
