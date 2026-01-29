@@ -118,5 +118,23 @@
 			<column name="changed_by" type="int"/>
 		</addColumn>
 	</changeSet>
+
+	<changeSet id="TRUNK-6522-2026-01-29" author="kmvipin">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<and>
+					<columnExists tableName="obs" columnName="date_changed"/>
+					<columnExists tableName="obs" columnName="dirty"/>
+					<columnExists tableName="obs" columnName="changed_by"/>
+				</and>
+			</not>
+		</preConditions>
+		<comment>Add audit columns required by Obs JPA mapping for TRUNK-6522</comment>
+		<addColumn tableName="obs">
+			<column name="date_changed" type="datetime"/>
+			<column name="dirty" type="BOOLEAN" defaultValueBoolean="false"/>
+			<column name="changed_by" type="int"/>
+		</addColumn>
+	</changeSet>
 	
 </databaseChangeLog>
