@@ -2138,12 +2138,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
     	}
 
     	if (validRanges.isEmpty()) {
-        ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
-        if (defaultReferenceRange != null) {
-            validRanges.add(defaultReferenceRange);
-        } else {
-            return null;
-        }
+			return getDefaultReferenceRange(conceptNumeric);
     	}
 
     	return findStrictestReferenceRange(validRanges);
