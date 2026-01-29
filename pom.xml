@@ -295,7 +295,7 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper</artifactId>
-				<version>11.0.15</version>
+				<version>11.0.18</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -408,7 +408,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.7.8</version>
+				<version>42.7.9</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
@@ -566,11 +566,6 @@
 				<version>33.5.0-jre</version>
 			</dependency>
 			<dependency>
-			    <groupId>jakarta.xml.bind</groupId>
-			    <artifactId>jakarta.xml.bind-api</artifactId>
-			    <version>4.0.4</version>
-			</dependency>
-			<dependency>
 				<groupId>com.sun.mail</groupId>
 				<artifactId>javax.mail</artifactId>
 				<version>1.6.2</version>
@@ -620,7 +615,7 @@
 			<dependency>
 				<groupId>org.jboss.logging</groupId>
 				<artifactId>jboss-logging</artifactId>
-				<version>3.6.1.Final</version>
+				<version>3.6.2.Final</version>
 			</dependency>
 
 			<dependency>
@@ -701,7 +696,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>buildnumber-maven-plugin</artifactId>
-					<version>3.2.1</version>
+					<version>3.3.0</version>
 					<configuration>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
 						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
@@ -1241,12 +1236,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1267,12 +1262,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1293,12 +1288,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1391,7 +1386,7 @@
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.25.3</log4jVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
-		<graalJsVersion>25.0.1</graalJsVersion>
+		<graalJsVersion>25.0.2</graalJsVersion>
 
 		<customArgLineForTesting />
 

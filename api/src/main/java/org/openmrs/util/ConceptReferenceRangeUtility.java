@@ -13,6 +13,7 @@ import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +28,9 @@ import org.apache.velocity.runtime.log.Log4JLogChute;
 import org.joda.time.LocalTime;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -290,7 +294,7 @@ public class ConceptReferenceRangeUtility {
 	 * Gets the number of days between two given dates
 	 * 
 	 * @param fromDate the date from which to start counting
-	 * @param dateDate the date up to which to stop counting
+	 * @param toDate the date up to which to stop counting
 	 * @return the number of days between
 	 * @since 2.7.8
 	 */
@@ -305,7 +309,7 @@ public class ConceptReferenceRangeUtility {
 	 * Gets the number of weeks between two given dates
 	 * 
 	 * @param fromDate the date from which to start counting
-	 * @param dateDate the date up to which to stop counting
+	 * @param toDate the date up to which to stop counting
 	 * @return the number of weeks between
 	 * @since 2.7.8
 	 */
@@ -320,7 +324,7 @@ public class ConceptReferenceRangeUtility {
 	 * Gets the number of months between two given dates
 	 * 
 	 * @param fromDate the date from which to start counting
-	 * @param dateDate the date up to which to stop counting
+	 * @param toDate the date up to which to stop counting
 	 * @return the number of months between
 	 * @since 2.7.8
 	 */
@@ -335,7 +339,7 @@ public class ConceptReferenceRangeUtility {
 	 * Gets the number of years between two given dates
 	 * 
 	 * @param fromDate the date from which to start counting
-	 * @param dateDate the date up to which to stop counting
+	 * @param toDate the date up to which to stop counting
 	 * @return the number of years between
 	 * @since 2.7.8
 	 */
@@ -391,6 +395,52 @@ public class ConceptReferenceRangeUtility {
 	}
 	
 	/**
+	 * Returns whether the patient is the specified program on the specified date
+	 * 
+	 * @param uuid of program
+	 * @param person the patient to test
+	 * @param onDate the date to test whether the patient is in the program
+	 * @return true if the patient is in the program on the specified date, false otherwise
+	 * 
+	 *  @since 2.8.3
+	 */
+	public boolean isEnrolledInProgram(String uuid, Person person, Date onDate) {
+		if (!(person.getIsPatient())) {
+			return false;
+		}
+		return getPatientPrograms((Patient) person, onDate).stream().anyMatch(pp -> pp.getProgram().getUuid().equals(uuid));
+	}
+	
+	/**
+	 * Returns whether the patient is the specified program state on the specified date
+	 *
+	 * @param uuid of program state
+	 * @param person  the patient to test
+	 * @param onDate the date to test whether the patient is in the program state
+	 * @return true if the patient is in the program state on the specified date, false otherwise
+	 * 
+	 * @since 2.8.3
+	 */
+	public boolean isInProgramState(String uuid, Person person, Date onDate) {
+		if (!(person.getIsPatient())) {
+			return false;
+		}
+	
+		List<PatientProgram> patientPrograms = getPatientPrograms((Patient) person, onDate);
+		List<PatientState> patientStates = new ArrayList<>();
+		
+		for (PatientProgram pp : patientPrograms) {
+			for (PatientState state : pp.getStates()) {
+				if (state.getActive(onDate)) {
+					patientStates.add(state);
+				}
+			}
+		}
+		
+		return patientStates.stream().anyMatch(ps -> ps.getState().getUuid().equals(uuid));
+	}
+	
+	/**
 	 * Converts a java.util.Date to java.time.LocalDate
 	 * 
 	 * @param date the java.util.Date
@@ -398,5 +448,12 @@ public class ConceptReferenceRangeUtility {
 	 */
 	private LocalDate toLocalDate(Date date) {
 		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	}
+	
+	private List<PatientProgram> getPatientPrograms(Patient patient, Date onDate) {
+		if (onDate == null) {
+			onDate = new Date();
+		}
+		return Context.getProgramWorkflowService().getPatientPrograms(patient, null, null, onDate, onDate, null, false);
 	}
 }

@@ -584,6 +584,7 @@ public class ModuleUtil {
 	 */
 	public static void expandJar(File fileToExpand, File tmpModuleDir, String name, boolean keepFullPath) throws IOException {
 		String docBase = tmpModuleDir.getAbsolutePath();
+		log.debug("Expanding jar {}", fileToExpand);
 		try (JarFile jarFile = new JarFile(fileToExpand)) {
 			Enumeration<JarEntry> jarEntries = jarFile.entries();
 			boolean foundName = (name == null);
