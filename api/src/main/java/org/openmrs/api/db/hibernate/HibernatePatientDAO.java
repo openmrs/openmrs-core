@@ -821,6 +821,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		patientIdentifierLuceneQuery.include("identifierType.patientIdentifierTypeId", identifierTypeIds);
 		patientIdentifierLuceneQuery.include("patient.isPatient", true);
+		patientIdentifierLuceneQuery.include("voided", false);
 		patientIdentifierLuceneQuery.skipSame("patient.personId");
 		
 		return patientIdentifierLuceneQuery;
