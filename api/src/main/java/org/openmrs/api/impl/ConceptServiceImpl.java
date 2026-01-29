@@ -66,14 +66,13 @@ import org.openmrs.api.ConceptNameInUseException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptStopWordException;
 import org.openmrs.api.ConceptsLockedException;
-import org.openmrs.api.context.ConceptReferenceRangeContext;
-import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.ConceptReferenceRangeContext;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ObsValidator;
@@ -2107,50 +2106,49 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 
 	@Override
 	public ConceptReferenceRange getConceptReferenceRange(ConceptReferenceRangeContext context) {
-    if (context == null) {
+		if (context == null) {
         throw new IllegalArgumentException("ConceptReferenceRangeContext must not be null");
-    }
+    	}
 
-    Obs obs = context.getObs();
-	// If Obs is already available, reuse existing logic
-    if (context.getObs() != null) {
-        Concept concept = HibernateUtil.getRealObjectFromProxy(obs.getConcept());
-		if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
-			return null;
-		}
-		
-		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
+    	Obs obs = context.getObs();
+    	if (obs == null) {
+        throw new IllegalArgumentException("ConceptReferenceRangeContext obs must not be null");
+    	}
 
+    	Concept concept = HibernateUtil.getRealObjectFromProxy(obs.getConcept());
+    	if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
+        return null;
+    	}
+
+    	ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
 		List<ConceptReferenceRange> referenceRanges = Context.getConceptService().getConceptReferenceRangesByConceptId(concept.getConceptId());
 
-		if (referenceRanges.isEmpty()) {
-			return getDefaultReferenceRange(conceptNumeric);
-		}
-
-		ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
-		List<ConceptReferenceRange> validRanges = new ArrayList<>();
-
-		for (ConceptReferenceRange referenceRange : referenceRanges) {
-			if (referenceRangeUtility.evaluateCriteria(StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()), obs)) {
-				validRanges.add(referenceRange);
-			}
-		}
-
-		if (validRanges.isEmpty()) {
-			ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
-			if (defaultReferenceRange != null) {
-				validRanges.add(defaultReferenceRange);
-			} else {
-				return null;
-			}
-		}
-		
-		return findStrictestReferenceRange(validRanges);
+    	if (referenceRanges.isEmpty()) {
+        return getDefaultReferenceRange(conceptNumeric);
     	}
-		return null;
+
+    	ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
+    	List<ConceptReferenceRange> validRanges = new ArrayList<>();
+
+    	for (ConceptReferenceRange referenceRange : referenceRanges) {
+        if (referenceRangeUtility.evaluateCriteria(
+                StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()), obs)) {
+            validRanges.add(referenceRange);
+        }
+    	}
+
+    	if (validRanges.isEmpty()) {
+        ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
+        if (defaultReferenceRange != null) {
+            validRanges.add(defaultReferenceRange);
+        } else {
+            return null;
+        }
+    	}
+
+    	return findStrictestReferenceRange(validRanges);
 	}
-
-
+	
 	/***
 	 * Determines if the passed string is in valid uuid format By OpenMRS standards, a uuid must be 36
 	 * characters in length and not contain whitespace, but we do not enforce that a uuid be in the
