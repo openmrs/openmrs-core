@@ -208,6 +208,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	@JoinColumn(name = "previous_version", unique = true)
 	private Obs previousVersion;
 	
+	@Column(name = "dirty")
 	private Boolean dirty = Boolean.FALSE;
 
 	@Enumerated(EnumType.STRING)
