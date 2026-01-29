@@ -39,7 +39,9 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
+import org.hibernate.type.SqlTypes;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -208,12 +210,14 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	
 	private Boolean dirty = Boolean.FALSE;
 
-	@Column(name = "interpretation", length = 32)
 	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "interpretation", length = 32)
 	private Interpretation interpretation;
 
-	@Column(name = "status", length = 16, nullable = false)
 	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "status", length = 16, nullable = false)
 	private Status status = Status.FINAL;
 
 	@OneToOne(mappedBy = "obs", cascade = CascadeType.ALL)
