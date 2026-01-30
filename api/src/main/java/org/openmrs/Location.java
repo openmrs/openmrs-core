@@ -49,7 +49,6 @@ import java.util.Set;
 @Table(name = "location")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@AttributeOverride(name = "attributes", column = @Column(name = "location_id"))
 @Audited
 public class Location extends BaseCustomizableMetadata<LocationAttribute> implements java.io.Serializable, Attributable<Location>, Address {
 	

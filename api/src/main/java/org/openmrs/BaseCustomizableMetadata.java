@@ -38,8 +38,7 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 	
 	@OrderBy("voided asc")
 	@BatchSize(size = 100)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "location_id")
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private Set<A> attributes = new LinkedHashSet<>();
 	
 	/**
