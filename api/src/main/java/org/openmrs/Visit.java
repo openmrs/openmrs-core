@@ -76,12 +76,6 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	@OrderBy("encounter_datetime desc, encounter_id desc")
 	private Set<Encounter> encounters;
 	
-	@Access(AccessType.PROPERTY)
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("voided asc")
-	@BatchSize(size = 100)
-	private Set<VisitAttribute> attributes = new LinkedHashSet<>();
-	
 	/**
 	 * Default Constructor
 	 */

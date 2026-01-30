@@ -82,13 +82,7 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
-
-	@Access(AccessType.PROPERTY)
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("voided asc")
-	@BatchSize(size = 100)
-	private Set<DiagnosisAttribute> attributes = new LinkedHashSet<>();
-
+	
 	@Column(name="form_namespace_and_path")
 	private String formNamespaceAndPath;
 

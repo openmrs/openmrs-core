@@ -63,12 +63,6 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	@ManyToOne
 	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
-
-	@Access(AccessType.PROPERTY)
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("voided asc")
-	@BatchSize(size = 100)
-	private Set<OrderGroupAttribute> attributes = new LinkedHashSet<>();
 	
 	@ManyToOne
 	@JoinColumn(name = "order_set_id")
