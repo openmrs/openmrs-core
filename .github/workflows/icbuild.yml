@@ -2,13 +2,16 @@ name: Imaging Cloud Analyzer Action
 env:
   version: 1
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - master
       - main
   workflow_dispatch:
 jobs:
   run-imaging-cloud-analyzer:
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -16,4 +19,4 @@ jobs:
       - name: Run Imaging Cloud Action
         run: |
           cd ${{github.workspace}}
-          docker run -v $(pwd):/home/carl/extras/source -e IMAGING_CLOUD_API_KEY=${{secrets.IMAGING_CLOUD_API_KEY}} -e REPO_URL=${{github.server_url}}/${{github.repository}} -e IMAGING_CLOUD_ACTION_FILE_VERSION=${{env.version}} -e IMAGING_CLOUD_URL="https://integration.castimaging.io" castimaging/imaging-cloud-action:int
+          docker run -v $(pwd):/home/carl/extras/source -e IMAGING_CLOUD_API_KEY=${{secrets.IMAGING_CLOUD_API_KEY}} -e REPO_URL=${{github.server_url}}/${{github.repository}} -e BRANCH_NAME=${{github.ref_name}} -e COMMIT_ID=${{github.sha}} -e IMAGING_CLOUD_ACTION_FILE_VERSION=${{env.version}} -e IMAGING_CLOUD_URL="https://integration.castimaging.io" castimaging/imaging-cloud-action:int
