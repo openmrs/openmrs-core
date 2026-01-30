@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import jakarta.persistence.Access;
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
