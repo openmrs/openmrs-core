@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import jakarta.persistence.Access;
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
@@ -56,7 +55,6 @@ import java.util.Date;
 @Table(name = "orders")
 @Audited
 @Inheritance(strategy = InheritanceType.JOINED)
-@AttributeOverride(name = "attributes", column = @Column(name = "order_id"))
 public class Order extends BaseCustomizableData<OrderAttribute> implements FormRecordable {
 	
 	public static final long serialVersionUID = 4334343L;

@@ -9,17 +9,13 @@
  */
 package org.openmrs;
 
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
 
-import jakarta.persistence.Access;
-import jakarta.persistence.AccessType;
 import jakarta.persistence.AssociationOverride;
 import jakarta.persistence.AssociationOverrides;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -30,13 +26,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import org.hibernate.type.SqlTypes;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * Diagnosis class defines the identification of the nature of an illness or other problem by
@@ -82,13 +74,7 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
-
-	@Access(AccessType.PROPERTY)
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("voided asc")
-	@BatchSize(size = 100)
-	private Set<DiagnosisAttribute> attributes = new LinkedHashSet<>();
-
+	
 	@Column(name="form_namespace_and_path")
 	private String formNamespaceAndPath;
 
