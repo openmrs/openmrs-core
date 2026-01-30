@@ -1,0 +1,90 @@
+@startuml OpenMRS_Patient_Management_Domain
+!theme plain
+skinparam linetype ortho
+skinparam packageStyle rectangle
+title OpenMRS Patient Management Domain Model
+
+entity "allergy" {
+  severity_concept_id : INT <<FK>>
+  encounter_id : INT <<FK>>
+  non_coded_allergen : VARCHAR(255)
+  uuid : CHAR(38)
+  form_namespace_and_path : VARCHAR(255)
+  comments : VARCHAR(1024)
+  changed_by : INT
+}
+
+entity "allergy_reaction" {
+  reaction_non_coded : VARCHAR(255)
+  uuid : CHAR(38)
+}
+
+entity "patient" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "patient_identifier" {
+  location_id : INT <<FK>>
+  patient_program_id : INT <<FK>>
+  date_changed : datetime(0)
+  changed_by : INT
+}
+
+entity "patient_identifier_type" {
+  description : TEXT
+  format_description : VARCHAR(255)
+  format : VARCHAR(255)
+  validator : VARCHAR(200)
+  ... (additional columns)
+}
+
+entity "person" {
+  gender : VARCHAR(50)
+  birthdate : date
+  cause_of_death_non_coded : VARCHAR(255)
+  death_date : datetime(0)
+  cause_of_death : INT
+  ... (additional columns)
+}
+
+entity "person_address" {
+  person_id : INT <<FK>>
+  postal_code : VARCHAR(50)
+  address1 : VARCHAR(255)
+  address2 : VARCHAR(255)
+  ... (additional columns)
+}
+
+entity "person_attribute" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "person_attribute_type" {
+  description : TEXT
+  format : VARCHAR(50)
+  foreign_key : INT
+}
+
+entity "person_merge_log" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "person_name" {
+  given_name : VARCHAR(50)
+  middle_name : VARCHAR(50)
+  family_name_prefix : VARCHAR(50)
+  family_name : VARCHAR(50)
+  family_name2 : VARCHAR(50)
+  family_name_suffix : VARCHAR(50)
+  prefix : VARCHAR(50)
+  degree : VARCHAR(50)
+  ... (additional columns)
+}
+
+' Relationships
+person_address }o--|| person : person_id
+
+@enduml
