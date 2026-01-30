@@ -22,9 +22,11 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Allergy;
 import org.openmrs.AllergyReaction;
 import org.openmrs.CareSetting;
+import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -45,7 +47,9 @@ import org.openmrs.DrugReferenceMap;
 import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
 import org.openmrs.EncounterRole;
+import org.openmrs.EncounterType;
 import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -70,6 +74,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Privilege;
 import org.openmrs.Program;
@@ -78,6 +83,7 @@ import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderRole;
+import org.openmrs.ReferralOrder;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.SimpleDosingInstructions;
@@ -2918,6 +2924,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ProgramAttributeType.class)
 				.addAnnotatedClass(HL7InError.class)
 				.addAnnotatedClass(OrderType.class)
+				.addAnnotatedClass(Cohort.class)
 				.addAnnotatedClass(CohortMembership.class)
 				.addAnnotatedClass(OrderAttributeType.class)
 				.addAnnotatedClass(OrderSetAttributeType.class)
@@ -2931,7 +2938,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(FormResource.class)
 				.addAnnotatedClass(VisitType.class)
 				.addAnnotatedClass(ProviderRole.class)
+				.addAnnotatedClass(EncounterType.class)
 				.addAnnotatedClass(EncounterRole.class)
+				.addAnnotatedClass(EncounterProvider.class)
 				.addAnnotatedClass(PatientProgram.class)
 				.addAnnotatedClass(HL7InArchive.class)
 				.addAnnotatedClass(PersonMergeLog.class)
@@ -2957,6 +2966,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(LocationAttribute.class)
 				.addAnnotatedClass(VisitAttribute.class)
 				.addAnnotatedClass(DiagnosisAttribute.class)
+			    .addAnnotatedClass(Order.class)
+			    .addAnnotatedClass(DrugOrder.class)
+		    	.addAnnotatedClass(TestOrder.class)
+			    .addAnnotatedClass(ReferralOrder.class)
+				.addAnnotatedClass(ConceptProposal.class)
+				.addAnnotatedClass(PersonAttribute.class)
+				.addAnnotatedClass(OrderGroupAttribute.class)
+				.addAnnotatedClass(OrderAttribute.class)
 				.getMetadataBuilder().build();
 
 
