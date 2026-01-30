@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import static org.openmrs.util.DateUtil.truncateToSeconds;
 
 import java.util.Date;
@@ -21,22 +23,27 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.CohortService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * API functions related to Cohorts
  */
+@Service("cohortService")
 @Transactional
-public class CohortServiceImpl extends BaseOpenmrsService implements CohortService {
+public class CohortServiceImpl extends BaseOpenmrsService implements CohortService, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(CohortServiceImpl.class);
 	
+	@Autowired
 	private CohortDAO dao;
 	
 	/**
@@ -279,4 +286,22 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 		}
 		return dao.getCohortMemberships(patientId, activeOnDate, includeVoided);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (CohortMembership.class.equals(type)) {
+            return (T) getCohortMembershipByUuid(uuid);
+        }
+        if (Cohort.class.equals(type)) {
+            return (T) getCohortByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(CohortMembership.class, Cohort.class);
+    }
+
 }

@@ -36,13 +36,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
-import javax.servlet.Filter;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -78,6 +78,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 public class WebModuleUtil {
 
@@ -122,7 +124,7 @@ public class WebModuleUtil {
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		
-		log.debug("trying to start module {}", mod);
+		log.debug("Trying to start module {}", mod);
 		
 		// only try and start this module if the api started it without a
 		// problem.
@@ -312,11 +314,11 @@ public class WebModuleUtil {
 			// refresh the spring web context to get the just-created xml
 			// files into it (if we copied an xml file)
 			if (moduleNeedsContextRefresh && !delayContextRefresh) {
-				log.debug("Refreshing context for module {}", mod);
+				log.debug("Refreshing context for module {}", mod.getModuleId());
 				
 				try {
 					refreshWAC(servletContext, false, mod);
-					log.debug("Done Refreshing WAC");
+					log.debug("Done refreshing context for module {}", mod.getModuleId());
 				}
 				catch (Exception e) {
 					String msg = "Unable to refresh the WebApplicationContext";
@@ -338,7 +340,9 @@ public class WebModuleUtil {
 					}
 					
 					// try starting the application context again
+					log.debug("Refreshing context for module {} (re-trying)", mod.getModuleId());
 					refreshWAC(servletContext, false, mod);
+					log.debug("Done refreshing context for module {} (re-trying)", mod.getModuleId());
 					
 					notifySuperUsersAboutModuleFailure(mod);
 				}
@@ -758,12 +762,7 @@ public class WebModuleUtil {
 	private static Document getDWRModuleXML(InputStream inputStream, String realPath) {
 		Document dwrmodulexml;
 		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-
-			// When asked to resolve external entities (such as a DTD) we return an InputSource
-			// with no data at the end, causing the parser to ignore the DTD.
-			db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+			DocumentBuilder db = createDocumentBuilder();
 			dwrmodulexml = db.parse(inputStream);
 		}
 		catch (Exception e) {
@@ -933,7 +932,7 @@ public class WebModuleUtil {
 	        Module startedModule) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext) WebApplicationContextUtils
 		        .getWebApplicationContext(servletContext);
-		log.debug("Refreshing web application Context of class: {}", wac.getClass().getName());
+		log.debug("Refreshing Web Application Context of class: {}", wac.getClass().getName());
 		
 		if (dispatcherServlet != null) {
 			dispatcherServlet.stopAndCloseApplicationContext();
@@ -1026,11 +1025,8 @@ public class WebModuleUtil {
 	}
 	
 	public static void createDwrModulesXml(String realPath) {
-		
 		try {
-			
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			DocumentBuilder docBuilder = createDocumentBuilder();
 			
 			// root elements
 			Document doc = docBuilder.newDocument();
@@ -1047,7 +1043,7 @@ public class WebModuleUtil {
 			transformer.transform(source, result);
 			
 		}
-		catch (ParserConfigurationException pce) {
+		catch (APIException pce) {
 			log.error("Failed to parse document", pce);
 		}
 		catch (TransformerException tfe) {

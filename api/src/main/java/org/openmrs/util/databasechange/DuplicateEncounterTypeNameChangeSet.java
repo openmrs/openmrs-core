@@ -143,7 +143,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 			}
 		}
 		catch (BatchUpdateException e) {
-			log.warn("Error generated while processsing batch insert", e);
+			log.warn("Error generated while processing batch insert", e);
 			
 			try {
 				log.debug("Rolling back batch", e);

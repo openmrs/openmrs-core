@@ -30,17 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TextHandlerTest extends BaseContextSensitiveTest {
 	
 	@Autowired
-	private AdministrationService adminService;
-
-	@TempDir
-	public Path complexObsTestFolder;
-
+	AdministrationService adminService;
+	
+	@Autowired
 	TextHandler handler;
-
-	@BeforeEach
-	public void setUp() {
-		handler = new TextHandler();
-	}
 	
     @Test
     public void shouldReturnSupportedViews() {
@@ -70,8 +63,9 @@ public class TextHandlerTest extends BaseContextSensitiveTest {
     }
     
 	@Test
-	public void saveObs_shouldRetrieveCorrectMimetype() {
-		ComplexData complexData = new ComplexData("TestingComplexObsSaving.txt", "Teststring");
+	public void saveObs_shouldRetrieveCorrectMimetypeAndTitle() throws Exception {
+		String filename = "TestingComplexObsSaving.txt";
+		ComplexData complexData = new ComplexData(filename, "Teststring");
 		
 		// Construct 2 Obs to also cover the case where the filename exists already
 		Obs obs1 = new Obs();
@@ -81,8 +75,7 @@ public class TextHandlerTest extends BaseContextSensitiveTest {
 		obs2.setComplexData(complexData);
 
 		adminService.saveGlobalProperty(new GlobalProperty(
-			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, 
-			complexObsTestFolder.toAbsolutePath().toString()
+			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, "obs"
 		));
 
 		handler.saveObs(obs1);
@@ -91,6 +84,8 @@ public class TextHandlerTest extends BaseContextSensitiveTest {
 		Obs complexObs1 = handler.getObs(obs1, "RAW_VIEW");
 		Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 		assertEquals(complexObs1.getComplexData().getMimeType(), "text/plain");
+		assertEquals(complexObs1.getComplexData().getTitle(), filename);
 		assertEquals(complexObs2.getComplexData().getMimeType(), "text/plain");
+		assertEquals(complexObs2.getComplexData().getTitle(), filename);
 	}
 }

@@ -50,6 +50,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
+
 /**
  * This class will parse an OpenMRS module, specifically its {@code config.xml} file into a {@link org.openmrs.module.Module} object.
  * <p>Typical usage is:
@@ -85,6 +87,7 @@ public class ModuleFileParser {
 		validConfigVersions.add("1.5");
 		validConfigVersions.add("1.6");
 		validConfigVersions.add("1.7");
+		validConfigVersions.add("2.0");
 	}
 	
 	// TODO - remove this field once ModuleFileParser(File), ModuleFileParser(InputStream) are removed.
@@ -286,8 +289,7 @@ public class ModuleFileParser {
 	}
 
 	private DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
+		DocumentBuilder db = createDocumentBuilder();;
 
 		// When asked to resolve external entities (such as a
 		// DTD) we return an InputSource
@@ -318,7 +320,7 @@ public class ModuleFileParser {
 		String desc = getElementTrimmed(configRoot, "description");
 		String version = getElementTrimmed(configRoot, "version");
 
-		Module module = new Module(name, moduleId, packageName, author, desc, version);
+		Module module = new Module(name, moduleId, packageName, author, desc, version, configVersion);
 
 		module.setActivatorName(getElementTrimmed(configRoot, "activator"));
 		module.setRequireDatabaseVersion(getElementTrimmed(configRoot, "require_database_version"));

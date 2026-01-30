@@ -9,15 +9,34 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.type.SqlTypes;
 
 /**
  * PatientIdentifierType
  */
+@Entity
+@Table(name = "patient_identifier_type")
 @Audited
+@AttributeOverrides({
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50)),
+	@AttributeOverride(name = "description", column = @Column(name = "description", length = 65535))
+})
 public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 211231L;
@@ -61,19 +80,33 @@ public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	
 	// Fields
 	@DocumentId
+	@Id
+	@GeneratedValue(generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
+	@Column(name = "patient_identifier_type_id")
 	private Integer patientIdentifierTypeId;
-	
+
+	@Column(name = "format")
 	private String format;
 
-	@Field
+	@GenericField
+	@Column(name = "required", nullable = false)
 	private Boolean required = Boolean.FALSE;
-	
+
+	@Column(name = "format_description", length = 250)
 	private String formatDescription;
 
+	@Column(name = "validator", length = 200)
 	private String validator;
-	
+
+	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "location_behavior", length = 50)
 	private LocationBehavior locationBehavior;
-	
+
+	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "uniqueness_behavior", length = 50)
 	private UniquenessBehavior uniquenessBehavior;
 	
 	/** default constructor */

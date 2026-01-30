@@ -205,6 +205,11 @@ public interface ContextDAO {
 	public void updateSearchIndexForType(Class<?> type);
 
 	/**
+	 * @see Context#updateSearchIndex(Class[])
+	 */
+	public void updateSearchIndex(Class<?>... types);
+
+	/**
 	 * @return a Connection from the OpenMRS database connection pool
 	 * @since 2.5.7
 	 */

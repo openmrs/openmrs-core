@@ -11,6 +11,7 @@ package org.openmrs.scheduler.timer;
 
 import java.util.Date;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
@@ -91,7 +92,11 @@ public class TimerSchedulerTask extends TimerTask {
 	 * Executes the given task.
 	 */
 	public static void execute(Task task) {
-		task.execute();
+		try {
+			task.execute();
+		} catch (InterruptedException | ExecutionException e) {
+			// ignored
+		} 
 		saveLastExecutionTime(task);
 	}
 }

@@ -373,7 +373,7 @@ if (owaspCSRFGuardScriptHasLoaded !== true) {
                     hidden.setAttribute('name', tokenName);
                     hidden.setAttribute('value', value);
 
-                    form.appendChild(hidden);
+					form.insertBefore(hidden, form.firstChild);
                     //console.debug('Hidden input element [', hidden, '] was added to the form: ', form);
                 } else {
                     hiddenTokenFields.forEach(function (i) {

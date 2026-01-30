@@ -13,11 +13,13 @@ import org.hibernate.SessionFactory;
 import org.openmrs.MedicationDispense;
 import org.openmrs.api.db.MedicationDispenseDAO;
 import org.openmrs.parameter.MedicationDispenseCriteria;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +28,13 @@ import java.util.List;
  * @since 2.6.0
  * @see MedicationDispenseDAO
  */
+@Repository("medicationDispenseDAO")
 public class HibernateMedicationDispenseDAO implements MedicationDispenseDAO {
 	
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateMedicationDispenseDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 

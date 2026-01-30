@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -31,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,14 +42,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -81,7 +86,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private ObsService obsService;
-
+	
+	@Autowired
+	private AdministrationService adminService;
 	
 	/**
 	 * This method gets the revision obs for voided obs
@@ -129,7 +136,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o.setObsDatetime(new Date());
 		o.setPerson(new Patient(2));
 		o.setValueText("original obs value text");
-		
+
 		//create a second obs
 		Obs o2 = new Obs();
 		o2.setConcept(cs.getConcept(3));
@@ -139,7 +146,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o2.setObsDatetime(new Date());
 		o2.setValueText("second obs value text");
 		o2.setPerson(new Patient(2));
-		
+
 		//create a parent obs
 		Obs oParent = new Obs();
 		oParent.setConcept(cs.getConcept(23)); //in the concept set table as a set
@@ -148,11 +155,11 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oParent.setLocation(new Location(1));
 		oParent.setObsDatetime(new Date());
 		oParent.setPerson(new Patient(2));
-		
+
 		//add o and o2 to the parent obs
 		oParent.addGroupMember(o2);
 		oParent.addGroupMember(o);
-		
+
 		//create a grandparent obs
 		Obs oGP = new Obs();
 		oGP.setConcept(cs.getConcept(3));
@@ -162,9 +169,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGP.setObsDatetime(new Date());
 		oGP.setPerson(new Patient(2));
 		//oGP.setValueText("grandparent obs value text");
-		
+
 		oGP.addGroupMember(oParent);
-		
+
 		//create a leaf observation
 		Obs o3 = new Obs();
 		o3.setConcept(cs.getConcept(3));
@@ -174,10 +181,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o3.setObsDatetime(new Date());
 		o3.setValueText("leaf obs value text");
 		o3.setPerson(new Patient(2));
-		
+
 		//and add it to the grandparent
 		oGP.addGroupMember(o3);
-		
+
 		//create a great-grandparent
 		Obs oGGP = new Obs();
 		oGGP.setConcept(cs.getConcept(3));
@@ -187,9 +194,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGGP.setObsDatetime(new Date());
 		//oGGP.setValueText("great grandparent value text");
 		oGGP.setPerson(new Patient(2));
-		
+
 		oGGP.addGroupMember(oGP);
-		
+
 		//create a great-great grandparent
 		Obs oGGGP = new Obs();
 		oGGGP.setConcept(cs.getConcept(3));
@@ -199,13 +206,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGGGP.setObsDatetime(new Date());
 		//oGGGP.setValueText("great great grandparent value text");
 		oGGGP.setPerson(new Patient(2));
-		
+
 		oGGGP.addGroupMember(oGGP);
-		
+
 		//Create the great great grandparent
 		os.saveObs(oGGGP, null);
 		int oGGGPId = oGGGP.getObsId();
-		
+
 		//now navigate the tree and make sure that all tree members have obs_ids
 		//indicating that they've been saved (unsaved_value in the hibernate mapping set to null so
 		// the notNull assertion is sufficient):
@@ -232,16 +239,16 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 							child.setValueText("testingUpdate");
 						}
 					}
-					
+
 				}
-				
+
 			}
 		}
-		
+
 		Obs oGGGPThatWasUpdated = os.saveObs(oGGGP, "Updating obs group parent");
-		
+
 		//now, re-walk the tree to verify that the bottom-level leaf obs have the new text value:
-		
+
 		int childOneId = 0;
 		int childTwoId = 0;
 		assertTrue(oGGGPThatWasUpdated.isObsGrouping());
@@ -270,12 +277,12 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 							i++;
 						}
 					}
-					
+
 				}
-				
+
 			}
 		}
-		
+
 		//check voiding:
 		//first, just create an Obs, and void it, and verify:
 		Obs oVoidTest = new Obs();
@@ -287,12 +294,12 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oVoidTest.setObsDatetime(new Date());
 		oVoidTest.setPerson(new Patient(2));
 		oVoidTest.setValueText("value text of soon-to-be-voided obs");
-		
+
 		Obs obsThatWasVoided = os.saveObs(oVoidTest, null);
 		os.voidObs(obsThatWasVoided, "testing void method");
-		
+
 		assertTrue(obsThatWasVoided.getVoided());
-		
+
 		//unvoid:
 		obsThatWasVoided.setVoided(false);
 		assertFalse(obsThatWasVoided.getVoided());
@@ -436,31 +443,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		AdministrationService as = Context.getAdministrationService();
 		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
-		File createdFile = new File(complexObsDir, "openmrs_logo_small.gif");
-		if (createdFile.exists())
-			createdFile.delete();
-		int width = 10;
-		int height = 10;
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		WritableRaster raster = image.getRaster();
-		int[] colorArray = new int[3];
-		int h = 255;
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				if (i == 0 || j == 0 || i == width - 1 || j == height - 1 || (i > width / 3 && i < 2 * width / 3)
-				        && (j > height / 3 && j < 2 * height / 3)) {
-					colorArray[0] = h;
-					colorArray[1] = h;
-					colorArray[2] = 0;
-				} else {
-					colorArray[0] = 0;
-					colorArray[1] = 0;
-					colorArray[2] = h;
-				}
-				raster.setPixel(i, j, colorArray);
-			}
-		}
-		ImageIO.write(image, "gif", createdFile);
+		File createdFile = createImage(complexObsDir, "openmrs_logo_small.gif");
 		// end create gif file
 		ObsService os = Context.getObsService();
 
@@ -477,20 +460,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		// database and hence can't be "rolled back" like everything else
 		createdFile.delete();
 	}
-	
-	/**
-	 * @throws IOException
-	 * @see ObsService#getComplexObs(Integer,String)
-	 */
-	@Test
-	public void getComplexObs_shouldNotFailWithNullView() throws IOException {
-		executeDataSet(COMPLEX_OBS_XML);
-		// create gif file
-		// make sure the file isn't there to begin with
-		AdministrationService as = Context.getAdministrationService();
-		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
-		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
-		File createdFile = new File(complexObsDir, "openmrs_logo_small.gif");
+
+	public static @NotNull File createImage(File complexObsDir, String filename) throws IOException {
+		File createdFile = new File(complexObsDir, filename);
 		if (createdFile.exists())
 			createdFile.delete();
 		int width = 10;
@@ -515,6 +487,22 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 		ImageIO.write(image, "gif", createdFile);
+		return createdFile;
+	}
+
+	/**
+	 * @throws IOException
+	 * @see ObsService#getComplexObs(Integer,String)
+	 */
+	@Test
+	public void getComplexObs_shouldNotFailWithNullView() throws IOException {
+		executeDataSet(COMPLEX_OBS_XML);
+		// create gif file
+		// make sure the file isn't there to begin with
+		AdministrationService as = Context.getAdministrationService();
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		File createdFile = createImage(complexObsDir, "openmrs_logo_small.gif");
 		// end create gif file
 		ObsService os = Context.getObsService();
 		
@@ -649,25 +637,14 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Obs obsToSave = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
 		obsToSave.setComplexData(complexData);
 		
-		// make sure the file isn't there to begin with
-		String filename = "nameOfFile_" + obsToSave.getUuid() + ".txt";
-		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
-	        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
-		File createdFile = new File(complexObsDir, filename);
-		if (createdFile.exists()) {
-			createdFile.delete();
-		}
-		
 		try {
 			os.saveObs(obsToSave, null);
-			
-			// make sure the file appears now after the save
-			assertTrue(createdFile.exists());
-		}
-		finally {
-			// we always have to delete this inside the same unit test because it is outside the
-			// database and hence can't be "rolled back" like everything else
-			createdFile.delete();
+
+			Obs savedObs = os.getObs(obsToSave.getObsId());
+			Object data = savedObs.getComplexData().getData();
+			assertThat(new String((byte[]) data), is("This is a string to save to a file"));
+		} finally {
+			os.purgeObs(obsToSave);
 		}
 	}
 	
@@ -680,62 +657,109 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COMPLEX_OBS_XML);
 		ObsService os = Context.getObsService();
 		ConceptService cs = Context.getConceptService();
-		AdministrationService as = Context.getAdministrationService();
 		
-		// Create the file that was supposedly put there by another obs
-		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
-		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
-		File previouslyCreatedFile = new File(complexObsDir, "nameOfFile.txt");
-		
-		FileUtils.writeByteArrayToFile(previouslyCreatedFile, "a string to save to a file".getBytes());
-		
-		// the file we'll be creating...defining it here so we can delete it in a finally block
-		File newComplexFile = null;
+		Obs firstObs = null, secondObs = null;
 		try {
-			
-			long oldFileSize = previouslyCreatedFile.length();
-			
-			// now add a new file to this obs and update it
-			// ...then make sure the original file is still there
-			
 			// the complex data to put onto an obs that will be saved
-			Reader input2 = new CharArrayReader("diff string to save to a file with the same name".toCharArray());
+			Reader input2 = new CharArrayReader("some string".toCharArray());
 			ComplexData complexData = new ComplexData("nameOfFile.txt", input2);
 			
 			// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
 			// this is a concept mapped to the text handler
 			Concept questionConcept = cs.getConcept(8474);
 			
-			Obs obsToSave = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+			firstObs = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+
+			firstObs.setComplexData(complexData);
 			
-			obsToSave.setComplexData(complexData);
+			os.saveObs(firstObs, null);
 			
-			os.saveObs(obsToSave, null);
+
+			Reader newInput = new CharArrayReader("diff string to save to a file with the same name".toCharArray());
+			ComplexData newComplexData = new ComplexData("nameOfFile.txt", newInput);
+
+			secondObs = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+			secondObs.setComplexData(newComplexData);
+			os.saveObs(secondObs, null);
 			
-			// make sure the old file still appears now after the save
-			assertEquals(oldFileSize, previouslyCreatedFile.length());
+			// Load data again
+			firstObs = os.getObs(firstObs.getObsId());
+			secondObs = os.getObs(secondObs.getObsId());
 			
-			String valueComplex = obsToSave.getValueComplex();
-			String filename = valueComplex.substring(valueComplex.indexOf("|") + 1).trim();
-			newComplexFile = new File(complexObsDir, filename);
-			// make sure the file appears now after the save
-			assertTrue(newComplexFile.length() > oldFileSize);
+			assertThat(new String((byte[]) firstObs.getComplexData().getData()), is("some string"));
+			assertThat(new String((byte[]) secondObs.getComplexData().getData()), is("diff string to save to a " +
+				"file with the same name"));
 		}
 		finally {
-			// clean up the files we created
-			newComplexFile.delete();
-			try {
-				previouslyCreatedFile.delete();
-			}
-			catch (Exception e) {
-				// pass
-			}
+			if (firstObs != null) os.purgeObs(firstObs);
+			if (secondObs != null) os.purgeObs(secondObs);
 		}
 		
 	}
+
+	@Test
+	public void updateObs_shouldUpdateAComplexObs() throws IOException {
+		executeDataSet(COMPLEX_OBS_XML);
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+
+		Obs obs = null;
+		Obs updatedObs = null;
+		
+		File obsFile = null;
+		File updatedObsFile = null;
+		
+		try {
+			// the complex data to put onto an obs that will be saved
+			Reader input2 = new CharArrayReader("some string".toCharArray());
+			ComplexData complexData = new ComplexData("nameOfFile", input2);
+
+			// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
+			// this is a concept mapped to the text handler
+			Concept questionConcept = cs.getConcept(8474);
+
+			obs = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+
+			obs.setComplexData(complexData);
+			os.saveObs(obs, null);
+
+			// sanity check, confirm the file exists
+			obs = os.getObs(obs.getObsId());
+			obsFile = new File(OpenmrsUtil.getApplicationDataDirectory() + File.separator + "storage" + File.separator + obs.getValueComplex().split("\\|")[1]);
+			assertTrue(obsFile.exists());
+			
+			// now change the obs
+			// NOTE: this really should change an actual field instead of voidReason; I originally had this change
+			// the comment field but, somewhat disconcertingly, this caused an UnchangeableObjectException because it
+			// tries to flush the original obs (before it is cloned) when it attempts to do a "getGlobalProperty" call.
+			// This exception doesn't occur in real life, and getGlobalProperty is set to transactional=readOnly, so
+			// not sure why it causes a flush when testing.
+			obs.setVoidReason("some comment");
+			updatedObs = os.saveObs(obs, "updating obs");
+			
+			// confirm old file has been removed and new one exists
+			updatedObsFile = new File(OpenmrsUtil.getApplicationDataDirectory() + File.separator + "storage" + File.separator + updatedObs.getValueComplex().split("\\|")[1]);
+			assertTrue(updatedObsFile.exists());
+			assertFalse(obsFile.exists());
+
+		}
+		finally {
+			if (obsFile != null && obsFile.exists()) {
+				obsFile.delete();
+			}
+			if (updatedObsFile != null && updatedObsFile.exists()) {
+				updatedObsFile.delete();
+			}
+		}
+	}
+	
+	private void confirmFileWithNameExists(File[] files, String name) {
+		assertTrue(Arrays.stream(files).anyMatch(f -> f.getName().equals(name)));
+	}
+	
 	
 	/**
-	 * @see ObsService#setHandlers(Map<QString;QComplexObsHandler;>)}
+	 * @see ObsService#setHandlers(Map)}
 	 */
 	@Test
 	public void setHandlers_shouldAddNewHandlersWithNewKeys() {
@@ -1101,7 +1125,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.PERSON),
 		    null, null, null, null, null, null, false, null);
 		
-		assertEquals(17, obss.size());
+		assertEquals(18, obss.size());
 	}
 	
 	/**
@@ -1117,7 +1141,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, null,
 		    Collections.singletonList(PERSON_TYPE.PERSON), null, null, null, null, false, null);
 		
-		assertEquals(17, count.intValue());
+		assertEquals(18, count.intValue());
 	}
 	
 	/**
@@ -1133,7 +1157,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.USER),
 		    null, null, null, null, null, null, false, null);
 		
-		assertEquals(1, obss.size());
+		assertEquals(2, obss.size());
 	}
 	
 	/**
@@ -1149,7 +1173,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, null, Collections.singletonList(PERSON_TYPE.USER),
 		    null, null, null, null, false, null);
 		
-		assertEquals(1, count.intValue());
+		assertEquals(2, count.intValue());
 	}
 	
 	/**
@@ -1278,7 +1302,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		List<Obs> obss = obsService.getObservations("5");
 		
-		assertEquals(1, obss.size());
+		assertEquals(2, obss.size());
 		assertEquals(16, obss.get(0).getObsId().intValue());
 	}
 	
@@ -1338,32 +1362,105 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * @see ObsService#purgeObs(Obs)
 	 */
 	@Test
-	public void purgeObs_shouldDeleteTheGivenObsFromTheDatabase() {
+	public void purgeObs_shouldDeleteTheGivenObsFromTheDatabase() throws IOException {
 		ObsService obsService = Context.getObsService();
 		Obs obs = obsService.getObs(7);
 		
 		obsService.purgeObs(obs);
 		
 		assertNull(obsService.getObs(7));
-		
-		
 		executeDataSet(COMPLEX_OBS_XML);
-		Obs complexObs = obsService.getComplexObs(44, ComplexObsHandler.RAW_VIEW);
-		// obs #44 is coded by the concept complex #8473 pointing to ImageHandler
-		// ImageHandler inherits AbstractHandler which handles complex data files on disk
-		assertNotNull(complexObs.getComplexData());
-		AdministrationService as = Context.getAdministrationService();
-		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
-		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
-		for (File file : complexObsDir.listFiles()) {
-			file.delete();
-		}
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(adminService
+			.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		File createdFile = null;
+		try {
+			//TODO: getComplexObs should fail if image is missing but legacy code did not fail so the logic is preserved
+			//createdFile = createImage(complexObsDir, "openmrs_logo_small.gif");
 
-		obsService.purgeObs(complexObs);
+			Obs complexObs = obsService.getComplexObs(44, ComplexObsHandler.RAW_VIEW);
+			// obs #44 is coded by the concept complex #8473 pointing to ImageHandler
+			// ImageHandler inherits AbstractHandler which handles complex data files on disk
+			assertNotNull(complexObs.getComplexData());
+			obsService.purgeObs(complexObs);
+			assertNull(obsService.getObs(obs.getObsId()));
+		} finally {
+			if (createdFile != null && createdFile.exists()) {
+				createdFile.delete();
+			}
+		}
 		
-		assertNull(obsService.getObs(obs.getObsId()));
+		
 	}
-	
+
+	@Test
+	public void purgeObs_shouldStillDeleteObsEvenIfPurgeComplexDataFails() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+
+		ObsService os = Context.getObsService();
+
+		// Store the original handler so we can restore it after the test.
+		ComplexObsHandler originalHandler = os.getHandler("ImageHandler");
+
+		/**
+		 * Define a custom handler that simulates failure by always returning false
+		 * from purgeComplexData(). This mimics the scenario where the backing file
+		 * is missing on disk.
+		 */
+		ComplexObsHandler failingHandler = new ComplexObsHandler() {
+
+			@Override
+			public Obs saveObs(Obs obs) {
+				return obs; // Not used in this test
+			}
+
+			@Override
+			public Obs getObs(Obs obs, String view) {
+				return obs; // Not used in this test
+			}
+
+			@Override
+			public boolean purgeComplexData(Obs obs) {
+				return false; // Force failure
+			}
+
+			@Override
+			public String[] getSupportedViews() {
+				return new String[0]; // Not used in this test
+			}
+
+			@Override
+			public boolean supportsView(String view) {
+				return false; // Not used in this test
+			}
+		};
+		
+		try {
+			// Override the ImageHandler with our failing version for this test scenario.
+			os.registerHandler("ImageHandler", failingHandler);
+
+			// Retrieve the known complex obs from the XML dataset.
+			Obs complexObs = os.getObs(44);
+			assertNotNull(complexObs);
+			assertTrue(complexObs.isComplex());
+
+			Integer obsId = complexObs.getObsId();
+
+			// Ensure purgeComplexData() returns false
+			assertFalse(failingHandler.purgeComplexData(complexObs));
+
+			// After the fix, purgeObs should NOT throw even when purgeComplexData fails.
+			assertDoesNotThrow(() -> os.purgeObs(complexObs));
+
+			// The obs should still be deleted from the database.
+			assertNull(os.getObs(obsId));
+
+		} finally {
+			// Ensure global state is restored so other tests are not affected.
+			os.registerHandler("ImageHandler", originalHandler);
+		}
+	}
+
+
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
 	 */
@@ -1997,5 +2094,51 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertThat(existing.getStatus(), is(Obs.Status.FINAL));
 		assertThat(existing.getVoided(), is(true));
 		assertThat(newObs.getStatus(), is(Obs.Status.FINAL));
+	}
+
+	@Test
+	public void saveObsReferenceRange_shouldSaveReferenceRangeAfterSavingObs() {
+		Obs obs = buildObservation();
+
+		obsService.saveObs(obs, null);
+		
+		List<ConceptReferenceRange> conceptReferenceRange = Context.getConceptService().getConceptReferenceRangesByConceptId(obs.getConcept().getId());
+
+		assertFalse(conceptReferenceRange.isEmpty());
+		
+		Double expectedHiAbsolute = conceptReferenceRange.get(0).getHiAbsolute();
+		
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs savedObs = obsService.getObsByUuid(obs.getUuid());
+
+		ObsReferenceRange obsReferenceRange = savedObs.getReferenceRange();
+		assertEquals(expectedHiAbsolute, obsReferenceRange.getHiAbsolute());
+	}
+	
+	private Obs buildObservation() {
+		Concept concept = Context.getConceptService().getConcept(4089);
+		Patient patient = new Patient(2);
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -5);
+		patient.setBirthdate(calendar.getTime());
+		
+		Date newDate = new Date();
+
+		Obs obs = new Obs();
+		obs.setConcept(concept);
+		obs.setPerson(patient);
+		obs.setEncounter(new Encounter(3));
+		obs.setObsDatetime(newDate);
+		obs.setLocation(new Location(1));
+		obs.setValueGroupId(7);
+		obs.setValueDatetime(newDate);
+		obs.setValueCoded(new Concept(3));
+		obs.setValueNumeric(90.0);
+		obs.setValueModifier("cc");
+		obs.setValueText("value text2");
+		
+		return obs;
 	}
 }

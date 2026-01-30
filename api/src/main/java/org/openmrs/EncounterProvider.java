@@ -9,6 +9,15 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
 /**
@@ -16,17 +25,29 @@ import org.hibernate.envers.Audited;
  * 
  * @since 1.9
  */
+@Entity
+@Table(name = "encounter_provider")
+@BatchSize(size = 25)
 @Audited
 public class EncounterProvider extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 1L;
 	
+	@Id
+	@Column(name = "encounter_provider_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer encounterProviderId;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 	
+	@ManyToOne
+	@JoinColumn(name = "provider_id", nullable = false)
 	private Provider provider;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_role_id", nullable = false)
 	private EncounterRole encounterRole;
 	
 	public void setEncounterProviderId(Integer encounterProviderId) {

@@ -23,12 +23,14 @@ import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.DiagnosisDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 
 
 /**
@@ -38,26 +40,23 @@ import javax.persistence.criteria.CriteriaQuery;
  * @see org.openmrs.api.DiagnosisService
  *
  */
+@Repository("diagnosisDAO")
 public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	
 	/**
 	 * Hibernate session factory
 	 */
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
+	
+	@Autowired
+	public HibernateDiagnosisDAO(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
 
 	/**
 	 * The rank for a primary diagnosis
 	 */
 	private static final Integer PRIMARY_RANK = 1;
-
-	/**
-	 * Set session factory
-	 *
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
 
 	/**
 	 * Saves the diagnosis.

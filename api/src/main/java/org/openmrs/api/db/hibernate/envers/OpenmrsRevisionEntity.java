@@ -13,8 +13,8 @@ package org.openmrs.api.db.hibernate.envers;
 import org.hibernate.envers.DefaultRevisionEntity;
 import org.hibernate.envers.RevisionEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import java.util.Date;
 
 /**

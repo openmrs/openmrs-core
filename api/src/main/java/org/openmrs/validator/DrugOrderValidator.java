@@ -90,8 +90,10 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			if (order.getAction() != Order.Action.DISCONTINUE) {
 				ValidationUtils.rejectIfEmpty(errors, "dosingType", "error.null");
 			}
-			if (order.getDrug() == null || order.getDrug().getConcept() == null) {
-				ValidationUtils.rejectIfEmpty(errors, "concept", "error.null");
+			if (!order.isNonCodedDrug()) {
+				if (order.getDrug() == null || order.getDrug().getConcept() == null) {
+					ValidationUtils.rejectIfEmpty(errors, "concept", "error.null");
+				}
 			}
 			
 			if (order.getConcept() != null && order.getDrug() != null && order.getDrug().getConcept() != null

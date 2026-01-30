@@ -9,23 +9,27 @@
  */
 package org.openmrs.api.context;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
@@ -38,6 +42,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.validation.Validator;
 
 /**
@@ -285,72 +290,158 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.logout();
 	}
 
+
 	/**
-	 * @see org.openmrs.api.context.Context#evictEntity(OpenmrsObject) 
+	 * @see Context#evictEntity(OpenmrsObject)
 	 */
 	@Test
 	public void evictEntity_shouldClearTheEntityFromCaches() {
-		// Load the person so that the names are also stored in the cache
-		PersonName name = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
-		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+		TestTransaction.end();
 		
-		// Assert that the names have been added to cache
-		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
-		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
+		// Load the person name so that it is stored in the cache
+		PersonName name = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+
+		// Clear session so that the first-level cache is empty
+		Context.flushSession();
+		Context.clearSession();
 
 		// evictEntity
 		Context.evictEntity(name);
 
 		// Assert that the entity name has been removed from cache
-		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
-		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
+		long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
+		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
 	}
 
 	/**
-	 * @see org.openmrs.api.context.Context#evictAllEntities(Class)
+	 * @see Context#evictAllEntities(Class)
 	 */
 	@Test
 	public void evictAllEntities_shouldClearAllEntityFromCaches() {
-		// Load the person and patient so that they are stored in the cache
+		TestTransaction.end();
+
+		// Load person names so that they are stored in the cache
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
-		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
-		
-		// Assert that the entities have been added to cache
-		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
-		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
-		assertTrue(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
 
+		// Clear session so that the first-level cache is empty
+		Context.flushSession();
+		Context.clearSession();
+		
 		// evictAllEntities
 		Context.evictAllEntities(PERSON_NAME_CLASS);
 
 		// Assert that the class entities have been removed from cache
-		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
-		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
-		assertTrue(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
+		long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
+		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
 	}
 
 	/**
-	 * @see org.openmrs.api.context.Context#clearEntireCache()
+	 * @see Context#clearEntireCache()
 	 */
 	@Test
 	public void clearEntireCache_shouldClearEntireCache() {
-		// Load the person and patient so that they are stored in the cache
+		TestTransaction.end();
+		
+		// Load person names and patient so that they are stored in the cache
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
 		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
-		
-		// Assert that the entities have been added to cache
-		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
-		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
-		assertTrue(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
+
+		// Clear session so that the first-level cache is empty
+		Context.flushSession();
+		Context.clearSession();
 
 		// clearEntireCache
 		Context.clearEntireCache();
 
 		// Assert that all entities have been removed from cache
-		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
-		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
-		assertFalse(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
+		long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
+		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+	}
+
+	/**
+	 * @see Context#addProxyPrivilege(String...)
+	 */
+	@Test
+	public void addProxyPrivilege_shouldAddMultiplePrivileges() {
+		Context.logout(); // logout to ensure user doesn't have privileges through roles
+		try {
+			// arrange - verify user doesn't have these privileges
+			assertFalse(Context.hasPrivilege("Some Privilege"));
+			assertFalse(Context.hasPrivilege("Another Privilege"));
+
+			// act
+			Context.addProxyPrivilege("Some Privilege", "Another Privilege");
+
+			// assert
+			assertTrue(Context.hasPrivilege("Some Privilege"));
+			assertTrue(Context.hasPrivilege("Another Privilege"));
+		} finally {
+			Context.removeProxyPrivilege("Some Privilege", "Another Privilege");
+			authenticate(); // restore authenticated state
+		}
+	}
+
+	/**
+	 * @see Context#addProxyPrivilege(String...)
+	 */
+	@Test
+	public void addProxyPrivilege_shouldThrowExceptionForNullArray() {
+		// act & assert
+		assertThrows(IllegalArgumentException.class, () -> Context.addProxyPrivilege((String[]) null));
+	}
+
+	/**
+	 * @see Context#removeProxyPrivilege(String...)
+	 */
+	@Test
+	public void removeProxyPrivilege_shouldRemoveMultiplePrivileges() {
+		Context.logout();
+		try {
+			// arrange
+			Context.addProxyPrivilege("Privilege A", "Privilege B", "Privilege C");
+
+			// act
+			Context.removeProxyPrivilege("Privilege A", "Privilege C");
+
+			// assert
+			assertFalse(Context.hasPrivilege("Privilege A"));
+			assertTrue(Context.hasPrivilege("Privilege B"));
+			assertFalse(Context.hasPrivilege("Privilege C"));
+		} finally {
+			Context.removeProxyPrivilege("Privilege B");
+			authenticate();
+		}
+	}
+
+	/**
+	 * @see Context#removeProxyPrivilege(String...)
+	 */
+	@Test
+	public void removeProxyPrivilege_shouldHandleNullArrayGracefully() {
+		Context.logout();
+		try {
+			// arrange
+			Context.addProxyPrivilege("Some Test Privilege");
+
+			// act
+			Context.removeProxyPrivilege((String[]) null);
+
+			// assert - should still have the privilege since null was passed
+			assertTrue(Context.hasPrivilege("Some Test Privilege"));
+		} finally {
+			Context.removeProxyPrivilege("Some Test Privilege");
+			authenticate();
+		}
 	}
 }

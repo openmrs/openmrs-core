@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.PersonAddress;
 import org.openmrs.annotation.Handler;
@@ -94,7 +95,7 @@ public class PersonAddressValidator implements Validator {
 		List<String> requiredElements;
 		
 		try {
-			AddressTemplate addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
+			AddressTemplate addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(StringEscapeUtils.unescapeXml(xml),
 			    AddressTemplate.class);
 			requiredElements = addressTemplate.getRequiredElements();
 		}

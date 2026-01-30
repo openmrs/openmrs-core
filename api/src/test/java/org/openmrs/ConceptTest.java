@@ -753,6 +753,42 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		assertEquals(preferredNameEN, testConcept.getPreferredName(new Locale("en")));
 	}
 	
+	@Test
+	public void getPreferredName_shouldReturnPreferredNameInLocaleWithCountryIfNoPreferredNameInLocaleWithNoCountry() {
+		Concept color = new Concept();
+		// add a name in en but *not* set as preferred
+		ConceptName preferredNameEN = createConceptName(3, "Color", new Locale("en"), null, false);
+		color.addName(preferredNameEN);
+		//preferred name in en_UK
+		ConceptName preferredNameEN_UK = createConceptName(4, "Colour", Locale.UK, null, true);
+		color.addName(preferredNameEN_UK);
+		// we ask for preferred name in en, but since none of the en names are preferred, we should get the en_UK name
+		assertEquals(preferredNameEN_UK, color.getPreferredName(new Locale("en")));
+	}
+
+	@Test
+	public void getPreferredName_shouldReturnPreferredNameInLocaleWithCountryIfNoNameInLocaleWithNoCountry() {
+		Concept color = new Concept();
+		//preferred name in en_UK
+		ConceptName preferredNameEN_UK = createConceptName(4, "Colour", Locale.UK, null, true);
+		color.addName(preferredNameEN_UK);
+		// we ask for preferred name in en, but since none of the en names are preferred, we should get the en_UK name
+		assertEquals(preferredNameEN_UK, color.getPreferredName(new Locale("en")));
+	}
+
+	@Test
+	public void getPreferredName_shouldReturnPreferredNameInLocaleWithoutCountryBeforeLocaleWithCountry() {
+		Concept color = new Concept();
+		// preferred name in en_UK
+		ConceptName preferredNameEN_UK = createConceptName(4, "Colour", Locale.UK, null, true);
+		color.addName(preferredNameEN_UK);
+		// preferred name in en
+		ConceptName preferredNameEN = createConceptName(3, "Color", new Locale("en"), null, true);
+		color.addName(preferredNameEN);
+		// we ask for preferred name in en_US; there are no names in en_US, but it should "prefer" "en" over "en_UK"
+		assertEquals(preferredNameEN, color.getPreferredName(new Locale("en")));
+	}
+	
 	/**
 	 * @see Concept#getShortestName(Locale,Boolean)
 	 */
@@ -899,6 +935,27 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		preferredName.setLocalePreferred(true);
 		preferredName.setConceptNameType(ConceptNameType.INDEX_TERM);
 		assertThrows(APIException.class, () -> concept.setPreferredName(preferredName));
+	}
+	
+	@Test
+	public void setPreferredName_shouldNotSetPreferredNameInDifferentCountryLocaleToNotPreferred() {
+		Concept concept = new Concept();
+		// set non-preferred name in en_US (due to an idiosyncrasy we need to set this to manifest the bug)
+		ConceptName nonPreferredNameInUS = new ConceptName("Col", Locale.US);
+		nonPreferredNameInUS.setLocalePreferred(false);
+		concept.addName(nonPreferredNameInUS);
+		// set preferred name in en_UK
+		ConceptName preferredNameInUK = new ConceptName("Colour", Locale.UK);
+		preferredNameInUK.setLocalePreferred(true);
+		concept.addName(preferredNameInUK);
+		// now set preferred name in en_US
+		ConceptName preferredNameInUS = new ConceptName("Color", Locale.US);
+		preferredNameInUS.setLocalePreferred(true);
+		concept.addName(preferredNameInUS);
+		assertThat(nonPreferredNameInUS.getLocalePreferred(), is(false));
+		assertThat(preferredNameInUK.getLocalePreferred(), is(true));
+		assertThat(preferredNameInUS.getLocalePreferred(), is(true));
+		
 	}
 	
 	/**

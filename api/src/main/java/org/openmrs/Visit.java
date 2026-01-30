@@ -11,26 +11,20 @@ package org.openmrs;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.BatchSize;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.Customizable;
 
@@ -75,12 +69,6 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	@OneToMany(mappedBy = "visit")
 	@OrderBy("encounter_datetime desc, encounter_id desc")
 	private Set<Encounter> encounters;
-	
-	@Access(AccessType.PROPERTY)
-	@OneToMany(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("voided asc")
-	@BatchSize(size = 100)
-	private Set<VisitAttribute> attributes = new LinkedHashSet<>();
 	
 	/**
 	 * Default Constructor

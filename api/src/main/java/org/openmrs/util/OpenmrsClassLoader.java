@@ -44,8 +44,6 @@ import org.openmrs.scheduler.SchedulerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sf.ehcache.CacheManager;
-
 /**
  * This classloader knows about the current ModuleClassLoaders and will attempt to load classes from
  * them if needed
@@ -54,9 +52,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	
 	private static Logger log = LoggerFactory.getLogger(OpenmrsClassLoader.class);
 	
-	private static File libCacheFolder;
+	private static volatile File libCacheFolder;
 	
-	private static boolean libCacheFolderInitialized = false;
+	private static final Object libCacheFolderLock = new Object();
 	
 	// placeholder to hold mementos to restore
 	private static Map<String, OpenmrsMemento> mementos = new WeakHashMap<>();
@@ -357,25 +355,6 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		
 		log.info("this classloader hashcode: {}", OpenmrsClassLoaderHolder.INSTANCE.hashCode());
-		
-		//Shut down and remove all cache managers.
-		List<CacheManager> knownCacheManagers = CacheManager.ALL_CACHE_MANAGERS;
-		while (!knownCacheManagers.isEmpty()) {
-			CacheManager cacheManager = CacheManager.ALL_CACHE_MANAGERS.get(0);
-			try {
-				//This shuts down and removes the cache manager.
-				cacheManager.shutdown();
-				
-				//Just in case the the timer does not stop, set the cacheManager 
-				//timer to null because it references this class loader.
-				Field field = cacheManager.getClass().getDeclaredField("cacheManagerTimer");
-				field.setAccessible(true);
-				field.set(cacheManager, null);
-			}
-			catch (Exception ex) {
-				log.error(ex.getMessage(), ex);
-			}
-		}
 		
 		OpenmrsClassScanner.destroyInstance();
 		
@@ -679,40 +658,46 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	
 	/**
 	 * Get the temporary "work" directory for expanded jar files
+	 * <p>
+	 * If the <code>optimized.startup</code> runtime property is set to <code>false</code>,
+	 * the cache folder is deleted upon startup, if it exists.
 	 *
 	 * @return temporary location for storing the libraries
 	 */
 	public static File getLibCacheFolder() {
-		// cache the location for all calls until OpenMRS is restarted
+		// Cache the location for all calls until OpenMRS is restarted
 		if (libCacheFolder != null) {
-			return libCacheFolderInitialized ? libCacheFolder : null;
+			return libCacheFolder;
 		}
 		
-		synchronized (ModuleClassLoader.class) {
-			libCacheFolder = new File(OpenmrsUtil.getApplicationDataDirectory(), LIBCACHESUFFIX);
+		synchronized (libCacheFolderLock) {
+			if (libCacheFolder != null) {
+				return libCacheFolder;
+			}
 			
-			log.debug("libraries cache folder is {}", libCacheFolder);
+			File newLibCacheFolder = new File(OpenmrsUtil.getApplicationDataDirectory(), LIBCACHESUFFIX);
 			
-			if (libCacheFolder.exists()) {
-				// clean up and empty the folder if it exists (and is not locked)
-				try {
-					OpenmrsUtil.deleteDirectory(libCacheFolder);
-					
-					libCacheFolder.mkdirs();
-				}
-				catch (IOException io) {
-					log.warn("Unable to delete: {}", libCacheFolder.getName());
+			log.debug("Libraries cache folder is {}", newLibCacheFolder);
+			
+			if (newLibCacheFolder.exists()) {
+				if (Context.isOptimizedStartup()) {
+					log.debug("Optimized startup enabled, using lib cache folder from last run {}", newLibCacheFolder);
+				} else {
+					log.debug("Optimized startup disabled, cleaning up lib cache folder {}", newLibCacheFolder);
+					try {
+						OpenmrsUtil.deleteDirectory(newLibCacheFolder);
+
+						newLibCacheFolder.mkdirs();
+					} catch (IOException io) {
+						log.warn("Unable to delete: {}", newLibCacheFolder.getName());
+					}
 				}
 			} else {
 				// otherwise just create the dir structure
-				libCacheFolder.mkdirs();
+				newLibCacheFolder.mkdirs();
 			}
 			
-			// mark the lock and entire library cache to be deleted when the jvm exits
-			libCacheFolder.deleteOnExit();
-			
-			// mark the lib cache folder as ready
-			libCacheFolderInitialized = true;
+			libCacheFolder = newLibCacheFolder;
 		}
 		
 		return libCacheFolder;

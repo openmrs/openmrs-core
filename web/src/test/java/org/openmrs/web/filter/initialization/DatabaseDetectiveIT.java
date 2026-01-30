@@ -12,12 +12,12 @@ package org.openmrs.web.filter.initialization;
 import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.util.H2DatabaseIT;
+import org.openmrs.util.DatabaseIT;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class DatabaseDetectiveIT extends H2DatabaseIT {
+public class DatabaseDetectiveIT extends DatabaseIT {
 	
 	private static final String LIQUIBASE_SCHEMA_ONLY_1_9_X = "org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-1.9.x.xml";
 
@@ -28,7 +28,7 @@ public class DatabaseDetectiveIT extends H2DatabaseIT {
 	private Properties properties;
 	
 	@BeforeEach
-	public void setup() {
+	public void setup() throws ClassNotFoundException {
 		databaseDetective = new DatabaseDetective();
 
 		properties = new Properties();

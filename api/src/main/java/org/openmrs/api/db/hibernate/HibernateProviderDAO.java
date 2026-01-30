@@ -14,14 +14,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,9 +32,12 @@ import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific Provider related functions. This class should not be used directly. All calls
@@ -42,11 +45,13 @@ import org.openmrs.util.OpenmrsConstants;
  *
  * @since 1.9
  */
+@Repository("providerDAO")
 public class HibernateProviderDAO implements ProviderDAO {
 	
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateProviderDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -392,5 +397,68 @@ public class HibernateProviderDAO implements ProviderDAO {
 		cq.where(cb.equal(cb.lower(root.get("identifier")), MatchMode.EXACT.toLowerCasePattern(identifier)));
 
 		return session.createQuery(cq).uniqueResult();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ProviderDAO#getProviderRole(Integer) 
+	 */
+	@Override
+	public ProviderRole getProviderRole(Integer providerRoleId) {
+		return sessionFactory.getCurrentSession().get(ProviderRole.class, providerRoleId);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ProviderDAO#getProviderRoleByUuid(String)
+	 */
+	@Override
+	public ProviderRole getProviderRoleByUuid(String uuid) {
+		return getByUuid(uuid, ProviderRole.class);
+	}
+
+	/**
+	 * @see ProviderDAO#getProvidersByRoles(List, boolean)  
+	 */
+	@Override
+	public List<Provider> getProvidersByRoles(List<ProviderRole> roles, boolean includeRetired) {
+		CriteriaBuilder cb = sessionFactory.getCurrentSession().getCriteriaBuilder();
+		CriteriaQuery<Provider> cq = cb.createQuery(Provider.class);
+		Root<Provider> root = cq.from(Provider.class);
+		
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(root.get("providerRole").in(roles));
+		if (!includeRetired) {
+			predicates.add(cb.isFalse(root.get("retired")));
+		}
+
+		cq.select(root)
+			.where(predicates.toArray(new Predicate[0]))
+			.orderBy(cb.asc(root.get("providerId")));
+
+		return sessionFactory.getCurrentSession().createQuery(cq).getResultList();
+	}
+
+	/**
+	 * @see ProviderDAO#getAllProviderRoles(boolean)
+	 */
+	@Override
+	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
+		return getAll(includeRetired, ProviderRole.class);
+	}
+
+	/**
+	 * @see ProviderDAO#saveProviderRole(ProviderRole)
+	 */
+	@Override
+	public ProviderRole saveProviderRole(ProviderRole providerRole) {
+		getSession().saveOrUpdate(providerRole);
+		return providerRole;
+	}
+
+	/**
+	 * @see ProviderDAO#deleteProviderRole(ProviderRole)
+	 */
+	@Override
+	public void deleteProviderRole(ProviderRole providerRole) {
+		getSession().delete(providerRole);
 	}
 }

@@ -1,0 +1,7 @@
+caches:
+    userSearchLocales:
+        configuration: "entity"
+    conceptIdsByMapping:
+        configuration: "entity"
+    serializerWhiteListTypes:
+        configuration: "entity"

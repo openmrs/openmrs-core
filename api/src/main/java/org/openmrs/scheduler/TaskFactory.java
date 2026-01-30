@@ -39,7 +39,7 @@ public class TaskFactory {
 	 * Creates a new instance of Schedulable used to run tasks. By default the returned task will be
 	 * the given task wrapped with the {@link TaskThreadedInitializationWrapper} class so that the
 	 * {@link Task#initialize(TaskDefinition)} method runs in a new thread.
-	 *
+	 * 
 	 * @param taskDefinition
 	 * @return the created Task
 	 * @throws SchedulerException

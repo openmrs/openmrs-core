@@ -47,7 +47,7 @@ public class ModuleExtensionsTest extends BaseContextMockTest {
 
 	@BeforeEach
 	public void before() {
-		module = new Module("Extension Test", "extensiontest", "org.openmrs.module.extensiontest", "", "", "0.0.1");
+		module = new Module("Extension Test", "extensiontest", "org.openmrs.module.extensiontest", "", "", "0.0.1", "1.0");
 	}
 	
 	@AfterEach

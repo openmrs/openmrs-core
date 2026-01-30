@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,9 +51,7 @@ import org.w3c.dom.ls.LSSerializer;
 public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 	private static final String LOGIC_MODULE_PATH = "org/openmrs/module/include/logic-0.2.omod";
-
-	private static DocumentBuilderFactory documentBuilderFactory;
-
+	
 	private static DocumentBuilder documentBuilder;
 
 
@@ -64,8 +63,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 	@BeforeAll
 	public static void setUp() throws ParserConfigurationException {
-		documentBuilderFactory = DocumentBuilderFactory.newInstance();
-		documentBuilder = documentBuilderFactory.newDocumentBuilder();
+		documentBuilder = createDocumentBuilder();
 	}
 
 	@Test
@@ -119,7 +117,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		String invalidConfigVersion = "0.0.1";
 		String expectedMessage = messageSourceService
 			.getMessage("Module.error.invalidConfigVersion",
-				new Object[] { invalidConfigVersion, "1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7" }, Context.getLocale());
+				new Object[] { invalidConfigVersion, "1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 2.0" }, Context.getLocale());
 
 		Document configXml = documentBuilder.newDocument();
 		Element root = configXml.createElement("module");
@@ -142,6 +140,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		assertThat(module.getActivatorName(), is("org.openmrs.logic.LogicModuleActivator"));
 		assertThat(module.getMappingFiles().size(), is(1));
 		assertThat(module.getMappingFiles(), hasItems("LogicRuleToken.hbm.xml"));
+		assertThat(module.getConfigVersion(), is("1.3"));
 	}
 
 	private void expectModuleExceptionWithTranslatedMessage(Executable executable, String s) {

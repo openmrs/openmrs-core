@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,6 +56,7 @@ import org.openmrs.api.PatientIdentifierTypeLockedException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
@@ -72,6 +75,9 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -83,17 +89,21 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.api.PatientService
  * @see org.openmrs.api.PersonService
  */
+@Service("patientService")
 @Transactional
-public class PatientServiceImpl extends BaseOpenmrsService implements PatientService {
+public class PatientServiceImpl extends BaseOpenmrsService implements PatientService, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
 	
+	@Autowired
 	private PatientDAO dao;
 	
 	/**
 	 * PatientIdentifierValidators registered through spring's applicationContext-service.xml
 	 */
-	private static Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators = null;
+	@Autowired
+	@Qualifier("identifierValidators")
+	private Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#setPatientDAO(org.openmrs.api.db.PatientDAO)
@@ -630,11 +640,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		ProgramWorkflowService programService = Context.getProgramWorkflowService();
 		for (PatientProgram pp : programService.getPatientPrograms(notPreferred, null, null, null, null, null, false)) {
 			if (!pp.getVoided()) {
-				PatientProgram enroll = pp.copy();
-				enroll.setPatient(preferred);
-				log.debug("Copying patientProgram {} to {}", pp.getPatientProgramId(), preferred.getPatientId());
-				PatientProgram persisted = programService.savePatientProgram(enroll);
-				mergedData.addCreatedProgram(persisted.getUuid());
+				pp.setPatient(preferred);
+				log.debug("Moving patientProgram {} to {}", pp.getPatientProgramId(), preferred.getPatientId());
+				PatientProgram persisted = programService.savePatientProgram(pp);
+				mergedData.addMovedProgram(persisted.getUuid());
 			}
 		}
 	}
@@ -1277,22 +1286,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public void setIdentifierValidators(Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators) {
 		if (identifierValidators == null) {
-			PatientServiceImpl.setStaticIdentifierValidators(null);
+			this.identifierValidators = null;
 			return;
 		}
 		for (Map.Entry<Class<? extends IdentifierValidator>, IdentifierValidator> entry : identifierValidators.entrySet()) {
 			getIdentifierValidators().put(entry.getKey(), entry.getValue());
 		}
-	}
-	
-	/**
-	 * Sets identifierValidators using static method
-	 *
-	 * @param currentIdentifierValidators
-	 */
-	private static void setStaticIdentifierValidators(
-	        Map<Class<? extends IdentifierValidator>, IdentifierValidator> currentIdentifierValidators) {
-		PatientServiceImpl.identifierValidators = currentIdentifierValidators;
 	}
 	
 	/**
@@ -1637,4 +1636,28 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<PatientIdentifier> getPatientIdentifiersByPatientProgram(PatientProgram patientProgram) {
 		return dao.getPatientIdentifierByProgram(patientProgram);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (PatientIdentifier.class.equals(type)) {
+            return (T) getPatientIdentifierByUuid(uuid);
+        }
+        if (PatientIdentifierType.class.equals(type)) {
+            return (T) getPatientIdentifierTypeByUuid(uuid);
+        }
+        if (Patient.class.equals(type)) {
+            return (T) getPatientByUuid(uuid);
+        }
+        if (Allergy.class.equals(type)) {
+            return (T) getAllergyByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(PatientIdentifier.class, PatientIdentifierType.class, Patient.class, Allergy.class);
+    }
+
 }

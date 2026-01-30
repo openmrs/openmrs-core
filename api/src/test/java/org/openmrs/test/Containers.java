@@ -13,8 +13,9 @@ import java.util.Collections;
 import java.util.Properties;
 
 import org.hibernate.dialect.MySQLDialect;
-import org.hibernate.dialect.PostgreSQL82Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.openmrs.api.context.Context;
+import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -42,21 +43,11 @@ public class Containers {
 		}
 	}
 	
+	
     private static void ensureMySQLRunning() {
     	
         if (mysql == null) {
-        	
-        	mysql = new MySQLContainer<>("mysql:5.7.39")
-                .withUsername(USERNAME)
-                .withPassword(PASSWORD)
-                .withDatabaseName(DATABASE)
-                .withUrlParam("autoReconnect", "true")
-                .withUrlParam("sessionVariables", "default_storage_engine=InnoDB")
-                .withUrlParam("useUnicode", "true")
-                .withUrlParam("characterEncoding", "UTF-8")
-                .withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_general_ci")
-                .withTmpFs(Collections.singletonMap("/var/lib/mysql", "rw"))
-                .withReuse(true);
+        	mysql = newMySQLContainer();
         }
         
         if (!mysql.isRunning()) {
@@ -69,21 +60,44 @@ public class Containers {
     		System.setProperty("databasePassword", PASSWORD);
     		System.setProperty("databaseDriver", mysql.getDriverClassName());
     		System.setProperty("databaseDialect", MySQLDialect.class.getName());
+			System.setProperty("database", "mysql");
     		
     		createSchema();
         }
     }
-    
-    private static void ensurePostgreSQLRunning() {
 
+	public static MariaDBContainer<?> newMariaDBContainer() {
+		return new MariaDBContainer<>("mariadb:10.11.7")
+			.withUsername(USERNAME)
+			.withPassword(PASSWORD)
+			.withDatabaseName(DATABASE)
+			.withUrlParam("autoReconnect", "true")
+			.withUrlParam("sessionVariables", "default_storage_engine=InnoDB")
+			.withUrlParam("useUnicode", "true")
+			.withUrlParam("characterEncoding", "UTF-8")
+			.withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_general_ci")
+			.withTmpFs(Collections.singletonMap("/var/lib/mysql", "rw"))
+			.withReuse(true);
+	}
+
+	public static MySQLContainer<?> newMySQLContainer() {
+		return new MySQLContainer<>("mysql:5.7.39")
+			.withUsername(USERNAME)
+			.withPassword(PASSWORD)
+			.withDatabaseName(DATABASE)
+			.withUrlParam("autoReconnect", "true")
+			.withUrlParam("sessionVariables", "default_storage_engine=InnoDB")
+			.withUrlParam("useUnicode", "true")
+			.withUrlParam("characterEncoding", "UTF-8")
+			.withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_general_ci")
+			.withTmpFs(Collections.singletonMap("/var/lib/mysql", "rw"))
+			.withReuse(true);
+	}
+	
+	private static void ensurePostgreSQLRunning() {
         if (postgres == null) {
-        	
-            postgres = new PostgreSQLContainer<>("postgres:14.5")
-                .withUsername(USERNAME)
-                .withPassword(PASSWORD)
-                .withDatabaseName(DATABASE)
-                .withReuse(true);
-        }
+			postgres = newPostgreSQLContainer();
+		}
         
         if (!postgres.isRunning()) {
         	
@@ -94,13 +108,21 @@ public class Containers {
     		System.setProperty("databaseUsername", USERNAME);
     		System.setProperty("databasePassword", PASSWORD);
     		System.setProperty("databaseDriver", postgres.getDriverClassName());
-    		System.setProperty("databaseDialect", PostgreSQL82Dialect.class.getName());
-    		
+    		System.setProperty("databaseDialect", PostgreSQLDialect.class.getName());
+			
     		createSchema();
         }
     }
-    
-    private static void createSchema() {
+
+	public static PostgreSQLContainer<?> newPostgreSQLContainer() {
+		return new PostgreSQLContainer<>("postgres:14.5")
+			.withUsername(USERNAME)
+			.withPassword(PASSWORD)
+			.withDatabaseName(DATABASE)
+			.withReuse(true);
+	}
+
+	private static void createSchema() {
     	
     	//needed for running liquibase changesets
 		Properties runtimeProperties = TestUtil.getRuntimeProperties("openmrs");

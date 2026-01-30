@@ -12,12 +12,12 @@ package org.openmrs;
 
 import org.hibernate.envers.Audited;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 
 /**
@@ -44,7 +44,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	@Column(name = "strength")
 	private Double strength;
 	
-	@JoinColumn(name = "units", insertable = false, updatable = false)
+	@JoinColumn(name = "units")
 	@ManyToOne
 	private Concept units;
 	

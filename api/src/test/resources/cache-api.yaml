@@ -1,0 +1,9 @@
+caches: 
+    subscription:
+        configuration: "entity"
+        memory:
+            maxCount: 1000
+    conceptDatatype:
+        configuration: "entity"
+    testCache:
+        configuration: "entity"

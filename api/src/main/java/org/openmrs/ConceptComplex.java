@@ -10,7 +10,7 @@
 package org.openmrs;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.openmrs.obs.ComplexObsHandler;
 
 /**
@@ -18,7 +18,6 @@ import org.openmrs.obs.ComplexObsHandler;
  *
  * @since 1.5
  */
-@Indexed
 @Audited
 public class ConceptComplex extends Concept {
 	

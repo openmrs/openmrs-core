@@ -9,6 +9,16 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 import java.util.Date;
@@ -17,17 +27,32 @@ import java.util.Date;
  * A concept source is defined as any institution that keeps a concept dictionary. Examples are
  * ICD9, ICD10, SNOMED, or any other OpenMRS implementation
  */
+@Entity
+@Table(name = "concept_reference_source")
+@AttributeOverrides({
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50)),
+	@AttributeOverride(name = "description", column = @Column(name= "description", nullable = false, length = 1024))
+})
 @Audited
 public class ConceptSource extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 375L;
 	
 	// Fields
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_source_id_seq")
+	@GenericGenerator(
+	name = "concept_source_id_seq",
+	strategy = "native",
+	parameters = @Parameter(name = "sequence", value = "concept_reference_source_concept_source_id_seq")
+	)
+	@Column(name = "concept_source_id", nullable = false)
 	private Integer conceptSourceId;
 	
+	@Column(name = "hl7_code", length = 50)
 	private String hl7Code;
 	
+	@Column(name = "unique_id", length = 250, unique = true)
 	private String uniqueId;
 	
 	// Constructors

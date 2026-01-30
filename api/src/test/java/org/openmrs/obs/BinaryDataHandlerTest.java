@@ -33,15 +33,8 @@ public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
 	@Autowired
 	private AdministrationService adminService;
 
-	@TempDir
-	public Path complexObsTestFolder;
-
+	@Autowired
 	BinaryDataHandler handler;
-
-	@BeforeEach
-	public void setUp() {
-		handler = new BinaryDataHandler();
-	}
 
 	@Test
     public void shouldReturnSupportedViews() {
@@ -70,7 +63,7 @@ public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
     }
     
 	@Test
-	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
+	public void saveObs_shouldRetrieveCorrectMimetypeAndTitle() throws IOException {
 		String mimetype = "application/octet-stream";
 		String filename = "TestingComplexObsSaving";
 		byte[] content = "Teststring".getBytes();
@@ -86,7 +79,7 @@ public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
 
 		adminService.saveGlobalProperty(new GlobalProperty(
 			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
-			complexObsTestFolder.toAbsolutePath().toString()
+			"obs"
 		));
 
 		// Execute save
@@ -98,7 +91,47 @@ public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
 		Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 		
 		assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
+		assertEquals(complexObs1.getComplexData().getTitle(), filename);
 		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+		assertEquals(complexObs2.getComplexData().getTitle(), filename);
+	}
+
+	@Test
+	public void saveObs_shouldNotDuplicateKeyWhenUpdating() throws IOException {
+		String filename = "TestingComplexObsSaving";
+		byte[] content = "Teststring".getBytes();
+
+		ComplexData complexData = new ComplexData(filename, content);
+		
+		Obs obs = new Obs();
+		obs.setComplexData(complexData);
+
+		adminService.saveGlobalProperty(new GlobalProperty(
+			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+			"obs"
+		));
+
+		// Execute save
+		handler.saveObs(obs);
+
+		// Get observation
+		Obs complexObs = handler.getObs(obs, "RAW_VIEW");
+
+		String initialKey = complexObs.getValueComplex().split("\\|")[1];
+		Integer initialKeyLength = initialKey.length();
+		assertTrue(initialKey.endsWith("TestingComplexObsSaving"));
+
+		// update
+		handler.saveObs(obs);;
+		complexObs = handler.getObs(obs, "RAW_VIEW");
+		String updatedKey = complexObs.getValueComplex().split("\\|")[1];
+		Integer updatedKeyLength = updatedKey.length();
+		assertTrue(updatedKey.endsWith("TestingComplexObsSaving"));
+		// we use the fact that the length grown as a proxy for
+		// duplication, may not work if we change the way keys are generated, see:
+		// https://openmrs.atlassian.net/browse/TRUNK-6472
+		assertEquals(initialKeyLength, updatedKeyLength);
+
 	}
 	
 }

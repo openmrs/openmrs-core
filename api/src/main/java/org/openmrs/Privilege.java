@@ -9,6 +9,16 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Cacheable;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 /**
@@ -17,12 +27,20 @@ import org.hibernate.envers.Audited;
  * @version 1.0
  */
 @Audited
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Entity
+@Table(name = "privilege")
+@AttributeOverrides({
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
+})
 public class Privilege extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 312L;
 	
 	// Fields
-	
+	@Id
+	@Column(name = "privilege", length = 250)
 	private String privilege;
 	
 	// Constructors

@@ -213,8 +213,10 @@ function CreateCallback(options) {
 	// This is what maps each PersonListItem returned object to a name in the dropdown
 	this.displayPerson = function(origQuery) { return function(person) {
 		// dwr methods sometimes put strings into the results, just display those
-		if (typeof person == 'string')
-			return { label: person, value: "" };
+		if (typeof person == 'string'){
+			personEscaped = $j('<div/>').text(person).html();
+			return { label: personEscaped, value: "" };
+		}
 					
 		// item is a PersonListItem object
 		var imageText = "";
@@ -230,11 +232,11 @@ function CreateCallback(options) {
 		var textShown = " ";
 		
 		if (person.identifier)
-			textShown += person.identifier;
+			textShown += $j('<div/>').text(person.identifier).html();
 		
 		textShown += " ";
 		
-		textShown += person.personName;
+		textShown += $j('<div/>').text(person.personName).html();
 
 		// highlight each search term in the results
 		textShown = highlightWords(textShown, origQuery);
@@ -242,6 +244,7 @@ function CreateCallback(options) {
 		var ageText = "";
 		if (person.age) {
 			ageText = " (" + person.age + " " + omsgs.yearsOld + ")";
+			ageText = $j('<div/>').text(ageText).html();
 		}
 		
 		// append the gender image and age AFTER word highlighting so regex doesn't match it
@@ -251,7 +254,9 @@ function CreateCallback(options) {
 		// wrap each result in a span tag (needed?)
 		textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
 		
-		return { label: textShown, value: person.personName, id: person.personId, object: person };
+		personNameEscaped = $j('<div/>').text(person.personName).html();
+		personIdEscaped = $j('<div/>').text(person.personId).html();
+		return { label: textShown, value: personNameEscaped, id: personIdEscaped, object: person };
 	}; }
 	
 	/**

@@ -35,15 +35,9 @@ public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
 	@Autowired
 	private AdministrationService adminService;
 
-	@TempDir
-	public Path complexObsTestFolder;
-
+	@Autowired
 	BinaryStreamHandler handler;
 
-	@BeforeEach
-	public void setUp() {
-		handler = new BinaryStreamHandler();
-	}
     @Test
     public void shouldReturnSupportedViews() {
         String[] actualViews = handler.getSupportedViews();
@@ -71,11 +65,11 @@ public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
     }
     	
 	@Test
-	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
+	public void saveObs_shouldRetrieveCorrectMimetypeAndTitle() throws IOException {
 		
 		adminService.saveGlobalProperty(new GlobalProperty(
 			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
-			complexObsTestFolder.toAbsolutePath().toString()
+			"obs"
 		));
 		
 		String mimetype = "application/octet-stream";
@@ -99,10 +93,16 @@ public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
 			complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 			
 			assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
+			assertEquals(complexObs1.getComplexData().getTitle(), filename);
 			assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+			assertEquals(complexObs2.getComplexData().getTitle(), filename);
 		} finally {
-			((InputStream) complexObs1.getComplexData().getData()).close();
-			((InputStream) complexObs2.getComplexData().getData()).close();
+			if (complexObs1 != null) {
+				((InputStream) complexObs1.getComplexData().getData()).close();
+			}
+			if (complexObs2 != null) {
+				((InputStream) complexObs2.getComplexData().getData()).close();
+			}
 		}
 	}
 }

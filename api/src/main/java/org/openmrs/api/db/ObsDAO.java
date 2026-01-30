@@ -17,6 +17,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.Person;
 import org.openmrs.Visit;
 import org.openmrs.api.ObsService;
@@ -109,5 +110,4 @@ public interface ObsDAO {
 			List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 			Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, List<Visit> visits,
 			boolean includeVoidedObs, String accessionNumber) throws DAOException;
-	
 }

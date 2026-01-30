@@ -9,12 +9,14 @@
  */
 package org.openmrs.scheduler.tasks;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
+import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +30,7 @@ public class TaskThreadedInitializationWrapper implements Task {
 	// Logger 
 	private static final Logger log = LoggerFactory.getLogger(TaskThreadedInitializationWrapper.class);
 	
-	private Task task;
+	private final Task task;
 	
 	private boolean initialized = false;
 	
@@ -64,8 +66,12 @@ public class TaskThreadedInitializationWrapper implements Task {
 		finally {
 			lock.unlock();
 		}
-		
-		task.execute();
+
+		try {
+			task.execute();
+		} catch (InterruptedException | ExecutionException e) {
+			log.error("Exception occurred while executing task.", e);
+		}
 	}
 	
 	/**
@@ -75,7 +81,7 @@ public class TaskThreadedInitializationWrapper implements Task {
 	 */
 	@Override
 	public void initialize(final TaskDefinition config) {
-		Runnable r = () -> {
+		OpenmrsThreadPoolHolder.threadExecutor.submit(() -> {
 			lock.lock();
 			try {
 				task.initialize(config);
@@ -85,9 +91,7 @@ public class TaskThreadedInitializationWrapper implements Task {
 			finally {
 				lock.unlock();
 			}
-		};
-		
-		new Thread(r).start();
+		});
 	}
 	
 	/**

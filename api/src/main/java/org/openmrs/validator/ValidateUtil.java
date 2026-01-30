@@ -131,7 +131,7 @@ public class ValidateUtil {
 			if (value == null || !(value instanceof String)) {
 				continue;
 			}
-			int length = Context.getAdministrationService().getMaximumPropertyLength((Class<? extends OpenmrsObject>) aClass, field);
+			long length = Context.getAdministrationService().getMaximumPropertyLength((Class<? extends OpenmrsObject>) aClass, field);
 			if (length == -1) {
 				return;
 			}

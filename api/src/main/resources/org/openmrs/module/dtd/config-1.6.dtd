@@ -115,9 +115,9 @@
 	<!ELEMENT packagesWithMappedClasses (#PCDATA)>
 	
 	<!ELEMENT conditionalResources (conditionalResource+)>
-	<!ELEMENT conditionalResource (path, (openmrsVersion | loadIfModulesPresent))>
+	<!ELEMENT conditionalResource (path, (openmrsVersion | modules))>
 	<!ELEMENT path (#PCDATA)>
 	<!ELEMENT openmrsVersion (#PCDATA)>
-	<!ELEMENT loadIfModulesPresent (openmrsModule+)>
-	<!ELEMENT openmrsModule (moduleId, version)>
+	<!ELEMENT modules (module+)>
+	<!ELEMENT module (moduleId, version)>
 	<!ELEMENT moduleId (#PCDATA)>

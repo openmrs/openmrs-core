@@ -9,6 +9,8 @@
  */
 package org.openmrs.hl7.impl;
 
+
+import java.util.Arrays;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -27,6 +29,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.Application;
+import ca.uhn.hl7v2.app.ApplicationException;
+import ca.uhn.hl7v2.app.MessageTypeRouter;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.datatype.ID;
+import ca.uhn.hl7v2.model.v25.datatype.PL;
+import ca.uhn.hl7v2.model.v25.datatype.TS;
+import ca.uhn.hl7v2.model.v25.datatype.XCN;
+import ca.uhn.hl7v2.model.v25.datatype.XPN;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.PID;
+import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
+import ca.uhn.hl7v2.parser.GenericParser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openmrs.Location;
@@ -38,6 +55,7 @@ import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientIdentifierException;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.impl.BaseOpenmrsService;
@@ -58,23 +76,10 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.app.MessageTypeRouter;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.datatype.CX;
-import ca.uhn.hl7v2.model.v25.datatype.ID;
-import ca.uhn.hl7v2.model.v25.datatype.PL;
-import ca.uhn.hl7v2.model.v25.datatype.TS;
-import ca.uhn.hl7v2.model.v25.datatype.XCN;
-import ca.uhn.hl7v2.model.v25.datatype.XPN;
-import ca.uhn.hl7v2.model.v25.segment.NK1;
-import ca.uhn.hl7v2.model.v25.segment.PID;
-import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
-import ca.uhn.hl7v2.parser.GenericParser;
 
 /**
  * OpenMRS HL7 API default methods This class shouldn't be instantiated by itself. Use the
@@ -82,37 +87,28 @@ import ca.uhn.hl7v2.parser.GenericParser;
  *
  * @see org.openmrs.hl7.HL7Service
  */
+@Service("hL7Service")
 @Transactional
-public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
+public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(HL7ServiceImpl.class);
 	
-	private static HL7ServiceImpl instance;
-	
+	@Autowired
 	protected HL7DAO dao;
 	
+	@Autowired
+	@Qualifier("hL7Parser")
 	private GenericParser parser;
 	
+	@Autowired
+	@Qualifier("hL7Router")
 	private MessageTypeRouter router;
+
 	
-	/**
-	 * Private constructor to only support on singleton instance.
-	 *
-	 * @see #getInstance()
-	 */
-	private HL7ServiceImpl() {
-	}
-	
-	/**
-	 * Singleton Factory method
-	 *
-	 * @return a singleton instance of this HL7ServiceImpl class
-	 */
-	public static HL7ServiceImpl getInstance() {
-		if (instance == null) {
-			instance = new HL7ServiceImpl();
-		}
-		return instance;
+
+	@Autowired
+	public void initializeHL7Handlers(@Qualifier("hL7Handlers") Map<String, Application> handlers) {
+		setHL7Handlers(handlers);
 	}
 	
 	/**
@@ -1206,4 +1202,27 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		return null;
 	}
 	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (HL7InError.class.equals(type)) {
+            return (T) getHL7InErrorByUuid(uuid);
+        }
+        if (HL7InQueue.class.equals(type)) {
+            return (T) getHL7InQueueByUuid(uuid);
+        }
+        if (HL7InArchive.class.equals(type)) {
+            return (T) getHL7InArchiveByUuid(uuid);
+        }
+        if (HL7QueueItem.class.equals(type)) {
+            return (T) getHl7QueueItemByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(HL7InError.class, HL7InQueue.class, HL7InArchive.class, HL7QueueItem.class);
+    }
+
 }

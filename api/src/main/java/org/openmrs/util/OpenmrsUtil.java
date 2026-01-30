@@ -59,7 +59,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
-import javax.activation.MimetypesFileTypeMap;
+import jakarta.activation.MimetypesFileTypeMap;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -72,10 +72,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
@@ -103,6 +105,7 @@ import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
+import org.openmrs.validator.ObsValidator;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -271,7 +274,6 @@ public class OpenmrsUtil {
 	 * <strong>Should</strong> copy inputstream to outputstream and close the outputstream
 	 */
 	public static void copyFile(InputStream inputStream, OutputStream outputStream) throws IOException {
-		
 		if (inputStream == null || outputStream == null) {
 			if (outputStream != null) {
 				IOUtils.closeQuietly(outputStream);
@@ -285,7 +287,6 @@ public class OpenmrsUtil {
 		finally {
 			IOUtils.closeQuietly(outputStream);
 		}
-		
 	}
 	
 	/**
@@ -2148,6 +2149,30 @@ public class OpenmrsUtil {
 	 */
 	public static Set<String> getDeclaredFields(Class<?> clazz) {
 		return Arrays.stream(clazz.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
+	}
+
+	/**
+	 * This method checks if a given value is a valid numeric value for the person/patient in subject 
+	 * given the concept. It checks if a given value is within the valid reference range.
+	 *
+	 * @param value The value to check
+	 * @param obs The observation to be verified
+	 * @return Error message containing expected range if there was a range mismatch, else returns empty string.
+	 * 
+	 * @since 2.7.0
+	 */
+	public static String isValidNumericValue(Float value, Obs obs) {
+		ConceptReferenceRange conceptReferenceRange = Context.getConceptService().getConceptReferenceRange(obs.getPerson(), obs.getConcept());
+		if (conceptReferenceRange == null) {
+			return "";
+		}
+
+		if ((conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < value) ||
+			(conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > value)) {
+			return String.format("Expected value between %s and %s", conceptReferenceRange.getLowAbsolute(), conceptReferenceRange.getHiAbsolute());
+		} else {
+			return "";
+		}
 	}
 	
 }

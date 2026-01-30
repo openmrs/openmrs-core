@@ -11,7 +11,7 @@ package org.openmrs.api;
 
 /**
  * An instance of this exception is thrown when a required property has not been set on an Object.
- *
+ * 
  * @since 2.1
  */
 public class MissingRequiredPropertyException extends APIException {

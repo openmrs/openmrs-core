@@ -9,9 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -22,6 +22,10 @@ import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderSetDAO;
+
+import org.openmrs.api.db.OrderSetDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderSetDAO that
@@ -35,22 +39,13 @@ import org.openmrs.api.db.OrderSetDAO;
  * @see org.openmrs.api.db.OrderSetDAO
  * @since 1.12
  */
+@Repository("orderSetDAO")
 public class HibernateOrderSetDAO implements OrderSetDAO {
 	
-	/**
-	 * Hibernate session factory
-	 */
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
-	public HibernateOrderSetDAO() {
-	}
-	
-	/**
-	 * Set session factory
-	 *
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateOrderSetDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	

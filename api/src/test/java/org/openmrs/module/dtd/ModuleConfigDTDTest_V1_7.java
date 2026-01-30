@@ -34,7 +34,7 @@ import org.w3c.dom.Document;
 
 public class ModuleConfigDTDTest_V1_7 {
 	
-	private static final String[] compatibleVersions = new String[] { "1.7" };
+	private static final String[] compatibleVersions = new String[] { "1.7", "2.0" };
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")

@@ -13,7 +13,7 @@ package org.openmrs.api;
  * An instance of this exception is thrown if an update operation is attempted on an object that is
  * referenced by others, typically this should be thrown when altering an existing object is
  * detrimental to the integrity of objects referencing it or any other existing associated data.
- *
+ * 
  * @since 2.1
  */
 public class CannotUpdateObjectInUseException extends InvalidOperationOnObjectException {

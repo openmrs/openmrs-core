@@ -9,11 +9,23 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
  * ConceptStateConversion
  */
+@Entity
+@Table(name = "concept_state_conversion")
 @Audited
 public class ConceptStateConversion extends BaseOpenmrsObject {
 	
@@ -22,13 +34,26 @@ public class ConceptStateConversion extends BaseOpenmrsObject {
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_state_conversion_id_seq")
+	@GenericGenerator(
+		name = "concept_state_conversion_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value="concept_state_conversion_concept_state_conversion_id_seq")
+	)
+	@Column(name = "concept_state_conversion_id", nullable = false)
 	private Integer conceptStateConversionId;
-	
+
+	@ManyToOne
+	@JoinColumn(name= "concept_id", nullable = false)
 	private Concept concept;
-	
+
+	@ManyToOne
+	@JoinColumn(name= "program_workflow_id", nullable = false)
 	private ProgramWorkflow programWorkflow;
-	
+
+	@ManyToOne
+	@JoinColumn(name= "program_workflow_state_id", nullable = false)
 	private ProgramWorkflowState programWorkflowState;
 	
 	// ******************

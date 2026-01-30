@@ -36,11 +36,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.openmrs.util.OpenmrsConstants;
-import org.powermock.reflect.Whitebox;
 
 /**
  * Tests methods on the {@link org.openmrs.module.ModuleUtil} class
@@ -111,26 +111,19 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @throws SecurityException
 	 * @throws NoSuchFieldException
-	 * @see ModuleUtil#isOpenmrsVersionInVersions(String[])
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void isOpenmrsVersionInVersions_shouldReturnTrueIfCurrentOpenmrsVersionMatchesOneElementInVersions()
-	        throws Exception {
-
-		final String currentVersion = "1.9.8";
-		Whitebox.setInternalState(OpenmrsConstants.class, "OPENMRS_VERSION_SHORT", currentVersion);
-		assertTrue(ModuleUtil.isOpenmrsVersionInVersions( currentVersion, "1.10.*"));
+	public void isOpenmrsVersionInVersions_shouldReturnTrueIfCurrentOpenmrsVersionMatchesOneElementInVersions() {
+		assertTrue(ModuleUtil.isVersionInVersions("1.11.2", "1.10.*", "1.11.*"));
 	}
 
 	/**
 	 * @see ModuleUtil#isOpenmrsVersionInVersions(String[])
 	 */
 	@Test
-	public void isOpenmrsVersionInVersions_shouldReturnFalseIfCurrentOpenmrsVersionDoesNotMatchAnyElementInVersions()
-	        throws Exception {
-
-		Whitebox.setInternalState(OpenmrsConstants.class, "OPENMRS_VERSION_SHORT", "1.9.8");
-		assertFalse(ModuleUtil.isOpenmrsVersionInVersions("1.11.*", "2.1.0"));
+	public void isOpenmrsVersionInVersions_shouldReturnFalseIfCurrentOpenmrsVersionDoesNotMatchAnyElementInVersions() {
+		assertFalse(ModuleUtil.isVersionInVersions("1.9.8", "1.11.*", "2.1.0"));
 	}
 
 	/**
@@ -355,6 +348,16 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		String requiredVersion = "1.4.0 - 1.4.10";
 		assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
 	}
+
+	/**
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
+	 */
+	@Test
+	public void matchRequiredVersions_shouldMatchWhenVersionHasQualifierAndIsOnLowerBoundary() {
+		String openmrsVersion = "1.4.0-SNAPSHOT";
+		String requiredVersion = "1.4.0 - 1.4.10";
+		assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
 	
 	/**
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
@@ -499,14 +502,57 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
 	 */
 	@Test
-	public void compareVersion_shouldTreatSNAPSHOTAsEarliestVersion() {
-		String olderVersion = "1.8.3";
+	public void compareVersion_shouldCorrectlyCompareOlderSNAPSHOTAndNewerSNAPSHOTVersion() {
+		String olderVersion = "1.8.3-SNAPSHOT";
 		String newerVersion = "1.8.4-SNAPSHOT";
 		assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
-		//should still return the correct value if the arguments are switched
 		assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
 	}
 	
+	/**
+	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
+	 */
+	@Test
+	public void compareVersion_shouldCorrectlyCompareOlderPlainAndNewerSNAPSHOTVersion() {
+		String olderVersion = "1.8.3";
+		String newerVersion = "1.8.4-SNAPSHOT";
+		assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
+		assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
+	}
+	
+	/**
+	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
+	 */
+	@Test
+	public void compareVersion_shouldCorrectlyCompareNewerPlainAndOlderSNAPSHOTVersion() {
+		String olderVersion = "1.8.3-SNAPSHOT";
+		String newerVersion = "1.8.4";
+		assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
+		assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
+	}
+	
+	/**
+	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
+	 */
+	@Test
+	public void compareVersion_shouldCorrectlyCompareSamePlainAndSNAPSHOTVersions() {
+		String olderVersion = "1.8.4-SNAPSHOT";
+		String newerVersion = "1.8.4";
+		assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
+		assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
+	}
+	
+	/**
+	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
+	 */
+	@Test
+	public void compareVersion_shouldCorrectlyCompareSamePlainAndRandomQualifierVersions() {
+		String olderVersion = "1.8.4-RandomQualifier";
+		String newerVersion = "1.8.4";
+		assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
+		assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
+	}
+
 	/**
 	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */
@@ -747,6 +793,45 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 			assertFalse(string.contains("META-INF"));
 			assertFalse(string.contains("web/module"));
 		}
+	}
+
+	/**
+	 * @see ModuleUtil#matchRequiredVersions(String, String) 
+	 */
+	@ParameterizedTest(name = "configVersion={0}, versionRange={1} => expected={2}")
+	@CsvSource({
+		// Exact version matches
+		"2.0, 2.0, true",
+		"2.1, 2.0, true",
+		"1.9, 2.0, false",
+
+		// Wildcard major version matches
+		"1.5, 1.*, true",
+		"1.0, 1.*, true",
+		"2.0, 1.*, false",
+
+		// Wildcard minor version matches
+		"2.0.1, 2.0.*, true",
+		"2.0.0, 2.0.*, true",
+		"2.1.0, 2.0.*, false",
+
+		// Version range matches
+		"1.5, 1.0 - 2.0, true",
+		"2.0, 1.0 - 2.0, true",
+		"2.1, 1.0 - 2.0, false",
+		"0.9, 1.0 - 2.0, false",
+
+		// No version range (null or empty)
+		"2.0, , true",
+		"1.5, , true",
+
+		// Edge cases
+		"1.0.0, 1.0, true",
+		"1.0.1, 1.0, true",
+		"0.9.9, 1.0, false"
+	})
+	void testMatchConfigVersions(String configVersion, String versionRange, boolean expected) {
+		assertEquals(expected, ModuleUtil.matchRequiredVersions(configVersion, versionRange));
 	}
 	
 	/**

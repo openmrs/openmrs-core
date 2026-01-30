@@ -19,5 +19,5 @@ import org.openmrs.OpenmrsTestsTest;
  * verify the tests in the web layer
  */
 public class OpenmrsWebTestsTest extends OpenmrsTestsTest {
-
+	
 }

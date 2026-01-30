@@ -24,19 +24,28 @@ import org.openmrs.serialization.SimpleXStreamSerializer;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains methods for retrieving registered OpenmrsSerializer instances, and for
  * persisting/retrieving/deleting objects using serialization
  */
+@Service("serializationService")
 @Transactional
 public class SerializationServiceImpl extends BaseOpenmrsService implements SerializationService {
 	
 	private static final Logger log = LoggerFactory.getLogger(SerializationServiceImpl.class);
 	
 	//***** Properties (set by spring)
-	private static Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
+	private Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
+
+	@Autowired
+	public void initializeSerializerMap(@Qualifier("serializerList") List<? extends OpenmrsSerializer> serializerList) {
+		setSerializers(serializerList);
+	}
 	
 	//***** Service method implementations *****
 	
@@ -133,17 +142,13 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		return new ArrayList<>(serializerMap.values());
 	}
 	
-	public static void setSerializerMap(Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap) {
-		SerializationServiceImpl.serializerMap = serializerMap;
-	}
-	
 	/**
 	 * @param serializers the serializers to set
 	 * <strong>Should</strong> not reset serializers list when called multiple times
 	 */
 	public void setSerializers(List<? extends OpenmrsSerializer> serializers) {
 		if (serializers == null || serializerMap == null) {
-			setSerializerMap(new LinkedHashMap<>());
+			this.serializerMap = new LinkedHashMap<>();
 		}
 		if (serializers != null) {
 			for (OpenmrsSerializer s : serializers) {

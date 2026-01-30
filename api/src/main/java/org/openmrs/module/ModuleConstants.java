@@ -9,29 +9,13 @@
  */
 package org.openmrs.module;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Constants used by the module system in openmrs
  */
 public class ModuleConstants {
-
+	
 	private ModuleConstants() {
 	}
-	
-	/**
-	 * A map from "moduleid" to "required version" for all core modules that are required by
-	 * openmrs. A module with at least the given version is required to start before openmrs will
-	 * fully start.
-	 */
-	public static final Map<String, String> CORE_MODULES = new HashMap<>();
-	
-	/**
-	 * Used to determine if the {@link #CORE_MODULES} list should be used or not. For unit testing
-	 * this is set to true to allow for faster runs with less dependencies.
-	 */
-	public static final String IGNORE_CORE_MODULES_PROPERTY = "module.ignore_core_status";
 	
 	/**
 	 * Name of the file in the module repository to ping to question for updates to a module
@@ -79,8 +63,9 @@ public class ModuleConstants {
 	public static final String REPOSITORY_FOLDER_RUNTIME_PROPERTY = "module.repository_folder";
 	
 	/**
-	 * A module message.properties file containing this key mapped to "true" will be allowed to define messages outside of the module's namespace.
-	 *
+	 * A module message.properties file containing this key mapped to "true" will be allowed to
+	 * define messages outside of the module's namespace.
+	 * 
 	 * @since 1.9.3
 	 */
 	public static final String MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE = "openmrs.property.MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE";

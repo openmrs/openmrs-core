@@ -11,13 +11,15 @@ package org.openmrs;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.hibernate.search.annotations.Field;
+import org.hibernate.envers.Audited;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Data (as opposed to
@@ -28,17 +30,18 @@ import org.hibernate.search.annotations.Field;
  * @see OpenmrsData
  */
 @MappedSuperclass
+@Audited
 public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements OpenmrsData {
 	
 	//***** Properties *****
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", updatable = false)
 	protected User creator;
 	
 	@Column(name = "date_created", nullable = false, updatable = false)
 	private Date dateCreated;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
@@ -46,13 +49,13 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	private Date dateChanged;
 	
 	@Column(name = "voided", nullable = false)
-	@Field
+	@GenericField
 	private Boolean voided = Boolean.FALSE;
 	
 	@Column(name = "date_voided")
 	private Date dateVoided;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 	

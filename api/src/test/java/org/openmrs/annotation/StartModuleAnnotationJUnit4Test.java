@@ -21,7 +21,6 @@ public class StartModuleAnnotationJUnit4Test extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldStartModules() throws ClassNotFoundException {
-		
 		Class<?> test1ServiceClass = Context.loadClass("org.openmrs.module.test1.api.Test1Service");
 		Class<?> test2ServiceClass = Context.loadClass("org.openmrs.module.test2.api.Test2Service");
 		assertNotNull(test1ServiceClass);

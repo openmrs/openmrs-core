@@ -9,7 +9,7 @@
  */
 package org.openmrs.web;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;

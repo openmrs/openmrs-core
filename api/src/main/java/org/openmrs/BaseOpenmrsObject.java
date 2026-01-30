@@ -12,18 +12,20 @@ package org.openmrs;
 import java.io.Serializable;
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.Hibernate;
+import org.hibernate.envers.Audited;
 
 /**
  * This is the base implementation of the {@link OpenmrsObject} interface.<br>
  * It implements the uuid variable that all objects are expected to have.
  */
 @MappedSuperclass
+@Audited
 public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	
 	@Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false)

@@ -9,7 +9,6 @@
 
 # ----------------------------------
 # Configurable environment variables
-OMRS_ADD_DEMO_DATA=${OMRS_ADD_DEMO_DATA:-false}
 OMRS_ADMIN_USER_PASSWORD=${OMRS_ADMIN_USER_PASSWORD:-Admin123}
 OMRS_ADMIN_PASSWORD_LOCKED=${OMRS_ADMIN_PASSWORD_LOCKED:-false}
 # When set to 'true' all DB updates are applied automatically upon startup
@@ -42,11 +41,14 @@ OMRS_JAVA_MEMORY_OPTS=${OMRS_JAVA_MEMORY_OPTS:-'-XX:NewSize=128m'}
 OMRS_MODULE_WEB_ADMIN=${OMRS_MODULE_WEB_ADMIN:-true}
 # This should match the name of the distribution supplied OpenMRS war file
 OMRS_WEBAPP_NAME=${OMRS_WEBAPP_NAME:-'openmrs'}
+# Can be set to lucene or elasticsearch
+OMRS_SEARCH=${OMRS_SEARCH:-'lucene'}
+OMRS_SEARCH_CONFIG=${OMRS_SEARCH_CONFIG:-"${OMRS_SEARCH}Config"}
+OMRS_SEARCH_ES_URIS=${OMRS_SEARCH_ES_URIS:-'http://es:9200'}
 # End of configurable environment variables
 # -----------------------------------------
 
 # Support deprecated environment names
-[ -n "${OMRS_CONFIG_ADD_DEMO_DATA:-}" ] && OMRS_ADD_DEMO_DATA=${OMRS_CONFIG_ADD_DEMO_DATA}
 [ -n "${OMRS_CONFIG_ADMIN_USER_PASSWORD:-}" ] && OMRS_ADMIN_USER_PASSWORD=${OMRS_CONFIG_ADMIN_USER_PASSWORD}
 [ -n "${OMRS_CONFIG_AUTO_UPDATE_DATABASE:-}" ] && OMRS_AUTO_UPDATE_DATABASE=${OMRS_CONFIG_AUTO_UPDATE_DATABASE}
 [ -n "${OMRS_CONFIG_CREATE_DATABASE_USER:-}" ] && OMRS_CREATE_DATABASE_USER=${OMRS_CONFIG_CREATE_DATABASE_USER}
@@ -75,6 +77,7 @@ OMRS_DISTRO_CORE="$OMRS_DISTRO_DIR/openmrs_core"
 OMRS_DISTRO_MODULES="$OMRS_DISTRO_DIR/openmrs_modules"
 OMRS_DISTRO_OWAS="$OMRS_DISTRO_DIR/openmrs_owas"
 OMRS_DISTRO_CONFIG="$OMRS_DISTRO_DIR/openmrs_config"
+OMRS_DISTRO_FRONTEND="$OMRS_DISTRO_DIR/openmrs_spa"
 
 # Each of these mounted directories are used to populate expected configurations on the server, defined here
 
@@ -82,21 +85,29 @@ OMRS_DATA_DIR="$OMRS_HOME/data"
 OMRS_MODULES_DIR="$OMRS_DATA_DIR/modules"
 OMRS_OWA_DIR="$OMRS_DATA_DIR/owa"
 OMRS_CONFIG_DIR="$OMRS_DATA_DIR/configuration"
+OMRS_FRONTEND_DIR="$OMRS_DATA_DIR/frontend"
 
 OMRS_SERVER_PROPERTIES_FILE="$OMRS_HOME/$OMRS_WEBAPP_NAME-server.properties"
 OMRS_RUNTIME_PROPERTIES_FILE="$OMRS_DATA_DIR/$OMRS_WEBAPP_NAME-runtime.properties"
 
-echo "Deleting modules, OWAs and configuration from OpenMRS"
+echo "Deleting modules, OWAs, configuration and frontend from OpenMRS"
 
-rm -fR "${OMRS_MODULES_DIR:?}/*"
-rm -fR "${OMRS_OWA_DIR:?}/*"
-rm -fR "${OMRS_CONFIG_DIR:?}/*"
+rm -fR "${OMRS_MODULES_DIR:?}"
+mkdir "${OMRS_MODULES_DIR}"
+rm -fR "${OMRS_OWA_DIR:?}"
+mkdir "${OMRS_OWA_DIR}"
+rm -fR "${OMRS_CONFIG_DIR:?}"
+mkdir "${OMRS_CONFIG_DIR}"
+rm -fR "${OMRS_FRONTEND_DIR:?}"
+mkdir "${OMRS_FRONTEND_DIR}"
 
 echo "Loading distribution artifacts into OpenMRS"
 
-[ -d "$OMRS_DISTRO_MODULES" ] && cp -R "$OMRS_DISTRO_MODULES/." "$OMRS_MODULES_DIR"
-[ -d "$OMRS_DISTRO_OWAS" ] && cp -R "$OMRS_DISTRO_OWAS/." "$OMRS_OWA_DIR"
-[ -d "$OMRS_DISTRO_CONFIG" ] && cp -R "$OMRS_DISTRO_CONFIG/." "$OMRS_CONFIG_DIR"
+# Copy preserving timestamps to avoid redeploys
+[ -d "$OMRS_DISTRO_MODULES" ] && cp -a "$OMRS_DISTRO_MODULES/." "$OMRS_MODULES_DIR"
+[ -d "$OMRS_DISTRO_OWAS" ] && cp -a "$OMRS_DISTRO_OWAS/." "$OMRS_OWA_DIR"
+[ -d "$OMRS_DISTRO_CONFIG" ] && cp -a "$OMRS_DISTRO_CONFIG/." "$OMRS_CONFIG_DIR"
+[ -d "$OMRS_DISTRO_FRONTEND" ] && cp -a "$OMRS_DISTRO_FRONTEND/." "$OMRS_FRONTEND_DIR"
 
 # Setup database configuration properties
 if [[ -z $OMRS_DB || "$OMRS_DB" == "mysql" ]]; then
@@ -104,6 +115,11 @@ if [[ -z $OMRS_DB || "$OMRS_DB" == "mysql" ]]; then
   OMRS_DB_DRIVER_CLASS=${OMRS_DB_DRIVER_CLASS:-com.mysql.jdbc.Driver}
   OMRS_DB_PORT=${OMRS_DB_PORT:-3306}
   OMRS_DB_ARGS="${OMRS_DB_ARGS:-?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8}"
+elif [[ "$OMRS_DB" == "mariadb" ]]; then
+  OMRS_DB_JDBC_PROTOCOL=${OMRS_DB_JDBC_PROTOCOL:-mariadb}
+  OMRS_DB_DRIVER_CLASS=${OMRS_DB_DRIVER_CLASS:-org.mariadb.jdbc.Driver}
+  OMRS_DB_PORT=${OMRS_DB_PORT:-3306}
+  OMRS_DB_ARGS="${OMRS_DB_ARGS:-?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8}"	
 elif [[ "$OMRS_DB" == "postgresql" ]]; then
   OMRS_DB_JDBC_PROTOCOL=${OMRS_DB_JDBC_PROTOCOL:-postgresql}
   OMRS_DB_DRIVER_CLASS=${OMRS_DB_DRIVER_CLASS:-org.postgresql.Driver}
@@ -122,7 +138,6 @@ OMRS_DB_URL="${OMRS_DB_URL:-jdbc:${OMRS_DB_JDBC_PROTOCOL}://${OMRS_DB_HOSTNAME}:
 echo "Writing out $OMRS_SERVER_PROPERTIES_FILE"
 
 cat > $OMRS_SERVER_PROPERTIES_FILE << EOF
-add_demo_data=${OMRS_ADD_DEMO_DATA}
 admin_user_password=${OMRS_ADMIN_USER_PASSWORD}
 admin_password_locked=${OMRS_ADMIN_PASSWORD_LOCKED}
 auto_update_database=${OMRS_AUTO_UPDATE_DATABASE}
@@ -137,8 +152,12 @@ install_method=${OMRS_INSTALL_METHOD}
 module_web_admin=${OMRS_MODULE_WEB_ADMIN}
 module.allow_web_admin=${OMRS_MODULE_WEB_ADMIN}
 
-EOF
+property.hibernate.search.backend.type=${OMRS_SEARCH}
+property.hibernate.search.backend.analysis.configurer=${OMRS_SEARCH_CONFIG}
+property.hibernate.search.backend.uris=${OMRS_SEARCH_ES_URIS}
+property.hibernate.search.backend.discovery.enabled=true
 
+EOF
 
 # Supports any custom env variable with the OMRS_EXTRA_ prefix, which translates to a property without the 
 # OMRS_EXTRA_ prefix. The '_' is replaced with '.' and '__' with '_'.
@@ -151,18 +170,42 @@ if [[ -n "${EXTRA_VARS+x}" ]]; then
 	  var=$(echo "${i#OMRS_EXTRA_}" | tr [:upper:] [:lower:])
 	  var=${var//_/.}
 	  var=${var//../_}
-	  EXTRA_PROPERTIES+="${var}=${!i} \n"
+	  EXTRA_PROPERTIES+="${var}=${!i}\n"
 	done
 	
-	echo -e "$EXTRA_PROPERTIES" >> "$OMRS_SERVER_PROPERTIES_FILE"
+	echo -e "$EXTRA_PROPERTIES" >> "openmrs-extra.properties"
 fi
 
-cat "$OMRS_SERVER_PROPERTIES_FILE"
-
 if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
-  echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Merging with $OMRS_SERVER_PROPERTIES_FILE"
-  awk -F= '!a[$1]++' "$OMRS_SERVER_PROPERTIES_FILE" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
-  cp openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
-  cat "$OMRS_RUNTIME_PROPERTIES_FILE"
+  if [ -f "openmrs-extra.properties" ]; then
+    echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Merging with extra properties."
+    awk -F= '!a[$1]++' "openmrs-extra.properties" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+    mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
+    cat "$OMRS_RUNTIME_PROPERTIES_FILE"
+  fi
+else
+  # on installation, we place the extra properties in the server properties, prefixed with `property` so that they
+  # are correctly pulled out by the InitializationFilter. This leverages a system originally used by the SDK.
+  if [ -f openmrs-extra.properties ]; then
+  	if [ -f openmrs-extra.properties.tmp ]; then
+  	  : > openmrs-extra.properties.tmp
+  	fi
+  	
+  	while IFS="" read -r line; do
+  	  [[ -n "$line" ]] && echo -e "property.$line" >> openmrs-extra.properties.tmp
+	done < openmrs-extra.properties
+	
+	echo >> openmrs-exta.properties.tmp
+	
+	if [ -f openmrs-extra.properties.tmp ]; then
+	  mv openmrs-extra.properties.tmp openmrs-extra.properties
+	  cat "openmrs-extra.properties" >> "$OMRS_SERVER_PROPERTIES_FILE"
+	fi
+  fi
+  cat "$OMRS_SERVER_PROPERTIES_FILE"
+fi
+
+if [ -f openmrs-extra.properties ]; then
+  rm openmrs-extra.properties;
 fi
 

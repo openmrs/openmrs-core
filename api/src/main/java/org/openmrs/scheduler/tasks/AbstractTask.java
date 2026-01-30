@@ -14,6 +14,8 @@ import org.openmrs.scheduler.TaskDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * Base class for all other task classes.
  */
@@ -48,7 +50,7 @@ public abstract class AbstractTask implements Task {
 	 * @see org.openmrs.scheduler.Task#execute()
 	 */
 	@Override
-	public abstract void execute();
+	public abstract void execute() throws InterruptedException, ExecutionException;
 	
 	/**
 	 * @see org.openmrs.scheduler.Task#isExecuting()

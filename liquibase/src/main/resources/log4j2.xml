@@ -19,7 +19,6 @@
 	</Appenders>
 	<Loggers>
 		<Logger name="org.openmrs.liquibase" level="INFO" />
-		<Logger name="liquibase.resource.CompositeResourceAccessor" level="ERROR" additivity="false"/>
 		<Root level="OFF">
 			<AppenderRef ref="CONSOLE" />
 		</Root>

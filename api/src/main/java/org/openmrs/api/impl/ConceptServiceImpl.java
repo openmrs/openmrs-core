@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -52,6 +55,8 @@ import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptInUseException;
@@ -59,17 +64,21 @@ import org.openmrs.api.ConceptNameInUseException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptStopWordException;
 import org.openmrs.api.ConceptsLockedException;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.validator.ObsValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -77,11 +86,13 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @see org.openmrs.api.ConceptService to access these methods
  */
+@Service("conceptService")
 @Transactional
-public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService {
+public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(ConceptServiceImpl.class);
 	
+	@Autowired
 	private ConceptDAO dao;
 	
 	private static Concept trueConcept;
@@ -2061,6 +2072,34 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		return dao.getConceptAttributeCount(conceptAttributeType) > 0;
 	}
 
+	/**
+	 * @see ConceptService#saveConceptReferenceRange(ConceptReferenceRange)
+	 */
+	@Override
+	public ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
+		return dao.saveConceptReferenceRange(conceptReferenceRange);
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId) {
+		return dao.getConceptReferenceRangesByConceptId(conceptId);
+	}
+
+	@Override
+	public ConceptReferenceRange getConceptReferenceRangeByUuid(String uuid) {
+		return dao.getConceptReferenceRangeByUuid(uuid);
+	}
+	
+	@Override
+	public ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept) {
+		Obs obs = new Obs(person, concept, null, null);
+		return new ObsValidator().getReferenceRange(obs);
+	}
+
 	/***
 	 * Determines if the passed string is in valid uuid format By OpenMRS standards, a uuid must be 36
 	 * characters in length and not contain whitespace, but we do not enforce that a uuid be in the
@@ -2111,4 +2150,79 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		return mappedClasses;
 	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#purgeConceptReferenceRange(ConceptReferenceRange)
+	 */
+	@Override
+	public void purgeConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
+		checkIfLocked();
+		dao.purgeConceptReferenceRange(conceptReferenceRange);
+	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (ConceptSource.class.equals(type)) {
+            return (T) getConceptSourceByUuid(uuid);
+        }
+        if (ConceptAttributeType.class.equals(type)) {
+            return (T) getConceptAttributeTypeByUuid(uuid);
+        }
+        if (DrugIngredient.class.equals(type)) {
+            return (T) getDrugIngredientByUuid(uuid);
+        }
+        if (ConceptSet.class.equals(type)) {
+            return (T) getConceptSetByUuid(uuid);
+        }
+        if (ConceptAttribute.class.equals(type)) {
+            return (T) getConceptAttributeByUuid(uuid);
+        }
+        if (ConceptName.class.equals(type)) {
+            return (T) getConceptNameByUuid(uuid);
+        }
+        if (ConceptDatatype.class.equals(type)) {
+            return (T) getConceptDatatypeByUuid(uuid);
+        }
+        if (ConceptMapType.class.equals(type)) {
+            return (T) getConceptMapTypeByUuid(uuid);
+        }
+        if (ConceptNumeric.class.equals(type)) {
+            return (T) getConceptNumericByUuid(uuid);
+        }
+        if (ConceptProposal.class.equals(type)) {
+            return (T) getConceptProposalByUuid(uuid);
+        }
+        if (Drug.class.equals(type)) {
+            return (T) getDrugByUuid(uuid);
+        }
+        if (ConceptDescription.class.equals(type)) {
+            return (T) getConceptDescriptionByUuid(uuid);
+        }
+        if (ConceptNameTag.class.equals(type)) {
+            return (T) getConceptNameTagByUuid(uuid);
+        }
+        if (ConceptClass.class.equals(type)) {
+            return (T) getConceptClassByUuid(uuid);
+        }
+        if (ConceptAnswer.class.equals(type)) {
+            return (T) getConceptAnswerByUuid(uuid);
+        }
+        if (ConceptReferenceTerm.class.equals(type)) {
+            return (T) getConceptReferenceTermByUuid(uuid);
+        }
+        if (ConceptReferenceRange.class.equals(type)) {
+            return (T) getConceptReferenceRangeByUuid(uuid);
+        }
+        if (Concept.class.equals(type)) {
+            return (T) getConceptByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(ConceptSource.class, ConceptAttributeType.class, DrugIngredient.class, ConceptSet.class, ConceptAttribute.class, ConceptName.class, ConceptDatatype.class, ConceptMapType.class, ConceptNumeric.class, ConceptProposal.class, Drug.class, ConceptDescription.class, ConceptNameTag.class, ConceptClass.class, ConceptAnswer.class, ConceptReferenceTerm.class, ConceptReferenceRange.class, Concept.class);
+    }
+
 }

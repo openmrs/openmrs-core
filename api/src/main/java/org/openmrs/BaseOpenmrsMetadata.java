@@ -9,15 +9,19 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.hibernate.search.annotations.Field;
+import org.hibernate.envers.Audited;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Metadata represent
@@ -29,24 +33,25 @@ import org.hibernate.search.annotations.Field;
  * @see OpenmrsMetadata
  */
 @MappedSuperclass
+@Audited
 public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements OpenmrsMetadata {
 	
 	//***** Properties *****
 	@Column(name = "name", nullable = false, length = 255)
-	@Field
+	@FullTextField(analyzer = SearchAnalysis.NAME_ANALYZER)
 	private String name;
 	
 	@Column(name = "description", length = 255)
 	private String description;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator")
 	private User creator;
 	
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
@@ -54,13 +59,13 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	private Date dateChanged;
 	
 	@Column(name = "retired", nullable = false)
-	@Field
+	@GenericField
 	private Boolean retired = Boolean.FALSE;
 	
 	@Column(name = "date_retired")
 	private Date dateRetired;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 	

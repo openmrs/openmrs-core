@@ -14,9 +14,10 @@ import org.openmrs.Encounter;
 import org.openmrs.Patient;
 
 /**
- * A convenience builder for {@link MedicationDispenseCriteria}. Create a builder, set
- * its properties to desired values and finally call {@link #build()}
- * to create the actual search criteria instance.
+ * A convenience builder for {@link MedicationDispenseCriteria}. Create a builder, set its
+ * properties to desired values and finally call {@link #build()} to create the actual search
+ * criteria instance.
+ * 
  * @since 2.6.0
  * @see MedicationDispenseCriteria
  */

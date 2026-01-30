@@ -22,6 +22,7 @@ public class ValidationException extends APIException {
 	
 	/**
 	 * Spring Errors object associated with the validation failure
+	 * 
 	 * @since 1.11
 	 */
 	
@@ -65,7 +66,7 @@ public class ValidationException extends APIException {
 	
 	/**
 	 * Constructor used to associate an Spring Errors object with a ValidationException
-	 *
+	 * 
 	 * @param errors
 	 * @since 1.11
 	 */
@@ -76,7 +77,7 @@ public class ValidationException extends APIException {
 	/**
 	 * Constructor to give the end user a helpful message and to associate an Spring Errors object
 	 * with a ValidationException
-	 *
+	 * 
 	 * @param errors
 	 * @since 1.11
 	 */

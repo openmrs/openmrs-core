@@ -16,7 +16,7 @@ import org.openmrs.api.context.Authenticated;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.TestUsernameCredentials;
-import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 
 /**
  * A Context loaded with a test Spring config that overrides the default auth scheme.

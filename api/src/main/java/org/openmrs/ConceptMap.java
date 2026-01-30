@@ -9,28 +9,54 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 /**
  * The concept map object represents a mapping of Concept to ConceptSource. A concept can have 0 to
  * N mappings to any and all concept sources in the database.
  */
 @Audited
+@Entity
+@Table(name = "concept_reference_map")
+@AssociationOverride(
+	name = "conceptMapType",
+	joinColumns = @JoinColumn(name = "concept_map_type_id", nullable = false)
+)
 public class ConceptMap extends BaseConceptMap {
 	
 	public static final long serialVersionUID = 754677L;
 	
 	// Fields
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "concept_map_id")
 	private Integer conceptMapId;
 	
-	@ContainedIn
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@IndexedEmbedded
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne(optional = false)
+	@Cascade(CascadeType.SAVE_UPDATE)
+	@JoinColumn(name = "concept_reference_term_id", nullable = false)
 	private ConceptReferenceTerm conceptReferenceTerm;
 	
 	// Constructors

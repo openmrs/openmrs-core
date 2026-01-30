@@ -25,8 +25,6 @@
 			</generator>
 		</id>
 
-		<discriminator column="provider_id" insert="false" />
-
 		<many-to-one name="person" class="Person" column="person_id"
 			cascade="save-update" />
 
@@ -39,6 +37,8 @@
 		<many-to-one name="role" class="Concept" column="role_id" />
 
 		<many-to-one name="speciality" class="Concept" column="speciality_id" />
+
+		<many-to-one name="providerRole" class="org.openmrs.ProviderRole" column="provider_role_id"/>
 
 		<property name="dateCreated" type="java.util.Date" column="date_created"
 			not-null="true" length="19" />

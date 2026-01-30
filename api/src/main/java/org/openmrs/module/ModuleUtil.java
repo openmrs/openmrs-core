@@ -24,11 +24,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -36,7 +34,19 @@ import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+import org.openmrs.api.OpenmrsService;
+import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -71,7 +81,7 @@ public class ModuleUtil {
 		
 		String moduleListString = props.getProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD);
 		
-		if (moduleListString == null || moduleListString.length() == 0) {
+		if (moduleListString == null || moduleListString.isEmpty()) {
 			// Attempt to get all of the modules from the modules folder
 			// and store them in the modules list
 			log.debug("Starting all modules");
@@ -138,9 +148,6 @@ public class ModuleUtil {
 				log.debug("Found and loaded {} module(s)", modules.size());
 			}
 		}
-		
-		// make sure all openmrs required moduls are loaded and started
-		checkOpenmrsCoreModulesStarted();
 		
 		// make sure all mandatory modules are loaded and started
 		checkMandatoryModulesStarted();
@@ -216,13 +223,24 @@ public class ModuleUtil {
 	 * <strong>Should</strong> return false if current openmrs version does not match any element in versions
 	 */
 	public static boolean isOpenmrsVersionInVersions(String ...versions) {
+		return isVersionInVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, versions);
+	}
+
+	/**
+	 * For testing of {@link #isOpenmrsVersionInVersions(String...)} only.
+	 * 
+	 * @param version the version
+	 * @param versions versions to match
+	 * @return true if version matches any value from versions
+	 */
+	static boolean isVersionInVersions(String version, String ...versions) {
 		if (versions == null || versions.length == 0) {
 			return false;
 		}
 
 		boolean result = false;
-		for (String version : versions) {
-			if (matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, version)) {
+		for (String candidateVersion : versions) {
+			if (matchRequiredVersions(version, candidateVersion)) {
 				result = true;
 				break;
 			}
@@ -322,9 +340,9 @@ public class ModuleUtil {
 						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
 					}
 					
-					int lowerReturn = compareVersion(version, lowerBound);
+					int lowerReturn = compareVersionIgnoringQualifier(version, lowerBound);
 					
-					int upperReturn = compareVersion(version, upperBound);
+					int upperReturn = compareVersionIgnoringQualifier(version, upperBound);
 					
 					if (lowerReturn < 0 || upperReturn > 0) {
 						log.debug("Version " + version + " is not between " + lowerBound + " and " + upperBound);
@@ -332,7 +350,7 @@ public class ModuleUtil {
 						return true;
 					}
 				} else {
-					if (compareVersion(version, range) < 0) {
+					if (compareVersionIgnoringQualifier(version, range) < 0) {
 						log.debug("Version " + version + " is below " + range);
 					} else {
 						return true;
@@ -392,65 +410,87 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Compares <code>version</code> to <code>value</code> version and value are strings like
-	 * 1.9.2.0 Returns <code>0</code> if either <code>version</code> or <code>value</code> is null.
+	 * Compare two version strings.
 	 *
-	 * @param version String like 1.9.2.0
-	 * @param value String like 1.9.2.0
-	 * @return the value <code>0</code> if <code>version</code> is equal to the argument
-	 *         <code>value</code>; a value less than <code>0</code> if <code>version</code> is
-	 *         numerically less than the argument <code>value</code>; and a value greater than
-	 *         <code>0</code> if <code>version</code> is numerically greater than the argument
-	 *         <code>value</code>
-	 * <strong>Should</strong> correctly comparing two version numbers
-	 * <strong>Should</strong> treat SNAPSHOT as earliest version
+	 * @param versionA String like 1.9.2.0, may include a qualifier like "-SNAPSHOT", may be null
+	 * @param versionB String like 1.9.2.0, may include a qualifier like "-SNAPSHOT", may be null
+	 * @return the value <code>0</code> if versions are equal; a value less than <code>0</code> if first version is
+	 * 		   before the second one; a value greater than <code>0</code> if first version is after the second one.
+	 * 		   If version numbers are equal and only one of them has a qualifier, the version without the qualifier is
+	 * 		   considered greater.
 	 */
-	public static int compareVersion(String version, String value) {
+	public static int compareVersion(String versionA, String versionB) {
+		return compareVersion(versionA, versionB, false);
+	}
+
+	/**
+	 * Compare two version strings. Any version qualifiers are ignored in the comparison.
+	 *
+	 * @param versionA String like 1.9.2.0, may include a qualifier like "-SNAPSHOT", may be null
+	 * @param versionB String like 1.9.2.0, may include a qualifier like "-SNAPSHOT", may be null
+	 * @return the value <code>0</code> if versions are equal; a value less than <code>0</code> if first version is
+	 * 		   before the second one; a value greater than <code>0</code> if first version is after the second one.
+	 */
+	public static int compareVersionIgnoringQualifier(String versionA, String versionB) {
+		return compareVersion(versionA, versionB, true);
+	}
+
+	private static int compareVersion(String versionA, String versionB, boolean ignoreQualifier) {
 		try {
-			if (version == null || value == null) {
+			if (versionA == null || versionB == null) {
 				return 0;
 			}
-			
-			List<String> versions = new ArrayList<>();
-			List<String> values = new ArrayList<>();
-			String separator = "-";
-			
+
+			List<String> versionANumbers = new ArrayList<>();
+			List<String> versionBNumbers = new ArrayList<>();
+			String qualifierSeparator = "-";
+
 			// strip off any qualifier e.g. "-SNAPSHOT"
-			int qualifierIndex = version.indexOf(separator);
-			if (qualifierIndex != -1) {
-				version = version.substring(0, qualifierIndex);
+			int qualifierIndexA = versionA.indexOf(qualifierSeparator);
+			if (qualifierIndexA != -1) {
+				versionA = versionA.substring(0, qualifierIndexA);
 			}
-			
-			qualifierIndex = value.indexOf(separator);
-			if (qualifierIndex != -1) {
-				value = value.substring(0, qualifierIndex);
+
+			// strip off any qualifier e.g. "-SNAPSHOT"
+			int qualifierIndexB = versionB.indexOf(qualifierSeparator);
+			if (qualifierIndexB != -1) {
+				versionB = versionB.substring(0, qualifierIndexB);
 			}
-			
-			Collections.addAll(versions, version.split("\\."));
-			Collections.addAll(values, value.split("\\."));
-			
+
+			Collections.addAll(versionANumbers, versionA.split("\\."));
+			Collections.addAll(versionBNumbers, versionB.split("\\."));
+
 			// match the sizes of the lists
-			while (versions.size() < values.size()) {
-				versions.add("0");
+			while (versionANumbers.size() < versionBNumbers.size()) {
+				versionANumbers.add("0");
 			}
-			while (values.size() < versions.size()) {
-				values.add("0");
+			while (versionBNumbers.size() < versionANumbers.size()) {
+				versionBNumbers.add("0");
 			}
-			
-			for (int x = 0; x < versions.size(); x++) {
-				String verNum = versions.get(x).trim();
-				String valNum = values.get(x).trim();
-				Long ver = NumberUtils.toLong(verNum, 0);
-				Long val = NumberUtils.toLong(valNum, 0);
-				
-				int ret = ver.compareTo(val);
+
+			for (int x = 0; x < versionANumbers.size(); x++) {
+				String verAPartString = versionANumbers.get(x).trim();
+				String verBPartString = versionBNumbers.get(x).trim();
+				Long verAPart = NumberUtils.toLong(verAPartString, 0);
+				Long verBPart = NumberUtils.toLong(verBPartString, 0);
+
+				int ret = verAPart.compareTo(verBPart);
 				if (ret != 0) {
 					return ret;
 				}
 			}
+			
+			// At this point the version numbers are equal.
+			if (!ignoreQualifier) {
+				if (qualifierIndexA >= 0 && qualifierIndexB < 0) {
+					return -1;
+				} else if (qualifierIndexA < 0 && qualifierIndexB >= 0) {
+					return 1;
+				}
+			}
 		}
 		catch (NumberFormatException e) {
-			log.error("Error while converting a version/value to an integer: " + version + "/" + value, e);
+			log.error("Error while converting a version/value to an integer: " + versionA + "/" + versionB, e);
 		}
 		
 		// default return value if an error occurs or elements are equal
@@ -544,6 +584,7 @@ public class ModuleUtil {
 	 */
 	public static void expandJar(File fileToExpand, File tmpModuleDir, String name, boolean keepFullPath) throws IOException {
 		String docBase = tmpModuleDir.getAbsolutePath();
+		log.debug("Expanding jar {}", fileToExpand);
 		try (JarFile jarFile = new JarFile(fileToExpand)) {
 			Enumeration<JarEntry> jarEntries = jarFile.entries();
 			boolean foundName = (name == null);
@@ -825,11 +866,12 @@ public class ModuleUtil {
 		for (Module module : startedModules) {
 			try {
 				if (module.getModuleActivator() != null) {
+					log.debug("Run module willRefreshContext: {}", module.getModuleId());
 					Thread.currentThread().setContextClassLoader(ModuleFactory.getModuleClassLoader(module));
 					module.getModuleActivator().willRefreshContext();
 				}
 			}
-			catch (Exception e) {
+			catch (Error e) {
 				log.warn("Unable to call willRefreshContext() method in the module's activator", e);
 			}
 		}
@@ -851,18 +893,24 @@ public class ModuleUtil {
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
+		log.debug("Refreshing context");
 		ServiceContext.getInstance().startRefreshingContext();
 		try {
 			ctx.refresh();
+			// TRUNK-6421: warn if XML-declared services also use annotations like @Autowired
+			logWarningsForAnnotatedXmlServices(ctx);
+			
 		}
 		finally {
 			ServiceContext.getInstance().doneRefreshingContext();
 		}
+		log.debug("Done refreshing context");
 		
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		OpenmrsClassLoader.restoreState();
+		log.debug("Startup scheduler");
 		SchedulerUtil.startup(Context.getRuntimeProperties());
 		
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
@@ -886,25 +934,29 @@ public class ModuleUtil {
 					ModuleFactory.passDaemonToken(module);
 					
 					if (module.getModuleActivator() != null) {
+						log.debug("Run module contextRefreshed: {}", module.getModuleId());
 						module.getModuleActivator().contextRefreshed();
 						try {
 							//if it is system start up, call the started method for all started modules
 							if (isOpenmrsStartup) {
+								log.debug("Run module started: {}", module.getModuleId());
 								module.getModuleActivator().started();
 							}
 							//if refreshing the context after a user started or uploaded a new module
 							else if (!isOpenmrsStartup && module.equals(startedModule)) {
+								log.debug("Run module started: {}", module.getModuleId());
 								module.getModuleActivator().started();
 							}
+							log.debug("Done running module started: {}", module.getModuleId());
 						}
-						catch (Exception e) {
+						catch (Error e) {
 							log.warn("Unable to invoke started() method on the module's activator", e);
 							ModuleFactory.stopModule(module, true, true);
 						}
 					}
 					
 				}
-				catch (Exception e) {
+				catch (Error e) {
 					log.warn("Unable to invoke method on the module's activator ", e);
 				}
 			}
@@ -914,6 +966,88 @@ public class ModuleUtil {
 		}
 		
 		return ctx;
+	}
+	
+	private static void logWarningsForAnnotatedXmlServices(AbstractRefreshableApplicationContext ctx) {
+		ConfigurableListableBeanFactory factory = ctx.getBeanFactory();
+
+		for (String beanName : factory.getBeanDefinitionNames()) {
+			BeanDefinition def = factory.getBeanDefinition(beanName);
+			String beanClassName = def.getBeanClassName();
+
+			if ("org.springframework.transaction.interceptor.TransactionProxyFactoryBean".equals(beanClassName)) {
+				PropertyValue target = def.getPropertyValues().getPropertyValue("target");
+				if (target != null) {
+					if (target.getValue() instanceof BeanDefinitionHolder) {
+						def = ((BeanDefinitionHolder) target.getValue()).getBeanDefinition();
+						beanClassName = def.getBeanClassName();
+					} else if (target.getValue() instanceof RuntimeBeanReference) {
+						beanName = ((RuntimeBeanReference) target.getValue()).getBeanName();
+						def = factory.getBeanDefinition(beanName);
+						beanClassName = def.getBeanClassName();
+					}
+				}
+			} else {
+				continue;
+			}
+			
+			if (beanClassName == null) {
+				log.debug("No classname for bean {}", beanName);
+				continue;
+			}
+			
+			int proxySuffix = beanClassName.indexOf("$$");
+			if (proxySuffix != -1) {
+				// Get rid of proxy suffix
+				beanClassName = beanClassName.substring(0, proxySuffix);
+			}
+
+			Class<?> beanClass;
+			try {
+				beanClass = OpenmrsClassLoader.getInstance().loadClass(beanClassName);
+			}
+			catch (ClassNotFoundException e) {
+				log.debug("Unable to load class {} for bean {}", beanClassName, beanName, e);
+				continue;
+			}
+
+			boolean hasAutowired = false;
+			
+			for (Field field : beanClass.getDeclaredFields()) {
+				if (AnnotationUtils.getAnnotation(field, Autowired.class) != null) {
+					hasAutowired = true;
+					break;
+				}
+			}
+			
+			if (!hasAutowired) {
+				for (Constructor<?> ctor : beanClass.getDeclaredConstructors()) {
+					if (AnnotationUtils.getAnnotation(ctor, Autowired.class) != null) {
+						hasAutowired = true;
+						break;
+					}
+				}
+			}
+			
+			if (!hasAutowired) {
+				for (Method method : beanClass.getDeclaredMethods()) {
+					if (AnnotationUtils.getAnnotation(method, Autowired.class) != null) {
+						hasAutowired = true;
+						break;
+					}
+				}
+			}
+
+			if (!hasAutowired) {
+				continue;
+			}
+			
+			log.warn("Service bean '{}' ({}) appears to be declared via XML " +
+					"and also uses @Autowired annotations. This combination can lead to " +
+					"slow context refresh when mixing XML-declared services with " +
+					"annotation-based injection. Please remove @Autowired annotations from the bean. See TRUNK-6363.",
+				beanName, beanClassName);
+		}
 	}
 	
 	/**
@@ -934,57 +1068,6 @@ public class ModuleUtil {
 		if (!mandatoryModuleIds.isEmpty()) {
 			throw new MandatoryModuleException(mandatoryModuleIds);
 		}
-	}
-	
-	/**
-	 * Looks at the list of modules in {@link ModuleConstants#CORE_MODULES} to make sure that all
-	 * modules that are core to OpenMRS are started and have at least a minimum version that OpenMRS
-	 * needs.
-	 *
-	 * @throws ModuleException if a module that is core to OpenMRS is not started
-	 * <strong>Should</strong> throw ModuleException if a core module is not started
-	 */
-	protected static void checkOpenmrsCoreModulesStarted() throws OpenmrsCoreModuleException {
-		
-		// if there is a property telling us to ignore required modules, drop out early
-		if (ignoreCoreModules()) {
-			return;
-		}
-		
-		// make a copy of the constant so we can modify the list
-		Map<String, String> coreModules = new HashMap<>(ModuleConstants.CORE_MODULES);
-		
-		Collection<Module> startedModules = ModuleFactory.getStartedModulesMap().values();
-		
-		// loop through the current modules and test them
-		for (Module mod : startedModules) {
-			String moduleId = mod.getModuleId();
-			if (coreModules.containsKey(moduleId)) {
-				String coreReqVersion = coreModules.get(moduleId);
-				if (compareVersion(mod.getVersion(), coreReqVersion) >= 0) {
-					coreModules.remove(moduleId);
-				} else {
-					log.debug("Module: " + moduleId + " is a core module and is started, but its version: "
-					        + mod.getVersion() + " is not within the required version: " + coreReqVersion);
-				}
-			}
-		}
-		
-		// any module ids left in the list are not started
-		if (coreModules.size() > 0) {
-			throw new OpenmrsCoreModuleException(coreModules);
-		}
-	}
-	
-	/**
-	 * Uses the runtime properties to determine if the core modules should be enforced or not.
-	 *
-	 * @return true if the core modules list can be ignored.
-	 */
-	public static boolean ignoreCoreModules() {
-		String ignoreCoreModules = Context.getRuntimeProperties().getProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY,
-		    "false");
-		return Boolean.parseBoolean(ignoreCoreModules);
 	}
 	
 	/**

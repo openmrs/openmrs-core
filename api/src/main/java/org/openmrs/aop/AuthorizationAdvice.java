@@ -11,20 +11,27 @@ package org.openmrs.aop;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.User;
 import org.openmrs.annotation.AuthorizedAnnotationAttributes;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.MethodBeforeAdvice;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 /**
  * This class provides the authorization AOP advice performed before every service layer method
  * call.
  */
+@Component("authorizationInterceptor")
 public class AuthorizationAdvice implements MethodBeforeAdvice {
 	
 	/**
@@ -44,7 +51,6 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 */
 	@Override
 	public void before(Method method, Object[] args, Object target) throws Throwable {
-		
 		log.debug("Calling authorization advice before {}", method.getName());
 		
 		if (log.isDebugEnabled()) {
@@ -55,6 +61,10 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 			}
 		}
 		
+		if (Daemon.isDaemonThread()) {
+			return;
+		}
+		
 		AuthorizedAnnotationAttributes attributes = new AuthorizedAnnotationAttributes();
 		Collection<String> privileges = attributes.getAttributes(method);
 		boolean requireAll = attributes.getRequireAll(method);
@@ -63,28 +73,32 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 		// Iterate through required privileges and return only if the user has
 		// one of them
 		if (!privileges.isEmpty()) {
-			for (String privilege : privileges) {
-				
-				// skip null privileges
-				if (privilege == null || privilege.isEmpty()) {
-					return;
-				}
-				
-				log.debug("User has privilege {}? {}", privilege, Context.hasPrivilege(privilege));
-				
-				if (Context.hasPrivilege(privilege)) {
-					if (!requireAll) {
-						// if not all required, the first one that they have
-						// causes them to "pass"
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.GET_ROLES);
+				for (String privilege : privileges) {
+					// skip null privileges
+					if (privilege == null || privilege.isEmpty()) {
 						return;
 					}
-				} else {
-					if (requireAll) {
-						// if all are required, the first miss causes them
-						// to "fail"
-						throwUnauthorized(Context.getAuthenticatedUser(), method, privilege);
+					boolean hasPrivilege  = Context.hasPrivilege(privilege);
+					log.debug("User has privilege {}? {}", privilege, hasPrivilege);
+
+					if (hasPrivilege) {
+						if (!requireAll) {
+							// if not all required, the first one that they have
+							// causes them to "pass"
+							return;
+						}
+					} else {
+						if (requireAll) {
+							// if all are required, the first miss causes them
+							// to "fail"
+							throwUnauthorized(Context.getAuthenticatedUser(), method, privilege);
+						}
 					}
 				}
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_ROLES);
 			}
 			
 			if (!requireAll) {
@@ -109,7 +123,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private void throwUnauthorized(User user, Method method, Collection<String> attrs) {
 		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
-		    new Object[] { StringUtils.join(attrs, ",") }, null));
+		    new Object[] { StringUtils.join(attrs, ",") }, Locale.getDefault()));
 	}
 	
 	/**
@@ -117,12 +131,12 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * 
 	 * @param user authenticated user
 	 * @param method acting method
-	 * @param attrs privilege names that the user must have
+	 * @param attr privilege names that the user must have
 	 */
 	private void throwUnauthorized(User user, Method method, String attr) {
 		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
-		    new Object[] { attr }, null));
+		    new Object[] { attr }, Locale.getDefault()));
 	}
 	
 	/**

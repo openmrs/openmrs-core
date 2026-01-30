@@ -11,7 +11,6 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -36,12 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.HashSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -69,7 +66,6 @@ import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
 import org.openmrs.Patient;
 import org.openmrs.Person;
-import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
 import org.openmrs.Role;
@@ -89,7 +85,9 @@ import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -106,7 +104,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 
-
+	@Autowired
+	AdministrationService adminService;
+	
 	/**
 	 * This method is run before all of the tests in this class because it has the @Before
 	 * annotation on it. This will add the contents of {@link #ENC_INITIAL_DATA_XML} to the current
@@ -384,22 +384,33 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void saveEncounter_shouldSaveEncounterWithComplexObs() {
-		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
-		EncounterService es = Context.getEncounterService();
+	public void saveEncounter_shouldSaveEncounterWithComplexObs() throws IOException {
+		File createdFile = null;
+		try {
+			executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
+			EncounterService es = Context.getEncounterService();
 
-		Encounter encounter = es.getEncounter(101);
-		Obs observation = buildObs();
-		observation.setLocation(encounter.getLocation());
-		observation.setPerson(encounter.getPatient());
-		encounter.addObs(observation);
+			File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(adminService
+				.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+			createdFile = ObsServiceTest.createImage(complexObsDir, "file1.jpg");
 
-		es.saveEncounter(encounter);
-		Context.flushSession();
-		Context.clearSession();
+			Encounter encounter = es.getEncounter(101);
+			Obs observation = buildObs();
+			observation.setLocation(encounter.getLocation());
+			observation.setPerson(encounter.getPatient());
+			encounter.addObs(observation);
 
-		encounter = es.getEncounter(101);
-		assertEquals(2, encounter.getObsAtTopLevel(true).size());
+			es.saveEncounter(encounter);
+			Context.flushSession();
+			Context.clearSession();
+
+			encounter = es.getEncounter(101);
+			assertEquals(2, encounter.getObsAtTopLevel(true).size());
+		} finally {
+			if (createdFile != null) {
+				createdFile.delete();
+			}
+		}
 	}
 	
 	@Test

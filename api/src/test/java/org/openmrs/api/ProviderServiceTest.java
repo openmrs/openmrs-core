@@ -9,23 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
@@ -34,10 +17,32 @@ import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * This test class (should) contain tests for all of the ProviderService
@@ -496,7 +501,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ProviderService#getCountOfProviders(String,null)
+	 * @see ProviderService#getCountOfProviders(String)
 	 */
 	@Test
 	public void getCountOfProviders_shouldFetchNumberOfProviderMatchingGivenQuery() {
@@ -523,7 +528,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ProviderService#getCountOfProviders(String,null)
+	 * @see ProviderService#getCountOfProviders(String, boolean)
 	 */
 	@Test
 	public void getCountOfProviders_shouldIncludeRetiredProvidersIfIncludeRetiredIsSetToTrue() {
@@ -545,5 +550,138 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		assertEquals(provider, service.getUnknownProvider());
 	}
+
+	/**
+	 * @see ProviderService#getProviderRole(Integer) 
+	 */
+	@Test
+	public void getProviderRole_shouldReturnTheProviderRoleIfExists() {
+		assertNotNull(service.getProviderRole(1003));
+	}
+
+	/**
+	 * @see ProviderService#getProviderRole(Integer)
+	 */
+	@Test
+	public void getProviderRole_shouldReturnNullIfNotExists() {
+		assertNull(service.getProviderRole(200));
+	}
+
+	/**
+	 * @see ProviderService#getProvidersByRoles(List) 
+	 */
+	@Test
+	public void getProvidersByRoles_shouldGetProvidersByRoles() {
+		List<ProviderRole> roles = new ArrayList<>();
+		roles.add(service.getProviderRole(1001));
+		roles.add(service.getProviderRole(1002));
+
+		List<Provider> providers = service.getProvidersByRoles(roles);
+		assertEquals(5, providers.size());
+	}
+
+	@Test
+	public void getAllProviderRoles_shouldGetAllProviderRoles() {
+		List<ProviderRole> roles = service.getAllProviderRoles(true);
+		assertEquals(7, roles.size());
+	}
+
+	@Test
+	public void getAllProviderRoles_shouldGetAllProviderRolesExcludingRetired() {
+		List<ProviderRole> roles = service.getAllProviderRoles(false);
+		assertEquals(4, roles.size());
+	}
+
+	/**
+	 * @see ProviderService#saveProviderRole(ProviderRole)
+	 */
+	@Test
+	public void saveProviderRole_shouldSaveTheProviderRole() {
+		int size = service.getAllProviderRoles(true).size();
+		ProviderRole providerRole = new ProviderRole();
+		providerRole.setName("new");
+		providerRole.setDescription("a new role");
+		providerRole = service.saveProviderRole(providerRole);
+		assertEquals(size + 1, service.getAllProviderRoles(true).size());
+		assertNotNull(providerRole.getId());
+		ProviderRole fetchedProviderRole = service.getProviderRoleByUuid(providerRole.getUuid());
+		assertNotNull(fetchedProviderRole);
+		assertEquals(providerRole, fetchedProviderRole);
+		assertEquals("new", fetchedProviderRole.getName());
+		assertEquals("a new role", fetchedProviderRole.getDescription());
+	}
+
+	/**
+	 * @see ProviderService#purgeProviderRole(ProviderRole) 
+	 */
+	@Test
+	public void purgeProviderRole_shouldPurgeProviderRole() {
+		List<ProviderRole> startingRoles = service.getAllProviderRoles(true);
+		assertThat(startingRoles.size(), greaterThan(0));
+		ProviderRole providerRole = service.getProviderRole(1011);
+		assertTrue(startingRoles.contains(providerRole));
+		service.purgeProviderRole(providerRole);
+		ProviderRole fetchedProviderRole = service.getProviderRole(providerRole.getProviderRoleId());
+		assertNull(fetchedProviderRole, "We shouldn't find the ProviderRole after deletion");
+		List<ProviderRole> endingRoles = service.getAllProviderRoles(true);
+		assertThat(endingRoles.size(), equalTo(startingRoles.size() - 1));
+		assertFalse(endingRoles.contains(providerRole));
+	}
 	
+	/**
+	 * @see ProviderService#purgeProviderRole(ProviderRole)
+	 */
+	@Test
+	public void purgeProviderRole_shouldNotAllowPurgingAProviderRoleThatIsInUse() {
+		final ProviderRole providerRole = service.getProviderRole(1001);
+		assertNotNull(providerRole);
+		List<Provider> providers = service.getProvidersByRoles(Collections.singletonList(providerRole));
+		assertThat(providers.size(), greaterThan(0));
+		assertThrows(APIException.class, () -> service.purgeProviderRole(providerRole));
+		ProviderRole fetchedProviderRole = service.getProviderRole(1001);
+		assertNotNull(fetchedProviderRole);
+		assertEquals(providerRole, fetchedProviderRole);
+	}
+
+	/**
+	 * @see ProviderService#retireProviderRole(ProviderRole, String)
+	 */
+	@Test
+	public void retireProviderRole_shouldRetireProviderRoleAndSetRetiredAttributes() {
+		List<ProviderRole> unretiredRoles = service.getAllProviderRoles(false);
+		ProviderRole providerRole = service.getProviderRole(1001);
+		assertFalse(providerRole.getRetired());
+		assertNull(providerRole.getRetiredBy());
+		assertNull(providerRole.getRetireReason());
+		assertNull(providerRole.getDateRetired());
+		ProviderRole retiredProviderRole = service.retireProviderRole(providerRole, "Just Testing");
+		List<ProviderRole> fetchedUnretiredRoles = service.getAllProviderRoles(false);
+		assertEquals(retiredProviderRole, providerRole);
+		assertTrue(retiredProviderRole.getRetired());
+		assertNotNull(retiredProviderRole.getDateRetired());
+		assertEquals(Context.getAuthenticatedUser(), retiredProviderRole.getRetiredBy());
+		assertEquals("Just Testing", retiredProviderRole.getRetireReason());
+		assertThat(fetchedUnretiredRoles.size(), equalTo(unretiredRoles.size() - 1));
+	}
+
+	/**
+	 * @see ProviderService#unretireProviderRole(ProviderRole)
+	 */
+	@Test
+	public void unretireProviderRole_shouldUnretireProviderRoleAndUnsetRetiredAttributes() {
+		List<ProviderRole> unretiredRoles = service.getAllProviderRoles(false);
+		ProviderRole providerRole = service.getProviderRole(1011);
+		assertTrue(providerRole.getRetired());
+		assertNotNull(providerRole.getRetiredBy());
+		assertNotNull(providerRole.getRetireReason());
+		assertNotNull(providerRole.getDateRetired());
+		ProviderRole unretiredProviderRole = service.unretireProviderRole(providerRole);
+		List<ProviderRole> fetchedUnretiredRoles = service.getAllProviderRoles(false);
+		assertEquals(unretiredProviderRole, providerRole);
+		assertFalse(unretiredProviderRole.getRetired());
+		assertNull(unretiredProviderRole.getDateRetired());
+		assertNull(unretiredProviderRole.getRetiredBy());
+		assertNull(unretiredProviderRole.getRetireReason());
+		assertThat(fetchedUnretiredRoles.size(), equalTo(unretiredRoles.size() + 1));
+	}
 }

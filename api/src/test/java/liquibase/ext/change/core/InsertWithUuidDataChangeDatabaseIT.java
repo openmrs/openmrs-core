@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.openmrs.util.H2DatabaseIT;
+import org.openmrs.util.DatabaseIT;
 
-public class InsertWithUuidDataChangeDatabaseIT extends H2DatabaseIT {
+public class InsertWithUuidDataChangeDatabaseIT extends DatabaseIT {
 	
 	@Test
 	public void shouldInsertUuids() throws Exception {
@@ -37,10 +37,10 @@ public class InsertWithUuidDataChangeDatabaseIT extends H2DatabaseIT {
 		Map<String, String> actual = getNamesWithUuids();
 		
 		assertEquals(3, actual.size());
-		assertEquals(expected.get("alpha"), actual.get("alpha"));
-		assertEquals(expected.get("bravo"), actual.get("bravo"));
+		assertEquals(expected.get("alpha"), actual.get("alpha").trim());
+		assertEquals(expected.get("bravo"), actual.get("bravo").trim());
 		
-		String uuid = actual.get("charlie");
+		String uuid = actual.get("charlie").trim();
 		assertNotNull(uuid);
 		try {
 			UUID.fromString(uuid);

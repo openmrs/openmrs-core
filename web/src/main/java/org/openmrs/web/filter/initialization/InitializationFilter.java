@@ -22,22 +22,27 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.zip.ZipInputStream;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import liquibase.changelog.ChangeSet;
 import org.apache.commons.io.IOUtils;
@@ -48,11 +53,9 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.UsernamePasswordCredentials;
-import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.module.MandatoryModuleException;
-import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
@@ -61,6 +64,7 @@ import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
@@ -72,9 +76,14 @@ import org.openmrs.web.filter.update.UpdateFilter;
 import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
+import org.openmrs.web.filter.util.SessionModelUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
+
+import static org.openmrs.util.PrivilegeConstants.GET_GLOBAL_PROPERTIES;
+import static org.openmrs.web.filter.initialization.InitializationWizardModel.DEFAULT_MYSQL_CONNECTION;
+import static org.openmrs.web.filter.initialization.InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION;
 
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
@@ -92,8 +101,8 @@ public class InitializationFilter extends StartupFilter {
 	private static final String DATABASE_SQLSERVER = "sqlserver";
 	
 	private static final String DATABASE_H2 = "h2";
-	
-	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
+
+	private static final String DATABASE_MARIADB = "mariadb";
 	
 	/**
 	 * The very first page of wizard, that asks user for select his preferred language
@@ -170,7 +179,7 @@ public class InitializationFilter extends StartupFilter {
 	 * this object are made available to all templates via reflection in the
 	 * {@link org.openmrs.web.filter.StartupFilter#renderTemplate(String, Map, HttpServletResponse)} method.
 	 */
-	private InitializationWizardModel wizardModel = null;
+	protected InitializationWizardModel wizardModel = null;
 	
 	private InitializationCompletion initJob;
 	
@@ -182,7 +191,10 @@ public class InitializationFilter extends StartupFilter {
 	
 	// the actual driver loaded by the DatabaseUpdater class
 	private String loadedDriverString;
-	
+
+	private static final Set<String> NON_NORMALIZED_KEYS = new HashSet<>(Arrays.asList(
+		"INSTALL_METHOD", "DATABASE_NAME", "HAS_CURRENT_OPENMRS_DATABASE", "CREATE_DATABASE_USER",
+		"CREATE_TABLES", "ADD_DEMO_DATA", "MODULE_WEB_ADMIN", "AUTO_UPDATE_DATABASE", "ADMIN_USER_PASSWORD"));
 	/**
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
@@ -200,8 +212,11 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-		throws IOException, ServletException {
-		loadInstallationScriptIfPresent();
+		throws IOException {
+		log.debug("Entered initialization filter");
+		
+		SessionModelUtils.loadFromSession(httpRequest.getSession(), wizardModel);
+		initializeWizardFromResolvedPropertiesIfPresent();
 		
 		// we need to save current user language in references map since it will be used when template
 		// will be rendered
@@ -239,7 +254,8 @@ public class InitializationFilter extends StartupFilter {
 					result.put("executedTasks", initJob.getExecutedTasks());
 					result.put("completedPercentage", initJob.getCompletedPercentage());
 				}
-				
+
+				SessionModelUtils.clearWizardSessionAttributes(httpRequest.getSession());
 				addLogLinesToResponse(result);
 			}
 			
@@ -304,14 +320,40 @@ public class InitializationFilter extends StartupFilter {
 			renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 		}
 	}
-	
-	private void loadInstallationScriptIfPresent() {
-		Properties script = getInstallationScript();
+
+	/**
+	 * Initializes the setup wizard model by resolving configuration properties from multiple sources.
+	 * <p>
+	 * Properties are loaded and prioritized from system properties, environment variables (normalized),
+	 * and the installation script file. Resolved values are then applied to the corresponding fields
+	 * of the {@link InitializationWizardModel}.
+	 */
+	protected void initializeWizardFromResolvedPropertiesIfPresent() {
+		Properties script = new Properties();
+
+		Properties installScript = getInstallationScript();
+		script.putAll(installScript);
+
+		getEnvironmentVariables().forEach((key, value) -> {
+			String normalizedKey = normalizeEnvVariableKey(key);
+			script.setProperty(normalizedKey, value);
+		});
+
+		System.getProperties().forEach((key, value) -> script.setProperty(key.toString(), value.toString()));
+
+		if (log.isDebugEnabled()) {
+			for (String key : script.stringPropertyNames()) {
+				String value = script.getProperty(key);
+				log.debug("{} = {}", key, key.toLowerCase().contains("password") ? "*******" : value);
+			}
+		}
+		
 		if (!script.isEmpty()) {
 			wizardModel.installMethod = script.getProperty("install_method", wizardModel.installMethod);
 			
 			wizardModel.databaseConnection = script.getProperty("connection.url", wizardModel.databaseConnection);
 			wizardModel.databaseDriver = script.getProperty("connection.driver_class", wizardModel.databaseDriver);
+			wizardModel.databaseName = script.getProperty("database_name", wizardModel.databaseName);
 			wizardModel.currentDatabaseUsername = script.getProperty("connection.username",
 				wizardModel.currentDatabaseUsername);
 			wizardModel.currentDatabasePassword = script.getProperty("connection.password",
@@ -319,7 +361,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			String hasCurrentOpenmrsDatabase = script.getProperty("has_current_openmrs_database");
 			if (hasCurrentOpenmrsDatabase != null) {
-				wizardModel.hasCurrentOpenmrsDatabase = Boolean.valueOf(hasCurrentOpenmrsDatabase);
+				wizardModel.hasCurrentOpenmrsDatabase = Boolean.parseBoolean(hasCurrentOpenmrsDatabase);
 			}
 			wizardModel.createDatabaseUsername = script.getProperty("create_database_username",
 				wizardModel.createDatabaseUsername);
@@ -328,32 +370,33 @@ public class InitializationFilter extends StartupFilter {
 			
 			String createTables = script.getProperty("create_tables");
 			if (createTables != null) {
-				wizardModel.createTables = Boolean.valueOf(createTables);
+				wizardModel.createTables = Boolean.parseBoolean(createTables);
 			}
 			
 			String createDatabaseUser = script.getProperty("create_database_user");
 			if (createDatabaseUser != null) {
-				wizardModel.createDatabaseUser = Boolean.valueOf(createDatabaseUser);
+				wizardModel.createDatabaseUser = Boolean.parseBoolean(createDatabaseUser);
 			}
 			wizardModel.createUserUsername = script.getProperty("create_user_username", wizardModel.createUserUsername);
 			wizardModel.createUserPassword = script.getProperty("create_user_password", wizardModel.createUserPassword);
 			
-			String addDemoData = script.getProperty("add_demo_data");
-			if (addDemoData != null) {
-				wizardModel.addDemoData = Boolean.valueOf(addDemoData);
-			}
-			
 			String moduleWebAdmin = script.getProperty("module_web_admin");
 			if (moduleWebAdmin != null) {
-				wizardModel.moduleWebAdmin = Boolean.valueOf(moduleWebAdmin);
+				wizardModel.moduleWebAdmin = Boolean.parseBoolean(moduleWebAdmin);
 			}
 			
 			String autoUpdateDatabase = script.getProperty("auto_update_database");
 			if (autoUpdateDatabase != null) {
-				wizardModel.autoUpdateDatabase = Boolean.valueOf(autoUpdateDatabase);
+				wizardModel.autoUpdateDatabase = Boolean.parseBoolean(autoUpdateDatabase);
 			}
 			
 			wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
+			
+			for (Map.Entry<Object, Object> entry : installScript.entrySet()) {
+				if (entry.getKey() instanceof String && ((String) entry.getKey()).startsWith("property.")) {
+					wizardModel.additionalPropertiesFromInstallationScript.put(((String) entry.getKey()).substring(9), entry.getValue());
+				}
+			}
 		}
 	}
 	
@@ -462,24 +505,30 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				return;
 			}
-			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
-			;
 			
-			wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
-				wizardModel.createDatabaseUsername);
-			
-			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
-			
+			String databaseType = httpRequest.getParameter("database_type");
+			if (databaseType != null) {
+				wizardModel.databaseType = databaseType;
+				if (DATABASE_POSTGRESQL.equals(databaseType)) {
+					wizardModel.databaseConnection = DEFAULT_POSTGRESQL_CONNECTION;
+					String postgresUsername = httpRequest.getParameter("create_database_username");
+					wizardModel.createDatabaseUsername = StringUtils.hasText(postgresUsername) ? 
+						postgresUsername : Context.getRuntimeProperties().getProperty("connection.username", "postgres");
+				} else {
+					wizardModel.databaseConnection = DEFAULT_MYSQL_CONNECTION;
+					wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username", 
+						wizardModel.createDatabaseUsername);
+				}
+			}
+
 			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
 			checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
-			
+			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
 			wizardModel.hasCurrentOpenmrsDatabase = false;
 			wizardModel.createTables = true;
 			// default wizardModel.databaseName is openmrs
 			// default wizardModel.createDatabaseUsername is root
 			wizardModel.createDatabasePassword = wizardModel.databaseRootPassword;
-			wizardModel.addDemoData = "yes".equals(httpRequest.getParameter("add_demo_data"));
-			
 			wizardModel.hasCurrentDatabaseUser = false;
 			wizardModel.createDatabaseUser = true;
 			// default wizardModel.createUserUsername is root
@@ -490,7 +539,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			wizardModel.adminUserPassword = InitializationWizardModel.ADMIN_DEFAULT_PASSWORD;
 			
-			createSimpleSetup(httpRequest.getParameter("database_root_password"), httpRequest.getParameter("add_demo_data"));
+			createSimpleSetup(httpRequest.getParameter("database_root_password"));
 			
 			try {
 				loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection,
@@ -581,8 +630,6 @@ public class InitializationFilter extends StartupFilter {
 			if (wizardModel.hasCurrentOpenmrsDatabase) {
 				wizardModel.createTables = "yes".equals(httpRequest.getParameter("create_tables"));
 			}
-			
-			wizardModel.addDemoData = "yes".equals(httpRequest.getParameter("add_demo_data"));
 			
 			if ("yes".equals(httpRequest.getParameter("current_database_user"))) {
 				wizardModel.currentDatabaseUsername = httpRequest.getParameter("current_database_username");
@@ -721,7 +768,6 @@ public class InitializationFilter extends StartupFilter {
 			if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 				wizardModel.importTestData = true;
 				wizardModel.createTables = false;
-				wizardModel.addDemoData = false;
 				//if we have a runtime properties file
 				if (skipDatabaseSetupPage()) {
 					wizardModel.hasCurrentOpenmrsDatabase = false;
@@ -738,7 +784,6 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.tasksToExecute.add(WizardTask.ADD_MODULES);
 			} else {
 				createTablesTask();
-				createDemoDataTask();
 			}
 			wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
 			
@@ -812,6 +857,7 @@ public class InitializationFilter extends StartupFilter {
 				}
 			}
 			
+			SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 			renderTemplate(page, referenceMap, httpResponse);
 		}
 	}
@@ -822,12 +868,6 @@ public class InitializationFilter extends StartupFilter {
 			initJob = new InitializationCompletion();
 			setInstallationStarted(true);
 			initJob.start();
-		}
-	}
-	
-	private void createDemoDataTask() {
-		if (wizardModel.addDemoData) {
-			wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
 		}
 	}
 	
@@ -847,7 +887,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 	
-	private void createSimpleSetup(String databaseRootPassword, String addDemoData) {
+	private void createSimpleSetup(String databaseRootPassword) {
 		setDatabaseNameIfInTestMode();
 		wizardModel.databaseConnection = Context.getRuntimeProperties().getProperty("connection.url",
 			wizardModel.databaseConnection);
@@ -865,8 +905,6 @@ public class InitializationFilter extends StartupFilter {
 		// default wizardModel.databaseName is openmrs
 		// default wizardModel.createDatabaseUsername is root
 		wizardModel.createDatabasePassword = wizardModel.databaseRootPassword;
-		wizardModel.addDemoData = "yes".equals(addDemoData);
-		
 		wizardModel.hasCurrentDatabaseUser = false;
 		wizardModel.createDatabaseUser = true;
 		// default wizardModel.createUserUsername is root
@@ -893,7 +931,7 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.createDatabaseUsername = httpRequest.getParameter("database_user_name");
 			}
 			
-			createSimpleSetup(httpRequest.getParameter("database_root_password"), "yes");
+			createSimpleSetup(httpRequest.getParameter("database_root_password"));
 		}
 		
 		checkLocaleAttributes(httpRequest);
@@ -907,7 +945,6 @@ public class InitializationFilter extends StartupFilter {
 		wizardModel.tasksToExecute = new ArrayList<>();
 		createDatabaseTask();
 		createTablesTask();
-		createDemoDataTask();
 		wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
 		startInstallation();
 	}
@@ -979,11 +1016,9 @@ public class InitializationFilter extends StartupFilter {
 			// verify connection
 			//Set Database Driver using driver String
 			Class.forName(loadedDriverString).newInstance();
-			Connection tempConnection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername,
-				connectionPassword);
-			tempConnection.close();
-			return true;
-			
+			try (Connection ignored = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword)) {
+				return true;
+			}
 		}
 		catch (Exception e) {
 			errors.put("User account " + connectionUsername + " does not work. " + e.getMessage()
@@ -1068,12 +1103,12 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * @return true if installation has been started
 	 */
-	protected static boolean isInstallationStarted() {
+	public static boolean isInstallationStarted() {
 		return isInstallationStarted;
 	}
 	
 	/**
-	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+	 * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
 	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -1151,6 +1186,8 @@ public class InitializationFilter extends StartupFilter {
 			// TODO how to get the driver for the other dbs...
 			if (isCurrentDatabase(DATABASE_MYSQL)) {
 				Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+			}else if(isCurrentDatabase(DATABASE_MARIADB)){
+				Class.forName("org.mariadb.jdbc.Driver").newInstance();
 			} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 				Class.forName("org.postgresql.Driver").newInstance();
 				replacedSql = replacedSql.replaceAll("`", "\"");
@@ -1223,20 +1260,18 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
-	 * Check if the given value is null or a zero-length String
+	 * Checks if the given string value is empty or contains only whitespace. 
+	 * If it is, an error is added to the provided errors map with the specified error message code.
 	 *
-	 * @param value the string to check
-	 * @param errors the list of errors to append the errorMessage to if value is empty
+	 * @param value            the string to check
+	 * @param errors           the list of errors to append the errorMessage to if value is empty
 	 * @param errorMessageCode the string with code of error message translation to append if value is
-	 *            empty
-	 * @return true if the value is non-empty
+	 *                         empty
 	 */
-	private boolean checkForEmptyValue(String value, Map<String, Object[]> errors, String errorMessageCode) {
-		if (!StringUtils.isEmpty(value)) {
-			return true;
+	private void checkForEmptyValue(String value, Map<String, Object[]> errors, String errorMessageCode) {
+		if (!StringUtils.hasText(value)) {
+			errors.put(errorMessageCode, null);
 		}
-		errors.put(errorMessageCode, null);
-		return false;
 	}
 	
 	/**
@@ -1245,7 +1280,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	private class InitializationCompletion {
 		
-		private Thread thread;
+		private final Future<Void> future;
 		
 		private int steps = 0;
 		
@@ -1287,15 +1322,13 @@ public class InitializationFilter extends StartupFilter {
 		public void start() {
 			setStepsComplete(0);
 			setInitializationComplete(false);
-			thread.start();
 		}
 		
 		public void waitForCompletion() {
 			try {
-				thread.join();
-			}
-			catch (InterruptedException e) {
-				log.error("Error generated", e);
+				future.get();
+			} catch (InterruptedException | ExecutionException e) {
+				throw new RuntimeException(e);
 			}
 		}
 		
@@ -1312,6 +1345,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 		
 		public synchronized void setMessage(String message) {
+			log.debug(message);
 			this.message = message;
 			setStepsComplete(getStepsComplete() + 1);
 		}
@@ -1376,7 +1410,7 @@ public class InitializationFilter extends StartupFilter {
 					try {
 						String connectionUsername;
 						StringBuilder connectionPassword = new StringBuilder();
-						ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+						ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 						ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 						
 						if (!wizardModel.hasCurrentOpenmrsDatabase) {
@@ -1516,26 +1550,20 @@ public class InitializationFilter extends StartupFilter {
 						if (StringUtils.hasText(wizardModel.databaseDriver)) {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
 						}
-						if (finalDatabaseConnectionString.contains(DATABASE_POSTGRESQL)) {
-							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL82Dialect");
-						}
-						if (finalDatabaseConnectionString.contains(DATABASE_SQLSERVER)) {
-							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
-						}
-						if (finalDatabaseConnectionString.contains(DATABASE_H2)) {
-							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-						}
-						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
-						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
+						runtimeProperties.put("module.allow_web_admin", "" + wizardModel.moduleWebAdmin);
+						runtimeProperties.put("auto_update_database", "" + wizardModel.autoUpdateDatabase);
 						final Encoder base64 = Base64.getEncoder();
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY,
 							new String(base64.encode(Security.generateNewInitVector()), StandardCharsets.UTF_8));
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY,
 							new String(base64.encode(Security.generateNewSecretKey()), StandardCharsets.UTF_8));
 						
+						runtimeProperties.putAll(wizardModel.additionalPropertiesFromInstallationScript);
+						
 						Properties properties = Context.getRuntimeProperties();
 						properties.putAll(runtimeProperties);
 						runtimeProperties = properties;
+
 						Context.setRuntimeProperties(runtimeProperties);
 						
 						/**
@@ -1567,6 +1595,7 @@ public class InitializationFilter extends StartupFilter {
 						}
 						
 						if (wizardModel.createTables) {
+							log.debug("Creating tables");
 							// use liquibase to create core data + tables
 							try {
 								String liquibaseSchemaFileName = changeLogVersionFinder.getLatestSchemaSnapshotFilename()
@@ -1653,28 +1682,6 @@ public class InitializationFilter extends StartupFilter {
 							}
 						}
 						
-						// add demo data only if creating tables fresh and user selected the option add demo data
-						if (wizardModel.createTables && wizardModel.addDemoData) {
-							try {
-								setMessage("Adding demo data");
-								setCompletedPercentage(0);
-								setExecutingTask(WizardTask.ADD_DEMO_DATA);
-								
-								log.debug("executing Liquibase file '{}' ", LIQUIBASE_DEMO_DATA);
-								
-								DatabaseUpdater.executeChangelog(LIQUIBASE_DEMO_DATA,
-									new PrintingChangeSetExecutorCallback("OpenMRS demo patients, users, and forms"));
-								wizardModel.workLog.add("Added demo data");
-								
-								addExecutedTask(WizardTask.ADD_DEMO_DATA);
-							}
-							catch (Exception e) {
-								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE,
-									e.getMessage());
-								log.warn("Error while trying to add demo data", e);
-							}
-						}
-						
 						// update the database to the latest version
 						try {
 							setMessage("Updating the database to the latest version");
@@ -1717,8 +1724,10 @@ public class InitializationFilter extends StartupFilter {
 						// start spring
 						// after this point, all errors need to also call: contextLoader.closeWebApplicationContext(event.getServletContext())
 						// logic copied from org.springframework.web.context.ContextLoaderListener
+						log.debug("Initializing WAC");
 						ContextLoader contextLoader = new ContextLoader();
 						contextLoader.initWebApplicationContext(filterConfig.getServletContext());
+						log.debug("Done initializing WAC");
 						
 						// output properties to the openmrs runtime properties file so that this wizard is not run again
 						FileOutputStream fos = null;
@@ -1756,6 +1765,7 @@ public class InitializationFilter extends StartupFilter {
 						if (!"".equals(wizardModel.implementationId)) {
 							try {
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+								Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);
 								Context.addProxyPrivilege(PrivilegeConstants.GET_CONCEPT_SOURCES);
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
@@ -1778,6 +1788,7 @@ public class InitializationFilter extends StartupFilter {
 							}
 							finally {
 								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+								Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);
 								Context.removeProxyPrivilege(PrivilegeConstants.GET_CONCEPT_SOURCES);
 								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
@@ -1788,6 +1799,7 @@ public class InitializationFilter extends StartupFilter {
 							// change the admin user password from "test" to what they input above
 							if (wizardModel.createTables) {
 								try {
+									Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
 									Context.authenticate(new UsernamePasswordCredentials("admin", "test"));
 									
 									Properties props = Context.getRuntimeProperties();
@@ -1807,6 +1819,9 @@ public class InitializationFilter extends StartupFilter {
 								}
 								catch (ContextAuthenticationException ex) {
 									log.info("No need to change admin password.", ex);
+								}
+								finally {
+									Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 								}
 							}
 						}
@@ -1859,13 +1874,6 @@ public class InitializationFilter extends StartupFilter {
 								mandatoryModEx.getMessage());
 							return;
 						}
-						catch (OpenmrsCoreModuleException coreModEx) {
-							log.warn(
-								"A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
-								coreModEx);
-							reportError(ErrorMessageConstants.ERROR_CORE_MOD_REQ, DEFAULT_PAGE, coreModEx.getMessage());
-							return;
-						}
 						
 						// TODO catch openmrs errors here and drop the user back out to the setup screen
 						
@@ -1886,7 +1894,7 @@ public class InitializationFilter extends StartupFilter {
 				}
 			};
 			
-			thread = new Thread(r);
+			future = OpenmrsThreadPoolHolder.threadExecutor.submit(() -> { r.run(); return null; });
 		}
 	}
 	
@@ -1936,13 +1944,24 @@ public class InitializationFilter extends StartupFilter {
 			|| (httpRequest.getParameter("back.x") != null && httpRequest.getParameter("back.y") != null);
 	}
 	
+	private String normalizeEnvVariableKey(String envVarKey) {
+		if (NON_NORMALIZED_KEYS.contains(envVarKey)) {
+			return envVarKey.toLowerCase();
+		}
+		return envVarKey.toLowerCase().replace('_', '.');
+	}
+
+	protected Map<String, String> getEnvironmentVariables() {
+		return System.getenv();
+	}
+
 	/**
 	 * Convenience method to get custom installation script
 	 *
 	 * @return Properties from custom installation script or empty if none specified
 	 * @throws RuntimeException if path to installation script is invalid
 	 */
-	private Properties getInstallationScript() {
+	protected Properties getInstallationScript() {
 		Properties prop = new Properties();
 		
 		String fileName = System.getProperty("OPENMRS_INSTALLATION_SCRIPT");
@@ -1954,13 +1973,16 @@ public class InitializationFilter extends StartupFilter {
 			InputStream input = null;
 			try {
 				input = getClass().getClassLoader().getResourceAsStream(fileName);
+				if (input == null) {
+					return null;
+				}
 				prop.load(input);
-				log.info("Using installation script from classpath: " + fileName);
+				log.info("Using installation script from classpath: {}", fileName);
 				
 				input.close();
 			}
 			catch (IOException ex) {
-				log.error("Failed to load installation script from classpath: " + fileName, ex);
+				log.error("Failed to load installation script from classpath: {}", fileName, ex);
 				throw new RuntimeException(ex);
 			}
 			finally {
@@ -1973,12 +1995,12 @@ public class InitializationFilter extends StartupFilter {
 				try {
 					input = new FileInputStream(fileName);
 					prop.load(input);
-					log.info("Using installation script from absolute path: " + file.getAbsolutePath());
+					log.info("Using installation script from absolute path: {}", file.getAbsolutePath());
 					
 					input.close();
 				}
 				catch (IOException ex) {
-					log.error("Failed to load installation script from absolute path: " + file.getAbsolutePath(), ex);
+					log.error("Failed to load installation script from absolute path: {}", file.getAbsolutePath(), ex);
 					throw new RuntimeException(ex);
 				}
 				finally {
@@ -1988,4 +2010,5 @@ public class InitializationFilter extends StartupFilter {
 		}
 		return prop;
 	}
+
 }

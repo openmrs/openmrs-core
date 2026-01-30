@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -17,6 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Tests the {@link ConceptNumeric} object
@@ -115,15 +120,69 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldSaveAConceptNumericWithAllowDecimalValue() {
-		Concept c = Context.getConceptService().getConcept(22);
-		ConceptNumeric cn = new ConceptNumeric(c);
+		ConceptNumeric cn = new ConceptNumeric(22);
+		cn.addName(new ConceptName("cn", Locale.ENGLISH));
+		cn.setDatatype(new ConceptDatatype(1));
+		cn.setConceptClass(new ConceptClass(1));
 		cn.addDescription(new ConceptDescription("some description", null));
-		
+
 		Context.getConceptService().saveConcept(cn);
 		assertFalse(Context.getConceptService().getConceptNumeric(22).getAllowDecimal());
 		
 		cn.setAllowDecimal(true);
 		Context.getConceptService().saveConcept(cn);
 		assertTrue(Context.getConceptService().getConceptNumeric(22).getAllowDecimal());
+	}
+
+	@Test
+	public void shouldRemoveReferenceRangeFromConceptNumeric() {
+		ConceptNumeric cn = new ConceptNumeric(22);
+		cn.addName(new ConceptName("cn", Locale.ENGLISH));
+		cn.setDatatype(new ConceptDatatype(1));
+		cn.setConceptClass(new ConceptClass(1));
+		ConceptReferenceRange referenceRange1 = new ConceptReferenceRange();
+		referenceRange1.setId(1);
+		referenceRange1.setConceptNumeric(cn);
+		ConceptReferenceRange referenceRange2 = new ConceptReferenceRange();
+		referenceRange2.setId(2);
+		referenceRange2.setConceptNumeric(cn);
+		cn.addReferenceRange(referenceRange1);
+		cn.addReferenceRange(referenceRange2);
+		
+		Context.getConceptService().saveConcept(cn);
+		assertEquals(2, Context.getConceptService().getConceptNumeric(22).getReferenceRanges().size());
+
+		cn.removeReferenceRange(referenceRange1);
+		Context.getConceptService().saveConcept(cn);
+		assertEquals(1, Context.getConceptService().getConceptNumeric(22).getReferenceRanges().size());
+	}
+
+	@Test
+	public void shouldMaintainInsertionOrderOfReferenceRangesWithConstructor() {
+		Concept concept = new Concept();
+		concept.setConceptId(1);
+
+		ConceptNumeric conceptNumeric = new ConceptNumeric(concept);
+
+		ConceptReferenceRange referenceRange1 = new ConceptReferenceRange();
+		referenceRange1.setId(1);
+		ConceptReferenceRange referenceRange2 = new ConceptReferenceRange();
+		referenceRange2.setId(2);
+		ConceptReferenceRange referenceRange3 = new ConceptReferenceRange();
+		referenceRange3.setId(3);
+		ConceptReferenceRange referenceRange4 = new ConceptReferenceRange();
+		referenceRange4.setId(4);
+
+		conceptNumeric.addReferenceRange(referenceRange1);
+		conceptNumeric.addReferenceRange(referenceRange2);
+		conceptNumeric.addReferenceRange(referenceRange3);
+		conceptNumeric.addReferenceRange(referenceRange4);
+
+		List<ConceptReferenceRange> referenceRangeList = new ArrayList<>(conceptNumeric.getReferenceRanges());
+
+		assertEquals(1, referenceRangeList.get(0).getId().intValue());
+		assertEquals(2, referenceRangeList.get(1).getId().intValue());
+		assertEquals(3, referenceRangeList.get(2).getId().intValue());
+		assertEquals(4, referenceRangeList.get(3).getId().intValue());
 	}
 }

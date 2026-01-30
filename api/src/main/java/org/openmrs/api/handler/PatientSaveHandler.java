@@ -46,10 +46,5 @@ public class PatientSaveHandler implements SaveHandler<Patient> {
 				}
 			}
 		}
-
-		if(patient.getPatientId() == null){
-			patient.setCreator(Context.getAuthenticatedUser());
-			patient.setDateCreated(new Date());
-		}
 	}
 }

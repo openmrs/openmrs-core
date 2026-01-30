@@ -9,8 +9,12 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Transient;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,17 +24,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.persistence.Transient;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.DateBridge;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.EncodingType;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Resolution;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +48,8 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.Patient
  */
 @Audited
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Person extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
@@ -56,18 +61,14 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	private Set<PersonAddress> addresses = null;
 	
-	@ContainedIn
 	private Set<PersonName> names = null;
 	
-	@ContainedIn
 	private Set<PersonAttribute> attributes = null;
 	
-	@Field
+	@GenericField
 	private String gender;
 	
-
-	@Field(analyze = Analyze.YES)
-	@DateBridge(encoding = EncodingType.STRING, resolution = Resolution.DAY)
+	@GenericField
 	private Date birthdate;
 	
 	private Date birthtime;
@@ -76,7 +77,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	private Boolean deathdateEstimated = false;
 	
-	@Field
+	@GenericField
 	private Boolean dead = false;
 	
 	private Date deathDate;
@@ -101,8 +102,9 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	private String personVoidReason;
 	
-	@Field
+	@GenericField
 	@NotAudited
+	@IndexingDependency(derivedFrom = @ObjectPath(@PropertyValue(propertyName = "patient")))
 	private boolean isPatient;
 	
 	/**
@@ -192,7 +194,13 @@ public class Person extends BaseChangeableOpenmrsData {
 	public void setPersonId(Integer personId) {
 		this.personId = personId;
 	}
-	
+
+	@IndexingDependency(derivedFrom = @ObjectPath(@PropertyValue(propertyName = "personVoided")))
+	@Override
+	public Boolean getVoided() {
+		return super.getVoided();
+	}
+
 	/**
 	 * @return person's gender
 	 */
@@ -946,6 +954,117 @@ public class Person extends BaseChangeableOpenmrsData {
 		
 		return age;
 	}
+
+	/**
+	 * Method to get the age of a person in months.
+	 *
+	 * @return the age in months as an Integer e.g. 20 (to mean 20 months)
+	 *
+	 * @since 2.7.0
+	 */
+	public Integer getAgeInMonths() {
+		return getAgeInMonths(null);
+	}
+
+	/**
+	 * Convenience method to get the age of a person in months on a given date 
+	 * 
+	 * @param onDate (null defaults to today)
+	 * @return the age in months as an Integer   
+	 * 
+	 * @since 3.0.0
+	 */ 
+	public Integer getAgeInMonths(Date onDate){
+		return getAgeInChronoUnit(ChronoUnit.MONTHS, onDate);
+	}
+
+	/**
+	 * Method to get the age of a person in weeks.
+	 *
+	 * @return the age in weeks as an Integer e.g. 20 (to mean 20 weeks)
+	 *
+	 * @since 2.7.0
+	 */
+	public Integer getAgeInWeeks() {
+		return getAgeInWeeks(null);
+	}
+
+	/**
+	 * Convenience method to get the age of a person in weeks on a given date 
+	 *
+	 * @param onDate (null defaults to today)
+	 * @return the age in weeks as an Integer   
+	 * 
+	 * @since 3.0.0
+	 */
+	public Integer getAgeInWeeks(Date onDate){
+		return getAgeInChronoUnit(ChronoUnit.WEEKS, onDate);
+	}
+
+	/**
+	 * Method to get the age of a person in days.
+	 *
+	 * @return the age in days as an Integer e.g. 20 (to mean 20 days)
+	 *
+	 * @since 2.7.0
+	 */
+	public Integer getAgeInDays() {
+		return getAgeInDays(null);
+	}
+
+	/**
+	 * Convenience method to get the age of a person in days on a given date 
+	 *
+	 * @param onDate (null defaults to today)
+	 * @return the age in days as an Integer   
+	 * 
+	 * @since 3.0.0
+	 */
+	public Integer getAgeInDays(Date onDate){
+		return getAgeInChronoUnit(ChronoUnit.DAYS, onDate);
+	}
+
+	/**
+	 * Gets the age of a person with the specified ChronoUnit.
+	 *
+	 * @param chronoUnit the unit of precision for the age calculation (e.g. WEEKS, MONTHS, YEARS)
+	 * @return the age in the specified unit as an Integer
+	 *
+	 * @since 2.7.0
+	 */
+	private Integer getAgeInChronoUnit(ChronoUnit chronoUnit, Date onDate) {
+		if (this.birthdate == null) {
+			return null;
+		}
+
+		LocalDate birthDate = new java.sql.Date(this.birthdate.getTime()).toLocalDate();
+		LocalDate endDate = LocalDate.now();
+
+		// If date is given then use that as end date
+		if(onDate != null){
+			endDate =  new java.sql.Date(onDate.getTime()).toLocalDate();
+		}
+		
+		// If date given is after date of death then use date of death as end date
+		if (this.deathDate != null) {
+			LocalDate deathDate = new java.sql.Date(this.deathDate.getTime()).toLocalDate();
+
+			if (endDate.isAfter(deathDate)) {
+				endDate = deathDate;
+			}
+		}
+
+		switch (chronoUnit) {
+			case DAYS:
+				return (int) ChronoUnit.DAYS.between(birthDate, endDate);
+			case WEEKS:
+				return (int) ChronoUnit.WEEKS.between(birthDate, endDate);
+			case MONTHS:
+				return (int) ChronoUnit.MONTHS.between(birthDate, endDate);
+			default:
+				throw new IllegalArgumentException("Unsupported ChronoUnit: " + chronoUnit);
+		}
+	}
 	
 	/**
 	 * Convenience method: sets a person's birth date from an age as of the given date Also sets
@@ -1100,5 +1219,4 @@ public class Person extends BaseChangeableOpenmrsData {
 		setPersonId(id);
 		
 	}
-	
 }

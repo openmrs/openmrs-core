@@ -13,20 +13,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.NativeQuery;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
@@ -39,6 +39,8 @@ import org.openmrs.Visit;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific Observation related functions This class should not be used directly. All
@@ -47,16 +49,13 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
  * @see org.openmrs.api.db.ObsDAO
  * @see org.openmrs.api.ObsService
  */
+@Repository("obsDAO")
 public class HibernateObsDAO implements ObsDAO {
 	
-	protected SessionFactory sessionFactory;
+	protected final SessionFactory sessionFactory;
 	
-	/**
-	 * Set session factory that allows us to connect to the database that Hibernate knows about.
-	 *
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateObsDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -286,7 +285,7 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @param cb          instance of CriteriaBuilder
 	 * @param root        Root entity in the JPA criteria query
 	 * @param personTypes list of person types as filters
-	 * @return a list of javax.persistence.criteria.Predicate instances.
+	 * @return a list of jakarta.persistence.criteria.Predicate instances.
 	 */
 	private List<Predicate> getCriteriaPersonModifier(CriteriaBuilder cb, Root<Obs> root, List<PERSON_TYPE> personTypes) {
 		List<Predicate> predicates = new ArrayList<>();
@@ -343,13 +342,13 @@ public class HibernateObsDAO implements ObsDAO {
 		FlushMode flushMode = session.getHibernateFlushMode();
 		session.setHibernateFlushMode(FlushMode.MANUAL);
 		try {
-			SQLQuery sql = session.createSQLQuery("select status from obs where obs_id = :obsId");
+			NativeQuery<String> sql = session.createNativeQuery("select status from obs where obs_id = :obsId",
+				String.class);
 			sql.setParameter("obsId", obs.getObsId());
-			return Obs.Status.valueOf((String) sql.uniqueResult());
+			return Obs.Status.valueOf(sql.uniqueResult());
 		}
 		finally {
 			session.setHibernateFlushMode(flushMode);
 		}
 	}
-	
 }

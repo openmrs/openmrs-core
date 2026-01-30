@@ -20,6 +20,7 @@ import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
+import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
@@ -30,18 +31,19 @@ import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,6 +56,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * This is the second filter that is processed. It is only active when OpenMRS has some liquibase
@@ -62,7 +65,7 @@ import java.util.Map;
  */
 public class UpdateFilter extends StartupFilter {
 	
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(UpdateFilter.class);
+	protected final Logger log = LoggerFactory.getLogger(UpdateFilter.class);
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
@@ -91,7 +94,7 @@ public class UpdateFilter extends StartupFilter {
 	 * Used on all pages after the first to make sure the user isn't trying to cheat and do some url
 	 * magic to hack in.
 	 */
-	private boolean authenticatedSuccessfully = false;
+	private volatile boolean authenticatedSuccessfully = false;
 	
 	private UpdateFilterCompletion updateJob;
 	
@@ -131,9 +134,6 @@ public class UpdateFilter extends StartupFilter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests
-	 *
-	 * @see org.openmrs.web.filter.StartupFilter#doPost(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	protected synchronized void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
@@ -320,7 +320,7 @@ public class UpdateFilter extends StartupFilter {
 		try {
 			connection = DatabaseUpdater.getConnection();
 			
-			String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and retired = '0'";
+			String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and retired = false";
 			PreparedStatement statement = null;
 			try {
 				statement = connection.prepareStatement(select);
@@ -371,7 +371,7 @@ public class UpdateFilter extends StartupFilter {
 			// we may not have upgraded User to have retired instead of voided yet, so if the query above fails, we try
 			// again the old way
 			if (connection != null) {
-				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = '0'";
+				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = false";
 				PreparedStatement statement = null;
 				try {
 					statement = connection.prepareStatement(select);
@@ -483,7 +483,7 @@ public class UpdateFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+	 * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
 	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -586,9 +586,9 @@ public class UpdateFilter extends StartupFilter {
 	 * executed. TODO: Break this out into a separate (non-inner) class
 	 */
 	private class UpdateFilterCompletion {
-		
-		private Thread thread;
-		
+
+		private Runnable r;
+
 		private String executingChangesetId = null;
 		
 		private List<String> changesetIds = new ArrayList<>();
@@ -627,7 +627,7 @@ public class UpdateFilter extends StartupFilter {
 		 */
 		public void start() {
 			setUpdatesRequired(true);
-			thread.start();
+			OpenmrsThreadPoolHolder.threadExecutor.submit(r);
 		}
 		
 		public synchronized void setMessage(String message) {
@@ -671,7 +671,7 @@ public class UpdateFilter extends StartupFilter {
 		 * This class does all the work of creating the desired database, user, updates, etc
 		 */
 		public UpdateFilterCompletion() {
-			Runnable r = new Runnable() {
+			 r = new Runnable() {
 				
 				/**
 				 * TODO split this up into multiple testable methods
@@ -702,42 +702,45 @@ public class UpdateFilter extends StartupFilter {
 							}
 							
 						}
+
 						
 						try {
-							setMessage("Updating the database to the latest version");
-							
-							ChangeLogDetective changeLogDetective = new ChangeLogDetective();
-							ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
-							
-							List<String> changelogs = new ArrayList<>();
-							List<String> warnings = new ArrayList<>();
-							
-							String version = changeLogDetective.getInitialLiquibaseSnapshotVersion(DatabaseUpdater.CONTEXT,
-							    new DatabaseUpdaterLiquibaseProvider());
-							
-							log.debug(
-							    "updating the database with versions of liquibase-update-to-latest files greater than '{}'",
-							    version);
-							
-							changelogs.addAll(changeLogVersionFinder
-							        .getUpdateFileNames(changeLogVersionFinder.getUpdateVersionsGreaterThan(version)));
-							
-							log.debug("found applicable Liquibase update change logs: {}", changelogs);
-							
-							for (String changelog : changelogs) {
-								log.debug("applying Liquibase changelog '{}'", changelog);
-								
-								List<String> currentWarnings = DatabaseUpdater.executeChangelog(changelog,
-								    new PrintingChangeSetExecutorCallback("executing Liquibase changelog :" + changelog));
-								
-								if (currentWarnings != null) {
-									warnings.addAll(currentWarnings);
+							if (DatabaseUpdater.updatesRequired()) {
+								setMessage("Updating the database to the latest version");
+
+								ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
+								ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
+
+								List<String> changelogs = new ArrayList<>();
+								List<String> warnings = new ArrayList<>();
+
+								String version = changeLogDetective.getInitialLiquibaseSnapshotVersion(DatabaseUpdater.CONTEXT,
+									new DatabaseUpdaterLiquibaseProvider());
+
+								log.debug(
+									"updating the database with versions of liquibase-update-to-latest files greater than '{}'",
+									version);
+
+								changelogs.addAll(changeLogVersionFinder
+									.getUpdateFileNames(changeLogVersionFinder.getUpdateVersionsGreaterThan(version)));
+
+								log.debug("found applicable Liquibase update change logs: {}", changelogs);
+
+								for (String changelog : changelogs) {
+									log.debug("applying Liquibase changelog '{}'", changelog);
+
+									List<String> currentWarnings = DatabaseUpdater.executeChangelog(changelog,
+										new PrintingChangeSetExecutorCallback("executing Liquibase changelog :" + changelog));
+
+									if (currentWarnings != null) {
+										warnings.addAll(currentWarnings);
+									}
 								}
-							}
-							executingChangesetId = null; // clear out the last changeset
-							
-							if (CollectionUtils.isNotEmpty(warnings)) {
-								reportWarnings(warnings);
+								executingChangesetId = null; // clear out the last changeset
+
+								if (CollectionUtils.isNotEmpty(warnings)) {
+									reportWarnings(warnings);
+								}
 							}
 						}
 						catch (InputRequiredException inputRequired) {
@@ -786,8 +789,6 @@ public class UpdateFilter extends StartupFilter {
 					}
 				}
 			};
-			
-			thread = new Thread(r);
 		}
 	}
 }

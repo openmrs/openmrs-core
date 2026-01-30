@@ -9,8 +9,19 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.util.Date;
 
 /**
@@ -20,34 +31,55 @@ import java.util.Date;
  *
  * @see Concept#getAnswers()
  */
+@Entity
+@Table(name = "concept_answer")
+@BatchSize(size = 25)
 @Audited
 public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptAnswer> {
 	
 	public static final long serialVersionUID = 3744L;
 	
 	// Fields
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_answer_id_seq")
+	@GenericGenerator(
+			name = "concept_answer_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "concept_answer_concept_answer_id_seq")
+	)
+	@Column(name = "concept_answer_id")
 	private Integer conceptAnswerId;
 	
 	/**
 	 * The question concept that this object is answering
 	 */
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
 	/**
 	 * The answer to the question
 	 */
+	@ManyToOne
+	@JoinColumn(name = "answer_concept", nullable = false)
 	private Concept answerConcept;
 	
 	/**
 	 * The {@link Drug} answer to the question. This can be null if this does not represent a drug
 	 * type of answer
 	 */
+	@ManyToOne
+	@JoinColumn(name = "answer_drug")
 	private Drug answerDrug;
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
+	@Column(name = "sort_weight")
 	private Double sortWeight;
 	
 	// Constructors

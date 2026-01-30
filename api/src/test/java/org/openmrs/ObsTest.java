@@ -56,7 +56,7 @@ public class ObsTest {
 	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID",
 	    "DATE_TIME_PATTERN", "TIME_PATTERN", "DATE_PATTERN", "FORM_NAMESPACE_PATH_SEPARATOR",
 	    "FORM_NAMESPACE_PATH_MAX_LENGTH", "obsId", "groupMembers", "uuid", "changedBy", "dateChanged", "voided", "voidedBy",
-	    "voidReason", "dateVoided", "formNamespaceAndPath", "$jacocoData");
+	    "voidReason", "dateVoided", "formNamespaceAndPath", "$jacocoData", "referenceRange");
 	
 	private void resetObs(Obs obs) throws Exception {
 		Field field = Obs.class.getDeclaredField("dirty");
@@ -305,24 +305,67 @@ public class ObsTest {
 		
 		assertTrue(obs.isComplex());
 	}
-	
-	/**
-	 * @see Obs#setValueAsString(String)
-	 */
+
 	@Test
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsEmpty() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("ST");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
 		Obs obs = new Obs();
+		obs.setConcept(c);
 		assertThrows(RuntimeException.class, () -> obs.setValueAsString(""));
 	}
-	
+
 	/**
 	 * @see Obs#setValueAsString(String)
 	 */
 	@Test
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsNull() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("ST");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
 		Obs obs = new Obs();
+		obs.setConcept(c);
 		assertThrows(RuntimeException.class, () -> obs.setValueAsString(null));
 	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldNotFailIfTheValueOfTheStringIsBlankAndTypeIsST() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("ST");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("\r\n");
+
+		assertEquals("\r\n", obs.getValueText());
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldFailIfTheValueOfTheStringIsBlankAndTypeIsNotST() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("NM");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);;
+
+		assertThrows(RuntimeException.class, () -> obs.setValueAsString("\r\n"));
+	}
+	
 	
 	/**
 	 * @see Obs#getValueAsBoolean()

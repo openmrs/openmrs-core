@@ -104,7 +104,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   verboseHandler: function to be called to return the text to display as verbose output
  *   attributes: Array of names for attributes types to display in the list of results
  *   showSearchButton: Boolean, indicating whether to use search button for immediate search
- *   lastSearchParams: Object with properties lastSearchText, includeVoided and includeVerbose, to preserve data with browser back button
+ *   showVerbose: Boolean, indicates whether to check checkbox for verbose 
+ *   includeVoided: Boolean, indicates whether to check checkbox for voided 
  *
  * The styling on this table works like this:
  * <pre>
@@ -194,8 +195,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             notification = div.find("#searchWidgetNotification");
             loadingMsgObj = div.find("#loadingMsg");
             showSearchButton = o.showSearchButton ? true : false;
-            lastSearchParams = (o.lastSearchParams != null) ? o.lastSearchParams : null;
-
+            
             this._div = div;
 
             lbl.text(o.searchLabel);
@@ -545,30 +545,21 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 }
             });
 
-            // Browser back button support, for preserve data
-            if (lastSearchParams !== null) {
-                $j('#inputNode').val(lastSearchParams.lastSearchText);
-                if (lastSearchParams.includeVoided == 1) {
-                    $j('#includeVoided').attr('checked','checked');
+            //Browser back button support, to preserve data
+            if(typeof(Storage) !== "undefined") {
+            	//check to see if there are parameters to get from sessionStorage
+            	//after setting the fields clear out session storage so it doesn't get used on other pages
+            	 
+                if(sessionStorage.includeVoided){
+                	self.options.includeVoided = true;
+                	sessionStorage.removeItem("includeVoided");
                 }
-                if (lastSearchParams.includeVerbose == 1) {
-                    $j('#includeVerbose').attr('checked','checked');
-                }
-                var keyEvent = jQuery.Event("keyup");
-
-                var codex = 13;
-
-                // Patient search doesn't support for Enter Key. So invoke keyup
-                // event with last character of searched text.
-                if (el.attr('id') === "findPatients") {
-                    var text = $j('#inputNode').val();
-                    codex = $j('#inputNode').val().charCodeAt($j('#inputNode').val().length - 1);
-                }
-
-                keyEvent.keyCode = codex;
-                $j("#inputNode").trigger(keyEvent);
+                if(sessionStorage.includeVerbose){
+                	self.options.showVerbose = true;
+                	sessionStorage.removeItem("includeVerbose");
+                }              
             }
-
+        
             //register an onchange event handler for the length dropdown so that we don't lose
             //the row highlight when the user makes changes to the length
             var selectElement = document.getElementById('openmrsSearchTable_length').getElementsByTagName('select')[0];
@@ -587,11 +578,30 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                     self._table.numberOfPages = Math.floor(initialRowCount/self._table.fnSettings()._iDisplayLength)+1;
 
             } else if(self.options.searchPhrase || self.options.doSearchWhenEmpty) {
-                if (self.options.searchPhrase == null) {
-                    self.options.searchPhrase = "";
-                }
-                $j(input).val(self.options.searchPhrase).keyup();
+            	if (self.options.searchPhrase == null) {
+            		self.options.searchPhrase = "";
+            	}                
+            	//check to see if we need to select the checkbox for includeVerbose and/or includeVoided
+            	//since there is a searchPhrase the page will reload using these values
+            	if(self.options.showVerbose){
+            		$j('#includeVerbose').attr('checked','checked');
+            	}
+            	if(self.options.includeVoided){
+            		$j('#includeVoided').attr('checked','checked');
+            	}           	
             }
+            $j(input).val(self.options.searchPhrase).keyup();
+        	//setting the cursor to the end of the searchPhrase
+        	//setSelectionRange is a method of the DOM element not the jQuery object so get the DOM element
+        	var inputNodeDOM = $j('#inputNode').get(0);
+        	inputNodeDOM.focus();
+        	if(inputNodeDOM){
+        		var searchPhraseLength = self.options.searchPhrase ? self.options.searchPhrase.length : 0;
+        		//setSelectionRange is for setting the cursor at the end of the search text
+        		if (inputNodeDOM.setSelectionRange) {
+        			inputNodeDOM.setSelectionRange(searchPhraseLength, searchPhraseLength);
+        		}
+        	}
         },
 
         _makeColumns: function() {
@@ -951,6 +961,16 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 
         _doSelected: function(position, rowData) {
             if(this.options.selectionHandler) {
+        		// Check the browser compatibility and, add an entries to sessionStorage
+            	if(typeof(Storage) !== "undefined") {
+        	        sessionStorage.lastSearchText= $j('#inputNode').val();
+        			if($j(verboseCheckBox).is(':checked')) {
+        				sessionStorage.includeVerbose = "checked";
+        			}
+        			if($j(checkBox).is(':checked')) {
+        				sessionStorage.includeVoided = "checked";	
+        			}
+        		}
                 this.options.selectionHandler(position, rowData);
             }
         },

@@ -11,7 +11,7 @@ package org.openmrs.api;
 
 /**
  * This exception is thrown whenever a concept stop word service failed.
- *
+ * 
  * @since 1.8
  */
 
@@ -21,7 +21,7 @@ public class ConceptStopWordException extends APIException {
 	
 	/**
 	 * Constructor to give the user a message
-	 *
+	 * 
 	 * @param message the String to show to the user as to why the concept stop word service failed
 	 */
 	public ConceptStopWordException(String message) {
@@ -29,9 +29,9 @@ public class ConceptStopWordException extends APIException {
 	}
 	
 	/**
-	 * Convenience constructor to give the user a message and to chain
-	 * this exception with a parent exception.
-	 *
+	 * Convenience constructor to give the user a message and to chain this exception with a parent
+	 * exception.
+	 * 
 	 * @param message the String to show to the user as to why the concept stop word service failed
 	 * @param cause the parent exception
 	 */

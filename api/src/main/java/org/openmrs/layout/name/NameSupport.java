@@ -9,6 +9,7 @@
  */
 package org.openmrs.layout.name;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 			return null;
 		}
 		try {
-			nameTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
+			nameTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(StringEscapeUtils.unescapeXml(xml),
 				NameTemplate.class);
 		} catch (Exception e) {
 			log.error("Error in deserializing provided name template", e);

@@ -83,6 +83,8 @@ public final class Module {
 	
 	private Set<String> packagesWithMappedClasses = new HashSet<>();
 	
+	private String configVersion;
+	
 	private Document config = null;
 	
 	private Document sqldiff = null;
@@ -116,13 +118,15 @@ public final class Module {
 	 * @param description
 	 * @param version
 	 */
-	public Module(String name, String moduleId, String packageName, String author, String description, String version) {
+	public Module(String name, String moduleId, String packageName, String author, String description, String version,
+				  String configVersion) {
 		this.name = name;
 		this.moduleId = moduleId;
 		this.packageName = packageName;
 		this.author = author;
 		this.description = description;
 		this.version = version;
+		this.configVersion = configVersion;
 		log.debug("Creating module " + name);
 	}
 	
@@ -644,7 +648,21 @@ public final class Module {
 	public void setConfig(Document config) {
 		this.config = config;
 	}
-	
+
+	/**
+	 * @since 2.7.0
+	 */
+	public String getConfigVersion() {
+		return configVersion;
+	}
+
+	/**
+	 * @since 2.7.0
+	 */
+	public void setConfigVersion(String configVersion) {
+		this.configVersion = configVersion;
+	}
+
 	public Document getSqldiff() {
 		return sqldiff;
 	}
@@ -692,17 +710,6 @@ public final class Module {
 	
 	public void setMandatory(boolean mandatory) {
 		this.mandatory = mandatory;
-	}
-	
-	/**
-	 * This is a convenience method to know whether this module is core to OpenMRS. A module is
-	 * 'core' when this module is essentially part of the core code and must exist at all times
-	 *
-	 * @return true if this is an OpenMRS core module
-	 * @see ModuleConstants#CORE_MODULES
-	 */
-	public boolean isCoreModule() {
-		return !ModuleUtil.ignoreCoreModules() && ModuleConstants.CORE_MODULES.containsKey(moduleId);
 	}
 	
 	public boolean isStarted() {
@@ -793,8 +800,5 @@ public final class Module {
 	public void setConditionalResources(List<ModuleConditionalResource> conditionalResources) {
 		this.conditionalResources = conditionalResources;
 	}
-	
-	public boolean isCore() {
-		return ModuleConstants.CORE_MODULES.containsKey(getModuleId());
-	}
+
 }
