@@ -245,6 +245,26 @@ public interface OrderService extends OpenmrsService {
 	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType, boolean includeVoided);
 	
 	/**
+	 * Gets orders for the specified patient with optional sorting based on urgency and/or date
+	 * 
+	 * @param patient the patient to match on
+	 * @param careSetting the CareSetting to match on
+	 * @param orderType The OrderType to match on
+	 * @param includeVoided Specifies whether voided orders should be included or not
+	 * @param sortBy comma-separated fields to sort by: "urgency", "dateActivated", or "urgency,dateActivated" (can be null)
+	 * @param sortOrder "asc" for ascending or "desc" for descending (defaults to "desc" if null)
+	 * @return list of orders, optionally sorted
+	 * @since 2.7.0
+	 * <strong>Should</strong> sort orders by urgency when sortBy is urgency
+	 * <strong>Should</strong> sort orders by urgency then date when sortBy is urgency,dateActivated
+	 * <strong>Should</strong> handle null sortBy parameter
+	 * <strong>Should</strong> default to descending order when sortOrder is null
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType, 
+	                              boolean includeVoided, String sortBy, String sortOrder);
+	
+	/**
 	 * Gets all orders for the specified patient including discontinuation orders
 	 * 
 	 * @param patient the patient to match on
