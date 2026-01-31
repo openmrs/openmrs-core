@@ -27,6 +27,7 @@ import org.openmrs.CohortMembership;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptSet;
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -2973,6 +2974,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ConceptProposal.class)
 				.addAnnotatedClass(PersonAttribute.class)
 				.addAnnotatedClass(OrderGroupAttribute.class)
+			    .addAnnotatedClass(ConceptSet.class)
 				.addAnnotatedClass(OrderAttribute.class)
 				.getMetadataBuilder().build();
 
