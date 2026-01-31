@@ -2528,6 +2528,167 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, orders.size());
 		assertEquals("2c96f25c-4949-4f72-9931-d808fbc226df", orders.iterator().next().getUuid());
 	}
+	
+	/**
+	 * @see OrderService#getOrders(Patient, CareSetting, OrderType, boolean, String, String)
+	 */
+	@Test
+	public void getOrders_shouldSortOrdersByUrgency() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-urgencySorting.xml");
+		
+		Patient patient = patientService.getPatient(2);
+		CareSetting careSetting = orderService.getCareSetting(1);
+		
+		// Get orders sorted by urgency descending (STAT first)
+		List<Order> orders = orderService.getOrders(patient, careSetting, null, false, "urgency", "desc");
+		
+		assertNotNull(orders);
+		assertTrue(orders.size() >= 6, "Should have test orders");
+		
+		// Verify STAT orders appear before ROUTINE orders
+		boolean foundStat = false;
+		boolean foundRoutine = false;
+		
+		for (Order order : orders) {
+			Order.Urgency urgency = order.getUrgency() != null ? order.getUrgency() : Order.Urgency.ROUTINE;
+			
+			if (urgency == Order.Urgency.STAT || urgency == Order.Urgency.ON_SCHEDULED_DATE) {
+				assertFalse(foundRoutine, "STAT/ON_SCHEDULED_DATE orders should appear before ROUTINE orders");
+				foundStat = true;
+			} else if (urgency == Order.Urgency.ROUTINE) {
+				foundRoutine = true;
+			}
+		}
+		
+		assertTrue(foundStat, "Should have found STAT orders");
+		assertTrue(foundRoutine, "Should have found ROUTINE orders");
+	}
+	
+	/**
+	 * @see OrderService#getOrders(Patient, CareSetting, OrderType, boolean, String, String)
+	 */
+	@Test
+	public void getOrders_shouldSortOrdersByUrgencyThenDate() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-urgencySorting.xml");
+		
+		Patient patient = patientService.getPatient(2);
+		CareSetting careSetting = orderService.getCareSetting(1);
+		
+		// Get orders sorted by urgency then date, descending
+		List<Order> orders = orderService.getOrders(patient, careSetting, null, false, "urgency,dateActivated", "desc");
+		
+		assertNotNull(orders);
+		assertTrue(orders.size() >= 5, "Should have test orders");
+		
+		Order.Urgency previousUrgency = null;
+		Date previousDate = null;
+		
+		// Filter to only active orders for simpler validation
+		List<Order> activeOrders = new ArrayList<>();
+		for (Order order : orders) {
+			if (order.getDateStopped() == null) {
+				activeOrders.add(order);
+			}
+		}
+		
+		for (Order order : activeOrders) {
+			Order.Urgency currentUrgency = order.getUrgency() != null ? order.getUrgency() : Order.Urgency.ROUTINE;
+			Date currentDate = order.getDateActivated() != null ? order.getDateActivated() : order.getDateCreated();
+			
+			if (previousUrgency != null) {
+				// Check urgency priority: STAT/ON_SCHEDULED_DATE should come before ROUTINE
+				boolean prevIsUrgent = previousUrgency == Order.Urgency.STAT || previousUrgency == Order.Urgency.ON_SCHEDULED_DATE;
+				boolean currIsUrgent = currentUrgency == Order.Urgency.STAT || currentUrgency == Order.Urgency.ON_SCHEDULED_DATE;
+				
+				if (prevIsUrgent && !currIsUrgent) {
+					assertTrue(true); // Correct ordering
+				} else if (!prevIsUrgent && currIsUrgent) {
+					org.junit.jupiter.api.Assertions.fail("STAT/ON_SCHEDULED_DATE orders should appear before ROUTINE orders");
+				}
+				
+				// Within same urgency group, verify date ordering (descending)
+				if (prevIsUrgent == currIsUrgent && previousDate != null && currentDate != null) {
+					assertTrue(previousDate.compareTo(currentDate) >= 0,
+							"Within same urgency, dates should be in descending order");
+				}
+			}
+			
+			previousUrgency = currentUrgency;
+			previousDate = currentDate;
+		}
+	}
+	
+	/**
+	 * @see OrderService#getOrders(Patient, CareSetting, OrderType, boolean, String, String)
+	 */
+	@Test
+	public void getOrders_shouldHandleNullSortByParameter() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-urgencySorting.xml");
+		
+		Patient patient = patientService.getPatient(2);
+		CareSetting careSetting = orderService.getCareSetting(1);
+		
+		// Get orders with null sortBy - should return unsorted
+		List<Order> orders = orderService.getOrders(patient, careSetting, null, false, null, null);
+		
+		assertNotNull(orders);
+		assertTrue(orders.size() > 0, "Should have test orders");
+		
+		// Verify no specific sorting is applied (backward compatibility)
+		// Just ensure we get the orders without errors
+	}
+	
+	/**
+	 * @see OrderService#getOrders(Patient, CareSetting, OrderType, boolean, String, String)
+	 */
+	@Test
+	public void getOrders_shouldSortAscendingAndDescending() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-urgencySorting.xml");
+		
+		Patient patient = patientService.getPatient(2);
+		CareSetting careSetting = orderService.getCareSetting(1);
+		
+		// Get orders sorted by urgency ascending (ROUTINE first, STAT last)
+		List<Order> ordersAsc = orderService.getOrders(patient, careSetting, null, false, "urgency", "asc");
+		
+		assertNotNull(ordersAsc);
+		assertTrue(ordersAsc.size() >= 6, "Should have test orders");
+		
+		// Verify ROUTINE orders appear before STAT orders in ascending
+		boolean foundRoutine = false;
+		boolean foundStat = false;
+		
+		for (Order order : ordersAsc) {
+			Order.Urgency urgency = order.getUrgency() != null ? order.getUrgency() : Order.Urgency.ROUTINE;
+			
+			if (urgency == Order.Urgency.ROUTINE) {
+				assertFalse(foundStat, "In ascending order, ROUTINE should come before STAT");
+				foundRoutine = true;
+			} else if (urgency == Order.Urgency.STAT || urgency == Order.Urgency.ON_SCHEDULED_DATE) {
+				foundStat = true;
+			}
+		}
+		
+		// Now test descending (STAT first, ROUTINE last)
+		List<Order> ordersDesc = orderService.getOrders(patient, careSetting, null, false, "urgency", "desc");
+		
+		assertNotNull(ordersDesc);
+		assertTrue(ordersDesc.size() >= 6, "Should have test orders");
+		
+		foundRoutine = false;
+		foundStat = false;
+		
+		for (Order order : ordersDesc) {
+			Order.Urgency urgency = order.getUrgency() != null ? order.getUrgency() : Order.Urgency.ROUTINE;
+			
+			if (urgency == Order.Urgency.STAT || urgency == Order.Urgency.ON_SCHEDULED_DATE) {
+				assertFalse(foundRoutine, "In descending order, STAT should come before ROUTINE");
+				foundStat = true;
+			} else if (urgency == Order.Urgency.ROUTINE) {
+				foundRoutine = true;
+			}
+		}
+	}
 
 	@Test
 	public void getOrders_shouldGetTheOrdersByAccessionNumber() {
