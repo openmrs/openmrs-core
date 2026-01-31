@@ -21,6 +21,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import org.hibernate.envers.Audited;
+import org.hibernate.annotations.BatchSize;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -28,6 +29,7 @@ import org.openmrs.util.OpenmrsUtil;
  */
 @Entity
 @Table(name = "concept_set")
+@BatchSize(size = 25)
 @Audited
 public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptSet> {
 	
