@@ -12,6 +12,7 @@ package org.openmrs.validator;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Date;
 import java.util.Set;
@@ -194,5 +195,159 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		validator.validate(patient, errors);
 		
 		assertTrue(errors.hasFieldErrors("voidReason"));
+	}
+
+	/**
+	* @see PatientValidator#validate(Object,Errors)
+ 	*/
+	@Test
+	public void validate_shouldFailIfRequiredIdentifierIsMissing() {
+    	PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+    	patientIdentifierType.setRequired(true);
+    	patientIdentifierType.setRetired(false);
+    	Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
+
+    	Patient patient = new Patient();
+
+    	PersonName pName = new PersonName();
+   		pName.setGivenName("Tom");
+    	pName.setMiddleName("E.");
+    	pName.setFamilyName("Patient");
+    	patient.addName(pName);
+		patient.setGender("male");
+		patient.setBirthdate(new Date());
+
+    	PersonAddress pAddress = new PersonAddress();
+    	pAddress.setAddress1("123 My street");
+    	pAddress.setAddress2("Apt 402");
+    	pAddress.setCityVillage("Anywhere city");
+    	pAddress.setCountry("Some Country");
+   	 	patient.addAddress(pAddress);
+
+    	Errors errors = new BindException(patient, "patient");
+    	validator.validate(patient, errors);
+
+    	assertTrue(errors.hasErrors());
+	}
+
+	/**
+	 * @see PatientValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldPassIfRequiredIdentifierIsPresent() {
+    	PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+    	patientIdentifierType.setRequired(true);
+    	patientIdentifierType.setRetired(false);
+    	Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
+
+    	Patient patient = new Patient();
+
+    	PersonName pName = new PersonName();
+    	pName.setGivenName("Tom");
+    	pName.setMiddleName("E.");
+    	pName.setFamilyName("Patient");
+    	patient.addName(pName);
+		patient.setGender("male");
+		patient.setBirthdate(new Date());
+
+    	PersonAddress pAddress = new PersonAddress();
+    	pAddress.setAddress1("123 My street");
+    	pAddress.setAddress2("Apt 402");
+    	pAddress.setCityVillage("Anywhere city");
+    	pAddress.setCountry("Some Country");
+    	patient.addAddress(pAddress);
+
+    	PatientIdentifier patientIdentifier = new PatientIdentifier();
+    	patientIdentifier.setLocation(new Location(1));
+    	patientIdentifier.setIdentifier("012345678");
+    	patientIdentifier.setDateCreated(new Date());
+    	patientIdentifier.setIdentifierType(patientIdentifierType);
+    	patientIdentifier.setPreferred(true);
+    	patient.addIdentifier(patientIdentifier);
+
+    	Errors errors = new BindException(patient, "patient");
+    	validator.validate(patient, errors);
+
+   		assertFalse(errors.hasErrors());
+	}
+
+	/**
+ 	* @see PatientValidator#validate(Object,Errors)
+ 	*/
+	@Test
+	public void validate_shouldIgnoreRetiredRequiredIdentifierTypes() {
+		for (PatientIdentifierType pit : Context.getPatientService().getAllPatientIdentifierTypes(false)) {
+        	pit.setRequired(false);
+        	pit.setRetired(false);
+        	Context.getPatientService().savePatientIdentifierType(pit);
+    	}
+
+    	PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+    	patientIdentifierType.setRequired(true);
+    	patientIdentifierType.setRetired(true);
+    	Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
+
+    	Patient patient = new Patient();
+
+    	PersonName pName = new PersonName();
+    	pName.setGivenName("Tom");
+    	pName.setMiddleName("E.");
+    	pName.setFamilyName("Patient");
+    	patient.addName(pName);
+		patient.setGender("male");
+		patient.setBirthdate(new Date());
+
+    	PersonAddress pAddress = new PersonAddress();
+    	pAddress.setAddress1("123 My street");
+   	 	pAddress.setAddress2("Apt 402");
+    	pAddress.setCityVillage("Anywhere city");
+    	pAddress.setCountry("Some Country");
+    	patient.addAddress(pAddress);
+
+		Errors errors = new BindException(patient, "patient");
+    	validator.validate(patient, errors);
+
+		assertFalse(errors.hasFieldErrors("identifiers"));
+	}
+
+	/**
+ 	* @see PatientValidator#validate(Object,Errors)
+	*/
+	@Test
+	public void validate_shouldFailIfRequiredIdentifierIsVoided() {
+    	PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+    	patientIdentifierType.setRequired(true);
+    	patientIdentifierType.setRetired(false);
+    	Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
+
+    	Patient patient = new Patient();
+
+    	PersonName pName = new PersonName();
+    	pName.setGivenName("Tom");
+    	pName.setMiddleName("E.");
+    	pName.setFamilyName("Patient");
+    	patient.addName(pName);
+		patient.setGender("male");
+		patient.setBirthdate(new Date());
+
+    	PersonAddress pAddress = new PersonAddress();
+    	pAddress.setAddress1("123 My street");
+    	pAddress.setAddress2("Apt 402");
+    	pAddress.setCityVillage("Anywhere city");
+    	pAddress.setCountry("Some Country");
+    	patient.addAddress(pAddress);
+
+    	PatientIdentifier patientIdentifier = new PatientIdentifier();
+    	patientIdentifier.setLocation(new Location(1));
+    	patientIdentifier.setIdentifier("012345678");
+   		patientIdentifier.setDateCreated(new Date());
+    	patientIdentifier.setIdentifierType(patientIdentifierType);
+    	patientIdentifier.setVoided(true);
+    	patient.addIdentifier(patientIdentifier);
+
+    	Errors errors = new BindException(patient, "patient");
+    	validator.validate(patient, errors);
+
+    	assertTrue(errors.hasErrors());
 	}
 }
