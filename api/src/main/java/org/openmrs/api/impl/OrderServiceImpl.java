@@ -54,6 +54,7 @@ import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,9 +72,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.Collection;
 
 import static org.openmrs.Order.Action.DISCONTINUE;
 import static org.openmrs.Order.Action.REVISE;
+import org.openmrs.User;
+
+
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
@@ -161,6 +166,30 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	private Order saveOrder(Order order, OrderContext orderContext, boolean isRetrospective) {
+
+		if (isRetrospective && order.getOrderer() != null) {
+
+    User authenticatedUser = Context.getAuthenticatedUser();
+    Provider authenticatedProvider = null;
+
+    if (authenticatedUser != null && authenticatedUser.getPerson() != null) {
+        Collection<Provider> providers = Context.getProviderService()
+                .getProvidersByPerson(authenticatedUser.getPerson());
+
+        if (!providers.isEmpty()) {
+            authenticatedProvider = providers.iterator().next();
+        }
+    }
+
+    if (authenticatedProvider != null
+            && !authenticatedProvider.equals(order.getOrderer())
+            && !Context.hasPrivilege(PrivilegeConstants.PLACE_ORDERS_ON_BEHALF)) {
+
+        throw new APIException(
+                "User does not have privilege to place orders on behalf of another provider");
+    }
+}
+
 
 		failOnExistingOrder(order);
 		ensureDateActivatedIsSet(order);

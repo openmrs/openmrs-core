@@ -287,7 +287,10 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to add orders")
 	public static final String ADD_ORDERS = "Add Orders";
-	
+
+	@AddOnStartup(description = "Able to place orders on behalf of another provider")
+  public static final String PLACE_ORDERS_ON_BEHALF = "Place Orders on Behalf";
+
 	@AddOnStartup(description = "Able to edit orders")
 	public static final String EDIT_ORDERS = "Edit Orders";
 	
