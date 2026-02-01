@@ -794,6 +794,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			}
 			b.filter(f.terms().field("identifierType.patientIdentifierTypeId").matchingAny(identifierTypeIds));
 			b.filter(f.match().field("patient.isPatient").matching(true));
+			b.filter(f.match().field("voided").matching(false));
 		}).toPredicate(), "patient.personId", PatientIdentifier::getPatient), tmpStart, tmpLength);
 	}
 	
