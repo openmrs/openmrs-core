@@ -57,7 +57,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,11 +93,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	@Autowired
 	protected OrderDAO dao;
-
-	@Autowired
-	@Lazy
-	private OrderService orderService;
-
 	
 	private static OrderNumberGenerator orderNumberGenerator = null;
 
@@ -662,8 +656,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @param orderContext
 	 */
 	@Override
-	public String getNewOrderNumber(OrderContext orderContext) throws APIException {
-		return ORDER_NUMBER_PREFIX + orderService.getNextOrderNumberSeedSequenceValue();
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public synchronized String getNewOrderNumber(OrderContext orderContext) throws APIException {
+		return ORDER_NUMBER_PREFIX + dao.getNextOrderNumberSeedSequenceValue();
 	}
 	
 	/**
