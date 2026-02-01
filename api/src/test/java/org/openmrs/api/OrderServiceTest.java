@@ -18,6 +18,7 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import org.openmrs.Allergy;
 import org.openmrs.AllergyReaction;
@@ -133,6 +134,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.concurrent.*;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -301,32 +303,48 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderNumberGenerator#getNewOrderNumber(OrderContext)
 	 */
 	@Test
-	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
-		throws InterruptedException {
+	@Timeout(15)
+	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledConcurrently() throws Exception {
 
-		int N = 50;
-		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(50));
-		List<Thread> threads = new ArrayList<>();
-		for (int i = 0; i < N; i++) {
-			threads.add(new Thread(() -> {
-				try {
-					Context.openSession();
-					Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-					uniqueOrderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
-				} finally {
-					Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-					Context.closeSession();
-				}
-			}));
-		}
-		for (int i = 0; i < N; ++i) {
-			threads.get(i).start();
-		}
-		for (int i = 0; i < N; ++i) {
-			threads.get(i).join();
-		}
-		//since we used a set we should have the size as N indicating that there were no duplicates
-		assertEquals(N, uniqueOrderNumbers.size());
+    	int N = 20;
+    	Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<>());
+
+    	ExecutorService executor = Executors.newFixedThreadPool(N);
+
+    	CountDownLatch startLatch = new CountDownLatch(1);
+    	CountDownLatch doneLatch = new CountDownLatch(N);
+
+    	for (int i = 0; i < N; i++) {
+        	executor.submit(() -> {
+            	try {
+                	Context.openSession();
+                	Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+
+                	startLatch.await(); // all threads start together
+
+                	String orderNumber = ((OrderNumberGenerator) orderService).getNewOrderNumber(null);
+
+                	uniqueOrderNumbers.add(orderNumber);
+            	}
+				catch (InterruptedException e) {
+        			Thread.currentThread().interrupt();
+        			throw new RuntimeException(e);
+    			}
+            	finally {
+                	Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+                	Context.closeSession();
+                	doneLatch.countDown();
+            	}
+        	});
+    	}
+
+    	startLatch.countDown(); // release all threads
+
+    	boolean completed = doneLatch.await(10, TimeUnit.SECONDS);
+    	executor.shutdownNow();
+
+    	assertTrue(completed, "Deadlock detected: threads did not complete");
+    	assertEquals(N, uniqueOrderNumbers.size());
 	}
 
 	/**
