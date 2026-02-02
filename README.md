@@ -110,8 +110,7 @@ mvn -Dcargo.servlet.port=8081 cargo:run
 
 If all goes well (check the console output) you can access the OpenMRS application at `localhost:8080/openmrs`.
 
-Refer to [Getting Started as a Developer - Maven](https://wiki.openmrs.org/display/docs/Maven) for some more information
-on useful Maven commands and build options.
+For project-specific guidance, see the [OpenMRS Maven Wiki](https://openmrs.atlassian.net/wiki/spaces/Archives/pages/25520545/Maven);    
 
 ## Docker build
 
