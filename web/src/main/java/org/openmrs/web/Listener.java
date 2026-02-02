@@ -83,6 +83,17 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
 	
+	private boolean isServletContextModifiable(ServletContext servletContext) {
+	try {
+		servletContext.getFilterRegistrations();
+		return true;
+	}
+	catch (IllegalStateException e) {
+		return false;
+	}
+}
+
+
 	private static boolean runtimePropertiesFound = false;
 	
 	private static Throwable errorAtStartup = null;
@@ -253,8 +264,15 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 				log.debug("Done refreshing WAC");
 				
-				WebDaemon.startOpenmrs(event.getServletContext());
-			} else {
+				if (!isServletContextModifiable(servletContext)) {
+		        log.warn("Skipping module web component registration because the servlet context "
+		                + "has already been initialized. This is expected during first startup.");
+	      }
+	      else {
+		        WebDaemon.startOpenmrs(servletContext);
+	       }
+			} 
+			else {
 				setupNeeded = true;
 			}
 			
