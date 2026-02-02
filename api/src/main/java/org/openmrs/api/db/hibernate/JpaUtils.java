@@ -12,6 +12,7 @@ package org.openmrs.api.db.hibernate;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 public class JpaUtils {
 
@@ -28,6 +29,14 @@ public class JpaUtils {
 	public static <T> T getSingleResultOrNull(Query query) {
 		try {
 			return (T) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	public static <T> T getSingleResultOrNull(TypedQuery<T> query) {
+		try {
+			return query.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
