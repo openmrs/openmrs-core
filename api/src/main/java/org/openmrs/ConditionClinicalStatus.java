@@ -39,8 +39,9 @@ public enum ConditionClinicalStatus {
 	 * Remission is where the patient is no longer experiencing the symptoms of the condition, 
 	 * but there is a risk of the symptoms returning.
 	 * 
-	 * @deprecated as of 2.6.0
+	 * @deprecated as of 2.6.0.
 	 * */
+	@Deprecated(since = "2.6.0", forRemoval = false)
 	HISTORY_OF,
 	
 	/**

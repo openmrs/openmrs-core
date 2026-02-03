@@ -148,50 +148,50 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#getChangedBy()
-	 * @deprecated as of version 2.2
+	 * @deprecated as of version 2.2.
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = false)
 	public User getChangedBy() {
 		return changedBy;
 	}
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#setChangedBy(User)
-	 * @deprecated as of version 2.2
+	 * @deprecated as of version 2.2.
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#getDateChanged()
-	 * @deprecated as of version 2.2
+	 * @deprecated as of version 2.2.
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#setDateChanged(Date)
-	 * @deprecated as of version 2.2
+	 * @deprecated as of version 2.2.
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
 	
 	/**
-	 * @deprecated as of 2.0, use {@link #getRetired()}
+	 * @deprecated as of 2.0; use {@link #getRetired()}.
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.0", forRemoval = false)
 	@JsonIgnore
 	public Boolean isRetired() {
 		return getRetired();
