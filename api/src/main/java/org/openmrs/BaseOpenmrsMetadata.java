@@ -148,7 +148,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#getChangedBy()
-	 * @deprecated as of version 2.2.
 	 */
 	@Override
 	@Deprecated(since = "2.2", forRemoval = false)
@@ -158,7 +157,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#setChangedBy(User)
-	 * @deprecated as of version 2.2.
 	 */
 	@Override
 	@Deprecated(since = "2.2", forRemoval = false)
@@ -168,7 +166,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#getDateChanged()
-	 * @deprecated as of version 2.2.
 	 */
 	@Override
 	@Deprecated(since = "2.2", forRemoval = false)
@@ -178,7 +175,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#setDateChanged(Date)
-	 * @deprecated as of version 2.2.
 	 */
 	@Override
 	@Deprecated(since = "2.2", forRemoval = false)
@@ -187,7 +183,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	}
 	
 	/**
-	 * @deprecated as of 2.0; use {@link #getRetired()}.
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
 	@Override

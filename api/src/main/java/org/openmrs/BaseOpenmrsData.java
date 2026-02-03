@@ -105,7 +105,6 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	}
 	
 	/**
-	 * @deprecated as of version 2.2.
 	 * @see org.openmrs.OpenmrsData#getChangedBy()
 	 */
 	@Override
@@ -115,7 +114,6 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	}
 	
 	/**
-	 * @deprecated as of version 2.2.
 	 * @see org.openmrs.OpenmrsData#setChangedBy(User)
 	 */
 	@Override
@@ -125,7 +123,6 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	}
 	
 	/**
-	 * @deprecated as of version 2.2.
 	 * @see org.openmrs.OpenmrsData#getDateChanged()
 	 */
 	@Override
@@ -135,7 +132,6 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	}
 	
 	/**
-	 * @deprecated as of version 2.2.
 	 * @see org.openmrs.OpenmrsData#setDateChanged(Date)
 	 */
 	@Override
@@ -145,7 +141,6 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	}
 	
 	/**
-	 * @deprecated as of 2.0; use {@link #getVoided()}.
 	 * @see org.openmrs.Voidable#isVoided()
 	 */
 	@Override
