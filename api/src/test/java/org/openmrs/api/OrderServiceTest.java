@@ -977,6 +977,34 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPassIfConceptInPreviousOrderDoesNotMatchWhenActionIsNew() {
+		Order previousOrder = orderService.getOrder(7);
+		assertTrue(OrderUtilTest.isActiveOrder(previousOrder, null));
+
+		TestOrder order = new TestOrder();
+		order.setAction(Action.NEW);
+		order.setPatient(previousOrder.getPatient());
+		order.setCareSetting(previousOrder.getCareSetting());
+		order.setOrderer(providerService.getProvider(1));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderType(previousOrder.getOrderType());
+		order.setDateActivated(new Date());
+		order.setPreviousOrder(previousOrder);
+
+		Concept newConcept = conceptService.getConcept(5089);
+		assertNotEquals(previousOrder.getConcept(), newConcept);
+		order.setConcept(newConcept);
+
+		Order savedOrder = orderService.saveOrder(order, null);
+		assertNotNull(savedOrder);
+		assertEquals(Action.NEW, savedOrder.getAction());
+		assertEquals(previousOrder, savedOrder.getPreviousOrder());
+	}
+
+	/**
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date,
 	 * org.openmrs.Provider, org.openmrs.Encounter)
 	 */
