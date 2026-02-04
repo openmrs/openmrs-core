@@ -995,7 +995,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setPreviousOrder(previousOrder);
 
 		Concept newConcept = conceptService.getConcept(5089);
-		assertFalse(previousOrder.getConcept().equals(newConcept));
+		assertNotEquals(previousOrder.getConcept(), newConcept);
 		order.setConcept(newConcept);
 
 		Order savedOrder = orderService.saveOrder(order, null);
