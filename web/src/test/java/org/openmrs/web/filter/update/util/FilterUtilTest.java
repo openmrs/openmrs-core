@@ -9,6 +9,7 @@
  */
 package org.openmrs.web.filter.update.util;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -30,7 +31,7 @@ public class FilterUtilTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void storeLocale_shouldStoreLocale() {
-		FilterUtil.storeLocale(INITIAL_LOCALE);
+		assertDoesNotThrow(() -> FilterUtil.storeLocale(INITIAL_LOCALE));
 	}
 	
 	/**

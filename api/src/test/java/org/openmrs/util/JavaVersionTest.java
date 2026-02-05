@@ -9,12 +9,14 @@
  */
 package org.openmrs.util;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import org.junit.jupiter.api.Test;
 
 public class JavaVersionTest {
-	
+
 	@Test
 	public void validateJavaVersion_shouldPassIfTheCurrentJVMVersionIsLaterThanJava5() {
-		OpenmrsUtil.validateJavaVersion();
+		assertDoesNotThrow(() -> OpenmrsUtil.validateJavaVersion());
 	}
 }

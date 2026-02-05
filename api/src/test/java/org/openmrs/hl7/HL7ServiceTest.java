@@ -11,6 +11,7 @@ package org.openmrs.hl7;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -647,7 +648,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
-		hl7service.getUuidFromIdentifiers(identifiers);
+		assertDoesNotThrow(() -> hl7service.getUuidFromIdentifiers(identifiers));
 	}
 	
 	/**
