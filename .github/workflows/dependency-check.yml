@@ -33,7 +33,7 @@ jobs:
           args: >
             --failOnCVSS 9
             --enableRetired
-          suppressionFile: 'dependency-check-suppressions.xml'
+            --suppressionFile dependency-check-suppressions.xml
       - name: Upload Test results
         if: always()
         uses: actions/upload-artifact@master
