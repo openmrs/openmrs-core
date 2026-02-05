@@ -345,19 +345,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @see #flushInstance()
 	 */
 	public static void destroyInstance() {
-		
-		// remove all thread references to this class
-		// Walk up all the way to the root thread group
-		ThreadGroup rootGroup = Thread.currentThread().getThreadGroup();
-		ThreadGroup parent;
-		while ((parent = rootGroup.getParent()) != null) {
-			rootGroup = parent;
-		}
-		
-		log.info("this classloader hashcode: {}", OpenmrsClassLoaderHolder.INSTANCE.hashCode());
-		
+		log.debug("this classloader hashcode: {}", OpenmrsClassLoaderHolder.INSTANCE.hashCode());
 		OpenmrsClassScanner.destroyInstance();
-		
 		OpenmrsClassLoaderHolder.INSTANCE = null;
 	}
 	
@@ -392,42 +381,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			}
 		}
 	}
-	
-	// List all threads and recursively list all subgroup
-	private static List<Thread> listThreads(ThreadGroup group, String indent) {
-		List<Thread> threadToReturn = new ArrayList<>();
-		
-		log.error(indent + "Group[" + group.getName() + ":" + group.getClass() + "]");
-		int nt = group.activeCount();
-		Thread[] threads = new Thread[nt * 2 + 10]; //nt is not accurate
-		nt = group.enumerate(threads, false);
-		
-		// List every thread in the group
-		for (int i = 0; i < nt; i++) {
-			Thread t = threads[i];
-			log.error(indent
-			        + "  Thread["
-			        + t.getName()
-			        + ":"
-			        + t.getClass()
-			        + ":"
-			        + (t.getContextClassLoader() == null ? "null cl" : t.getContextClassLoader().getClass().getName() + " "
-			                + t.getContextClassLoader().hashCode()) + "]");
-			threadToReturn.add(t);
-		}
-		
-		// Recursively list all subgroups
-		int ng = group.activeGroupCount();
-		ThreadGroup[] groups = new ThreadGroup[ng * 2 + 10];
-		ng = group.enumerate(groups, false);
-		
-		for (int i = 0; i < ng; i++) {
-			threadToReturn.addAll(listThreads(groups[i], indent + "  "));
-		}
-		
-		return threadToReturn;
-	}
-	
+
 	public static void onShutdown() {
 		
 		//Since we are shutting down, stop all threads that reference the openmrs class loader.
