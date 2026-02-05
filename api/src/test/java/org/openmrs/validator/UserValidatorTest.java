@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -247,8 +248,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldNotThrowNPEWhenUserIsNull() {
 		Errors errors = new BindException(new User(), "user");
-		validator.validate(null, errors);
-		assertTrue(true);
+		assertDoesNotThrow(() -> validator.validate(null, errors));
 	}
 	
 	/**

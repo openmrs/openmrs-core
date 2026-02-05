@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -813,7 +814,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifier patientIdentifier = new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1));
 		patientIdentifier.setPreferred(true);
 		patient.addIdentifier(patientIdentifier);
-		patientService.savePatient(patient);
+		assertDoesNotThrow(() -> patientService.savePatient(patient));
 	}
 	
 	/**
@@ -821,16 +822,18 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * (Or really, not fetched from the cache but instead are mapped with lazy=false. For some
 	 * reason Hibernate isn't able to find objects in the cache if a parent object was the one that
 	 * loaded them)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void shouldFetchNamesForPersonsThatWereFirstFetchedAsPatients() throws Exception {
 		Person person = Context.getPersonService().getPerson(2);
 		Patient patient = Context.getPatientService().getPatient(2);
-		
-		patient.getNames().size();
-		person.getNames().size();
+
+		assertDoesNotThrow(() -> {
+			patient.getNames().size();
+			person.getNames().size();
+		});
 	}
 	
 	/**
@@ -838,16 +841,18 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * cache. (Or really, not fetched from the cache but instead are mapped with lazy=false. For
 	 * some reason Hibernate isn't able to find objects in the cache if a parent object was the one
 	 * that loaded them)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void shouldFetchAddressesForPersonsThatWereFirstFetchedAsPatients() throws Exception {
 		Person person = Context.getPersonService().getPerson(2);
 		Patient patient = Context.getPatientService().getPatient(2);
-		
-		patient.getAddresses().size();
-		person.getAddresses().size();
+
+		assertDoesNotThrow(() -> {
+			patient.getAddresses().size();
+			person.getAddresses().size();
+		});
 	}
 	
 	/**
@@ -855,21 +860,23 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * cache. (Or really, not fetched from the cache but instead are mapped with lazy=false. For
 	 * some reason Hibernate isn't able to find objects in the cache if a parent object was the one
 	 * that loaded them)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void shouldFetchPersonAttributesForPersonsThatWereFirstFetchedAsPatients() throws Exception {
 		Person person = Context.getPersonService().getPerson(2);
 		Patient patient = Context.getPatientService().getPatient(2);
-		
-		patient.getAttributes().size();
-		person.getAttributes().size();
+
+		assertDoesNotThrow(() -> {
+			patient.getAttributes().size();
+			person.getAttributes().size();
+		});
 	}
 	
 	/**
 	 * Regression test for http://dev.openmrs.org/ticket/1375
-	 * 
+	 *
 	 * @see PatientService#savePatient(Patient)
 	 */
 	@Test
@@ -884,7 +891,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifier patientIdentifier = new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1));
 		patientIdentifier.setPreferred(true);
 		patient.addIdentifier(patientIdentifier);
-		Context.getPatientService().savePatient(patient);
+		assertDoesNotThrow(() -> Context.getPatientService().savePatient(patient));
 	}
 	
 	/**
@@ -3086,7 +3093,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * https://tickets.openmrs.org/browse/TRUNK-3728
-	 * 
+	 *
 	 * @see PatientService#savePatient(Patient)
 	 */
 	@Test
@@ -3097,8 +3104,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		        new Location(1));
 		patientIdentifier.setPreferred(true);
 		patient.addIdentifier(patientIdentifier);
-		
-		patientService.savePatient(patient);
+
+		assertDoesNotThrow(() -> patientService.savePatient(patient));
 	}
 	
 	/**
@@ -3238,10 +3245,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferredPatient = patientService.getPatient(2);
 		Patient notPreferredPatient = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferredPatient));
-		
+
 		assertTrue(hasActiveOrderOfType(preferredPatient, "Drug order"), "Test pre-request: No Active Drug order in " + preferredPatient);
 		assertFalse(hasActiveOrderOfType(notPreferredPatient, "Drug order"), "Test pre-request: At least one Active Drug order in " + notPreferredPatient);
-		patientService.mergePatients(preferredPatient, notPreferredPatient);
+		assertDoesNotThrow(() -> patientService.mergePatients(preferredPatient, notPreferredPatient));
 	}
 
 	/**
@@ -3253,13 +3260,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferredPatient = patientService.getPatient(7);
 		OrderType DrugOrder = Context.getOrderService().getOrderTypeByName("Drug order");
 		voidOrdersForType(Collections.singleton(preferredPatient), DrugOrder);
-		
+
 		assertFalse(hasActiveOrderOfType(preferredPatient, "Drug order"), "Test pre-request: No Active Drug order in " + preferredPatient);
 		assertTrue(hasActiveOrderOfType(preferredPatient, "Test order"), "Test pre-request: At least one Active Test order in " + preferredPatient);
-		
+
 		assertTrue(hasActiveOrderOfType(notPreferredPatient, "Drug order"), "Test pre-request: At least one Active Drug order in " + notPreferredPatient);
 		assertFalse(hasActiveOrderOfType(notPreferredPatient, "Test order"), "Test pre-request: No Active Test order in " + notPreferredPatient);
-		patientService.mergePatients(preferredPatient, notPreferredPatient);
+		assertDoesNotThrow(() -> patientService.mergePatients(preferredPatient, notPreferredPatient));
 	}
 
 
