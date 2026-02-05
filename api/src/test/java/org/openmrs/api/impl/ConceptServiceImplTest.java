@@ -47,11 +47,14 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
+import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ConceptReferenceRangeContext;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
@@ -1026,5 +1029,60 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		conceptNumeric.setDatatype(new ConceptDatatype(1));
 		conceptNumeric.setConceptClass(new ConceptClass(1));
 		return (ConceptNumeric) Context.getConceptService().saveConcept(conceptNumeric);
+	}
+
+	/**
+ 	* @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+ 	*/
+	@Test
+	public void getConceptReferenceRange_shouldReturnReferenceRangeUsingContext() {
+		ConceptService service = Context.getConceptService();
+
+    	Patient patient = new Patient();
+    	patient.setBirthdate(new Date(100, 0, 1)); // Jan 1 2000
+
+    	ConceptNumeric numericConcept = (ConceptNumeric) Context.getConceptService().getConcept(5089);
+
+    	Date effectiveDate = new Date();
+
+    	ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(patient, numericConcept, effectiveDate);
+
+    	ConceptReferenceRange range = service.getConceptReferenceRange(context);
+
+    	assertNotNull(range);
+	}
+
+	/**
+ 	* @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+ 	*/
+	@Test
+	public void getConceptReferenceRange_shouldThrowExceptionIfContextIsNull() {
+    	assertThrows(IllegalArgumentException.class, () -> {
+        Context.getConceptService().getConceptReferenceRange((ConceptReferenceRangeContext) null);
+    	});
+	}
+
+	/**
+ 	* @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+ 	*/
+	@Test
+	public void getConceptReferenceRange_shouldWorkWithObsBasedContext() {
+		ConceptService service = Context.getConceptService();
+
+    	Patient patient = new Patient();
+    	patient.setBirthdate(new Date(100, 0, 1)); // Jan 1 2000
+
+    	ConceptNumeric numericConcept = (ConceptNumeric) Context.getConceptService().getConcept(5089);
+
+    	Obs obs = new Obs();
+    	obs.setPerson(patient);
+    	obs.setConcept(numericConcept);
+    	obs.setObsDatetime(new Date());
+
+    	ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(obs);
+
+    	ConceptReferenceRange range = service.getConceptReferenceRange(context);
+
+    	assertNotNull(range);
 	}
 }
