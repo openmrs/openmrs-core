@@ -31,7 +31,7 @@ jobs:
           format: 'HTML'
           out: 'reports'
           args: >
-            --failOnCVSS 10
+            --failOnCVSS 9
             --enableRetired
           suppressionFile: 'dependency-check-suppressions.xml'
       - name: Upload Test results
