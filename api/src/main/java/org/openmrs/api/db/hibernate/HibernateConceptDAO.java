@@ -465,12 +465,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptClass saveConceptClass(ConceptClass cc) throws DAOException {
-		Session session = sessionFactory.getCurrentSession();
-		if (cc.getId() != null) {
-			return session.merge(cc);
-		}
-		session.persist(cc);
-		return cc;
+		return JpaUtils.saveOrUpdate(sessionFactory.getCurrentSession(), cc);
 	}
 	
 	/**
@@ -549,14 +544,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws DAOException {
-		Session session = sessionFactory.getCurrentSession();
-		if (cd.getId() != null) {
-			return session.merge(cd);
-		}
-		else {
-			session.persist(cd);
-		}
-		return cd;
+		return JpaUtils.saveOrUpdate(sessionFactory.getCurrentSession(), cd);
 	}
 	
 	/**
@@ -581,10 +569,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 			// remove from cache
 			sessionFactory.getCurrentSession().evict(obj);
 			// session.get() did not work here, we need to perform a query to get a ConceptNumeric
-			TypedQuery<ConceptNumeric> query = sessionFactory.getCurrentSession()
-				.createQuery("from ConceptNumeric where conceptId = :conceptId",ConceptNumeric.class)
+			TypedQuery<ConceptNumeric> sql = sessionFactory.getCurrentSession()
+				.createQuery("from ConceptNumeric where conceptId = :conceptId", ConceptNumeric.class)
 				.setParameter("conceptId", i);
-			obj = JpaUtils.getSingleResultOrNull(query);
+			obj = JpaUtils.getSingleResultOrNull(sql);
 		}
 		cn = (ConceptNumeric) obj;
 		
@@ -763,10 +751,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public List<Concept> getConceptsWithDrugsInFormulary() {
-		String query = "select distinct concept from Drug d where d.retired = false";
+		String sql = "select distinct concept from Drug d where d.retired = false";
 		
 		return sessionFactory.getCurrentSession()
-			.createQuery(query,Concept.class)
+			.createQuery(sql, Concept.class)
 			.getResultList();
 	}
 	
@@ -783,16 +771,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptProposal saveConceptProposal(ConceptProposal cp) throws DAOException {
-		if (cp == null) {
-			throw new IllegalArgumentException("ConceptProposal cannot be null");
-		}
-		
-		Session session = sessionFactory.getCurrentSession();
-		if (cp.getConceptProposalId() != null) {
-			return session.merge(cp);
-		}
-		session.persist(cp);
-		return cp;
+		return JpaUtils.saveOrUpdate(sessionFactory.getCurrentSession(), cp);
 	}
 	
 	/**
@@ -907,10 +886,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 	private List<Concept> getParents(Concept current) throws DAOException {
 		List<Concept> parents = new ArrayList<>();
 		if (current != null) {
-			String query = "from Concept c join c.conceptSets sets where sets.concept = ?";
+			String sql = "from Concept c join c.conceptSets sets where sets.concept = ?";
 			List<Concept> immedParents = sessionFactory.getCurrentSession()
-				.createQuery(query,Concept.class)
-				.setParameter(0,current)
+				.createQuery(sql, Concept.class)
+				.setParameter(0, current)
 				.getResultList();
 			for (Concept c : immedParents) {
 				parents.addAll(getParents(c));
@@ -932,9 +911,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public Set<Locale> getLocalesOfConceptNames() {
 
-		String query = "select distinct locale from ConceptName";
+		String sql = "select distinct locale from ConceptName";
 		List<Locale> localeList = sessionFactory.getCurrentSession()
-			.createQuery(query,Locale.class)
+			.createQuery(sql, Locale.class)
 			.getResultList();
 		return new HashSet<>(localeList);
 	}
@@ -972,9 +951,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public List<ConceptNameTag> getAllConceptNameTags() {
-		String query = "from ConceptNameTag cnt order by cnt.tag";
+		String sql = "from ConceptNameTag cnt order by cnt.tag";
 		return sessionFactory.getCurrentSession()
-			.createQuery(query,ConceptNameTag.class)
+			.createQuery(sql, ConceptNameTag.class)
 			.list();
 	}
 	
@@ -1017,12 +996,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws DAOException {
-		Session session = sessionFactory.getCurrentSession();
-		if (conceptSource.getId() != null) {
-			return session.merge(conceptSource);
-		}
-		session.persist(conceptSource);
-		return conceptSource;
+		return JpaUtils.saveOrUpdate(sessionFactory.getCurrentSession(), conceptSource);
 	}
 	
 	/**
@@ -1034,21 +1008,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 			return null;
 		}
 
-		Session session = sessionFactory.getCurrentSession();
-		if (nameTag.getId() != null) {
-			return session.merge(nameTag);
-		}
-		session.persist(nameTag);
-		return nameTag;
+		return JpaUtils.saveOrUpdate(sessionFactory.getCurrentSession(), nameTag);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getMaxConceptId()
 	 */
 	public Integer getMinConceptId() {
-		String q = "select min(conceptId) from Concept";
+		String sql = "select min(conceptId) from Concept";
 		TypedQuery<Integer> query = sessionFactory.getCurrentSession()
-			.createQuery(q,Integer.class);
+			.createQuery(sql, Integer.class);
 		return JpaUtils.getSingleResultOrNull(query);
 	}
 	
@@ -1057,9 +1026,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Integer getMaxConceptId() {
-		String q = "select max(conceptId) from Concept";
+		String sql = "select max(conceptId) from Concept";
 		TypedQuery<Integer> query = sessionFactory.getCurrentSession()
-			.createQuery(q,Integer.class);
+			.createQuery(sql, Integer.class);
 		return JpaUtils.getSingleResultOrNull(query);
 	}
 	
@@ -1247,9 +1216,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Map<Integer, String> getConceptUuids() {
-		String query = "select c.conceptId, c.uuid from Concept c";
+		String sql = "select c.conceptId, c.uuid from Concept c";
 		List<Object[]> list = sessionFactory.getCurrentSession()
-				.createQuery(query, Object[].class)
+				.createQuery(sql, Object[].class)
 				.getResultList();
 
 		Map<Integer, String> ret = new HashMap<>();
@@ -1358,8 +1327,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 			datatype.concept_datatype_id = concept.datatype_id and concept.concept_id=:conceptId
 			""";
 		TypedQuery<ConceptDatatype> query = sessionFactory.getCurrentSession()
-				.createNativeQuery(sql,ConceptDatatype.class)
-			.setParameter("conceptId",concept.getConceptId());
+				.createNativeQuery(sql, ConceptDatatype.class)
+			.setParameter("conceptId", concept.getConceptId());
 
 		return JpaUtils.getSingleResultOrNull(query);
 	}
@@ -1412,10 +1381,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			if (!stopWordList.isEmpty()) {
 				throw new DAOException("Duplicate ConceptStopWord Entry");
 			}
-			if (conceptStopWord.getId() != null) {
-				return session.merge(conceptStopWord);
-			}
-			session.persist(conceptStopWord);
+			conceptStopWord = JpaUtils.saveOrUpdate(session, conceptStopWord);
 		}
 		return conceptStopWord;
 	}
@@ -1688,12 +1654,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptMapType saveConceptMapType(ConceptMapType conceptMapType) throws DAOException {
-		Session session = sessionFactory.getCurrentSession();
-		if (conceptMapType.getId() != null) {
-			return session.merge(conceptMapType);
-		}
-		session.persist(conceptMapType);
-		return conceptMapType;
+		return JpaUtils.saveOrUpdate(sessionFactory.getCurrentSession(), conceptMapType);
 	}
 	
 	/**
@@ -1833,12 +1794,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptReferenceTerm saveConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws DAOException {
-		Session session = sessionFactory.getCurrentSession();
-		if (conceptReferenceTerm.getId() != null) {
-			return session.merge(conceptReferenceTerm);
-		}
-		session.persist(conceptReferenceTerm);
-		return conceptReferenceTerm;
+		return JpaUtils.saveOrUpdate(sessionFactory.getCurrentSession(), conceptReferenceTerm);
 	}
 	
 	/**
@@ -2257,12 +2213,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptAttributeType saveConceptAttributeType(ConceptAttributeType conceptAttributeType) {
-		Session session = sessionFactory.getCurrentSession();
-		if (conceptAttributeType.getId() != null) {
-			return session.merge(conceptAttributeType);
-		}
-		session.persist(conceptAttributeType);
-		return conceptAttributeType;
+		return JpaUtils.saveOrUpdate(sessionFactory.getCurrentSession(), conceptAttributeType);
 	}
 
 	/**
@@ -2415,16 +2366,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
-		if (conceptReferenceRange == null) {
-			throw new IllegalArgumentException("Cannot save a null ConceptReferenceRange");
-		}
-		
-		Session session = sessionFactory.getCurrentSession();
-		if (conceptReferenceRange.getId() != null) {
-			return session.merge(conceptReferenceRange);
-		}
-		session.persist(conceptReferenceRange);
-		return conceptReferenceRange;
+		return JpaUtils.saveOrUpdate(sessionFactory.getCurrentSession(), conceptReferenceRange);
 	}
 
 	/**
