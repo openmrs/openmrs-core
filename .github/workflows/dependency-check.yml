@@ -35,6 +35,7 @@ jobs:
             --enableRetired
           suppressionFile: 'dependency-check-suppressions.xml'
       - name: Upload Test results
+        if: always()
         uses: actions/upload-artifact@master
         with:
            name: Dependency Check report
