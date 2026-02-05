@@ -167,7 +167,9 @@ public class OpenmrsTestsTest {
 	 * @return list of classes whose name ends with Test.class
 	 */
 	private List<Class<?>> getTestClasses() {
-		return getClasses(".*(Test|IT|PT)\\.class$");
+		// NB the negative look-ahead here is a hack, but we need to exclude that test and only that test
+		// It uses different testing machinery than our normal tests.
+		return getClasses(".*(?<!ThreadSafeCircularFifoQueue)(Test|IT|PT)\\.class$");
 	}
 	
 	/**
