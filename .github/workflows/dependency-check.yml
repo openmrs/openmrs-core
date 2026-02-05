@@ -12,9 +12,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Set up Java version
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
       - name: Build project with Maven
         run: mvn clean install
-      - name: Depcheck
+      - name: Run OWASP Dependency-Check
         uses: dependency-check/Dependency-Check_Action@main
         id: Depcheck
         with:
