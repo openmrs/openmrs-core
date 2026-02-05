@@ -31,6 +31,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -704,6 +706,31 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		FileUtils.deleteDirectory(destinationFolder);
 	}
 	
+	/**
+	 * @throws IOException
+	 * @see ModuleUtil#expandJar(File,File,String,boolean)
+	 */
+	@Test
+	public void expandJar_shouldThrowExceptionForZipSlipAttack() throws IOException {
+		File destinationFolder = this.getEmptyJarDestinationFolder();
+		File maliciousJar = File.createTempFile("zipslip", ".jar");
+		maliciousJar.deleteOnExit();
+
+		// Create a JAR with a path traversal entry
+		try (JarOutputStream jos = new JarOutputStream(new FileOutputStream(maliciousJar))) {
+			ZipEntry entry = new ZipEntry("../../../etc/malicious.txt");
+			jos.putNextEntry(entry);
+			jos.write("malicious content".getBytes());
+			jos.closeEntry();
+		}
+
+		assertThrows(UnsupportedOperationException.class, () -> {
+			ModuleUtil.expandJar(maliciousJar, destinationFolder, null, false);
+		});
+
+		FileUtils.deleteDirectory(destinationFolder);
+	}
+
 	/**
 	* @see ModuleUtil#file2url(File)
 	*/
