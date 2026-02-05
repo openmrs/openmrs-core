@@ -13,6 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -570,9 +571,9 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	public void checkRequiredVersion_shouldHandleSnapshotVersion() {
 		String openMRSVersion = "1.9.2-SNAPSHOT";
 		String requiredOpenmrsVersion = "1.9.2-SNAPSHOT";
-		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+		assertDoesNotThrow(() -> ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion));
 	}
-	
+
 	/**
 	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */
@@ -580,14 +581,14 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	public void checkRequiredVersion_shouldHandleUuidSuffixVersion() {
 		String openMRSVersion = "1.9.9-f4927f";
 		String requiredOpenmrsVersion = "1.9.9-SNAPSHOT";
-		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+		assertDoesNotThrow(() -> ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion));
 	}
-	
+
 	@Test
 	public void checkRequiredVersion_shouldHandleAlphaVersion() {
 		String openMRSVersion = "1.9.2-ALPHA";
 		String requiredOpenmrsVersion = "1.9.2-ALPHA";
-		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+		assertDoesNotThrow(() -> ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion));
 	}
 	
 	private JarFile loadModuleJarFile(String moduleId, String version) throws IOException {

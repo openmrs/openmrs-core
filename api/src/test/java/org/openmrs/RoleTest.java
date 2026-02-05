@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -73,9 +74,9 @@ public class RoleTest {
 	@Test
 	public void hasPrivilege_shouldNotFailGivenNullParameter() {
 		Role role = new Role();
-		
+
 		// test the null case
-		role.hasPrivilege(null);
+		assertDoesNotThrow(() -> role.hasPrivilege(null));
 	}
 	
 	/**

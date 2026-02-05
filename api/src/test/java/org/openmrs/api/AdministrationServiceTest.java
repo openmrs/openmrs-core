@@ -20,6 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.emptyIterable;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -195,7 +196,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getGlobalProperty_shouldNotFailWithNullPropertyName() {
-		adminService.getGlobalProperty(null);
+		assertDoesNotThrow(() -> adminService.getGlobalProperty(null));
 	}
 	
 	@Test
@@ -210,7 +211,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getGlobalProperty_shouldNotFailWithNullDefaultValue() {
-		adminService.getGlobalProperty("asdfsadfsafd", null);
+		assertDoesNotThrow(() -> adminService.getGlobalProperty("asdfsadfsafd", null));
 	}
 	
 	@Test
@@ -361,7 +362,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void getAllowedLocales_shouldNotFailIfNotGlobalPropertyForLocalesAllowedDefinedYet() {
 		adminService.purgeGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST));
-		adminService.getAllowedLocales();
+		assertDoesNotThrow(() -> adminService.getAllowedLocales());
 	}
 	
 	@Test
@@ -378,7 +379,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void saveGlobalProperties_shouldNotFailWithEmptyList() {
-		adminService.saveGlobalProperties(new ArrayList<>());
+		assertDoesNotThrow(() -> adminService.saveGlobalProperties(new ArrayList<>()));
 	}
 	
 	@Test
