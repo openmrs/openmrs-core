@@ -406,12 +406,10 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 	private void internalAdd(E e) {
 		if (size == maxElements) {
 			internalRemove();
-		} else {
-			size++;
 		}
 
+		size++;
 		elements[write] = e;
-
 		write = increment(write);
 	}
 	
@@ -730,12 +728,17 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 				prevIndex = nextIndex;
 				prevItem = it;
 
-				if (nextIndex < 0 || nextIndex == write) {
+				if (nextIndex < 0) {
 					nextIndex = NONE;
 					nextItem = null;
 				} else {
 					nextIndex = increment(nextIndex);
-					nextItem = elements[nextIndex];
+					if (nextIndex == write) {
+						nextIndex = NONE;
+						nextItem = null;
+					} else {
+						nextItem = elements[nextIndex];
+					}
 				}
 
 				return it;
