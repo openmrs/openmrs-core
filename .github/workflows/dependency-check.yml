@@ -1,3 +1,4 @@
+name: "OWASP Dependency Check"
 on:
   push:
     branches:
