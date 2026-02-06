@@ -388,7 +388,11 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(Class theClass, Serializable id, LockOptions lockOptions) {
-		return getSession().load(theClass, id, lockOptions);
+		Object entity = getSession().find(theClass, id);
+		if (entity != null) {
+			getSession().lock(entity, lockOptions.getLockMode());
+		}
+		return entity;
 	}
 	
 	/**
@@ -401,7 +405,12 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(String entityName, Serializable id, LockOptions lockOptions) {
-		return getSession().load(entityName, id, lockOptions);
+		// In Hibernate 7, we need to use the entity class name to find the entity
+		Object entity = getSession().get(entityName, id);
+		if (entity != null) {
+			getSession().lock(entity, lockOptions.getLockMode());
+		}
+		return entity;
 	}
 	
 	/**
@@ -418,7 +427,8 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(Class theClass, Serializable id) {
-		return getSession().load(theClass, id);
+		Object entity = getSession().byId(theClass).load(id);
+		return entity;
 	}
 	
 	/**
@@ -435,7 +445,8 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(String entityName, Serializable id) {
-		return getSession().load(entityName, id);
+		Object entity = getSession().byNaturalId(entityName).load(id);
+		return entity;
 	}
 	
 	/**
@@ -723,11 +734,14 @@ public class DbSession {
 	 * <li>after inserting a <tt>Blob</tt> or <tt>Clob</tt>
 	 * </ul>
 	 *
-	 * @param entityName a persistent class
+	 * @param entityName a persistent class (no longer used in Hibernate 7)
 	 * @param object a persistent or detached instance
+	 * @deprecated The entityName parameter is no longer supported in Hibernate 7. Use {@link #refresh(Object)} instead.
 	 */
+	@Deprecated
 	public void refresh(String entityName, Object object) {
-		getSession().refresh(entityName, object);
+		// In Hibernate 7, entityName is no longer supported for refresh
+		getSession().refresh(object);
 	}
 	
 	/**
@@ -747,12 +761,15 @@ public class DbSession {
 	 * <tt>LockMode</tt>. It is inadvisable to use this to implement long-running sessions that span
 	 * many business tasks. This method is, however, useful in certain special circumstances.
 	 *
-	 * @param entityName a persistent class
+	 * @param entityName a persistent class (no longer used in Hibernate 7)
 	 * @param object a persistent or detached instance
 	 * @param lockOptions contains the lock mode to use
+	 * @deprecated The entityName parameter is no longer supported in Hibernate 7. Use {@link #refresh(Object, LockOptions)} instead.
 	 */
+	@Deprecated
 	public void refresh(String entityName, Object object, LockOptions lockOptions) {
-		getSession().refresh(entityName, object, lockOptions);
+		// In Hibernate 7, entityName is no longer supported for refresh
+		getSession().refresh(object, lockOptions);
 	}
 	
 	/**
