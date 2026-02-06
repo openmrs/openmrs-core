@@ -656,9 +656,10 @@ public class DbSession {
 	 * identifier associated with existing persistent state. This operation cascades to associated
 	 * instances if the association is mapped with {@code cascade="delete"}
 	 *
-	 * @param entityName The entity name for the instance to be removed.
+	 * @param entityName The entity name for the instance to be removed (NOTE: This parameter is ignored in Hibernate 7.x as the remove() API no longer supports entityName)
 	 * @param object the instance to be removed
 	 * @deprecated Use {@link #remove(Object)} instead for Hibernate 7.x compatibility.
+	 *             Note: The entityName parameter is no longer supported in Hibernate 7.x remove() API.
 	 */
 	@Deprecated
 	public void delete(String entityName, Object object) {
