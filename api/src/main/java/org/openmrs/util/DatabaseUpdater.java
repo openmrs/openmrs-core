@@ -452,7 +452,7 @@ public class DatabaseUpdater {
 		String url = props.getProperty("hibernate.connection.url");
 		
 		// hack for mysql to make sure innodb tables are created
-		if (url.contains("mysql") && !url.contains("InnoDB")) {
+		if (url.contains("jdbc:mysql") && !url.contains("InnoDB")) {
 			url = url + "&sessionVariables=default_storage_engine=InnoDB";
 		}
 		
