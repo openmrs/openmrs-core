@@ -25,7 +25,6 @@ import org.hibernate.LockOptions;
 import org.hibernate.NaturalIdLoadAccess;
 import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
-import org.hibernate.Session.LockRequest;
 import org.hibernate.SessionEventListener;
 import org.hibernate.SessionFactory;
 import org.hibernate.SharedSessionBuilder;
@@ -687,13 +686,13 @@ public class DbSession {
 	 * {@code session.buildLockRequest().setLockMode(LockMode.PESSIMISTIC_WRITE).setTimeOut(60000).lock(entity);}
 	 *
 	 * @param lockOptions contains the lock level
-	 * @return a lockRequest that can be used to lock the passed object.
-	 * @deprecated This method has been removed in Hibernate 7.x. Use {@code session.lock(entity, lockOptions.getLockMode())} 
-	 * instead for simple locking operations.
+	 * @deprecated This method has been removed in Hibernate 7.x because LockRequest was removed. 
+	 * Use {@code session.lock(entity, lockOptions.getLockMode())} instead for simple locking operations.
 	 */
 	@Deprecated
-	public LockRequest buildLockRequest(LockOptions lockOptions) {
-		return getSession().buildLockRequest(lockOptions);
+	public void buildLockRequest(LockOptions lockOptions) {
+		// LockRequest was removed in Hibernate 7.x - this method is now a no-op
+		// Use session.lock(entity, lockMode) directly instead
 	}
 	
 	/**
