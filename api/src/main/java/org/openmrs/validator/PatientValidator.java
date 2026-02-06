@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.openmrs.annotation.Handler;
@@ -93,6 +95,8 @@ public class PatientValidator extends PersonValidator {
 		}
 		Collection<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes(false);
 
+		List<String> missingRequiredIdentifiers = new ArrayList<>(); 
+
     	for (PatientIdentifierType type : identifierTypes) {
         	if (Boolean.TRUE.equals(type.getRequired())) {
 				boolean found = false;
@@ -104,15 +108,19 @@ public class PatientValidator extends PersonValidator {
             	}
 
             	if (!found) {
-                	errors.rejectValue(
-                        "identifiers",
-                        "Patient.missingRequiredIdentifier",
-                        new Object[] { type.getName() },
-						null
-                	);
+                	 missingRequiredIdentifiers.add(type.getName());
             	}
         	}
     	}
+		if (!missingRequiredIdentifiers.isEmpty()) {
+    		errors.rejectValue(
+        	"identifiers",
+        	"Patient.missingRequiredIdentifier",
+        	new Object[] { String.join(", ", missingRequiredIdentifiers) },
+        	null
+			);
+		}
+
 		int index = 0;
 		if (!errors.hasErrors() && patient.getIdentifiers() != null) {
 			// Validate PatientIdentifers
