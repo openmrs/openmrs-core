@@ -14,13 +14,13 @@
 
 	<parent>
 		<groupId>org.openmrs.module</groupId>
-		<artifactId>openmrs-test-module</artifactId>
+		<artifactId>openmrs-test-suite-module</artifactId>
 		<version>3.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>openmrs-test-module-omod</artifactId>
+	<artifactId>openmrs-test-suite-module-omod</artifactId>
 	<packaging>jar</packaging>
-	<name>openmrs-test-module-omod</name>
+	<name>openmrs-test-suite-module-omod</name>
 	<description>OMOD project for Test Module</description>
 
 	<dependencies>
@@ -184,7 +184,7 @@
 				<groupId>com.mycila</groupId>
 				<artifactId>license-maven-plugin</artifactId>
 				<configuration>
-					<header>${project.basedir}/../../license-header.txt</header>
+					<header>${project.parent.basedir}/../../license-header.txt</header>
 				</configuration>
 			</plugin>
 			<plugin>

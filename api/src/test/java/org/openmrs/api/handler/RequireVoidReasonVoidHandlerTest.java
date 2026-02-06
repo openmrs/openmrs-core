@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.handler;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Date;
@@ -61,15 +62,15 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	@Test
 	public void handle_shouldNotThrowExceptionIfVoidReasonIsNotBlank() {
 		Obs o = Context.getObsService().getObs(7);
-		Context.getObsService().voidObs(o, "Some Reason");
+		assertDoesNotThrow(() -> Context.getObsService().voidObs(o, "Some Reason"));
 	}
-	
+
 	/**
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldNotThrowExceptionIfVoidReasonIsNullForUnsupportedTypes() {
 		Person p = Context.getPersonService().getPerson(1);
-		Context.getPersonService().voidPerson(p, null);
+		assertDoesNotThrow(() -> Context.getPersonService().voidPerson(p, null));
 	}
 }

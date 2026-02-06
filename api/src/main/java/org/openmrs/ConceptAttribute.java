@@ -9,13 +9,30 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
 
 @Audited
+@Entity
+@Table(name = "concept_attribute")
+@AssociationOverride(
+	name="owner",
+	joinColumns = @JoinColumn(name="concept_id", nullable = false)
+)
 public class ConceptAttribute extends BaseAttribute<ConceptAttributeType, Concept> implements Attribute<ConceptAttributeType, Concept> {
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="concept_attribute_id")
 	private Integer conceptAttributeId;
 	
 	public Concept getConcept() {

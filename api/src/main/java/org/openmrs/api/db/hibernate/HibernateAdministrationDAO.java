@@ -113,10 +113,16 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 
 			query.where(condition);
 
-			return session.createQuery(query).uniqueResult();
-		} else {
-			return session.get(GlobalProperty.class, propertyName);
+			GlobalProperty gp = session.createQuery(query).uniqueResult();
+			if (gp != null) {
+				// GP may be null, but the session may contain an unflushed gp so
+				// we will do a final check with session.get below. It may happen,
+				// if flush is set to manual and running in a larger transaction.
+				return gp;
+			}
 		}
+		
+		return session.get(GlobalProperty.class, propertyName);
 	}
 
 	@Override

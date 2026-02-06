@@ -57,7 +57,7 @@
 		<module>web</module>
 		<module>webapp</module>
 		<module>liquibase</module>
-		<module>test-module</module>
+		<module>test-suite</module>
 	</modules>
 
 	<dependencyManagement>
@@ -119,8 +119,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
-				<artifactId>velocity</artifactId>
-				<version>1.7</version>
+				<artifactId>velocity-engine-core</artifactId>
+				<version>2.4.1</version>
 				<exclusions>
 					<exclusion>
 						<groupId>oro</groupId>
@@ -129,19 +129,9 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.velocity</groupId>
-				<artifactId>velocity-tools</artifactId>
-				<version>2.0.1-atlassian-2</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.struts</groupId>
-						<artifactId>struts-core</artifactId>
-					</exclusion>
-				</exclusions>
+			    <groupId>org.apache.velocity.tools</groupId>
+			    <artifactId>velocity-tools-generic</artifactId>
+			    <version>3.1</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-collections</groupId>
@@ -295,7 +285,7 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper</artifactId>
-				<version>11.0.14</version>
+				<version>11.0.18</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -403,12 +393,12 @@
 			<dependency>
 				<groupId>org.mariadb.jdbc</groupId>
 				<artifactId>mariadb-java-client</artifactId>
-				<version>3.5.6</version>
+				<version>3.5.7</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.7.8</version>
+				<version>42.7.9</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
@@ -566,11 +556,6 @@
 				<version>33.5.0-jre</version>
 			</dependency>
 			<dependency>
-			    <groupId>jakarta.xml.bind</groupId>
-			    <artifactId>jakarta.xml.bind-api</artifactId>
-			    <version>4.0.4</version>
-			</dependency>
-			<dependency>
 				<groupId>com.sun.mail</groupId>
 				<artifactId>javax.mail</artifactId>
 				<version>1.6.2</version>
@@ -585,27 +570,27 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>testcontainers</artifactId>
-				<version>2.0.2</version>
+				<version>2.0.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>junit-jupiter</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>mysql</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>mariadb</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>software.amazon.awssdk</groupId>
@@ -615,12 +600,12 @@
 			<dependency>
 				<groupId>com.adobe.testing</groupId>
 				<artifactId>s3mock-testcontainers</artifactId>
-				<version>4.10.0</version>
+				<version>4.11.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.logging</groupId>
 				<artifactId>jboss-logging</artifactId>
-				<version>3.6.1.Final</version>
+				<version>3.6.2.Final</version>
 			</dependency>
 
 			<dependency>
@@ -650,12 +635,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.3.1</version>
+					<version>3.4.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.1.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.14.1</version>
+					<version>3.15.0</version>
 					<configuration>
 						<target>${javaCompilerVersion}</target>
 						<source>${javaCompilerVersion}</source>
@@ -686,7 +676,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>3.5.0</version>
+					<version>3.5.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -696,7 +686,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>buildnumber-maven-plugin</artifactId>
-					<version>3.2.1</version>
+					<version>3.3.0</version>
 					<configuration>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
 						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
@@ -752,7 +742,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>3.3.1</version>
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
@@ -867,7 +857,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.3.0.6276</version>
+					<version>5.5.0.6356</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -956,7 +946,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.7.1</version>
+					<version>3.8.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.liquibase</groupId>
@@ -1009,6 +999,9 @@
 					<systemProperties>
 						<log4j2.disable.jmx>true</log4j2.disable.jmx>
 					</systemProperties>
+					<systemPropertyVariables>
+						<project.version>${project.version}</project.version>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -1107,6 +1100,7 @@
 									</includes>
 									<excludes>
 										<exclude>**/*DatabaseIT.java</exclude>
+										<exclude>**/*PerformanceIT.java</exclude>
 									</excludes>
 								</configuration>
 							</execution>
@@ -1125,6 +1119,31 @@
 								<configuration>
 									<includes>
 										<include>**/*DatabaseIT.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>performance-test</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>performance-test</id>
+								<phase>test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/*PerformanceIT.java</include>
 									</includes>
 								</configuration>
 							</execution>
@@ -1202,17 +1221,17 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.20.0</version>
+						<version>5.21.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1228,17 +1247,17 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.20.0</version>
+						<version>5.21.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1254,17 +1273,17 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.20.0</version>
+						<version>5.21.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.2</version>
+						<version>1.18.4</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1348,16 +1367,16 @@
 		<luceneVersion>10.3.2</luceneVersion>
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.2.Final</infinispanVersion>
-		<aspectjVersion>1.9.25</aspectjVersion>
+		<aspectjVersion>1.9.25.1</aspectjVersion>
 		<jacksonVersion>2.19.2</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
-		<mockitoVersion>5.20.0</mockitoVersion>
+		<mockitoVersion>5.21.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.25.2</log4jVersion>
+		<log4jVersion>2.25.3</log4jVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
-		<graalJsVersion>25.0.1</graalJsVersion>
+		<graalJsVersion>25.0.2</graalJsVersion>
 
 		<customArgLineForTesting />
 

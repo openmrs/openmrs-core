@@ -52,9 +52,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	
 	private static Logger log = LoggerFactory.getLogger(OpenmrsClassLoader.class);
 	
-	private static File libCacheFolder;
+	private static volatile File libCacheFolder;
 	
-	private static boolean libCacheFolderInitialized = false;
+	private static final Object libCacheFolderLock = new Object();
 	
 	// placeholder to hold mementos to restore
 	private static Map<String, OpenmrsMemento> mementos = new WeakHashMap<>();
@@ -345,19 +345,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @see #flushInstance()
 	 */
 	public static void destroyInstance() {
-		
-		// remove all thread references to this class
-		// Walk up all the way to the root thread group
-		ThreadGroup rootGroup = Thread.currentThread().getThreadGroup();
-		ThreadGroup parent;
-		while ((parent = rootGroup.getParent()) != null) {
-			rootGroup = parent;
-		}
-		
-		log.info("this classloader hashcode: {}", OpenmrsClassLoaderHolder.INSTANCE.hashCode());
-		
+		log.debug("this classloader hashcode: {}", OpenmrsClassLoaderHolder.INSTANCE.hashCode());
 		OpenmrsClassScanner.destroyInstance();
-		
 		OpenmrsClassLoaderHolder.INSTANCE = null;
 	}
 	
@@ -392,42 +381,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			}
 		}
 	}
-	
-	// List all threads and recursively list all subgroup
-	private static List<Thread> listThreads(ThreadGroup group, String indent) {
-		List<Thread> threadToReturn = new ArrayList<>();
-		
-		log.error(indent + "Group[" + group.getName() + ":" + group.getClass() + "]");
-		int nt = group.activeCount();
-		Thread[] threads = new Thread[nt * 2 + 10]; //nt is not accurate
-		nt = group.enumerate(threads, false);
-		
-		// List every thread in the group
-		for (int i = 0; i < nt; i++) {
-			Thread t = threads[i];
-			log.error(indent
-			        + "  Thread["
-			        + t.getName()
-			        + ":"
-			        + t.getClass()
-			        + ":"
-			        + (t.getContextClassLoader() == null ? "null cl" : t.getContextClassLoader().getClass().getName() + " "
-			                + t.getContextClassLoader().hashCode()) + "]");
-			threadToReturn.add(t);
-		}
-		
-		// Recursively list all subgroups
-		int ng = group.activeGroupCount();
-		ThreadGroup[] groups = new ThreadGroup[ng * 2 + 10];
-		ng = group.enumerate(groups, false);
-		
-		for (int i = 0; i < ng; i++) {
-			threadToReturn.addAll(listThreads(groups[i], indent + "  "));
-		}
-		
-		return threadToReturn;
-	}
-	
+
 	public static void onShutdown() {
 		
 		//Since we are shutting down, stop all threads that reference the openmrs class loader.
@@ -658,40 +612,46 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	
 	/**
 	 * Get the temporary "work" directory for expanded jar files
+	 * <p>
+	 * If the <code>optimized.startup</code> runtime property is set to <code>false</code>,
+	 * the cache folder is deleted upon startup, if it exists.
 	 *
 	 * @return temporary location for storing the libraries
 	 */
 	public static File getLibCacheFolder() {
-		// cache the location for all calls until OpenMRS is restarted
+		// Cache the location for all calls until OpenMRS is restarted
 		if (libCacheFolder != null) {
-			return libCacheFolderInitialized ? libCacheFolder : null;
+			return libCacheFolder;
 		}
 		
-		synchronized (ModuleClassLoader.class) {
-			libCacheFolder = new File(OpenmrsUtil.getApplicationDataDirectory(), LIBCACHESUFFIX);
+		synchronized (libCacheFolderLock) {
+			if (libCacheFolder != null) {
+				return libCacheFolder;
+			}
 			
-			log.debug("libraries cache folder is {}", libCacheFolder);
+			File newLibCacheFolder = new File(OpenmrsUtil.getApplicationDataDirectory(), LIBCACHESUFFIX);
 			
-			if (libCacheFolder.exists()) {
-				// clean up and empty the folder if it exists (and is not locked)
-				try {
-					OpenmrsUtil.deleteDirectory(libCacheFolder);
-					
-					libCacheFolder.mkdirs();
-				}
-				catch (IOException io) {
-					log.warn("Unable to delete: {}", libCacheFolder.getName());
+			log.debug("Libraries cache folder is {}", newLibCacheFolder);
+			
+			if (newLibCacheFolder.exists()) {
+				if (Context.isOptimizedStartup()) {
+					log.debug("Optimized startup enabled, using lib cache folder from last run {}", newLibCacheFolder);
+				} else {
+					log.debug("Optimized startup disabled, cleaning up lib cache folder {}", newLibCacheFolder);
+					try {
+						OpenmrsUtil.deleteDirectory(newLibCacheFolder);
+
+						newLibCacheFolder.mkdirs();
+					} catch (IOException io) {
+						log.warn("Unable to delete: {}", newLibCacheFolder.getName());
+					}
 				}
 			} else {
 				// otherwise just create the dir structure
-				libCacheFolder.mkdirs();
+				newLibCacheFolder.mkdirs();
 			}
 			
-			// mark the lock and entire library cache to be deleted when the jvm exits
-			libCacheFolder.deleteOnExit();
-			
-			// mark the lib cache folder as ready
-			libCacheFolderInitialized = true;
+			libCacheFolder = newLibCacheFolder;
 		}
 		
 		return libCacheFolder;

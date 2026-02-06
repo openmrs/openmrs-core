@@ -56,6 +56,8 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +68,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
@@ -278,13 +281,34 @@ public class DatabaseUpdater {
 	}
 	
 	/**
-	 * Ask Liquibase if it needs to do any updates.
+	 * Determine if Liquibase updates are required. If OpenMRS Core version did not change, then do not run any checks
+	 * unless <b>optimized.startup</b> runtime property is set to <b>false</b>.
 	 *
 	 * @return true/false whether database updates are required
 	 * @throws Exception when an exception is raised while processing Liquibase changelog files
 	 */
 	public static boolean updatesRequired() throws Exception {
-		log.debug("Checking for updates");
+		String storedCoreVersion = null;
+		// Using raw SQL to not rely on Context being initialized for this check.
+		try (Connection con = getConnection()) {
+			try (PreparedStatement ps = con.prepareStatement("SELECT property_value from global_property " +
+				"where property = ?")) {
+				ps.setString(1, "core.version");
+				ResultSet resultSet = ps.executeQuery();
+				if (resultSet.next()) {
+					storedCoreVersion = resultSet.getString(1);
+				}
+			}
+		}
+		String currentCoreVersion = OpenmrsConstants.OPENMRS_VERSION_SHORT;
+		boolean optimizedStartup = Context.isOptimizedStartup();
+
+		if (optimizedStartup && Objects.equals(storedCoreVersion, currentCoreVersion)) {
+			log.info("No core version changed. Skipping database updates.");
+			return false;
+		}
+		
+		log.debug("Checking for database updates");
 		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges(new DatabaseUpdaterLiquibaseProvider());
 		
 		// if the db is locked, it means there was a crash
@@ -295,7 +319,7 @@ public class DatabaseUpdater {
 			// if there is a db lock but there are no db changes we undo the
 			// lock
 			DatabaseUpdater.releaseDatabaseLock();
-			log.debug("db lock found and released automatically");
+			log.debug("DB lock found and released automatically");
 			return false;
 		}
 		

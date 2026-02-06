@@ -9,6 +9,15 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 
@@ -22,18 +31,26 @@ import java.util.stream.Collectors;
 /**
  * This class represents a list of patientIds.
  */
+@Entity
+@Table(name = "cohort")
 @Audited
 public class Cohort extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 0L;
 	
+	@Id
+	@Column(name = "cohort_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer cohortId;
 	
+	@Column(nullable = false, length = 255)
 	private String name;
 	
+	@Column(nullable = false, length = 1000)
 	private String description;
 	
-	private Collection<CohortMembership> memberships;
+	@OneToMany(mappedBy = "cohort", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private Set<CohortMembership> memberships;
 	
 	public Cohort() {
 		memberships = new TreeSet<>();
@@ -348,7 +365,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 		}
 	}
 	
-	public void setMemberships(Collection<CohortMembership> members) {
+	public void setMemberships(Set<CohortMembership> members) {
 		this.memberships = members;
 	}
 	

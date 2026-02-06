@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
@@ -59,6 +60,8 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.person.PersonMergeLogData;
+import org.openmrs.util.DatabaseUpdateException;
+import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -1010,4 +1013,121 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
         return Arrays.asList(GlobalProperty.class);
     }
 
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#isCoreSetupOnVersionChangeNeeded() 
+	 */
+	@Override
+	public boolean isCoreSetupOnVersionChangeNeeded() {
+		if (!Context.isOptimizedStartup()) {
+			return true;
+		}
+		
+		String stored = getStoredCoreVersion();
+		String current = OpenmrsConstants.OPENMRS_VERSION_SHORT;
+		return !Objects.equals(stored, current);
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#isModuleSetupOnVersionChangeNeeded(String)
+	 */
+	@Override
+	public boolean isModuleSetupOnVersionChangeNeeded(String moduleId) {
+		Module module = ModuleFactory.getModuleById(moduleId);
+		if (module == null) {
+			log.info("{} module is no longer installed, skipping setup", moduleId);
+			return false;
+		}
+		
+		if (isCoreSetupOnVersionChangeNeeded()) {
+			return true;
+		}
+		
+		String stored = getStoredModuleVersion(moduleId);
+		String current = module.getVersion();
+		if (!Objects.equals(stored, current)) {
+			return true;
+		} else {
+			log.info("{} module did not change, skipping setup", moduleId);
+			return false;
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#runCoreSetupOnVersionChange() 
+	 */
+	@Override
+	@Transactional
+	public void runCoreSetupOnVersionChange() throws DatabaseUpdateException {
+		if (!ModuleFactory.getLoadedModules().isEmpty()) {
+			String prevCoreVersion = getStoredCoreVersion();
+			
+			for (Module module : ModuleFactory.getLoadedModules()) {
+				String prevModuleVersion = getStoredModuleVersion(module.getModuleId());
+				
+				module.getModuleActivator().setupOnVersionChangeBeforeSchemaChanges(prevCoreVersion, prevModuleVersion);
+			}
+		}
+		
+		boolean updatesRequired;
+		try {
+			updatesRequired = DatabaseUpdater.updatesRequired();
+		}
+		catch (Exception e) {
+			throw new DatabaseUpdateException("Unable to check if database updates are required", e);
+		}
+
+		// this must be the first thing run in case it changes database mappings
+		if (updatesRequired) {
+			if (!DatabaseUpdater.allowAutoUpdate()) {
+				throw new DatabaseUpdateException(
+					"Database updates are required. Call Context.updateDatabase() before .startup() to continue.");
+			}
+		}
+		
+		DatabaseUpdater.executeChangelog();
+		
+		storeCoreVersion();
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#runModuleSetupOnVersionChange(Module)
+	 */
+	@Override
+	@Transactional
+	public void runModuleSetupOnVersionChange(Module module) {
+		if (module == null) {
+			return;
+		}
+
+		String moduleId = module.getModuleId();
+		String prevCoreVersion = getStoredCoreVersion();
+		String prevModuleVersion = getStoredModuleVersion(moduleId);
+		
+		ModuleFactory.runLiquibaseForModule(module);
+		module.getModuleActivator().setupOnVersionChange(prevCoreVersion, prevModuleVersion);
+		
+		storeModuleVersion(moduleId, module.getVersion());
+	}
+
+	protected String getStoredCoreVersion() {
+		return dao.getGlobalProperty("core.version");
+	}
+
+	protected String getStoredModuleVersion(String moduleId) {
+		return dao.getGlobalProperty("module." + moduleId + ".version");
+	}
+
+	protected void storeCoreVersion() {
+		String propertyName = "core.version";
+		GlobalProperty gp = new GlobalProperty(propertyName, OpenmrsConstants.OPENMRS_VERSION_SHORT, 
+			"Saved core version for future restarts");
+		dao.saveGlobalProperty(gp);
+	}
+
+	protected void storeModuleVersion(String moduleId, String version) {
+		String propertyName = "module." + moduleId + ".version";
+		GlobalProperty gp = new GlobalProperty(propertyName, version, "Saved module version for future restarts");
+		dao.saveGlobalProperty(gp);
+	}
 }

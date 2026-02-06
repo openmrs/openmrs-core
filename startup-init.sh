@@ -92,17 +92,22 @@ OMRS_RUNTIME_PROPERTIES_FILE="$OMRS_DATA_DIR/$OMRS_WEBAPP_NAME-runtime.propertie
 
 echo "Deleting modules, OWAs, configuration and frontend from OpenMRS"
 
-rm -fR "${OMRS_MODULES_DIR:?}/*"
-rm -fR "${OMRS_OWA_DIR:?}/*"
-rm -fR "${OMRS_CONFIG_DIR:?}/*"
-rm -fR "${OMRS_FRONTEND_DIR:?}/*"
+rm -fR "${OMRS_MODULES_DIR:?}"
+mkdir "${OMRS_MODULES_DIR}"
+rm -fR "${OMRS_OWA_DIR:?}"
+mkdir "${OMRS_OWA_DIR}"
+rm -fR "${OMRS_CONFIG_DIR:?}"
+mkdir "${OMRS_CONFIG_DIR}"
+rm -fR "${OMRS_FRONTEND_DIR:?}"
+mkdir "${OMRS_FRONTEND_DIR}"
 
 echo "Loading distribution artifacts into OpenMRS"
 
-[ -d "$OMRS_DISTRO_MODULES" ] && cp -R "$OMRS_DISTRO_MODULES/." "$OMRS_MODULES_DIR"
-[ -d "$OMRS_DISTRO_OWAS" ] && cp -R "$OMRS_DISTRO_OWAS/." "$OMRS_OWA_DIR"
-[ -d "$OMRS_DISTRO_CONFIG" ] && cp -R "$OMRS_DISTRO_CONFIG/." "$OMRS_CONFIG_DIR"
-[ -d "$OMRS_DISTRO_FRONTEND" ] && cp -R "$OMRS_DISTRO_FRONTEND/." "$OMRS_FRONTEND_DIR"
+# Copy preserving timestamps to avoid redeploys
+[ -d "$OMRS_DISTRO_MODULES" ] && cp -a "$OMRS_DISTRO_MODULES/." "$OMRS_MODULES_DIR"
+[ -d "$OMRS_DISTRO_OWAS" ] && cp -a "$OMRS_DISTRO_OWAS/." "$OMRS_OWA_DIR"
+[ -d "$OMRS_DISTRO_CONFIG" ] && cp -a "$OMRS_DISTRO_CONFIG/." "$OMRS_CONFIG_DIR"
+[ -d "$OMRS_DISTRO_FRONTEND" ] && cp -a "$OMRS_DISTRO_FRONTEND/." "$OMRS_FRONTEND_DIR"
 
 # Setup database configuration properties
 if [[ -z $OMRS_DB || "$OMRS_DB" == "mysql" ]]; then

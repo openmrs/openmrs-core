@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -76,8 +77,7 @@ public class EncounterTest extends BaseContextMockTest {
 	@Test
 	public void toString_shouldNotFailWithEmptyObject() {
 		Encounter encounter = new Encounter();
-		@SuppressWarnings("unused")
-		String toStringOutput = encounter.toString();
+		assertDoesNotThrow(() -> encounter.toString());
 	}
 	
 	/**
@@ -107,7 +107,7 @@ public class EncounterTest extends BaseContextMockTest {
 	@Test
 	public void removeObs_shouldNotThrowErrorWhenRemovingNullObsFromEmptySet() {
 		Encounter encounterWithoutObsSet = new Encounter();
-		encounterWithoutObsSet.removeObs(null);
+		assertDoesNotThrow(() -> encounterWithoutObsSet.removeObs(null));
 	}
 	
 	/**
@@ -966,7 +966,7 @@ public class EncounterTest extends BaseContextMockTest {
 	@Test
 	public void removeOrder_shouldNotFailWhenRemovingNullOrder() {
 		Encounter encounter = new Encounter();
-		encounter.removeOrder(null);
+		assertDoesNotThrow(() -> encounter.removeOrder(null));
 	}
 	
 	/**
@@ -975,7 +975,7 @@ public class EncounterTest extends BaseContextMockTest {
 	@Test
 	public void removeOrder_shouldNotFailWhenRemovingNonExistentOrder() {
 		Encounter encounter = new Encounter();
-		encounter.removeOrder(new Order(123));
+		assertDoesNotThrow(() -> encounter.removeOrder(new Order(123)));
 	}
 	
 	/**
@@ -1000,7 +1000,7 @@ public class EncounterTest extends BaseContextMockTest {
 	@Test
 	public void removeCondition_shouldNotFailWhenRemovingNonExistentCondition() {
 		Encounter encounter = new Encounter();
-		encounter.removeCondition(new Condition());
+		assertDoesNotThrow(() -> encounter.removeCondition(new Condition()));
 	}
 	
 	/**

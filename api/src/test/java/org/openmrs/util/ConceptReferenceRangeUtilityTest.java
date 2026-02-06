@@ -9,6 +9,7 @@
  */
 package org.openmrs.util;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,12 +21,14 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import java.util.Calendar;
@@ -686,6 +689,77 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		);
 	}
 	
+	// all the following tests use data from the standard test dataset instead of mocking
+	@Test
+	public void isEnrolledInProgram_shouldReturnTrueIfPatientIsEnrolledInProgram() {
+		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
+		Obs obs = buildObs();
+		obs.setPerson(patient);
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, $obs.obsDatetime)", obs));  // uuid of HIV program which patient 2 is enrolled in
+	}
+
+	@Test
+	public void isEnrolledInProgram_shouldReturnFalseIfPatientIsNotEnrolledInProgramOnDate() {
+		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
+		Obs obs = buildObs();
+		obs.setObsDatetime(new DateTime(2006, 1, 1, 1,1).toDate());
+		obs.setPerson(patient);
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, $obs.obsDatetime)", obs));  // uuid of HIV program which patient 2 is enrolled in, but not until 2008
+	}
+	
+	@Test
+	public void isEnrolledInProgram_shouldReturnFalseIfPatientIsNotEnrolledInProgram() {
+		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
+		Obs obs = buildObs();
+		obs.setPerson(patient);
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('f386c3d2-dd75-441f-a582-2237824edfb0', $patient, $obs.obsDatetime)", obs));  // uuid of the Malaria program which patient 2 is not enrolled in
+	}
+
+	@Test
+	public void isEnrolledInProgram_shouldReturnFalseIfPersonIsNotPatient() {
+		// not likely a real use case, but just testing it doesn't throw an exception
+		Person person = Context.getPersonService().getPerson(9); // from standard test dataset
+		assertFalse(person.getIsPatient());
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('f386c3d2-dd75-441f-a582-2237824edfb0', $patient, $obs.obsDatetime)", obs));  
+	}
+
+
+	@Test
+	public void isInProgramState_shouldReturnTrueIfPatientInState() {
+		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
+		Obs obs = buildObs();
+		obs.setPerson(patient);
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  // uuid from standard test dataset, patient is in this state
+	}
+
+	@Test
+	public void isInProgramState_shouldReturnFalseIfPatientIsNotInStateOnDate() {
+		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
+		Obs obs = buildObs();
+		obs.setObsDatetime(new DateTime(2006, 1, 1, 1,1).toDate());
+		obs.setPerson(patient);
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  // uuid from standard test dataset, patient is in this state, but not until 2008
+	}
+
+	@Test
+	public void isInProgramState_shouldReturnFalseIfPatientIsNotInState() {
+		Patient patient = Context.getPatientService().getPatient(6); // from standard test dataset, different patient that is not in this state
+		Obs obs = buildObs();
+		obs.setPerson(patient);
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  
+	}
+
+	@Test
+	public void isInProgramState_shouldReturnFalseIfPersonIsNotPatient() {
+		// not likely a real use case, but just testing it doesn't throw an exception
+		Person person = Context.getPersonService().getPerson(9); // from standard test dataset
+		assertFalse(person.getIsPatient());
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  
+	}
 	private Obs buildObs() {
 		Concept concept = new Concept(5089);
 		concept.setDatatype(new ConceptDatatype(3));

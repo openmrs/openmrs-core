@@ -610,7 +610,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	public void updateSearchIndex() {
 		try {
-			log.info("Updating the search index... It may take a few minutes.");
+			log.warn("Updating the search index... It may take a few minutes.");
 			searchSessionFactory.getSearchSession().massIndexer().startAndWait();
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(

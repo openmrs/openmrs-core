@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
+import java.nio.charset.Charset;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -41,10 +42,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -66,14 +70,13 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	private Module[] awareOfModules;
 	
-	private Map<URI, File> libraryCache;
-	
 	private boolean probeParentLoaderLast = true;
 	
-	private Set<String> providedPackages = new LinkedHashSet<>();
+	private final Set<String> providedPackages = new LinkedHashSet<>();
 	
 	private boolean disposed = false;
 	
+	private static final Map<String, File> libCacheFolders = new ConcurrentHashMap<>();
 	
 	/**
 	 * @param module Module
@@ -97,7 +100,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		this.module = module;
 		requiredModules = collectRequiredModuleImports(module);
 		awareOfModules = collectAwareOfModuleImports(module);
-		libraryCache = new WeakHashMap<>();
 	}
 	
 	/**
@@ -441,24 +443,66 @@ public class ModuleClassLoader extends URLClassLoader {
 
 		return globPattern;
 	}
-
 	
 	/**
 	 * Get the library cache folder for the given module. Each module has a different cache folder
-	 * to ease cleanup when unloading a module while openmrs is running
+	 * to ease cleanup when unloading a module while openmrs is running.
+	 * <p>
+	 * The method persists lastModified of a module in .moduleLastModified file. If the value changed, 
+	 * the dir will be deleted and re-created.
 	 *
 	 * @param module Module which the cache will be used for
 	 * @return File directory where the files will be placed
 	 */
 	public static File getLibCacheFolderForModule(Module module) {
-		File tmpModuleDir = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
-		
-		// each module gets its own folder named /moduleId/
-		if (!tmpModuleDir.exists()) {
-			tmpModuleDir.mkdir();
-			tmpModuleDir.deleteOnExit();
+		File libCacheFolder = libCacheFolders.get(module.getModuleId());
+		if (libCacheFolder != null) {
+			return libCacheFolder;
 		}
-		return tmpModuleDir;
+		
+		synchronized (libCacheFolders) {
+			libCacheFolder = libCacheFolders.get(module.getModuleId());
+			if (libCacheFolder != null) {
+				return libCacheFolder;
+			}
+
+			// each module gets its own folder named /moduleId/
+			File tmpModuleDir = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
+
+			long moduleLastModified = module.getFile().lastModified();
+			File moduleLastModifiedFile = new File(tmpModuleDir, ".moduleLastModified");
+			
+			if (Context.isOptimizedStartup() && moduleLastModifiedFile.exists()) {
+				// Re-create tmpModuleDir if module changed
+				try {
+					String savedLastModified = FileUtils.readFileToString(moduleLastModifiedFile,
+						Charset.defaultCharset());
+					if (!Long.valueOf(savedLastModified).equals(moduleLastModified)) {
+						log.debug("Deleting {} since the module was modified", tmpModuleDir.getAbsolutePath());
+						tmpModuleDir.delete();
+					}
+				} catch (IOException | NumberFormatException e) {
+					log.warn("Error while reading module last modified file: {}", moduleLastModifiedFile, e);
+				}
+			} else {
+				log.debug("Optimized startup disabled or {} does not exist, deleting {}", moduleLastModifiedFile, 
+					tmpModuleDir);
+				tmpModuleDir.delete();
+			}
+
+			tmpModuleDir.mkdirs();
+			libCacheFolders.put(module.getModuleId(), tmpModuleDir);
+
+			if (moduleLastModified != 0L) {
+				try {
+					FileUtils.writeStringToFile(moduleLastModifiedFile, moduleLastModified + "", Charset.defaultCharset());
+				} catch (IOException e) {
+					log.warn("Error while writing module last modified file: {}", moduleLastModifiedFile, e);
+				}
+			}
+
+			return tmpModuleDir;
+		}
 	}
 	
 	/**
@@ -540,7 +584,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		requiredModules = collectRequiredModuleImports(getModule());
 		awareOfModules = collectAwareOfModuleImports(getModule());
-		libraryCache.entrySet().removeIf(uriFileEntry -> uriFileEntry.getValue() == null);
 	}
 	
 	/**
@@ -548,11 +591,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	public void dispose() {
 		log.debug("Disposing of ModuleClassLoader: {}", this);
-		for (File file : libraryCache.values()) {
-			file.delete();
-		}
-		
-		libraryCache.clear();
+		libCacheFolders.remove(getModule().getModuleId());
+
 		requiredModules = null;
 		awareOfModules = null;
 		disposed = true;
@@ -764,87 +804,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		if (log.isTraceEnabled()) {
 			log.trace(
 			    "findLibrary(String): name=" + name + ", libname=" + libname + ", result=" + result + ", this=" + this);
-		}
-		
-		return result;
-	}
-	
-	/**
-	 * Saves the given library in the openmrs cache. This prevents locking of jars/files by servlet
-	 * container
-	 *
-	 * @param libUrl URL to the library/jar file
-	 * @param libname name of the jar that will be the name of the cached file
-	 * @return file that is now copied and cached
-	 */
-	protected File cacheLibrary(final URL libUrl, final String libname) {
-		File cacheFolder = OpenmrsClassLoader.getLibCacheFolder();
-		
-		URI libUri;
-		try {
-			libUri = libUrl.toURI();
-		}
-		catch (URISyntaxException e) {
-			throw new IllegalArgumentException(libUrl.getPath() + " is not a valid URI", e);
-		}
-		
-		if (libraryCache.containsKey(libUri)) {
-			return libraryCache.get(libUri);
-		}
-		
-		File result;
-		try {
-			if (cacheFolder == null) {
-				throw new IOException("can't initialize libraries cache folder");
-			}
-			
-			// create the directory to hold the jar's files
-			File libCacheModuleFolder = new File(cacheFolder, getModule().getModuleId());
-			
-			// error while creating the file
-			if (!libCacheModuleFolder.exists() && !libCacheModuleFolder.mkdirs()) {
-				throw new IOException("can't create cache folder " + libCacheModuleFolder);
-			}
-			
-			// directory within the specific folder within the cache
-			result = new File(libCacheModuleFolder, libname);
-			
-			// copy the file over to the cache
-			InputStream in = OpenmrsUtil.getResourceInputStream(libUrl);
-			try {
-				FileOutputStream fileOut = new FileOutputStream(result);
-				OutputStream out = new BufferedOutputStream(fileOut);
-				try {
-					OpenmrsUtil.copyFile(in, out);
-				}
-				finally {
-					try {
-						out.close();
-					}
-					catch (Exception e) { /* pass */}
-					try {
-						fileOut.close();
-					}
-					catch (Exception e) {}
-				}
-			}
-			finally {
-				try {
-					in.close();
-				}
-				catch (Exception e) { /* pass */}
-			}
-			
-			// save a link to the cached file
-			libraryCache.put(libUri, result);
-			
-			log.debug("library {} successfully cached from URL {} and saved to local file {}", libname, libUrl, result);
-			
-		}
-		catch (IOException ioe) {
-			log.error("can't cache library " + libname + " from URL " + libUrl, ioe);
-			libraryCache.put(libUri, null);
-			result = null;
 		}
 		
 		return result;

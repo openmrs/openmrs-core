@@ -73,6 +73,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.Action.NEW;
 import static org.openmrs.Order.Action.REVISE;
 
 /**
@@ -189,7 +190,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		if (previousOrder != null) {
 			//concept should be the same as on previous order, same applies to drug for drug orders
-			if (!order.hasSameOrderableAs(previousOrder)) {
+			if (NEW != order.getAction() && !order.hasSameOrderableAs(previousOrder)) {
 				throw new EditedOrderDoesNotMatchPreviousException("Order.orderable.doesnot.match");
 			} else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
 				throw new EditedOrderDoesNotMatchPreviousException("Order.type.doesnot.match");

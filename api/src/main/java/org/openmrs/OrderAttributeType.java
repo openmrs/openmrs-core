@@ -9,6 +9,12 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
@@ -18,9 +24,14 @@ import org.openmrs.attribute.BaseAttributeType;
  * @see AttributeType
  * @since 2.5.0
  */
+@Entity
+@Table(name = "order_attribute_type")
 @Audited
 public class OrderAttributeType extends BaseAttributeType<Order> implements AttributeType<Order> {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "order_attribute_type_id")
 	private Integer orderAttributeTypeId;
 
 	/**

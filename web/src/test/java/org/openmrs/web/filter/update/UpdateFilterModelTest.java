@@ -10,12 +10,14 @@
 package org.openmrs.web.filter.update;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -53,6 +55,7 @@ public class UpdateFilterModelTest {
 	        throws Exception {
 		List<OpenMRSChangeSet> changes = Arrays.asList(mock(OpenMRSChangeSet.class));
 		
+		when(databaseUpdaterWrapper.updatesRequired()).thenReturn(true);
 		when(databaseUpdaterWrapper.getUnrunDatabaseChanges(any(LiquibaseProvider.class))).thenReturn(changes);
 		when(databaseUpdaterWrapper.isLocked()).thenReturn(false);
 		
@@ -62,7 +65,7 @@ public class UpdateFilterModelTest {
 		assertThat(model.changes, is(changes));
 		
 		verify( databaseUpdaterWrapper, times(1)).getUnrunDatabaseChanges( liquibaseProvider );
-		verify( databaseUpdaterWrapper, never()).updatesRequired();
+		verify( databaseUpdaterWrapper, times(1)).updatesRequired();
 	}
 	
 	@Test
@@ -95,9 +98,9 @@ public class UpdateFilterModelTest {
 		model = new UpdateFilterModel(liquibaseProvider, databaseUpdaterWrapper);
 		
 		assertFalse(model.updateRequired, "should not require an update");
-		assertThat(model.changes, is(empty()));
+		assertThat(model.changes, is(nullValue()));
 
-		verify( databaseUpdaterWrapper, times(1)).getUnrunDatabaseChanges( liquibaseProvider );
+		verify( databaseUpdaterWrapper, times(0)).getUnrunDatabaseChanges( liquibaseProvider );
 		verify( databaseUpdaterWrapper, times(1)).updatesRequired();
 	}
 	
@@ -114,7 +117,7 @@ public class UpdateFilterModelTest {
 		assertFalse(model.updateRequired, "should not require an update");
 		assertNull(model.changes, "should not have changes");
 
-		verify( databaseUpdaterWrapper, times(1)).getUnrunDatabaseChanges( liquibaseProvider );
+		verify( databaseUpdaterWrapper, times(0)).getUnrunDatabaseChanges( liquibaseProvider );
 		verify( databaseUpdaterWrapper, times(1)).updatesRequired();
 	}
 	
@@ -131,7 +134,7 @@ public class UpdateFilterModelTest {
 		assertFalse(model.updateRequired, "should not require an update");
 		assertNull(model.changes, "should not have changes");
 
-		verify( databaseUpdaterWrapper, times(2)).getUnrunDatabaseChanges( liquibaseProvider );
+		verify( databaseUpdaterWrapper, times(0)).getUnrunDatabaseChanges( liquibaseProvider );
 		verify( databaseUpdaterWrapper, times(1)).updatesRequired();
 	}
 	
@@ -140,6 +143,7 @@ public class UpdateFilterModelTest {
 	        throws Exception {
 		List<OpenMRSChangeSet> changes = Arrays.asList(mock(OpenMRSChangeSet.class));
 		
+		when(databaseUpdaterWrapper.updatesRequired()).thenReturn(true);
 		when(databaseUpdaterWrapper.getUnrunDatabaseChanges(any(LiquibaseProvider.class))).thenReturn(changes);
 		when(databaseUpdaterWrapper.isLocked()).thenReturn(true);
 		
@@ -149,6 +153,6 @@ public class UpdateFilterModelTest {
 		assertThat(model.changes, is(changes));
 
 		verify( databaseUpdaterWrapper, times(1)).getUnrunDatabaseChanges( liquibaseProvider );
-		verify( databaseUpdaterWrapper, never()).updatesRequired();
+		verify( databaseUpdaterWrapper, times(1)).updatesRequired();
 	}
 }
