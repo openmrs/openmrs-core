@@ -93,6 +93,8 @@ public class InitializationFilter extends StartupFilter {
 	private static final String DATABASE_SQLSERVER = "sqlserver";
 	
 	private static final String DATABASE_H2 = "h2";
+
+	private static final String DATABASE_MARIADB = "mariadb";
 	
 	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
 	
@@ -1156,6 +1158,8 @@ public class InitializationFilter extends StartupFilter {
 			// TODO how to get the driver for the other dbs...
 			if (isCurrentDatabase(DATABASE_MYSQL)) {
 				Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+			}else if(isCurrentDatabase(DATABASE_MARIADB)){
+				Class.forName("org.mariadb.jdbc.Driver").newInstance();
 			} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 				Class.forName("org.postgresql.Driver").newInstance();
 				replacedSql = replacedSql.replaceAll("`", "\"");
@@ -1529,6 +1533,9 @@ public class InitializationFilter extends StartupFilter {
 						}
 						if (finalDatabaseConnectionString.contains(DATABASE_H2)) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+						}
+						if (finalDatabaseConnectionString.contains(DATABASE_MARIADB)) {
+							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
 						}
 						runtimeProperties.put("module.allow_web_admin", "" + wizardModel.moduleWebAdmin);
 						runtimeProperties.put("auto_update_database", "" + wizardModel.autoUpdateDatabase);

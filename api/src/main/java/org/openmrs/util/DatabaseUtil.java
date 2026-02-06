@@ -57,19 +57,22 @@ public class DatabaseUtil {
 			Class.forName(connectionDriver);
 			log.debug("set user defined Database driver class: " + connectionDriver);
 		} else {
-			if (connectionUrl.contains("mysql")) {
+			if (connectionUrl.contains("jdbc:mysql")) {
 				Class.forName("com.mysql.cj.jdbc.Driver");
 				connectionDriver = "com.mysql.cj.jdbc.Driver";
-			} else if (connectionUrl.contains("hsqldb")) {
+			} else if (connectionUrl.contains("jdbc:mariadb")) {
+				Class.forName("org.mariadb.jdbc.Driver");
+				connectionDriver = "org.mariadb.jdbc.Driver";
+			} else if (connectionUrl.contains("jdbc:hsqldb")) {
 				Class.forName("org.hsqldb.jdbcDriver");
 				connectionDriver = "org.hsqldb.jdbcDriver";
-			} else if (connectionUrl.contains("postgresql")) {
+			} else if (connectionUrl.contains("jdbc:postgresql")) {
 				Class.forName("org.postgresql.Driver");
 				connectionDriver = "org.postgresql.Driver";
-			} else if (connectionUrl.contains("oracle")) {
+			} else if (connectionUrl.contains("jdbc:oracle")) {
 				Class.forName("oracle.jdbc.driver.OracleDriver");
 				connectionDriver = "oracle.jdbc.driver.OracleDriver";
-			} else if (connectionUrl.contains("jtds")) {
+			} else if (connectionUrl.contains("jdbc:jtds")) {
 				Class.forName("net.sourceforge.jtds.jdbc.Driver");
 				connectionDriver = "net.sourceforge.jtds.jdbc.Driver";
 			} else if (connectionUrl.contains("sqlserver")) {
