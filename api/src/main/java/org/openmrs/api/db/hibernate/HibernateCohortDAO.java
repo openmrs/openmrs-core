@@ -20,8 +20,11 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.openmrs.BaseOpenmrsData_;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
+import org.openmrs.CohortMembership_;
+import org.openmrs.Cohort_;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.api.db.DAOException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +39,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("cohortDAO")
 public class HibernateCohortDAO implements CohortDAO {
-	
-	private static final String VOIDED = "voided";
-	
+
 	private final SessionFactory sessionFactory;
 	
 	@Autowired
@@ -65,21 +66,21 @@ public class HibernateCohortDAO implements CohortDAO {
 		CriteriaQuery<Cohort> cq = cb.createQuery(Cohort.class);
 		Root<Cohort> root = cq.from(Cohort.class);
 
-		Join<Cohort, CohortMembership> membershipJoin = root.join("memberships");
+		Join<Cohort, CohortMembership> membershipJoin = root.join(Cohort_.memberships);
 
 		List<Predicate> predicates = new ArrayList<>();
 
 		if (asOfDate != null) {
-			predicates.add(cb.lessThanOrEqualTo(membershipJoin.get("startDate"), asOfDate));
+			predicates.add(cb.lessThanOrEqualTo(membershipJoin.get(CohortMembership_.startDate), asOfDate));
 
-			Predicate endDateNullPredicate = cb.isNull(membershipJoin.get("endDate"));
-			Predicate endDateGtPredicate = cb.greaterThan(membershipJoin.get("endDate"), asOfDate);
+			Predicate endDateNullPredicate = cb.isNull(membershipJoin.get(CohortMembership_.endDate));
+			Predicate endDateGtPredicate = cb.greaterThan(membershipJoin.get(CohortMembership_.endDate), asOfDate);
 			predicates.add(cb.or(endDateNullPredicate, endDateGtPredicate));
 		}
-		predicates.add(cb.equal(membershipJoin.get("patientId"), patientId));
+		predicates.add(cb.equal(membershipJoin.get(CohortMembership_.patientId), patientId));
 
 		if (!includeVoided) {
-			predicates.add(cb.equal(root.get(VOIDED), includeVoided));
+			predicates.add(cb.isFalse(root.get(BaseOpenmrsData_.voided)));
 		}
 
 		cq.distinct(true).where(predicates.toArray(new Predicate[]{}));
@@ -122,9 +123,9 @@ public class HibernateCohortDAO implements CohortDAO {
 		CriteriaQuery<Cohort> cq = cb.createQuery(Cohort.class);
 		Root<Cohort> root = cq.from(Cohort.class);
 
-		cq.where(cb.like(cb.lower(root.get("name")), 
+		cq.where(cb.like(cb.lower(root.get(Cohort_.name)),
 			MatchMode.ANYWHERE.toLowerCasePattern(nameFragment)));
-		cq.orderBy(cb.asc(root.get("name")));
+		cq.orderBy(cb.asc(root.get(Cohort_.name)));
 
 		return session.createQuery(cq).getResultList();
 	}
@@ -140,10 +141,10 @@ public class HibernateCohortDAO implements CohortDAO {
 		Root<Cohort> root = cq.from(Cohort.class);
 
 		if (!includeVoided) {
-			cq.where(cb.isFalse(root.get(VOIDED)));
+			cq.where(cb.isFalse(root.get(BaseOpenmrsData_.voided)));
 		}
 
-		cq.orderBy(cb.asc(root.get("name")));
+		cq.orderBy(cb.asc(root.get(Cohort_.name)));
 
 		return session.createQuery(cq).getResultList();
 	}
@@ -158,7 +159,7 @@ public class HibernateCohortDAO implements CohortDAO {
 		CriteriaQuery<Cohort> cq = cb.createQuery(Cohort.class);
 		Root<Cohort> root = cq.from(Cohort.class);
 
-		cq.where(cb.equal(root.get("name"), name), cb.isFalse(root.get(VOIDED)));
+		cq.where(cb.equal(root.get(Cohort_.name), name), cb.isFalse(root.get(BaseOpenmrsData_.voided)));
 
 		return session.createQuery(cq).uniqueResult();
 	}
@@ -181,19 +182,19 @@ public class HibernateCohortDAO implements CohortDAO {
 
 		List<Predicate> predicates = new ArrayList<>();
 
-		predicates.add(cb.equal(root.get("patientId"), patientId));
+		predicates.add(cb.equal(root.get(CohortMembership_.patientId), patientId));
 
 		if (activeOnDate != null) {
-			predicates.add(cb.lessThanOrEqualTo(root.get("startDate"), activeOnDate));
+			predicates.add(cb.lessThanOrEqualTo(root.get(CohortMembership_.startDate), activeOnDate));
 
-			Predicate endDateIsNull = cb.isNull(root.get("endDate"));
-			Predicate endDateIsGreater = cb.greaterThanOrEqualTo(root.get("endDate"), activeOnDate);
+			Predicate endDateIsNull = cb.isNull(root.get(CohortMembership_.endDate));
+			Predicate endDateIsGreater = cb.greaterThanOrEqualTo(root.get(CohortMembership_.endDate), activeOnDate);
 
 			predicates.add(cb.or(endDateIsNull, endDateIsGreater));
 		}
 
 		if (!includeVoided) {
-			predicates.add(cb.isFalse(root.get(VOIDED)));
+			predicates.add(cb.isFalse(root.get(BaseOpenmrsData_.voided)));
 		}
 
 		cq.where(predicates.toArray(new Predicate[]{}));
