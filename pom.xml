@@ -57,7 +57,7 @@
 		<module>web</module>
 		<module>webapp</module>
 		<module>liquibase</module>
-		<!-- <module>test-suite</module> -->
+		<module>test-suite</module>
 	</modules>
 
 	<dependencyManagement>
@@ -207,7 +207,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-hibernate-cache-v70</artifactId>
+				<artifactId>infinispan-hibernate-cache-v62</artifactId>
 				<version>${infinispanVersion}</version>
 			</dependency>
 			<dependency>
@@ -1318,6 +1318,11 @@
 			<name>OpenMRS Nexus Repository</name>
 			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
 		</repository>
+		<repository>
+			<id>mulesoft-releases</id>
+			<name>MuleSoft Releases Repository</name>
+			<url>https://repository.mulesoft.org/releases/</url>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -1364,9 +1369,9 @@
 		<hibernateVersion>7.2.3.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>7.2.5.Final</hibernateSearchVersion>
-		<luceneVersion>9.13.0</luceneVersion>
+		<luceneVersion>9.12.3</luceneVersion>
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
-		<infinispanVersion>16.0.3.Final</infinispanVersion>
+		<infinispanVersion>15.2.6.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
 		<jacksonVersion>2.19.2</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
