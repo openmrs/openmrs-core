@@ -109,6 +109,8 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 
 					if (severityConcept != null) {
 						allergyInsertStatement.setInt(3, severityConcept);
+					} else {
+						allergyInsertStatement.setNull(3, java.sql.Types.INTEGER);
 					}
 
 					allergyInsertStatement.setInt(4, rs.getInt("creator"));
