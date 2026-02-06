@@ -77,11 +77,13 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		DISCONTINUE,
 		RENEW
 	}
-	
+
 	/**
 	 * Valid values for the status of an order that is received from a filler
+	 * Aligned with FHIR Task Status: https://hl7.org/fhir/codesystem-task-status.html
 	 * @since 2.2.0
 	 * @since 2.6.1 added ON_HOLD & DECLINED
+	 * @since 3.0.0 added DRAFT, REQUESTED, ACCEPTED, REJECTED, READY, CANCELLED, FAILED, ENTERED_IN_ERROR
 	 */
 	public enum FulfillerStatus {
 		RECEIVED,
@@ -89,7 +91,14 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		EXCEPTION,
 		ON_HOLD,
 		DECLINED,
-		COMPLETED
+		COMPLETED,
+		DRAFT,           
+		REQUESTED,       
+		ACCEPTED,       
+		REJECTED,     
+		CANCELLED,     
+		FAILED,        
+		ENTERED_IN_ERROR 
 	}
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
