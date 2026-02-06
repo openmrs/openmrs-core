@@ -82,16 +82,19 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 	 */
 	@Override
 	public int getAllCount(boolean includeVoided) {
-		
-		String hql = "select count(*)" + " from " + mappedClass;
-		
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<T> root = cq.from(mappedClass);
+
+		cq.select(cb.count(root));
+
 		if (!includeVoided) {
-			hql += " where voided = false";
+			cq.where(cb.isFalse(root.get("voided")));
 		}
-		Query query = sessionFactory.getCurrentSession().createQuery(hql);
-		
-		Number count = JpaUtils.getSingleResultOrNull(query);
-		
+
+		Long count = session.createQuery(cq).getSingleResult();
+
 		return count == null ? 0 : count.intValue();
 	}
 }

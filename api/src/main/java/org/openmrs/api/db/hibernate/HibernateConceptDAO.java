@@ -16,6 +16,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
@@ -66,6 +67,7 @@ import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
 import org.openmrs.DrugReferenceMap;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
@@ -287,11 +289,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConcepts(java.lang.String, boolean, boolean)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Concept> getAllConcepts(String sortBy, boolean asc, boolean includeRetired) throws DAOException {
-		
+
 		boolean isNameField = false;
-		
+
 		try {
 			Concept.class.getDeclaredField(sortBy);
 		}
@@ -304,40 +305,35 @@ public class HibernateConceptDAO implements ConceptDAO {
 				sortBy = "conceptId";
 			}
 		}
-		
-		String hql = "";
+
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Concept> cq = cb.createQuery(Concept.class);
+		Root<Concept> root = cq.from(Concept.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		// When sorting by a ConceptName field, join to names filtered on FULLY_SPECIFIED
+		// to avoid duplicates (each concept should have exactly one fully specified name)
+		Join<Concept, ConceptName> namesJoin = null;
 		if (isNameField) {
-			hql += "select concept";
+			namesJoin = root.join("names", JoinType.LEFT);
+			predicates.add(cb.equal(namesJoin.get("conceptNameType"), ConceptNameType.FULLY_SPECIFIED));
 		}
-		
-		hql += " from Concept as concept";
-		boolean hasWhereClause = false;
-		if (isNameField) {
-			hasWhereClause = true;
-			//This assumes every concept has a unique(avoid duplicates) fully specified name
-			//which should be true for a clean concept dictionary
-			hql += " left join concept.names as names where names.conceptNameType = 'FULLY_SPECIFIED'";
-		}
-		
+
 		if (!includeRetired) {
-			if (hasWhereClause) {
-				hql += " and";
-			} else {
-				hql += " where";
-			}
-			hql += " concept.retired = false";
-			
+			predicates.add(cb.isFalse(root.get("retired")));
 		}
-		
+
+		cq.select(root).where(predicates.toArray(new Predicate[0]));
+
 		if (isNameField) {
-			hql += " order by names." + sortBy;
+			cq.orderBy(asc ? cb.asc(namesJoin.get(sortBy)) : cb.desc(namesJoin.get(sortBy)));
 		} else {
-			hql += " order by concept." + sortBy;
+			cq.orderBy(asc ? cb.asc(root.get(sortBy)) : cb.desc(root.get(sortBy)));
 		}
-		
-		hql += asc ? " asc" : " desc";
-		Query query = sessionFactory.getCurrentSession().createQuery(hql);
-		return (List<Concept>) query.getResultList();
+
+		return session.createQuery(cq).getResultList();
 	}
 	
 	/**

@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,8 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 
 /**
@@ -77,22 +80,25 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 * @param patient the patient whose active diagnoses are being queried.
 	 * @return all active diagnoses associated with the specified patient.
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Diagnosis> getActiveDiagnoses(Patient patient, Date fromDate) {
-		String fromDateCriteria = "";
-		if(fromDate != null){
-			fromDateCriteria = " and d.dateCreated >= :fromDate ";
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Diagnosis> cq = cb.createQuery(Diagnosis.class);
+		Root<Diagnosis> root = cq.from(Diagnosis.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(cb.equal(root.get("patient").get("patientId"), patient.getId()));
+		predicates.add(cb.isFalse(root.get("voided")));
+
+		if (fromDate != null) {
+			predicates.add(cb.greaterThanOrEqualTo(root.get("dateCreated"), fromDate));
 		}
-		Query query = sessionFactory.getCurrentSession().createQuery(
-			"from Diagnosis d where d.patient.patientId = :patientId and d.voided = false " 
-				+ fromDateCriteria  
-				+ " order by d.dateCreated desc");
-		query.setParameter("patientId", patient.getId());
-		if(fromDate != null){
-			query.setParameter("fromDate", fromDate);
-		}
-		return query.getResultList();
+
+		cq.where(predicates.toArray(new Predicate[0]));
+		cq.orderBy(cb.desc(root.get("dateCreated")));
+
+		return session.createQuery(cq).getResultList();
 	}
 
 	/**
