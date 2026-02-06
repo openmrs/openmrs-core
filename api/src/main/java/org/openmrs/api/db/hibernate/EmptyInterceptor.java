@@ -14,6 +14,7 @@ import java.util.Iterator;
 
 import org.hibernate.CallbackException;
 import org.hibernate.Interceptor;
+import org.hibernate.metamodel.spi.EntityRepresentationStrategy;
 import org.hibernate.type.Type;
 
 /**
@@ -80,7 +81,7 @@ public abstract class EmptyInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public Object instantiate(String entityName, org.hibernate.metamodel.spi.EntityRepresentationStrategy representationStrategy, Object id) throws CallbackException {
+	public Object instantiate(String entityName, EntityRepresentationStrategy representationStrategy, Object id) throws CallbackException {
 		return null;
 	}
 	
