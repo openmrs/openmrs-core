@@ -94,7 +94,7 @@ public class PatientValidator extends PersonValidator {
 		Collection<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes(false);
 
     	for (PatientIdentifierType type : identifierTypes) {
-        	if (Boolean.TRUE.equals(type.getRequired()) && !type.getRetired()) {
+        	if (Boolean.TRUE.equals(type.getRequired())) {
 				boolean found = false;
             	for (PatientIdentifier pi : identifiers) {
                 	if (!pi.getVoided() && pi.getIdentifierType() != null && pi.getIdentifierType().getId().equals(type.getId())) {
