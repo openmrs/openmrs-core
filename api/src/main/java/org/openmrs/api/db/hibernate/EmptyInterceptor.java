@@ -61,11 +61,11 @@ public abstract class EmptyInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public void preFlush(Iterator entities) throws CallbackException {
+	public void preFlush(Iterator<?> entities) throws CallbackException {
 	}
 	
 	@Override
-	public void postFlush(Iterator entities) throws CallbackException {
+	public void postFlush(Iterator<?> entities) throws CallbackException {
 	}
 	
 	@Override
@@ -80,7 +80,7 @@ public abstract class EmptyInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public Object instantiate(String entityName, Integer entityMode, Serializable id) throws CallbackException {
+	public Object instantiate(String entityName, org.hibernate.metamodel.spi.EntityRepresentationStrategy representationStrategy, Object id) throws CallbackException {
 		return null;
 	}
 	
