@@ -688,7 +688,51 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void nullSafeEqualsIgnoreCase_shouldBeCaseInsensitive() {
 		assertTrue(OpenmrsUtil.nullSafeEqualsIgnoreCase("equal", "Equal"));
 	}
-	
+	/**
+	 * @see OpenmrsUtil#isStringInArray(String, String[])
+	 */
+	@Test
+	public void isStringInArray_shouldReturnTrueIfStringExistsInArray() {
+		String[] arr = {"a", "b", "c"};
+		assertTrue(OpenmrsUtil.isStringInArray("b", arr));
+	}
+
+	/**
+	 * @see OpenmrsUtil#isStringInArray(String, String[])
+	 */
+	@Test
+	public void isStringInArray_shouldReturnFalseIfStringDoesNotExistInArray() {
+		String[] arr = {"a", "b", "c"};
+		assertFalse(OpenmrsUtil.isStringInArray("d", arr));
+	}
+
+	/**
+	 * @see OpenmrsUtil#isStringInArray(String, String[])
+	 */
+	@Test
+	public void isStringInArray_shouldReturnFalseIfStringIsNull() {
+		String[] arr = {"a", "b"};
+		assertFalse(OpenmrsUtil.isStringInArray(null, arr));
+	}
+
+	/**
+	 * @see OpenmrsUtil#isStringInArray(String, String[])
+	 */
+	@Test
+	public void isStringInArray_shouldReturnFalseIfArrayIsNull() {
+		assertFalse(OpenmrsUtil.isStringInArray("a", null));
+	}
+
+	/**
+	 * @see OpenmrsUtil#isStringInArray(String, String[])
+	 */
+	@Test
+	public void isStringInArray_shouldHandleNullValuesInsideArray() {
+		String[] arr = {"a", null, "b"};
+		assertTrue(OpenmrsUtil.isStringInArray("a", arr));
+		assertFalse(OpenmrsUtil.isStringInArray("c", arr));
+	}
+
 	/**
 	 * @see OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)
 	 */
