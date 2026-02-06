@@ -11,7 +11,6 @@ package org.openmrs.util.databasechange;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.UUID;
 
 import org.openmrs.AllergySeverity;
@@ -62,13 +61,15 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 			JdbcConnection connection = (JdbcConnection) database.getConnection();
 
 			int allergyTypeId;
-			try (Statement selectStatement = connection.createStatement();
-				ResultSet rs = selectStatement.executeQuery(
-					"select active_list_type_id from active_list_type where name = 'Allergy'")) {
-				if (!rs.next()) {
-					throw new CustomChangeException("Failed to find row with name 'Allergy' in the active_list_type");
+			try (PreparedStatement typeStmt = connection.prepareStatement(
+					"select active_list_type_id from active_list_type where name = ?")) {
+				typeStmt.setString(1, "Allergy");
+				try (ResultSet rs = typeStmt.executeQuery()) {
+					if (!rs.next()) {
+						throw new CustomChangeException("Failed to find row with name 'Allergy' in the active_list_type");
+					}
+					allergyTypeId = rs.getInt(1);
 				}
-				allergyTypeId = rs.getInt(1);
 			}
 
 			try (PreparedStatement allergyInsertStatement = connection.prepareStatement(
@@ -79,12 +80,13 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 						+ "values (?,?,?)");
 				PreparedStatement allergySelectStatement = connection.prepareStatement(
 					"select allergy_id from allergy where uuid = ?");
-				Statement selectStatement = connection.createStatement();
-				ResultSet rs = selectStatement.executeQuery(
+				PreparedStatement activeListStmt = connection.prepareStatement(
 					"select person_id, concept_id, comments, creator, date_created, uuid, reaction_concept_id, severity, allergy_type "
 						+ "from active_list al inner join active_list_allergy ala on al.active_list_id=ala.active_list_id "
-						+ "where voided = 0 and active_list_type_id = " + allergyTypeId)) {
+						+ "where voided = 0 and active_list_type_id = ?")) {
 
+				activeListStmt.setInt(1, allergyTypeId);
+				try (ResultSet rs = activeListStmt.executeQuery()) {
 				while (rs.next()) {
 					String uuid = rs.getString("uuid");
 
@@ -141,6 +143,7 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 					if (!rs.wasNull()) {
 						reactionInsertStatement.execute();
 					}
+				}
 				}
 			}
 		}
