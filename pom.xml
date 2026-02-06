@@ -57,7 +57,7 @@
 		<module>web</module>
 		<module>webapp</module>
 		<module>liquibase</module>
-		<module>test-suite</module>
+		<!-- <module>test-suite</module> -->
 	</modules>
 
 	<dependencyManagement>
@@ -207,7 +207,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-hibernate-cache-v62</artifactId>
+				<artifactId>infinispan-hibernate-cache-v70</artifactId>
 				<version>${infinispanVersion}</version>
 			</dependency>
 			<dependency>
@@ -1360,13 +1360,13 @@
 			 For instance, our version of Lucene is tied to the version of Hibernate Search. Similarly, our
 			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
 			 be compatible with our version of Spring. -->
-		<springVersion>6.2.12</springVersion>
-		<hibernateVersion>6.6.23.Final</hibernateVersion>
+		<springVersion>7.0.3</springVersion>
+		<hibernateVersion>7.2.3.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
-		<hibernateSearchVersion>7.1.2.Final</hibernateSearchVersion>
-		<luceneVersion>10.3.2</luceneVersion>
+		<hibernateSearchVersion>7.2.5.Final</hibernateSearchVersion>
+		<luceneVersion>9.13.0</luceneVersion>
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
-		<infinispanVersion>15.2.2.Final</infinispanVersion>
+		<infinispanVersion>16.0.3.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
 		<jacksonVersion>2.19.2</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>

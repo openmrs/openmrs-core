@@ -134,7 +134,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
-			<artifactId>infinispan-hibernate-cache-v62</artifactId>
+			<artifactId>infinispan-hibernate-cache-v70</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.search</groupId>
