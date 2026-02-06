@@ -110,7 +110,8 @@ public class PatientValidator extends PersonValidator {
                 	errors.rejectValue(
                         "identifiers",
                         "Patient.missingRequiredIdentifier",
-                        "Missing required patient identifier: " + type.getName()
+                        new Object[] { type.getName() },
+						null
                 	);
             	}
         	}
