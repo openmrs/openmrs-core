@@ -73,7 +73,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public Form saveForm(Form form) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(form);
+		sessionFactory.getCurrentSession().merge(form);
 		return form;
 	}
 	
@@ -90,7 +90,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public void deleteForm(Form form) throws DAOException {
-		sessionFactory.getCurrentSession().delete(form);
+		sessionFactory.getCurrentSession().remove(form);
 	}
 	
 	/**
@@ -300,7 +300,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public Field saveField(Field field) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(field);
+		sessionFactory.getCurrentSession().merge(field);
 		return field;
 	}
 	
@@ -310,7 +310,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public void deleteField(Field field) throws DAOException {
-		sessionFactory.getCurrentSession().delete(field);
+		sessionFactory.getCurrentSession().remove(field);
 	}
 	
 	/**
@@ -318,7 +318,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public FormField saveFormField(FormField formField) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(formField);
+		sessionFactory.getCurrentSession().merge(formField);
 		return formField;
 	}
 	
@@ -328,7 +328,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public void deleteFormField(FormField formField) throws DAOException {
-		sessionFactory.getCurrentSession().delete(formField);
+		sessionFactory.getCurrentSession().remove(formField);
 	}
 	
 	/**
@@ -623,7 +623,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public void deleteFieldType(FieldType fieldType) throws DAOException {
-		sessionFactory.getCurrentSession().delete(fieldType);
+		sessionFactory.getCurrentSession().remove(fieldType);
 	}
 	
 	/**
@@ -631,7 +631,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public FieldType saveFieldType(FieldType fieldType) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(fieldType);
+		sessionFactory.getCurrentSession().merge(fieldType);
 		return fieldType;
 	}
 	
@@ -686,7 +686,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public FormResource saveFormResource(FormResource formResource) {
-		sessionFactory.getCurrentSession().saveOrUpdate(formResource);
+		sessionFactory.getCurrentSession().merge(formResource);
 		return formResource;
 	}
 	
@@ -695,7 +695,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public void deleteFormResource(FormResource formResource) {
-		sessionFactory.getCurrentSession().delete(formResource);
+		sessionFactory.getCurrentSession().remove(formResource);
 	}
 	
 	/**

@@ -28,8 +28,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -64,7 +64,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 	
 
 	@OneToMany(mappedBy = "allergy", cascade = CascadeType.ALL, orphanRemoval = true)
-	@LazyCollection(LazyCollectionOption.FALSE)
+	@Fetch(FetchMode.SELECT)
 	private List<AllergyReaction> reactions = new ArrayList<>();
 	
 	@ManyToOne(optional = true)

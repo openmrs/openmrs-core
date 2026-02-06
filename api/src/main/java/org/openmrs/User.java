@@ -41,9 +41,9 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -87,8 +87,8 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "person_id", nullable = false)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	@Cascade(CascadeType.SAVE_UPDATE)
+	@Fetch(FetchMode.SELECT)
+	@Cascade({CascadeType.PERSIST, CascadeType.MERGE})
 	private Person person;
 
 	@Column(name = "system_id", nullable = false, length = 50)

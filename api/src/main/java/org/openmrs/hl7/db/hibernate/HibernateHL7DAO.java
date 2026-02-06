@@ -59,7 +59,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public HL7Source saveHL7Source(HL7Source hl7Source) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(hl7Source);
+		sessionFactory.getCurrentSession().merge(hl7Source);
 		return hl7Source;
 	}
 	
@@ -100,7 +100,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public void deleteHL7Source(HL7Source hl7Source) throws DAOException {
-		sessionFactory.getCurrentSession().delete(hl7Source);
+		sessionFactory.getCurrentSession().remove(hl7Source);
 	}
 	
 	/**
@@ -108,7 +108,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public HL7InQueue saveHL7InQueue(HL7InQueue hl7InQueue) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(hl7InQueue);
+		sessionFactory.getCurrentSession().merge(hl7InQueue);
 		return hl7InQueue;
 	}
 	
@@ -233,7 +233,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public void deleteHL7InQueue(HL7InQueue hl7InQueue) throws DAOException {
-		sessionFactory.getCurrentSession().delete(hl7InQueue);
+		sessionFactory.getCurrentSession().remove(hl7InQueue);
 	}
 	
 	/**
@@ -241,7 +241,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public HL7InArchive saveHL7InArchive(HL7InArchive hl7InArchive) throws DAOException {
-		sessionFactory.getCurrentSession().save(hl7InArchive);
+		sessionFactory.getCurrentSession().persist(hl7InArchive);
 		return hl7InArchive;
 	}
 	
@@ -310,7 +310,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public void deleteHL7InArchive(HL7InArchive hl7InArchive) throws DAOException {
-		sessionFactory.getCurrentSession().delete(hl7InArchive);
+		sessionFactory.getCurrentSession().remove(hl7InArchive);
 	}
 	
 	/**
@@ -318,7 +318,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public HL7InError saveHL7InError(HL7InError hl7InError) throws DAOException {
-		sessionFactory.getCurrentSession().save(hl7InError);
+		sessionFactory.getCurrentSession().persist(hl7InError);
 		return hl7InError;
 	}
 	
@@ -349,7 +349,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public void deleteHL7InError(HL7InError hl7InError) throws DAOException {
-		sessionFactory.getCurrentSession().delete(hl7InError);
+		sessionFactory.getCurrentSession().remove(hl7InError);
 	}
 	
 	/**

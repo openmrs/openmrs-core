@@ -483,9 +483,13 @@ public class DbSession {
 	 *
 	 * @param object a transient instance of a persistent class
 	 * @return the generated identifier
+	 * @deprecated Use {@link #persist(Object)} instead. For Hibernate 7.x compatibility, 
+	 * this method now delegates to persist() and returns the object itself.
 	 */
+	@Deprecated
 	public Object save(Object object) {
-		return getSession().save(object);
+		getSession().persist(object);
+		return object;
 	}
 	
 	/**
@@ -497,9 +501,13 @@ public class DbSession {
 	 * @param entityName The entity name
 	 * @param object a transient instance of a persistent class
 	 * @return the generated identifier
+	 * @deprecated Use {@link #persist(String, Object)} instead. For Hibernate 7.x compatibility, 
+	 * this method now delegates to persist() and returns the object itself.
 	 */
+	@Deprecated
 	public Object save(String entityName, Object object) {
-		return getSession().save(entityName, object);
+		getSession().persist(entityName, object);
+		return object;
 	}
 	
 	/**
@@ -513,9 +521,11 @@ public class DbSession {
 	 * @param object a transient or detached instance containing new or updated state
 	 * @see Session#save(java.lang.Object)
 	 * @see Session#update(Object object)
+	 * @deprecated Use {@link #merge(Object)} instead for Hibernate 7.x compatibility.
 	 */
+	@Deprecated
 	public void saveOrUpdate(Object object) {
-		getSession().saveOrUpdate(object);
+		getSession().merge(object);
 	}
 	
 	/**
@@ -530,9 +540,11 @@ public class DbSession {
 	 * @param object a transient or detached instance containing new or updated state
 	 * @see Session#save(String,Object)
 	 * @see Session#update(String,Object)
+	 * @deprecated Use {@link #merge(String, Object)} instead for Hibernate 7.x compatibility.
 	 */
+	@Deprecated
 	public void saveOrUpdate(String entityName, Object object) {
-		getSession().saveOrUpdate(entityName, object);
+		getSession().merge(entityName, object);
 	}
 	
 	/**
@@ -542,9 +554,11 @@ public class DbSession {
 	 * {@code cascade="save-update"}
 	 *
 	 * @param object a detached instance containing updated state
+	 * @deprecated Use {@link #merge(Object)} instead for Hibernate 7.x compatibility.
 	 */
+	@Deprecated
 	public void update(Object object) {
-		getSession().update(object);
+		getSession().merge(object);
 	}
 	
 	/**
@@ -555,9 +569,11 @@ public class DbSession {
 	 *
 	 * @param entityName The entity name
 	 * @param object a detached instance containing updated state
+	 * @deprecated Use {@link #merge(String, Object)} instead for Hibernate 7.x compatibility.
 	 */
+	@Deprecated
 	public void update(String entityName, Object object) {
-		getSession().update(entityName, object);
+		getSession().merge(entityName, object);
 	}
 	
 	/**
@@ -627,9 +643,11 @@ public class DbSession {
 	 * association is mapped with {@code cascade="delete"}
 	 *
 	 * @param object the instance to be removed
+	 * @deprecated Use {@link #remove(Object)} instead for Hibernate 7.x compatibility.
 	 */
+	@Deprecated
 	public void delete(Object object) {
-		getSession().delete(object);
+		getSession().remove(object);
 	}
 	
 	/**
@@ -640,9 +658,23 @@ public class DbSession {
 	 *
 	 * @param entityName The entity name for the instance to be removed.
 	 * @param object the instance to be removed
+	 * @deprecated Use {@link #remove(Object)} instead for Hibernate 7.x compatibility.
 	 */
+	@Deprecated
 	public void delete(String entityName, Object object) {
-		getSession().delete(entityName, object);
+		getSession().remove(object);
+	}
+	
+	/**
+	 * Remove a persistent instance from the datastore. The argument may be an instance associated
+	 * with the receiving <tt>Session</tt> or a transient instance with an identifier associated
+	 * with existing persistent state. This operation cascades to associated instances if the
+	 * association is mapped with {@code cascade="delete"}
+	 *
+	 * @param object the instance to be removed
+	 */
+	public void remove(Object object) {
+		getSession().remove(object);
 	}
 	
 	/**
@@ -655,7 +687,10 @@ public class DbSession {
 	 *
 	 * @param lockOptions contains the lock level
 	 * @return a lockRequest that can be used to lock the passed object.
+	 * @deprecated This method has been removed in Hibernate 7.x. Use {@code session.lock(entity, lockOptions.getLockMode())} 
+	 * instead for simple locking operations.
 	 */
+	@Deprecated
 	public LockRequest buildLockRequest(LockOptions lockOptions) {
 		return getSession().buildLockRequest(lockOptions);
 	}
