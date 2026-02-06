@@ -50,8 +50,7 @@ import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate6.SessionFactoryUtils;
-import org.springframework.orm.hibernate6.SessionHolder;
+import org.springframework.orm.jpa.hibernate.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.stereotype.Repository;
@@ -351,7 +350,7 @@ public class HibernateContextDAO implements ContextDAO {
 				try {
 					if (value instanceof SessionHolder) {
 						Session session = ((SessionHolder) value).getSession();
-						SessionFactoryUtils.closeSession(session);
+						session.close();
 					}
 				}
 				catch (RuntimeException e) {
@@ -649,9 +648,10 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	public Connection getDatabaseConnection() {
 		try {
-			return SessionFactoryUtils.getDataSource(sessionFactory).getConnection();
+			// In Hibernate 7 with Spring 7, we get the connection directly from the SessionFactory
+			return sessionFactory.openSession().doReturningWork(connection -> connection);
 		}
-		catch (SQLException e) {
+		catch (Exception e) {
 			throw new RuntimeException("Unable to retrieve a database connection", e);
 		}
 	}
