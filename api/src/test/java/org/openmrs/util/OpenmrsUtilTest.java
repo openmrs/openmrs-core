@@ -732,6 +732,22 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		assertTrue(OpenmrsUtil.isStringInArray("a", arr));
 		assertFalse(OpenmrsUtil.isStringInArray("c", arr));
 	}
+	/**
+	 * @see OpenmrsUtil#isStringInArray(String, String[])
+	 */
+	@Test
+	public void isStringInArray_shouldReturnFalseIfStringIsNullAndArrayContainsNull() {
+		String[] arr = {"a", null, "b"};
+		assertFalse(OpenmrsUtil.isStringInArray(null, arr));
+	}
+	/**
+	 * @see OpenmrsUtil#isStringInArray(String, String[])
+	 */
+	@Test
+	public void isStringInArray_shouldReturnFalseIfStringAndArrayAreNull() {
+		assertFalse(OpenmrsUtil.isStringInArray(null, null));
+	}
+
 
 	/**
 	 * @see OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)
