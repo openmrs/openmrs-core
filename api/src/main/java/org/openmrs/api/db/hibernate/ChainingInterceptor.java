@@ -108,14 +108,14 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public void postFlush(Iterator<?> entities) {
+	public void postFlush(Iterator<Object> entities) {
 		for (Interceptor i : interceptors) {
 			i.postFlush(entities);
 		}
 	}
 	
 	@Override
-	public void preFlush(Iterator<?> entities) {
+	public void preFlush(Iterator<Object> entities) {
 		for (Interceptor i : interceptors) {
 			i.preFlush(entities);
 		}

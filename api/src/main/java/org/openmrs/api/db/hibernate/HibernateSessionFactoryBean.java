@@ -217,7 +217,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 		super.destroy();
 	}
 
-	@Override
+	// Integrator interface method - signature may vary by Hibernate version
 	public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory,
 			SessionFactoryServiceRegistry serviceRegistry) {
 		this.metadata = metadata;

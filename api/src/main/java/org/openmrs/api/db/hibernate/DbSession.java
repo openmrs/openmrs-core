@@ -445,7 +445,8 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(String entityName, Serializable id) {
-		Object entity = getSession().byNaturalId(entityName).load(id);
+		// In Hibernate 7, we use get() which returns the loaded entity or null
+		Object entity = getSession().get(entityName, id);
 		return entity;
 	}
 	

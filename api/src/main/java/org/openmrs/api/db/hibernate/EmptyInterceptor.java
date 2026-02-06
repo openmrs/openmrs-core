@@ -62,11 +62,11 @@ public abstract class EmptyInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public void preFlush(Iterator<?> entities) throws CallbackException {
+	public void preFlush(Iterator<Object> entities) throws CallbackException {
 	}
 	
 	@Override
-	public void postFlush(Iterator<?> entities) throws CallbackException {
+	public void postFlush(Iterator<Object> entities) throws CallbackException {
 	}
 	
 	@Override
