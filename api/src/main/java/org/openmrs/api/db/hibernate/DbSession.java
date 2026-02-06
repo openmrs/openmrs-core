@@ -686,13 +686,15 @@ public class DbSession {
 	 * {@code session.buildLockRequest().setLockMode(LockMode.PESSIMISTIC_WRITE).setTimeOut(60000).lock(entity);}
 	 *
 	 * @param lockOptions contains the lock level
+	 * @throws UnsupportedOperationException always thrown as LockRequest was removed in Hibernate 7.x
 	 * @deprecated This method has been removed in Hibernate 7.x because LockRequest was removed. 
 	 * Use {@code session.lock(entity, lockOptions.getLockMode())} instead for simple locking operations.
 	 */
 	@Deprecated
 	public void buildLockRequest(LockOptions lockOptions) {
-		// LockRequest was removed in Hibernate 7.x - this method is now a no-op
-		// Use session.lock(entity, lockMode) directly instead
+		throw new UnsupportedOperationException(
+			"buildLockRequest() has been removed in Hibernate 7.x. Use session.lock(entity, lockMode) directly instead."
+		);
 	}
 	
 	/**
