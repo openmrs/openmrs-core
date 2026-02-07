@@ -12,6 +12,8 @@ package org.openmrs.api.db.hibernate;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.Query;
+import org.hibernate.Session;
+import org.openmrs.BaseOpenmrsObject;
 
 public class JpaUtils {
 
@@ -31,5 +33,26 @@ public class JpaUtils {
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+	
+	/**
+	 * Saves or updates the given entity using the provided Hibernate session.
+	 * If the entity has a non-null ID, it is merged (updated); otherwise, it is persisted (saved).
+	 *
+	 * @param session the Hibernate session to use for saving or updating
+	 * @param entity the entity to save or update
+	 * @param <T> the type of the entity, which must extend BaseOpenmrsObject
+	 * @return the saved or updated entity
+	 */
+	public static <T extends BaseOpenmrsObject> T saveOrUpdate(Session session, T entity) {
+		if (entity == null) {
+			throw new IllegalArgumentException("attempt to create saveOrUpdate event with null identifier");
+		}
+
+		if (entity.getId() != null) {
+			return session.merge(entity);
+		}
+		session.persist(entity);
+		return entity;
 	}
 }
