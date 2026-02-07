@@ -1085,4 +1085,45 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 
     	assertNotNull(range);
 	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+ 	*/
+	@Test
+	public void getConceptReferenceRange_shouldReturnNullIfConceptIsMissingInContext() {
+    	ConceptService service = Context.getConceptService();
+
+    	Patient patient = new Patient();
+    	patient.setPatientId(1);
+    	patient.setPersonId(1);
+    	patient.setBirthdate(new Date(100, 0, 1));
+
+    	ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(patient, null, new Date());
+		ConceptReferenceRange range = service.getConceptReferenceRange(context);
+
+    	assertNull(range);
+	}
+
+	/**
+ 	* @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+ 	*/
+	@Test
+	public void getConceptReferenceRange_shouldUseExplicitContextDateOverObsDate() {
+    	ConceptService service = Context.getConceptService();
+
+    	Patient patient = new Patient();
+    	patient.setPatientId(1);
+    	patient.setPersonId(1);
+    	patient.setBirthdate(new Date(100, 0, 1));
+
+    	ConceptNumeric numericConcept = (ConceptNumeric) Context.getConceptService().getConcept(5089);
+
+    	Date explicitDate = new Date();
+
+    	// Explicit context date wins because obs is NOT used here
+    	ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(patient, numericConcept, explicitDate);
+
+    	ConceptReferenceRange range = service.getConceptReferenceRange(context);
+		assertNotNull(range);
+	}
 }
