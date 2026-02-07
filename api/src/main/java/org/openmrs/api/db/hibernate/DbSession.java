@@ -494,8 +494,7 @@ public class DbSession {
 	 *
 	 * @param object a transient instance of a persistent class
 	 * @return the generated identifier
-	 * @deprecated Use {@link #persist(Object)} instead. For Hibernate 7.x compatibility, 
-	 * this method now delegates to persist() and returns the object itself.
+	 * @deprecated as of 2.7.0, replaced by {@link #persist(Object)}
 	 */
 	@Deprecated
 	public Object save(Object object) {
@@ -512,8 +511,7 @@ public class DbSession {
 	 * @param entityName The entity name
 	 * @param object a transient instance of a persistent class
 	 * @return the generated identifier
-	 * @deprecated Use {@link #persist(String, Object)} instead. For Hibernate 7.x compatibility, 
-	 * this method now delegates to persist() and returns the object itself.
+	 * @deprecated as of 2.7.0, replaced by {@link #persist(String, Object)}
 	 */
 	@Deprecated
 	public Object save(String entityName, Object object) {
@@ -532,7 +530,7 @@ public class DbSession {
 	 * @param object a transient or detached instance containing new or updated state
 	 * @see Session#save(java.lang.Object)
 	 * @see Session#update(Object object)
-	 * @deprecated Use {@link #merge(Object)} instead for Hibernate 7.x compatibility.
+	 * @deprecated as of 2.7.0, replaced by {@link #merge(Object)}
 	 */
 	@Deprecated
 	public void saveOrUpdate(Object object) {
@@ -551,7 +549,7 @@ public class DbSession {
 	 * @param object a transient or detached instance containing new or updated state
 	 * @see Session#save(String,Object)
 	 * @see Session#update(String,Object)
-	 * @deprecated Use {@link #merge(String, Object)} instead for Hibernate 7.x compatibility.
+	 * @deprecated as of 2.7.0, replaced by {@link #merge(String, Object)}
 	 */
 	@Deprecated
 	public void saveOrUpdate(String entityName, Object object) {
@@ -565,7 +563,7 @@ public class DbSession {
 	 * {@code cascade="save-update"}
 	 *
 	 * @param object a detached instance containing updated state
-	 * @deprecated Use {@link #merge(Object)} instead for Hibernate 7.x compatibility.
+	 * @deprecated as of 2.7.0, replaced by {@link #merge(Object)}
 	 */
 	@Deprecated
 	public void update(Object object) {
@@ -580,7 +578,7 @@ public class DbSession {
 	 *
 	 * @param entityName The entity name
 	 * @param object a detached instance containing updated state
-	 * @deprecated Use {@link #merge(String, Object)} instead for Hibernate 7.x compatibility.
+	 * @deprecated as of 2.7.0, replaced by {@link #merge(String, Object)}
 	 */
 	@Deprecated
 	public void update(String entityName, Object object) {
@@ -654,7 +652,7 @@ public class DbSession {
 	 * association is mapped with {@code cascade="delete"}
 	 *
 	 * @param object the instance to be removed
-	 * @deprecated Use {@link #remove(Object)} instead for Hibernate 7.x compatibility.
+	 * @deprecated as of 2.7.0, replaced by {@link #remove(Object)}
 	 */
 	@Deprecated
 	public void delete(Object object) {
@@ -669,8 +667,7 @@ public class DbSession {
 	 *
 	 * @param entityName The entity name for the instance to be removed (NOTE: This parameter is ignored in Hibernate 7.x as the remove() API no longer supports entityName)
 	 * @param object the instance to be removed
-	 * @deprecated Use {@link #remove(Object)} instead for Hibernate 7.x compatibility.
-	 *             Note: The entityName parameter is no longer supported in Hibernate 7.x remove() API.
+	 * @deprecated as of 2.7.0, replaced by {@link #remove(Object)}
 	 */
 	@Deprecated
 	public void delete(String entityName, Object object) {
@@ -699,8 +696,7 @@ public class DbSession {
 	 *
 	 * @param lockOptions contains the lock level
 	 * @throws UnsupportedOperationException always thrown as LockRequest was removed in Hibernate 7.x
-	 * @deprecated This method has been removed in Hibernate 7.x because LockRequest was removed. 
-	 * Use {@code session.lock(entity, lockOptions.getLockMode())} instead for simple locking operations.
+	 * @deprecated as of 2.7.0, use {@code session.lock(entity, lockOptions.getLockMode())} instead
 	 */
 	@Deprecated
 	public void buildLockRequest(LockOptions lockOptions) {
@@ -737,7 +733,7 @@ public class DbSession {
 	 *
 	 * @param entityName a persistent class (no longer used in Hibernate 7)
 	 * @param object a persistent or detached instance
-	 * @deprecated The entityName parameter is no longer supported in Hibernate 7. Use {@link #refresh(Object)} instead.
+	 * @deprecated as of 2.7.0, replaced by {@link #refresh(Object)}
 	 */
 	@Deprecated
 	public void refresh(String entityName, Object object) {
@@ -765,7 +761,7 @@ public class DbSession {
 	 * @param entityName a persistent class (no longer used in Hibernate 7)
 	 * @param object a persistent or detached instance
 	 * @param lockOptions contains the lock mode to use
-	 * @deprecated The entityName parameter is no longer supported in Hibernate 7. Use {@link #refresh(Object, LockOptions)} instead.
+	 * @deprecated as of 2.7.0, replaced by {@link #refresh(Object, LockOptions)}
 	 */
 	@Deprecated
 	public void refresh(String entityName, Object object, LockOptions lockOptions) {
