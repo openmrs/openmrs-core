@@ -107,8 +107,8 @@ public class ConceptReferenceRangeUtility {
         velocityContext.put("encounter", context.getEncounter());
     	}
 
-    	if (context.getDate() != null) {
-        velocityContext.put("date", context.getDate());
+    	if (context.getEffectiveDate() != null) {
+        velocityContext.put("date", context.getEffectiveDate());
     	}
 
     	VelocityEngine velocityEngine = new VelocityEngine();
