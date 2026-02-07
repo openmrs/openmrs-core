@@ -92,7 +92,7 @@ public class ConceptReferenceRangeContext {
 	}
 	
 	/** Required by ConceptServiceImpl */
-	public Date getDate() {
+	public Date getEffectiveDate() {
 		return effectiveDate;
 	}
 	
