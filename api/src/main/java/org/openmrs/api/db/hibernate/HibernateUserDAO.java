@@ -93,7 +93,7 @@ public class HibernateUserDAO implements UserDAO {
 		// only change the user's password when creating a new user
 		boolean isNewUser = user.getUserId() == null;
 		
-		sessionFactory.getCurrentSession().saveOrUpdate(user);
+		sessionFactory.getCurrentSession().merge(user);
 		
 		if (isNewUser && password != null) {
 			/* In OpenMRS, we are using generation strategy as native which will convert to IDENTITY 
@@ -238,7 +238,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void deleteUser(User user) {
-		sessionFactory.getCurrentSession().delete(user);
+		sessionFactory.getCurrentSession().remove(user);
 	}
 	
 	/**
@@ -281,7 +281,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void deletePrivilege(Privilege privilege) throws DAOException {
-		sessionFactory.getCurrentSession().delete(privilege);
+		sessionFactory.getCurrentSession().remove(privilege);
 	}
 	
 	/**
@@ -289,7 +289,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public Privilege savePrivilege(Privilege privilege) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(privilege);
+		sessionFactory.getCurrentSession().merge(privilege);
 		return privilege;
 	}
 	
@@ -298,7 +298,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void deleteRole(Role role) throws DAOException {
-		sessionFactory.getCurrentSession().delete(role);
+		sessionFactory.getCurrentSession().remove(role);
 	}
 	
 	/**
@@ -306,7 +306,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public Role saveRole(Role role) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(role);
+		sessionFactory.getCurrentSession().merge(role);
 		return role;
 	}
 	
@@ -646,7 +646,7 @@ public class HibernateUserDAO implements UserDAO {
 			}
 		}
 		
-		sessionFactory.getCurrentSession().update(credential);
+		sessionFactory.getCurrentSession().merge(credential);
 	}
 	
 	/**
