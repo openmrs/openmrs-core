@@ -551,7 +551,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveConceptClass_shouldSaveTheGivenConceptClass() {
-		int unusedConceptClassId = 123;
+		int unusedConceptClassId = 1;
 		ConceptClass conceptClass = new ConceptClass(unusedConceptClassId);
 		conceptClass.setName("name");
 		conceptClass.setDescription("description");
