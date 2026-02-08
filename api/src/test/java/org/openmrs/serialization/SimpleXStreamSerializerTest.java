@@ -29,7 +29,7 @@ import java.util.Map;
 import com.thoughtworks.xstream.XStreamException;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.collection.spi.PersistentList;
-import org.hibernate.loader.PropertyPath;
+import org.hibernate.loader.MultipleBagFetchException;
 import org.hibernate.mapping.Column;
 import org.hibernate.type.OrderedMapType;
 import org.junit.jupiter.api.Test;
@@ -176,11 +176,11 @@ public class SimpleXStreamSerializerTest {
 		SimpleXStreamSerializer serializer = new SimpleXStreamSerializer(adminService);
 		
 		String columnXml = serializer.serialize(column);
-		String propertyPath = serializer.serialize(new PropertyPath());
+		String loaderException = serializer.serialize(new MultipleBagFetchException(new ArrayList<>()));
 		
 		//when/then
 		assertNotNull(serializer.deserialize(columnXml, Column.class));
-		assertNotNull(serializer.deserialize(propertyPath, PropertyPath.class));
+		assertNotNull(serializer.deserialize(loaderException, MultipleBagFetchException.class));
 	}
 
 	/**
@@ -192,17 +192,17 @@ public class SimpleXStreamSerializerTest {
 		//given
 		Column column = new Column();
 		AdministrationService adminService = mock(AdministrationService.class);
-		when(adminService.getSerializerWhitelistTypes()).thenReturn(Arrays.asList("org.hibernate.loader.PropertyPath", 
+		when(adminService.getSerializerWhitelistTypes()).thenReturn(Arrays.asList("org.hibernate.loader.MultipleBagFetchException", 
 				"org.hibernate.mapping.*", "org.hibernate.collection.**"));
 		SimpleXStreamSerializer serializer = new SimpleXStreamSerializer(adminService);
 		String columnXml = serializer.serialize(column);
-		String propertyPath = serializer.serialize(new PropertyPath());
+		String loaderException = serializer.serialize(new MultipleBagFetchException(new ArrayList<>()));
 		String persistentList = serializer.serialize(new PersistentList());
 		String orderedMapType = serializer.serialize(new OrderedMapType("role", "ref"));
 		
 		//when/then
 		assertNotNull(serializer.deserialize(columnXml, Column.class));
-		assertNotNull(serializer.deserialize(propertyPath, PropertyPath.class));
+		assertNotNull(serializer.deserialize(loaderException, MultipleBagFetchException.class));
 		assertNotNull(serializer.deserialize(persistentList, PersistentList.class));
 		assertThrows(SerializationException.class, () -> serializer.deserialize(orderedMapType, OrderedMapType.class));
 	}
