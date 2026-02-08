@@ -28,7 +28,7 @@
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-		<many-to-one name="parent" class="FormField" cascade="save-update,merge,evict">
+		<many-to-one name="parent" class="FormField" cascade="merge,persist,evict">
 			<column name="parent_form_field" />
 		</many-to-one>
 
@@ -36,7 +36,7 @@
 			<column name="form_id" />
 		</many-to-one>
 
-		<many-to-one name="field" class="Field" not-null="true" cascade="save-update,merge,evict">
+		<many-to-one name="field" class="Field" not-null="true" cascade="merge,persist,evict">
 			<column name="field_id" />
 		</many-to-one>
 
