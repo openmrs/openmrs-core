@@ -65,7 +65,6 @@ public class HibernateTemplateDAO implements TemplateDAO {
 			createTemplate(template);
 		} else {
 			template = (Template) sessionFactory.getCurrentSession().merge(template);
-			sessionFactory.getCurrentSession().merge(template);
 		}
 	}
 	
