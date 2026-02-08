@@ -130,7 +130,7 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public Condition saveCondition(Condition condition) {
-		sessionFactory.getCurrentSession().merge(condition);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), condition);
 		return condition;
 	}
 }

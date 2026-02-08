@@ -91,7 +91,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public Order saveOrder(Order order) throws DAOException {
-		sessionFactory.getCurrentSession().merge(order);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), order);
 		
 		return order;
 	}
@@ -368,7 +368,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException {
-		sessionFactory.getCurrentSession().merge(orderGroup);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderGroup);
 		return orderGroup;
 	}
 	
@@ -663,7 +663,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) {
-		sessionFactory.getCurrentSession().merge(orderFrequency);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderFrequency);
 		return orderFrequency;
 	}
 	
@@ -809,7 +809,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderType saveOrderType(OrderType orderType) {
-		sessionFactory.getCurrentSession().merge(orderType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderType);
 		return orderType;
 	}
 	
@@ -926,7 +926,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws DAOException {
-		sessionFactory.getCurrentSession().merge(orderGroupAttributeType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderGroupAttributeType);
 		return orderGroupAttributeType;
 	}
 	
@@ -1008,7 +1008,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderAttributeType saveOrderAttributeType(OrderAttributeType orderAttributeType) throws DAOException {
-		sessionFactory.getCurrentSession().merge(orderAttributeType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderAttributeType);
 		return orderAttributeType;
 	}
 

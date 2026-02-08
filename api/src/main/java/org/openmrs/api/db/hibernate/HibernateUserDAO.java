@@ -93,7 +93,7 @@ public class HibernateUserDAO implements UserDAO {
 		// only change the user's password when creating a new user
 		boolean isNewUser = user.getUserId() == null;
 		
-		sessionFactory.getCurrentSession().merge(user);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), user);
 		
 		if (isNewUser && password != null) {
 			/* In OpenMRS, we are using generation strategy as native which will convert to IDENTITY 
@@ -289,7 +289,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public Privilege savePrivilege(Privilege privilege) throws DAOException {
-		sessionFactory.getCurrentSession().merge(privilege);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), privilege);
 		return privilege;
 	}
 	
@@ -306,7 +306,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public Role saveRole(Role role) throws DAOException {
-		sessionFactory.getCurrentSession().merge(role);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), role);
 		return role;
 	}
 	
@@ -405,7 +405,7 @@ public class HibernateUserDAO implements UserDAO {
 		credentials.setDateChanged(dateChanged);
 		credentials.setUuid(changeForUser.getUuid());
 		
-		sessionFactory.getCurrentSession().merge(credentials);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credentials);
 		
 		// reset lockout 
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
@@ -646,7 +646,7 @@ public class HibernateUserDAO implements UserDAO {
 			}
 		}
 		
-		sessionFactory.getCurrentSession().merge(credential);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credential);
 	}
 	
 	/**
@@ -786,7 +786,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void setUserActivationKey(LoginCredential credentials) {		
-			sessionFactory.getCurrentSession().merge(credentials);	
+			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credentials);	
 	}
 
 	/**

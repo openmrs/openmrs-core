@@ -63,7 +63,7 @@ public class HibernateDatatypeDAO implements DatatypeDAO {
 	 */
 	@Override
 	public ClobDatatypeStorage saveClobDatatypeStorage(ClobDatatypeStorage storage) {
-		session().merge(storage);
+		HibernateUtil.saveOrUpdate(session(), storage);
 		return storage;
 	}
 	

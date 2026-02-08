@@ -516,7 +516,7 @@ public class DbSession {
 	 * @see Session#update(Object object)
 	 */
 	public void saveOrUpdate(Object object) {
-		getSession().merge(object);
+		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
 	
 	/**
@@ -533,7 +533,7 @@ public class DbSession {
 	 * @see Session#update(String,Object)
 	 */
 	public void saveOrUpdate(String entityName, Object object) {
-		getSession().merge(entityName, object);
+		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
 	
 	/**
@@ -545,7 +545,7 @@ public class DbSession {
 	 * @param object a detached instance containing updated state
 	 */
 	public void update(Object object) {
-		getSession().merge(object);
+		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
 	
 	/**
@@ -558,7 +558,7 @@ public class DbSession {
 	 * @param object a detached instance containing updated state
 	 */
 	public void update(String entityName, Object object) {
-		getSession().merge(entityName, object);
+		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
 	
 	/**

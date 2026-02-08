@@ -91,7 +91,7 @@ public class HibernateObsDAO implements ObsDAO {
 			}
 		}
 		
-		sessionFactory.getCurrentSession().merge(obs);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), obs);
 		
 		return obs;
 	}

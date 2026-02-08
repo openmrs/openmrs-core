@@ -64,7 +64,7 @@ public class HibernateLocationDAO implements LocationDAO {
 			}
 		}
 		
-		sessionFactory.getCurrentSession().merge(location);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), location);
 		return location;
 	}
 	
@@ -131,7 +131,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public LocationTag saveLocationTag(LocationTag tag) {
-		sessionFactory.getCurrentSession().merge(tag);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), tag);
 		return tag;
 	}
 	
@@ -352,7 +352,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType) {
-		sessionFactory.getCurrentSession().merge(locationAttributeType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), locationAttributeType);
 		return locationAttributeType;
 	}
 	

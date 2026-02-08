@@ -50,6 +50,27 @@ public class HibernateUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateUtil.class);
 	
+	/**
+	 * Persists a new entity or merges a detached entity, emulating the old Hibernate
+	 * {@code saveOrUpdate()} behavior. For new (transient) entities, {@code persist()} is used
+	 * which modifies the entity in-place. For detached entities, {@code merge()} is used.
+	 *
+	 * @param session the Hibernate session
+	 * @param entity the entity to save or update
+	 * @since 3.0.0
+	 */
+	public static void saveOrUpdate(Session session, Object entity) {
+		if (session.contains(entity)) {
+			return;
+		}
+		Object id = session.getSessionFactory().getPersistenceUnitUtil().getIdentifier(entity);
+		if (id == null) {
+			session.persist(entity);
+		} else {
+			session.merge(entity);
+		}
+	}
+	
 	private static Dialect dialect = null;
 	
 	private static Boolean isHSQLDialect = null;

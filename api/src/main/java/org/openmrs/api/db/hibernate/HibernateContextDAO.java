@@ -295,7 +295,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @param user the User to save
 	 */
 	private void saveUserProperties(User user) {
-		sessionFactory.getCurrentSession().merge(user);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), user);
 	}
 	
 	/**

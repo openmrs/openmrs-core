@@ -71,7 +71,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public Program saveProgram(Program program) throws DAOException {
-		sessionFactory.getCurrentSession().merge(program);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), program);
 		return program;
 	}
 	
@@ -160,7 +160,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		if (patientProgram.getPatientProgramId() == null) {
 			sessionFactory.getCurrentSession().persist(patientProgram);
 		} else {
-			sessionFactory.getCurrentSession().merge(patientProgram);
+			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patientProgram);
 		}
                 
 		return patientProgram;
@@ -266,7 +266,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		if (csc.getConceptStateConversionId() == null) {
 			sessionFactory.getCurrentSession().persist(csc);
 		} else {
-			sessionFactory.getCurrentSession().merge(csc);
+			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), csc);
 		}
 		return csc;
 	}
@@ -440,7 +440,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 
 	@Override
 	public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType programAttributeType) {
-		sessionFactory.getCurrentSession().merge(programAttributeType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), programAttributeType);
 		return programAttributeType;
 	}
 

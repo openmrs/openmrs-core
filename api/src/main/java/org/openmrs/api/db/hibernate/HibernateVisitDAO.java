@@ -128,7 +128,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional
 	public VisitType saveVisitType(VisitType visitType) {
-		sessionFactory.getCurrentSession().merge(visitType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), visitType);
 		return visitType;
 	}
 	
@@ -165,7 +165,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional
 	public Visit saveVisit(Visit visit) throws DAOException {
-		getCurrentSession().merge(visit);
+		HibernateUtil.saveOrUpdate(getCurrentSession(), visit);
 		return visit;
 	}
 	
@@ -344,7 +344,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional
 	public VisitAttributeType saveVisitAttributeType(VisitAttributeType visitAttributeType) {
-		getCurrentSession().merge(visitAttributeType);
+		HibernateUtil.saveOrUpdate(getCurrentSession(), visitAttributeType);
 		return visitAttributeType;
 	}
 	

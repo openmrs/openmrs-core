@@ -68,7 +68,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 */
 	@Override
 	public Diagnosis saveDiagnosis(Diagnosis diagnosis) {
-		sessionFactory.getCurrentSession().merge(diagnosis);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), diagnosis);
 		return diagnosis;
 	}
 
@@ -218,7 +218,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	@Override
 	@Transactional
 	public DiagnosisAttributeType saveDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws DAOException {
-		sessionFactory.getCurrentSession().merge(diagnosisAttributeType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), diagnosisAttributeType);
 		return diagnosisAttributeType;
 	}
 

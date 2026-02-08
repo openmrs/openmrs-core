@@ -253,7 +253,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 			serializedObject.setRetireReason(dataObj.getVoidReason());
 		}
 		
-		sessionFactory.getCurrentSession().merge(serializedObject);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), serializedObject);
 		
 		object.setId(serializedObject.getId());
 		return object;

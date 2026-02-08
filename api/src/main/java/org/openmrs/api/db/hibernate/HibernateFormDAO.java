@@ -73,7 +73,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public Form saveForm(Form form) throws DAOException {
-		sessionFactory.getCurrentSession().merge(form);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), form);
 		return form;
 	}
 	
@@ -82,7 +82,8 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public Form duplicateForm(Form form) throws DAOException {
-		return (Form) sessionFactory.getCurrentSession().merge(form);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), form);
+		return form;
 	}
 	
 	/**
@@ -300,7 +301,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public Field saveField(Field field) throws DAOException {
-		sessionFactory.getCurrentSession().merge(field);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), field);
 		return field;
 	}
 	
@@ -318,7 +319,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public FormField saveFormField(FormField formField) throws DAOException {
-		sessionFactory.getCurrentSession().merge(formField);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), formField);
 		return formField;
 	}
 	
@@ -631,7 +632,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public FieldType saveFieldType(FieldType fieldType) throws DAOException {
-		sessionFactory.getCurrentSession().merge(fieldType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), fieldType);
 		return fieldType;
 	}
 	
@@ -686,7 +687,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public FormResource saveFormResource(FormResource formResource) {
-		sessionFactory.getCurrentSession().merge(formResource);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), formResource);
 		return formResource;
 	}
 	

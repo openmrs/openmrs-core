@@ -108,7 +108,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			// if we're saving a new patient, just do the normal thing
 			// and rows in the person and patient table will be created by
 			// hibernate
-			sessionFactory.getCurrentSession().merge(patient);
+			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patient);
 			return patient;
 		} else {
 			// if we're updating a patient, its possible that a person
@@ -124,7 +124,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			// Note: A merge might be necessary here because hibernate thinks that Patients
 			// and Persons are the same objects.  So it sees a Person object in the
 			// cache and claims it is a duplicate of this Patient object.
-			sessionFactory.getCurrentSession().merge(patient);
+			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patient);
 			
 			return patient;
 		}
@@ -309,7 +309,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
-		sessionFactory.getCurrentSession().merge(patientIdentifierType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patientIdentifierType);
 		return patientIdentifierType;
 	}
 	
@@ -705,7 +705,7 @@ public class HibernatePatientDAO implements PatientDAO {
         @Override
 	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) {
 		
-		sessionFactory.getCurrentSession().merge(patientIdentifier);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patientIdentifier);
 		return patientIdentifier;
 		
 	}

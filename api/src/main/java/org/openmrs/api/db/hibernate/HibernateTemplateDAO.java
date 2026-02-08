@@ -56,7 +56,7 @@ public class HibernateTemplateDAO implements TemplateDAO {
 	
 	@Override
 	public void createTemplate(Template template) throws DAOException {
-		sessionFactory.getCurrentSession().merge(template);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), template);
 	}
 	
 	@Override
@@ -64,7 +64,7 @@ public class HibernateTemplateDAO implements TemplateDAO {
 		if (template.getId() == null) {
 			createTemplate(template);
 		} else {
-			template = (Template) sessionFactory.getCurrentSession().merge(template);
+			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), template);
 		}
 	}
 	
