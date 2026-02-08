@@ -41,8 +41,6 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.openmrs.api.context.Context;
@@ -74,12 +72,7 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_user_id_seq")
-	@GenericGenerator(
-		name = "users_user_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "users_user_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Integer userId;
 

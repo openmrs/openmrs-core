@@ -16,8 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
@@ -36,12 +34,7 @@ public class EncounterRole extends BaseChangeableOpenmrsMetadata {
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encounter_role_id_seq")
-	@GenericGenerator(
-			name = "encounter_role_id_seq",
-			strategy = "native",
-			parameters = @Parameter(name = "sequence", value = "encounter_role_encounter_role_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "encounter_role_id", nullable = false)
 	private Integer encounterRoleId;
 	

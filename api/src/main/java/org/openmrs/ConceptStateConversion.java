@@ -17,8 +17,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
@@ -35,12 +33,7 @@ public class ConceptStateConversion extends BaseOpenmrsObject {
 	// Properties
 	// ******************
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_state_conversion_id_seq")
-	@GenericGenerator(
-		name = "concept_state_conversion_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value="concept_state_conversion_concept_state_conversion_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "concept_state_conversion_id", nullable = false)
 	private Integer conceptStateConversionId;
 

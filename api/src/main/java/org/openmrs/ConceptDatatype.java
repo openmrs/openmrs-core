@@ -18,8 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
@@ -80,12 +78,7 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_datatype_id_seq")
-	@GenericGenerator(
-		name = "concept_datatype_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "concept_datatype_concept_datatype_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "concept_datatype_id", nullable = false)
 	private Integer conceptDatatypeId;
 	

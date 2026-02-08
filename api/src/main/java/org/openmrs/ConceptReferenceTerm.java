@@ -25,8 +25,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -50,11 +48,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	
 	@DocumentId
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_reference_term_id_seq")
-	@GenericGenerator(
-		name = "concept_reference_term_id_seq",
-		parameters = @Parameter(name = "sequence", value = "concept_reference_term_concept_reference_term_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "concept_reference_term_id")
 	private Integer conceptReferenceTermId;
 	

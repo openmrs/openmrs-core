@@ -9,8 +9,6 @@
  */
 package org.openmrs.hl7;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 
@@ -36,12 +34,7 @@ public class HL7InError extends HL7QueueItem {
 	private static final int MAX_ERROR_DETAILS_LENGTH = 16777215;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hl7_in_error_id_seq")
-	@GenericGenerator(
-		name = "hl7_in_error_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "hl7_in_error_hl7_in_error_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "hl7_in_error_id", nullable = false)
 	private Integer hl7InErrorId;
 
