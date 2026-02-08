@@ -170,7 +170,7 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
-				<version>${springVersion}</version>
+				<version>${springTestVersion}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -1361,6 +1361,9 @@
 			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
 			 be compatible with our version of Spring. -->
 		<springVersion>7.0.3</springVersion>
+		<!-- spring-test 6.2.12 is used because Spring 7.0.3's spring-test requires JUnit 6.x which is -->
+		<!-- not yet supported by maven-surefire-plugin 3.5.4. Spring test 6.2.12 works with JUnit 5.x. -->
+		<springTestVersion>6.2.12</springTestVersion>
 		<hibernateVersion>7.2.3.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.0.0.Final</hibernateSearchVersion>
@@ -1369,7 +1372,7 @@
 		<infinispanVersion>15.2.2.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
 		<jacksonVersion>2.19.2</jacksonVersion>
-		<junitVersion>6.0.2</junitVersion>
+		<junitVersion>5.11.4</junitVersion>
 		<mockitoVersion>5.21.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
