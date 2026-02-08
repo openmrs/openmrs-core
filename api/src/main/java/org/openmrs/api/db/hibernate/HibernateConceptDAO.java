@@ -627,7 +627,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			
 			b.must(f.bool().with(bb -> {
 				List<String> tokenizedName = tokenizeName(name, locales);
-				BooleanPredicateClausesStep<?> nameQuery = newNameQuery(f, tokenizedName, name, searchKeywords);
+				BooleanPredicateClausesStep<?, ?> nameQuery = newNameQuery(f, tokenizedName, name, searchKeywords);
 
 				bb.should(f.match().field("concept.conceptMappings.conceptReferenceTerm.code").matching(name).boost(10f));
 				bb.should(f.and()
@@ -638,7 +638,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}).toPredicate();
 	}
 	
-	private BooleanPredicateClausesStep<?> newNameQuery(SearchPredicateFactory f, final List<String> tokenizedName, final String name,
+	private BooleanPredicateClausesStep<?, ?> newNameQuery(SearchPredicateFactory f, final List<String> tokenizedName, final String name,
 														final boolean searchKeywords) {
 		return f.bool().with(b -> {
 			b.minimumShouldMatchNumber(1);
@@ -1474,7 +1474,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return searchSessionFactory.getSearchSession().search(Drug.class).where(f -> f.bool().with(b -> {
 			b.minimumShouldMatchNumber(1);
 			List<String> tokenizedName = tokenizeName(drugName, locales);
-			BooleanPredicateClausesStep<?> nameQuery = newNameQuery(f, tokenizedName, drugName, searchKeywords);
+			BooleanPredicateClausesStep<?, ?> nameQuery = newNameQuery(f, tokenizedName, drugName, searchKeywords);
 			b.should(f.match().field("drugReferenceMaps.conceptReferenceTerm.code").matching(drugName).boost(10f));
 			b.should(nameQuery.boost(0.5f));
 			if (concept != null) {
