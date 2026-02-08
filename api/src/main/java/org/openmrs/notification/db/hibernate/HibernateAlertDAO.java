@@ -49,7 +49,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	 */
 	@Override
 	public Alert saveAlert(Alert alert) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(alert);
+		sessionFactory.getCurrentSession().merge(alert);
 		return alert;
 	}
 	
@@ -66,7 +66,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	 */
 	@Override
 	public void deleteAlert(Alert alert) throws DAOException {
-		sessionFactory.getCurrentSession().delete(alert);
+		sessionFactory.getCurrentSession().remove(alert);
 	}
 	
 	/**

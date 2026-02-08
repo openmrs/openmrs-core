@@ -13,7 +13,6 @@ import java.io.Serializable;
 import java.sql.Time;
 import java.util.Date;
 
-import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.openmrs.util.DateUtil;
 import org.springframework.stereotype.Component;

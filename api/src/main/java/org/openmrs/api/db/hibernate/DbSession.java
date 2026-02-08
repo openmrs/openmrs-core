@@ -25,7 +25,6 @@ import org.hibernate.LockOptions;
 import org.hibernate.NaturalIdLoadAccess;
 import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
-import org.hibernate.Session.LockRequest;
 import org.hibernate.SessionEventListener;
 import org.hibernate.SessionFactory;
 import org.hibernate.SharedSessionBuilder;
@@ -389,7 +388,11 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(Class theClass, Serializable id, LockOptions lockOptions) {
-		return getSession().load(theClass, id, lockOptions);
+		Object entity = getSession().find(theClass, id);
+		if (entity != null) {
+			getSession().lock(entity, lockOptions.getLockMode());
+		}
+		return entity;
 	}
 	
 	/**
@@ -402,7 +405,12 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(String entityName, Serializable id, LockOptions lockOptions) {
-		return getSession().load(entityName, id, lockOptions);
+		// In Hibernate 7, we need to use the entity class name to find the entity
+		Object entity = getSession().get(entityName, id);
+		if (entity != null) {
+			getSession().lock(entity, lockOptions.getLockMode());
+		}
+		return entity;
 	}
 	
 	/**
@@ -419,7 +427,8 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(Class theClass, Serializable id) {
-		return getSession().load(theClass, id);
+		Object entity = getSession().byId(theClass).load(id);
+		return entity;
 	}
 	
 	/**
@@ -436,7 +445,9 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(String entityName, Serializable id) {
-		return getSession().load(entityName, id);
+		// In Hibernate 7, we use get() which returns the loaded entity or null
+		Object entity = getSession().get(entityName, id);
+		return entity;
 	}
 	
 	/**
@@ -483,9 +494,12 @@ public class DbSession {
 	 *
 	 * @param object a transient instance of a persistent class
 	 * @return the generated identifier
+	 * @deprecated as of 2.7.0, replaced by {@link #persist(Object)}
 	 */
+	@Deprecated
 	public Object save(Object object) {
-		return getSession().save(object);
+		getSession().persist(object);
+		return object;
 	}
 	
 	/**
@@ -497,9 +511,12 @@ public class DbSession {
 	 * @param entityName The entity name
 	 * @param object a transient instance of a persistent class
 	 * @return the generated identifier
+	 * @deprecated as of 2.7.0, replaced by {@link #persist(String, Object)}
 	 */
+	@Deprecated
 	public Object save(String entityName, Object object) {
-		return getSession().save(entityName, object);
+		getSession().persist(entityName, object);
+		return object;
 	}
 	
 	/**
@@ -513,9 +530,11 @@ public class DbSession {
 	 * @param object a transient or detached instance containing new or updated state
 	 * @see Session#save(java.lang.Object)
 	 * @see Session#update(Object object)
+	 * @deprecated as of 2.7.0, replaced by {@link #merge(Object)}
 	 */
+	@Deprecated
 	public void saveOrUpdate(Object object) {
-		getSession().saveOrUpdate(object);
+		getSession().merge(object);
 	}
 	
 	/**
@@ -530,9 +549,11 @@ public class DbSession {
 	 * @param object a transient or detached instance containing new or updated state
 	 * @see Session#save(String,Object)
 	 * @see Session#update(String,Object)
+	 * @deprecated as of 2.7.0, replaced by {@link #merge(String, Object)}
 	 */
+	@Deprecated
 	public void saveOrUpdate(String entityName, Object object) {
-		getSession().saveOrUpdate(entityName, object);
+		getSession().merge(entityName, object);
 	}
 	
 	/**
@@ -542,9 +563,11 @@ public class DbSession {
 	 * {@code cascade="save-update"}
 	 *
 	 * @param object a detached instance containing updated state
+	 * @deprecated as of 2.7.0, replaced by {@link #merge(Object)}
 	 */
+	@Deprecated
 	public void update(Object object) {
-		getSession().update(object);
+		getSession().merge(object);
 	}
 	
 	/**
@@ -555,9 +578,11 @@ public class DbSession {
 	 *
 	 * @param entityName The entity name
 	 * @param object a detached instance containing updated state
+	 * @deprecated as of 2.7.0, replaced by {@link #merge(String, Object)}
 	 */
+	@Deprecated
 	public void update(String entityName, Object object) {
-		getSession().update(entityName, object);
+		getSession().merge(entityName, object);
 	}
 	
 	/**
@@ -627,9 +652,11 @@ public class DbSession {
 	 * association is mapped with {@code cascade="delete"}
 	 *
 	 * @param object the instance to be removed
+	 * @deprecated as of 2.7.0, replaced by {@link #remove(Object)}
 	 */
+	@Deprecated
 	public void delete(Object object) {
-		getSession().delete(object);
+		getSession().remove(object);
 	}
 	
 	/**
@@ -638,11 +665,25 @@ public class DbSession {
 	 * identifier associated with existing persistent state. This operation cascades to associated
 	 * instances if the association is mapped with {@code cascade="delete"}
 	 *
-	 * @param entityName The entity name for the instance to be removed.
+	 * @param entityName The entity name for the instance to be removed (NOTE: This parameter is ignored in Hibernate 7.x as the remove() API no longer supports entityName)
+	 * @param object the instance to be removed
+	 * @deprecated as of 2.7.0, replaced by {@link #remove(Object)}
+	 */
+	@Deprecated
+	public void delete(String entityName, Object object) {
+		getSession().remove(object);
+	}
+	
+	/**
+	 * Remove a persistent instance from the datastore. The argument may be an instance associated
+	 * with the receiving <tt>Session</tt> or a transient instance with an identifier associated
+	 * with existing persistent state. This operation cascades to associated instances if the
+	 * association is mapped with {@code cascade="delete"}
+	 *
 	 * @param object the instance to be removed
 	 */
-	public void delete(String entityName, Object object) {
-		getSession().delete(entityName, object);
+	public void remove(Object object) {
+		getSession().remove(object);
 	}
 	
 	/**
@@ -654,10 +695,14 @@ public class DbSession {
 	 * {@code session.buildLockRequest().setLockMode(LockMode.PESSIMISTIC_WRITE).setTimeOut(60000).lock(entity);}
 	 *
 	 * @param lockOptions contains the lock level
-	 * @return a lockRequest that can be used to lock the passed object.
+	 * @throws UnsupportedOperationException always thrown as LockRequest was removed in Hibernate 7.x
+	 * @deprecated as of 2.7.0, use {@code session.lock(entity, lockOptions.getLockMode())} instead
 	 */
-	public LockRequest buildLockRequest(LockOptions lockOptions) {
-		return getSession().buildLockRequest(lockOptions);
+	@Deprecated
+	public void buildLockRequest(LockOptions lockOptions) {
+		throw new UnsupportedOperationException(
+			"buildLockRequest() has been removed in Hibernate 7.x. Use session.lock(entity, lockMode) directly instead."
+		);
 	}
 	
 	/**
@@ -686,11 +731,14 @@ public class DbSession {
 	 * <li>after inserting a <tt>Blob</tt> or <tt>Clob</tt>
 	 * </ul>
 	 *
-	 * @param entityName a persistent class
+	 * @param entityName a persistent class (no longer used in Hibernate 7)
 	 * @param object a persistent or detached instance
+	 * @deprecated as of 2.7.0, replaced by {@link #refresh(Object)}
 	 */
+	@Deprecated
 	public void refresh(String entityName, Object object) {
-		getSession().refresh(entityName, object);
+		// In Hibernate 7, entityName is no longer supported for refresh
+		getSession().refresh(object);
 	}
 	
 	/**
@@ -710,12 +758,15 @@ public class DbSession {
 	 * <tt>LockMode</tt>. It is inadvisable to use this to implement long-running sessions that span
 	 * many business tasks. This method is, however, useful in certain special circumstances.
 	 *
-	 * @param entityName a persistent class
+	 * @param entityName a persistent class (no longer used in Hibernate 7)
 	 * @param object a persistent or detached instance
 	 * @param lockOptions contains the lock mode to use
+	 * @deprecated as of 2.7.0, replaced by {@link #refresh(Object, LockOptions)}
 	 */
+	@Deprecated
 	public void refresh(String entityName, Object object, LockOptions lockOptions) {
-		getSession().refresh(entityName, object, lockOptions);
+		// In Hibernate 7, entityName is no longer supported for refresh
+		getSession().refresh(object, lockOptions);
 	}
 	
 	/**

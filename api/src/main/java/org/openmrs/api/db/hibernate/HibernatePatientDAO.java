@@ -108,7 +108,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			// if we're saving a new patient, just do the normal thing
 			// and rows in the person and patient table will be created by
 			// hibernate
-			sessionFactory.getCurrentSession().saveOrUpdate(patient);
+			sessionFactory.getCurrentSession().merge(patient);
 			return patient;
 		} else {
 			// if we're updating a patient, its possible that a person
@@ -124,7 +124,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			// Note: A merge might be necessary here because hibernate thinks that Patients
 			// and Persons are the same objects.  So it sees a Person object in the
 			// cache and claims it is a duplicate of this Patient object.
-			sessionFactory.getCurrentSession().saveOrUpdate(patient);
+			sessionFactory.getCurrentSession().merge(patient);
 			
 			return patient;
 		}
@@ -257,7 +257,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
-		sessionFactory.getCurrentSession().delete(patientIdentifierType);
+		sessionFactory.getCurrentSession().remove(patientIdentifierType);
 	}
 
 	/**
@@ -309,7 +309,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(patientIdentifierType);
+		sessionFactory.getCurrentSession().merge(patientIdentifierType);
 		return patientIdentifierType;
 	}
 	
@@ -705,7 +705,7 @@ public class HibernatePatientDAO implements PatientDAO {
         @Override
 	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) {
 		
-		sessionFactory.getCurrentSession().saveOrUpdate(patientIdentifier);
+		sessionFactory.getCurrentSession().merge(patientIdentifier);
 		return patientIdentifier;
 		
 	}
@@ -717,7 +717,7 @@ public class HibernatePatientDAO implements PatientDAO {
         @Override
 	public void deletePatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException {
 		
-		sessionFactory.getCurrentSession().delete(patientIdentifier);
+		sessionFactory.getCurrentSession().remove(patientIdentifier);
 		
 	}
 	
@@ -984,7 +984,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			    .executeUpdate();
 		
 		for (Allergy allergy : allergies) {
-			sessionFactory.getCurrentSession().save(allergy);
+			sessionFactory.getCurrentSession().persist(allergy);
 		}
 			
 		return allergies;
@@ -1017,7 +1017,7 @@ public class HibernatePatientDAO implements PatientDAO {
      */
     @Override
     public Allergy saveAllergy(Allergy allergy) {
-    	sessionFactory.getCurrentSession().save(allergy);
+    	sessionFactory.getCurrentSession().persist(allergy);
     	return allergy;
     }
 

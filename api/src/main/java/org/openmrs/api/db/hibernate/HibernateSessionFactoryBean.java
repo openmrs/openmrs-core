@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.hibernate.LocalSessionFactoryBean;
 
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean implements Integrator {
 	
@@ -217,7 +217,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 		super.destroy();
 	}
 
-	@Override
+	// Integrator interface method - signature may vary by Hibernate version
 	public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory,
 			SessionFactoryServiceRegistry serviceRegistry) {
 		this.metadata = metadata;
