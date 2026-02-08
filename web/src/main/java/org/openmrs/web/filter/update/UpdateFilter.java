@@ -274,8 +274,10 @@ public class UpdateFilter extends StartupFilter {
 				
 				addLogLinesToResponse(result);
 			}
-			
+
 			String jsonText = toJSONString(result);
+			httpResponse.setContentType("application/json;charset=UTF-8");
+			jsonText = org.apache.commons.text.StringEscapeUtils.escapeHtml4(jsonText);
 			httpResponse.getWriter().write(jsonText);
 		}
 	}
