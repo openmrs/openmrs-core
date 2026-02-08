@@ -25,6 +25,7 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
 import org.hibernate.boot.Metadata;
+import org.hibernate.boot.spi.BootstrapContext;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
@@ -218,8 +219,8 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	}
 
 	@Override
-	public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory,
-			SessionFactoryServiceRegistry serviceRegistry) {
+	public void integrate(Metadata metadata, BootstrapContext bootstrapContext,
+			SessionFactoryImplementor sessionFactory) {
 		this.metadata = metadata;
 	}
 
