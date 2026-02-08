@@ -61,7 +61,7 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 
 	@ManyToOne
 	@JoinColumn(name = "term_id", nullable = false)
-	@Cascade(CascadeType.SAVE_UPDATE)
+	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private ConceptReferenceTerm conceptReferenceTerm;
