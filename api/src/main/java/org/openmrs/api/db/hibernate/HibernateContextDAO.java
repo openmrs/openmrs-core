@@ -649,7 +649,7 @@ public class HibernateContextDAO implements ContextDAO {
 		try {
 			return sessionFactory.getCurrentSession().doReturningWork(connection -> connection);
 		}
-		catch (Exception e) {
+		catch (HibernateException e) {
 			throw new RuntimeException("Unable to retrieve a database connection", e);
 		}
 	}
