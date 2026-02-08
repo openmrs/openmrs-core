@@ -1369,7 +1369,7 @@
 		<infinispanVersion>15.2.2.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
 		<jacksonVersion>2.19.2</jacksonVersion>
-		<junitVersion>5.11.4</junitVersion>
+		<junitVersion>6.0.2</junitVersion>
 		<mockitoVersion>5.21.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
