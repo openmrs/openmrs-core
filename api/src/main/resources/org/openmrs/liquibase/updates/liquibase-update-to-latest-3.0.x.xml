@@ -83,6 +83,25 @@
 		<modifyDataType tableName="concept_reference_range" columnName="criteria" newDataType="TEXT" />
 	</changeSet>
 
+	<changeSet id="TRUNK-5822-add-columns-to-form-field" author="pidson">
+		<addColumn tableName="form_field">
+			<column name="name" type="varchar(255)"/>
+			<column name="description" type="varchar(255)"/>
+			<column name="retired" type="bit"/>
+			<column name="retired_by" type="int"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="date_retired" type="datetime"/>
+		</addColumn>
+
+		<addForeignKeyConstraint
+			baseTableName="form_field"
+			baseColumnNames="retired_by"
+			referencedTableName="users"
+			referencedColumnNames="user_id"
+			constraintName="fk_form_field_retired_by"
+			onDelete="SET NULL"/>
+	</changeSet>
+
 	<changeSet id="TRUNK-5902-2026-01-05" author="shivvani-r">
 		<comment>Adding missing audit columns to cohort_member for TRUNK-5902</comment>
 		<addColumn tableName="cohort_member">
