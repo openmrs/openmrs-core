@@ -29,6 +29,7 @@ import org.hibernate.boot.spi.BootstrapContext;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
+import org.openmrs.api.APIException;
 import org.openmrs.api.cache.CacheConfig;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
@@ -244,7 +245,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 			EnversAuditTableInitializer.initialize(metadata, hibernateProperties, serviceRegistry);
 		} catch (Exception e) {
 			log.error("Failed to initialize Envers audit tables", e);
-			throw new RuntimeException(e);
+			throw new APIException("An error occurred while initializing the Envers audit tables", e);
 		}
 	}
 }
