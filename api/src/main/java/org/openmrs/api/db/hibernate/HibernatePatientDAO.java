@@ -104,11 +104,12 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public Patient savePatient(Patient patient) throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
 		if (patient.getPatientId() == null) {
 			// if we're saving a new patient, just do the normal thing
 			// and rows in the person and patient table will be created by
 			// hibernate
-			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patient);
+			HibernateUtil.saveOrUpdate(session, patient);
 			return patient;
 		} else {
 			// if we're updating a patient, its possible that a person
@@ -121,10 +122,17 @@ public class HibernatePatientDAO implements PatientDAO {
 			// things up
 			insertPatientStubIfNeeded(patient);
 			
+			// Evict any existing Person entity for this ID from the session
+			// to avoid conflicts during merge (Person vs Patient class mismatch)
+			Person existingPerson = session.get(Person.class, patient.getPatientId());
+			if (existingPerson != null && !(existingPerson instanceof Patient)) {
+				session.evict(existingPerson);
+			}
+			
 			// Note: A merge might be necessary here because hibernate thinks that Patients
 			// and Persons are the same objects.  So it sees a Person object in the
 			// cache and claims it is a duplicate of this Patient object.
-			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patient);
+			HibernateUtil.saveOrUpdate(session, patient);
 			
 			return patient;
 		}
