@@ -52,21 +52,36 @@ public class HibernateUtil {
 	
 	/**
 	 * Persists a new entity or merges a detached entity, emulating the old Hibernate
-	 * {@code saveOrUpdate()} behavior. For new (transient) entities, {@code persist()} is used
-	 * which modifies the entity in-place. For detached entities, {@code merge()} is used.
+	 * {@code saveOrUpdate()} behavior. For entities that are already managed, this is a no-op.
+	 * For new (transient) entities, {@code persist()} is used which modifies the entity in-place.
+	 * For detached entities (entities with an identifier), the existing managed instance is 
+	 * evicted to avoid stale state conflicts and the detached entity is merged via {@code merge()}.
 	 *
 	 * @param session the Hibernate session
 	 * @param entity the entity to save or update
 	 * @since 3.0.0
 	 */
+	@SuppressWarnings("unchecked")
 	public static void saveOrUpdate(Session session, Object entity) {
 		if (session.contains(entity)) {
 			return;
 		}
 		Object id = session.getSessionFactory().getPersistenceUnitUtil().getIdentifier(entity);
 		if (id == null) {
-			session.persist(entity);
+			try {
+				session.persist(entity);
+			}
+			catch (jakarta.persistence.EntityExistsException e) {
+				session.merge(entity);
+			}
 		} else {
+			// Evict any existing managed instance with the same ID to prevent
+			// StaleObjectStateException during merge
+			Class<?> entityClass = org.hibernate.Hibernate.getClass(entity);
+			Object existing = session.get(entityClass, id);
+			if (existing != null) {
+				session.evict(existing);
+			}
 			session.merge(entity);
 		}
 	}
