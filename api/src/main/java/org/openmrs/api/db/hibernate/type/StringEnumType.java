@@ -34,7 +34,8 @@ import org.hibernate.usertype.EnhancedUserType;
  * </property>
  * }</pre>
  *
- * @since 3.0.0
+ * NOTE: This class should be deleted once Obs, ConceptName, and OrderSet are migrated from
+ * hibernate xml mapping files to annotations.
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class StringEnumType implements EnhancedUserType<Enum>, DynamicParameterizedType {
