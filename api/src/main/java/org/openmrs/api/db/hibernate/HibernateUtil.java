@@ -54,8 +54,7 @@ public class HibernateUtil {
 	 * Persists a new entity or merges a detached entity, emulating the old Hibernate
 	 * {@code saveOrUpdate()} behavior. For entities that are already managed, this is a no-op.
 	 * For new entities (no identifier), {@code persist()} is used which modifies the entity in-place.
-	 * For existing entities (with identifier), the existing managed instance is evicted and
-	 * the entity is merged.
+	 * For existing entities (with identifier), the existing managed instance is merged.
 	 *
 	 * @param session the Hibernate session
 	 * @param entity the entity to save or update
