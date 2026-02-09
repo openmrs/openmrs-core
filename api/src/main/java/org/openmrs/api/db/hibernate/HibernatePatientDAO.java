@@ -121,30 +121,13 @@ public class HibernatePatientDAO implements PatientDAO {
 			// things up
 			insertPatientStubIfNeeded(patient);
 			
-			// Check if the session has a Person (not Patient) for this ID.
-			// If so, we need to evict it to avoid class mismatch errors.
-			Person existingPerson = session.get(Person.class, patient.getPatientId());
-			if (existingPerson != null && !(existingPerson instanceof Patient)) {
-				session.evict(existingPerson);
-				// After evicting, the Person's collections are detached.
-				// The Patient(Person) constructor shares collection references,
-				// so we must create new collection instances to avoid Hibernate 7's
-				// "shared references to a collection" error during merge.
-				if (patient.getNames() != null) {
-					patient.setNames(new java.util.LinkedHashSet<>(patient.getNames()));
-				}
-				if (patient.getAddresses() != null) {
-					patient.setAddresses(new java.util.TreeSet<>(patient.getAddresses()));
-				}
-				if (patient.getAttributes() != null) {
-					patient.setAttributes(new java.util.LinkedHashSet<>(patient.getAttributes()));
-				}
-			}
-			
-			// Note: A merge might be necessary here because hibernate thinks that Patients
-			// and Persons are the same objects.  So it sees a Person object in the
-			// cache and claims it is a duplicate of this Patient object.
-			return HibernateUtil.saveOrUpdate(session, patient);
+			// In Hibernate 7, after the Person has been evicted or the stub inserted,
+			// the Patient's collection references (inherited from Person via Patient(Person) 
+			// constructor) may be orphaned PersistentSets with no CollectionEntry.
+			// Flush and clear the entire session, then merge cleanly.
+			session.flush();
+			session.clear();
+			return (Patient) session.merge(patient);
 		}
 	}
 	
