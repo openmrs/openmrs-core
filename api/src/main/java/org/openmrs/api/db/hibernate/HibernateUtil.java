@@ -70,14 +70,24 @@ public class HibernateUtil {
 		if (id == null) {
 			session.persist(entity);
 		} else {
-			// Evict any existing managed instance with the same ID to prevent
-			// StaleObjectStateException during merge
+			// Check if the entity already exists in the DB
 			Class<?> entityClass = org.hibernate.Hibernate.getClass(entity);
 			Object existing = session.get(entityClass, id);
-			if (existing != null) {
-				session.evict(existing);
+			if (existing == null) {
+				// Entity has an assigned ID but doesn't exist in DB yet - persist it
+				session.persist(entity);
+			} else {
+				Class<?> existingClass = org.hibernate.Hibernate.getClass(existing);
+				if (!existingClass.equals(entityClass)) {
+					// Class mismatch (e.g., Person->Patient or Concept->ConceptNumeric):
+					// flush pending changes and clear session to avoid WrongClassException
+					session.flush();
+					session.clear();
+				} else {
+					session.evict(existing);
+				}
+				session.merge(entity);
 			}
-			session.merge(entity);
 		}
 	}
 	

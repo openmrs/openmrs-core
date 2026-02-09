@@ -18,7 +18,7 @@
 	<class name="org.openmrs.hl7.HL7InQueue" table="hl7_in_queue">
 
 		<id name="HL7InQueueId" type="int" column="hl7_in_queue_id" unsaved-value="0">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">hl7_in_queue_hl7_in_queue_id_seq</param>
 			</generator>
 		</id>

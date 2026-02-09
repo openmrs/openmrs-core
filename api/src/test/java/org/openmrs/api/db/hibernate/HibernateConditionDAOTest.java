@@ -53,8 +53,9 @@ public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
 		ConditionClinicalStatus clinicalStatus = ConditionClinicalStatus.ACTIVE;
 		ConditionVerificationStatus verificationStatus = ConditionVerificationStatus.CONFIRMED;
 		Patient patient = new Patient(2);
-		Date onsetDate = new Date();
-		Date endDate = new Date();
+		// Truncate to seconds precision since database DATETIME may not store milliseconds
+		Date onsetDate = new Date((new Date().getTime() / 1000) * 1000);
+		Date endDate = new Date((new Date().getTime() / 1000) * 1000);
 		Condition previousVersion = dao.getConditionByUuid("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7");
 		String additionalDetail = "additionalDetail";
 		Condition condition = new Condition();

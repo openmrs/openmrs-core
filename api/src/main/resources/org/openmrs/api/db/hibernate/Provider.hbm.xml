@@ -20,7 +20,7 @@
 
 		<id name="providerId" type="java.lang.Integer" column="provider_id"
 			unsaved-value="0">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">provider_provider_id_seq</param>
 			</generator>
 		</id>

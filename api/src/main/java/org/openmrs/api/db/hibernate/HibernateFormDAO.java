@@ -82,8 +82,9 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public Form duplicateForm(Form form) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), form);
-		return form;
+		// Use merge instead of persist because the form's FormFields may contain
+		// detached proxy references after Context.clearSession() was called
+		return (Form) sessionFactory.getCurrentSession().merge(form);
 	}
 	
 	/**
@@ -533,7 +534,7 @@ public class HibernateFormDAO implements FormDAO {
 
 			subquery.select(cb.count(subqueryRoot.get("formFieldId")));
 			subquery.where(
-				cb.equal(subqueryRoot.get("form").get("formId"), root.get("formId")),
+				cb.equal(subqueryRoot.get("form"), root),
 				subqueryRoot.get("formFieldId").in(allFormFieldIds)
 			);
 			predicates.add(cb.equal(cb.literal((long) containingAllFormFields.size()), subquery.getSelection()));

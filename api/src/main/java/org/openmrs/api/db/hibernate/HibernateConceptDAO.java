@@ -232,6 +232,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 				}
 			}
 		}
+		else {
+			// Plain Concept (not a subclass): clean up any subclass rows that may exist
+			deleteSubclassConcept("concept_numeric", concept.getConceptId());
+			deleteSubclassConcept("concept_complex", concept.getConceptId());
+		}
 	}
 	
 	/**

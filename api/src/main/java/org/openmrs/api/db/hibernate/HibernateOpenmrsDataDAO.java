@@ -89,7 +89,15 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 		cq.select(cb.count(root));
 
 		if (!includeVoided) {
-			cq.where(cb.isFalse(root.get("voided")));
+			// Person maps its voided column as "personVoided" in HBM XML,
+			// while other entities use "voided" from BaseOpenmrsData
+			String voidedAttribute = "voided";
+			try {
+				root.get(voidedAttribute);
+			} catch (IllegalArgumentException e) {
+				voidedAttribute = "personVoided";
+			}
+			cq.where(cb.isFalse(root.get(voidedAttribute)));
 		}
 
 		Long count = session.createQuery(cq).getSingleResult();

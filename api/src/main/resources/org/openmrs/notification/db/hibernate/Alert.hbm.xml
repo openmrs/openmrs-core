@@ -18,7 +18,7 @@
 	<class name="org.openmrs.notification.Alert" table="notification_alert">
 		
 		<id name="alertId" type="int" column="alert_id" unsaved-value="0">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">notification_alert_alert_id_seq</param>
 			</generator>
 		</id>

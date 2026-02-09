@@ -18,7 +18,7 @@
     <class name="OrderSet" table="order_set">
 
         <id name="orderSetId" type="int" column="order_set_id" unsaved-value="0">
-            <generator class="native">
+            <generator class="identity">
                 <param name="sequence">order_set_order_set_id_seq</param>
             </generator>
         </id>
