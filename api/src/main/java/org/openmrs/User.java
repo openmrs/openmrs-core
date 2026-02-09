@@ -41,10 +41,6 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.openmrs.api.context.Context;
@@ -76,19 +72,13 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_user_id_seq")
-	@GenericGenerator(
-		name = "users_user_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "users_user_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Integer userId;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "person_id", nullable = false)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	@Cascade(CascadeType.SAVE_UPDATE)
+	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
 	private Person person;
 
 	@Column(name = "system_id", nullable = false, length = 50)
@@ -100,18 +90,17 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	@Column(name = "email", length = 255, unique = true)
 	private String email;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role"))
-	@LazyCollection(LazyCollectionOption.FALSE)
 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.DETACH })
+	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH })
 	private Set<Role> roles;
 
 	@ElementCollection
 	@CollectionTable(name = "user_property", joinColumns = @JoinColumn(name = "user_id", nullable = false))
 	@MapKeyColumn(name = "property", length = 255)
 	@Column(name = "property_value", length = Integer.MAX_VALUE)
-	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.DETACH })
+	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH })
 	@NotAudited
 	private Map<String, String> userProperties;
 

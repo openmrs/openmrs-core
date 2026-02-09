@@ -551,12 +551,12 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveConceptClass_shouldSaveTheGivenConceptClass() {
-		int unusedConceptClassId = 123;
-		ConceptClass conceptClass = new ConceptClass(unusedConceptClassId);
+		ConceptClass conceptClass = new ConceptClass();
 		conceptClass.setName("name");
 		conceptClass.setDescription("description");
 		conceptService.saveConceptClass(conceptClass);
-		assertEquals(conceptClass, conceptService.getConceptClass(unusedConceptClassId));
+		assertNotNull(conceptClass.getConceptClassId());
+		assertEquals(conceptClass, conceptService.getConceptClass(conceptClass.getConceptClassId()));
 	}
 	
 	/**

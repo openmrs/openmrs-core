@@ -43,15 +43,14 @@
 			column="void_reason" length="255" />
 		<many-to-one name="voidedBy" class="User" column="voided_by" />
 		
-		<set name="tags" table="concept_name_tag_map" cascade="save-update">
+		<set name="tags" table="concept_name_tag_map" cascade="merge,persist">
 			<key column="concept_name_id"/>
 			<many-to-many class="ConceptNameTag" column="concept_name_tag_id"/>
 		</set>
 		
 		<property name="conceptNameType" column="concept_name_type" length="50">
-			<type name="org.hibernate.type.EnumType">
+			<type name="org.openmrs.api.db.hibernate.type.StringEnumType">
 				<param name="enumClass">org.openmrs.api.ConceptNameType</param>
-				<param name="useNamed">true</param>
 			</type>
 		</property>
 		

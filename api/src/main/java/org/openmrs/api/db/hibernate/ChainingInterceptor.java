@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -20,7 +19,6 @@ import org.hibernate.CallbackException;
 import org.hibernate.Interceptor;
 import org.hibernate.Transaction;
 import org.hibernate.metamodel.spi.EntityRepresentationStrategy;
-import org.hibernate.resource.jdbc.spi.StatementInspector;
 import org.hibernate.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +60,7 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
+	public void onDelete(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
 		for (Interceptor i : interceptors) {
 			i.onDelete(entity, id, state, propertyNames, types);
 		}
@@ -71,7 +69,7 @@ public class ChainingInterceptor implements Interceptor {
 	
 	
 	@Override
-	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
+	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState,
 	        String[] propertyNames, Type[] types) {
 		boolean objectChanged = false;
 		
@@ -84,7 +82,7 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
+	public boolean onLoad(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
 		boolean objectChanged = false;
 		
 		for (Interceptor i : interceptors) {
@@ -96,7 +94,7 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
+	public boolean onSave(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
 		boolean objectChanged = false;
 		
 		for (Interceptor i : interceptors) {
@@ -156,7 +154,7 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public int[] findDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
+	public int[] findDirty(Object entity, Object id, Object[] currentState, Object[] previousState,
 	        String[] propertyNames, Type[] types) {
 		
 		List<Integer> uniqueIndices = new LinkedList<>();
@@ -201,7 +199,7 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public Object getEntity(String entityName, Serializable id) {
+	public Object getEntity(String entityName, Object id) {
 		for (Interceptor i : interceptors) {
 			Object o = i.getEntity(entityName, id);
 			if (o != null) {
@@ -234,21 +232,21 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public void onCollectionRemove(Object collection, Serializable key) throws CallbackException {
+	public void onCollectionRemove(Object collection, Object key) throws CallbackException {
 		for (Interceptor i : interceptors) {
 			i.onCollectionRemove(collection, key);
 		}
 	}
 	
 	@Override
-	public void onCollectionRecreate(Object collection, Serializable key) throws CallbackException {
+	public void onCollectionRecreate(Object collection, Object key) throws CallbackException {
 		for (Interceptor i : interceptors) {
 			i.onCollectionRecreate(collection, key);
 		}
 	}
 	
 	@Override
-	public void onCollectionUpdate(Object collection, Serializable key) throws CallbackException {
+	public void onCollectionUpdate(Object collection, Object key) throws CallbackException {
 		for (Interceptor i : interceptors) {
 			i.onCollectionUpdate(collection, key);
 		}

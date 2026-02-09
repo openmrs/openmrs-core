@@ -17,8 +17,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 import java.util.Date;
@@ -40,12 +38,7 @@ public class ConceptSource extends BaseChangeableOpenmrsMetadata {
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_source_id_seq")
-	@GenericGenerator(
-	name = "concept_source_id_seq",
-	strategy = "native",
-	parameters = @Parameter(name = "sequence", value = "concept_reference_source_concept_source_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "concept_source_id", nullable = false)
 	private Integer conceptSourceId;
 	

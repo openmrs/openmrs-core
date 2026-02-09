@@ -22,6 +22,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openmrs.User;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.db.AlertDAO;
 import org.slf4j.Logger;
@@ -49,7 +50,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	 */
 	@Override
 	public Alert saveAlert(Alert alert) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(alert);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), alert);
 		return alert;
 	}
 	
@@ -66,7 +67,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	 */
 	@Override
 	public void deleteAlert(Alert alert) throws DAOException {
-		sessionFactory.getCurrentSession().delete(alert);
+		sessionFactory.getCurrentSession().remove(alert);
 	}
 	
 	/**

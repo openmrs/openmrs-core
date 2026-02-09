@@ -64,7 +64,7 @@ public class HibernateLocationDAO implements LocationDAO {
 			}
 		}
 		
-		sessionFactory.getCurrentSession().saveOrUpdate(location);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), location);
 		return location;
 	}
 	
@@ -123,7 +123,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public void deleteLocation(Location location) {
-		sessionFactory.getCurrentSession().delete(location);
+		sessionFactory.getCurrentSession().remove(location);
 	}
 	
 	/**
@@ -131,7 +131,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public LocationTag saveLocationTag(LocationTag tag) {
-		sessionFactory.getCurrentSession().saveOrUpdate(tag);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), tag);
 		return tag;
 	}
 	
@@ -202,7 +202,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public void deleteLocationTag(LocationTag tag) {
-		sessionFactory.getCurrentSession().delete(tag);
+		sessionFactory.getCurrentSession().remove(tag);
 	}
 	
 	/**
@@ -352,7 +352,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType) {
-		sessionFactory.getCurrentSession().saveOrUpdate(locationAttributeType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), locationAttributeType);
 		return locationAttributeType;
 	}
 	
@@ -361,7 +361,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public void deleteLocationAttributeType(LocationAttributeType locationAttributeType) {
-		sessionFactory.getCurrentSession().delete(locationAttributeType);
+		sessionFactory.getCurrentSession().remove(locationAttributeType);
 	}
 	
 	/**

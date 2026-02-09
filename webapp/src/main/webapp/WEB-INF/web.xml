@@ -134,7 +134,7 @@
 	      hibernate filter (to help with lazy loading) -->
 	<filter>
         <filter-name>HibernateFilter</filter-name>
-        <filter-class>org.springframework.orm.hibernate5.support.OpenSessionInViewFilter</filter-class>
+        <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
     </filter>
     <filter-mapping>
 		<filter-name>HibernateFilter</filter-name> 

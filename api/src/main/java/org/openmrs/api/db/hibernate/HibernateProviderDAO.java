@@ -72,7 +72,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public Provider saveProvider(Provider provider) {
-		getSession().saveOrUpdate(provider);
+		HibernateUtil.saveOrUpdate(getSession(), provider);
 		return provider;
 	}
 	
@@ -81,7 +81,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public void deleteProvider(Provider provider) {
-		getSession().delete(provider);
+		getSession().remove(provider);
 	}
 	
 	/**
@@ -350,7 +350,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public ProviderAttributeType saveProviderAttributeType(ProviderAttributeType providerAttributeType) {
-		getSession().saveOrUpdate(providerAttributeType);
+		HibernateUtil.saveOrUpdate(getSession(), providerAttributeType);
 		return providerAttributeType;
 	}
 	
@@ -359,7 +359,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public void deleteProviderAttributeType(ProviderAttributeType providerAttributeType) {
-		getSession().delete(providerAttributeType);
+		getSession().remove(providerAttributeType);
 	}
 	
 	/**
@@ -450,7 +450,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public ProviderRole saveProviderRole(ProviderRole providerRole) {
-		getSession().saveOrUpdate(providerRole);
+		HibernateUtil.saveOrUpdate(getSession(), providerRole);
 		return providerRole;
 	}
 
@@ -459,6 +459,6 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public void deleteProviderRole(ProviderRole providerRole) {
-		getSession().delete(providerRole);
+		getSession().remove(providerRole);
 	}
 }

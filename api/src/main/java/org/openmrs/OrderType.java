@@ -10,8 +10,6 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
@@ -53,12 +51,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	public static final String REFERRAL_ORDER_TYPE_UUID = "f1b63696-2b6c-11ec-8d3d-0242ac130003";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_type_id_seq")
-	@GenericGenerator(
-		name = "order_type_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "order_type_order_type_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "order_type_id", nullable = false)
 	private Integer orderTypeId;
 	

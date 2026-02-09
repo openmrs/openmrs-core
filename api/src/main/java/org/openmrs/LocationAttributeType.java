@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
@@ -38,12 +36,7 @@ import jakarta.persistence.Table;
 public class LocationAttributeType extends BaseAttributeType<Location> implements AttributeType<Location> {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "location_attribute_type_id_seq")
-	@GenericGenerator(
-		name = "location_attribute_type_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "location_attribute_type_location_attribute_type_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "location_attribute_type_id")
 	private Integer locationAttributeTypeId;
 	

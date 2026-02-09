@@ -18,7 +18,7 @@
 	<class name="ProgramWorkflowState" table="program_workflow_state">
 
 		<id name="programWorkflowStateId" type="java.lang.Integer" column="program_workflow_state_id">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">program_workflow_state_program_workflow_state_id_seq</param>
 			</generator>
 		</id>

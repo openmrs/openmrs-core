@@ -18,7 +18,7 @@
     <class name="OrderSet" table="order_set">
 
         <id name="orderSetId" type="int" column="order_set_id" unsaved-value="0">
-            <generator class="native">
+            <generator class="identity">
                 <param name="sequence">order_set_order_set_id_seq</param>
             </generator>
         </id>
@@ -28,16 +28,15 @@
         <property name="description" type="java.lang.String"
                   column="description" not-null="true" />
         <property name="operator" column="operator" not-null="true">
-            <type name="org.hibernate.type.EnumType">
+            <type name="org.openmrs.api.db.hibernate.type.StringEnumType">
                 <param name="enumClass">org.openmrs.OrderSet$Operator</param>
-                <param name="useNamed">true</param>
             </type>
         </property>
 
         <many-to-one name="category" class="org.openmrs.Concept"
 			not-null="false" column="category" />
 
-        <list name="orderSetMembers" lazy="true" cascade="save-update" inverse="false">
+        <list name="orderSetMembers" lazy="true" cascade="merge,persist" inverse="false">
             <key column="order_set_id" not-null="true"/>
             <list-index column="sequence_number"/>
             <one-to-many class="OrderSetMember" />

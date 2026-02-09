@@ -71,7 +71,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public Program saveProgram(Program program) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(program);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), program);
 		return program;
 	}
 	
@@ -143,7 +143,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public void deleteProgram(Program program) throws DAOException {
-		sessionFactory.getCurrentSession().delete(program);
+		sessionFactory.getCurrentSession().remove(program);
 	}
 	
 	// **************************
@@ -158,9 +158,9 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
                 CustomDatatypeUtil.saveAttributesIfNecessary(patientProgram);
 
 		if (patientProgram.getPatientProgramId() == null) {
-			sessionFactory.getCurrentSession().save(patientProgram);
+			sessionFactory.getCurrentSession().persist(patientProgram);
 		} else {
-			sessionFactory.getCurrentSession().merge(patientProgram);
+			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patientProgram);
 		}
                 
 		return patientProgram;
@@ -255,7 +255,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public void deletePatientProgram(PatientProgram patientProgram) throws DAOException {
-		sessionFactory.getCurrentSession().delete(patientProgram);
+		sessionFactory.getCurrentSession().remove(patientProgram);
 	}
 	
 	/**
@@ -264,9 +264,9 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	@Override
 	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion csc) throws DAOException {
 		if (csc.getConceptStateConversionId() == null) {
-			sessionFactory.getCurrentSession().save(csc);
+			sessionFactory.getCurrentSession().persist(csc);
 		} else {
-			sessionFactory.getCurrentSession().merge(csc);
+			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), csc);
 		}
 		return csc;
 	}
@@ -298,7 +298,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public void deleteConceptStateConversion(ConceptStateConversion csc) {
-		sessionFactory.getCurrentSession().delete(csc);
+		sessionFactory.getCurrentSession().remove(csc);
 	}
 	
 	/**
@@ -440,7 +440,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 
 	@Override
 	public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType programAttributeType) {
-		sessionFactory.getCurrentSession().saveOrUpdate(programAttributeType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), programAttributeType);
 		return programAttributeType;
 	}
 
@@ -451,7 +451,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 
 	@Override
 	public void purgeProgramAttributeType(ProgramAttributeType type) {
-		sessionFactory.getCurrentSession().delete(type);
+		sessionFactory.getCurrentSession().remove(type);
 	}
 
 	@Override

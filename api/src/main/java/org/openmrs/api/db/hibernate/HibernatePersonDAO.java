@@ -310,7 +310,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public void deletePersonAttributeType(PersonAttributeType type) {
-		sessionFactory.getCurrentSession().delete(type);
+		sessionFactory.getCurrentSession().remove(type);
 	}
 	
 	/**
@@ -319,7 +319,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) {
-		sessionFactory.getCurrentSession().saveOrUpdate(type);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), type);
 		return type;
 	}
 	
@@ -558,7 +558,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(relationshipType);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), relationshipType);
 		return relationshipType;
 	}
 	
@@ -568,7 +568,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException {
-		sessionFactory.getCurrentSession().delete(relationshipType);
+		sessionFactory.getCurrentSession().remove(relationshipType);
 	}
 	
 	/**
@@ -586,7 +586,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public Person savePerson(Person person) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(person);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), person);
 		return person;
 	}
 	
@@ -596,7 +596,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public Relationship saveRelationship(Relationship relationship) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(relationship);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), relationship);
 		return relationship;
 	}
 	
@@ -606,7 +606,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public void deleteRelationship(Relationship relationship) throws DAOException {
-		sessionFactory.getCurrentSession().delete(relationship);
+		sessionFactory.getCurrentSession().remove(relationship);
 	}
 	
 	/**
@@ -622,7 +622,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			if (address.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(address);
 			} else {
-				sessionFactory.getCurrentSession().delete(address);
+				sessionFactory.getCurrentSession().remove(address);
 			}
 		}
 		person.setAddresses(null);
@@ -631,7 +631,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			if (attribute.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(attribute);
 			} else {
-				sessionFactory.getCurrentSession().delete(attribute);
+				sessionFactory.getCurrentSession().remove(attribute);
 			}
 		}
 		person.setAttributes(null);
@@ -640,13 +640,13 @@ public class HibernatePersonDAO implements PersonDAO {
 			if (name.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(name);
 			} else {
-				sessionFactory.getCurrentSession().delete(name);
+				sessionFactory.getCurrentSession().remove(name);
 			}
 		}
 		person.setNames(null);
 		
 		// finally, just tell hibernate to delete our object
-		sessionFactory.getCurrentSession().delete(person);
+		sessionFactory.getCurrentSession().remove(person);
 	}
 	
 	/**
@@ -696,7 +696,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(personMergeLog);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), personMergeLog);
 		return personMergeLog;
 	}
 	
@@ -806,7 +806,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonName savePersonName(PersonName personName) {
-		sessionFactory.getCurrentSession().saveOrUpdate(personName);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), personName);
 		return personName;
 	}
 	
@@ -816,7 +816,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonAddress savePersonAddress(PersonAddress personAddress) {
-		sessionFactory.getCurrentSession().saveOrUpdate(personAddress);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), personAddress);
 		return personAddress;
 	}
 	
