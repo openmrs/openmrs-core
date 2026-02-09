@@ -63,7 +63,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	
 	private String voidReason;
 	
-	private Collection<ConceptNameTag> tags = new HashSet<>();
+	private Collection<ConceptNameTag> tags;
 	
 	@GenericField
 	private ConceptNameType conceptNameType;
