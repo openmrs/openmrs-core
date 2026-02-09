@@ -53,9 +53,9 @@ public class HibernateUtil {
 	/**
 	 * Persists a new entity or merges a detached entity, emulating the old Hibernate
 	 * {@code saveOrUpdate()} behavior. For entities that are already managed, this is a no-op.
-	 * For new (transient) entities, {@code persist()} is used which modifies the entity in-place.
-	 * For detached entities (entities with an identifier), the existing managed instance is 
-	 * evicted to avoid stale state conflicts and the detached entity is merged via {@code merge()}.
+	 * For new entities (no identifier), {@code persist()} is used which modifies the entity in-place.
+	 * For existing entities (with identifier), the existing managed instance is evicted and
+	 * the entity is merged.
 	 *
 	 * @param session the Hibernate session
 	 * @param entity the entity to save or update
@@ -68,12 +68,7 @@ public class HibernateUtil {
 		}
 		Object id = session.getSessionFactory().getPersistenceUnitUtil().getIdentifier(entity);
 		if (id == null) {
-			try {
-				session.persist(entity);
-			}
-			catch (jakarta.persistence.EntityExistsException e) {
-				session.merge(entity);
-			}
+			session.persist(entity);
 		} else {
 			// Evict any existing managed instance with the same ID to prevent
 			// StaleObjectStateException during merge

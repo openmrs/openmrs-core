@@ -93,7 +93,16 @@ public class HibernateUserDAO implements UserDAO {
 		// only change the user's password when creating a new user
 		boolean isNewUser = user.getUserId() == null;
 		
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), user);
+		// Ensure the associated Person is managed before persisting/merging
+		Session currentSession = sessionFactory.getCurrentSession();
+		if (user.getPerson() != null && user.getPerson().getPersonId() != null && !currentSession.contains(user.getPerson())) {
+			Person managedPerson = currentSession.get(Person.class, user.getPerson().getPersonId());
+			if (managedPerson != null) {
+				user.setPerson(managedPerson);
+			}
+		}
+		
+		HibernateUtil.saveOrUpdate(currentSession, user);
 		
 		if (isNewUser && password != null) {
 			/* In OpenMRS, we are using generation strategy as native which will convert to IDENTITY 
