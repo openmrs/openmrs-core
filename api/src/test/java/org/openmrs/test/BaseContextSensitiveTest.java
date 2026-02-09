@@ -321,7 +321,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// properties
 		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000;MODE=LEGACY;NON_KEYWORDS=VALUE";
+			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000;MODE=LEGACY;NON_KEYWORDS=VALUE;IGNORECASE=TRUE";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
@@ -358,18 +358,20 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
 		}
 		
-		try {
-			File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
-			tempappdir.delete(); // so we can make it into a directory
-			tempappdir.mkdir(); // turn it into a directory
-			tempappdir.deleteOnExit(); // clean up when we're done with tests
-			
-			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
-			        .getAbsolutePath());
-			OpenmrsUtil.setApplicationDataDirectory(tempappdir.getAbsolutePath());
-		}
-		catch (IOException e) {
-			log.error("Unable to create temp dir", e);
+		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
+		if (appDataDir == null || !appDataDir.contains("appdir-for-unit-tests-")) {
+			try {
+				File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
+				tempappdir.delete(); // so we can make it into a directory
+				tempappdir.mkdir(); // turn it into a directory
+				tempappdir.deleteOnExit(); // clean up when we're done with tests
+
+				runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
+					.getAbsolutePath());
+				OpenmrsUtil.setApplicationDataDirectory(tempappdir.getAbsolutePath());
+			} catch (IOException e) {
+				log.error("Unable to create temp dir", e);
+			}
 		}
 		
 		return runtimeProperties;
@@ -939,7 +941,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			Context.openSession();
 		}
 		
-		// The skipBaseSetup flag is controlled by the @SkipBaseSetup annotation. 		if (useInMemoryDatabase()) {
+		// The skipBaseSetup flag is controlled by the @SkipBaseSetup annotation.
 		if (!skipBaseSetup) {
 			if (!isBaseSetup) {
 				

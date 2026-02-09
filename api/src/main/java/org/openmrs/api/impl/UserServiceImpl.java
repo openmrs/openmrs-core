@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -22,7 +23,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
@@ -35,6 +36,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CannotDeleteRoleWithChildrenException;
 import org.openmrs.api.InvalidActivationKeyException;
 import org.openmrs.notification.MessageService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -66,7 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("userService")
 @Transactional
-public class UserServiceImpl extends BaseOpenmrsService implements UserService {
+public class UserServiceImpl extends BaseOpenmrsService implements UserService, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 	
@@ -847,4 +849,25 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public String getLastLoginTime(User user) {
 		return dao.getLastLoginTime(user);
 	}
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (Role.class.equals(type)) {
+            return (T) getRoleByUuid(uuid);
+        }
+        if (Privilege.class.equals(type)) {
+            return (T) getPrivilegeByUuid(uuid);
+        }
+        if (User.class.equals(type)) {
+            return (T) getUserByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(Role.class, Privilege.class, User.class);
+    }
+
 }

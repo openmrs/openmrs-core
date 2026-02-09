@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -63,12 +62,6 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	@ManyToOne
 	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
-
-	@Access(AccessType.PROPERTY)
-	@OneToMany(mappedBy = "orderGroup", cascade = CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("voided asc")
-	@BatchSize(size = 100)
-	private Set<OrderGroupAttribute> attributes = new LinkedHashSet<>();
 	
 	@ManyToOne
 	@JoinColumn(name = "order_set_id")

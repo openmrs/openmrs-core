@@ -36,9 +36,11 @@ COPY liquibase/pom.xml liquibase/
 COPY api/pom.xml api/
 COPY web/pom.xml web/
 COPY webapp/pom.xml webapp/
-COPY test-module/pom.xml test-module/
-COPY test-module/api/pom.xml test-module/api/
-COPY test-module/omod/pom.xml test-module/omod/
+COPY test-suite/pom.xml test-suite/
+COPY test-suite/module/pom.xml test-suite/module/
+COPY test-suite/module/api/pom.xml test-suite/module/api/
+COPY test-suite/module/omod/pom.xml test-suite/module/omod/
+COPY test-suite/performance/pom.xml test-suite/performance/
 
 # Install dependencies
 # Commenting out as it fails with:
@@ -91,8 +93,8 @@ COPY --from=compile /usr/share/maven/ref /usr/share/maven/ref
 COPY --from=compile /openmrs_core /openmrs_core/
 
 RUN mkdir -p /openmrs/distribution/openmrs_core/ \
-    && cp /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war \
-    && cp /openmrs_core/wait-for-it.sh /openmrs_core/startup-init.sh /openmrs_core/startup.sh /openmrs_core/startup-dev.sh /openmrs/  \
+    && cp -a /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war \
+    && cp -a /openmrs_core/wait-for-it.sh /openmrs_core/startup-init.sh /openmrs_core/startup.sh /openmrs_core/startup-dev.sh /openmrs/  \
     && chmod +x /openmrs/wait-for-it.sh && chmod +x /openmrs/startup-init.sh && chmod +x /openmrs/startup.sh \
     && chmod +x /openmrs/startup-dev.sh 
 
@@ -123,8 +125,9 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=
 RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' \
     /usr/local/tomcat/conf/server.xml \
     && chmod -R g+rx /usr/local/tomcat \
-    && touch /usr/local/tomcat/bin/setenv.sh && chmod g+w /usr/local/tomcat/bin/setenv.sh \
-    && chmod -R g+w /usr/local/tomcat/webapps /usr/local/tomcat/logs /usr/local/tomcat/work /usr/local/tomcat/temp 
+    && touch /usr/local/tomcat/bin/setenv.sh && chmod g+rw /usr/local/tomcat/bin/setenv.sh \
+    && chmod -R g+rw /usr/local/tomcat/webapps /usr/local/tomcat/logs /usr/local/tomcat/work /usr/local/tomcat/temp \
+    && chown -R 1001 /usr/local/tomcat/webapps
 
 RUN mkdir -p /openmrs/data/modules \
     && mkdir -p /openmrs/data/owa  \
@@ -132,7 +135,8 @@ RUN mkdir -p /openmrs/data/modules \
     && mkdir -p /openmrs/data/configuration_checksums \
     && mkdir -p /openmrs/data/complex_obs \
     && mkdir -p /openmrs/data/activemq-data \
-    && chmod -R g+rw /openmrs
+    && chmod -R g+rw /openmrs \
+    && chown -R 1001 /openmrs
     
 # Copy in the start-up scripts
 COPY --from=dev /openmrs/wait-for-it.sh /openmrs/startup-init.sh /openmrs/startup.sh /openmrs/

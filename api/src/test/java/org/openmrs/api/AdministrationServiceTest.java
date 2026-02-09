@@ -20,6 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.emptyIterable;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +53,8 @@ import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.impl.MutableResourceBundleMessageSource;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleActivator;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
@@ -192,7 +196,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getGlobalProperty_shouldNotFailWithNullPropertyName() {
-		adminService.getGlobalProperty(null);
+		assertDoesNotThrow(() -> adminService.getGlobalProperty(null));
 	}
 	
 	@Test
@@ -207,7 +211,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getGlobalProperty_shouldNotFailWithNullDefaultValue() {
-		adminService.getGlobalProperty("asdfsadfsafd", null);
+		assertDoesNotThrow(() -> adminService.getGlobalProperty("asdfsadfsafd", null));
 	}
 	
 	@Test
@@ -358,7 +362,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void getAllowedLocales_shouldNotFailIfNotGlobalPropertyForLocalesAllowedDefinedYet() {
 		adminService.purgeGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST));
-		adminService.getAllowedLocales();
+		assertDoesNotThrow(() -> adminService.getAllowedLocales());
 	}
 	
 	@Test
@@ -375,7 +379,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void saveGlobalProperties_shouldNotFailWithEmptyList() {
-		adminService.saveGlobalProperties(new ArrayList<>());
+		assertDoesNotThrow(() -> adminService.saveGlobalProperties(new ArrayList<>()));
 	}
 	
 	@Test
@@ -1167,5 +1171,29 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 			"hierarchyOf:org.openmrs.layout.LayoutSupport", "hierarchyOf:org.openmrs.obs.ComplexData",
 			"hierarchyOf:org.openmrs.messagesource.PresentationMessage",
 			"hierarchyOf:org.openmrs.person.PersonMergeLogData"));
+	}
+
+	@Test
+	public void runModuleSetupOnVersionChange_shouldExecuteLiquibaseAndStoreNewVersion() {
+		// old version
+		adminService.setGlobalProperty("module.testmodule.version", "1.0.0");
+		assertEquals("1.0.0", adminService.getGlobalProperty("module.testmodule.version"));
+		
+		String previousModuleVersion = "1.0.0";
+		String previousCoreVersion = null;
+		
+		Module module = new Module("Test Module");
+		module.setModuleId("testmodule");
+		module.setVersion("1.2.3");
+
+		ModuleActivator activator = mock(ModuleActivator.class);
+		module.setModuleActivator(activator);
+
+		adminService.runModuleSetupOnVersionChange(module);
+
+		assertEquals("1.2.3", adminService.getGlobalProperty("module.testmodule.version"));
+
+		// verify hook methods must be called
+		verify(activator).setupOnVersionChange(previousCoreVersion, previousModuleVersion);
 	}
 }

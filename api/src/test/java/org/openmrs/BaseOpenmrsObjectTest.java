@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -133,12 +134,12 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	public void hashCode_shouldNotFailIfUuidIsNull() {
 		//given
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
-		
+
 		//when
 		o.setUuid(null);
-		
+
 		//then
-		o.hashCode();
+		assertDoesNotThrow(() -> o.hashCode());
 	}
 	
 	@Test

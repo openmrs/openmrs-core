@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +22,7 @@ import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderSetService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderSetDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
@@ -29,7 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("orderSetService")
-public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetService {
+public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetService, RefByUuid {
 	
 	private final OrderSetDAO dao;
 	private final OrderSetService self;
@@ -219,4 +222,28 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	public OrderSetAttribute getOrderSetAttributeByUuid(String uuid) {
 		return dao.getOrderSetAttributeByUuid(uuid);
 	}
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (OrderSetMember.class.equals(type)) {
+            return (T) getOrderSetMemberByUuid(uuid);
+        }
+        if (OrderSetAttribute.class.equals(type)) {
+            return (T) getOrderSetAttributeByUuid(uuid);
+        }
+        if (OrderSetAttributeType.class.equals(type)) {
+            return (T) getOrderSetAttributeTypeByUuid(uuid);
+        }
+        if (OrderSet.class.equals(type)) {
+            return (T) getOrderSetByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(OrderSetMember.class, OrderSetAttribute.class, OrderSetAttributeType.class, OrderSet.class);
+    }
+
 }

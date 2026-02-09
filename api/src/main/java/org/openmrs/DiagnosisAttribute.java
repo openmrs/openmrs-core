@@ -9,6 +9,14 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
@@ -19,8 +27,17 @@ import org.openmrs.attribute.BaseAttribute;
  * @since 2.5.0
  */
 @Audited
+@Entity
+@Table(name = "diagnosis_attribute")
+@AssociationOverride(
+	name="owner",
+	joinColumns = @JoinColumn(name="diagnosis_id", nullable = false)
+)
 public class DiagnosisAttribute extends BaseAttribute<DiagnosisAttributeType, Diagnosis> implements Attribute<DiagnosisAttributeType, Diagnosis> {
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "diagnosis_attribute_id")
 	private Integer diagnosisAttributeId;
 
 	/**

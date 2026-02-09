@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -29,6 +31,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
@@ -38,6 +41,8 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -51,8 +56,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("obsService")
 @Transactional
-public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
-	
+public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, RefByUuid {
+
+	private static final Logger log = LoggerFactory.getLogger(ObsServiceImpl.class);
 	/**
 	 * The data access object for the obs service
 	 */
@@ -114,9 +120,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		if(obs.getId() != null && changeMessage == null){
 			throw new APIException("Obs.error.ChangeMessage.required", (Object[]) null);
 		}
-
-		handleExistingObsWithComplexConcept(obs);
-
+		
 		ensureRequirePrivilege(obs);
 
 		//Should allow updating a voided Obs, it seems to be pointless to restrict it,
@@ -171,7 +175,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		Obs newObs = Obs.newInstance(obs);
 
 		unsetVoidedAndCreationProperties(newObs,obs);
-		
+		handleObsWithComplexConcept(newObs);
 		Obs.Status originalStatus = dao.getSavedStatus(obs);
 		updateStatusIfNecessary(newObs, originalStatus);
 
@@ -228,6 +232,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	private Obs saveNewOrVoidedObs(Obs obs, String changeMessage) {
+		handleObsWithComplexConcept(obs);
 		Obs ret = dao.saveObs(obs);
 		saveObsGroup(ret,changeMessage);
 		return ret;
@@ -258,7 +263,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		}
 	}
 
-	private void handleExistingObsWithComplexConcept(Obs obs) {
+	private void handleObsWithComplexConcept(Obs obs) {
 		ComplexData complexData = obs.getComplexData();
 		Concept concept = obs.getConcept();
 		if (null != concept && concept.isComplex()
@@ -323,16 +328,19 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Override
 	public void purgeObs(Obs obs, boolean cascade) throws APIException {
 		if (!purgeComplexData(obs)) {
-			throw new APIException("Obs.error.unable.purge.complex.data", new Object[] { obs });
+			// Log a warning instead of throwing an error.
+			// This allows purging the obs row even if the associated file is missing,
+			// which matches the behavior expected by modules like Attachments.
+			log.warn("purgeComplexData returned false for Obs ID: " + (obs != null ? obs.getObsId() : "null") + ". " + 
+				"This may mean the file is already missing. Proceeding to purge the database row.");
 		}
-		
+
 		if (cascade) {
 			throw new APIException("Obs.error.cascading.purge.not.implemented", (Object[]) null);
 			// TODO delete any related objects here before deleting the obs
 			// obsGroups objects?
 			// orders?
 		}
-		
 		dao.deleteObs(obs);
 	}
 	
@@ -680,4 +688,19 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	public void removeHandler(String key) {
 		handlers.remove(key);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (Obs.class.equals(type)) {
+            return (T) getObsByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(Obs.class);
+    }
+
 }

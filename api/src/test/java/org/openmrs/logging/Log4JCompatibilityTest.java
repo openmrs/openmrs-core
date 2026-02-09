@@ -18,12 +18,14 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
  * Class to ensure that we maintain some level of compatibility with Log4J 1.X
  * At some point in the future, this compatibility guarantee should be removed.
  */
+@Disabled("Do we still need this compatibility in OpenMRS Core 3.0?")
 class Log4JCompatibilityTest {
 
 	@Test

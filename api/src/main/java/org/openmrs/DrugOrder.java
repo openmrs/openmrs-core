@@ -11,7 +11,19 @@ package org.openmrs;
 
 import static org.openmrs.Order.Action.DISCONTINUE;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import org.hibernate.annotations.JdbcTypeCode;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
+import org.hibernate.type.SqlTypes;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -20,6 +32,10 @@ import org.openmrs.util.OpenmrsUtil;
  *
  * @version 1.0
  */
+@Entity
+@Table(name = "drug_order") 
+@PrimaryKeyJoinColumn(name = "order_id") 
+@OnDelete(action = OnDeleteAction.CASCADE) 
 @Audited
 public class DrugOrder extends Order {
 
@@ -27,38 +43,63 @@ public class DrugOrder extends Order {
 
 	// Fields
 
+	@Column(name = "dose", length = 22)
 	private Double dose;
 
+	@ManyToOne
+	@JoinColumn(name = "dose_units")
 	private Concept doseUnits;
 
+	@ManyToOne
+	@JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 
+	@Column(name = "as_needed", nullable = false, length = 1)
 	private Boolean asNeeded = false;
 
+	@Column(name = "quantity", length = 22)
 	private Double quantity;
 
+	@ManyToOne
+	@JoinColumn(name = "quantity_units")
 	private Concept quantityUnits;
 
+	@ManyToOne
+	@JoinColumn(name = "drug_inventory_id")
+	@Access(AccessType.FIELD)
 	private Drug drug;
 
+	@Column(name = "as_needed_condition", length = 255)
 	private String asNeededCondition;
 
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "dosing_type", length = 255)
 	private Class<? extends DosingInstructions> dosingType = SimpleDosingInstructions.class;
 
+	@Column(name = "num_refills")
 	private Integer numRefills;
 
+	@Column(name = "dosing_instructions", columnDefinition = "TEXT")
 	private String dosingInstructions;
 
+	@Column(name = "duration")
 	private Integer duration;
 
+	@ManyToOne
+	@JoinColumn(name = "duration_units")
 	private Concept durationUnits;
 
+	@ManyToOne
+	@JoinColumn(name = "route")
 	private Concept route;
 
+	@Column(name = "brand_name", length = 255)
 	private String brandName;
 
+	@Column(name = "dispense_as_written", nullable = false, length = 1)
 	private Boolean dispenseAsWritten = Boolean.FALSE;
 
+	@Column(name = "drug_non_coded", length = 255)
 	private String drugNonCoded;
 
 	// Constructors

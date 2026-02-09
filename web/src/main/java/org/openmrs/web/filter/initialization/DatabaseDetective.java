@@ -21,6 +21,8 @@ public class DatabaseDetective {
 	
 	private static final String CONNECTION_URL = "connection.url";
 	
+	private static final String CONNECTION_DRIVER_CLASS = "connection.driver_class";
+	
 	private static final String CONNECTION_USERNAME = "connection.username";
 	
 	private static final String CONNECTION_PASSWORD = "connection.password";
@@ -40,7 +42,8 @@ public class DatabaseDetective {
 		Connection connection = null;
 		
 		try {
-			DatabaseUtil.loadDatabaseDriver(props.getProperty(CONNECTION_URL), null);
+			DatabaseUtil.loadDatabaseDriver(props.getProperty(CONNECTION_URL),
+			    props.getProperty(CONNECTION_DRIVER_CLASS, null));
 			
 			connection = DriverManager.getConnection(props.getProperty(CONNECTION_URL),
 			    props.getProperty(CONNECTION_USERNAME), props.getProperty(CONNECTION_PASSWORD));

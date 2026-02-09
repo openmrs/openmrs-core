@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,6 +60,7 @@ import org.openmrs.api.PatientIdentifierTypeLockedException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
@@ -94,7 +97,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("patientService")
 @Transactional
-public class PatientServiceImpl extends BaseOpenmrsService implements PatientService {
+public class PatientServiceImpl extends BaseOpenmrsService implements PatientService, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
 	
@@ -1684,4 +1687,28 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<PatientIdentifier> getPatientIdentifiersByPatientProgram(PatientProgram patientProgram) {
 		return dao.getPatientIdentifierByProgram(patientProgram);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (PatientIdentifier.class.equals(type)) {
+            return (T) getPatientIdentifierByUuid(uuid);
+        }
+        if (PatientIdentifierType.class.equals(type)) {
+            return (T) getPatientIdentifierTypeByUuid(uuid);
+        }
+        if (Patient.class.equals(type)) {
+            return (T) getPatientByUuid(uuid);
+        }
+        if (Allergy.class.equals(type)) {
+            return (T) getAllergyByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(PatientIdentifier.class, PatientIdentifierType.class, Patient.class, Allergy.class);
+    }
+
 }

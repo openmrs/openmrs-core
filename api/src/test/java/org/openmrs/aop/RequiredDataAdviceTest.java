@@ -9,6 +9,7 @@
  */
 package org.openmrs.aop;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -487,8 +488,10 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	@Test
 	public void before_shouldNotFailOnUpdateMethodWithNoArguments() throws Throwable {
 		Method method = ConceptServiceImpl.class.getMethod("updateConceptIndexes", (Class[]) null);
-		requiredDataAdvice.before(method, null, new ConceptServiceImpl(mock(ConceptDAO.class), mock(MessageSourceService.class), mock(ObsService.class), mock(AdministrationService.class), mock(ConceptService.class)));
-		requiredDataAdvice.before(method, new Object[] {}, new ConceptServiceImpl(mock(ConceptDAO.class), mock(MessageSourceService.class), mock(ObsService.class), mock(AdministrationService.class), mock(ConceptService.class)));
+		assertDoesNotThrow(() -> {
+			requiredDataAdvice.before(method, null, new ConceptServiceImpl());
+			requiredDataAdvice.before(method, new Object[] {}, new ConceptServiceImpl());
+		});
 	}
 	
 	@Test
