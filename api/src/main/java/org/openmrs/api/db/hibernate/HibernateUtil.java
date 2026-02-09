@@ -79,15 +79,6 @@ public class HibernateUtil {
 				session.persist(entity);
 				return entity;
 			} else {
-				Class<?> existingClass = org.hibernate.Hibernate.getClass(existing);
-				if (!existingClass.equals(entityClass)) {
-					// Class mismatch (e.g., Person->Patient or Concept->ConceptNumeric):
-					// flush pending changes and clear session to avoid WrongClassException
-					session.flush();
-					session.clear();
-				} else {
-					session.evict(existing);
-				}
 				return (T) session.merge(entity);
 			}
 		}
