@@ -1470,8 +1470,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			// "shared references to a collection" errors in Hibernate 7
 			if (conceptName.getTags() != null) {
 				copy.setTags(new HashSet<>(conceptName.getTags()));
-			} else {
-				copy.setTags(new HashSet<>());
 			}
 		}
 		catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
