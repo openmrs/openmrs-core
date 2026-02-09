@@ -147,6 +147,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 			// doesn't like to insert into concept_numeric but update concept in the
 			// same go.  It assumes that its either in both tables or no tables
 			insertRowIntoSubclassIfNecessary(concept);
+			
+			// After insertRowIntoSubclassIfNecessary, the session may have been
+			// cleared. Use merge directly since the concept row already exists.
+			Session session = sessionFactory.getCurrentSession();
+			if (!session.contains(concept)) {
+				return (Concept) session.merge(concept);
+			}
+			return concept;
 		}
 		
 		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), concept);

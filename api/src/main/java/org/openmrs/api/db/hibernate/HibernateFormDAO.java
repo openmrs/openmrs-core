@@ -529,15 +529,16 @@ public class HibernateFormDAO implements FormDAO {
 			for (FormField ff : containingAllFormFields) {
 				allFormFieldIds.add(ff.getFormFieldId());
 			}
+			// Use a correlated subquery to count matching form fields for each form
 			Subquery<Long> subquery = cq.subquery(Long.class);
 			Root<FormField> subqueryRoot = subquery.from(FormField.class);
 
 			subquery.select(cb.count(subqueryRoot.get("formFieldId")));
 			subquery.where(
-				cb.equal(subqueryRoot.get("form"), root),
+				cb.equal(subqueryRoot.get("form").get("formId"), root.get("formId")),
 				subqueryRoot.get("formFieldId").in(allFormFieldIds)
 			);
-			predicates.add(cb.equal(cb.literal((long) containingAllFormFields.size()), subquery.getSelection()));
+			predicates.add(cb.equal(cb.literal((long) containingAllFormFields.size()), subquery));
 		}
 
 		// get all forms (dupes included) that have this field on them

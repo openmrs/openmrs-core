@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -100,6 +102,21 @@ public class HibernateUserDAO implements UserDAO {
 			if (managedPerson != null) {
 				user.setPerson(managedPerson);
 			}
+		}
+		
+		// Ensure referenced Roles are managed. The User->Role cascade includes
+		// PERSIST, so detached Roles would cause constraint violations in Hibernate 7.
+		if (user.getRoles() != null) {
+			Set<Role> managedRoles = new LinkedHashSet<>();
+			for (Role role : user.getRoles()) {
+				if (!currentSession.contains(role)) {
+					Role managedRole = currentSession.get(Role.class, role.getRole());
+					managedRoles.add(managedRole != null ? managedRole : role);
+				} else {
+					managedRoles.add(role);
+				}
+			}
+			user.setRoles(managedRoles);
 		}
 		
 		HibernateUtil.saveOrUpdate(currentSession, user);
