@@ -119,15 +119,20 @@ public class HibernatePatientDAO implements PatientDAO {
 			// Check to make sure we have a row in the patient table already.
 			// If we don't have a row, create it so Hibernate doesn't bung
 			// things up
-			insertPatientStubIfNeeded(patient);
+			boolean wasStubInserted = insertPatientStubIfNeeded(patient);
 			
-			// In Hibernate 7, after the Person has been evicted or the stub inserted,
-			// the Patient's collection references (inherited from Person via Patient(Person) 
-			// constructor) may be orphaned PersistentSets with no CollectionEntry.
-			// Flush and clear the entire session, then merge cleanly.
-			session.flush();
-			session.clear();
-			return (Patient) session.merge(patient);
+			if (wasStubInserted) {
+				// This is a Person→Patient promotion. The session was already contaminated
+				// with a Person entity that's been evicted. In Hibernate 7, the orphaned
+				// PersistentSet CollectionEntry references cause merge failures.
+				// Flush pending changes and clear the session, then merge cleanly.
+				session.flush();
+				session.clear();
+				return (Patient) session.merge(patient);
+			}
+			
+			// Normal patient update - use standard saveOrUpdate
+			return HibernateUtil.saveOrUpdate(session, patient);
 		}
 	}
 	
@@ -137,7 +142,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 *
 	 * @param patient
 	 */
-	private void insertPatientStubIfNeeded(Patient patient) {
+	private boolean insertPatientStubIfNeeded(Patient patient) {
 		
 		boolean stubInsertNeeded = false;
 		
@@ -177,6 +182,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			sessionFactory.getCurrentSession().evict(person);
 		}
 		
+		return stubInsertNeeded;
 	}
 	
 	public List<Patient> getPatients(String query, List<PatientIdentifierType> identifierTypes,
