@@ -86,7 +86,8 @@ class HibernateProxyModule extends Module {
 
 		@Override
 		public void serializeAsField(Object bean, JsonGenerator gen, SerializerProvider prov) throws Exception {
-			// Get the raw field/accessor value without triggering lazy loading
+			// Get the raw field value without triggering Hibernate lazy loading.
+			// This allows us to check if a collection/proxy is initialized before serializing.
 			Object value = null;
 			try {
 				if (delegate.getMember() != null) {
@@ -95,23 +96,23 @@ class HibernateProxyModule extends Module {
 						java.lang.reflect.Field field = (java.lang.reflect.Field) member;
 						field.setAccessible(true);
 						value = field.get(bean);
-					} else if (member instanceof java.lang.reflect.Method) {
-						// For getter-based access, use delegate.get() which calls the getter
+					} else {
+						// For getter-based or other access, use delegate.get()
 						value = delegate.get(bean);
 					}
-				}
-				if (value == null) {
+				} else {
 					value = delegate.get(bean);
 				}
 			} catch (Exception e) {
-				// Fall back to delegate serialization
 				delegate.serializeAsField(bean, gen, prov);
 				return;
 			}
 			
+			// Skip uninitialized lazy collections - omit the field from serialized output
 			if (value instanceof PersistentCollection && !((PersistentCollection<?>) value).wasInitialized()) {
 				return;
 			}
+			// Skip uninitialized lazy proxies - omit the field from serialized output
 			if (value instanceof HibernateProxy && !Hibernate.isInitialized(value)) {
 				return;
 			}
