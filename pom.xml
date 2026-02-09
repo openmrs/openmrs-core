@@ -1376,7 +1376,7 @@
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<graalJsVersion>25.0.2</graalJsVersion>
 
-		<customArgLineForTesting />
+		<customArgLineForTesting>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED</customArgLineForTesting>
 
 		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>		
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>

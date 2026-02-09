@@ -62,13 +62,14 @@ public class HibernateUtil {
 	 * @since 3.0.0
 	 */
 	@SuppressWarnings("unchecked")
-	public static void saveOrUpdate(Session session, Object entity) {
+	public static <T> T saveOrUpdate(Session session, T entity) {
 		if (session.contains(entity)) {
-			return;
+			return entity;
 		}
 		Object id = session.getSessionFactory().getPersistenceUnitUtil().getIdentifier(entity);
 		if (id == null) {
 			session.persist(entity);
+			return entity;
 		} else {
 			// Check if the entity already exists in the DB
 			Class<?> entityClass = org.hibernate.Hibernate.getClass(entity);
@@ -76,6 +77,7 @@ public class HibernateUtil {
 			if (existing == null) {
 				// Entity has an assigned ID but doesn't exist in DB yet - persist it
 				session.persist(entity);
+				return entity;
 			} else {
 				Class<?> existingClass = org.hibernate.Hibernate.getClass(existing);
 				if (!existingClass.equals(entityClass)) {
@@ -86,7 +88,7 @@ public class HibernateUtil {
 				} else {
 					session.evict(existing);
 				}
-				session.merge(entity);
+				return (T) session.merge(entity);
 			}
 		}
 	}

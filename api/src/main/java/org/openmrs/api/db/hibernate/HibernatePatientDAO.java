@@ -109,8 +109,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			// if we're saving a new patient, just do the normal thing
 			// and rows in the person and patient table will be created by
 			// hibernate
-			HibernateUtil.saveOrUpdate(session, patient);
-			return patient;
+			return HibernateUtil.saveOrUpdate(session, patient);
 		} else {
 			// if we're updating a patient, its possible that a person
 			// row exists but a patient row does not. hibernate does not deal
@@ -145,9 +144,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			// Note: A merge might be necessary here because hibernate thinks that Patients
 			// and Persons are the same objects.  So it sees a Person object in the
 			// cache and claims it is a duplicate of this Patient object.
-			HibernateUtil.saveOrUpdate(session, patient);
-			
-			return patient;
+			return HibernateUtil.saveOrUpdate(session, patient);
 		}
 	}
 	
