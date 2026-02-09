@@ -10,7 +10,6 @@
 package org.openmrs.util;
 
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -34,7 +33,11 @@ import org.slf4j.LoggerFactory;
 public class EnversAuditTableInitializer {
 	
 	private static final Logger log = LoggerFactory.getLogger(EnversAuditTableInitializer.class);
-	
+
+	private EnversAuditTableInitializer() {
+		
+	}
+
 	/**
 	 * Checks if Envers is enabled and creates/updates audit tables as needed. This will Create or
 	 * Update audit tables if they don't exist - Update existing audit tables if the schema has
@@ -80,9 +83,9 @@ public class EnversAuditTableInitializer {
 		String auditTablePrefix = hibernateProperties.getProperty("org.hibernate.envers.audit_table_prefix", "");
 		String auditTableSuffix = hibernateProperties.getProperty("org.hibernate.envers.audit_table_suffix", "_audit");
 
-		ExecutionOptions executionOptions = getExecutionOptions((Map<String, Object>) (Map) hibernateProperties);
-
-		SchemaMigrator schemaMigrator = serviceRegistry.getService(SchemaManagementTool.class).getSchemaMigrator((Map<String, Object>) (Map)hibernateProperties);
+		Map<String, Object> settings = (Map) hibernateProperties;
+		ExecutionOptions executionOptions = getExecutionOptions(settings);
+		SchemaMigrator schemaMigrator = serviceRegistry.getService(SchemaManagementTool.class).getSchemaMigrator(settings);
 
 		TargetDescriptor targetDescriptor = getTargetDescriptor();
 
