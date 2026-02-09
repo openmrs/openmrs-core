@@ -12,6 +12,7 @@ package org.openmrs.api.context;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -145,7 +146,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	@Test
 	public void logout_shouldNotFailIfSessionHasntBeenOpenedYet() {
 		Context.closeSession();
-		Context.logout();
+		assertDoesNotThrow(() -> Context.logout());
 	}
 	
 	/**

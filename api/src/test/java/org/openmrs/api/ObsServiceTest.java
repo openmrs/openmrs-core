@@ -595,7 +595,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void removeHandler_shouldNotFailWithInvalidKey() {
-		Context.getObsService().removeHandler("SomeRandomHandler");
+		assertDoesNotThrow(() -> Context.getObsService().removeHandler("SomeRandomHandler"));
 	}
 	
 	/**
@@ -1354,8 +1354,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getObservationsByPersonAndConcept_shouldNotFailWithNullPersonParameter() {
 		ObsService obsService = Context.getObsService();
-		
-		obsService.getObservationsByPersonAndConcept(null, new Concept(7));
+
+		assertDoesNotThrow(() -> obsService.getObservationsByPersonAndConcept(null, new Concept(7)));
 	}
 	
 	/**

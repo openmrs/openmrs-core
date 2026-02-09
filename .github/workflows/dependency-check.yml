@@ -1,0 +1,42 @@
+name: "OWASP Dependency Check"
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  dependencycheck:
+    runs-on: ubuntu-latest
+    name: dependencycheck_test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Set up Java version
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Build project with Maven
+        run: mvn clean install
+      - name: Run OWASP Dependency-Check
+        uses: dependency-check/Dependency-Check_Action@main
+        id: Depcheck
+        env:
+          JAVA_HOME: /opt/jdk
+        with:
+          project: 'openmrs-core'
+          path: '.'
+          format: 'HTML'
+          out: 'reports'
+          args: >
+            --failOnCVSS 8
+            --enableRetired
+            --suppression dependency-check-suppressions.xml
+      - name: Upload Test results
+        if: always()
+        uses: actions/upload-artifact@master
+        with:
+           name: Dependency Check report
+           path: ${{github.workspace}}/reports

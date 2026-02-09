@@ -10,31 +10,56 @@
 package org.openmrs;
 
 import java.util.Date;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import org.hibernate.envers.Audited;
+import org.hibernate.annotations.BatchSize;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * This represents a single concept within a concept set.
  */
+@Entity
+@Table(name = "concept_set")
+@BatchSize(size = 25)
 @Audited
 public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptSet> {
 	
 	public static final long serialVersionUID = 3787L;
 	
 	// Fields
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "concept_set_id")
 	private Integer conceptSetId;
 	
 	// concept in the set
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept; 
 	
 	// parent concept that uses this set
-	private Concept conceptSet; 
-	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "concept_set", nullable = false)
+	private Concept conceptSet;
+
+	@Column(name = "sort_weight", nullable = false)
 	private Double sortWeight;
-	
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
-	
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
 	// Constructors
