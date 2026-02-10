@@ -1,0 +1,228 @@
+@startuml OpenMRS API Resource Model
+
+' Define colors consistent with other OpenMRS diagrams
+!define PATIENT_COLOR #90EE90
+!define CLINICAL_COLOR #FFFFE0
+!define CONCEPT_COLOR #E6E6FA
+!define FORM_COLOR #FFB6C1
+!define USER_COLOR #FFA500
+
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam interfaceStyle rectangle
+skinparam packageBackgroundColor #F8F9FA
+skinparam packageBorderColor #6C757D
+
+title OpenMRS API Resource Model
+
+package "Patient Management" {
+  interface "**Patient Resource**" as PatientR PATIENT_COLOR {
+    GET /patients
+    GET /patients/{uuid}
+    POST /patients
+    PUT /patients/{uuid}
+    DELETE /patients/{uuid}
+    --
+    + patientIdentifiers[]
+    + person
+    + attributes[]
+    + voided
+  }
+
+  interface "**Person Resource**" as PersonR PATIENT_COLOR {
+    GET /persons
+    GET /persons/{uuid}
+    POST /persons
+    PUT /persons/{uuid}
+    DELETE /persons/{uuid}
+    --
+    + names[]
+    + addresses[]
+    + attributes[]
+    + gender
+    + birthdate
+  }
+}
+
+package "Clinical Data" {
+  interface "**Encounter Resource**" as EncounterR CLINICAL_COLOR {
+    GET /encounters
+    GET /encounters/{uuid}
+    POST /encounters
+    PUT /encounters/{uuid}
+    DELETE /encounters/{uuid}
+    --
+    + patient
+    + encounterType
+    + location
+    + datetime
+    + obs[]
+    + orders[]
+    + providers[]
+  }
+
+  interface "**Observation Resource**" as ObsR CLINICAL_COLOR {
+    GET /obs
+    GET /obs/{uuid}
+    POST /obs
+    PUT /obs/{uuid}
+    DELETE /obs/{uuid}
+    --
+    + concept
+    + value
+    + encounter
+    + person
+    + obsGroup
+    + location
+    + obsDatetime
+  }
+
+  interface "**Order Resource**" as OrderR CLINICAL_COLOR {
+    GET /orders
+    GET /orders/{uuid}
+    POST /orders
+    PUT /orders/{uuid}
+    DELETE /orders/{uuid}
+    --
+    + concept
+    + patient
+    + encounter
+    + orderer
+    + urgency
+    + instructions
+  }
+}
+
+package "Concepts and Metadata" {
+  interface "**Concept Resource**" as ConceptR CONCEPT_COLOR {
+    GET /concepts
+    GET /concepts/{uuid}
+    POST /concepts
+    PUT /concepts/{uuid}
+    DELETE /concepts/{uuid}
+    --
+    + names[]
+    + descriptions[]
+    + datatype
+    + conceptClass
+    + mappings[]
+    + answers[]
+  }
+
+  interface "**Location Resource**" as LocationR CONCEPT_COLOR {
+    GET /locations
+    GET /locations/{uuid}
+    POST /locations
+    PUT /locations/{uuid}
+    DELETE /locations/{uuid}
+    --
+    + name
+    + description
+    + address
+    + parentLocation
+    + childLocations[]
+    + tags[]
+  }
+}
+
+package "Forms and Configuration" {
+  interface "**Form Resource**" as FormR FORM_COLOR {
+    GET /forms
+    GET /forms/{uuid}
+    POST /forms
+    PUT /forms/{uuid}
+    DELETE /forms/{uuid}
+    --
+    + name
+    + version
+    + encounterType
+    + formFields[]
+    + resources[]
+  }
+
+  interface "**EncounterType Resource**" as EncounterTypeR FORM_COLOR {
+    GET /encountertypes
+    GET /encountertypes/{uuid}
+    POST /encountertypes
+    PUT /encountertypes/{uuid}
+    DELETE /encountertypes/{uuid}
+    --
+    + name
+    + description
+    + retired
+  }
+}
+
+package "User Management" {
+  interface "**User Resource**" as UserR USER_COLOR {
+    GET /users
+    GET /users/{uuid}
+    POST /users
+    PUT /users/{uuid}
+    DELETE /users/{uuid}
+    --
+    + username
+    + person
+    + roles[]
+    + retired
+  }
+
+  interface "**Provider Resource**" as ProviderR USER_COLOR {
+    GET /providers
+    GET /providers/{uuid}
+    POST /providers
+    PUT /providers/{uuid}
+    DELETE /providers/{uuid}
+    --
+    + name
+    + identifier
+    + person
+    + attributes[]
+    + retired
+  }
+}
+
+' Relationships between resources
+PatientR ||--|| PersonR : "extends"
+EncounterR }|--|| PatientR : "belongs to"
+EncounterR ||--|| LocationR : "occurs at"
+EncounterR ||--|| EncounterTypeR : "of type"
+EncounterR ||--o{ ObsR : "contains"
+EncounterR ||--o{ OrderR : "contains"
+EncounterR }o--o{ ProviderR : "has providers"
+
+ObsR }|--|| ConceptR : "measures"
+ObsR }|--|| PatientR : "about"
+ObsR }o--|| LocationR : "recorded at"
+
+OrderR }|--|| ConceptR : "orders"
+OrderR }|--|| PatientR : "for"
+OrderR }|--|| ProviderR : "ordered by"
+
+FormR ||--|| EncounterTypeR : "captures"
+FormR }o--o{ ConceptR : "contains fields for"
+
+UserR ||--|| PersonR : "extends"
+ProviderR }o--|| PersonR : "may be"
+
+note top of PatientR
+  Core entity representing
+  a person receiving care
+end note
+
+note top of EncounterR
+  Central clinical interaction
+  containing observations and orders
+end note
+
+note top of ConceptR
+  Dictionary terms for
+  medical concepts and questions
+end note
+
+note bottom of FormR
+  UI templates for data
+  collection during encounters
+end note
+
+@enduml

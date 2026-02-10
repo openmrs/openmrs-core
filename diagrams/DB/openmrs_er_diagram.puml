@@ -1,0 +1,792 @@
+@startuml OpenMRS_Database_Schema
+!theme plain
+
+package "Concepts" {
+  entity "concept_map_type" as ConceptMapType {
+    * conceptMapTypeId : Integer
+    1L : =
+    conceptMapTypeId : =
+    conceptMapTypeId : =
+    isHidden : =
+  }
+  entity "concept_class" as ConceptClass {
+    33473L : =
+    * conceptClassId : Integer
+    conceptClassId : =
+    conceptClassId : =
+  }
+  entity "concept_reference_term_map" as ConceptReferenceTermMap {
+    1L : =
+    * conceptReferenceTermMapId : Integer
+    conceptReferenceTermMapId : =
+    termB : =
+    conceptReferenceTermMapId : =
+    termA : =
+    termB : =
+    obj : (ConceptReferenceTermMap)
+    obj : ==
+    3 : =
+  }
+  entity "concept_reference_term" as ConceptReferenceTerm {
+    1L : =
+    conceptReferenceTermId : Integer
+    * code : String
+    version : String
+    conceptReferenceTermId : =
+    source : =
+    code : =
+    conceptReferenceTermId : =
+    conceptSource : =
+    code : =
+    version : =
+    conceptReferenceTermMaps : =
+  }
+  entity "concept_reference_source" as ConceptSource {
+    375L : =
+    * conceptSourceId : Integer
+    hl7Code : String
+    uniqueId : String
+    conceptSourceId : =
+    conceptSourceId : =
+    hl7Code : =
+    uniqueId : =
+  }
+  entity "concept_answer" as ConceptAnswer {
+    3744L : =
+    conceptAnswerId : Integer
+    * dateCreated : Date
+    sortWeight : Double
+    conceptAnswerId : =
+    answerConcept : =
+    answerConcept : =
+    d : =
+    answerConcept : =
+    answerDrug : =
+    concept : =
+    conceptAnswerId : =
+    creator : =
+    dateCreated : =
+    sortWeight : =
+    0 : :
+  }
+}
+
+package "Forms" {
+  entity "field_answer" as FieldAnswer {
+    5656L : =
+    dateCreated : Date
+    dirty : boolean
+    false : =
+    true : =
+    concept : =
+    true : =
+    creator : =
+    true : =
+    dateCreated : =
+    true : =
+    field : =
+  }
+  entity "form_resource" as FormResource {
+    1L : =
+    formResourceId : Integer
+    name : String
+    valueReference : String
+    datatypeClassname : String
+    datatypeConfig : String
+    preferredHandlerClassname : String
+    handlerConfig : String
+    false : =
+    typedValue : Object
+    dateChanged : Date
+    form : =
+    formResourceId : =
+    name : =
+    datatypeClassname : =
+    datatypeConfig : =
+    preferredHandlerClassname : =
+    handlerConfig : =
+    typedValue : =
+    true : =
+    valueToPersist : =
+    changedBy : =
+    dateChanged : =
+  }
+}
+
+package "Clinical Data" {
+  entity "encounter_diagnosis" as Diagnosis {
+    * diagnosisId : Integer
+    1L : =
+    diagnosis : CodedOrFreeText
+    certainty : ConditionVerificationStatus
+    * rank : Integer
+    formNamespaceAndPath : String
+    Constructor : no-arg
+    encounter : =
+    diagnosis : =
+    certainty : =
+    rank : =
+    patient : =
+    encounter : =
+    diagnosis : =
+    certainty : =
+    rank : =
+    patient : =
+    formNamespaceAndPath : =
+    diagnosisId : =
+    encounter : =
+    diagnosis : =
+    certainty : =
+    rank : =
+    condition : =
+    patient : =
+    formNamespaceAndPath : =
+  }
+  entity "encounter" as Encounter {
+    * encounterId : Integer
+    2L : =
+    * encounterDatetime : Date
+    encounterId : =
+    encounterDatetime : =
+    encounterId : =
+    encounterType : =
+    location : =
+    obs : =
+    orders : =
+    patient : =
+    diagnoses : =
+    conditions : =
+    encounterProviders : =
+    form : =
+    visit : =
+    false : =
+    true : =
+    allergies : =
+  }
+  entity "conditions" as Condition {
+    * conditionId : Integer
+    1L : =
+    condition : CodedOrFreeText
+    clinicalStatus : ConditionClinicalStatus
+    verificationStatus : ConditionVerificationStatus
+    additionalDetail : String
+    onsetDate : Date
+    endDate : Date
+    endReason : String
+    condition : =
+    clinicalStatus : =
+    verificationStatus : =
+    previousVersion : =
+    additionalDetail : =
+    null : :
+    null : :
+    patient : =
+    conditionId : =
+    condition : =
+    clinicalStatus : =
+    verificationStatus : =
+    previousVersion : =
+    additionalDetail : =
+    null : :
+    null : :
+    null : :
+    null : :
+    endReason : =
+    patient : =
+    encounter : =
+  }
+  entity "order_type" as OrderType {
+    23232L : =
+    * orderTypeId : Integer
+    * javaClassName : String
+    conceptClasses : Set<ConceptClass>
+    orderTypeId : =
+    orderTypeId : =
+    javaClassName : =
+    parent : =
+  }
+  entity "order_group" as OrderGroup {
+    * orderGroupId : Integer
+    72232L : =
+    orderGroupId : =
+    patient : =
+    encounter : =
+    orders : =
+    1 : +
+    size : =
+    2 : /
+    2 : /
+    orderSet : =
+    parentOrderGroup : =
+    orderGroupReason : =
+    previousOrderGroup : =
+    nestedOrderGroups : =
+  }
+  entity "encounter_role" as EncounterRole {
+    * encounterRoleId : Integer
+    encounterRoleId : =
+    encounterRoleId : =
+  }
+}
+
+package "Patient Management" {
+  entity "allergy" as Allergy {
+    * allergyId : Integer
+    1 : =
+    allergen : Allergen
+    comments : String
+    patient : =
+    allergen : =
+    severity : =
+    comments : =
+    reactions : =
+    allergyId : =
+    allergyId : =
+    patient : =
+    allergen : =
+    severity : =
+    comments : =
+    reactions : =
+    encounter : =
+  }
+  entity "patient_program" as PatientProgram {
+    * patientProgramId : Integer
+    0L : =
+    dateEnrolled : Date
+    dateCompleted : Date
+    null : =
+    null : =
+    null : =
+    state : =
+    concept : =
+    dateCompleted : =
+    dateEnrolled : =
+    patient : =
+    patientProgramId : =
+    program : =
+    states : =
+    location : =
+    attributes : =
+  }
+  entity "patient_state" as PatientState {
+    0L : =
+    patientStateId : Integer
+    startDate : Date
+    endDate : Date
+    patientProgram : =
+    patientStatusId : =
+    state : =
+    endDate : =
+    startDate : =
+    encounter : =
+  }
+  entity "patient_identifier_type" as PatientIdentifierType {
+    * patientIdentifierTypeId : Integer
+    211231L : =
+    format : String
+    formatDescription : String
+    validator : String
+    locationBehavior : LocationBehavior
+    uniquenessBehavior : UniquenessBehavior
+    patientIdentifierTypeId : =
+    formatDescription : =
+    required : =
+    locationBehavior : =
+    uniquenessBehavior : =
+    format : =
+    patientIdentifierTypeId : =
+    validator : =
+  }
+  entity "person_attribute_type" as PersonAttributeType {
+    * personAttributeTypeId : Integer
+    2112313431211L : =
+    format : String
+    foreignKey : Integer
+    * sortWeight : Double
+    * false : =
+    myPersonAttributeTypeId : =
+    format : =
+    foreignKey : =
+    sortWeight : =
+    newPersonAttributeTypeId : =
+    searchable : =
+    editPrivilege : =
+    1L : =
+  }
+  entity "person_address" as PersonAddress {
+    * personAddressId : Integer
+    343333L : =
+    * false : =
+    address1 : String
+    address2 : String
+    address3 : String
+    address4 : String
+    address5 : String
+    address6 : String
+    address7 : String
+    address8 : String
+    address9 : String
+    address10 : String
+    address11 : String
+    address12 : String
+    address13 : String
+    address14 : String
+    address15 : String
+    cityVillage : String
+    countyDistrict : String
+    stateProvince : String
+    country : String
+    postalCode : String
+    latitude : String
+    longitude : String
+    startDate : Date
+    endDate : Date
+    personAddressId : =
+    address1 : =
+    address2 : =
+    cityVillage : =
+    country : =
+    preferred : :
+    preferred : =
+    latitude : =
+    longitude : =
+    person : =
+    personAddressId : =
+    postalCode : =
+    stateProvince : =
+    countyDistrict : =
+    0 : =
+    1 : =
+    address3 : =
+    address4 : =
+    address6 : =
+    address5 : =
+    startDate : =
+    endDate : =
+    null : ==
+    address7 : =
+    address8 : =
+    address9 : =
+    address10 : =
+    address11 : =
+    address12 : =
+    address13 : =
+    address14 : =
+    address15 : =
+  }
+}
+
+package "Users & Roles" {
+  entity "users" as User {
+    userId : Integer
+    * systemId : String
+    username : String
+    email : String
+    userProperties : String>
+    null : =
+    * dateCreated : Date
+    dateChanged : Date
+    * retired : boolean
+    dateRetired : Date
+    retireReason : String
+    userId : =
+    person : =
+    tmprole : =
+    roles : =
+    systemId : =
+    userId : =
+    person : =
+    username : =
+    email : =
+    systemId : :
+    userProperties : =
+    proficientLocalesProperty : =
+    creator : =
+    dateCreated : =
+    changedBy : =
+    dateChanged : =
+    retired : =
+    retiredBy : =
+    dateRetired : =
+    retireReason : =
+  }
+}
+
+package "Providers" {
+  entity "provider_role" as ProviderRole {
+    * providerRoleId : Integer
+    1L : =
+    id : =
+    id : =
+  }
+  entity "provider_attribute_type" as ProviderAttributeType {
+    * providerAttributeTypeId : Integer
+    providerAttributeTypeId : =
+  }
+}
+
+package "Medications" {
+  entity "drug_reference_map" as DrugReferenceMap {
+    1L : =
+    drugReferenceMapId : Integer
+    * dateCreated : Date
+    dateChanged : Date
+    term : =
+    conceptMapType : =
+    drugReferenceMapId : =
+    drug : =
+    conceptReferenceTerm : =
+    conceptMapType : =
+    creator : =
+    dateCreated : =
+    changedBy : =
+    dateChanged : =
+  }
+  entity "medication_dispense" as MedicationDispense {
+    * medicationDispenseId : Integer
+    1L : =
+    event : dispensing
+    quantity : Double
+    dose : Double
+    asNeeded : Boolean
+    dosingInstructions : String
+    datePrepared : Date
+    dateHandedOver : Date
+    wasSubstituted : Boolean
+    medicationDispenseId : =
+    patient : =
+    encounter : =
+    concept : =
+    drug : =
+    location : =
+    dispenser : =
+    drugOrder : =
+    status : =
+    statusReason : =
+    type : =
+    quantity : =
+    quantityUnits : =
+    dose : =
+    doseUnits : =
+    route : =
+    frequency : =
+    asNeeded : =
+    dosingInstructions : =
+    datePrepared : =
+    dateHandedOver : =
+    wasSubstituted : =
+    substitutionType : =
+    substitutionReason : =
+  }
+  entity "drug_ingredient" as DrugIngredient {
+    94023L : =
+    strength : Double
+    drug : =
+    ingredient : =
+    strength : =
+    units : =
+  }
+}
+
+package "Programs" {
+  entity "program_attribute_type" as ProgramAttributeType {
+    programAttributeTypeId : Integer
+    programAttributeTypeId : =
+  }
+}
+
+package "Location" {
+  entity "location" as Location {
+    * locationId : Integer
+    455634L : =
+    1 : =
+    address1 : String
+    address2 : String
+    cityVillage : String
+    stateProvince : String
+    country : String
+    postalCode : String
+    latitude : String
+    longitude : String
+    countyDistrict : String
+    address3 : String
+    address4 : String
+    address6 : String
+    address5 : String
+    address7 : String
+    address8 : String
+    address9 : String
+    address10 : String
+    address11 : String
+    address12 : String
+    address13 : String
+    address14 : String
+    address15 : String
+    tags : Set<LocationTag>
+    locationId : =
+    address1 : =
+    address2 : =
+    cityVillage : =
+    country : =
+    latitude : =
+    locationId : =
+    longitude : =
+    postalCode : =
+    stateProvince : =
+    countyDistrict : =
+    type : =
+    parentLocationId : =
+    childLocations : =
+    this : =
+    tags : =
+    address3 : =
+    address4 : =
+    address6 : =
+    address5 : =
+    address7 : =
+    address8 : =
+    address9 : =
+    address10 : =
+    address11 : =
+    address12 : =
+    address13 : =
+    address14 : =
+    address15 : =
+  }
+  entity "location_attribute_type" as LocationAttributeType {
+    locationAttributeTypeId : Integer
+    locationAttributeTypeId : =
+  }
+}
+
+package "Visits" {
+  entity "visit_type" as VisitType {
+    * visitTypeId : Integer
+    1L : =
+    visitTypeId : =
+    visitTypeId : =
+  }
+  entity "visit" as Visit {
+    * visitId : Integer
+    * startDatetime : Date
+    stopDatetime : Date
+    visitId : =
+    patient : =
+    visitType : =
+    startDatetime : =
+    visitId : =
+    patient : =
+    visitType : =
+    indication : =
+    location : =
+    startDatetime : =
+    stopDatetime : =
+    id : =
+    visitId : +
+    encounters : =
+  }
+  entity "visit_attribute_type" as VisitAttributeType {
+    * visitAttributeTypeId : Integer
+    visitAttributeTypeId : =
+  }
+}
+
+package "System" {
+  entity "hl7_in_archive" as HL7InArchive {
+    hl7InArchiveId : int
+    messageState : Integer
+    false : =
+    hl7InArchiveId : =
+    messageState : =
+    loaded : =
+  }
+  entity "hl7_in_error" as HL7InError {
+    16777215 : =
+    * hl7InErrorId : Integer
+    * error : String
+    errorDetails : String
+    hl7InErrorId : =
+    error : =
+    errorDetails : =
+  }
+}
+
+package "Other" {
+  entity "concept_reference_range" as ConceptReferenceRange {
+    * conceptReferenceRangeId : Integer
+    47329L : =
+    criteria : String
+    conceptReferenceRangeId : =
+    criteria : =
+    conceptNumeric : =
+  }
+  entity "obs_reference_range" as ObsReferenceRange {
+    * obsReferenceRangeId : Integer
+    473299L : =
+    obsReferenceRangeId : =
+    obs : =
+  }
+  entity "concept_state_conversion" as ConceptStateConversion {
+    3214511L : =
+    * conceptStateConversionId : Integer
+    concept : =
+    conceptStateConversionId : =
+    programWorkflow : =
+    programWorkflowState : =
+  }
+  entity "relationship" as Relationship {
+    323423L : =
+    relationshipId : Integer
+    startDate : Date
+    endDate : Date
+    relationshipId : =
+    personA : =
+    personB : =
+    type : =
+    personA : =
+    type : =
+    relationshipId : =
+    personB : =
+    startDate : =
+    endDate : =
+    personB : +
+  }
+  entity "person_merge_log" as PersonMergeLog {
+    * personMergeLogId : Integer
+    1L : =
+    * serializedMergedData : String
+    personMergeLogData : PersonMergeLogData
+    personMergeLogId : =
+    winner : =
+    loser : =
+    serializedMergedData : =
+    personMergeLogData : =
+  }
+  entity "notification_alert_recipient" as AlertRecipient {
+    false : =
+    dateChanged : Date
+    * recipientId : Integer
+    a : =
+    a : =
+    read : =
+    alert : =
+    dateChanged : =
+    recipient : +
+    alertRead : =
+    user : =
+    recipientId : =
+  }
+  entity "notification_template" as Template {
+    * id : Integer
+    * name : String
+    * template : String
+    * ordinal : Integer
+    * sender : String
+    * recipients : String
+    * subject : String
+    data : Map
+    content : String
+    id : =
+    name : =
+    template : =
+    id : =
+    name : =
+    template : =
+    recipients : =
+    sender : =
+    subject : =
+    ordinal : =
+    data : =
+    content : =
+  }
+  entity "scheduler_task_config" as TaskDefinition {
+    id : Integer
+    taskClass : String
+    null : =
+    startTime : Date
+    lastExecutionTime : Date
+    repeatInterval : Long
+    * startOnStartup : Boolean
+    startTimePattern : String
+    started : Boolean
+    properties : String>
+    id : =
+    taskClass : =
+    id : =
+    properties : =
+    taskClass : =
+    startTime : =
+    lastExecutionTime : =
+    repeatInterval : =
+    pattern : =
+    startOnStartup : =
+    started : =
+    1000 : /
+    taskInstance : =
+  }
+  entity "clob_datatype_storage" as ClobDatatypeStorage {
+    * id : Integer
+    id : =
+    value : =
+  }
+  entity "serialized_object" as SerializedObject {
+    id : Integer
+    * type : String
+    * subtype : String
+    * serializationClass : OpenmrsSerializer>
+    serializedData : String
+    id : =
+    type : =
+    subtype : =
+    serializationClass : =
+    serializedData : =
+  }
+  entity "revision_entity" as OpenmrsRevisionEntity {
+    changedBy : Integer
+    changedOn : Date
+    userId : =
+    changedOn : =
+  }
+}
+
+' Relationships
+FieldAnswer }o--|| User
+Diagnosis }o--|| Encounter
+Diagnosis }o--|| Condition
+Allergy }o--|| Encounter
+ConceptReferenceTermMap }o--|| ConceptReferenceTerm
+ConceptReferenceTermMap }o--|| ConceptReferenceTerm
+FormResource }o--|| User
+ConceptReferenceTerm }o--|| ConceptSource
+PatientProgram }o--|| Location
+PatientState }o--|| PatientProgram
+PatientState }o--|| Encounter
+User }o--|| User
+User }o--|| User
+User }o--|| User
+DrugReferenceMap }o--|| ConceptReferenceTerm
+DrugReferenceMap }o--|| ConceptMapType
+DrugReferenceMap }o--|| User
+DrugReferenceMap }o--|| User
+ConceptAnswer }o--|| User
+Encounter }o--|| Location
+Encounter ||--o{ Diagnosis
+Encounter ||--o{ Condition
+Encounter }o--|| Visit
+Encounter ||--o{ Allergy
+Condition }o--|| Condition
+Condition }o--|| Encounter
+Location }o--|| Location
+Location ||--o{ Location
+OrderType }o--|| OrderType
+Visit }o--|| VisitType
+Visit }o--|| Location
+Visit ||--o{ Encounter
+OrderGroup }o--|| Encounter
+OrderGroup }o--|| OrderGroup
+OrderGroup }o--|| OrderGroup
+OrderGroup ||--o{ OrderGroup
+MedicationDispense }o--|| Encounter
+MedicationDispense }o--|| Location
+AlertRecipient }o--|| User
+@enduml

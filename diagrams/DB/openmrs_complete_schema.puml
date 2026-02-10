@@ -1,0 +1,1115 @@
+@startuml OpenMRS_Complete_Database_Schema
+!theme plain
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+package "Core Patient Data" {
+  entity "allergy" {
+    severity_concept_id : INT <<FK>>
+    encounter_id : INT <<FK>>
+    non_coded_allergen : VARCHAR(255)
+    comments : VARCHAR(1024)
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    uuid : CHAR(38)
+    form_namespace_and_path : VARCHAR(255)
+  }
+  entity "allergy_reaction" {
+    reaction_non_coded : VARCHAR(255)
+    uuid : CHAR(38)
+  }
+  entity "patient" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "patient_identifier" {
+    location_id : INT <<FK>>
+    patient_program_id : INT <<FK>>
+    date_changed : datetime(0)
+    changed_by : INT
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "patient_identifier_type" {
+    description : TEXT
+    format : VARCHAR(255)
+    format_description : VARCHAR(255)
+    validator : VARCHAR(200)
+    location_behavior : VARCHAR(50)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    uniqueness_behavior : VARCHAR(50)
+    date_changed : datetime(0)
+    changed_by : INT
+  }
+  entity "person" {
+    gender : VARCHAR(50)
+    birthdate : date
+    death_date : datetime(0)
+    cause_of_death : INT
+    creator : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    birthtime : time
+    cause_of_death_non_coded : VARCHAR(255)
+  }
+  entity "person_address" {
+    person_id : INT <<FK>>
+    address1 : VARCHAR(255)
+    address2 : VARCHAR(255)
+    city_village : VARCHAR(255)
+    state_province : VARCHAR(255)
+    postal_code : VARCHAR(50)
+    country : VARCHAR(50)
+    latitude : VARCHAR(50)
+    longitude : VARCHAR(50)
+    start_date : datetime(0)
+    end_date : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    county_district : VARCHAR(255)
+    address3 : VARCHAR(255)
+    address4 : VARCHAR(255)
+    address5 : VARCHAR(255)
+    address6 : VARCHAR(255)
+    date_changed : datetime(0)
+    changed_by : INT
+    address7 : VARCHAR(255)
+    address8 : VARCHAR(255)
+    address9 : VARCHAR(255)
+    address10 : VARCHAR(255)
+    address11 : VARCHAR(255)
+    address12 : VARCHAR(255)
+    address13 : VARCHAR(255)
+    address14 : VARCHAR(255)
+    address15 : VARCHAR(255)
+  }
+  entity "person_attribute" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "person_attribute_type" {
+    description : TEXT
+    format : VARCHAR(50)
+    foreign_key : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    edit_privilege : VARCHAR(255)
+    sort_weight : DOUBLE
+  }
+  entity "person_name" {
+    prefix : VARCHAR(50)
+    given_name : VARCHAR(50)
+    middle_name : VARCHAR(50)
+    family_name_prefix : VARCHAR(50)
+    family_name : VARCHAR(50)
+    family_name2 : VARCHAR(50)
+    family_name_suffix : VARCHAR(50)
+    degree : VARCHAR(50)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+}
+
+package "System" {
+  entity "care_setting" {
+    description : VARCHAR(255)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "clob_datatype_storage" {
+  }
+  entity "global_property" {
+    property_value : TEXT
+    description : TEXT
+    datatype : VARCHAR(255)
+    datatype_config : TEXT
+    preferred_handler : VARCHAR(255)
+    handler_config : TEXT
+    date_changed : datetime(0)
+    changed_by : INT
+    view_privilege : VARCHAR(255)
+    edit_privilege : VARCHAR(255)
+    delete_privilege : VARCHAR(255)
+  }
+  entity "serialized_object" {
+    description : VARCHAR(5000)
+    date_changed : datetime(0)
+    changed_by : INT
+    date_retired : datetime(0)
+    retired_by : INT
+    retire_reason : VARCHAR(1000)
+  }
+}
+
+package "Cohorts" {
+  entity "cohort" {
+    description : VARCHAR(1000)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "cohort_member" {
+    start_date : datetime(0)
+    end_date : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+}
+
+package "Clinical Concepts" {
+  entity "concept" {
+    short_name : VARCHAR(255)
+    description : TEXT
+    form_text : TEXT
+    version : VARCHAR(50)
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "concept_answer" {
+    answer_concept : INT
+    answer_drug : INT
+    sort_weight : DOUBLE
+  }
+  entity "concept_attribute" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "concept_attribute_type" {
+    description : VARCHAR(1024)
+    datatype : VARCHAR(255)
+    datatype_config : TEXT
+    preferred_handler : VARCHAR(255)
+    handler_config : TEXT
+    max_occurs : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "concept_class" {
+    description : VARCHAR(255)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    date_changed : datetime(0)
+    changed_by : INT
+  }
+  entity "concept_complex" {
+    handler : VARCHAR(255)
+  }
+  entity "concept_datatype" {
+    hl7_abbreviation : VARCHAR(3)
+    description : VARCHAR(255)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "concept_description" {
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "concept_map_type" {
+    description : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "concept_name" {
+    concept_id : INT <<FK>>
+    locale_preferred : BOOLEAN
+    concept_name_type : VARCHAR(50)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    date_changed : datetime(0)
+    changed_by : INT
+  }
+  entity "concept_numeric" {
+    hi_absolute : DOUBLE
+    hi_critical : DOUBLE
+    hi_normal : DOUBLE
+    low_absolute : DOUBLE
+    low_critical : DOUBLE
+    low_normal : DOUBLE
+    units : VARCHAR(50)
+    allow_decimal : BOOLEAN
+    display_precision : INT
+  }
+  entity "concept_proposal" {
+    concept_id : INT <<FK>>
+    encounter_id : INT <<FK>>
+    obs_id : INT <<FK>>
+    obs_concept_id : INT <<FK>>
+    final_text : VARCHAR(255)
+    comments : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "concept_reference_map" {
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "concept_reference_range" {
+    hi_absolute : DOUBLE
+    hi_critical : DOUBLE
+    hi_normal : DOUBLE
+    low_absolute : DOUBLE
+    low_critical : DOUBLE
+    low_normal : DOUBLE
+  }
+  entity "concept_reference_source" {
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    date_changed : datetime(0)
+    changed_by : INT
+  }
+  entity "concept_reference_term" {
+    name : VARCHAR(255)
+    version : VARCHAR(255)
+    description : VARCHAR(255)
+    date_changed : datetime(0)
+    changed_by : INT
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "concept_reference_term_map" {
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "concept_set" {
+    sort_weight : DOUBLE
+  }
+  entity "concept_state_conversion" {
+    concept_id : INT <<FK>>
+    program_workflow_id : INT <<FK>>
+    program_workflow_state_id : INT <<FK>>
+  }
+  entity "concept_stop_word" {
+    locale : VARCHAR(50)
+  }
+}
+
+package "Conditions" {
+  entity "conditions" {
+    encounter_id : INT <<FK>>
+    additional_detail : VARCHAR(255)
+    previous_version : INT
+    condition_coded : INT
+    condition_non_coded : VARCHAR(255)
+    condition_coded_name : INT
+    verification_status : VARCHAR(50)
+    onset_date : datetime(0)
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    voided_by : INT
+    changed_by : INT
+    end_date : datetime(0)
+    date_changed : datetime(0)
+    form_namespace_and_path : VARCHAR(255)
+  }
+}
+
+package "Orders & Medications" {
+  entity "drug" {
+    name : VARCHAR(255)
+    dosage_form : INT
+    maximum_daily_dose : DOUBLE
+    minimum_daily_dose : DOUBLE
+    route : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    strength : VARCHAR(255)
+    dose_limit_units : INT
+  }
+  entity "drug_ingredient" {
+    strength : DOUBLE
+    units : INT
+  }
+  entity "drug_reference_map" {
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "medication_dispense" {
+    encounter_id : INT <<FK>>
+    drug_id : INT <<FK>>
+    location_id : INT <<FK>>
+    drug_order_id : INT <<FK>>
+    dispenser : INT
+    status_reason : INT
+    type : INT
+    quantity : DOUBLE
+    quantity_units : INT
+    dose : DOUBLE
+    dose_units : INT
+    route : INT
+    frequency : INT
+    as_needed : BOOLEAN
+    dosing_instructions : TEXT
+    date_prepared : datetime(0)
+    date_handed_over : datetime(0)
+    was_substituted : BOOLEAN
+    substitution_type : INT
+    substitution_reason : INT
+    form_namespace_and_path : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "order_attribute" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "order_attribute_type" {
+    description : VARCHAR(1024)
+    datatype : VARCHAR(255)
+    datatype_config : TEXT
+    preferred_handler : VARCHAR(255)
+    handler_config : TEXT
+    max_occurs : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "order_frequency" {
+    frequency_per_day : DOUBLE
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "order_group" {
+    order_set_id : INT <<FK>>
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+    order_group_reason : INT
+    parent_order_group : INT
+    previous_order_group : INT
+  }
+  entity "order_group_attribute" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "order_group_attribute_type" {
+    description : VARCHAR(1024)
+    datatype : VARCHAR(255)
+    datatype_config : TEXT
+    preferred_handler : VARCHAR(255)
+    handler_config : TEXT
+    max_occurs : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "order_type" {
+    description : TEXT
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    parent : INT
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "orders" {
+    previous_order_id : INT <<FK>>
+    order_group_id : INT <<FK>>
+    instructions : TEXT
+    date_activated : datetime(0)
+    auto_expire_date : datetime(0)
+    date_stopped : datetime(0)
+    order_reason : INT
+    order_reason_non_coded : VARCHAR(255)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    accession_number : VARCHAR(255)
+    comment_to_fulfiller : VARCHAR(1024)
+    scheduled_date : datetime(0)
+    sort_weight : DOUBLE
+    fulfiller_comment : VARCHAR(1024)
+    fulfiller_status : VARCHAR(50)
+    form_namespace_and_path : VARCHAR(255)
+  }
+}
+
+package "Clinical Encounters" {
+  entity "encounter" {
+    location_id : INT <<FK>>
+    form_id : INT <<FK>>
+    visit_id : INT <<FK>>
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "encounter_diagnosis" {
+    condition_id : INT <<FK>>
+    diagnosis_coded : INT
+    diagnosis_non_coded : VARCHAR(255)
+    diagnosis_coded_name : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    form_namespace_and_path : VARCHAR(255)
+  }
+  entity "encounter_provider" {
+    changed_by : INT
+    date_changed : datetime(0)
+    date_voided : datetime(0)
+    voided_by : INT
+    void_reason : VARCHAR(255)
+  }
+  entity "encounter_role" {
+    description : VARCHAR(1024)
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "encounter_type" {
+    description : TEXT
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    edit_privilege : VARCHAR(255)
+    view_privilege : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "obs" {
+    encounter_id : INT <<FK>>
+    order_id : INT <<FK>>
+    location_id : INT <<FK>>
+    obs_group_id : INT <<FK>>
+    value_group_id : INT <<FK>>
+    value_coded_name_id : INT <<FK>>
+    accession_number : VARCHAR(255)
+    value_coded : INT
+    value_drug : INT
+    value_datetime : datetime(0)
+    value_numeric : DOUBLE
+    value_modifier : VARCHAR(2)
+    value_text : TEXT
+    value_complex : VARCHAR(1000)
+    comments : VARCHAR(255)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    previous_version : INT
+    form_namespace_and_path : VARCHAR(255)
+    interpretation : VARCHAR(32)
+  }
+  entity "obs_reference_range" {
+    hi_absolute : DOUBLE
+    hi_critical : DOUBLE
+    hi_normal : DOUBLE
+    low_absolute : DOUBLE
+    low_critical : DOUBLE
+    low_normal : DOUBLE
+  }
+}
+
+package "Forms & Fields" {
+  entity "field" {
+    concept_id : INT <<FK>>
+    description : TEXT
+    field_type : INT
+    table_name : VARCHAR(50)
+    attribute_name : VARCHAR(50)
+    default_value : TEXT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "field_answer" {
+  }
+  entity "field_type" {
+    name : VARCHAR(50)
+    description : TEXT
+  }
+  entity "form" {
+    build : INT
+    xslt : TEXT
+    template : TEXT
+    description : TEXT
+    encounter_type : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retired_reason : VARCHAR(255)
+  }
+  entity "form_field" {
+    field_number : INT
+    field_part : VARCHAR(5)
+    page_number : INT
+    parent_form_field : INT
+    min_occurs : INT
+    max_occurs : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    sort_weight : FLOAT
+  }
+  entity "form_resource" {
+    datatype : VARCHAR(255)
+    datatype_config : TEXT
+    preferred_handler : VARCHAR(255)
+    handler_config : TEXT
+    date_changed : datetime(0)
+    changed_by : INT
+  }
+}
+
+package "HL7 Integration" {
+  entity "hl7_in_archive" {
+    hl7_source_key : VARCHAR(255)
+    message_state : INT
+  }
+  entity "hl7_in_error" {
+    hl7_source_key : TEXT
+    error_details : MEDIUMTEXT
+  }
+  entity "hl7_in_queue" {
+    hl7_source_key : TEXT
+    date_processed : datetime(0)
+    error_msg : TEXT
+    date_created : datetime(0)
+  }
+}
+
+package "Locations" {
+  entity "location" {
+    location_type_concept_id : INT <<FK>>
+    description : VARCHAR(255)
+    address1 : VARCHAR(255)
+    address2 : VARCHAR(255)
+    city_village : VARCHAR(255)
+    state_province : VARCHAR(255)
+    postal_code : VARCHAR(50)
+    country : VARCHAR(50)
+    latitude : VARCHAR(50)
+    longitude : VARCHAR(50)
+    county_district : VARCHAR(255)
+    address3 : VARCHAR(255)
+    address4 : VARCHAR(255)
+    address5 : VARCHAR(255)
+    address6 : VARCHAR(255)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    parent_location : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    address7 : VARCHAR(255)
+    address8 : VARCHAR(255)
+    address9 : VARCHAR(255)
+    address10 : VARCHAR(255)
+    address11 : VARCHAR(255)
+    address12 : VARCHAR(255)
+    address13 : VARCHAR(255)
+    address14 : VARCHAR(255)
+    address15 : VARCHAR(255)
+  }
+  entity "location_attribute" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "location_attribute_type" {
+    description : VARCHAR(1024)
+    datatype : VARCHAR(255)
+    datatype_config : TEXT
+    preferred_handler : VARCHAR(255)
+    handler_config : TEXT
+    max_occurs : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "location_tag" {
+    description : VARCHAR(255)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "location_tag_map" {
+  }
+}
+
+package "Notifications" {
+  entity "notification_alert" {
+    date_to_expire : datetime(0)
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "notification_alert_recipient" {
+  }
+  entity "notification_template" {
+    name : VARCHAR(50)
+    template : TEXT
+    subject : VARCHAR(100)
+    sender : VARCHAR(255)
+    recipients : VARCHAR(512)
+    ordinal : INT
+  }
+}
+
+package "Programs & Workflows" {
+  entity "patient_program" {
+    location_id : INT <<FK>>
+    outcome_concept_id : INT <<FK>>
+    date_enrolled : datetime(0)
+    date_completed : datetime(0)
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "patient_state" {
+    encounter_id : INT <<FK>>
+    start_date : date
+    end_date : date
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    form_namespace_and_path : VARCHAR(255)
+  }
+  entity "program" {
+    outcomes_concept_id : INT <<FK>>
+    changed_by : INT
+    date_changed : datetime(0)
+    description : TEXT
+  }
+  entity "program_attribute_type" {
+    description : VARCHAR(1024)
+    datatype : VARCHAR(255)
+    datatype_config : TEXT
+    preferred_handler : VARCHAR(255)
+    handler_config : TEXT
+    max_occurs : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "program_workflow" {
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "program_workflow_state" {
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+}
+
+package "Users & Security" {
+  entity "privilege" {
+    description : TEXT
+  }
+  entity "role" {
+    description : VARCHAR(255)
+  }
+  entity "role_role" {
+  }
+  entity "user_property" {
+    property_value : CLOB
+  }
+  entity "user_role" {
+  }
+  entity "users" {
+    username : VARCHAR(50)
+    password : VARCHAR(128)
+    salt : VARCHAR(128)
+    secret_question : VARCHAR(255)
+    secret_answer : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    activation_key : VARCHAR(255)
+  }
+}
+
+package "Providers" {
+  entity "provider" {
+    person_id : INT <<FK>>
+    role_id : INT <<FK>>
+    speciality_id : INT <<FK>>
+    provider_role_id : INT <<FK>>
+    name : VARCHAR(255)
+    identifier : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "provider_attribute" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "provider_attribute_type" {
+    description : VARCHAR(1024)
+    datatype : VARCHAR(255)
+    datatype_config : TEXT
+    preferred_handler : VARCHAR(255)
+    handler_config : TEXT
+    max_occurs : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "provider_role" {
+    description : VARCHAR(1000)
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+}
+
+package "Scheduler" {
+  entity "scheduler_task_config" {
+    description : VARCHAR(1024)
+    schedulable_class : TEXT
+    start_time : datetime(0)
+    start_time_pattern : VARCHAR(50)
+    created_by : INT
+    date_created : datetime(0)
+    changed_by : INT
+    date_changed : datetime(0)
+    last_execution_time : datetime(0)
+  }
+}
+
+package "Visits" {
+  entity "visit" {
+    indication_concept_id : INT <<FK>>
+    location_id : INT <<FK>>
+    date_stopped : datetime(0)
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "visit_attribute" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "visit_attribute_type" {
+    description : VARCHAR(1024)
+    datatype : VARCHAR(255)
+    datatype_config : TEXT
+    preferred_handler : VARCHAR(255)
+    handler_config : TEXT
+    max_occurs : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "visit_type" {
+    description : VARCHAR(1024)
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+}
+
+package "Other" {
+  entity "concept_name_tag" {
+    description : TEXT
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+    date_changed : datetime(0)
+    changed_by : INT
+  }
+  entity "concept_name_tag_map" {
+  }
+  entity "concept_proposal_tag_map" {
+  }
+  entity "diagnosis_attribute" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "diagnosis_attribute_type" {
+    description : VARCHAR(1024)
+    datatype : VARCHAR(255)
+    datatype_config : TEXT
+    preferred_handler : VARCHAR(255)
+    handler_config : TEXT
+    max_occurs : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "drug_order" {
+    drug_inventory_id : INT <<FK>>
+    dose : DOUBLE
+    as_needed : BOOLEAN
+    dosing_type : VARCHAR(255)
+    quantity : DOUBLE
+    as_needed_condition : VARCHAR(255)
+    num_refills : INT
+    dosing_instructions : TEXT
+    duration : INT
+    duration_units : INT
+    quantity_units : INT
+    route : INT
+    dose_units : INT
+    frequency : INT
+    brand_name : VARCHAR(255)
+    drug_non_coded : VARCHAR(255)
+  }
+  entity "hl7_source" {
+    description : TEXT
+  }
+  entity "note" {
+    patient_id : INT <<FK>>
+    obs_id : INT <<FK>>
+    encounter_id : INT <<FK>>
+    note_type : VARCHAR(50)
+    priority : INT
+    parent : INT
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "order_set" {
+    description : VARCHAR(1000)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+    category : INT
+  }
+  entity "order_set_attribute" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "order_set_attribute_type" {
+    description : VARCHAR(1024)
+    datatype : VARCHAR(255)
+    datatype_config : TEXT
+    preferred_handler : VARCHAR(255)
+    handler_config : TEXT
+    max_occurs : INT
+    changed_by : INT
+    date_changed : datetime(0)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+  }
+  entity "order_set_member" {
+    order_template : TEXT
+    order_template_type : VARCHAR(1024)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    changed_by : INT
+    date_changed : datetime(0)
+  }
+  entity "order_type_class_map" {
+  }
+  entity "patient_program_attribute" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "person_merge_log" {
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "referral_order" {
+    specimen_source : INT
+    laterality : VARCHAR(20)
+    clinical_history : TEXT
+    frequency : INT
+    number_of_repeats : INT
+    location : INT
+  }
+  entity "relationship" {
+    start_date : datetime(0)
+    end_date : datetime(0)
+    date_changed : datetime(0)
+    changed_by : INT
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "relationship_type" {
+    description : VARCHAR(255)
+    retired_by : INT
+    date_retired : datetime(0)
+    retire_reason : VARCHAR(255)
+    date_changed : datetime(0)
+    changed_by : INT
+  }
+  entity "report_object" {
+    description : VARCHAR(1000)
+    xml_data : TEXT
+    changed_by : INT
+    date_changed : datetime(0)
+    voided_by : INT
+    date_voided : datetime(0)
+    void_reason : VARCHAR(255)
+  }
+  entity "report_schema_xml" {
+  }
+  entity "role_privilege" {
+  }
+  entity "scheduler_task_config_property" {
+    task_config_id : INT <<FK>>
+    value : TEXT
+  }
+  entity "test_order" {
+    specimen_source : INT
+    laterality : VARCHAR(20)
+    clinical_history : TEXT
+    frequency : INT
+    number_of_repeats : INT
+    location : INT
+  }
+}
+
+allergy }o--|| encounter : encounter_id
+concept_name }o--|| concept : concept_id
+concept_proposal }o--|| concept : concept_id
+concept_proposal }o--|| encounter : encounter_id
+concept_proposal }o--|| obs : obs_id
+concept_state_conversion }o--|| concept : concept_id
+concept_state_conversion }o--|| program_workflow : program_workflow_id
+concept_state_conversion }o--|| program_workflow_state : program_workflow_state_id
+conditions }o--|| encounter : encounter_id
+encounter }o--|| location : location_id
+encounter }o--|| form : form_id
+encounter }o--|| visit : visit_id
+encounter_diagnosis }o--|| conditions : condition_id
+field }o--|| concept : concept_id
+medication_dispense }o--|| encounter : encounter_id
+medication_dispense }o--|| drug : drug_id
+medication_dispense }o--|| location : location_id
+medication_dispense }o--|| drug_order : drug_order_id
+note }o--|| patient : patient_id
+note }o--|| obs : obs_id
+note }o--|| encounter : encounter_id
+obs }o--|| encounter : encounter_id
+obs }o--|| orders : order_id
+obs }o--|| location : location_id
+order_group }o--|| order_set : order_set_id
+orders }o--|| order_group : order_group_id
+patient_identifier }o--|| location : location_id
+patient_identifier }o--|| patient_program : patient_program_id
+patient_program }o--|| location : location_id
+patient_state }o--|| encounter : encounter_id
+person_address }o--|| person : person_id
+provider }o--|| person : person_id
+provider }o--|| role : role_id
+provider }o--|| provider_role : provider_role_id
+visit }o--|| location : location_id
+
+@enduml
