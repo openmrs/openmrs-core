@@ -18,7 +18,6 @@ import org.hibernate.service.ServiceRegistry;
 import org.hibernate.tool.schema.TargetType;
 import org.hibernate.tool.schema.spi.ExceptionHandler;
 import org.hibernate.tool.schema.spi.ExecutionOptions;
-import org.hibernate.tool.schema.spi.SchemaFilter;
 import org.hibernate.tool.schema.spi.SchemaManagementTool;
 import org.hibernate.tool.schema.spi.SchemaMigrator;
 import org.hibernate.tool.schema.spi.ScriptTargetOutput;
@@ -142,11 +141,6 @@ public class EnversAuditTableInitializer {
 			@Override
 			public ExceptionHandler getExceptionHandler() {
 				return throwable -> log.warn("Schema migration encountered an issue: {}", throwable.getMessage());
-			}
-
-			@Override
-			public SchemaFilter getSchemaFilter() {
-				return SchemaFilter.ALL;
 			}
 		};
 	}
