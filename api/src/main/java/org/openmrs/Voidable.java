@@ -11,8 +11,6 @@ package org.openmrs;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * In OpenMRS, data are rarely fully deleted (purged) from the system; rather, they are either
  * voided or retired. When data can be removed (effectively deleted from the user's perspective),
@@ -34,7 +32,6 @@ public interface Voidable extends OpenmrsObject {
 	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
 	@Deprecated
-	@JsonIgnore
 	public Boolean isVoided();
 	
 	/**
