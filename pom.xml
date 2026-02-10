@@ -1382,7 +1382,7 @@
 		<log4jVersion>2.25.3</log4jVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<graalJsVersion>25.0.2</graalJsVersion>
-		<nettyVersion>4.1.124.Final</nettyVersion>
+		<nettyVersion>4.1.131.Final</nettyVersion>
 
 		<customArgLineForTesting>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED</customArgLineForTesting>
 
