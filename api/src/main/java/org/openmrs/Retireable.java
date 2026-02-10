@@ -11,7 +11,7 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * In OpenMRS, data are rarely fully deleted (purged) from the system; rather, they are either
