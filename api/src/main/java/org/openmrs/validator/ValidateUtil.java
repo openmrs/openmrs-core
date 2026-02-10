@@ -14,6 +14,7 @@ import org.openmrs.OpenmrsObject;
 import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateUtil;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -70,23 +71,35 @@ public class ValidateUtil {
 		
 		Errors errors = new BindException(obj, "");
 		
-		Context.getAdministrationService().validate(obj, errors);
-		
-		if (errors.hasErrors()) {
-			Set<String> uniqueErrorMessages = new LinkedHashSet<>();
-			for (Object objerr : errors.getAllErrors()) {
-				ObjectError error = (ObjectError) objerr;
-				String message = Context.getMessageSourceService().getMessage(error.getCode(), error.getArguments(), Context.getLocale());
-				if (error instanceof FieldError) {
-					message = ((FieldError) error).getField() + ": " + message;
-				}
-				uniqueErrorMessages.add(message);
+		try {
+			Context.getAdministrationService().validate(obj, errors);
+		} catch (UnexpectedRollbackException ex) {
+			if (errors.hasErrors()) {
+				throwValidationError(errors, obj);
+			} else {
+				throw ex;
 			}
-			
-			String exceptionMessage = "'" + obj + "' failed to validate with reason: ";
-			exceptionMessage += StringUtils.join(uniqueErrorMessages, ", ");
-			throw new ValidationException(exceptionMessage, errors);
 		}
+
+		if (errors.hasErrors()) {
+			throwValidationError(errors, obj);
+		} 
+	}
+
+	private static void throwValidationError(Errors errors, Object obj) {
+		Set<String> uniqueErrorMessages = new LinkedHashSet<>();
+		for (Object objerr : errors.getAllErrors()) {
+			ObjectError error = (ObjectError) objerr;
+			String message = Context.getMessageSourceService().getMessage(error.getCode(), error.getArguments(), Context.getLocale());
+			if (error instanceof FieldError) {
+				message = ((FieldError) error).getField() + ": " + message;
+			}
+			uniqueErrorMessages.add(message);
+		}
+		
+		String exceptionMessage = "'" + obj + "' failed to validate with reason: ";
+		exceptionMessage += StringUtils.join(uniqueErrorMessages, ", ");
+		throw new ValidationException(exceptionMessage, errors);
 	}
 	
 	/**
