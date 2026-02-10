@@ -220,6 +220,19 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		newObs.setComplexData(obsToCopy.getComplexData());
 		newObs.setFormField(obsToCopy.getFormFieldNamespace(), obsToCopy.getFormFieldPath());
 		
+		if (obsToCopy.getReferenceRange() != null) {
+			ObsReferenceRange newRange = new ObsReferenceRange();
+			ObsReferenceRange srcRange = obsToCopy.getReferenceRange();
+			newRange.setHiAbsolute(srcRange.getHiAbsolute());
+			newRange.setHiCritical(srcRange.getHiCritical());
+			newRange.setHiNormal(srcRange.getHiNormal());
+			newRange.setLowAbsolute(srcRange.getLowAbsolute());
+			newRange.setLowCritical(srcRange.getLowCritical());
+			newRange.setLowNormal(srcRange.getLowNormal());
+			newRange.setObs(newObs);
+			newObs.setReferenceRange(newRange);
+		}
+		
 		// Copy list of all members, including voided, and put them in respective groups
 		if (obsToCopy.hasGroupMembers(true)) {
 			for (Obs member : obsToCopy.getGroupMembers(true)) {
