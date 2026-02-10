@@ -60,8 +60,7 @@ public class HibernateOpenmrsObjectDAO<T extends BaseOpenmrsObject> implements O
 	 */
 	@Override
 	public T saveOrUpdate(T persistent) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), persistent);
-		return persistent;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), persistent);
 	}
 	
 }

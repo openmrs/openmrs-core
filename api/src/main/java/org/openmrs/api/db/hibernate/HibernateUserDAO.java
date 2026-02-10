@@ -119,7 +119,7 @@ public class HibernateUserDAO implements UserDAO {
 			user.setRoles(managedRoles);
 		}
 		
-		HibernateUtil.saveOrUpdate(currentSession, user);
+		user = HibernateUtil.saveOrUpdate(currentSession, user);
 		
 		if (isNewUser && password != null) {
 			/* In OpenMRS, we are using generation strategy as native which will convert to IDENTITY 
@@ -315,8 +315,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public Privilege savePrivilege(Privilege privilege) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), privilege);
-		return privilege;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), privilege);
 	}
 	
 	/**
@@ -332,8 +331,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public Role saveRole(Role role) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), role);
-		return role;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), role);
 	}
 	
 	/**

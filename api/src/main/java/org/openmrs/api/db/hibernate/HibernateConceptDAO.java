@@ -157,12 +157,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			return concept;
 		}
 		
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), concept);
-		return concept;
-	}
-	
-	/**
-	 * Convenience method that will check this concept for subtype values (ConceptNumeric,
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), concept);
 	 * ConceptDerived, etc) and insert a line into that subtable if needed. This prevents a
 	 * hibernate ConstraintViolationException
 	 * 
@@ -348,8 +343,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Drug saveDrug(Drug drug) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), drug);
-		return drug;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), drug);
 	}
 	
 	/**
@@ -475,8 +469,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptClass saveConceptClass(ConceptClass cc) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cc);
-		return cc;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cc);
 	}
 	
 	/**
@@ -555,8 +548,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cd);
-		return cd;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cd);
 	}
 	
 	/**
@@ -781,8 +773,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptProposal saveConceptProposal(ConceptProposal cp) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cp);
-		return cp;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cp);
 	}
 	
 	/**
@@ -1007,8 +998,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptSource);
-		return conceptSource;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptSource);
 	}
 	
 	/**
@@ -1020,8 +1010,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			return null;
 		}
 		
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), nameTag);
-		return nameTag;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), nameTag);
 	}
 	
 	/**
@@ -1385,7 +1374,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			if (!stopWordList.isEmpty()) {
 				throw new DAOException("Duplicate ConceptStopWord Entry");
 			}
-			HibernateUtil.saveOrUpdate(session, conceptStopWord);
+			conceptStopWord = HibernateUtil.saveOrUpdate(session, conceptStopWord);
 		}
 		return conceptStopWord;
 	}
@@ -1658,8 +1647,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptMapType saveConceptMapType(ConceptMapType conceptMapType) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptMapType);
-		return conceptMapType;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptMapType);
 	}
 	
 	/**
@@ -1799,8 +1787,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptReferenceTerm saveConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptReferenceTerm);
-		return conceptReferenceTerm;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptReferenceTerm);
 	}
 	
 	/**
@@ -2219,8 +2206,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptAttributeType saveConceptAttributeType(ConceptAttributeType conceptAttributeType) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptAttributeType);
-		return conceptAttributeType;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptAttributeType);
 	}
 
 	/**
@@ -2373,8 +2359,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptReferenceRange);
-		return conceptReferenceRange;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptReferenceRange);
 	}
 
 	/**

@@ -77,8 +77,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public Encounter saveEncounter(Encounter encounter) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounter);
-		return encounter;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounter);
 	}
 	
 	/**
@@ -182,8 +181,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public EncounterType saveEncounterType(EncounterType encounterType) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounterType);
-		return encounterType;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounterType);
 	}
 	
 	/**
@@ -535,8 +533,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounterRole);
-		return encounterRole;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounterRole);
 	}
 	
 	/**

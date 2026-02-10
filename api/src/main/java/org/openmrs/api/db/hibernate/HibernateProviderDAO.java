@@ -72,8 +72,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public Provider saveProvider(Provider provider) {
-		HibernateUtil.saveOrUpdate(getSession(), provider);
-		return provider;
+		return HibernateUtil.saveOrUpdate(getSession(), provider);
 	}
 	
 	/**
@@ -350,8 +349,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public ProviderAttributeType saveProviderAttributeType(ProviderAttributeType providerAttributeType) {
-		HibernateUtil.saveOrUpdate(getSession(), providerAttributeType);
-		return providerAttributeType;
+		return HibernateUtil.saveOrUpdate(getSession(), providerAttributeType);
 	}
 	
 	/* (non-Javadoc)
@@ -450,8 +448,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public ProviderRole saveProviderRole(ProviderRole providerRole) {
-		HibernateUtil.saveOrUpdate(getSession(), providerRole);
-		return providerRole;
+		return HibernateUtil.saveOrUpdate(getSession(), providerRole);
 	}
 
 	/**

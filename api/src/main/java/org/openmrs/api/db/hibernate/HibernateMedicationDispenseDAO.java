@@ -75,8 +75,7 @@ public class HibernateMedicationDispenseDAO implements MedicationDispenseDAO {
 
 	@Override
 	public MedicationDispense saveMedicationDispense(MedicationDispense medicationDispense) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), medicationDispense);
-		return medicationDispense;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), medicationDispense);
 	}
 
 	@Override

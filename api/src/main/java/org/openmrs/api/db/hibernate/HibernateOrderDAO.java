@@ -91,9 +91,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public Order saveOrder(Order order) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), order);
-		
-		return order;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), order);
 	}
 	
 	/**
@@ -368,8 +366,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderGroup);
-		return orderGroup;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderGroup);
 	}
 	
 	/**
@@ -663,8 +660,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderFrequency);
-		return orderFrequency;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderFrequency);
 	}
 	
 	/**
@@ -809,8 +805,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderType saveOrderType(OrderType orderType) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderType);
-		return orderType;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderType);
 	}
 	
 	/**
@@ -926,8 +921,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderGroupAttributeType);
-		return orderGroupAttributeType;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderGroupAttributeType);
 	}
 	
 	/**
@@ -1008,8 +1002,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderAttributeType saveOrderAttributeType(OrderAttributeType orderAttributeType) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderAttributeType);
-		return orderAttributeType;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderAttributeType);
 	}
 
 	/**

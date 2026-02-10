@@ -63,8 +63,7 @@ public class HibernateDatatypeDAO implements DatatypeDAO {
 	 */
 	@Override
 	public ClobDatatypeStorage saveClobDatatypeStorage(ClobDatatypeStorage storage) {
-		HibernateUtil.saveOrUpdate(session(), storage);
-		return storage;
+		return HibernateUtil.saveOrUpdate(session(), storage);
 	}
 	
 	/**
