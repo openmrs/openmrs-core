@@ -55,8 +55,7 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	@Override
 	public OrderSet save(OrderSet orderSet) throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
-		HibernateUtil.saveOrUpdate(session, orderSet);
-		return orderSet;
+		return HibernateUtil.saveOrUpdate(session, orderSet);
 	}
 	
 	/**
@@ -136,8 +135,7 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	 */
 	@Override
 	public OrderSetAttributeType saveOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderSetAttributeType);
-		return orderSetAttributeType;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderSetAttributeType);
 	}
 
 	/**

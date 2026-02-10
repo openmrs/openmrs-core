@@ -200,7 +200,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		if (gpObject != null) {
 			gpObject.setPropertyValue(gp.getPropertyValue());
 			gpObject.setDescription(gp.getDescription());
-			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), gpObject);
+			gpObject = HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), gpObject);
 			return gpObject;
 		} else {
 			sessionFactory.getCurrentSession().persist(gp);

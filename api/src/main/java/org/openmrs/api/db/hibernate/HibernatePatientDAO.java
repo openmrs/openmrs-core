@@ -316,8 +316,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patientIdentifierType);
-		return patientIdentifierType;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patientIdentifierType);
 	}
 	
 	/**
@@ -712,8 +711,7 @@ public class HibernatePatientDAO implements PatientDAO {
         @Override
 	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) {
 		
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patientIdentifier);
-		return patientIdentifier;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patientIdentifier);
 		
 	}
 	

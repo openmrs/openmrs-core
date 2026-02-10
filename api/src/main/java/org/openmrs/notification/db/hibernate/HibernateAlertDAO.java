@@ -50,8 +50,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	 */
 	@Override
 	public Alert saveAlert(Alert alert) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), alert);
-		return alert;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), alert);
 	}
 	
 	/**

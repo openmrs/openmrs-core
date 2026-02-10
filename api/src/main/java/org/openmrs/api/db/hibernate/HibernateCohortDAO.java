@@ -168,8 +168,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	 */
 	@Override
 	public Cohort saveCohort(Cohort cohort) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cohort);
-		return cohort;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cohort);
 	}
 
 	@Override
@@ -203,7 +202,6 @@ public class HibernateCohortDAO implements CohortDAO {
 	
 	@Override
 	public CohortMembership saveCohortMembership(CohortMembership cohortMembership) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cohortMembership);
-		return cohortMembership;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cohortMembership);
 	}
 }

@@ -73,8 +73,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public Form saveForm(Form form) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), form);
-		return form;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), form);
 	}
 	
 	/**
@@ -302,8 +301,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public Field saveField(Field field) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), field);
-		return field;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), field);
 	}
 	
 	/**
@@ -320,8 +318,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public FormField saveFormField(FormField formField) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), formField);
-		return formField;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), formField);
 	}
 	
 	/**
@@ -634,8 +631,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public FieldType saveFieldType(FieldType fieldType) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), fieldType);
-		return fieldType;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), fieldType);
 	}
 	
 	/**
@@ -689,8 +685,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@Override
 	public FormResource saveFormResource(FormResource formResource) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), formResource);
-		return formResource;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), formResource);
 	}
 	
 	/**
