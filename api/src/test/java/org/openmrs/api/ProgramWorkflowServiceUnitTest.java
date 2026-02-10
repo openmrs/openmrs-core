@@ -69,8 +69,10 @@ public class ProgramWorkflowServiceUnitTest {
 	public void getProgramByName_shouldFailWhenTwoProgramsFoundWithSameName() {
 		ProgramWorkflowDAO mockDao = Mockito.mock(ProgramWorkflowDAO.class);
 		List<Program> programsWithGivenName = new ArrayList<>();
-		Program program1 = new Program("A name");
-		Program program2 = new Program("A name");
+		Program program1 = new Program(1);
+		program1.setName("A name");
+		Program program2 = new Program(2);
+		program2.setName("A name");
 		programsWithGivenName.add(program1);
 		programsWithGivenName.add(program2);
 		Mockito.when(mockDao.getProgramsByName("A name", false)).thenReturn(programsWithGivenName);
