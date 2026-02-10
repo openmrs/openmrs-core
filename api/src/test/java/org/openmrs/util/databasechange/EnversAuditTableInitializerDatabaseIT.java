@@ -29,6 +29,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
+import org.hibernate.boot.spi.BootstrapContext;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -63,11 +64,11 @@ public class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 		List<String> snapshotFiles = changeLogVersionFinder.getSnapshotFilenames(latestVersion);
 		
 		this.initializeDatabase();
-		
-		log.info("Liquibase files used for creating the OpenMRS database are: " + snapshotFiles);
+
+		log.info("Liquibase files used for creating the OpenMRS database are: {}", snapshotFiles);
 		
 		for (String fileName : snapshotFiles) {
-			log.info("processing " + fileName);
+			log.info("processing {}", fileName);
 			this.updateDatabase(fileName);
 		}
 	}
@@ -118,8 +119,8 @@ public class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 			
 			@Override
 			public void integrate(@UnknownKeyFor @NonNull @Initialized Metadata metadata,
-			        @UnknownKeyFor @NonNull @Initialized SessionFactoryImplementor sessionFactory,
-			        @UnknownKeyFor @NonNull @Initialized SessionFactoryServiceRegistry serviceRegistry) {
+			        @UnknownKeyFor @NonNull @Initialized BootstrapContext bootstrapContext,
+			        @UnknownKeyFor @NonNull @Initialized SessionFactoryImplementor sessionFactory) {
 				if (enversEnabled) {
 					try {
 						Properties properties = new java.util.Properties();
@@ -129,7 +130,7 @@ public class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 							suffix = customSuffix;
 						}
 						properties.setProperty("org.hibernate.envers.audit_table_suffix", suffix);
-						EnversAuditTableInitializer.initialize(metadata, properties, serviceRegistry);
+						EnversAuditTableInitializer.initialize(metadata, properties, bootstrapContext.getServiceRegistry());
 					}
 					catch (Exception e) {
 						throw new RuntimeException("Failed to initialize audit tables", e);
