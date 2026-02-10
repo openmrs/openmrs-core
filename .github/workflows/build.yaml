@@ -22,8 +22,7 @@ jobs:
           - windows-latest
         java-version:
           - 21
-#          Current spring version only supports up to java 21
-#          - 24
+          - 25
         isPR:
             - ${{ github.event_name == 'pull_request' }}
         test-profile: ["", "-Pintegration-test -Pskip-default-test", "-Pperformance-test -Pskip-default-test"]
