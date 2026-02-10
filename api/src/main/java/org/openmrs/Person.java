@@ -10,6 +10,20 @@
 package org.openmrs;
 
 import jakarta.persistence.Cacheable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,8 +39,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -47,6 +64,8 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.Patient
  */
+@Entity
+@Table(name = "person")
 @Audited
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -57,54 +76,69 @@ public class Person extends BaseChangeableOpenmrsData {
 	private static final Logger log = LoggerFactory.getLogger(Person.class);
 	
 	@DocumentId
+	@Id
+	@Column(name = "person_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Integer personId;
 	
+	@OneToMany(mappedBy = "person", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("voided asc, preferred desc, dateCreated desc")
+	@SortNatural
+	@BatchSize(size = 1000)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Set<PersonAddress> addresses = null;
 	
+	@OneToMany(mappedBy = "person", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("voided asc, preferred desc, dateCreated desc")
+	@SortNatural
+	@BatchSize(size = 1000)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Set<PersonName> names = null;
 	
+	@OneToMany(mappedBy = "person", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@SortNatural
+	@BatchSize(size = 1000)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Set<PersonAttribute> attributes = null;
 	
 	@GenericField
+	@Column(name = "gender", nullable = true, length = 50)
 	private String gender;
 	
 	@GenericField
+	@Column(name = "birthdate")
+	@Temporal(TemporalType.DATE)
 	private Date birthdate;
 	
+	@Column(name = "birthtime")
+	@Temporal(TemporalType.TIME)
 	private Date birthtime;
 	
+	@Column(name = "birthdate_estimated")
 	private Boolean birthdateEstimated = false;
 	
+	@Column(name = "deathdate_estimated")
 	private Boolean deathdateEstimated = false;
 	
 	@GenericField
+	@Column(name = "dead", nullable = false)
 	private Boolean dead = false;
 	
+	@Column(name = "death_date")
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date deathDate;
 	
+	@ManyToOne
+	@JoinColumn(name = "cause_of_death", nullable = true)
 	private Concept causeOfDeath;
 	
+	@Column(name = "cause_of_death_non_coded")
 	private String causeOfDeathNonCoded;
-
-	private User personCreator;
-	
-	private Date personDateCreated;
-
-	private User personChangedBy;
-	
-	private Date personDateChanged;
-	
-	private Boolean personVoided = false;
-
-	private User personVoidedBy;
-	
-	private Date personDateVoided;
-	
-	private String personVoidReason;
 	
 	@GenericField
 	@NotAudited
 	@IndexingDependency(derivedFrom = @ObjectPath(@PropertyValue(propertyName = "patient")))
+	@Formula("case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end")
 	private boolean isPatient;
 	
 	/**
@@ -1086,57 +1120,51 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 	
 	public User getPersonChangedBy() {
-		return personChangedBy;
+		return getChangedBy();
 	}
 	
 	public void setPersonChangedBy(User changedBy) {
-		this.personChangedBy = changedBy;
-		this.setChangedBy(changedBy);
+		setChangedBy(changedBy);
 	}
 	
 	public Date getPersonDateChanged() {
-		return personDateChanged;
+		return getDateChanged();
 	}
 	
 	public void setPersonDateChanged(Date dateChanged) {
-		this.personDateChanged = dateChanged;
-		this.setDateChanged(dateChanged);
+		setDateChanged(dateChanged);
 	}
 	
 	public User getPersonCreator() {
-		return personCreator;
+		return getCreator();
 	}
 	
 	public void setPersonCreator(User creator) {
-		this.personCreator = creator;
-		this.setCreator(creator);
+		setCreator(creator);
 	}
 	
 	public Date getPersonDateCreated() {
-		return personDateCreated;
+		return getDateCreated();
 	}
 	
 	public void setPersonDateCreated(Date dateCreated) {
-		this.personDateCreated = dateCreated;
-		this.setDateCreated(dateCreated);
+		setDateCreated(dateCreated);
 	}
 	
 	public Date getPersonDateVoided() {
-		return personDateVoided;
+		return getDateVoided();
 	}
 	
 	public void setPersonDateVoided(Date dateVoided) {
-		this.personDateVoided = dateVoided;
-		this.setDateVoided(dateVoided);
+		setDateVoided(dateVoided);
 	}
 	
 	public void setPersonVoided(Boolean voided) {
-		this.personVoided = voided;
-		this.setVoided(voided);
+		setVoided(voided);
 	}
 	
 	public Boolean getPersonVoided() {
-		return personVoided;
+		return getVoided();
 	}
 	
 	/**
@@ -1149,21 +1177,19 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 	
 	public User getPersonVoidedBy() {
-		return personVoidedBy;
+		return getVoidedBy();
 	}
 	
 	public void setPersonVoidedBy(User voidedBy) {
-		this.personVoidedBy = voidedBy;
-		this.setVoidedBy(voidedBy);
+		setVoidedBy(voidedBy);
 	}
 	
 	public String getPersonVoidReason() {
-		return personVoidReason;
+		return getVoidReason();
 	}
 	
 	public void setPersonVoidReason(String voidReason) {
-		this.personVoidReason = voidReason;
-		this.setVoidReason(voidReason);
+		setVoidReason(voidReason);
 	}
 	
 	/**
