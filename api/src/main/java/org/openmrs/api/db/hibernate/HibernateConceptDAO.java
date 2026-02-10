@@ -158,6 +158,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), concept);
+	}
+	
+	/**
+	 * Convenience method that will check this concept for subtype values (ConceptNumeric,
 	 * ConceptDerived, etc) and insert a line into that subtable if needed. This prevents a
 	 * hibernate ConstraintViolationException
 	 * 
