@@ -23,7 +23,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	
 	private Double high;
 	
-	private boolean closedLow = true; //TODO: add setters and getters for these
+	private boolean closedLow = true;
 	
 	private boolean closedHigh = false;
 	
@@ -75,6 +75,34 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 */
 	public void setLow(Double low) {
 		this.low = low == null ? new Double(Double.NEGATIVE_INFINITY) : low;
+	}
+	
+	/**
+	 * @return Returns whether the low bound is closed (inclusive).
+	 */
+	public boolean isClosedLow() {
+		return closedLow;
+	}
+	
+	/**
+	 * @param closedLow Whether the low bound should be closed (inclusive).
+	 */
+	public void setClosedLow(boolean closedLow) {
+		this.closedLow = closedLow;
+	}
+	
+	/**
+	 * @return Returns whether the high bound is closed (inclusive).
+	 */
+	public boolean isClosedHigh() {
+		return closedHigh;
+	}
+	
+	/**
+	 * @param closedHigh Whether the high bound should be closed (inclusive).
+	 */
+	public void setClosedHigh(boolean closedHigh) {
+		this.closedHigh = closedHigh;
 	}
 	
 	/**
