@@ -9,6 +9,9 @@
  */
 package org.openmrs.validator;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.ValidationException;
@@ -20,9 +23,6 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * This class should be used in the *Services to validate objects before saving them. <br>
@@ -74,6 +74,10 @@ public class ValidateUtil {
 		try {
 			Context.getAdministrationService().validate(obj, errors);
 		} catch (UnexpectedRollbackException ex) {
+			// We shouldn't be committing to the DB here, but for some reason, it's possible for a
+			// UnexpectedRollbackException to get thrown if there are errors.
+			// If that's the case, throw a more informative ValidationException instead.
+			// See: https://openmrs.atlassian.net/browse/TRUNK-6541 
 			if (errors.hasErrors()) {
 				throwValidationError(errors, obj);
 			} else {
