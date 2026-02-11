@@ -31,6 +31,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
  */
 @MappedSuperclass
 @Audited
+@SuppressWarnings("java:S2160") // Equality in OpenMRS is UUID-based (see BaseOpenmrsObject)
 public abstract class BaseOpenmrsData extends BaseAuditableOpenmrsObject implements OpenmrsData {
 	
 	//***** Properties *****

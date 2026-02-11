@@ -34,6 +34,7 @@ import org.hibernate.envers.Audited;
  */
 @MappedSuperclass
 @Audited
+@SuppressWarnings("java:S2160") // Equality in OpenMRS is UUID-based (see BaseOpenmrsObject)
 public abstract class BaseAuditableOpenmrsObject extends BaseOpenmrsObject {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -42,24 +43,6 @@ public abstract class BaseAuditableOpenmrsObject extends BaseOpenmrsObject {
 	
 	@Column(name = "date_changed")
 	private Date dateChanged;
-	
-	/**
-	 * Delegates to {@link BaseOpenmrsObject#equals(Object)}. Audit fields ({@code changedBy},
-	 * {@code dateChanged}) are intentionally excluded from equality checks because object identity
-	 * in OpenMRS is determined by UUID alone.
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		return super.equals(obj);
-	}
-	
-	/**
-	 * Delegates to {@link BaseOpenmrsObject#hashCode()}.
-	 */
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
 	
 	/**
 	 * @return the user who last changed this object
