@@ -69,7 +69,11 @@ public class PseudoStaticContentController implements Controller, GlobalProperty
 		if (interpretJstl) {
 			path += ".withjstl";
 		}
-		
+
+		if (path.startsWith("/")) {
+			path = path.substring(1);
+		}
+
 		return new ModelAndView(path);
 	}
 	
