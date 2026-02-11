@@ -34,7 +34,6 @@ import org.openmrs.api.db.hibernate.search.SearchAnalysis;
  */
 @MappedSuperclass
 @Audited
-@SuppressWarnings("java:S2160") // Equality in OpenMRS is UUID-based (see BaseOpenmrsObject)
 public abstract class BaseOpenmrsMetadata extends BaseAuditableOpenmrsObject implements OpenmrsMetadata {
 	
 	//***** Properties *****
