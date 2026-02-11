@@ -385,6 +385,12 @@
 				<artifactId>commons-fileupload</artifactId>
 				<version>1.6.0</version>
 			</dependency>
+			<!-- CVE-2022-3509/CVE-2024-7254 fix: Upgrade protobuf-java to address textformat parsing issue -->
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>4.28.2</version>
+			</dependency>
 			<dependency>
 				<groupId>com.mysql</groupId>
 				<artifactId>mysql-connector-j</artifactId>
@@ -612,6 +618,39 @@
 				<version>${nettyVersion}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<!-- Override netty dependencies to fix CVE-2025-55163 -->
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec-http2</artifactId>
+				<version>4.2.4.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-handler</artifactId>
+				<version>4.2.4.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec</artifactId>
+				<version>4.2.4.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-handler-proxy</artifactId>
+				<version>4.2.4.Final</version>
+			</dependency>
+			<!-- Override netty dependency to fix CVE-2025-58056 -->
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec-http</artifactId>
+				<version>4.2.5.Final</version>
+			</dependency>
+			<!-- Override netty dependencies to fix CVE-2025-58057 -->
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec-compression</artifactId>
+				<version>4.2.5.Final</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
