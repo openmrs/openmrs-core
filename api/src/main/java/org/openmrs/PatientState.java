@@ -239,15 +239,27 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
 	@SuppressWarnings("squid:S1210")
+
 	@Override
 	public int compareTo(PatientState o) {
+		// 1. Compare Start Dates
 		int result = OpenmrsUtil.compareWithNullAsEarliest(getStartDate(), o.getStartDate());
+
+		// 2. If Start Dates are equal, Compare End Dates
 		if (result == 0) {
 			result = OpenmrsUtil.compareWithNullAsLatest(getEndDate(), o.getEndDate());
 		}
+
+		// 3. THE FIX: If Dates are equal, use the ID (Creation Order) instead of random UUID
+		if (result == 0) {
+			result = OpenmrsUtil.compareWithNullAsGreatest(getPatientStateId(), o.getPatientStateId());
+		}
+
+		// 4. Safety Fallback: Use UUID only if ID is null (e.g. not saved to DB yet)
 		if (result == 0) {
 			result = OpenmrsUtil.compareWithNullAsGreatest(getUuid(), o.getUuid());
 		}
+
 		return result;
 	}
 }
