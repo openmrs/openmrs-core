@@ -99,6 +99,7 @@ public abstract class BaseOpenmrsData extends BaseAuditableOpenmrsObject impleme
 	
 	/**
 	 * @see org.openmrs.Voidable#isVoided()
+	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
 	@Override
 	@Deprecated(since = "2.0", forRemoval = false)

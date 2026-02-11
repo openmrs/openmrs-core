@@ -141,6 +141,7 @@ public abstract class BaseOpenmrsMetadata extends BaseAuditableOpenmrsObject imp
 	
 	/**
 	 * @see org.openmrs.Retireable#isRetired()
+	 * @deprecated as of 2.0, use {@link #getRetired()}
 	 */
 	@Override
 	@Deprecated(since = "2.0", forRemoval = false)

@@ -44,8 +44,28 @@ public abstract class BaseAuditableOpenmrsObject extends BaseOpenmrsObject {
 	private Date dateChanged;
 	
 	/**
+	 * Delegates to {@link BaseOpenmrsObject#equals(Object)}. Audit fields ({@code changedBy},
+	 * {@code dateChanged}) are intentionally excluded from equality checks because object identity
+	 * in OpenMRS is determined by UUID alone.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+	
+	/**
+	 * Delegates to {@link BaseOpenmrsObject#hashCode()}.
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
+	/**
 	 * @return the user who last changed this object
 	 * @see Changeable#getChangedBy()
+	 * @deprecated as of version 2.2, use {@link BaseChangeableOpenmrsData} or
+	 *             {@link BaseChangeableOpenmrsMetadata} instead
 	 */
 	@Deprecated(since = "2.2", forRemoval = false)
 	public User getChangedBy() {
@@ -55,6 +75,8 @@ public abstract class BaseAuditableOpenmrsObject extends BaseOpenmrsObject {
 	/**
 	 * @param changedBy the user who last changed this object
 	 * @see Changeable#setChangedBy(User)
+	 * @deprecated as of version 2.2, use {@link BaseChangeableOpenmrsData} or
+	 *             {@link BaseChangeableOpenmrsMetadata} instead
 	 */
 	@Deprecated(since = "2.2", forRemoval = false)
 	public void setChangedBy(User changedBy) {
@@ -64,6 +86,8 @@ public abstract class BaseAuditableOpenmrsObject extends BaseOpenmrsObject {
 	/**
 	 * @return the date this object was last changed
 	 * @see Changeable#getDateChanged()
+	 * @deprecated as of version 2.2, use {@link BaseChangeableOpenmrsData} or
+	 *             {@link BaseChangeableOpenmrsMetadata} instead
 	 */
 	@Deprecated(since = "2.2", forRemoval = false)
 	public Date getDateChanged() {
@@ -73,6 +97,8 @@ public abstract class BaseAuditableOpenmrsObject extends BaseOpenmrsObject {
 	/**
 	 * @param dateChanged the date this object was last changed
 	 * @see Changeable#setDateChanged(Date)
+	 * @deprecated as of version 2.2, use {@link BaseChangeableOpenmrsData} or
+	 *             {@link BaseChangeableOpenmrsMetadata} instead
 	 */
 	@Deprecated(since = "2.2", forRemoval = false)
 	public void setDateChanged(Date dateChanged) {
