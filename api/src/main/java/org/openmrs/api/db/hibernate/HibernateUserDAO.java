@@ -40,6 +40,7 @@ import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.util.LogSanitizer;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.Security;
 import org.openmrs.util.UserByNameComparator;
@@ -463,7 +464,9 @@ public class HibernateUserDAO implements UserDAO {
 			throw new DAOException("Passwords don't match");
 		}
 		
-		log.info("updating password for {}", u.getUsername());
+		if (log.isInfoEnabled()) {
+			log.info("updating password for {}", LogSanitizer.sanitize(u.getUsername()));
+		}
 		
 		// update the user with the new password
 		String salt = credentials.getSalt();
@@ -493,7 +496,9 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changeQuestionAnswer(User u, String question, String answer) throws DAOException {
-		log.info("Updating secret question and answer for " + u.getUsername());
+		if (log.isInfoEnabled()) {
+			log.info("Updating secret question and answer for {}", LogSanitizer.sanitize(u.getUsername()));
+		}
 		
 		LoginCredential credentials = getLoginCredential(u);
 		credentials.setSecretQuestion(question);

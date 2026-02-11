@@ -18,6 +18,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.openmrs.User;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.LogSanitizer;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -105,7 +106,7 @@ public class LoggingAdvice implements MethodInterceptor {
 					if (argsToIgnore.contains(x)) {
 						output.append("<Arg value ignored>");
 					} else {
-						output.append(values[x]);
+						output.append(LogSanitizer.sanitize(values[x]));
 					}
 					
 					output.append(", ");
@@ -137,9 +138,8 @@ public class LoggingAdvice implements MethodInterceptor {
 						username = user.getSystemId();
 					}
 				}
-				log.debug(String.format(
-				    "An error occurred while executing this method.%nCurrent user: %s%nError message: %s", username, e
-				            .getMessage()), e);
+				log.debug("An error occurred while executing this method. Current user: {} Error message: {}",
+				    LogSanitizer.sanitize(username), LogSanitizer.sanitize(e.getMessage()), e);
 			}
 			throw e;
 		}
