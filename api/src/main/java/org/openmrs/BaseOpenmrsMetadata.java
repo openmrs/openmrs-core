@@ -34,7 +34,7 @@ import org.openmrs.api.db.hibernate.search.SearchAnalysis;
  */
 @MappedSuperclass
 @Audited
-public abstract class BaseOpenmrsMetadata extends BaseAuditableOpenmrsObject implements OpenmrsMetadata {
+public abstract class BaseOpenmrsMetadata extends BaseAuditableOpenmrsObject implements OpenmrsMetadata { // NOSONAR
 	
 	//***** Properties *****
 	@Column(name = "name", nullable = false, length = 255)
@@ -140,11 +140,11 @@ public abstract class BaseOpenmrsMetadata extends BaseAuditableOpenmrsObject imp
 	}
 	
 	/**
-	 * @see org.openmrs.Retireable#isRetired()
 	 * @deprecated as of 2.0, use {@link #getRetired()}
+	 * @see org.openmrs.Retireable#isRetired()
 	 */
 	@Override
-	@Deprecated(since = "2.0", forRemoval = false)
+	@Deprecated
 	@JsonIgnore
 	public Boolean isRetired() {
 		return getRetired();

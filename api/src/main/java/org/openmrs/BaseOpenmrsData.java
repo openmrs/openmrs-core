@@ -31,7 +31,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
  */
 @MappedSuperclass
 @Audited
-public abstract class BaseOpenmrsData extends BaseAuditableOpenmrsObject implements OpenmrsData {
+public abstract class BaseOpenmrsData extends BaseAuditableOpenmrsObject implements OpenmrsData { // NOSONAR
 	
 	//***** Properties *****
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -98,11 +98,11 @@ public abstract class BaseOpenmrsData extends BaseAuditableOpenmrsObject impleme
 	}
 	
 	/**
-	 * @see org.openmrs.Voidable#isVoided()
 	 * @deprecated as of 2.0, use {@link #getVoided()}
+	 * @see org.openmrs.Voidable#isVoided()
 	 */
 	@Override
-	@Deprecated(since = "2.0", forRemoval = false)
+	@Deprecated
 	@JsonIgnore
 	public Boolean isVoided() {
 		return getVoided();
