@@ -31,7 +31,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
  */
 @MappedSuperclass
 @Audited
-public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements OpenmrsData {
+public abstract class BaseOpenmrsData extends BaseAuditableOpenmrsObject implements OpenmrsData {
 	
 	//***** Properties *****
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -40,13 +40,6 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	
 	@Column(name = "date_created", nullable = false, updatable = false)
 	private Date dateCreated;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "changed_by")
-	private User changedBy;
-	
-	@Column(name = "date_changed")
-	private Date dateChanged;
 	
 	@Column(name = "voided", nullable = false)
 	@GenericField
@@ -102,42 +95,6 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	@Override
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsData#getChangedBy()
-	 */
-	@Override
-	@Deprecated(since = "2.2", forRemoval = false)
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsData#setChangedBy(User)
-	 */
-	@Override
-	@Deprecated(since = "2.2", forRemoval = false)
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsData#getDateChanged()
-	 */
-	@Override
-	@Deprecated(since = "2.2", forRemoval = false)
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsData#setDateChanged(Date)
-	 */
-	@Override
-	@Deprecated(since = "2.2", forRemoval = false)
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
 	}
 	
 	/**

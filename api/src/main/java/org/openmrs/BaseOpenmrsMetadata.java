@@ -34,7 +34,7 @@ import org.openmrs.api.db.hibernate.search.SearchAnalysis;
  */
 @MappedSuperclass
 @Audited
-public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements OpenmrsMetadata {
+public abstract class BaseOpenmrsMetadata extends BaseAuditableOpenmrsObject implements OpenmrsMetadata {
 	
 	//***** Properties *****
 	@Column(name = "name", nullable = false, length = 255)
@@ -50,13 +50,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "changed_by")
-	private User changedBy;
-	
-	@Column(name = "date_changed")
-	private Date dateChanged;
 	
 	@Column(name = "retired", nullable = false)
 	@GenericField
@@ -144,42 +137,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Override
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsMetadata#getChangedBy()
-	 */
-	@Override
-	@Deprecated(since = "2.2", forRemoval = false)
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsMetadata#setChangedBy(User)
-	 */
-	@Override
-	@Deprecated(since = "2.2", forRemoval = false)
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsMetadata#getDateChanged()
-	 */
-	@Override
-	@Deprecated(since = "2.2", forRemoval = false)
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsMetadata#setDateChanged(Date)
-	 */
-	@Override
-	@Deprecated(since = "2.2", forRemoval = false)
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
 	}
 	
 	/**
