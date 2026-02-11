@@ -1465,6 +1465,12 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		ConceptName copy = new ConceptName();
 		try {
 			copy = (ConceptName) BeanUtils.cloneBean(conceptName);
+			// Create a new tags collection to avoid sharing the same Hibernate
+			// PersistentSet between the original and the clone, which causes
+			// "shared references to a collection" errors in Hibernate 7
+			if (conceptName.getTags() != null) {
+				copy.setTags(new HashSet<>(conceptName.getTags()));
+			}
 		}
 		catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
 			

@@ -55,7 +55,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	@Override
 	public void createTask(TaskDefinition task) throws DAOException {
 		// add all data minus the password as a new user
-		sessionFactory.getCurrentSession().save(task);
+		sessionFactory.getCurrentSession().persist(task);
 	}
 	
 	/**
@@ -148,7 +148,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 */
 	@Override
 	public void deleteTask(TaskDefinition taskConfig) throws DAOException {
-		sessionFactory.getCurrentSession().delete(taskConfig);
+		sessionFactory.getCurrentSession().remove(taskConfig);
 	}
 	
 	/**

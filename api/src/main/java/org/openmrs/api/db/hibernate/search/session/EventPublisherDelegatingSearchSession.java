@@ -14,13 +14,16 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.hibernate.Session;
+import org.hibernate.search.engine.search.common.NonStaticMetamodelScope;
 import org.hibernate.search.engine.search.query.dsl.SearchQuerySelectStep;
 import org.hibernate.search.mapper.orm.automaticindexing.session.AutomaticIndexingSynchronizationStrategy;
 import org.hibernate.search.mapper.orm.common.EntityReference;
 import org.hibernate.search.mapper.orm.entity.SearchIndexedEntity;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.schema.management.SearchSchemaManager;
+import org.hibernate.search.mapper.orm.scope.HibernateOrmRootReferenceScope;
 import org.hibernate.search.mapper.orm.scope.SearchScope;
+import org.hibernate.search.mapper.orm.scope.TypedSearchScope;
 import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.hibernate.search.mapper.orm.work.SearchIndexingPlan;
@@ -60,9 +63,9 @@ public class EventPublisherDelegatingSearchSession implements SearchSession {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public <T> SearchQuerySelectStep<?, EntityReference, T, SearchLoadingOptionsStep, ?, ?> search(Collection<? extends Class<? extends T>> collection) {
+	public <T> SearchQuerySelectStep<NonStaticMetamodelScope, ?, EntityReference, T, SearchLoadingOptionsStep, ?, ?> search(Collection<? extends Class<? extends T>> collection) {
 		log.debug("Creating new search instance");
-		SearchQuerySelectDelegate<EntityReference, T, SearchLoadingOptionsStep> search = 
+		SearchQuerySelectDelegate<NonStaticMetamodelScope, EntityReference, T, SearchLoadingOptionsStep> search = 
 			new SearchQuerySelectDelegate<>(delegate.search(collection));
 		
 		log.debug("Notifying search listeners...");
@@ -78,9 +81,9 @@ public class EventPublisherDelegatingSearchSession implements SearchSession {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public <T> SearchQuerySelectStep<?, EntityReference, T, SearchLoadingOptionsStep, ?, ?> search(SearchScope<T> searchScope) {
+	public <T> SearchQuerySelectStep<?, ?, EntityReference, T, SearchLoadingOptionsStep, ?, ?> search(SearchScope<T> searchScope) {
 		log.debug("Creating new search instance");
-		SearchQuerySelectDelegate<EntityReference, T, SearchLoadingOptionsStep> search =
+		SearchQuerySelectDelegate<?, EntityReference, T, SearchLoadingOptionsStep> search =
 			new SearchQuerySelectDelegate<>(delegate.search(searchScope));
 
 		log.debug("Notifying search listeners...");
@@ -118,6 +121,21 @@ public class EventPublisherDelegatingSearchSession implements SearchSession {
 	@Override
 	public <T> SearchScope<T> scope(Class<T> aClass, Collection<String> collection) {
 		return delegate.scope(aClass, collection);
+	}
+
+	@Override
+	public <SR, T> TypedSearchScope<SR, T> typedScope(Class<SR> srClass, Collection<? extends Class<? extends T>> collection) {
+		return delegate.typedScope(srClass, collection);
+	}
+
+	@Override
+	public <SR, T> SearchQuerySelectStep<SR, ?, EntityReference, T, SearchLoadingOptionsStep, ?, ?> search(TypedSearchScope<SR, T> typedSearchScope) {
+		return delegate.search(typedSearchScope);
+	}
+
+	@Override
+	public <SR, T> SearchQuerySelectStep<SR, ?, EntityReference, T, SearchLoadingOptionsStep, ?, ?> search(HibernateOrmRootReferenceScope<SR, T> scope) {
+		return delegate.search(scope);
 	}
 
 	@Override

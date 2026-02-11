@@ -28,8 +28,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 
@@ -50,8 +48,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	public static final long serialVersionUID = 72232L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_group_id_seq")
-	@GenericGenerator(name = "order_group_id_seq", strategy = "native", parameters = @Parameter(name = "sequence", value = "order_group_order_group_id_seq"))
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "order_group_id", nullable = false)
 	private Integer orderGroupId;
 	

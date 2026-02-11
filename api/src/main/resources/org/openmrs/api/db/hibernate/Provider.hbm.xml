@@ -20,13 +20,12 @@
 
 		<id name="providerId" type="java.lang.Integer" column="provider_id"
 			unsaved-value="0">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">provider_provider_id_seq</param>
 			</generator>
 		</id>
 
-		<many-to-one name="person" class="Person" column="person_id"
-			cascade="save-update" />
+		<many-to-one name="person" class="Person" column="person_id" />
 
 		<property name="name" type="java.lang.String" length="255" access="field"/>
 

@@ -36,6 +36,19 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 	}
 	
 	/**
+	 * Gets the attribute name for the voided flag. Person maps it as "personVoided"
+	 * in HBM XML, while other entities use "voided" from BaseOpenmrsData.
+	 */
+	private String getVoidedAttributeName(Root<T> root) {
+		try {
+			root.get("voided");
+			return "voided";
+		} catch (IllegalArgumentException e) {
+			return "personVoided";
+		}
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAll(boolean)
 	 */
 	@Override
@@ -46,7 +59,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 		Root<T> root = cq.from(mappedClass);
 
 		if (!includeVoided) {
-			cq.where(cb.isFalse(root.get("voided")));
+			cq.where(cb.isFalse(root.get(getVoidedAttributeName(root))));
 		}
 
 		return session.createQuery(cq).getResultList();
@@ -63,7 +76,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 		Root<T> root = cq.from(mappedClass);
 
 		if (!includeVoided) {
-			cq.where(cb.isFalse(root.get("voided")));
+			cq.where(cb.isFalse(root.get(getVoidedAttributeName(root))));
 		}
 
 		TypedQuery<T> query = session.createQuery(cq);
@@ -89,7 +102,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 		cq.select(cb.count(root));
 
 		if (!includeVoided) {
-			cq.where(cb.isFalse(root.get("voided")));
+			cq.where(cb.isFalse(root.get(getVoidedAttributeName(root))));
 		}
 
 		Long count = session.createQuery(cq).getSingleResult();

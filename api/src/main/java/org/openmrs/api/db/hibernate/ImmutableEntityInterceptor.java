@@ -11,7 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.hibernate.EmptyInterceptor;
+import org.hibernate.Interceptor;
 import org.hibernate.type.Type;
 import org.openmrs.Retireable;
 import org.openmrs.Voidable;
@@ -20,7 +20,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +35,7 @@ import java.util.List;
  * 
  * @since 1.10
  */
-public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
+public abstract class ImmutableEntityInterceptor implements Interceptor {
 	
 	private static final Logger log = LoggerFactory.getLogger(ImmutableEntityInterceptor.class);
 	
@@ -69,15 +68,13 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	}
 	
 	/**
-	 * @see org.hibernate.EmptyInterceptor#onFlushDirty(Object, java.io.Serializable, Object[],
-	 *      Object[], String[], org.hibernate.type.Type[])
 	 * <strong>Should</strong> fail if an entity has a changed property
 	 * <strong>Should</strong> pass if an entity has changes for an allowed mutable property
 	 * <strong>Should</strong> pass if the edited object is voided or retired and ignore is set to true
 	 * <strong>Should</strong> fail if the edited object is voided or retired and ignore is set to false
 	 */
 	@Override
-	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
+	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState,
 	                            String[] propertyNames, Type[] types) {
 		
 		if (getSupportedType().isAssignableFrom(entity.getClass())) {

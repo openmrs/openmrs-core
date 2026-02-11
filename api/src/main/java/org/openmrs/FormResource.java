@@ -12,11 +12,9 @@ package org.openmrs;
 import java.util.Date;
 
 import jakarta.persistence.FetchType;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
@@ -56,12 +54,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "form_resource_form_resource_id_seq")
-	@GenericGenerator(
-		name = "form_resource_form_resource_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "form_resource_form_resource_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "form_resource_id")
 	private Integer formResourceId;
 

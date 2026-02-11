@@ -25,7 +25,6 @@ import org.hibernate.LockOptions;
 import org.hibernate.NaturalIdLoadAccess;
 import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
-import org.hibernate.Session.LockRequest;
 import org.hibernate.SessionEventListener;
 import org.hibernate.SessionFactory;
 import org.hibernate.SharedSessionBuilder;
@@ -389,7 +388,7 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(Class theClass, Serializable id, LockOptions lockOptions) {
-		return getSession().load(theClass, id, lockOptions);
+		return getSession().get(theClass, id, lockOptions);
 	}
 	
 	/**
@@ -402,7 +401,7 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(String entityName, Serializable id, LockOptions lockOptions) {
-		return getSession().load(entityName, id, lockOptions);
+		return getSession().get(entityName, id, lockOptions);
 	}
 	
 	/**
@@ -419,7 +418,7 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(Class theClass, Serializable id) {
-		return getSession().load(theClass, id);
+		return getSession().getReference(theClass, id);
 	}
 	
 	/**
@@ -436,7 +435,7 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(String entityName, Serializable id) {
-		return getSession().load(entityName, id);
+		return getSession().getReference(entityName, id);
 	}
 	
 	/**
@@ -485,7 +484,8 @@ public class DbSession {
 	 * @return the generated identifier
 	 */
 	public Object save(Object object) {
-		return getSession().save(object);
+		getSession().persist(object);
+		return getSession().getIdentifier(object);
 	}
 	
 	/**
@@ -499,7 +499,8 @@ public class DbSession {
 	 * @return the generated identifier
 	 */
 	public Object save(String entityName, Object object) {
-		return getSession().save(entityName, object);
+		getSession().persist(entityName, object);
+		return getSession().getIdentifier(object);
 	}
 	
 	/**
@@ -515,7 +516,7 @@ public class DbSession {
 	 * @see Session#update(Object object)
 	 */
 	public void saveOrUpdate(Object object) {
-		getSession().saveOrUpdate(object);
+		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
 	
 	/**
@@ -532,7 +533,7 @@ public class DbSession {
 	 * @see Session#update(String,Object)
 	 */
 	public void saveOrUpdate(String entityName, Object object) {
-		getSession().saveOrUpdate(entityName, object);
+		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
 	
 	/**
@@ -544,7 +545,7 @@ public class DbSession {
 	 * @param object a detached instance containing updated state
 	 */
 	public void update(Object object) {
-		getSession().update(object);
+		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
 	
 	/**
@@ -557,7 +558,7 @@ public class DbSession {
 	 * @param object a detached instance containing updated state
 	 */
 	public void update(String entityName, Object object) {
-		getSession().update(entityName, object);
+		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
 	
 	/**
@@ -629,7 +630,7 @@ public class DbSession {
 	 * @param object the instance to be removed
 	 */
 	public void delete(Object object) {
-		getSession().delete(object);
+		getSession().remove(object);
 	}
 	
 	/**
@@ -642,22 +643,19 @@ public class DbSession {
 	 * @param object the instance to be removed
 	 */
 	public void delete(String entityName, Object object) {
-		getSession().delete(entityName, object);
+		getSession().remove(object);
 	}
 	
 	/**
-	 * Build a LockRequest that specifies the LockMode, pessimistic lock timeout and lock scope.
-	 * timeout and scope is ignored for optimistic locking. After building the LockRequest, call
-	 * LockRequest.lock to perform the requested locking.
+	 * Obtain a lock on the given entity, with the given {@link LockMode lock mode}.
 	 * <p>
-	 * Example usage:
-	 * {@code session.buildLockRequest().setLockMode(LockMode.PESSIMISTIC_WRITE).setTimeOut(60000).lock(entity);}
+	 * This replaces the removed {@code buildLockRequest(LockOptions)} API.
 	 *
-	 * @param lockOptions contains the lock level
-	 * @return a lockRequest that can be used to lock the passed object.
+	 * @param object a persistent instance
+	 * @param lockMode the lock mode
 	 */
-	public LockRequest buildLockRequest(LockOptions lockOptions) {
-		return getSession().buildLockRequest(lockOptions);
+	public void lock(Object object, LockMode lockMode) {
+		getSession().lock(object, lockMode);
 	}
 	
 	/**
@@ -690,7 +688,7 @@ public class DbSession {
 	 * @param object a persistent or detached instance
 	 */
 	public void refresh(String entityName, Object object) {
-		getSession().refresh(entityName, object);
+		getSession().refresh(object);
 	}
 	
 	/**
@@ -715,7 +713,7 @@ public class DbSession {
 	 * @param lockOptions contains the lock mode to use
 	 */
 	public void refresh(String entityName, Object object, LockOptions lockOptions) {
-		getSession().refresh(entityName, object, lockOptions);
+		getSession().refresh(object, lockOptions);
 	}
 	
 	/**

@@ -18,7 +18,7 @@
 	<class name="org.openmrs.hl7.HL7Source" table="hl7_source">
 
 		<id name="HL7SourceId" type="int" column="hl7_source_id" unsaved-value="0">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">hl7_source_hl7_source_id_seq</param>
 			</generator>
 		</id>

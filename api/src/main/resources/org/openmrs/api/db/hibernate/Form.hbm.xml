@@ -18,7 +18,7 @@
 	<class name="Form" table="form">
 
 		<id name="formId" type="int" column="form_id" unsaved-value="0">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">form_form_id_seq</param>
 			</generator>
 		</id>

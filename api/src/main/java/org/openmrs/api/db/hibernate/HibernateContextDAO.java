@@ -12,7 +12,6 @@ package org.openmrs.api.db.hibernate;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +49,7 @@ import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SessionFactoryUtils;
-import org.springframework.orm.hibernate5.SessionHolder;
+import org.springframework.orm.jpa.hibernate.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.stereotype.Repository;
@@ -297,7 +295,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @param user the User to save
 	 */
 	private void saveUserProperties(User user) {
-		sessionFactory.getCurrentSession().update(user);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), user);
 	}
 	
 	/**
@@ -351,7 +349,7 @@ public class HibernateContextDAO implements ContextDAO {
 				try {
 					if (value instanceof SessionHolder) {
 						Session session = ((SessionHolder) value).getSession();
-						SessionFactoryUtils.closeSession(session);
+						session.close();
 					}
 				}
 				catch (RuntimeException e) {
@@ -649,9 +647,9 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	public Connection getDatabaseConnection() {
 		try {
-			return SessionFactoryUtils.getDataSource(sessionFactory).getConnection();
+			return sessionFactory.getCurrentSession().doReturningWork(connection -> connection);
 		}
-		catch (SQLException e) {
+		catch (HibernateException e) {
 			throw new RuntimeException("Unable to retrieve a database connection", e);
 		}
 	}
