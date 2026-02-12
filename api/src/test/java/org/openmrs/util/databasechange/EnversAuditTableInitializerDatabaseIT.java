@@ -50,12 +50,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Validates that Envers audit tables are correctly generated when auditing is enabled.
  */
-public class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
+class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 	
 	private static final Logger log = LoggerFactory.getLogger(EnversAuditTableInitializerDatabaseIT.class);
 	
 	@BeforeEach
-	public void beforeEach() throws Exception {
+	void beforeEach() throws Exception {
 		this.dropAllDatabaseObjects();
 		
 		ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
@@ -74,7 +74,7 @@ public class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 	}
 	
 	@Test
-	public void shouldCreateEnversAuditTablesWhenEnversIsEnabled() throws Exception {
+	void shouldCreateEnversAuditTablesWhenEnversIsEnabled() throws Exception {
 		List<Class<?>> auditedEntities = getAuditedEntityClasses();
 		log.info("Found {} @Audited entity classes", auditedEntities.size());
 		
@@ -94,7 +94,7 @@ public class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 	}
 	
 	@Test
-	public void shouldNotCreateAuditTablesWhenEnversIsDisabled() throws Exception {
+	void shouldNotCreateAuditTablesWhenEnversIsDisabled() throws Exception {
 		try (SessionFactory sessionFactory = buildSessionFactoryWithEnvers(false, null)) {
 			assertFalse(tableExists("patient_audit"), "patient_aud table should not exist");
 			assertFalse(tableExists("encounter_audit"), "encounter_aud table should not exist");
@@ -104,7 +104,7 @@ public class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 	}
 	
 	@Test
-	public void shouldRespectCustomAuditTableSuffix() throws Exception {
+	void shouldRespectCustomAuditTableSuffix() throws Exception {
 		try (SessionFactory sessionFactory = buildSessionFactoryWithEnvers(true, "_Aaa")) {
 			assertTrue(tableExists("patient_Aaa"), "patient_AUDIT table should exist");
 			assertTrue(tableExists("encounter_Aaa"), "encounter_AUDIT table should exist");
@@ -142,6 +142,8 @@ public class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 			public void disintegrate(
 			        @UnknownKeyFor @NonNull @Initialized SessionFactoryImplementor sessionFactoryImplementor,
 			        @UnknownKeyFor @NonNull @Initialized SessionFactoryServiceRegistry sessionFactoryServiceRegistry) {
+				// No cleanup needed: the audit table initialization performed in integrate() is a one-time
+				// schema operation with no resources to release when the SessionFactory is closed.
 			}
 		};
 		
