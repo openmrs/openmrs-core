@@ -4539,4 +4539,26 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	// Test-only subclass
 	public static class MyTestOrder extends TestOrder { }
+
+@Test
+public void saveOrder_shouldThrowExceptionWhenPlacingOrderOnBehalfWithoutPrivilege() {
+
+    Patient patient = patientService.getPatient(2);
+
+    // Use a known provider from test dataset
+    Provider anotherProvider = providerService.getProvider(1);
+    assertNotNull(anotherProvider);
+
+    Order order = new Order();
+    order.setPatient(patient);
+    order.setOrderType(orderService.getOrderType(1));
+    order.setConcept(conceptService.getConcept(88));
+    order.setCareSetting(orderService.getCareSetting(1));
+    order.setOrderer(anotherProvider);
+    order.setDateActivated(new Date());
+
+    OrderContext orderContext = new OrderContext();
+
+    assertThrows(APIException.class, () -> orderService.saveOrder(order, orderContext));
+}
 }
