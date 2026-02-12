@@ -84,6 +84,7 @@ import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderRole;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.ReferralOrder;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
@@ -3004,7 +3005,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(OrderGroupAttribute.class)
 			    .addAnnotatedClass(ConceptSet.class)
 				.addAnnotatedClass(OrderAttribute.class)
-			.addAnnotatedClass(ProgramWorkflowServiceTest.class)
+			    .addAnnotatedClass(ProgramWorkflowState.class)
 				.getMetadataBuilder().build();
 
 
