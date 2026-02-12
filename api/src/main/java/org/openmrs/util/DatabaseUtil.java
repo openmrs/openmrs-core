@@ -55,7 +55,7 @@ public class DatabaseUtil {
 	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
 		if (StringUtils.hasText(connectionDriver)) {
 			Class.forName(connectionDriver);
-			log.debug("set user defined Database driver class: " + connectionDriver);
+			log.debug("set user defined Database driver class: {}", OpenmrsUtil.sanitizeForLogging(connectionDriver));
 		} else {
 			if (connectionUrl.contains("jdbc:mysql")) {
 				Class.forName("com.mysql.cj.jdbc.Driver");
@@ -80,7 +80,7 @@ public class DatabaseUtil {
 				connectionDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
 			}
 		}
-		log.info("Set database driver class as " + connectionDriver);
+		log.info("Set database driver class as {}", OpenmrsUtil.sanitizeForLogging(connectionDriver));
 		return connectionDriver;
 	}
 	
