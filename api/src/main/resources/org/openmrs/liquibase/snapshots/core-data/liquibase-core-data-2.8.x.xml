@@ -12,7 +12,7 @@
 
 -->
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">  
-  <changeSet author="rafal (generated)" id="1770893021219-17"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-17"> 
     <insert tableName="person"> 
       <column name="person_id" valueNumeric="1"/>  
       <column name="gender" value="M"/>  
@@ -35,7 +35,7 @@
       <column name="cause_of_death_non_coded"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-27"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-27"> 
     <insert tableName="users"> 
       <column name="user_id" valueNumeric="1"/>  
       <column name="system_id" value="admin"/>  
@@ -47,7 +47,7 @@
       <column name="creator" valueNumeric="1"/>  
       <column name="date_created" value="2005-01-01T00:00"/>  
       <column name="changed_by" valueNumeric="1"/>  
-      <column name="date_changed" value="2026-02-12T11:41:57"/>  
+      <column name="date_changed" value="2025-07-31T15:03:38"/>  
       <column name="person_id" valueNumeric="1"/>  
       <column name="retired" valueBoolean="false"/>  
       <column name="retired_by"/>  
@@ -79,7 +79,7 @@
       <column name="email"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-1"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-1"> 
     <insert tableName="care_setting"> 
       <column name="care_setting_id" valueNumeric="1"/>  
       <column name="name" value="Outpatient"/>  
@@ -111,7 +111,7 @@
       <column name="uuid" value="c365e560-c3ec-11e3-9c1a-0800200c9a66"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-3"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-3"> 
     <insert tableName="concept_class"> 
       <column name="concept_class_id" valueNumeric="1"/>  
       <column name="name" value="Test"/>  
@@ -337,7 +337,7 @@
       <column name="changed_by"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-4"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-4"> 
     <insert tableName="concept_datatype"> 
       <column name="concept_datatype_id" valueNumeric="1"/>  
       <column name="name" value="Numeric"/>  
@@ -495,7 +495,7 @@
       <column name="uuid" value="8d4a6242-c2cc-11de-8d13-0010c6dffd0f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-2"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-2"> 
     <insert tableName="concept"> 
       <column name="concept_id" valueNumeric="1"/>  
       <column name="retired" valueBoolean="false"/>  
@@ -535,7 +535,7 @@
       <column name="uuid" value="488b58ff-64f5-4f8a-8979-fa79940b1594"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-5"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-5"> 
     <insert tableName="concept_map_type"> 
       <column name="concept_map_type_id" valueNumeric="1"/>  
       <column name="name" value="SAME-AS"/>  
@@ -1587,7 +1587,7 @@
       <column name="uuid" value="41a034da-7d8f-11e1-909d-c80aa9edcf4e"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-6"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-6"> 
     <insert tableName="concept_name"> 
       <column name="concept_name_id" valueNumeric="1"/>  
       <column name="concept_id" valueNumeric="1"/>  
@@ -1929,7 +1929,7 @@
       <column name="changed_by"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-7"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-7"> 
     <insert tableName="concept_stop_word"> 
       <column name="concept_stop_word_id" valueNumeric="1"/>  
       <column name="word" value="A"/>  
@@ -1991,7 +1991,7 @@
       <column name="uuid" value="f5f49cda-e2a7-11df-87ae-18a905e044dc"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-8"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-8"> 
     <insert tableName="encounter_role"> 
       <column name="encounter_role_id" valueNumeric="1"/>  
       <column name="name" value="Unknown"/>  
@@ -2007,7 +2007,7 @@
       <column name="uuid" value="a0b03050-c99b-11e0-9572-0800200c9a66"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-9"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-9"> 
     <insert tableName="field_type"> 
       <column name="field_type_id" valueNumeric="1"/>  
       <column name="name" value="Concept"/>  
@@ -2054,7 +2054,7 @@
       <column name="uuid" value="8d5e86fa-c2cc-11de-8d13-0010c6dffd0f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-10"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-10"> 
     <insert tableName="global_property"> 
       <column name="property" value="allergy.allergen.ConceptClasses"/>  
       <column name="property_value" value="Drug,MedSet"/>  
@@ -2301,21 +2301,6 @@
       <column name="description" value="Enables or disables management of concept map types"/>  
       <column name="uuid" value="29b994cf-b5b6-4b08-8308-b0fbeb066407"/>  
       <column name="datatype" value="org.openmrs.customdatatype.datatype.BooleanDatatype"/>  
-      <column name="datatype_config"/>  
-      <column name="preferred_handler"/>  
-      <column name="handler_config"/>  
-      <column name="date_changed"/>  
-      <column name="changed_by"/>  
-      <column name="view_privilege"/>  
-      <column name="edit_privilege"/>  
-      <column name="delete_privilege"/> 
-    </insert>  
-    <insert tableName="global_property"> 
-      <column name="property" value="core.version"/>  
-      <column name="property_value" value="2.9.0-5668e5"/>  
-      <column name="description" value="Saved core version for future restarts"/>  
-      <column name="uuid" value="5f60981b-2dc3-43fa-ad46-b2e41ae7af6a"/>  
-      <column name="datatype"/>  
       <column name="datatype_config"/>  
       <column name="preferred_handler"/>  
       <column name="handler_config"/>  
@@ -3155,36 +3140,6 @@
       <column name="property_value" value="complex_obs"/>  
       <column name="description" value="Default directory for storing complex obs."/>  
       <column name="uuid" value="4e3ca595-2506-4548-be8b-5d18223918b3"/>  
-      <column name="datatype"/>  
-      <column name="datatype_config"/>  
-      <column name="preferred_handler"/>  
-      <column name="handler_config"/>  
-      <column name="date_changed"/>  
-      <column name="changed_by"/>  
-      <column name="view_privilege"/>  
-      <column name="edit_privilege"/>  
-      <column name="delete_privilege"/> 
-    </insert>  
-    <insert tableName="global_property"> 
-      <column name="property" value="order.allowSettingOrderNumber"/>  
-      <column name="property_value" value="false"/>  
-      <column name="description" value="Specifies whether the order number property on an order can be set. If false, the order number must be generated by an order number generator."/>  
-      <column name="uuid" value="76f46931-08a5-4691-9e40-6d8d17173ab6"/>  
-      <column name="datatype"/>  
-      <column name="datatype_config"/>  
-      <column name="preferred_handler"/>  
-      <column name="handler_config"/>  
-      <column name="date_changed"/>  
-      <column name="changed_by"/>  
-      <column name="view_privilege"/>  
-      <column name="edit_privilege"/>  
-      <column name="delete_privilege"/> 
-    </insert>  
-    <insert tableName="global_property"> 
-      <column name="property" value="order.allowSettingStopDateOnInactiveOrders"/>  
-      <column name="property_value" value="false"/>  
-      <column name="description" value="Allow setting a stop date on an order that is already inactive. May be necessary when importing orders from another system."/>  
-      <column name="uuid" value="592af251-fcde-4909-8921-d20f5ce88f96"/>  
       <column name="datatype"/>  
       <column name="datatype_config"/>  
       <column name="preferred_handler"/>  
@@ -4051,7 +4006,7 @@
       <column name="delete_privilege"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-11"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-11"> 
     <insert tableName="hl7_source"> 
       <column name="hl7_source_id" valueNumeric="1"/>  
       <column name="name" value="LOCAL"/>  
@@ -4061,7 +4016,7 @@
       <column name="uuid" value="8d6b8bb6-c2cc-11de-8d13-0010c6dffd0f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-14"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-14"> 
     <insert tableName="location"> 
       <column name="location_id" valueNumeric="1"/>  
       <column name="name" value="Unknown Location"/>  
@@ -4101,7 +4056,7 @@
       <column name="location_type_concept_id"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-15"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-15"> 
     <insert tableName="order_type"> 
       <column name="order_type_id" valueNumeric="2"/>  
       <column name="name" value="Drug Order"/>  
@@ -4135,7 +4090,7 @@
       <column name="date_changed"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-16"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-16"> 
     <insert tableName="patient_identifier_type"> 
       <column name="patient_identifier_type_id" valueNumeric="1"/>  
       <column name="name" value="OpenMRS Identification Number"/>  
@@ -4179,7 +4134,7 @@
       <column name="changed_by"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-18"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-18"> 
     <insert tableName="person_attribute_type"> 
       <column name="person_attribute_type_id" valueNumeric="1"/>  
       <column name="name" value="Race"/>  
@@ -4314,7 +4269,7 @@
       <column name="uuid" value="8d87236c-c2cc-11de-8d13-0010c6dffd0f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-19"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-19"> 
     <insert tableName="person_name"> 
       <column name="person_name_id" valueNumeric="1"/>  
       <column name="preferred" valueBoolean="true"/>  
@@ -4338,7 +4293,7 @@
       <column name="uuid" value="5f897a68-6814-11e8-923f-e9a88dcb533f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-20"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-20"> 
     <insert tableName="privilege"> 
       <column name="privilege" value="Add Allergies"/>  
       <column name="description" value="Add allergies"/>  
@@ -4890,11 +4845,6 @@
       <column name="uuid" value="78b973c7-d051-4bb7-9eca-c18f8c61398a"/> 
     </insert>  
     <insert tableName="privilege"> 
-      <column name="privilege" value="Get Provider Roles"/>  
-      <column name="description" value="Able to get Provider Roles"/>  
-      <column name="uuid" value="5e941b4e-e9e7-4e3f-bd0f-ba07bc3b1656"/> 
-    </insert>  
-    <insert tableName="privilege"> 
       <column name="privilege" value="Get Providers"/>  
       <column name="description" value="Able to get Providers"/>  
       <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a211"/> 
@@ -5088,11 +5038,6 @@
       <column name="privilege" value="Manage Programs"/>  
       <column name="description" value="Able to add/view/delete patient programs"/>  
       <column name="uuid" value="5f8a3552-6814-11e8-923f-e9a88dcb533f"/> 
-    </insert>  
-    <insert tableName="privilege"> 
-      <column name="privilege" value="Manage Provider Roles"/>  
-      <column name="description" value="Able to add/edit/retire Provider Roles"/>  
-      <column name="uuid" value="f0239e33-bd5f-40fd-a9cb-ce5dd25b756d"/> 
     </insert>  
     <insert tableName="privilege"> 
       <column name="privilege" value="Manage Providers"/>  
@@ -5415,7 +5360,7 @@
       <column name="uuid" value="5f8a3f2a-6814-11e8-923f-e9a88dcb533f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-21"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-21"> 
     <insert tableName="relationship_type"> 
       <column name="relationship_type_id" valueNumeric="1"/>  
       <column name="a_is_to_b" value="Doctor"/>  
@@ -5485,7 +5430,7 @@
       <column name="changed_by"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-22"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-22"> 
     <insert tableName="role"> 
       <column name="role" value="Anonymous"/>  
       <column name="description" value="Privileges for non-authenticated users."/>  
@@ -5507,7 +5452,7 @@
       <column name="uuid" value="8d94f852-c2cc-11de-8d13-0010c6dffd0f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-23"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-23"> 
     <insert tableName="role_privilege"> 
       <column name="role" value="Authenticated"/>  
       <column name="privilege" value="Get Concept Classes"/> 
@@ -5617,7 +5562,7 @@
       <column name="privilege" value="View Roles"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-24"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-24"> 
     <insert tableName="scheduler_task_config"> 
       <column name="task_config_id" valueNumeric="2"/>  
       <column name="name" value="Auto Close Visits Task"/>  
@@ -5636,7 +5581,7 @@
       <column name="uuid" value="8c17b376-1a2b-11e1-a51a-00248140a5eb"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-25"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-25"> 
     <insert tableName="user_property"> 
       <column name="user_id" valueNumeric="1"/>  
       <column name="property" value="defaultLocale"/>  
@@ -5645,7 +5590,7 @@
     <insert tableName="user_property"> 
       <column name="user_id" valueNumeric="1"/>  
       <column name="property" value="lastLoginTimestamp"/>  
-      <column name="property_value" value="1770892917948"/> 
+      <column name="property_value" value="1753954418554"/> 
     </insert>  
     <insert tableName="user_property"> 
       <column name="user_id" valueNumeric="1"/>  
@@ -5658,7 +5603,7 @@
       <column name="property_value" value="0"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1770893021219-26"> 
+  <changeSet author="Wikum Weerakutti (generated)" id="1753955109175-26"> 
     <insert tableName="user_role"> 
       <column name="user_id" valueNumeric="1"/>  
       <column name="role" value="Provider"/> 
