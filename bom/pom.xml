@@ -49,7 +49,7 @@
 		<springVersion>7.0.3</springVersion>
 		<!-- spring-test 6.2.12 is used because Spring 7.0.3's spring-test requires JUnit 6.x which is -->
 		<!-- not yet supported by maven-surefire-plugin 3.5.4. Spring test 6.2.12 works with JUnit 5.x. -->
-		<springTestVersion>6.2.12</springTestVersion>
+		<springTestVersion>7.0.4</springTestVersion>
 		<hibernateVersion>7.2.4.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.2.1.Final</hibernateSearchVersion>
