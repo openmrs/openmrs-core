@@ -22,6 +22,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.spec.GCMParameterSpec;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -187,14 +188,15 @@ public class Security {
 	 * @since 1.9
 	 */
 	public static String encrypt(String text, byte[] initVector, byte[] secretKey) {
-		IvParameterSpec initVectorSpec = new IvParameterSpec(initVector);
+		GCMParameterSpec gcmspec = new GCMParameterSpec(128, initVector);
+			
 		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
 		byte[] encrypted;
 		String result;
 
 		try {
-			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
-			cipher.init(Cipher.ENCRYPT_MODE, secret, initVectorSpec);
+			Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+			cipher.init(Cipher.ENCRYPT_MODE, secret, gcmspec);
 			encrypted = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
 			result = new String(Base64.getEncoder().encode(encrypted), StandardCharsets.UTF_8);
 		}
@@ -234,18 +236,29 @@ public class Security {
 	 * @since 1.9
 	 */
 	public static String decrypt(String text, byte[] initVector, byte[] secretKey) {
-		IvParameterSpec initVectorSpec = new IvParameterSpec(initVector);
 		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
 		String decrypted;
-
+		byte[] decodedText = Base64.getDecoder().decode(text);
+		
 		try {
-			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
-			cipher.init(Cipher.DECRYPT_MODE, secret, initVectorSpec);
-			byte[] original = cipher.doFinal(Base64.getDecoder().decode(text));
+			Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+			GCMParameterSpec gcmSpec = new GCMParameterSpec(128, initVector);
+			cipher.init(Cipher.DECRYPT_MODE, secret, gcmSpec);
+			byte[] original = cipher.doFinal(decodedText);
 			decrypted = new String(original, StandardCharsets.UTF_8);
 		}
 		catch (GeneralSecurityException e) {
-			throw new APIException("could.not.decrypt.text", null, e);
+			try {
+				Cipher legacyCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+				IvParameterSpec ivSpec = new IvParameterSpec(initVector);
+				legacyCipher.init(Cipher.DECRYPT_MODE, secret, ivSpec);
+
+				byte[] original = legacyCipher.doFinal(decodedText);
+				decrypted = new String(original, StandardCharsets.UTF_8);
+
+			} catch (GeneralSecurityException legacyEx) {
+				throw new APIException("could.not.decrypt.text", null, legacyEx);
+			}
 		}
 
 		return decrypted;
