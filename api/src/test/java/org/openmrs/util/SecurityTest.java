@@ -219,7 +219,7 @@ public class SecurityTest {
 	}
 
 	@Test
-	public void decrypt_shouldDecryptLegacyCBCData() throws Exception {
+	void decrypt_shouldDecryptLegacyCBCData() throws Exception {
 		String secretMessage = "ThisIsOldData";
 		byte[] key = new byte[16]; 
 		byte[] iv = new byte[16];  
