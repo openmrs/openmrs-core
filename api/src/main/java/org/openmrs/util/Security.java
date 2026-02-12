@@ -249,9 +249,10 @@ public class Security {
 		}
 		catch (GeneralSecurityException e) {
 			try {
+				// Suppress SonarCloud warning
 				@SuppressWarnings("java:S5542")
-				/* AES/CBC/PKCS5Padding IS USED AS A FALLBACK to decrypt legacy data that was encrypted before the patch. NEW DATA USES AES/GCM/NoPadding*/
-		        // codeql[java/weak-cryptographic-algorithm]	
+				// Suppress CodeQL warning (Legacy fallback)
+				// lgtm [java/weak-cryptographic-algorithm]
 				Cipher legacyCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 				IvParameterSpec ivSpec = new IvParameterSpec(initVector);
 				legacyCipher.init(Cipher.DECRYPT_MODE, secret, ivSpec);
