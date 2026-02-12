@@ -45,12 +45,16 @@ import org.openmrs.Relationship;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.BlankIdentifierException;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.InsufficientIdentifiersException;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientIdentifierTypeLockedException;
 import org.openmrs.api.PatientService;
@@ -67,6 +71,7 @@ import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
@@ -77,6 +82,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,22 +101,79 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
 	
-	@Autowired
-	private PatientDAO dao;
-	
-	/**
-	 * PatientIdentifierValidators registered through spring's applicationContext-service.xml
-	 */
-	@Autowired
-	@Qualifier("identifierValidators")
+	private final PatientDAO dao;
+	private final PersonService personService;
+	private final VisitService visitService;
+	private final EncounterService encounterService;
+	private final ObsService obsService;
+	private final ProgramWorkflowService programWorkflowService;
+	private final OrderService orderService;
+	private final MessageSourceService messageSourceService;
+	private final UserService userService;
+	private final AdministrationService administrationService;
+	private final ConceptService conceptService;
+	private final LocationService locationService;
+	private final PatientService self;
 	private Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators;
 	
-	/**
-	 * @see org.openmrs.api.PatientService#setPatientDAO(org.openmrs.api.db.PatientDAO)
-	 */
-	@Override
-	public void setPatientDAO(PatientDAO dao) {
+	public PatientServiceImpl(PatientDAO dao,
+	                         PersonService personService,
+	                         VisitService visitService,
+	                         EncounterService encounterService,
+	                         ObsService obsService,
+	                         ProgramWorkflowService programWorkflowService,
+	                         OrderService orderService,
+	                         MessageSourceService messageSourceService,
+	                         UserService userService,
+	                         AdministrationService administrationService,
+	                         ConceptService conceptService,
+	                         LocationService locationService,
+	                         Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators) {
 		this.dao = dao;
+		this.personService = personService;
+		this.visitService = visitService;
+		this.encounterService = encounterService;
+		this.obsService = obsService;
+		this.programWorkflowService = programWorkflowService;
+		this.orderService = orderService;
+		this.messageSourceService = messageSourceService;
+		this.userService = userService;
+		this.administrationService = administrationService;
+		this.conceptService = conceptService;
+		this.locationService = locationService;
+		this.identifierValidators = identifierValidators;
+		this.self = this;
+	}
+	
+	@Autowired
+	public PatientServiceImpl(PatientDAO dao,
+	                         @Lazy PersonService personService,
+	                         @Lazy VisitService visitService,
+	                         @Lazy EncounterService encounterService,
+	                         @Lazy ObsService obsService,
+	                         @Lazy ProgramWorkflowService programWorkflowService,
+	                         @Lazy OrderService orderService,
+	                         @Lazy MessageSourceService messageSourceService,
+	                         @Lazy UserService userService,
+	                         @Lazy AdministrationService administrationService,
+	                         @Lazy ConceptService conceptService,
+	                         @Lazy LocationService locationService,
+	                         @Qualifier("identifierValidators") Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators,
+	                         @Lazy PatientService self) {
+		this.dao = dao;
+		this.personService = personService;
+		this.visitService = visitService;
+		this.encounterService = encounterService;
+		this.obsService = obsService;
+		this.programWorkflowService = programWorkflowService;
+		this.orderService = orderService;
+		this.messageSourceService = messageSourceService;
+		this.userService = userService;
+		this.administrationService = administrationService;
+		this.conceptService = conceptService;
+		this.locationService = locationService;
+		this.identifierValidators = identifierValidators;
+		this.self = self;
 	}
 	
 	/**
@@ -230,7 +293,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	@Transactional(readOnly = true)
 	public Patient getPatientOrPromotePerson(Integer patientOrPersonId) {
-		Person person = Context.getPersonService().getPerson(patientOrPersonId);
+		Person person = personService.getPerson(patientOrPersonId);
 		if (person == null) {
 			return null;
 		}
@@ -249,7 +312,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	@Transactional(readOnly = true)
 	public List<Patient> getAllPatients() throws APIException {
-		return Context.getPatientService().getAllPatients(false);
+		return self.getAllPatients(false);
 	}
 	
 	/**
@@ -271,7 +334,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) throws APIException {
 		
-		return Context.getPatientService().getPatients(name, identifier, identifierTypes, matchIdentifierExactly, 0, null);
+		return self.getPatients(name, identifier, identifierTypes, matchIdentifierExactly, 0, null);
 	}
 	
 	/**
@@ -356,7 +419,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		// patient and patientidentifier attributes taken care of by the BaseUnvoidHandler
 		
-		return Context.getPatientService().savePatient(patient);
+		return self.savePatient(patient);
 	}
 	
 	/**
@@ -413,7 +476,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	@Transactional(readOnly = true)
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes() throws APIException {
-		return Context.getPatientService().getAllPatientIdentifierTypes(false);
+		return self.getAllPatientIdentifierTypes(false);
 	}
 	
 	/**
@@ -480,7 +543,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		patientIdentifierType.setRetiredBy(Context.getAuthenticatedUser());
 		patientIdentifierType.setDateRetired(new Date());
 		patientIdentifierType.setRetireReason(reason);
-		return Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
+		return self.savePatientIdentifierType(patientIdentifierType);
 	}
 	
 	/**
@@ -494,7 +557,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		patientIdentifierType.setRetiredBy(null);
 		patientIdentifierType.setDateRetired(null);
 		patientIdentifierType.setRetireReason(null);
-		return Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
+		return self.savePatientIdentifierType(patientIdentifierType);
 	}
 	
 	/**
@@ -514,7 +577,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String query) throws APIException {
-		return Context.getPatientService().getPatients(query, 0, null);
+		return self.getPatients(query, 0, null);
 	}
 	
 	/**
@@ -531,7 +594,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			return null;
 		}
 		
-		return Context.getPatientService().getPatient(patientToMatch.getPatientId());
+		return self.getPatient(patientToMatch.getPatientId());
 	}
 	
 	/**
@@ -598,10 +661,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		mergeDateOfDeath(preferred, notPreferred, mergedData);
 		
 		// void the non preferred patient
-		Context.getPatientService().voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
+		self.voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
 		
 		// void the person associated with not preferred patient
-		Context.getPersonService().voidPerson(notPreferred,
+		personService.voidPerson(notPreferred,
 		    "The patient corresponding to this person has been voided and Merged with patient #" + preferred.getPatientId());
 		
 		// associate the Users associated with the not preferred person, to the preferred person.
@@ -617,17 +680,17 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		personMergeLog.setWinner(preferred);
 		personMergeLog.setLoser(notPreferred);
 		personMergeLog.setPersonMergeLogData(mergedData);
-		Context.getPersonService().savePersonMergeLog(personMergeLog);
+		personService.savePersonMergeLog(personMergeLog);
 	}
 	
 	private void requireNoActiveOrderOfSameType(Patient patient1, Patient patient2) {
 		String messageKey = "Patient.merge.cannotHaveSameTypeActiveOrders";
-		List<Order> ordersByPatient1 = Context.getOrderService().getAllOrdersByPatient(patient1);
-		List<Order> ordersByPatient2 = Context.getOrderService().getAllOrdersByPatient(patient2);
+		List<Order> ordersByPatient1 = orderService.getAllOrdersByPatient(patient1);
+		List<Order> ordersByPatient2 = orderService.getAllOrdersByPatient(patient2);
 		ordersByPatient1.forEach((Order order1) -> ordersByPatient2.forEach((Order order2) -> {
 			if (order1.isActive() && order2.isActive() && order1.getOrderType().equals(order2.getOrderType())) {
 				Object[] parameters = { patient1.getPatientId(), patient2.getPatientId(), order1.getOrderType() };
-				String message = Context.getMessageSourceService().getMessage(messageKey, parameters,
+				String message = messageSourceService.getMessage(messageKey, parameters,
 						Context.getLocale());
 				log.debug(message);
 				throw new APIException(message);
@@ -637,12 +700,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 	private void mergeProgramEnrolments(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all program enrollments
-		ProgramWorkflowService programService = Context.getProgramWorkflowService();
-		for (PatientProgram pp : programService.getPatientPrograms(notPreferred, null, null, null, null, null, false)) {
+		for (PatientProgram pp : programWorkflowService.getPatientPrograms(notPreferred, null, null, null, null, null, false)) {
 			if (!pp.getVoided()) {
 				pp.setPatient(preferred);
 				log.debug("Moving patientProgram {} to {}", pp.getPatientProgramId(), preferred.getPatientId());
-				PatientProgram persisted = programService.savePatientProgram(pp);
+				PatientProgram persisted = programWorkflowService.savePatientProgram(pp);
 				mergedData.addMovedProgram(persisted.getUuid());
 			}
 		}
@@ -652,7 +714,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// move all visits, including voided ones (encounters will be handled below)
 		//TODO: this should be a copy, not a move
 		
-		VisitService visitService = Context.getVisitService();
 		
 		for (Visit visit : visitService.getVisitsByPatient(notPreferred, true, true)) {
 			log.debug("Merging visit {} to {}", visit.getVisitId(), preferred.getPatientId());
@@ -665,23 +726,21 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	private void mergeEncounters(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// change all encounters. This will cascade to obs and orders contained in those encounters
 		// TODO: this should be a copy, not a move
-		EncounterService es = Context.getEncounterService();
 
 		EncounterSearchCriteria notPreferredPatientEncounterSearchCriteria = new EncounterSearchCriteriaBuilder()
 				.setIncludeVoided(true)
 				.setPatient(notPreferred)
 				.createEncounterSearchCriteria();
-		for (Encounter e : es.getEncounters(notPreferredPatientEncounterSearchCriteria)) {
+		for (Encounter e : encounterService.getEncounters(notPreferredPatientEncounterSearchCriteria)) {
 			e.setPatient(preferred);
 			log.debug("Merging encounter " + e.getEncounterId() + " to " + preferred.getPatientId());
-			Encounter persisted = es.saveEncounter(e);
+			Encounter persisted = encounterService.saveEncounter(e);
 			mergedData.addMovedEncounter(persisted.getUuid());
 		}
 	}
 	
 	private void mergeRelationships(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all relationships
-		PersonService personService = Context.getPersonService();
 		Set<String> existingRelationships = new HashSet<>();
 		// fill in the existing relationships with hashes
 		for (Relationship rel : personService.getRelationshipsByPerson(preferred)) {
@@ -731,7 +790,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	        PersonMergeLogData mergedData) {
 		// move all obs that weren't contained in encounters
 		// TODO: this should be a copy, not a move
-		ObsService obsService = Context.getObsService();
 		for (Obs obs : obsService.getObservationsByPerson(notPreferred)) {
 			if (obs.getEncounter() == null && !obs.getVoided()) {
 				obs.setPerson(preferred);
@@ -919,10 +977,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		
 		// void the non preferred patient
-		Context.getPatientService().voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
+		self.voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
 		
 		// void the person associated with not preferred patient
-		Context.getPersonService().voidPerson(notPreferred,
+		personService.voidPerson(notPreferred,
 		    "The patient corresponding to this person has been voided and Merged with patient #" + preferred.getPatientId());
 		
 		// associate the Users associated with the not preferred person, to the preferred person.
@@ -938,7 +996,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		personMergeLog.setWinner(preferred);
 		personMergeLog.setLoser(notPreferred);
 		personMergeLog.setPersonMergeLogData(mergedData);
-		Context.getPersonService().savePersonMergeLog(personMergeLog);
+		personService.savePersonMergeLog(personMergeLog);
 	}
 	
 	/**
@@ -950,7 +1008,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see PatientServiceImpl#mergePatients(Patient, Patient)
 	 */
 	private void changeUserAssociations(Patient preferred, Person notPreferred, PersonMergeLogData mergedData) {
-		UserService userService = Context.getUserService();
 		List<User> users = userService.getUsersByPerson(notPreferred, true);
 		for (User user : users) {
 			user.setPerson(preferred);
@@ -1018,11 +1075,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// exit
 		log.debug("Patient is exiting, so let's make sure there's an Obs for it");
 		
-		String codProp = Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare");
-		Concept reasonForExit = Context.getConceptService().getConcept(codProp);
+		String codProp = administrationService.getGlobalProperty("concept.reasonExitedCare");
+		Concept reasonForExit = conceptService.getConcept(codProp);
 		
 		if (reasonForExit != null) {
-			List<Obs> obssExit = Context.getObsService().getObservationsByPersonAndConcept(patient, reasonForExit);
+			List<Obs> obssExit = obsService.getObservationsByPersonAndConcept(patient, reasonForExit);
 			if (obssExit != null) {
 				if (obssExit.size() > 1) {
 					log.error("Multiple reasons for exit (" + obssExit.size() + ")?  Shouldn't be...");
@@ -1042,7 +1099,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						obsExit.setPerson(patient);
 						obsExit.setConcept(reasonForExit);
 						
-						Location loc = Context.getLocationService().getDefaultLocation();
+						Location loc = locationService.getDefaultLocation();
 						
 						if (loc != null) {
 							obsExit.setLocation(loc);
@@ -1057,7 +1114,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						obsExit.setValueCoded(cause);
 						obsExit.setValueCodedName(cause.getName()); // ABKTODO: presume current locale?
 						obsExit.setObsDatetime(exitDate);
-						Context.getObsService().saveObs(obsExit, "updated by PatientService.saveReasonForExit");
+						obsService.saveObs(obsExit, "updated by PatientService.saveReasonForExit");
 					}
 				}
 			}
@@ -1091,8 +1148,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			
 			// exit from program
 			// first, need to get Concept for "Patient Died"
-			String strPatientDied = Context.getAdministrationService().getGlobalProperty("concept.patientDied");
-			Concept conceptPatientDied = Context.getConceptService().getConcept(strPatientDied);
+			String strPatientDied = administrationService.getGlobalProperty("concept.patientDied");
+			Concept conceptPatientDied = conceptService.getConcept(strPatientDied);
 			
 			if (conceptPatientDied == null) {
 				log.debug("ConceptPatientDied is null");
@@ -1139,12 +1196,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// need to make sure there is an Obs that represents the patient's
 		// cause of death, if applicable
 		
-		String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+		String codProp = administrationService.getGlobalProperty("concept.causeOfDeath");
 		
-		Concept causeOfDeath = Context.getConceptService().getConcept(codProp);
+		Concept causeOfDeath = conceptService.getConcept(codProp);
 		
 		if (causeOfDeath != null) {
-			List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, causeOfDeath);
+			List<Obs> obssDeath = obsService.getObservationsByPersonAndConcept(patient, causeOfDeath);
 			if (obssDeath != null) {
 				if (obssDeath.size() > 1) {
 					log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
@@ -1163,7 +1220,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						obsDeath = new Obs();
 						obsDeath.setPerson(patient);
 						obsDeath.setConcept(causeOfDeath);
-						Location location = Context.getLocationService().getDefaultLocation();
+						Location location = locationService.getDefaultLocation();
 						if (location != null) {
 							obsDeath.setLocation(location);
 						} else {
@@ -1176,8 +1233,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 					if (currCause == null) {
 						// set to NONE
 						log.debug("Current cause is null, attempting to set to NONE");
-						String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
-						currCause = Context.getConceptService().getConcept(noneConcept);
+						String noneConcept = administrationService.getGlobalProperty("concept.none");
+						currCause = conceptService.getConcept(noneConcept);
 					}
 					
 					if (currCause != null) {
@@ -1193,8 +1250,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						
 						// check if this is an "other" concept - if so, then
 						// we need to add value_text
-						String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
-						Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
+						String otherConcept = administrationService.getGlobalProperty("concept.otherNonCoded");
+						Concept conceptOther = conceptService.getConcept(otherConcept);
 						if (conceptOther != null) {
 							if (conceptOther.equals(currCause)) {
 								// seems like this is an other concept -
@@ -1210,7 +1267,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 							obsDeath.setValueText("");
 						}
 						
-						Context.getObsService().saveObs(obsDeath, "updated by PatientService.saveCauseOfDeathObs");
+						obsService.saveObs(obsDeath, "updated by PatientService.saveCauseOfDeathObs");
 					} else {
 						log.debug("Current cause is still null - aborting mission");
 					}
@@ -1251,7 +1308,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	@Transactional(readOnly = true)
 	public IdentifierValidator getDefaultIdentifierValidator() {
-		String defaultPIV = Context.getAdministrationService().getGlobalProperty(
+		String defaultPIV = administrationService.getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR, "");
 		
 		try {
@@ -1285,13 +1342,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @param identifierValidators
 	 */
 	public void setIdentifierValidators(Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators) {
-		if (identifierValidators == null) {
-			this.identifierValidators = null;
-			return;
-		}
-		for (Map.Entry<Class<? extends IdentifierValidator>, IdentifierValidator> entry : identifierValidators.entrySet()) {
-			getIdentifierValidators().put(entry.getKey(), entry.getValue());
-		}
+		this.identifierValidators = identifierValidators;
 	}
 	
 	/**
@@ -1349,7 +1400,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (patientIdentifier == null || StringUtils.isBlank(reason)) {
 			throw new APIException("Patient.identifier.cannot.be.null", (Object[]) null);
 		}
-		return Context.getPatientService().savePatientIdentifier(patientIdentifier);
+		return self.savePatientIdentifier(patientIdentifier);
 		
 	}
 	
@@ -1472,7 +1523,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			if (allergy.getAllergyId() == null && allergy.getAllergen().getCodedAllergen() == null
 			        && StringUtils.isNotBlank(allergy.getAllergen().getNonCodedAllergen())) {
 				
-				Concept otherNonCoded = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
+				Concept otherNonCoded = conceptService.getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 				if (otherNonCoded == null) {
 					throw new APIException("Can't find concept with uuid:" + Allergen.getOtherNonCodedConceptUuid());
 				}
@@ -1623,7 +1674,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Override
 	public void checkIfPatientIdentifierTypesAreLocked() {
-		String locked = Context.getAdministrationService().getGlobalProperty(
+		String locked = administrationService.getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED, "false");
 		if ("true".equalsIgnoreCase(locked)) {
 			throw new PatientIdentifierTypeLockedException();

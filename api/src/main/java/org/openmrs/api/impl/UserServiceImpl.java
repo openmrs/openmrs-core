@@ -35,6 +35,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CannotDeleteRoleWithChildrenException;
 import org.openmrs.api.InvalidActivationKeyException;
+import org.openmrs.notification.MessageService;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
@@ -53,6 +54,7 @@ import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,8 +72,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	
 	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 	
-	@Autowired
-	protected UserDAO dao;
+	private final UserDAO dao;
 	
 	private static final int MAX_VALID_TIME = 12 * 60 * 60 * 1000; //Period of 12 hours
 	
@@ -79,18 +80,40 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	
 	private static final int DEFAULT_VALID_TIME = 10 * 60 * 1000; //Default time of 10 minute
 	
-	public UserServiceImpl() {
+	private final AdministrationService administrationService;
+	private final MessageSourceService messageSourceService;
+	private final MessageService messageService;
+	private final UserService self;
+	
+	public UserServiceImpl(UserDAO dao,
+	                      AdministrationService administrationService,
+	                      MessageSourceService messageSourceService,
+	                      MessageService messageService) {
+		this.dao = dao;
+		this.administrationService = administrationService;
+		this.messageSourceService = messageSourceService;
+		this.messageService = messageService;
+		this.self = this;
 	}
 	
-	public void setUserDAO(UserDAO dao) {
+	@Autowired
+	public UserServiceImpl(UserDAO dao,
+	                      @Lazy AdministrationService administrationService,
+	                      @Lazy MessageSourceService messageSourceService,
+	                      @Lazy MessageService messageService,
+	                      @Lazy UserService self) {
 		this.dao = dao;
+		this.administrationService = administrationService;
+		this.messageSourceService = messageSourceService;
+		this.messageService = messageService;
+		this.self = self;
 	}
 	
 	/**
 	 * @return the validTime for which the password reset activation key will be valid
 	 */
 	private int getValidTime() {
-		String validTimeGp = Context.getAdministrationService()
+		String validTimeGp = administrationService
 			.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_VALIDTIME);
 		final int validTime = StringUtils.isBlank(validTimeGp) ? DEFAULT_VALID_TIME : Integer.parseInt(validTimeGp);
 		//if valid time is less that a minute or greater than 12hrs reset valid time to 1 minutes else set it to the required time.
@@ -162,7 +185,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		List<Role> roles = new ArrayList<>();
 		roles.add(role);
 		
-		return Context.getUserService().getUsers(null, roles, false);
+		return self.getUsers(null, roles, false);
 	}
 	
 	/**
@@ -188,7 +211,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 	
 	public User voidUser(User user, String reason) throws APIException {
-		return Context.getUserService().retireUser(user, reason);
+		return self.retireUser(user, reason);
 	}
 	
 	/**
@@ -205,7 +228,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 	
 	public User unvoidUser(User user) throws APIException {
-		return Context.getUserService().unretireUser(user);
+		return self.unretireUser(user);
 	}
 	
 	/**
@@ -389,7 +412,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	@Transactional(readOnly = true)
 	public List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws APIException {
-		return Context.getUserService().getUsers(nameSearch, roles, includeVoided, null, null);
+		return self.getUsers(nameSearch, roles, includeVoided, null, null);
 	}
 	
 	/**
@@ -428,7 +451,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			user.setUserProperty(key, value);
 			try {
 				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-				Context.getUserService().saveUser(user);
+				self.saveUser(user);
 			}
 			finally {
 				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
@@ -456,7 +479,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			
 			try {
 				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-				Context.getUserService().saveUser(user);
+				self.saveUser(user);
 			}
 			finally {
 				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
@@ -749,28 +772,26 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		credentials.setActivationKey(activationKey);
 		dao.setUserActivationKey(credentials);
 		
-		MessageSourceService messages = Context.getMessageSourceService();
-		AdministrationService adminService = Context.getAdministrationService();
 		Locale locale = getDefaultLocaleForUser(user);
 		
 		//		Delete this method call when removing {@link OpenmrsConstants#GP_HOST_URL}
-		copyHostURLGlobalPropertyToPasswordResetGlobalProperty(adminService);
+		copyHostURLGlobalPropertyToPasswordResetGlobalProperty(administrationService);
 		
-		String link = adminService.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL)
+		String link = administrationService.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL)
 			.replace("{activationKey}", token);
 		
 		Properties mailProperties = Context.getMailProperties();
 		
 		String sender = mailProperties.getProperty("mail.from");
 		
-		String subject = messages.getMessage("mail.passwordreset.subject", null, locale);
+		String subject = messageSourceService.getMessage("mail.passwordreset.subject", null, locale);
 		
-		String msg = messages.getMessage("mail.passwordreset.content", null, locale)
+		String msg = messageSourceService.getMessage("mail.passwordreset.content", null, locale)
 			.replace("{name}", user.getUsername())
 			.replace("{link}", link)
 			.replace("{time}", String.valueOf(getValidTime() / 60000));
 		
-		Context.getMessageService().sendMessage(user.getEmail(), sender, subject, msg);
+		messageService.sendMessage(user.getEmail(), sender, subject, msg);
 		
 		return user;
 	}

@@ -36,14 +36,6 @@ import org.openmrs.util.PrivilegeConstants;
 public interface LocationService extends OpenmrsService {
 	
 	/**
-	 * Set the data access object that the service will use to interact with the database. This is
-	 * set by spring in the applicationContext-service.xml file
-	 * 
-	 * @param dao
-	 */
-	public void setLocationDAO(LocationDAO dao);
-	
-	/**
 	 * Save location to database (create if new or update if changed)
 	 * 
 	 * @param location is the location to be saved to the database

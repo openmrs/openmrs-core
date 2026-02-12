@@ -25,28 +25,45 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.SerializationService;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.impl.AdministrationServiceImpl;
+import org.openmrs.messagesource.MessageSourceService;
 
 /**
  * Unit tests for {@link AdministrationService}.
  */
+@ExtendWith(MockitoExtension.class)
 public class AdministrationServiceUnitTest {
 	
+	@Mock
 	private AdministrationDAO adminDAO;
 	
+	@Mock
 	private EventListeners eventListeners;
 	
-	private AdministrationService adminService;
+	@Mock
+	private MessageSourceService messageSourceService;
+	
+	@Mock
+	private SerializationService serializationService;
+	
+	@Mock
+	private ConceptService conceptService;
+	
+	private AdministrationServiceImpl adminService;
 	
 	@BeforeEach
 	public void setUp() {
-		
-		adminService = new AdministrationServiceImpl();
-		adminDAO = mock(AdministrationDAO.class);
-		adminService.setAdministrationDAO(adminDAO);
-		eventListeners = mock(EventListeners.class);
-		((AdministrationServiceImpl) adminService).setEventListeners(eventListeners);
+        // Use the constructor injection with DAO
+        adminService = new AdministrationServiceImpl(adminDAO, messageSourceService, serializationService, conceptService);
+        adminService.setEventListeners(eventListeners);
 	}
 	
 	@Test

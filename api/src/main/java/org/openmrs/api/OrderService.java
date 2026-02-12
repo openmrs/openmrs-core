@@ -42,14 +42,6 @@ public interface OrderService extends OpenmrsService {
 	public static final String PARALLEL_ORDERS = "PARALLEL_ORDERS";
 	
 	/**
-	 * Setter for the Order data access object. The dao is used for saving and getting orders
-	 * to/from the database
-	 * 
-	 * @param dao The data access object to use
-	 */
-	public void setOrderDAO(OrderDAO dao);
-	
-	/**
 	 * Save or update the given <code>order</code> in the database. If the OrderType for the order
 	 * is not specified, then it will be set to the one set on the OrderContext if any, if none
 	 * exists on the orderContext, then it will be set to the one associated to the ConceptClass of

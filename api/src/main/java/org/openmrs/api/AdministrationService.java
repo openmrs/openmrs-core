@@ -48,13 +48,6 @@ public interface AdministrationService extends OpenmrsService {
 	public static final String GP_SERIALIZER_WHITELIST_HIERARCHY_TYPES_PREFIX = "hierarchyOf:";
 	
 	/**
-	 * Used by Spring to set the specific/chosen database access implementation
-	 * 
-	 * @param dao The dao implementation to use
-	 */
-	public void setAdministrationDAO(AdministrationDAO dao);
-										
-	/**
 	 * Get a global property by its uuid. There should be only one of these in the database (well,
 	 * in the world actually). If multiple are found, an error is thrown.
 	 * 
