@@ -220,25 +220,19 @@ public class SecurityTest {
 
 	@Test
 	public void decrypt_shouldDecryptLegacyCBCData() throws Exception {
-		// 1. SETUP: Create some data encrypted with the OLD (Vulnerable) algorithm manually
 		String secretMessage = "ThisIsOldData";
-		byte[] key = new byte[16]; // 128-bit key
-		byte[] iv = new byte[16];  // 128-bit IV
-		// Fill with dummy data
+		byte[] key = new byte[16]; 
+		byte[] iv = new byte[16];  
 		for (int i=0; i<16; i++) { key[i] = (byte)i; iv[i] = (byte)i; }
 
-		// Manually force the OLD encryption (AES/CBC)
 		Cipher oldCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 		SecretKeySpec secretSpec = new SecretKeySpec(key, "AES");
 		oldCipher.init(Cipher.ENCRYPT_MODE, secretSpec, new IvParameterSpec(iv));
 		byte[] encryptedBytes = oldCipher.doFinal(secretMessage.getBytes(StandardCharsets.UTF_8));
 		String legacyEncryptedString = Base64.getEncoder().encodeToString(encryptedBytes);
 
-		// 2. ACTION: Try to decrypt it using YOUR new code (which defaults to GCM)
-		// This will fail GCM first, catch the exception, and trigger your "Fallback" block.
 		String result = Security.decrypt(legacyEncryptedString, iv, key);
 
-		// 3. ASSERT: It should match the original message
 		assertEquals(secretMessage, result);
 	}
 }
