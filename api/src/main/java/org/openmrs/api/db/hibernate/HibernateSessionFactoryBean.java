@@ -246,7 +246,6 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 			Properties hibernateProperties = getHibernateProperties();
 			EnversAuditTableInitializer.initialize(metadata, hibernateProperties, serviceRegistry);
 		} catch (Exception e) {
-			log.error("Failed to initialize Envers audit tables", e);
 			throw new APIException("An error occurred while initializing the Envers audit tables", e);
 		}
 	}
