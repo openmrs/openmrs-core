@@ -106,7 +106,7 @@
 		<!-- Database -->
 		<mysqlConnectorVersion>9.6.0</mysqlConnectorVersion>
 		<mariadbClientVersion>3.5.7</mariadbClientVersion>
-		<postgresqlVersion>42.7.9</postgresqlVersion>
+		<postgresqlVersion>42.7.10</postgresqlVersion>
 		<liquibaseVersion>4.32.0</liquibaseVersion>
 		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
 
