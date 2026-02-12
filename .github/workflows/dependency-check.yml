@@ -32,7 +32,7 @@ jobs:
           format: 'HTML'
           out: 'reports'
           args: >
-            --failOnCVSS 8
+            --failOnCVSS 7
             --enableRetired
             --suppression dependency-check-suppressions.xml
       - name: Upload Test results
