@@ -3332,5 +3332,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifierException patientIdentifierException = assertThrows(PatientIdentifierException.class, () -> patientService.getIdentifierValidator("com.example.InvalidIdentifierValidator"));
 		assertEquals("Could not find patient identifier validator com.example.InvalidIdentifierValidator", patientIdentifierException.getMessage());
 	}
+	 @Test
+    public void getPatientByUuid_shouldReturnPatientWhenUuidExists() {
+        Patient patient = Context.getPatientService().getPatient(2);
 
+        Patient fetched = Context.getPatientService()
+                .getPatientByUuid(patient.getUuid());
+
+        assertNotNull(fetched);
+        assertEquals(patient.getUuid(), fetched.getUuid());
+}
 }
