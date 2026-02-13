@@ -62,6 +62,7 @@ public class SchedulerConfig {
 				driverClass = "com.mysql.jdbc.Driver";
 			}
 		}
+		dataSource.setDriverClassName(driverClass);
 		dataSource.setUrl(properties.getProperty("connection.url",
 				properties.getProperty("hibernate.connection.url")));
 		dataSource.setUsername(properties.getProperty("connection.username",
