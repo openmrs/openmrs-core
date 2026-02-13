@@ -16,6 +16,7 @@ import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,8 +54,14 @@ public class SchedulerConfig {
 	public DataSource dataSource() {
 		Properties properties = Context.getRuntimeProperties();
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(properties.getProperty("connection.driver_class",
-				properties.getProperty("hibernate.connection.driver_class")));
+		// Driver_class property may be blank
+		String driverClass = properties.getProperty("connection.driver_class");
+		if (StringUtils.isBlank(driverClass)) {
+			driverClass = properties.getProperty("hibernate.connection.driver_class");
+			if (StringUtils.isBlank(driverClass)) {
+				driverClass = "com.mysql.jdbc.Driver";
+			}
+		}
 		dataSource.setUrl(properties.getProperty("connection.url",
 				properties.getProperty("hibernate.connection.url")));
 		dataSource.setUsername(properties.getProperty("connection.username",
