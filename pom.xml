@@ -456,6 +456,11 @@
 				<version>${jacksonVersion}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-hibernate5</artifactId>
+				<version>${jacksonVersion}</version>
+			</dependency>
+			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.13.2</version>
@@ -636,6 +641,11 @@
 				<groupId>net.javacrumbs.shedlock</groupId>
 				<artifactId>shedlock-provider-jdbc-template</artifactId>
 				<version>${shedlockVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jobrunr</groupId>
+				<artifactId>jobrunr</artifactId>
+				<version>${jobrunrVersion}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -1354,6 +1364,8 @@
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<!-- shedlockVersion needs to be upgraded after upgrading Spring to 6.x and JDK to 17 -->
 		<shedlockVersion>4.48.0</shedlockVersion>
+		<!-- jobrunrVersions needs to be upgraded after upgrading to JDK 17.x -->
+		<jobrunrVersion>6.3.5</jobrunrVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.22.1</log4jVersion>

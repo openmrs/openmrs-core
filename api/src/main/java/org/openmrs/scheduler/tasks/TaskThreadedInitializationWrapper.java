@@ -24,7 +24,9 @@ import org.slf4j.LoggerFactory;
  * This class executes the Task.initialize method in a new thread. Extend this class if you want
  * your {@link #initialize(TaskDefinition)} method to run in a new thread (and hence not hold up the
  * "startup" processes)
+ * @deprecated since 2.9.x it is not used anymore
  */
+@Deprecated
 public class TaskThreadedInitializationWrapper implements Task {
 	
 	// Logger 
