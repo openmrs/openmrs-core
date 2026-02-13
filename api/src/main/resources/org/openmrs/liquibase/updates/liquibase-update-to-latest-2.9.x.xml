@@ -19,11 +19,34 @@
 		http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<!--
-		The empty change set is needed for integration tests. It can be removed if this file contains other change sets.
-	-->
-	<changeSet id="42ddb873-f064-4418-a6c0-6c09426c4832" author="wschlegel">
-		<comment>Empty change set for integration tests.</comment>
+	<changeSet id="20200604-soundex_extension" author="aman" dbms="postgresql">
+		<comment> Soundex extension for PostgreSQL</comment>
+		<sql> CREATE EXTENSION IF NOT EXISTS fuzzystrmatch SCHEMA public;</sql>
+	</changeSet>
+
+	<changeSet id="20200715-uuid_ossp_extension" author="aman" dbms="postgresql">
+		<comment> Extension to use UUID functions with PostgreSQL and creating an alias similar to MySQL</comment>
+		<sql>
+			CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;
+			CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="20260212-create-shedlock-table" author="rkorytkowski">
+		<createTable tableName="shedlock">
+			<column name="name" type="VARCHAR(64)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="lock_until" type="TIMESTAMP">
+				<constraints nullable="false"/>
+			</column>
+			<column name="locked_at" type="TIMESTAMP">
+				<constraints nullable="false"/>
+			</column>
+			<column name="locked_by" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
 	</changeSet>
 	
 </databaseChangeLog>

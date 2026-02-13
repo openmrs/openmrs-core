@@ -98,6 +98,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -595,6 +596,14 @@ public abstract class BaseContextSensitiveTest {
 			throw new RuntimeException(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
 
+		//Create shedlock table for tests
+		getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS shedlock(" +
+			"name VARCHAR(64) NOT NULL, " +
+			"lock_until TIMESTAMP NOT NULL, " +
+			"locked_at TIMESTAMP NOT NULL, " +
+			"locked_by VARCHAR(255) NOT NULL, " +
+			"PRIMARY KEY (name))").execute();
+		
 		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the 
 		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from 
 		//person.creator column, historically this was to allow inserting the very first row. Ideally, this should not 

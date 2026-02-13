@@ -288,6 +288,14 @@
 			<groupId>org.graalvm.js</groupId>
 			<artifactId>js-scriptengine</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-spring</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-provider-jdbc-template</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<resources>
@@ -384,4 +392,3 @@
 		</profile>
 	</profiles>
 </project>
-

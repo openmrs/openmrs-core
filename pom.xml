@@ -627,6 +627,16 @@
 				<artifactId>js-scriptengine</artifactId>
 				<version>${graalJsVersion}</version>
 			</dependency>
+			<dependency>
+				<groupId>net.javacrumbs.shedlock</groupId>
+				<artifactId>shedlock-spring</artifactId>
+				<version>${shedlockVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.javacrumbs.shedlock</groupId>
+				<artifactId>shedlock-provider-jdbc-template</artifactId>
+				<version>${shedlockVersion}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -1342,6 +1352,8 @@
 		<junitVersion>5.11.4</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
+		<!-- shedlockVersion needs to be upgraded after upgrading Spring to 6.x and JDK to 17 -->
+		<shedlockVersion>4.48.0</shedlockVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.22.1</log4jVersion>
