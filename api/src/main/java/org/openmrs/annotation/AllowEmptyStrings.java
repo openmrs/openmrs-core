@@ -20,6 +20,7 @@ import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
 
 /**
  * Annotation used to indicate that a method allows empty strings.
+ * This annotation bypasses the default validation that prevents empty string values.
  * 
  * <pre>
  * &#064;AllowEmptyStrings
