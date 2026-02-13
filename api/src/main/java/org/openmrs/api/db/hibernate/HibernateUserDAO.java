@@ -10,6 +10,7 @@
 package org.openmrs.api.db.hibernate;
 
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -145,10 +146,9 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.UserService#getUserByUsername(java.lang.String)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public User getUserByUsername(String username) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-			"from User u where u.retired = false and (u.username = ?1 or u.systemId = ?2)");
+		TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery(
+			"from User u where u.retired = false and (u.username = ?1 or u.systemId = ?2)", User.class);
 		query.setParameter(1, username);
 		query.setParameter(2, username);
 		List<User> users = query.getResultList();
@@ -223,10 +223,10 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		catch (Exception e) {}
 		
-		Query query = sessionFactory
+		TypedQuery<Long> query = sessionFactory
 		        .getCurrentSession()
 		        .createQuery(
-		            "select count(*) from User u where (u.username = :uname1 or u.systemId = :uname2 or u.username = :sysid1 or u.systemId = :sysid2 or u.systemId = :uname3) and u.userId <> :uid");
+		            "select count(*) from User u where (u.username = :uname1 or u.systemId = :uname2 or u.username = :sysid1 or u.systemId = :sysid2 or u.systemId = :uname3) and u.userId <> :uid", Long.class);
 		query.setParameter("uname1", username);
 		query.setParameter("uname2", username);
 		query.setParameter("sysid1", systemId);
@@ -253,10 +253,9 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.UserService#getAllUsers()
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<User> getAllUsers() throws DAOException {
-		return sessionFactory.getCurrentSession().createQuery("from User where not uuid = :daemonUserUuid order by userId")
-		        .setParameter("daemonUserUuid", Daemon.getDaemonUserUuid()).list();
+		return sessionFactory.getCurrentSession().createQuery("from User where not uuid = :daemonUserUuid order by userId", User.class)
+		        .setParameter("daemonUserUuid", Daemon.getDaemonUserUuid()).getResultList();
 	}
 	
 	/**
@@ -289,9 +288,8 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.UserService#getAllPrivileges()
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Privilege> getAllPrivileges() throws DAOException {
-		return sessionFactory.getCurrentSession().createQuery("from Privilege p order by p.privilege").list();
+		return sessionFactory.getCurrentSession().createQuery("from Privilege p order by p.privilege", Privilege.class).getResultList();
 	}
 	
 	/**
@@ -338,9 +336,8 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.UserService#getAllRoles()
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Role> getAllRoles() throws DAOException {
-		return sessionFactory.getCurrentSession().createQuery("from Role r order by r.role").list();
+		return sessionFactory.getCurrentSession().createQuery("from Role r order by r.role", Role.class).getResultList();
 	}
 	
 	/**
@@ -555,7 +552,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		String hql = "select max(userId) from User";
 		
-		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		TypedQuery<Integer> query = sessionFactory.getCurrentSession().createQuery(hql, Integer.class);
 		
 		Object object = JpaUtils.getSingleResultOrNull(query);
 		
@@ -792,7 +789,7 @@ public class HibernateUserDAO implements UserDAO {
 			hql.append(" role in (:roleList)");
 		}
 		
-		Query query = sessionFactory.getCurrentSession().createQuery(hql.toString());
+		Query query = sessionFactory.getCurrentSession().createQuery(hql.toString(), Object.class);
 		query.setParameter("DAEMON_USER_UUID", Daemon.getDaemonUserUuid());
 		for (Map.Entry<String, String> e : namesMap.entrySet()) {
 			query.setParameter(e.getKey(), e.getValue());

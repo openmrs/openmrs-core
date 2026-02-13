@@ -151,8 +151,8 @@ public class HibernateContextDAO implements ContextDAO {
 				}
 			}
 
-			Object[] passwordAndSalt = (Object[]) session
-				.createNativeQuery("select password, salt from users where user_id = ?1")
+			Object[] passwordAndSalt =  session
+				.createNativeQuery("select password, salt from users where user_id = ?1", Object[].class)
 				.addScalar("password", StandardBasicTypes.STRING).addScalar("salt", StandardBasicTypes.STRING)
 				.setParameter(1, candidateUser.getUserId()).uniqueResult();
 

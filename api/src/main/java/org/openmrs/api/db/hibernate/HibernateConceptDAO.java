@@ -577,7 +577,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			// remove from cache
 			sessionFactory.getCurrentSession().evict(obj);
 			// session.get() did not work here, we need to perform a query to get a ConceptNumeric
-			Query query = sessionFactory.getCurrentSession().createQuery("from ConceptNumeric where conceptId = :conceptId")
+			TypedQuery<ConceptNumeric> query = sessionFactory.getCurrentSession().createQuery("from ConceptNumeric where conceptId = :conceptId", ConceptNumeric.class)
 			        .setParameter("conceptId", i);
 			obj = JpaUtils.getSingleResultOrNull(query);
 		}
@@ -696,10 +696,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByAnswer(org.openmrs.Concept)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Concept> getConceptsByAnswer(Concept concept) {
 		String q = "select c from Concept c join c.answers ca where ca.answerConcept = :answer";
-		Query query = sessionFactory.getCurrentSession().createQuery(q);
+		TypedQuery<Concept> query = sessionFactory.getCurrentSession().createQuery(q, Concept.class);
 		query.setParameter("answer", concept);
 		
 		return query.getResultList();
@@ -757,10 +756,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptsWithDrugsInFormulary()
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Concept> getConceptsWithDrugsInFormulary() {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "select distinct concept from Drug d where d.retired = false");
+		TypedQuery<Concept> query = sessionFactory.getCurrentSession().createQuery(
+		    "select distinct concept from Drug d where d.retired = false", Concept.class);
 		return query.getResultList();
 	}
 	
@@ -889,12 +887,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @return List&lt;Concept&gt;
 	 * @throws DAOException
 	 */
-	@SuppressWarnings("unchecked")
 	private List<Concept> getParents(Concept current) throws DAOException {
 		List<Concept> parents = new ArrayList<>();
 		if (current != null) {
-			Query query = sessionFactory.getCurrentSession().createQuery(
-			    "from Concept c join c.conceptSets sets where sets.concept = ?").setParameter(0, current);
+			TypedQuery<Concept> query = sessionFactory.getCurrentSession().createQuery(
+			    "from Concept c join c.conceptSets sets where sets.concept = ?", Concept.class).setParameter(0, current);
 			List<Concept> immedParents = query.getResultList();
 			for (Concept c : immedParents) {
 				parents.addAll(getParents(c));
@@ -917,7 +914,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public Set<Locale> getLocalesOfConceptNames() {
 		Set<Locale> locales = new HashSet<>();
 		
-		Query query = sessionFactory.getCurrentSession().createQuery("select distinct locale from ConceptName");
+		TypedQuery<Locale> query = sessionFactory.getCurrentSession().createQuery("select distinct locale from ConceptName", Locale.class);
 		
 		for (Object locale : query.getResultList()) {
 			locales.add((Locale) locale);
@@ -958,9 +955,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptNameTags()
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<ConceptNameTag> getAllConceptNameTags() {
-		return sessionFactory.getCurrentSession().createQuery("from ConceptNameTag cnt order by cnt.tag").list();
+		return sessionFactory.getCurrentSession().createQuery("from ConceptNameTag cnt order by cnt.tag", ConceptNameTag.class).getResultList();
 	}
 	
 	/**
@@ -1021,7 +1017,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getMaxConceptId()
 	 */
 	public Integer getMinConceptId() {
-		Query query = sessionFactory.getCurrentSession().createQuery("select min(conceptId) from Concept");
+		TypedQuery<Integer> query = sessionFactory.getCurrentSession().createQuery("select min(conceptId) from Concept", Integer.class);
 		return JpaUtils.getSingleResultOrNull(query);
 	}
 	
@@ -1030,7 +1026,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Integer getMaxConceptId() {
-		Query query = sessionFactory.getCurrentSession().createQuery("select max(conceptId) from Concept");
+		TypedQuery<Integer> query = sessionFactory.getCurrentSession().createQuery("select max(conceptId) from Concept", Integer.class);
 		return JpaUtils.getSingleResultOrNull(query);
 	}
 	
@@ -1217,10 +1213,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptUuids()
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public Map<Integer, String> getConceptUuids() {
 		Map<Integer, String> ret = new HashMap<>();
-		Query q = sessionFactory.getCurrentSession().createQuery("select conceptId, uuid from Concept");
+		TypedQuery<Object[]> q = sessionFactory.getCurrentSession().createQuery("select conceptId, uuid from Concept", Object[].class);
 		List<Object[]> list = q.getResultList();
 		for (Object[] o : list) {
 			ret.put((Integer) o[0], (String) o[1]);

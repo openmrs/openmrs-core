@@ -34,10 +34,9 @@ public class HibernateTemplateDAO implements TemplateDAO {
 	
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Template> getTemplates() {
 		log.info("Getting all templates from the database");
-		return sessionFactory.getCurrentSession().createQuery("from Template").list();
+		return sessionFactory.getCurrentSession().createQuery("from Template", Template.class).getResultList();
 	}
 	
 	@Override
@@ -47,11 +46,10 @@ public class HibernateTemplateDAO implements TemplateDAO {
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Template> getTemplatesByName(String name) {
 		log.info("Get template " + name);
-		return sessionFactory.getCurrentSession().createQuery("from Template as template where template.name = ?")
-		        .setParameter(0, name).list();
+		return sessionFactory.getCurrentSession().createQuery("from Template as template where template.name = ?", Template.class)
+		        .setParameter(0, name).getResultList();
 	}
 	
 	@Override

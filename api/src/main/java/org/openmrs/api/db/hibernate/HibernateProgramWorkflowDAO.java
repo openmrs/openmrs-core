@@ -9,7 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -223,7 +223,6 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 *      java.util.Collection)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
 		String hql = "from PatientProgram ";
 		if (cohort != null || programs != null) {
@@ -239,7 +238,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 			hql += " program in (:programs)";
 		}
 		hql += " order by patient.patientId, dateEnrolled";
-		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		TypedQuery<PatientProgram> query = sessionFactory.getCurrentSession().createQuery(hql, PatientProgram.class);
 		if (cohort != null) {
 			query.setParameter("patientIds", cohort.getMemberIds());
 		}
@@ -390,7 +389,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	@Override
 	public List<Program> getProgramsByConcept(Concept concept) {
 		String pq = "select distinct p from Program p where p.concept = :concept";
-		Query pquery = sessionFactory.getCurrentSession().createQuery(pq);
+		TypedQuery<Program> pquery = sessionFactory.getCurrentSession().createQuery(pq, Program.class);
 		pquery.setParameter("concept", concept);
 		return pquery.getResultList();
 	}
@@ -401,7 +400,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	@Override
 	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept) {
 		String wq = "select distinct w from ProgramWorkflow w where w.concept = :concept";
-		Query wquery = sessionFactory.getCurrentSession().createQuery(wq);
+		TypedQuery<ProgramWorkflow> wquery = sessionFactory.getCurrentSession().createQuery(wq, ProgramWorkflow.class);
 		wquery.setParameter("concept", concept);
 		return wquery.getResultList();
 	}
@@ -412,7 +411,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	@Override
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept) {
 		String sq = "select distinct s from ProgramWorkflowState s where s.concept = :concept";
-		Query squery = sessionFactory.getCurrentSession().createQuery(sq);
+		TypedQuery<ProgramWorkflowState> squery = sessionFactory.getCurrentSession().createQuery(sq, ProgramWorkflowState.class);
 		squery.setParameter("concept", concept);
 		return squery.getResultList();
 	}
@@ -456,7 +455,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	public List<PatientProgram> getPatientProgramByAttributeNameAndValue(String attributeName, String attributeValue) {
 		FlushMode flushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
 		sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
-		Query query;
+		TypedQuery<PatientProgram> query;
 		try {
 			query = sessionFactory.getCurrentSession().createQuery(
 					"SELECT pp FROM patient_program pp " +
@@ -464,7 +463,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 							"INNER JOIN attr.attributeType attr_type " +
 							"WHERE attr.valueReference = :attributeValue " +
 							"AND attr_type.name = :attributeName " +
-							"AND pp.voided = 0")
+							"AND pp.voided = 0", PatientProgram.class)
 					.setParameter("attributeName", attributeName)
 					.setParameter("attributeValue", attributeValue);
 			return query.getResultList();
