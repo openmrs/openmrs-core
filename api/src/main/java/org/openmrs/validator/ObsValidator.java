@@ -239,8 +239,8 @@ public class ObsValidator implements Validator {
 				}
 				finally {
 					errors.popNestedPath();
-					index++;
 				}
+				index++;
 			}
 			ancestors.remove(ancestors.size() - 1);
 		}
