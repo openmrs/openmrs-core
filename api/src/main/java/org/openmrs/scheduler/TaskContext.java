@@ -9,21 +9,20 @@
  */
 package org.openmrs.scheduler;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.springframework.stereotype.Component;
-
-@Component
-public class TestComponentTask {
-
-	private final AtomicInteger executions = new AtomicInteger(0);
-
-	@ScheduledWithLock(name = "testComponentTask", fixedDelay = 100)
-	public void someScheduledTask() {
-		executions.incrementAndGet();
-	}
-
-	public int getExecutions() {
-		return executions.get();
-	}
+/**
+ * Context for a running task.
+ * <p>
+ * This interface hides the underlying JobRunr JobContext dependency.
+ * 
+ * @since 2.9.x
+ */
+public interface TaskContext extends TaskDetails {
+	
+	String getUserSystemId();
+	
+	void saveMetadata(String key, Object value);
+	
+	void saveMetadataIfAbsent(String key, Object value);
+	
+	TaskProgress setProgressBar(int totalProgress);
 }
