@@ -51,7 +51,9 @@ public class ModuleResourcesServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		log.debug("In service method for module servlet: {}", OpenmrsUtil.sanitizeForLogging(request.getPathInfo()));
+		if (log.isDebugEnabled()) {
+			log.debug("In service method for module servlet: {}", OpenmrsUtil.sanitizeForLogging(request.getPathInfo()));
+		}
 		
 		File f = getFile(request);
 		if (f == null) {
@@ -85,7 +87,9 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		Module module = ModuleUtil.getModuleForPath(path);
 		if (module == null) {
+			if (log.isWarnEnabled()) {
 			log.warn("No module handles the path: {}", OpenmrsUtil.sanitizeForLogging(path));
+		}
 			return null;
 		}
 		
@@ -103,7 +107,9 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		File f = new File(realPath);
 		if (!f.exists()) {
+			if (log.isWarnEnabled()) {
 			log.warn("No file with path '{}' exists for module '{}'", OpenmrsUtil.sanitizeForLogging(realPath), OpenmrsUtil.sanitizeForLogging(module.getModuleId()));
+		}
 			return null;
 		}
 		
