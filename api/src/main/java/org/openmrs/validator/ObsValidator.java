@@ -231,8 +231,16 @@ public class ObsValidator implements Validator {
 		
 		if (obs.isObsGrouping()) {
 			ancestors.add(obs);
+			int index = 0;
 			for (Obs child : obs.getGroupMembers()) {
-				validateHelper(child, errors, ancestors, false);
+				try {
+					errors.pushNestedPath("groupMembers[" + index + "]");
+					validateHelper(child, errors, ancestors, true);
+				}
+				finally {
+					errors.popNestedPath();
+					index++;
+				}
 			}
 			ancestors.remove(ancestors.size() - 1);
 		}
