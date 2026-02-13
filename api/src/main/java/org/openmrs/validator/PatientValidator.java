@@ -93,44 +93,48 @@ public class PatientValidator extends PersonValidator {
 		if (!preferredIdentifierChosen && identifiers.size() != 1) {
 			errors.reject("error.preferredIdentifier");
 		}
-		Collection<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes(false);
 
-		List<String> missingRequiredIdentifiers = new ArrayList<>(); 
+        if (!patient.getVoided()) {
+    		Collection<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes(false);
 
-    	for (PatientIdentifierType type : identifierTypes) {
-        	if (Boolean.TRUE.equals(type.getRequired())) {
-				boolean found = false;
-            	for (PatientIdentifier pi : identifiers) {
-                	if (!pi.getVoided() && pi.getIdentifierType() != null && pi.getIdentifierType().getId().equals(type.getId())) {
-                    	found = true;
-                    	break;
-                	}
-            	}
+    		List<String> missingRequiredIdentifiers = new ArrayList<>();
 
-            	if (!found) {
-                	 missingRequiredIdentifiers.add(type.getName());
-            	}
+    		for (PatientIdentifierType type : identifierTypes) {
+        		if (Boolean.TRUE.equals(type.getRequired())) {
+            		boolean found = false;
+            		for (PatientIdentifier pi : patient.getActiveIdentifiers()) {
+                		if (!pi.getVoided() && pi.getIdentifierType() != null && pi.getIdentifierType().getId().equals(type.getId())) {
+                    		found = true;
+                    		break;
+                		}
+            		}
+
+            		if (!found) {
+                			missingRequiredIdentifiers.add(type.getName());
+            		}
+        		}
+    		}
+
+    		if (!missingRequiredIdentifiers.isEmpty()) {
+        		errors.rejectValue(
+              "identifiers",
+          "Patient.missingRequiredIdentifier",
+            		new Object[] { String.join(", ", missingRequiredIdentifiers) },
+    null
+        		);
+   			}
+		}
+		
+		int index = 0;
+    	if (!errors.hasErrors() && patient.getIdentifiers() != null) {
+
+        	for (PatientIdentifier identifier : patient.getIdentifiers()) {
+            	errors.pushNestedPath("identifiers[" + index + "]");
+           		patientIdentifierValidator.validate(identifier, errors);
+            	errors.popNestedPath();
+            	index++;
         	}
     	}
-		if (!missingRequiredIdentifiers.isEmpty()) {
-    		errors.rejectValue(
-        	"identifiers",
-        	"Patient.missingRequiredIdentifier",
-        	new Object[] { String.join(", ", missingRequiredIdentifiers) },
-        	null
-			);
-		}
-
-		int index = 0;
-		if (!errors.hasErrors() && patient.getIdentifiers() != null) {
-			// Validate PatientIdentifers
-			for (PatientIdentifier identifier : patient.getIdentifiers()) {
-				errors.pushNestedPath("identifiers[" + index + "]");
-				patientIdentifierValidator.validate(identifier, errors);
-				errors.popNestedPath();
-				index++;
-			}
-		}
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 	}
 }

@@ -9,11 +9,13 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -226,7 +228,11 @@ public class PatientValidatorTest extends PersonValidatorTest {
     	Errors errors = new BindException(patient, "patient");
     	validator.validate(patient, errors);
 
-    	assertTrue(errors.hasErrors());
+    	assertTrue(errors.hasFieldErrors("identifiers"));
+		assertEquals(
+   "Patient.missingRequiredIdentifier",
+    		errors.getFieldError("identifiers").getCode()
+		);
 	}
 
 	/**
@@ -347,6 +353,112 @@ public class PatientValidatorTest extends PersonValidatorTest {
     	Errors errors = new BindException(patient, "patient");
     	validator.validate(patient, errors);
 
-    	assertTrue(errors.hasErrors());
+    	assertTrue(errors.hasFieldErrors("identifiers"));
+		assertEquals(
+   "Patient.missingRequiredIdentifier",
+    		errors.getFieldError("identifiers").getCode()
+		);
+	}
+
+	/**
+ 	* @see PatientValidator#validate(Object,Errors)
+ 	*/
+	@Test
+	public void validate_shouldPassWithRequiredAndNonRequiredIdentifiers() {
+
+    	List<PatientIdentifierType> types = Context.getPatientService().getAllPatientIdentifierTypes(false);
+
+    	PatientIdentifierType requiredType = types.get(0);
+    	requiredType.setRequired(true);
+    	requiredType.setRetired(false);
+    	Context.getPatientService().savePatientIdentifierType(requiredType);
+
+    	PatientIdentifierType optionalType = types.get(1);
+    	optionalType.setRequired(false);
+    	optionalType.setRetired(false);
+    	Context.getPatientService().savePatientIdentifierType(optionalType);
+
+    	Patient patient = new Patient();
+    	patient.addName(new PersonName("Tom", "", "Patient"));
+   		patient.setGender("male");
+    	patient.setBirthdate(new Date());
+
+    	PatientIdentifier requiredIdentifier = new PatientIdentifier();
+    	requiredIdentifier.setIdentifier("REQ123");
+    	requiredIdentifier.setIdentifierType(requiredType);
+    	requiredIdentifier.setLocation(new Location(1));
+    	patient.addIdentifier(requiredIdentifier);
+
+    	PatientIdentifier optionalIdentifier = new PatientIdentifier();
+    	optionalIdentifier.setIdentifier("OPT456");
+    	optionalIdentifier.setIdentifierType(optionalType);
+    	optionalIdentifier.setLocation(new Location(1));
+    	patient.addIdentifier(optionalIdentifier);
+
+    	Errors errors = new BindException(patient, "patient");
+    	validator.validate(patient, errors);
+
+    	assertFalse(errors.hasFieldErrors("identifiers"));
+	}
+
+	/**
+ 	* @see PatientValidator#validate(Object,Errors)
+	*/
+	@Test
+	public void validate_shouldPassIfVoidedRequiredIdentifierReplaced() {
+
+    	PatientIdentifierType type = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+
+    	type.setRequired(true);
+    	type.setRetired(false);
+    	Context.getPatientService().savePatientIdentifierType(type);
+
+    	Patient patient = new Patient();
+    	patient.addName(new PersonName("Tom", "", "Patient"));
+    	patient.setGender("male");
+    	patient.setBirthdate(new Date());
+
+    	PatientIdentifier oldIdentifier = new PatientIdentifier();
+    	oldIdentifier.setIdentifier("OLD123");
+    	oldIdentifier.setIdentifierType(type);
+    	oldIdentifier.setLocation(new Location(1));
+    	oldIdentifier.setVoided(true);
+    	patient.addIdentifier(oldIdentifier);
+
+    	PatientIdentifier newIdentifier = new PatientIdentifier();
+    	newIdentifier.setIdentifier("NEW456");
+    	newIdentifier.setIdentifierType(type);
+    	newIdentifier.setLocation(new Location(1));
+    	patient.addIdentifier(newIdentifier);
+
+   		Errors errors = new BindException(patient, "patient");
+    	validator.validate(patient, errors);
+
+    	assertFalse(errors.hasFieldErrors("identifiers"));
+	}
+
+	/**
+ 	* @see PatientValidator#validate(Object,Errors)
+ 	*/
+
+	@Test
+	public void validate_shouldNotFailForVoidedPatientWithoutRequiredIdentifier() {
+
+    	PatientIdentifierType type = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+
+    	type.setRequired(true);
+    	type.setRetired(false);
+    	Context.getPatientService().savePatientIdentifierType(type);
+
+    	Patient patient = new Patient();
+    	patient.setVoided(true);
+    	patient.addName(new PersonName("Tom", "", "Patient"));
+    	patient.setGender("male");
+    	patient.setBirthdate(new Date());
+
+    	Errors errors = new BindException(patient, "patient");
+    	validator.validate(patient, errors);
+
+    	assertFalse(errors.hasFieldErrors("identifiers"));
 	}
 }
