@@ -160,7 +160,7 @@ public class UserContext implements Serializable {
 	 * @throws ContextAuthenticationException
 	 */
 	public User becomeUser(String systemId) throws ContextAuthenticationException {
-		if (!Context.getAuthenticatedUser().isSuperUser()) {
+		if (!Daemon.isDaemonThread() && !Context.getAuthenticatedUser().isSuperUser()) {
 			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
 		}
 		

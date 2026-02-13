@@ -9,6 +9,8 @@
  */
 package org.openmrs.scheduler;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -53,15 +55,15 @@ public class ScheduledWithLockTest extends BaseContextSensitiveTest {
 
 	public static class TestTask {
 
-		private int executions = 0;
+		private final AtomicInteger executions = new AtomicInteger(0);
 
 		@ScheduledWithLock(name = "testTask", fixedRate = 100)
 		public void someTask() {
-			executions++;
+			executions.incrementAndGet();
 		}
 
 		public int getExecutions() {
-			return executions;
+			return executions.get();
 		}
 	}
 }

@@ -57,7 +57,7 @@ RUN mvn $MVN_SETTINGS $MVN_ARGS
 ### Development Stage
 FROM maven:3.9-$DEV_JDK AS dev
 
-RUN yum -y update && yum -y install tar gzip git && yum clean all
+RUN yum -y update && yum -y install tar gzip git curl && yum clean all
 
 # Setup Tini
 ARG TARGETARCH
@@ -94,6 +94,9 @@ RUN mkdir -p /openmrs/distribution/openmrs_core/ \
 
 EXPOSE 8080
 
+HEALTHCHECK --interval=5s --timeout=5s --start-period=1m --retries=3 \
+  CMD curl -f http://localhost:8080/openmrs/health/alive || exit 1
+
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/mvn-entrypoint.sh"]
 
 # See startup-init.sh for all configurable environment variables
@@ -103,7 +106,7 @@ CMD ["/openmrs/startup-dev.sh"]
 ### Production Stage
 FROM tomcat:9-$RUNTIME_JDK
 
-RUN yum -y update && yum clean all && rm -rf /usr/local/tomcat/webapps/*
+RUN yum -y update && yum -y install curl && yum clean all && rm -rf /usr/local/tomcat/webapps/*
 
 # Setup Tini
 ARG TARGETARCH
@@ -143,6 +146,9 @@ COPY --from=dev /openmrs/distribution/openmrs_core/openmrs.war /openmrs/distribu
 
 EXPOSE 8080
 
+HEALTHCHECK --interval=5s --timeout=5s --start-period=1m --retries=3 \
+  CMD curl -f http://localhost:8080/openmrs/health/alive || exit 1
+
 # Run as non-root user using Bitnami approach, see e.g.
 # https://github.com/bitnami/containers/blob/6c8f10bbcf192ab4e575614491abf10697c46a3e/bitnami/tomcat/8.5/debian-11/Dockerfile#L54
 USER 1001
@@ -151,4 +157,3 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # See startup-init.sh for all configurable environment variables
 CMD ["/openmrs/startup.sh"]
-
