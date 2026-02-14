@@ -220,6 +220,19 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		newObs.setComplexData(obsToCopy.getComplexData());
 		newObs.setFormField(obsToCopy.getFormFieldNamespace(), obsToCopy.getFormFieldPath());
 		
+		if (obsToCopy.getReferenceRange() != null) {
+			ObsReferenceRange newRange = new ObsReferenceRange();
+			ObsReferenceRange srcRange = obsToCopy.getReferenceRange();
+			newRange.setHiAbsolute(srcRange.getHiAbsolute());
+			newRange.setHiCritical(srcRange.getHiCritical());
+			newRange.setHiNormal(srcRange.getHiNormal());
+			newRange.setLowAbsolute(srcRange.getLowAbsolute());
+			newRange.setLowCritical(srcRange.getLowCritical());
+			newRange.setLowNormal(srcRange.getLowNormal());
+			newRange.setObs(newObs);
+			newObs.setReferenceRange(newRange);
+		}
+		
 		// Copy list of all members, including voided, and put them in respective groups
 		if (obsToCopy.hasGroupMembers(true)) {
 			for (Obs member : obsToCopy.getGroupMembers(true)) {
@@ -1071,32 +1084,45 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 */
 	public void setValueAsString(String s) throws ParseException {
 		log.debug("getConcept() == {}", getConcept());
-		
-		if (getConcept() != null && !StringUtils.isBlank(s)) {
+
+		if (getConcept() != null && s != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
-			if ("BIT".equals(abbrev)) {
-				setValueBoolean(Boolean.valueOf(s));
-			} else if ("CWE".equals(abbrev)) {
-				throw new RuntimeException("Not Yet Implemented");
-			} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
-				setValueNumeric(Double.valueOf(s));
-			} else if ("DT".equals(abbrev)) {
-				DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
-				setValueDatetime(dateFormat.parse(s));
-			} else if ("TM".equals(abbrev)) {
-				DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
-				setValueDatetime(timeFormat.parse(s));
-			} else if ("TS".equals(abbrev)) {
-				DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
-				setValueDatetime(datetimeFormat.parse(s));
-			} else if ("ST".equals(abbrev)) {
-				setValueText(s);
+			if ("ST".equals(abbrev)) {
+				if (!StringUtils.isEmpty(s)) {
+					setValueText(s);
+				}
+				else {
+					throw new RuntimeException("Cannot set value to a empty string for concept: " + getConcept().getDisplayString());
+				}
+			} else if (!StringUtils.isBlank(s)) {
+				s = s.trim();
+				if ("BIT".equals(abbrev)) {
+					setValueBoolean(Boolean.valueOf(s));
+				} else if ("CWE".equals(abbrev)) {
+					throw new RuntimeException("Not Yet Implemented");
+				} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
+					setValueNumeric(Double.valueOf(s));
+				} else if ("DT".equals(abbrev)) {
+					DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
+					setValueDatetime(dateFormat.parse(s));
+				} else if ("TM".equals(abbrev)) {
+					DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
+					setValueDatetime(timeFormat.parse(s));
+				} else if ("TS".equals(abbrev)) {
+					DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
+					setValueDatetime(datetimeFormat.parse(s));
+				}  else {
+					throw new RuntimeException("Don't know how to handle " + abbrev + " for concept: " + getConcept().getDisplayString());
+				}
 			} else {
-				throw new RuntimeException("Don't know how to handle " + abbrev + " for concept: " + getConcept().getName().getName());
+				throw new RuntimeException("Cannot set value to a blank string for concept: " + getConcept().getDisplayString());
 			}
-			
 		} else {
-			throw new RuntimeException("concept is null for " + this);
+			if (s == null) {
+				throw new RuntimeException("cannot set value to null via setValueAsString()");
+			} else {
+				throw new RuntimeException("concept is null for " + this);
+			}
 		}
 	}
 	
