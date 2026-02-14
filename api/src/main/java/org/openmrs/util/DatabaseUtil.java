@@ -14,10 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.hibernate.Session;
 import org.openmrs.api.db.DAOException;
@@ -34,6 +31,15 @@ public class DatabaseUtil {
 
 	private DatabaseUtil() {
 	}
+
+	public static Set<String> ALLOWED_JDBC_DRIVERS = new HashSet<>(Arrays.asList(
+		"com.mysql.cj.jdbc.Driver",
+		"com.mysql.jdbc.Driver",
+		"org.mariadb.jdbc.Driver",
+		"org.postgresql.Driver",
+		"org.h2.Driver",
+		"org.hsqldb.jdbcDriver"
+	));
 	
 	private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 
@@ -54,6 +60,10 @@ public class DatabaseUtil {
 	 */
 	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
 		if (StringUtils.hasText(connectionDriver)) {
+			if (!ALLOWED_JDBC_DRIVERS.contains(connectionDriver)) {
+				log.error("Attempted to load an unauthorized database driver: " + connectionDriver);
+				throw new ClassNotFoundException("Database driver '" + connectionDriver + "' is not an allowed driver.");
+			}
 			Class.forName(connectionDriver);
 			log.debug("set user defined Database driver class: " + connectionDriver);
 		} else {
