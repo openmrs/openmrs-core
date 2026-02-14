@@ -29,6 +29,8 @@ import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import org.openmrs.util.OpenmrsConstants;
+	
 
 /**
  * OpenMRS's security class deals with the hashing of passwords.
@@ -195,7 +197,7 @@ public class Security {
 		String result;
 
 		try {
-			Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
 			cipher.init(Cipher.ENCRYPT_MODE, secret, gcmspec);
 			encrypted = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
 			result = new String(Base64.getEncoder().encode(encrypted), StandardCharsets.UTF_8);
@@ -241,7 +243,7 @@ public class Security {
 		byte[] decodedText = Base64.getDecoder().decode(text);
 		
 		try {
-			Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
 			GCMParameterSpec gcmSpec = new GCMParameterSpec(128, initVector);
 			cipher.init(Cipher.DECRYPT_MODE, secret, gcmSpec);
 			byte[] original = cipher.doFinal(decodedText);
@@ -253,7 +255,7 @@ public class Security {
 				@SuppressWarnings("java:S5542")
 				// Suppress CodeQL warning (Legacy fallback)
 				// lgtm [java/weak-cryptographic-algorithm]
-				Cipher legacyCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+				Cipher legacyCipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION_LEGACY);
 				IvParameterSpec ivSpec = new IvParameterSpec(initVector);
 				legacyCipher.init(Cipher.DECRYPT_MODE, secret, ivSpec);
 

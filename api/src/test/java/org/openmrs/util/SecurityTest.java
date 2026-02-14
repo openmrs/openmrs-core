@@ -224,8 +224,8 @@ public class SecurityTest {
 		byte[] key = new byte[16]; 
 		byte[] iv = new byte[16];  
 		for (int i=0; i<16; i++) { key[i] = (byte)i; iv[i] = (byte)i; }
-
-		Cipher oldCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		// codeql[java/weak-cryptographic-algorithm] 
+		Cipher oldCipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION_LEGACY);
 		SecretKeySpec secretSpec = new SecretKeySpec(key, "AES");
 		oldCipher.init(Cipher.ENCRYPT_MODE, secretSpec, new IvParameterSpec(iv));
 		byte[] encryptedBytes = oldCipher.doFinal(secretMessage.getBytes(StandardCharsets.UTF_8));
