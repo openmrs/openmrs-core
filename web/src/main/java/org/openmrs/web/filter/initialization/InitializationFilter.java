@@ -1016,7 +1016,7 @@ public class InitializationFilter extends StartupFilter {
 			// verify connection
 			//Set Database Driver using driver String
 			if (!DatabaseUtil.ALLOWED_JDBC_DRIVERS.contains(loadedDriverString)) {
-				log.error("Attempted to load an unauthorized database driver: " + loadedDriverString);
+				log.error("Attempted to load an unauthorized database driver: {}", loadedDriverString);
 				return false; 
 			}
 			// lgtm [java/unsafe-reflection]
