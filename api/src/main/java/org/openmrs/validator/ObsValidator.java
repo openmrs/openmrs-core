@@ -231,8 +231,16 @@ public class ObsValidator implements Validator {
 		
 		if (obs.isObsGrouping()) {
 			ancestors.add(obs);
+			int index = 0;
 			for (Obs child : obs.getGroupMembers()) {
-				validateHelper(child, errors, ancestors, false);
+				try {
+					errors.pushNestedPath("groupMembers[" + index + "]");
+					validateHelper(child, errors, ancestors, true);
+				}
+				finally {
+					errors.popNestedPath();
+				}
+				index++;
 			}
 			ancestors.remove(ancestors.size() - 1);
 		}
@@ -424,7 +432,7 @@ public class ObsValidator implements Validator {
 				);
 			} else {
 				errors.rejectValue(
-					"groupMember",
+					"groupMembers",
 					"Obs.error.inGroupMember",
 					new Object[] {},
 					null
@@ -442,7 +450,7 @@ public class ObsValidator implements Validator {
 				);
 			} else {
 				errors.rejectValue(
-					"groupMember",
+					"groupMembers",
 					"Obs.error.inGroupMember",
 					new Object[] { },
 					null
