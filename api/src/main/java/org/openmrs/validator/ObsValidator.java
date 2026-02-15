@@ -224,10 +224,6 @@ public class ObsValidator implements Validator {
 		if (errors.hasErrors()) {
 			return;
 		}
-		
-		if (ancestors.contains(obs)) {
-			errors.rejectValue("groupMembers", "Obs.error.groupContainsItself");
-		}
 
 		if (obs.isObsGrouping()) {
 			ancestors.add(obs);
@@ -235,6 +231,9 @@ public class ObsValidator implements Validator {
 			for (Obs child : obs.getGroupMembers(true)) {
 				if (child.getVoided()) {
 					continue;
+				}
+				if (ancestors.contains(obs)) {
+					errors.rejectValue("groupMembers", "Obs.error.groupContainsItself");
 				}
 				try {
 					errors.pushNestedPath("groupMembers[" + index + "]");
