@@ -103,6 +103,9 @@ public class ObsValidator implements Validator {
 	 *            not then we shouldn't reject fields by name.
 	 */
 	private void validateHelper(Obs obs, Errors errors, List<Obs> ancestors, boolean atRootNode) {
+		if (obs.getVoided()) {
+			return;
+		}
 		if (obs.getPersonId() == null) {
 			errors.rejectValue("person", "error.null");
 		}
