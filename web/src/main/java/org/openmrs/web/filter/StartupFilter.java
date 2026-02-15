@@ -54,6 +54,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.logging.MemoryAppender;
 import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.LogSanitizer;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
@@ -136,7 +137,9 @@ public abstract class StartupFilter implements Filter {
 				if (httpRequest.getPathInfo() != null) {
 					fullFilePath = fullFilePath.resolve(httpRequest.getPathInfo());
 					if (!(fullFilePath.normalize().startsWith(filePath))) {
-						log.warn("Detected attempted directory traversal in request for {}", httpRequest.getPathInfo());
+						if (log.isWarnEnabled()) {
+							log.warn("Detected attempted directory traversal in request for {}", LogSanitizer.sanitize(httpRequest.getPathInfo()));
+						}
 						return;
 					}
 				}

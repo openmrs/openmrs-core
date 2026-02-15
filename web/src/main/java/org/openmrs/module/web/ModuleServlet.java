@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.util.LogSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,9 @@ public class ModuleServlet extends HttpServlet {
 	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.debug("In service method for module servlet: " + request.getPathInfo());
+		if (log.isDebugEnabled()) {
+			log.debug("In service method for module servlet: {}", LogSanitizer.sanitize(request.getPathInfo()));
+		}
 		String servletName = request.getPathInfo();
 		int end = servletName.indexOf("/", 1);
 		
