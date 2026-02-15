@@ -51,7 +51,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		log.debug("In service method for module servlet: " + request.getPathInfo());
+		log.debug("In service method for module servlet: {}",
+		    request.getPathInfo() == null ? null : request.getPathInfo().replaceAll("[\n\r]", "_"));
 		
 		File f = getFile(request);
 		if (f == null) {
@@ -85,7 +86,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		Module module = ModuleUtil.getModuleForPath(path);
 		if (module == null) {
-			log.warn("No module handles the path: " + path);
+			log.warn("No module handles the path: {}", path == null ? null : path.replaceAll("[\n\r]", "_"));
 			return null;
 		}
 		
@@ -103,7 +104,9 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		File f = new File(realPath);
 		if (!f.exists()) {
-			log.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
+			String sanitizedRealPath = realPath == null ? null : realPath.replaceAll("[\n\r]", "_");
+			String sanitizedModuleId = module.getModuleId() == null ? null : module.getModuleId().replaceAll("[\n\r]", "_");
+			log.warn("No file with path '{}' exists for module '{}'", sanitizedRealPath, sanitizedModuleId);
 			return null;
 		}
 		

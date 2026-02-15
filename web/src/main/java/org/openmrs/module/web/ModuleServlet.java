@@ -34,7 +34,8 @@ public class ModuleServlet extends HttpServlet {
 	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.debug("In service method for module servlet: " + request.getPathInfo());
+		log.debug("In service method for module servlet: {}",
+		    request.getPathInfo() == null ? null : request.getPathInfo().replaceAll("[\n\r]", "_"));
 		String servletName = request.getPathInfo();
 		int end = servletName.indexOf("/", 1);
 		
@@ -43,13 +44,15 @@ public class ModuleServlet extends HttpServlet {
 			moduleId = servletName.substring(1, end);
 		}
 		
-		log.debug("ModuleId: " + moduleId);
+		String sanitizedModuleId = moduleId == null ? null : moduleId.replaceAll("[\n\r]", "_");
+		log.debug("ModuleId: {}", sanitizedModuleId);
 		Module mod = ModuleFactory.getModuleById(moduleId);
 		 
 		// where in the path to start trimming
 		int start = 1;
 		if (mod != null) {
-			log.debug("Module with id " + moduleId + " found.  Looking for servlet name after " + moduleId + " in url path");
+			log.debug("Module with id {} found. Looking for servlet name after {} in url path", sanitizedModuleId,
+			    sanitizedModuleId);
 			start = moduleId.length() + 2;
 			// this skips over the moduleId that is in the path
 		}
@@ -60,12 +63,13 @@ public class ModuleServlet extends HttpServlet {
 		}
 		servletName = servletName.substring(start, end);
 		
-		log.debug("Servlet name: " + servletName);
+		String sanitizedServletName = servletName == null ? null : servletName.replaceAll("[\n\r]", "_");
+		log.debug("Servlet name: {}", sanitizedServletName);
 		
 		HttpServlet servlet = WebModuleUtil.getServlet(servletName);
 		
 		if (servlet == null) {
-			log.warn("No servlet with name: " + servletName + " was found");
+			log.warn("No servlet with name: {} was found", sanitizedServletName);
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}

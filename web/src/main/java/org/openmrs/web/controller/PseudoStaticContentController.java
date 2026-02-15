@@ -79,7 +79,8 @@ public class PseudoStaticContentController implements Controller, GlobalProperty
 		// through the jsp (.withjstl) servlet
 		// this allows the files to cache until we say so
 		if (interpretJstl) {
-			log.debug("returning last modified date of : {} for : {}", lastModified, request.getPathInfo());
+			log.debug("returning last modified date of : {} for : {}", lastModified,
+			    request.getPathInfo() == null ? null : request.getPathInfo().replaceAll("[\n\r]", "_"));
 			return lastModified;
 		}
 		
