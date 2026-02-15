@@ -2175,4 +2175,22 @@ public class OpenmrsUtil {
 		}
 	}
 	
+	/**
+	 * Sanitizes data for logging to prevent log injection attacks. This method removes carriage
+	 * return (CR) and line feed (LF) characters from untrusted input to prevent attackers from
+	 * forging log entries. Use this method to sanitize any untrusted data (e.g., user input,
+	 * request parameters, request headers) before logging.
+	 * 
+	 * @param data the untrusted data to sanitize
+	 * @return the sanitized string with CR and LF characters replaced with underscores, or null if
+	 *         input is null
+	 * @since 2.7.0
+	 */
+	public static String sanitizeForLogging(String data) {
+		if (data == null) {
+			return null;
+		}
+		return data.replaceAll("[\n\r]", "_");
+	}
+	
 }
