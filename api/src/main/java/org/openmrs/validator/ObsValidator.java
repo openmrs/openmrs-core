@@ -232,12 +232,11 @@ public class ObsValidator implements Validator {
 		if (obs.isObsGrouping()) {
 			ancestors.add(obs);
 			int index = 0;
-			for (Obs child : obs.getGroupMembers()) {
+			for (Obs child : obs.getGroupMembers(true)) {
 				if (child.getVoided()) {
 					continue;
 				}
 				try {
-					
 					errors.pushNestedPath("groupMembers[" + index + "]");
 					validateHelper(child, errors, ancestors, true);
 				}
