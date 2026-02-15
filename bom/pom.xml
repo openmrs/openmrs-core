@@ -46,7 +46,7 @@
 		     of Hibernate Search. Similarly, our version of Hibernate Search must be
 		     compatible with the version of Hibernate and Hibernate must be compatible
 		     with our version of Spring. -->
-		<springVersion>7.0.3</springVersion>
+		<springVersion>7.0.4</springVersion>
 		<!-- spring-test 6.2.12 is used because Spring 7.0.3's spring-test requires JUnit 6.x which is -->
 		<!-- not yet supported by maven-surefire-plugin 3.5.4. Spring test 6.2.12 works with JUnit 5.x. -->
 		<springTestVersion>6.2.12</springTestVersion>
