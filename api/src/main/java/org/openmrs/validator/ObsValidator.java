@@ -232,8 +232,9 @@ public class ObsValidator implements Validator {
 				if (child.getVoided()) {
 					continue;
 				}
-				if (ancestors.contains(obs)) {
+				if (ancestors.contains(child)) {
 					errors.rejectValue("groupMembers", "Obs.error.groupContainsItself");
+					return;
 				}
 				try {
 					errors.pushNestedPath("groupMembers[" + index + "]");
