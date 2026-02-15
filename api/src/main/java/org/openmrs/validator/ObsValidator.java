@@ -103,6 +103,9 @@ public class ObsValidator implements Validator {
 	 *            not then we shouldn't reject fields by name.
 	 */
 	private void validateHelper(Obs obs, Errors errors, List<Obs> ancestors, boolean atRootNode) {
+		if (obs.getVoided()) {
+			return;
+		}
 		if (obs.getPersonId() == null) {
 			errors.rejectValue("person", "error.null");
 		}
@@ -224,15 +227,26 @@ public class ObsValidator implements Validator {
 		if (errors.hasErrors()) {
 			return;
 		}
-		
-		if (ancestors.contains(obs)) {
-			errors.rejectValue("groupMembers", "Obs.error.groupContainsItself");
-		}
-		
+
 		if (obs.isObsGrouping()) {
 			ancestors.add(obs);
-			for (Obs child : obs.getGroupMembers()) {
-				validateHelper(child, errors, ancestors, false);
+			int index = 0;
+			for (Obs child : obs.getGroupMembers(true)) {
+				if (child.getVoided()) {
+					continue;
+				}
+				if (ancestors.contains(child)) {
+					errors.rejectValue("groupMembers", "Obs.error.groupContainsItself");
+					return;
+				}
+				try {
+					errors.pushNestedPath("groupMembers[" + index + "]");
+					validateHelper(child, errors, ancestors, true);
+				}
+				finally {
+					errors.popNestedPath();
+				}
+				index++;
 			}
 			ancestors.remove(ancestors.size() - 1);
 		}
@@ -424,7 +438,7 @@ public class ObsValidator implements Validator {
 				);
 			} else {
 				errors.rejectValue(
-					"groupMember",
+					"groupMembers",
 					"Obs.error.inGroupMember",
 					new Object[] {},
 					null
@@ -442,7 +456,7 @@ public class ObsValidator implements Validator {
 				);
 			} else {
 				errors.rejectValue(
-					"groupMember",
+					"groupMembers",
 					"Obs.error.inGroupMember",
 					new Object[] { },
 					null
