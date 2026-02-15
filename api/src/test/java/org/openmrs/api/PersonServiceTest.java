@@ -2451,5 +2451,23 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 	    assertNotNull(personService.getPersonAddressByUuid("y403fafk-e5k4-42d0-9d11-4f52e89d123r"));
 	}
+
+
+	/**
+	 * @see PersonService#getPersonByUuid(String) 
+	 */
+
+	@Test
+	public void getPersonByUuid_shouldReturnNullIfNoPersonFoundWithUuid() {
+
+		Person p = new Person();
+   	    p.setGender("M");
+    	p.addName(new PersonName("Test", "User", "Person"));
+    	personService.savePerson(p);
+		
+		assertNotNull("Should find existing person", personService.getPersonByUuid(p.getUuid()));
+		String nonExistentUuid = "random-uuid-that-does-not-exist";
+    	assertNull("Should return null for non-existent UUID", personService.getPersonByUuid(nonExistentUuid));
+	}
 	
 }
