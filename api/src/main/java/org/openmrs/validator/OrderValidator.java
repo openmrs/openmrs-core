@@ -30,6 +30,7 @@ import org.springframework.validation.Validator;
 public class OrderValidator implements Validator {
 	
 	private static final int MIN_YEAR = 1000;
+	private static final String DATE_ACTIVATED = "dateActivated";
 
 	/**
 	 * Determines if the command object being submitted is a valid type
@@ -110,27 +111,27 @@ public class OrderValidator implements Validator {
 			Calendar cal = Calendar.getInstance();
             cal.setTime(dateActivated);
             if (cal.get(Calendar.YEAR) < MIN_YEAR) {
-                errors.rejectValue("dateActivated", "Order.error.date.invalid", "Invalid value");
+                errors.rejectValue(DATE_ACTIVATED, "Order.error.date.invalid", "Invalid value");
             }
 			
 			if (dateActivated.after(new Date())) {
-				errors.rejectValue("dateActivated", "Order.error.dateActivatedInFuture");
+				errors.rejectValue(DATE_ACTIVATED, "Order.error.dateActivatedInFuture");
 				return;
 			}
 			Date dateStopped = order.getDateStopped();
 			if (dateStopped != null && dateActivated.after(dateStopped)) {
-				errors.rejectValue("dateActivated", "Order.error.dateActivatedAfterDiscontinuedDate");
+				errors.rejectValue(DATE_ACTIVATED, "Order.error.dateActivatedAfterDiscontinuedDate");
 				errors.rejectValue("dateStopped", "Order.error.dateActivatedAfterDiscontinuedDate");
 			}
 			Date autoExpireDate = order.getAutoExpireDate();
 			if (autoExpireDate != null && dateActivated.after(autoExpireDate)) {
-				errors.rejectValue("dateActivated", "Order.error.dateActivatedAfterAutoExpireDate");
+				errors.rejectValue(DATE_ACTIVATED, "Order.error.dateActivatedAfterAutoExpireDate");
 				errors.rejectValue("autoExpireDate", "Order.error.dateActivatedAfterAutoExpireDate");
 			}
 			Encounter encounter = order.getEncounter();
 			if (encounter != null && encounter.getEncounterDatetime() != null
 			        && encounter.getEncounterDatetime().after(dateActivated)) {
-				errors.rejectValue("dateActivated", "Order.error.encounterDatetimeAfterDateActivated");
+				errors.rejectValue(DATE_ACTIVATED, "Order.error.encounterDatetimeAfterDateActivated");
 			}
 		}
 	}

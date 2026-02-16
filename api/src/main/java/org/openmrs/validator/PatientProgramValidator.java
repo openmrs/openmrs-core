@@ -37,6 +37,8 @@ public class PatientProgramValidator implements Validator {
 	
 	private static final Logger log = LoggerFactory.getLogger(PatientProgramValidator.class);
 	private static final int MIN_YEAR = 1000;
+	private static final String DATE_ENROLLED = "dateEnrolled";
+    private static final String DATE_COMPLETED = "dateCompleted";
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -90,35 +92,35 @@ public class PatientProgramValidator implements Validator {
 			return;
 		}
 		
-		ValidationUtils.rejectIfEmpty(errors, "dateEnrolled", "error.patientProgram.enrolledDateEmpty");
+		ValidationUtils.rejectIfEmpty(errors, DATE_ENROLLED, "error.patientProgram.enrolledDateEmpty");
 		
 		Date today = new Date();
 		if (patientProgram.getDateEnrolled() != null && today.before(patientProgram.getDateEnrolled())) {
-			errors.rejectValue("dateEnrolled", "error.patientProgram.enrolledDateDateCannotBeInFuture");
+			errors.rejectValue(DATE_ENROLLED, "error.patientProgram.enrolledDateDateCannotBeInFuture");
 		}
 		
 		if (patientProgram.getDateCompleted() != null && today.before(patientProgram.getDateCompleted())) {
-			errors.rejectValue("dateCompleted", "error.patientProgram.completionDateCannotBeInFuture");
+			errors.rejectValue(DATE_COMPLETED, "error.patientProgram.completionDateCannotBeInFuture");
 		}
 		
 		Calendar cal = Calendar.getInstance();
         if (patientProgram.getDateEnrolled() != null) {
             cal.setTime(patientProgram.getDateEnrolled());
             if (cal.get(Calendar.YEAR) < MIN_YEAR) {
-                errors.rejectValue("dateEnrolled", "PatientProgram.error.date.invalid", "Invalid value");
+                errors.rejectValue(DATE_ENROLLED, "PatientProgram.error.date.invalid", "Invalid value");
             }
         }
         if (patientProgram.getDateCompleted() != null) {
             cal.setTime(patientProgram.getDateCompleted());
             if (cal.get(Calendar.YEAR) < MIN_YEAR) {
-                errors.rejectValue("dateCompleted", "PatientProgram.error.date.invalid", "Invalid value");
+                errors.rejectValue(DATE_COMPLETED, "PatientProgram.error.date.invalid", "Invalid value");
             }
         }
-		
+
 		// if enrollment or complete date of program is in future or complete date has come before enroll date we should throw error
 		if (patientProgram.getDateEnrolled() != null
 		        && OpenmrsUtil.compareWithNullAsLatest(patientProgram.getDateCompleted(), patientProgram.getDateEnrolled()) < 0) {
-			errors.rejectValue("dateCompleted", "error.patientProgram.enrolledDateShouldBeBeforecompletionDate");
+			errors.rejectValue(DATE_COMPLETED, "error.patientProgram.enrolledDateShouldBeBeforecompletionDate");
 		}
 		
 		Set<ProgramWorkflow> workFlows = patientProgram.getProgram().getWorkflows();
