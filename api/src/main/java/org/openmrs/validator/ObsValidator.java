@@ -103,9 +103,6 @@ public class ObsValidator implements Validator {
 	 *            not then we shouldn't reject fields by name.
 	 */
 	private void validateHelper(Obs obs, Errors errors, List<Obs> ancestors, boolean atRootNode) {
-		if (!atRootNode) {
-			System.err.println("DEBUG validateHelper child: concept=" + (obs.getConcept() != null ? obs.getConcept().getConceptId() : "null") + " voided=" + obs.getVoided() + " personId=" + obs.getPersonId() + " valueNum=" + obs.getValueNumeric() + " hasGroupMembers(true)=" + obs.hasGroupMembers(true) + " errorsAlready=" + errors.hasErrors());
-		}
 		if (obs.getPersonId() == null) {
 			errors.rejectValue("person", "error.null");
 		}
@@ -202,9 +199,6 @@ public class ObsValidator implements Validator {
 					}
 					
 					validateConceptReferenceRange(obs, errors, atRootNode);
-					if (!atRootNode && errors.hasErrors()) {
-						System.err.println("DEBUG: AFTER ref range validation, errors exist for concept=" + c.getConceptId() + " value=" + obs.getValueNumeric());
-					}
 				} else if (dt.isText() && obs.getValueText() == null) {
 					if (atRootNode) {
 						errors.rejectValue("valueText", "error.null");
@@ -280,10 +274,6 @@ public class ObsValidator implements Validator {
 			setObsReferenceRange(obs);
 		}
 		setObsInterpretation(obs);
-		if (!atRootNode && errors.hasErrors()) {
-			System.err.println("DEBUG: After validateConceptReferenceRange for concept=" + (obs.getConcept() != null ? obs.getConcept().getConceptId() : "null") + " value=" + obs.getValueNumeric() + " errors=" + errors.getAllErrors());
-			new Exception("DEBUG STACKTRACE").printStackTrace(System.err);
-		}
 	}
 
 	/**
