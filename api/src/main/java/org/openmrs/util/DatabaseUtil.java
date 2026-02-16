@@ -34,7 +34,7 @@ public class DatabaseUtil {
 
 	private DatabaseUtil() {
 	}
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 
 	public static final String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
@@ -55,7 +55,9 @@ public class DatabaseUtil {
 	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
 		if (StringUtils.hasText(connectionDriver)) {
 			Class.forName(connectionDriver);
-			log.debug("set user defined Database driver class: {}", OpenmrsUtil.sanitizeForLogging(connectionDriver));
+			if (log.isDebugEnabled()) {
+				log.debug("set user defined Database driver class: {}", OpenmrsUtil.sanitizeForLogging(connectionDriver));
+			}
 		} else {
 			if (connectionUrl.contains("jdbc:mysql")) {
 				Class.forName("com.mysql.cj.jdbc.Driver");
@@ -80,7 +82,9 @@ public class DatabaseUtil {
 				connectionDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
 			}
 		}
-		log.info("Set database driver class as {}", OpenmrsUtil.sanitizeForLogging(connectionDriver));
+		if (log.isInfoEnabled()) {
+			log.info("Set database driver class as {}", OpenmrsUtil.sanitizeForLogging(connectionDriver));
+		}
 		return connectionDriver;
 	}
 	
