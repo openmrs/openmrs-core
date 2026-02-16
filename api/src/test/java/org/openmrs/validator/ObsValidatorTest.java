@@ -480,8 +480,23 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasErrors());
 		
 		inValidChild.setVoided(true);
+		// Debug: check state before second validation
+		System.err.println("DEBUG: validChild.concept=" + validChild.getConcept().getConceptId() + " dt=" + validChild.getConcept().getDatatype());
+		System.err.println("DEBUG: validChild.valueNumeric=" + validChild.getValueNumeric());
+		System.err.println("DEBUG: validChild.referenceRange=" + validChild.getReferenceRange());
+		System.err.println("DEBUG: validChild.interpretation=" + validChild.getInterpretation());
+		System.err.println("DEBUG: obs.hasGroupMembers(true)=" + obs.hasGroupMembers(true));
+		System.err.println("DEBUG: obs.hasGroupMembers(false)=" + obs.hasGroupMembers(false));
+		System.err.println("DEBUG: obs.isObsGrouping()=" + obs.isObsGrouping());
+		System.err.println("DEBUG: obs.getGroupMembers(false)=" + obs.getGroupMembers(false));
+		for (Obs m : obs.getGroupMembers(true)) {
+			System.err.println("DEBUG: member voided=" + m.getVoided() + " person=" + m.getPersonId() + " concept=" + (m.getConcept() != null ? m.getConcept().getConceptId() : "null"));
+		}
 		errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
+		if (errors.hasErrors()) {
+			System.err.println("DEBUG FINAL: errors=" + errors.getAllErrors());
+		}
 		assertFalse(errors.hasErrors());
 	}
 	
