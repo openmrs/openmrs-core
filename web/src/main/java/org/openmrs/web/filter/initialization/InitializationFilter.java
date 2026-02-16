@@ -473,8 +473,8 @@ public class InitializationFilter extends StartupFilter {
 			referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE,
 				httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 			if (log.isInfoEnabled()) {
-			log.info("Locale stored in session is {}", OpenmrsUtil.sanitizeForLogging(String.valueOf(httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE))));
-		}
+				log.info("Locale stored in session is {}", OpenmrsUtil.sanitizeForLogging(String.valueOf(httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE))));
+			}
 			
 			httpResponse.setContentType("text/html");
 			// otherwise do step one of the wizard
@@ -1912,8 +1912,8 @@ public class InitializationFilter extends StartupFilter {
 		try {
 			loadedDriverString = DatabaseUtil.loadDatabaseDriver(connection, databaseDriver);
 			if (log.isInfoEnabled()) {
-			log.info("using database driver :{}", OpenmrsUtil.sanitizeForLogging(loadedDriverString));
-		}
+				log.info("using database driver :{}", OpenmrsUtil.sanitizeForLogging(loadedDriverString));
+			}
 		}
 		catch (ClassNotFoundException e) {
 			log.error("The given database driver class was not found. "

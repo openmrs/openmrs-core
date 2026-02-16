@@ -137,8 +137,8 @@ public abstract class StartupFilter implements Filter {
 					fullFilePath = fullFilePath.resolve(httpRequest.getPathInfo());
 					if (!(fullFilePath.normalize().startsWith(filePath))) {
 						if (log.isWarnEnabled()) {
-						log.warn("Detected attempted directory traversal in request for {}", OpenmrsUtil.sanitizeForLogging(httpRequest.getPathInfo()));
-					}
+							log.warn("Detected attempted directory traversal in request for {}", OpenmrsUtil.sanitizeForLogging(httpRequest.getPathInfo()));
+						}
 						return;
 					}
 				}
