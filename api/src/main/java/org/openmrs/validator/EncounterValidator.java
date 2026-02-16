@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import java.util.Date;
+import java.util.Calendar;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.openmrs.Encounter;
@@ -31,6 +32,7 @@ import org.springframework.validation.Validator;
 public class EncounterValidator implements Validator {
 	
 	private static final Logger log = LoggerFactory.getLogger(EncounterValidator.class);
+	private static final int MIN_YEAR = 1000;
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
@@ -89,6 +91,14 @@ public class EncounterValidator implements Validator {
 			    "The encounter datetime should be before the current date.");
 		}
 		
+		if (encounterDateTime != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(encounterDateTime);
+			if (cal.get(Calendar.YEAR) < MIN_YEAR) {
+				errors.rejectValue("encounterDatetime", "Encounter.error.date.invalid", "Invalid value");
+			}
+		}
+
 		Visit visit = encounter.getVisit();
 		if (visit != null && encounterDateTime != null) {
 			if (visit.getStartDatetime() != null && encounterDateTime.before(visit.getStartDatetime())) {

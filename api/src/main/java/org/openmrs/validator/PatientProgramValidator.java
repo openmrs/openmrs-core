@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import java.util.Date;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,7 +36,7 @@ import org.springframework.validation.Validator;
 public class PatientProgramValidator implements Validator {
 	
 	private static final Logger log = LoggerFactory.getLogger(PatientProgramValidator.class);
-	
+	private static final int MIN_YEAR = 1000;
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -99,6 +100,20 @@ public class PatientProgramValidator implements Validator {
 		if (patientProgram.getDateCompleted() != null && today.before(patientProgram.getDateCompleted())) {
 			errors.rejectValue("dateCompleted", "error.patientProgram.completionDateCannotBeInFuture");
 		}
+		
+		Calendar cal = Calendar.getInstance();
+        if (patientProgram.getDateEnrolled() != null) {
+            cal.setTime(patientProgram.getDateEnrolled());
+            if (cal.get(Calendar.YEAR) < MIN_YEAR) {
+                errors.rejectValue("dateEnrolled", "PatientProgram.error.date.invalid", "Invalid value");
+            }
+        }
+        if (patientProgram.getDateCompleted() != null) {
+            cal.setTime(patientProgram.getDateCompleted());
+            if (cal.get(Calendar.YEAR) < MIN_YEAR) {
+                errors.rejectValue("dateCompleted", "PatientProgram.error.date.invalid", "Invalid value");
+            }
+        }
 		
 		// if enrollment or complete date of program is in future or complete date has come before enroll date we should throw error
 		if (patientProgram.getDateEnrolled() != null

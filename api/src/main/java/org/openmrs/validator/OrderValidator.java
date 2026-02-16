@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import java.util.Date;
+import java.util.Calendar;
 
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -28,6 +29,8 @@ import org.springframework.validation.Validator;
 @Handler(supports = { Order.class })
 public class OrderValidator implements Validator {
 	
+	private static final int MIN_YEAR = 1000;
+
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 * 
@@ -104,6 +107,12 @@ public class OrderValidator implements Validator {
 	private void validateDateActivated(Order order, Errors errors) {
 		Date dateActivated = order.getDateActivated();
 		if (dateActivated != null) {
+			Calendar cal = Calendar.getInstance();
+            cal.setTime(dateActivated);
+            if (cal.get(Calendar.YEAR) < MIN_YEAR) {
+                errors.rejectValue("dateActivated", "Order.error.date.invalid", "Invalid value");
+            }
+			
 			if (dateActivated.after(new Date())) {
 				errors.rejectValue("dateActivated", "Order.error.dateActivatedInFuture");
 				return;
@@ -136,9 +145,16 @@ public class OrderValidator implements Validator {
 	private void validateScheduledDate(Order order, Errors errors) {
 		boolean isUrgencyOnScheduledDate = (order.getUrgency() != null && order.getUrgency().equals(
 		    Order.Urgency.ON_SCHEDULED_DATE));
-		if (order.getScheduledDate() != null && !isUrgencyOnScheduledDate) {
-			errors.rejectValue("urgency", "Order.error.urgencyNotOnScheduledDate");
-		}
+		if (order.getScheduledDate() != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(order.getScheduledDate());
+            if (cal.get(Calendar.YEAR) < MIN_YEAR) {
+                errors.rejectValue("scheduledDate", "Order.error.date.invalid", "Invalid value");
+            }
+            if (!isUrgencyOnScheduledDate) {
+                errors.rejectValue("urgency", "Order.error.urgencyNotOnScheduledDate");
+            }
+        }
 		if (isUrgencyOnScheduledDate && order.getScheduledDate() == null) {
 			errors.rejectValue("scheduledDate", "Order.error.scheduledDateNullForOnScheduledDateUrgency");
 		}

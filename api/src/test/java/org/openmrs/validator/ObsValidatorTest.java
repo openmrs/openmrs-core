@@ -916,6 +916,28 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.LOW, obs.getInterpretation());
 	}
+
+	/**
+	 * @see ObsValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfObsDatetimeYearIsBefore1000() {
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(Context.getConceptService().getConcept(5089));
+		obs.setValueNumeric(1.0);
+		
+		// Set date to Year 999
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, 999);
+		obs.setObsDatetime(cal.getTime());
+		
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+		
+		assertTrue(errors.hasFieldErrors("obsDatetime"));
+		assertEquals("Obs.error.date.invalid", errors.getFieldError("obsDatetime").getCode());
+	}
 	
 	/**
 	 * Helper method to create an Obs with specific reference range values
