@@ -468,9 +468,9 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 		Obs validChild = new Obs();
 		validChild.setPerson(Context.getPersonService().getPerson(2));
-		validChild.setConcept(Context.getConceptService().getConcept(5089));
+		validChild.setConcept(Context.getConceptService().getConcept(19));
 		validChild.setObsDatetime(new Date());
-		validChild.setValueNumeric(80.0);
+		validChild.setValueText("text value");
 		obs.addGroupMember(validChild);
 		Obs inValidChild = new Obs();
 		obs.addGroupMember(inValidChild);
@@ -482,33 +482,6 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		inValidChild.setVoided(true);
 		errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
-		if (errors.hasErrors()) {
-			for (Object e : errors.getAllErrors()) {
-				System.err.println("DBGFINAL: " + e);
-			}
-			// Check reference ranges
-			for (org.openmrs.ConceptReferenceRange crr : Context.getConceptService().getConceptReferenceRangesByConceptId(5089)) {
-				System.err.println("DBGFINAL: range id=" + crr.getId() + " criteria=" + crr.getCriteria() + " hiAbs=" + crr.getHiAbsolute() + " loAbs=" + crr.getLowAbsolute());
-			}
-			// Check obs for person 2 concept 5089
-			org.openmrs.Person person2 = Context.getPersonService().getPerson(2);
-			org.openmrs.Concept concept5089 = Context.getConceptService().getConcept(5089);
-			java.util.List<Obs> obsForPerson2 = Context.getObsService().getObservations(
-				java.util.Collections.singletonList(person2), null, java.util.Collections.singletonList(concept5089),
-				null, null, null, null, null, null, null, null, false);
-			System.err.println("DBGFINAL: obs for person2 concept5089 count=" + obsForPerson2.size());
-			for (Obs o : obsForPerson2) {
-				System.err.println("DBGFINAL: obs id=" + o.getId() + " value=" + o.getValueNumeric());
-			}
-			// Try evaluating the criteria manually
-			org.openmrs.util.ConceptReferenceRangeUtility util = new org.openmrs.util.ConceptReferenceRangeUtility();
-			Obs latestObs = util.getLatestObs("c607c80f-1ea9-4da3-bb88-6276ce8868dd", person2);
-			System.err.println("DBGFINAL: latestObs for person2 = " + latestObs + (latestObs != null ? " value=" + latestObs.getValueNumeric() : ""));
-			// Also check the first validation reference range
-			org.openmrs.validator.ObsValidator ov = new org.openmrs.validator.ObsValidator();
-			org.openmrs.ConceptReferenceRange rr = ov.getReferenceRange(validChild);
-			System.err.println("DBGFINAL: refRange for validChild = " + rr + (rr != null ? " hiAbs=" + rr.getHiAbsolute() + " loAbs=" + rr.getLowAbsolute() : " null"));
-		}
 		assertFalse(errors.hasErrors());
 	}
 	
