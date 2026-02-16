@@ -468,9 +468,9 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 		Obs validChild = new Obs();
 		validChild.setPerson(Context.getPersonService().getPerson(2));
-		validChild.setConcept(Context.getConceptService().getConcept(19));
+		validChild.setConcept(Context.getConceptService().getConcept(5089));
 		validChild.setObsDatetime(new Date());
-		validChild.setValueText("text value");
+		validChild.setValueNumeric(80.0);
 		obs.addGroupMember(validChild);
 		Obs inValidChild = new Obs();
 		obs.addGroupMember(inValidChild);
