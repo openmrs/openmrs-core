@@ -434,7 +434,7 @@ public class ObsValidator implements Validator {
 				);
 			} else {
 				errors.rejectValue(
-					"groupMember",
+					"groupMembers",
 					"Obs.error.inGroupMember",
 					new Object[] {},
 					null
@@ -452,7 +452,7 @@ public class ObsValidator implements Validator {
 				);
 			} else {
 				errors.rejectValue(
-					"groupMember",
+					"groupMembers",
 					"Obs.error.inGroupMember",
 					new Object[] { },
 					null
