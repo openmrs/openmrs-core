@@ -19,27 +19,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
-      - name: Debug - Check Java Setup After setup-java
-        run: |
-          echo "JAVA_HOME from setup-java: $JAVA_HOME"
-          echo "Java version: $(java -version 2>&1)"
-          echo "Java location: $(which java)"
-          ls -la $JAVA_HOME || echo "JAVA_HOME path does not exist!"
-
-      - name: Debug - Check if /opt/jdk exists
-        run: |
-          if [ -d "/opt/jdk" ]; then
-            echo "/opt/jdk exists"
-            ls -la /opt/jdk
-          else
-            echo "/opt/jdk does NOT exist - this will break Dependency-Check!"
-          fi
-
       - name: Build project with Maven
         run: mvn clean install -DskipTests
       - name: Run OWASP Dependency-Check
         uses: dependency-check/Dependency-Check_Action@main
         id: Depcheck
+        env:
+          JAVA_HOME: /opt/jdk
         with:
           project: 'openmrs-core'
           path: '.'
@@ -49,11 +35,7 @@ jobs:
             --failOnCVSS 6.2
             --enableRetired
             --suppression dependency-check-suppressions.xml
-            --nvdApiKey ${{ secrets.NVD_API_KEY }}
       - name: Debug - Check Java During Dependency-Check
-        run: |
-          echo "JAVA_HOME in this step: $JAVA_HOME"
-          java -version 2>&1 || echo "Java not found!"
       - name: Upload Test results
         if: always()
         uses: actions/upload-artifact@v6
