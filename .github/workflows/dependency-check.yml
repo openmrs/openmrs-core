@@ -35,7 +35,6 @@ jobs:
             --failOnCVSS 6.2
             --enableRetired
             --suppression dependency-check-suppressions.xml
-      - name: Debug - Check Java During Dependency-Check
       - name: Upload Test results
         if: always()
         uses: actions/upload-artifact@v6
