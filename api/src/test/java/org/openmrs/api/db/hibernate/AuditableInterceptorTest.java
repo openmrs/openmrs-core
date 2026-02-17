@@ -168,10 +168,15 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 			@Override
 			public void execute() {
 				ConceptNumeric weight = Context.getConceptService().getConceptNumeric(5089);
+				Double originalHiAbsolute = weight.getHiAbsolute();
 				Date dateChangedBefore = weight.getDateChanged();
 				weight.setHiAbsolute(75d);
 				Context.getConceptService().saveConcept(weight);
 				assertNotSame(dateChangedBefore, weight.getDateChanged());
+				
+				// Restore the original value since daemon tasks commit outside the test transaction
+				weight.setHiAbsolute(originalHiAbsolute);
+				Context.getConceptService().saveConcept(weight);
 			}
 		}).runTheTask();
 	}
