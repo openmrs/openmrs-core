@@ -40,7 +40,7 @@ import static org.apache.commons.lang3.StringUtils.defaultString;
 @Audited
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address {
+public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PersonAddress>, Address {
 	
 	public static final long serialVersionUID = 343333L;
 	
@@ -193,14 +193,45 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 *
 	 * @return New PersonAddress object
 	 */
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		}
-		catch (CloneNotSupportedException e) {
-			throw new InternalError("PersonAddress should be cloneable");
-		}
+	public PersonAddress copy() {
+		PersonAddress address = new PersonAddress();
+		address.setPersonAddressId(getPersonAddressId());
+		address.setPerson(getPerson());
+		address.setPreferred(getPreferred());
+		address.setAddress1(getAddress1());
+		address.setAddress2(getAddress2());
+		address.setAddress3(getAddress3());
+		address.setAddress4(getAddress4());
+		address.setAddress5(getAddress5());
+		address.setAddress6(getAddress6());
+		address.setAddress7(getAddress7());
+		address.setAddress8(getAddress8());
+		address.setAddress9(getAddress9());
+		address.setAddress10(getAddress10());
+		address.setAddress11(getAddress11());
+		address.setAddress12(getAddress12());
+		address.setAddress13(getAddress13());
+		address.setAddress14(getAddress14());
+		address.setAddress15(getAddress15());
+		address.setCityVillage(getCityVillage());
+		address.setCountyDistrict(getCountyDistrict());
+		address.setStateProvince(getStateProvince());
+		address.setCountry(getCountry());
+		address.setPostalCode(getPostalCode());
+		address.setLatitude(getLatitude());
+		address.setLongitude(getLongitude());
+		address.setStartDate(getStartDate());
+		address.setEndDate(getEndDate());
+		address.setCreator(getCreator());
+		address.setDateCreated(getDateCreated());
+		address.setChangedBy(getChangedBy());
+		address.setDateChanged(getDateChanged());
+		address.setVoided(getVoided());
+		address.setDateVoided(getDateVoided());
+		address.setVoidedBy(getVoidedBy());
+		address.setVoidReason(getVoidReason());
+		address.setUuid(getUuid());
+		return address;
 	}
 	
 	/**

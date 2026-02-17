@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 @Audited
 @Entity
 @Table(name = "patient_identifier")
-public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
+public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PatientIdentifier> {
 	
 	public static final long serialVersionUID = 1123121L;
 	
@@ -306,14 +306,25 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 * @return New PatientIdentifier object
 	 * @since 2.2.0
 	 */
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		}
-		catch (CloneNotSupportedException e) {
-			throw new InternalError("PatientIdentifier should be cloneable");
-		}
+	public PatientIdentifier copy() {
+		PatientIdentifier patientIdentifier = new PatientIdentifier();
+		patientIdentifier.setPatientIdentifierId(getPatientIdentifierId());
+		patientIdentifier.setPatient(getPatient());
+		patientIdentifier.setIdentifier(getIdentifier());
+		patientIdentifier.setIdentifierType(getIdentifierType());
+		patientIdentifier.setLocation(getLocation());
+		patientIdentifier.setPatientProgram(getPatientProgram());
+		patientIdentifier.setPreferred(getPreferred());
+		patientIdentifier.setCreator(getCreator());
+		patientIdentifier.setDateCreated(getDateCreated());
+		patientIdentifier.setChangedBy(getChangedBy());
+		patientIdentifier.setDateChanged(getDateChanged());
+		patientIdentifier.setVoided(getVoided());
+		patientIdentifier.setDateVoided(getDateVoided());
+		patientIdentifier.setVoidedBy(getVoidedBy());
+		patientIdentifier.setVoidReason(getVoidReason());
+		patientIdentifier.setUuid(getUuid());
+		return patientIdentifier;
 	}
 	
 	/**
