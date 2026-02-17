@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This class validates a {@link PatientProgram} object
@@ -36,7 +37,6 @@ import org.springframework.validation.Validator;
 public class PatientProgramValidator implements Validator {
 	
 	private static final Logger log = LoggerFactory.getLogger(PatientProgramValidator.class);
-	private static final int MIN_YEAR = 1000;
 	private static final String DATE_ENROLLED = "dateEnrolled";
     private static final String DATE_COMPLETED = "dateCompleted";
 	/**
@@ -106,13 +106,13 @@ public class PatientProgramValidator implements Validator {
 		Calendar cal = Calendar.getInstance();
         if (patientProgram.getDateEnrolled() != null) {
             cal.setTime(patientProgram.getDateEnrolled());
-            if (cal.get(Calendar.YEAR) < MIN_YEAR) {
+            if (cal.get(Calendar.YEAR) < OpenmrsConstants.MINIMUM_VALID_DATE_YEAR) {
                 errors.rejectValue(DATE_ENROLLED, "PatientProgram.error.date.invalid", "Invalid value");
             }
         }
         if (patientProgram.getDateCompleted() != null) {
             cal.setTime(patientProgram.getDateCompleted());
-            if (cal.get(Calendar.YEAR) < MIN_YEAR) {
+            if (cal.get(Calendar.YEAR) < OpenmrsConstants.MINIMUM_VALID_DATE_YEAR) {
                 errors.rejectValue(DATE_COMPLETED, "PatientProgram.error.date.invalid", "Invalid value");
             }
         }

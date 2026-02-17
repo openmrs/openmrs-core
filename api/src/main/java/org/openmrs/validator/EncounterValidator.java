@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Validator for {@link Encounter} class
@@ -32,7 +33,6 @@ import org.springframework.validation.Validator;
 public class EncounterValidator implements Validator {
 	
 	private static final Logger log = LoggerFactory.getLogger(EncounterValidator.class);
-	private static final int MIN_YEAR = 1000;
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
@@ -111,11 +111,8 @@ public class EncounterValidator implements Validator {
     if (encounter.getEncounterDatetime() != null) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(encounter.getEncounterDatetime());
-        if (cal.get(Calendar.YEAR) < MIN_YEAR) {
+        if (cal.get(Calendar.YEAR) < OpenmrsConstants.MINIMUM_VALID_DATE_YEAR) {
             errors.rejectValue("encounterDatetime", "Encounter.error.date.invalid", "Invalid value");
-        }
-        if (encounter.getEncounterDatetime().after(new Date())) {
-            errors.rejectValue("encounterDatetime", "Encounter.error.encounterDatetimeInFuture");
         }
     }
 }

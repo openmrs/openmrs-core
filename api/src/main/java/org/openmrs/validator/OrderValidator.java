@@ -20,6 +20,7 @@ import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Validates the {@link Order} class.
@@ -29,7 +30,6 @@ import org.springframework.validation.Validator;
 @Handler(supports = { Order.class })
 public class OrderValidator implements Validator {
 	
-	private static final int MIN_YEAR = 1000;
 	private static final String DATE_ACTIVATED = "dateActivated";
 
 	/**
@@ -110,7 +110,7 @@ public class OrderValidator implements Validator {
 		if (dateActivated != null) {
 			Calendar cal = Calendar.getInstance();
             cal.setTime(dateActivated);
-            if (cal.get(Calendar.YEAR) < MIN_YEAR) {
+            if (cal.get(Calendar.YEAR) < OpenmrsConstants.MINIMUM_VALID_DATE_YEAR) {
                 errors.rejectValue(DATE_ACTIVATED, "Order.error.date.invalid", "Invalid value");
             }
 			
@@ -149,7 +149,7 @@ public class OrderValidator implements Validator {
 		if (order.getScheduledDate() != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(order.getScheduledDate());
-            if (cal.get(Calendar.YEAR) < MIN_YEAR) {
+            if (cal.get(Calendar.YEAR) < OpenmrsConstants.MINIMUM_VALID_DATE_YEAR) {
                 errors.rejectValue("scheduledDate", "Order.error.date.invalid", "Invalid value");
             }
             if (!isUrgencyOnScheduledDate) {

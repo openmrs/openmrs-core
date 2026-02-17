@@ -31,6 +31,7 @@ import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Validator for the Obs class. This class checks for anything set on the Obs object that will cause
@@ -47,7 +48,6 @@ import org.springframework.validation.Validator;
 public class ObsValidator implements Validator {
 	
 	public static final int VALUE_TEXT_MAX_LENGTH = 65535;
-	private static final int MIN_YEAR = 1000;
 
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -115,7 +115,7 @@ public class ObsValidator implements Validator {
 		if (obs.getObsDatetime() != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(obs.getObsDatetime());
-            if (cal.get(Calendar.YEAR) < MIN_YEAR) {
+            if (cal.get(Calendar.YEAR) < OpenmrsConstants.MINIMUM_VALID_DATE_YEAR) {
                 errors.rejectValue("obsDatetime", "Obs.error.date.invalid", "Invalid value");
             }
         }
