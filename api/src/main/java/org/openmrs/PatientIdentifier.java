@@ -42,9 +42,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s). PatientIdentifiers
- * are anything from medical record numbers, to social security numbers, to driver's licenses. The
- * type of identifier is defined by the PatientIdentifierType. A PatientIdentifier also contains a
+ * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s).
+ * PatientIdentifiers
+ * are anything from medical record numbers, to social security numbers, to
+ * driver's licenses. The
+ * type of identifier is defined by the PatientIdentifierType. A
+ * PatientIdentifier also contains a
  * Location.
  *
  * @see org.openmrs.PatientIdentifierType
@@ -53,14 +56,15 @@ import org.slf4j.LoggerFactory;
 @Audited
 @Entity
 @Table(name = "patient_identifier")
-public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
-	
+public class PatientIdentifier extends BaseChangeableOpenmrsData
+		implements java.io.Serializable, Comparable<PatientIdentifier> {
+
 	public static final long serialVersionUID = 1123121L;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(PatientIdentifier.class);
-	
+
 	// Fields
-	
+
 	/**
 	 * @since 1.5
 	 */
@@ -74,7 +78,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@JoinColumn(name = "patient_id", nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@AssociationInverseSide(inversePath = @ObjectPath({
-		@PropertyValue(propertyName = "identifiers")
+			@PropertyValue(propertyName = "identifiers")
 	}))
 	private Patient patient;
 
@@ -103,28 +107,57 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@Column(name = "preferred", nullable = false)
 	@GenericField
 	private Boolean preferred = false;
-	
+
 	/** default constructor */
 	public PatientIdentifier() {
 	}
-	
+
 	/**
 	 * Convenience constructor for creating a basic identifier
 	 *
 	 * @param identifier String identifier
-	 * @param type PatientIdentifierType
-	 * @param location Location of the identifier
+	 * @param type       PatientIdentifierType
+	 * @param location   Location of the identifier
 	 */
 	public PatientIdentifier(String identifier, PatientIdentifierType type, Location location) {
 		this.identifier = identifier;
 		this.identifierType = type;
 		this.location = location;
 	}
-	
+
 	/**
-	 * Compares this PatientIdentifier object to the given otherIdentifier. This method differs from
-	 * {@link #equals(Object)} in that this method compares the inner fields of each identifier for
-	 * equality. Note: Null/empty fields on <code>otherIdentifier</code> /will not/ cause a false
+	 * Copy constructor. Creates a shallow copy equivalent to the previous clone()
+	 * behavior,
+	 * excluding database identity fields.
+	 *
+	 * @param template PatientIdentifier to copy from
+	 * @since 2.x
+	 */
+	public PatientIdentifier(PatientIdentifier template) {
+		if (template == null) {
+			return;
+		}
+
+		// Business fields
+		this.identifier = template.getIdentifier();
+		this.identifierType = template.getIdentifierType();
+		this.location = template.getLocation();
+		this.patient = template.getPatient();
+		this.patientProgram = template.getPatientProgram();
+		this.preferred = template.getPreferred();
+
+		// Lifecycle / state fields
+		this.setVoided(template.getVoided());
+		this.setVoidReason(template.getVoidReason());
+	}
+
+	/**
+	 * Compares this PatientIdentifier object to the given otherIdentifier. This
+	 * method differs from
+	 * {@link #equals(Object)} in that this method compares the inner fields of each
+	 * identifier for
+	 * equality. Note: Null/empty fields on <code>otherIdentifier</code> /will not/
+	 * cause a false
 	 * value to be returned
 	 *
 	 * @param otherIdentifier PatientiIdentifier with which to compare
@@ -132,114 +165,112 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 */
 	public boolean equalsContent(PatientIdentifier otherIdentifier) {
 		boolean returnValue = true;
-		
+
 		// these are the methods to compare.
 		String[] methods = { "getIdentifier", "getIdentifierType", "getLocation" };
-		
+
 		Class<? extends PatientIdentifier> identifierClass = this.getClass();
-		
+
 		// loop over all of the selected methods and compare this and other
 		for (String methodName : methods) {
 			try {
 				Method method = identifierClass.getMethod(methodName);
-				
+
 				Object thisValue = method.invoke(this);
 				Object otherValue = method.invoke(otherIdentifier);
-				
+
 				if (otherValue != null) {
 					returnValue &= otherValue.equals(thisValue);
 				}
-				
-			}
-			catch (NoSuchMethodException e) {
+
+			} catch (NoSuchMethodException e) {
 				log.warn("No such method for comparison " + methodName, e);
-			}
-			catch (IllegalAccessException | InvocationTargetException e) {
+			} catch (IllegalAccessException | InvocationTargetException e) {
 				log.error("Error while comparing identifiers", e);
 			}
 
 		}
-		
+
 		return returnValue;
 	}
-	
-	//property accessors
-	
+
+	// property accessors
+
 	/**
 	 * @return Returns the identifier.
 	 */
 	public String getIdentifier() {
 		return identifier;
 	}
-	
+
 	/**
 	 * @param identifier The identifier to set.
 	 */
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
-	
+
 	/**
 	 * @return Returns the identifierType.
 	 */
 	public PatientIdentifierType getIdentifierType() {
 		return identifierType;
 	}
-	
+
 	/**
 	 * @param identifierType The identifierType to set.
 	 */
 	public void setIdentifierType(PatientIdentifierType identifierType) {
 		this.identifierType = identifierType;
 	}
-	
+
 	/**
 	 * @return Returns the location.
 	 */
 	public Location getLocation() {
 		return location;
 	}
-	
+
 	/**
 	 * @param location The location to set.
 	 */
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-	
+
 	/**
 	 * @return Returns the patient.
 	 */
 	public Patient getPatient() {
 		return patient;
 	}
-	
+
 	/**
 	 * @param patient The patient to set.
 	 */
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.identifier;
 	}
-	
+
 	/**
 	 * @return Returns the preferred.
 	 */
 	public Boolean getPreferred() {
 		return preferred;
 	}
-	
+
 	/**
 	 * @param preferred The preferred to set.
 	 */
 	public void setPreferred(Boolean preferred) {
 		this.preferred = preferred;
 	}
-	
+
 	/**
 	 * @return the preferred status
 	 * 
@@ -250,11 +281,12 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	public Boolean isPreferred() {
 		return getPreferred();
 	}
-	
+
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 * @deprecated since 1.12. Use DefaultComparator instead.
-	 * Note: this comparator imposes orderings that are inconsistent with equals.
+	 *             Note: this comparator imposes orderings that are inconsistent
+	 *             with equals.
 	 */
 	@Deprecated
 	@Override
@@ -263,7 +295,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 		DefaultComparator piDefaultComparator = new DefaultComparator();
 		return piDefaultComparator.compare(this, other);
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -272,7 +304,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	public Integer getId() {
 		return getPatientIdentifierId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -281,7 +313,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	public void setId(Integer id) {
 		setPatientIdentifierId(id);
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @return the patientIdentifierId
@@ -289,7 +321,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	public Integer getPatientIdentifierId() {
 		return patientIdentifierId;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @param patientIdentifierId the patientIdentifierId to set
@@ -299,31 +331,14 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	}
 
 	/**
-	 * bitwise copy of the PatientIdentifier object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
-	 * PatientIdentifier.patient object in this object AND the cloned object will point at the same
-	 * patient
-	 *
-	 * @return New PatientIdentifier object
-	 * @since 2.2.0
-	 */
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		}
-		catch (CloneNotSupportedException e) {
-			throw new InternalError("PatientIdentifier should be cloneable");
-		}
-	}
-	
-	/**
-	 Provides a default comparator.
-	 @since 1.12
+	 * Provides a default comparator.
+	 * 
+	 * @since 1.12
 	 **/
 	public static class DefaultComparator implements Comparator<PatientIdentifier>, Serializable {
 
 		private static final long serialVersionUID = 1L;
-		
+
 		@Override
 		public int compare(PatientIdentifier pi1, PatientIdentifier pi2) {
 			int retValue = 0;
@@ -345,28 +360,29 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 					retValue = -1;
 				}
 				if (retValue == 0) {
-					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifierType().getPatientIdentifierTypeId(),
-					    pi2.getIdentifierType().getPatientIdentifierTypeId());
+					retValue = OpenmrsUtil.compareWithNullAsGreatest(
+							pi1.getIdentifierType().getPatientIdentifierTypeId(),
+							pi2.getIdentifierType().getPatientIdentifierTypeId());
 				}
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifier(), pi2.getIdentifier());
 				}
-				
-				// if we've gotten this far, just check all identifier values.  If they are
-				// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1
+
+				// if we've gotten this far, just check all identifier values. If they are
+				// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
 				// and return that (they are not equal).
 				if (retValue == 0 && !pi1.equalsContent(pi2)) {
 					retValue = 1;
 				}
 			}
-			
+
 			return retValue;
 		}
 	}
 
-
 	/**
 	 * Gets patient program associated to the identifier in context
+	 * 
 	 * @since 2.6.0
 	 * @return patientProgram the patient program associated to an identifier
 	 */
@@ -376,6 +392,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	/**
 	 * This method sets the patient program on a patient Identifier
+	 * 
 	 * @since 2.6.0
 	 * @param patientProgram The patientProgram to set.
 	 */
