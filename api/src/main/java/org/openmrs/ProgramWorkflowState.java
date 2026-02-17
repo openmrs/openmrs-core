@@ -50,11 +50,11 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
-
-	@Column(name = "initial", nullable = false)
+	
+	@Column(name = "initial", nullable = false, length = 1)
 	private Boolean initial;
-
-	@Column(name = "terminal", nullable = false)
+	
+	@Column(name = "terminal", nullable = false, length = 1)
 	private Boolean terminal;
 	
 	// ******************
