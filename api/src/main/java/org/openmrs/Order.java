@@ -9,6 +9,24 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
@@ -33,7 +51,10 @@ import java.util.Date;
  * 
  * @version 1.0
  */
+@Entity
+@Table(name = "orders")
 @Audited
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Order extends BaseCustomizableData<OrderAttribute> implements FormRecordable {
 	
 	public static final long serialVersionUID = 4334343L;
@@ -70,43 +91,78 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		DECLINED,
 		COMPLETED
 	}
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	@Column(name = "order_id")
 	private Integer orderId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "order_type_id", nullable = false)
 	private OrderType orderType;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
-	
+
+	@Column(name = "instructions", columnDefinition = "TEXT")
 	private String instructions;
-	
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "date_activated", nullable = false)
 	private Date dateActivated;
-	
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "auto_expire_date")
 	private Date autoExpireDate;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "orderer", nullable = false)
 	private Provider orderer;
-	
+
+	@Access(AccessType.FIELD)
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "date_stopped")
 	private Date dateStopped;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "order_reason")
 	private Concept orderReason;
-	
+
+	@Column(name = "accession_number", length = 255)
 	private String accessionNumber;
-	
+
+	@Column(name = "order_reason_non_coded", length = 255)
 	private String orderReasonNonCoded;
-	
+
+	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "urgency", length = 50, nullable = false)
 	private Urgency urgency = Urgency.ROUTINE;
-	
+
+	@Column(name = "order_number", length = 50, nullable = false)
+	@Access(AccessType.FIELD)
 	private String orderNumber;
-	
+
+	@Column(name = "comment_to_fulfiller", length = 1024)
 	private String commentToFulfiller;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "care_setting", nullable = false)
 	private CareSetting careSetting;
-	
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "scheduled_date")
 	private Date scheduledDate;
-	
+
+	@Column(name = "form_namespace_and_path", length = 255)
 	private String formNamespaceAndPath;
 	
 	/**
@@ -114,12 +170,15 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * added in the group ex - for two orders of isoniazid and ampicillin, the sequence of 1 and 2
 	 * needed to be maintained
 	 */
+	@Column(name = "sort_weight")
 	private Double sortWeight;
 	
 	/**
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
 	 * to the original ampicillin order (the D/C gets its own order number)
 	 */
+	@ManyToOne
+	@JoinColumn(name = "previous_order_id")
 	private Order previousOrder;
 	
 	/**
@@ -127,24 +186,33 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * 
 	 * @see org.openmrs.Order.Action
 	 */
+	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "order_action", length = 50, nullable = false)
 	private Action action = Action.NEW;
 	
 	/**
 	 * {@link org.openmrs.OrderGroup}
 	 */
+	@ManyToOne
+	@JoinColumn(name = "order_group_id")
 	private OrderGroup orderGroup;
 	
 	/**
 	 * Represents the status of an order received from a fulfiller 
 	 * @see FulfillerStatus
 	 */
+	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "fulfiller_status", length = 50)
 	private FulfillerStatus fulfillerStatus;
 	
 	/**
 	 * Represents the comment that goes along with with fulfiller status
-	 */	
+	 */
+	@Column(name = "fulfiller_comment", length = 1024)
 	private String fulfillerComment;
-
+	
 	// Constructors
 	
 	/** default constructor */

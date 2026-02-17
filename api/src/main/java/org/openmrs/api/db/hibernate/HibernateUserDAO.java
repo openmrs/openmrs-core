@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,7 +95,31 @@ public class HibernateUserDAO implements UserDAO {
 		// only change the user's password when creating a new user
 		boolean isNewUser = user.getUserId() == null;
 		
-		sessionFactory.getCurrentSession().saveOrUpdate(user);
+		// Ensure the associated Person is managed before persisting/merging
+		Session currentSession = sessionFactory.getCurrentSession();
+		if (user.getPerson() != null && user.getPerson().getPersonId() != null && !currentSession.contains(user.getPerson())) {
+			Person managedPerson = currentSession.get(Person.class, user.getPerson().getPersonId());
+			if (managedPerson != null) {
+				user.setPerson(managedPerson);
+			}
+		}
+		
+		// Ensure referenced Roles are managed. The User->Role cascade includes
+		// PERSIST, so detached Roles would cause constraint violations in Hibernate 7.
+		if (user.getRoles() != null) {
+			Set<Role> managedRoles = new LinkedHashSet<>();
+			for (Role role : user.getRoles()) {
+				if (!currentSession.contains(role)) {
+					Role managedRole = currentSession.get(Role.class, role.getRole());
+					managedRoles.add(managedRole != null ? managedRole : role);
+				} else {
+					managedRoles.add(role);
+				}
+			}
+			user.setRoles(managedRoles);
+		}
+		
+		user = HibernateUtil.saveOrUpdate(currentSession, user);
 		
 		if (isNewUser && password != null) {
 			/* In OpenMRS, we are using generation strategy as native which will convert to IDENTITY 
@@ -238,7 +264,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void deleteUser(User user) {
-		sessionFactory.getCurrentSession().delete(user);
+		sessionFactory.getCurrentSession().remove(user);
 	}
 	
 	/**
@@ -281,7 +307,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void deletePrivilege(Privilege privilege) throws DAOException {
-		sessionFactory.getCurrentSession().delete(privilege);
+		sessionFactory.getCurrentSession().remove(privilege);
 	}
 	
 	/**
@@ -289,8 +315,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public Privilege savePrivilege(Privilege privilege) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(privilege);
-		return privilege;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), privilege);
 	}
 	
 	/**
@@ -298,7 +323,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void deleteRole(Role role) throws DAOException {
-		sessionFactory.getCurrentSession().delete(role);
+		sessionFactory.getCurrentSession().remove(role);
 	}
 	
 	/**
@@ -306,8 +331,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public Role saveRole(Role role) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(role);
-		return role;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), role);
 	}
 	
 	/**
@@ -405,7 +429,7 @@ public class HibernateUserDAO implements UserDAO {
 		credentials.setDateChanged(dateChanged);
 		credentials.setUuid(changeForUser.getUuid());
 		
-		sessionFactory.getCurrentSession().merge(credentials);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credentials);
 		
 		// reset lockout 
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
@@ -646,7 +670,7 @@ public class HibernateUserDAO implements UserDAO {
 			}
 		}
 		
-		sessionFactory.getCurrentSession().update(credential);
+		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credential);
 	}
 	
 	/**
@@ -786,7 +810,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void setUserActivationKey(LoginCredential credentials) {		
-			sessionFactory.getCurrentSession().merge(credentials);	
+			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credentials);	
 	}
 
 	/**

@@ -47,7 +47,10 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Begin OpenMRS core -->
+			<!-- Scope overrides for the module development pattern: openmrs-api and
+			     openmrs-web are provided by the platform at runtime, so modules
+			     compile against them but do not bundle them. Version management for
+			     all other dependencies is inherited from the parent (via the BOM). -->
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
@@ -62,14 +65,8 @@
 				<version>${openmrsPlatformVersion}</version>
 				<type>jar</type>
 				<scope>provided</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>jakarta.servlet</groupId>
-						<artifactId>jakarta-servlet-api</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
-						
+
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
@@ -77,7 +74,7 @@
 				<type>test-jar</type>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.openmrs.web</groupId>
 				<artifactId>openmrs-web</artifactId>
@@ -85,7 +82,7 @@
 				<type>test-jar</type>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.openmrs.test</groupId>
 				<artifactId>openmrs-test</artifactId>
@@ -93,15 +90,6 @@
 				<type>pom</type>
 				<scope>test</scope>
 			</dependency>
-			<!-- End OpenMRS core -->
-
-			<dependency>
-				<groupId>jakarta.servlet</groupId>
-				<artifactId>jakarta.servlet-api</artifactId>
-				<version>6.1.0</version>
-				<scope>provided</scope>
-			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 

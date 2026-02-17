@@ -13,6 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -31,6 +32,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -570,9 +573,9 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	public void checkRequiredVersion_shouldHandleSnapshotVersion() {
 		String openMRSVersion = "1.9.2-SNAPSHOT";
 		String requiredOpenmrsVersion = "1.9.2-SNAPSHOT";
-		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+		assertDoesNotThrow(() -> ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion));
 	}
-	
+
 	/**
 	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */
@@ -580,14 +583,14 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	public void checkRequiredVersion_shouldHandleUuidSuffixVersion() {
 		String openMRSVersion = "1.9.9-f4927f";
 		String requiredOpenmrsVersion = "1.9.9-SNAPSHOT";
-		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+		assertDoesNotThrow(() -> ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion));
 	}
-	
+
 	@Test
 	public void checkRequiredVersion_shouldHandleAlphaVersion() {
 		String openMRSVersion = "1.9.2-ALPHA";
 		String requiredOpenmrsVersion = "1.9.2-ALPHA";
-		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+		assertDoesNotThrow(() -> ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion));
 	}
 	
 	private JarFile loadModuleJarFile(String moduleId, String version) throws IOException {
@@ -750,6 +753,31 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		FileUtils.deleteDirectory(destinationFolder);
 	}
 	
+	/**
+	 * @throws IOException
+	 * @see ModuleUtil#expandJar(File,File,String,boolean)
+	 */
+	@Test
+	public void expandJar_shouldThrowExceptionForZipSlipAttack() throws IOException {
+		File destinationFolder = this.getEmptyJarDestinationFolder();
+		File maliciousJar = File.createTempFile("zipslip", ".jar");
+		maliciousJar.deleteOnExit();
+
+		// Create a JAR with a path traversal entry
+		try (JarOutputStream jos = new JarOutputStream(new FileOutputStream(maliciousJar))) {
+			ZipEntry entry = new ZipEntry("../../../etc/malicious.txt");
+			jos.putNextEntry(entry);
+			jos.write("malicious content".getBytes());
+			jos.closeEntry();
+		}
+
+		assertThrows(UnsupportedOperationException.class, () -> {
+			ModuleUtil.expandJar(maliciousJar, destinationFolder, null, false);
+		});
+
+		FileUtils.deleteDirectory(destinationFolder);
+	}
+
 	/**
 	* @see ModuleUtil#file2url(File)
 	*/

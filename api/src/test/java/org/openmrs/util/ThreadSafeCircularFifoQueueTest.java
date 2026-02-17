@@ -10,7 +10,15 @@
 package org.openmrs.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.collections4.queue.AbstractQueueTest;
 
@@ -21,7 +29,6 @@ import org.apache.commons.collections4.queue.AbstractQueueTest;
  * @param <E>
  */
 public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
-	// TODO We should add some tests related to concurrent access
 
 	public ThreadSafeCircularFifoQueueTest(String testName) {
 		super(testName);
@@ -217,5 +224,241 @@ public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
 	@Override
 	public void testCanonicalFullCollectionExists() {
 		super.testCanonicalFullCollectionExists();
+	}
+
+	/* Circular eviction tests */
+
+	public void testCircularEviction_shouldEvictOldestElementWhenFull() {
+		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(3);
+		queue.add("1");
+		queue.add("2");
+		queue.add("3");
+
+		assertEquals(3, queue.size());
+
+		// Adding a 4th element should evict "1"
+		queue.add("4");
+
+		assertEquals(3, queue.size());
+		assertFalse(queue.contains("1"));
+		assertTrue(queue.contains("2"));
+		assertTrue(queue.contains("3"));
+		assertTrue(queue.contains("4"));
+
+		// Verify FIFO order
+		assertEquals("2", queue.poll());
+		assertEquals("3", queue.poll());
+		assertEquals("4", queue.poll());
+		assertTrue(queue.isEmpty());
+	}
+
+	public void testCircularEviction_shouldMaintainCorrectSizeAfterMultipleEvictions() {
+		ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(3);
+
+		// Add 10 elements to a queue of size 3
+		for (int i = 1; i <= 10; i++) {
+			queue.add(i);
+			assertTrue("Size should never exceed capacity", queue.size() <= 3);
+		}
+
+		assertEquals(3, queue.size());
+
+		// Should contain only the last 3 elements
+		assertTrue(queue.contains(8));
+		assertTrue(queue.contains(9));
+		assertTrue(queue.contains(10));
+
+		// Verify iteration works correctly
+		List<Integer> elements = new ArrayList<>();
+		for (Integer elem : queue) {
+			elements.add(elem);
+		}
+		assertEquals(3, elements.size());
+		assertEquals(Integer.valueOf(8), elements.get(0));
+		assertEquals(Integer.valueOf(9), elements.get(1));
+		assertEquals(Integer.valueOf(10), elements.get(2));
+	}
+
+	public void testCircularEviction_shouldWorkCorrectlyWithIterator() {
+		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(3);
+		queue.add("a");
+		queue.add("b");
+		queue.add("c");
+		queue.add("d"); // evicts "a"
+
+		Iterator<String> iter = queue.iterator();
+		assertTrue(iter.hasNext());
+		assertEquals("b", iter.next());
+		assertTrue(iter.hasNext());
+		assertEquals("c", iter.next());
+		assertTrue(iter.hasNext());
+		assertEquals("d", iter.next());
+		assertFalse(iter.hasNext());
+	}
+
+	public void testCircularEviction_toArrayShouldReturnCorrectElements() {
+		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(3);
+		queue.add("1");
+		queue.add("2");
+		queue.add("3");
+		queue.add("4"); // evicts "1"
+		queue.add("5"); // evicts "2"
+
+		Object[] array = queue.toArray();
+		assertEquals(3, array.length);
+		assertEquals("3", array[0]);
+		assertEquals("4", array[1]);
+		assertEquals("5", array[2]);
+	}
+
+	/* Thread safety tests */
+
+	public void testConcurrentAdds_shouldMaintainConsistentState() throws InterruptedException {
+		final ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(100);
+		final int numThreads = 10;
+		final int addsPerThread = 1000;
+		final CountDownLatch startLatch = new CountDownLatch(1);
+		final CountDownLatch doneLatch = new CountDownLatch(numThreads);
+
+		ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+
+		for (int t = 0; t < numThreads; t++) {
+			final int threadId = t;
+			executor.submit(() -> {
+				try {
+					startLatch.await();
+					for (int i = 0; i < addsPerThread; i++) {
+						queue.add(threadId * addsPerThread + i);
+					}
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				} finally {
+					doneLatch.countDown();
+				}
+			});
+		}
+
+		startLatch.countDown();
+		assertTrue("Threads should complete within timeout", doneLatch.await(30, TimeUnit.SECONDS));
+		executor.shutdown();
+
+		// Queue should have exactly 100 elements (its capacity)
+		assertEquals(100, queue.size());
+
+		// Verify iteration doesn't throw and returns correct count
+		int count = 0;
+		for (Integer ignored : queue) {
+			count++;
+		}
+		assertEquals(100, count);
+	}
+
+	public void testConcurrentAddsAndPolls_shouldNotCorruptState() throws InterruptedException {
+		final ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(50);
+		final int numProducers = 5;
+		final int numConsumers = 5;
+		final int operationsPerThread = 1000;
+		final CountDownLatch startLatch = new CountDownLatch(1);
+		final CountDownLatch doneLatch = new CountDownLatch(numProducers + numConsumers);
+		final AtomicInteger addCount = new AtomicInteger(0);
+		final AtomicInteger pollCount = new AtomicInteger(0);
+
+		ExecutorService executor = Executors.newFixedThreadPool(numProducers + numConsumers);
+
+		// Producers
+		for (int t = 0; t < numProducers; t++) {
+			executor.submit(() -> {
+				try {
+					startLatch.await();
+					for (int i = 0; i < operationsPerThread; i++) {
+						queue.add(i);
+						addCount.incrementAndGet();
+					}
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				} finally {
+					doneLatch.countDown();
+				}
+			});
+		}
+
+		// Consumers
+		for (int t = 0; t < numConsumers; t++) {
+			executor.submit(() -> {
+				try {
+					startLatch.await();
+					for (int i = 0; i < operationsPerThread; i++) {
+						if (queue.poll() != null) {
+							pollCount.incrementAndGet();
+						}
+					}
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				} finally {
+					doneLatch.countDown();
+				}
+			});
+		}
+
+		startLatch.countDown();
+		assertTrue("Threads should complete within timeout", doneLatch.await(30, TimeUnit.SECONDS));
+		executor.shutdown();
+
+		// Size should be non-negative and within capacity
+		int size = queue.size();
+		assertTrue("Size should be non-negative", size >= 0);
+		assertTrue("Size should not exceed capacity", size <= 50);
+
+		// Verify iteration works and count matches size
+		int iterCount = 0;
+		for (Integer ignored : queue) {
+			iterCount++;
+		}
+		assertEquals(size, iterCount);
+	}
+
+	public void testConcurrentIteration_shouldNotThrowConcurrentModificationException() throws InterruptedException {
+		final ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(100);
+
+		// Pre-fill the queue
+		for (int i = 0; i < 100; i++) {
+			queue.add(i);
+		}
+
+		final int numThreads = 10;
+		final CountDownLatch startLatch = new CountDownLatch(1);
+		final CountDownLatch doneLatch = new CountDownLatch(numThreads);
+		final AtomicInteger errorCount = new AtomicInteger(0);
+
+		ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+
+		for (int t = 0; t < numThreads; t++) {
+			final boolean isWriter = (t % 2 == 0);
+			executor.submit(() -> {
+				try {
+					startLatch.await();
+					for (int i = 0; i < 100; i++) {
+						if (isWriter) {
+							queue.add(i);
+						} else {
+							// Iterate while others are writing
+							for (Integer ignored : queue) {
+								// Just iterate through
+							}
+						}
+					}
+				} catch (Exception e) {
+					errorCount.incrementAndGet();
+				} finally {
+					doneLatch.countDown();
+				}
+			});
+		}
+
+		startLatch.countDown();
+		assertTrue("Threads should complete within timeout", doneLatch.await(30, TimeUnit.SECONDS));
+		executor.shutdown();
+
+		assertEquals("No exceptions should occur during concurrent access", 0, errorCount.get());
 	}
 }

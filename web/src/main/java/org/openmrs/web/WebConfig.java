@@ -99,7 +99,6 @@ public class WebConfig implements WebMvcConfigurer {
 
         configurer
                 .defaultContentType(MediaType.APPLICATION_JSON)
-                .favorPathExtension(true)
                 .mediaTypes(mediaTypes);
     }
 

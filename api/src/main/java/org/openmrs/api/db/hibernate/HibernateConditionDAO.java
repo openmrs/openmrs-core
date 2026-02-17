@@ -119,7 +119,7 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public void deleteCondition(Condition condition) throws DAOException {
-		sessionFactory.getCurrentSession().delete(condition);
+		sessionFactory.getCurrentSession().remove(condition);
 	}
 
 	/**
@@ -130,7 +130,6 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public Condition saveCondition(Condition condition) {
-		sessionFactory.getCurrentSession().saveOrUpdate(condition);
-		return condition;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), condition);
 	}
 }

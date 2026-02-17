@@ -25,6 +25,7 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
 import org.hibernate.boot.Metadata;
+import org.hibernate.boot.spi.BootstrapContext;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.hibernate.LocalSessionFactoryBean;
 
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean implements Integrator {
 	
@@ -218,8 +219,8 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	}
 
 	@Override
-	public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory,
-			SessionFactoryServiceRegistry serviceRegistry) {
+	public void integrate(Metadata metadata, BootstrapContext bootstrapContext,
+			SessionFactoryImplementor sessionFactory) {
 		this.metadata = metadata;
 	}
 

@@ -16,11 +16,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -81,8 +81,7 @@ public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	// Fields
 	@DocumentId
 	@Id
-	@GeneratedValue(generator = "native")
-	@GenericGenerator(name = "native", strategy = "native")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "patient_identifier_type_id")
 	private Integer patientIdentifierTypeId;
 
