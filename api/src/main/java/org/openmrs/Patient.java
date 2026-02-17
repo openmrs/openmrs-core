@@ -371,7 +371,7 @@ public class Patient extends Person {
 		List<PatientIdentifier> nonPreferred = new LinkedList<>();
 		for (PatientIdentifier pi : getIdentifiers()) {
 			if (!pi.getVoided()) {
-				if (pi.getPreferred()) {
+				if (Boolean.TRUE.equals(pi.getPreferred())) {
 					ids.add(pi);
 				} else {
 					nonPreferred.add(pi);

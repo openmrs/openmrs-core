@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
-public class PatientIdentifierTest {
+class PatientIdentifierTest {
 
     @Test
-    public void shouldCopyBusinessFields() {
+    void shouldCopyBusinessFields() {
         PatientIdentifier template = new PatientIdentifier();
         template.setIdentifier("123");
         template.setIdentifierType(new PatientIdentifierType(1));
