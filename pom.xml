@@ -721,12 +721,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -747,12 +747,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -773,12 +773,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>

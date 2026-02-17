@@ -15,7 +15,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,16 +35,19 @@ public class DatabaseUtil {
 	private DatabaseUtil() {
 	}
 
-	public static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
-	public static final String MYSQL_LEGACY_DRIVER = "com.mysql.jdbc.Driver";
-	public static final String MARIADB_DRIVER = "org.mariadb.jdbc.Driver";
-	public static final String POSTGRESQL_DRIVER = "org.postgresql.Driver";
-	public static final String H2_DRIVER = "org.h2.Driver";
-	public static final String HSQLDB_DRIVER = "org.hsqldb.jdbcDriver";
-
-	public static final Set<String> ALLOWED_JDBC_DRIVERS = new HashSet<>(Arrays.asList(
-		MYSQL_DRIVER, MYSQL_LEGACY_DRIVER, MARIADB_DRIVER, POSTGRESQL_DRIVER, H2_DRIVER, HSQLDB_DRIVER
-	));
+	private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
+	private static final String MYSQL_LEGACY_DRIVER = "com.mysql.jdbc.Driver";
+	private static final String MARIADB_DRIVER = "org.mariadb.jdbc.Driver";
+	private static final String POSTGRESQL_DRIVER = "org.postgresql.Driver";
+	private static final String H2_DRIVER = "org.h2.Driver";
+	private static final String HSQLDB_DRIVER = "org.hsqldb.jdbcDriver";
+	private static final String ORACLE_DRIVER = "oracle.jdbc.driver.OracleDriver";
+	private static final String JTDS_DRIVER = "net.sourceforge.jtds.jdbc.Driver";
+	private static final String SQLSERVER_DRIVER = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
+	
+	private static final Set<String> ALLOWED_JDBC_DRIVERS = Set.of(
+		MYSQL_DRIVER, MYSQL_LEGACY_DRIVER, MARIADB_DRIVER, POSTGRESQL_DRIVER, H2_DRIVER, HSQLDB_DRIVER, ORACLE_DRIVER, SQLSERVER_DRIVER, JTDS_DRIVER
+	);
 	
 	private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 
@@ -68,7 +70,7 @@ public class DatabaseUtil {
 		if (StringUtils.hasText(connectionDriver)) {
 			if (!ALLOWED_JDBC_DRIVERS.contains(connectionDriver)) {
 				log.error("Attempted to load an unauthorized database driver: {}", connectionDriver);
-				throw new ClassNotFoundException("Database driver '" + connectionDriver + "' is not an allowed driver.");
+				throw new IllegalArgumentException("Database driver '" + connectionDriver + "' is not an allowed driver.");
 			}
 			Class.forName(connectionDriver);
 			log.debug("set user defined Database driver class: " + connectionDriver);
@@ -86,14 +88,14 @@ public class DatabaseUtil {
 				Class.forName(POSTGRESQL_DRIVER);
 				connectionDriver = POSTGRESQL_DRIVER;
 			} else if (connectionUrl.contains("jdbc:oracle")) {
-				Class.forName("oracle.jdbc.driver.OracleDriver");
-				connectionDriver = "oracle.jdbc.driver.OracleDriver";
+				Class.forName(ORACLE_DRIVER);
+				connectionDriver = ORACLE_DRIVER;
 			} else if (connectionUrl.contains("jdbc:jtds")) {
-				Class.forName("net.sourceforge.jtds.jdbc.Driver");
-				connectionDriver = "net.sourceforge.jtds.jdbc.Driver";
+				Class.forName(JTDS_DRIVER);
+				connectionDriver = JTDS_DRIVER;
 			} else if (connectionUrl.contains("sqlserver")) {
-				Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
-				connectionDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
+				Class.forName(SQLSERVER_DRIVER);
+				connectionDriver = SQLSERVER_DRIVER;
 			} else if (connectionUrl.contains("jdbc:h2")) {
 				Class.forName(H2_DRIVER);
 				connectionDriver = H2_DRIVER;

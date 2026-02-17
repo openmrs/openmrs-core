@@ -1014,13 +1014,7 @@ public class InitializationFilter extends StartupFilter {
 		String databaseConnectionFinalUrl) {
 		try {
 			// verify connection
-			//Set Database Driver using driver String
-			if (!DatabaseUtil.ALLOWED_JDBC_DRIVERS.contains(loadedDriverString)) {
-				log.error("Attempted to load an unauthorized database driver: {}", loadedDriverString);
-				return false; 
-			}
-			// lgtm [java/unsafe-reflection]
-			Class.forName(loadedDriverString).newInstance();
+			DatabaseUtil.loadDatabaseDriver(databaseConnectionFinalUrl, loadedDriverString);
 			try (Connection ignored = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword)) {
 				return true;
 			}
