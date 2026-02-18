@@ -28,7 +28,7 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(name = "program_workflow_state")
 @AttributeOverrides({
-	@AttributeOverride(name = "name",column = @Column(name = "name", nullable = true, length = 255))
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true, length = 255))
 })
 @Audited
 public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
