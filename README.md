@@ -198,6 +198,9 @@ The project tree is set up as follows:
  <tr>
   <td>pom.xml</td>
   <td>The main maven file used to build and package OpenMRS.</td>
+  <!-- Test change for Git workflow -->
+Updated by Madhuradha to demonstrate Git branching and pull requests.
+
  </tr>  
 </table>
 
