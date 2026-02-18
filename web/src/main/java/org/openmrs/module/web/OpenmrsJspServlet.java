@@ -40,7 +40,7 @@ public class OpenmrsJspServlet extends JspServlet {
 	public static final String OPENMRS_TLD_SCAN_NEEDED = "OPENMRS_TLD_SCAN_NEEDED";
 
 	
-	//here 
+	
 	@Override
 public void init(ServletConfig config) {
 
@@ -52,10 +52,10 @@ public void init(ServletConfig config) {
         log.error("Unexpected error during OpenmrsJspServlet initialization", e);
         throw new RuntimeException("Failed to initialize OpenmrsJspServlet", e);
     }
-}// to here
+}
 
 	
-	//here
+	
 	@Override
 public void service(HttpServletRequest request, HttpServletResponse response) {
 
@@ -75,7 +75,7 @@ public void service(HttpServletRequest request, HttpServletResponse response) {
             log.error("Failed to send error response", ioException);
         }
     }
-}// to here
+}
 
 
 	protected synchronized void rescanTldsIfNeeded() throws ServletException {
