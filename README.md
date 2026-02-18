@@ -42,7 +42,7 @@ The mission of OpenMRS is to improve health care delivery in resource-constraine
 
 #### Java
 
-OpenMRS is a Java application which is why you need to install a Java JDK.
+OpenMRS is a Java application, which is why you need to install a Java JDK.
 
 If you want to build the master branch you will need a Java JDK of minimum version 8.
 
@@ -220,7 +220,7 @@ If you haven't found what you were looking for refer to the [Module - wiki](http
 
 ### Developer guides
 
-If you want to contribute please refer to these resources
+If you want to contribute please refer to these resources:
 
 * [Getting Started as a Developer](https://openmrs.atlassian.net/wiki/spaces/docs/pages/25477022/Getting+Started+as+a+Developer)
 * [How To Configure Your IDE](https://openmrs.atlassian.net/wiki/spaces/Archives/pages/25506949/How-To+Setup+And+Use+Your+IDE)
@@ -229,7 +229,7 @@ If you want to contribute please refer to these resources
 ### Wiki
 
 If you are looking for detailed guides on how to install, configure, contribute and
-extend OpenMRS visit
+extend OpenMRS visit:
 
 http://wiki.openmrs.org
 
@@ -303,7 +303,7 @@ https://issues.openmrs.org
 
 ## Support
 
-Talk to us on [OpenMRS Talk](https://talk.openmrs.org/)
+Talk to us on [OpenMRS Talk](https://talk.openmrs.org/).
 
 ## License
 
