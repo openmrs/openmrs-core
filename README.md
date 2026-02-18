@@ -309,3 +309,8 @@ Talk to us on [OpenMRS Talk](https://talk.openmrs.org/)
 
 [MPL 2.0 w/ HD](http://openmrs.org/license/) © [OpenMRS Inc.](http://www.openmrs.org/)
 
+### Consent & DID Integration
+
+OpenMRS can integrate with external consent services. For DID-based consent and OIDC4VP workflows, external modules or services can act as consent managers. This aligns with privacy-by-design practices.
+
+See also: https://github.com/decentralized-identity/presentation-exchange
