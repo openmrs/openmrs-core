@@ -52,7 +52,7 @@
 		<springTestVersion>6.2.12</springTestVersion>
 		<hibernateVersion>7.2.4.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
-		<hibernateSearchVersion>8.2.1.Final</hibernateSearchVersion>
+		<hibernateSearchVersion>8.2.2.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.0.Final</hibernateValidatorVersion>
 		<luceneVersion>10.3.2</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
