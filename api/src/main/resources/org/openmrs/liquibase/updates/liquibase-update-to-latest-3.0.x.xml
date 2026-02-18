@@ -120,7 +120,7 @@
 	</changeSet>
 
 	<changeSet id="TRUNK-5891-2026-01-22" author="Chinmay7070">
-		<comment>Add audit columns required by ProgramWorkflowStat JPA mapping for TRUNK-5891</comment>
+		<comment>Add audit columns required by ProgramWorkflowState JPA mapping for TRUNK-5891</comment>
 		<addColumn tableName="program_workflow_state">
 			<column name="date_retired" type="datetime"/>
 			<column name="name" type="varchar(255)"/>
