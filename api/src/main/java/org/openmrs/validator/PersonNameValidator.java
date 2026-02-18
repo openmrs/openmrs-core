@@ -21,14 +21,15 @@ import org.springframework.validation.Validator;
 
 /**
  * This class validates a PersonName object.
- *
+ * 
  * @since 1.7
  */
-@Handler(supports = { PersonName.class }, order = 50)
+@Handler(supports = {PersonName.class}, order = 50)
 public class PersonNameValidator implements Validator {
-	
-	private static final Logger log = LoggerFactory.getLogger(PersonNameValidator.class);
-	
+
+	private static final Logger log = LoggerFactory
+			.getLogger(PersonNameValidator.class);
+
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -36,16 +37,18 @@ public class PersonNameValidator implements Validator {
 	public boolean supports(Class<?> c) {
 		return PersonName.class.isAssignableFrom(c);
 	}
-	
+
 	/**
-	 * Checks whether person name has all required values, and whether values are proper length
-	 *
+	 * Checks whether person name has all required values, and whether values
+	 * are proper length
+	 * 
 	 * @param object
 	 * @param errors
-	 * <strong>Should</strong> fail validation if PersonName object is null
-	 * <strong>Should</strong> pass validation if name is invalid but voided
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *            <strong>Should</strong> fail validation if PersonName object
+	 *            is null <strong>Should</strong> pass validation if name is
+	 *            invalid but voided <strong>Should</strong> pass validation if
+	 *            field lengths are correct <strong>Should</strong> fail
+	 *            validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object object, Errors errors) {
@@ -56,110 +59,188 @@ public class PersonNameValidator implements Validator {
 			if (personName == null) {
 				errors.reject("error.name");
 			} else if (!personName.getVoided()) {
-				// TODO - the following method should be made private in a major release
+				// TODO - the following method should be made private in a major
+				// release
 				validatePersonName(personName, errors, false, true);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			errors.reject(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Checks that the given {@link PersonName} is valid
-	 *
-	 * @param personName the {@link PersonName} to validate
+	 * 
+	 * @param personName
+	 *            the {@link PersonName} to validate
 	 * @param errors
-	 * @param arrayInd indicates whether or not a names[0] array needs to be prepended to field
-	 * <strong>Should</strong> fail validation if PersonName object is null
-	 * <strong>Should</strong> fail validation if PersonName.givenName is null
-	 * <strong>Should</strong> fail validation if PersonName.givenName is empty
-	 * <strong>Should</strong> fail validation if PersonName.givenName is just spaces
-	 * <strong>Should</strong> fail validation if PersonName.givenName is spaces surrounded by quotation marks
-	 * <strong>Should</strong> pass validation if PersonName.givenName is not blank
-	 * <strong>Should</strong> pass validation if PersonName.familyName is null
-	 * <strong>Should</strong> pass validation if PersonName.familyName is empty
-	 * <strong>Should</strong> pass validation if PersonName.familyName is just spaces
-	 * <strong>Should</strong> fail validation if PersonName.familyName is spaces surrounded by quotation marks
-	 * <strong>Should</strong> pass validation if PersonName.familyName is not blank
-	 * <strong>Should</strong> fail validation if PersonName.prefix is too long
-	 * <strong>Should</strong> pass validation if PersonName.prefix is exactly max length
-	 * <strong>Should</strong> pass validation if PersonName.prefix is less than maximum field length
-	 * <strong>Should</strong> fail validation if PersonName.givenName is too long
-	 * <strong>Should</strong> pass validation if PersonName.givenName is exactly max length
-	 * <strong>Should</strong> pass validation if PersonName.givenName is less than maximum field length
-	 * <strong>Should</strong> fail validation if PersonName.middleName is too long
-	 * <strong>Should</strong> pass validation if PersonName.middleName is exactly max length
-	 * <strong>Should</strong> pass validation if PersonName.middleName is less than maximum field length
-	 * <strong>Should</strong> fail validation if PersonName.familyNamePrefix is too long
-	 * <strong>Should</strong> pass validation if PersonName.familyNamePrefix is exactly max length
-	 * <strong>Should</strong> pass validation if PersonName.familyNamePrefix is less than maximum field length
-	 * <strong>Should</strong> fail validation if PersonName.familyName is too long
-	 * <strong>Should</strong> pass validation if PersonName.familyName is exactly max length
-	 * <strong>Should</strong> pass validation if PersonName.familyName is less than maximum field length
-	 * <strong>Should</strong> fail validation if PersonName.familyName2 is too long
-	 * <strong>Should</strong> pass validation if PersonName.familyName2 is exactly max length
-	 * <strong>Should</strong> pass validation if PersonName.familyName2 is less than maximum field length
-	 * <strong>Should</strong> fail validation if PersonName.familyNameSuffix is too long
-	 * <strong>Should</strong> pass validation if PersonName.familyNameSuffix is exactly max length
-	 * <strong>Should</strong> pass validation if PersonName.familyNameSuffix is less than maximum field length
-	 * <strong>Should</strong> fail validation if PersonName.degree is too long
-	 * <strong>Should</strong> pass validation if PersonName.degree is exactly max length
-	 * <strong>Should</strong> pass validation if PersonName.degree is less than maximum field length
-	 * <strong>Should</strong> fail validation if PersonName.givenName is invalid
-	 * <strong>Should</strong> pass validation if PersonName.givenName is valid
-	 * <strong>Should</strong> fail validation if PersonName.middleName is invalid
-	 * <strong>Should</strong> pass validation if PersonName.middleName is valid
-	 * <strong>Should</strong> fail validation if PersonName.familyName is invalid
-	 * <strong>Should</strong> pass validation if PersonName.familyName is valid
-	 * <strong>Should</strong> fail validation if PersonName.familyName2 is invalid
-	 * <strong>Should</strong> pass validation if PersonName.familyName2 is valid
-	 * <strong>Should</strong> pass validation if regex string is null
-	 * <strong>Should</strong> pass validation if regex string is empty
-	 * <strong>Should</strong> not validate against regex for blank names
+	 * @param arrayInd
+	 *            indicates whether or not a names[0] array needs to be
+	 *            prepended to field <strong>Should</strong> fail validation if
+	 *            PersonName object is null <strong>Should</strong> fail
+	 *            validation if PersonName.givenName is null
+	 *            <strong>Should</strong> fail validation if
+	 *            PersonName.givenName is empty <strong>Should</strong> fail
+	 *            validation if PersonName.givenName is just spaces
+	 *            <strong>Should</strong> fail validation if
+	 *            PersonName.givenName is spaces surrounded by quotation marks
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.givenName is not blank <strong>Should</strong> pass
+	 *            validation if PersonName.familyName is null
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.familyName is empty <strong>Should</strong> pass
+	 *            validation if PersonName.familyName is just spaces
+	 *            <strong>Should</strong> fail validation if
+	 *            PersonName.familyName is spaces surrounded by quotation marks
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.familyName is not blank <strong>Should</strong>
+	 *            fail validation if PersonName.prefix is too long
+	 *            <strong>Should</strong> pass validation if PersonName.prefix
+	 *            is exactly max length <strong>Should</strong> pass validation
+	 *            if PersonName.prefix is less than maximum field length
+	 *            <strong>Should</strong> fail validation if
+	 *            PersonName.givenName is too long <strong>Should</strong> pass
+	 *            validation if PersonName.givenName is exactly max length
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.givenName is less than maximum field length
+	 *            <strong>Should</strong> fail validation if
+	 *            PersonName.middleName is too long <strong>Should</strong> pass
+	 *            validation if PersonName.middleName is exactly max length
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.middleName is less than maximum field length
+	 *            <strong>Should</strong> fail validation if
+	 *            PersonName.familyNamePrefix is too long
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.familyNamePrefix is exactly max length
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.familyNamePrefix is less than maximum field length
+	 *            <strong>Should</strong> fail validation if
+	 *            PersonName.familyName is too long <strong>Should</strong> pass
+	 *            validation if PersonName.familyName is exactly max length
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.familyName is less than maximum field length
+	 *            <strong>Should</strong> fail validation if
+	 *            PersonName.familyName2 is too long <strong>Should</strong>
+	 *            pass validation if PersonName.familyName2 is exactly max
+	 *            length <strong>Should</strong> pass validation if
+	 *            PersonName.familyName2 is less than maximum field length
+	 *            <strong>Should</strong> fail validation if
+	 *            PersonName.familyNameSuffix is too long
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.familyNameSuffix is exactly max length
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.familyNameSuffix is less than maximum field length
+	 *            <strong>Should</strong> fail validation if PersonName.degree
+	 *            is too long <strong>Should</strong> pass validation if
+	 *            PersonName.degree is exactly max length
+	 *            <strong>Should</strong> pass validation if PersonName.degree
+	 *            is less than maximum field length <strong>Should</strong> fail
+	 *            validation if PersonName.givenName is invalid
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.givenName is valid <strong>Should</strong> fail
+	 *            validation if PersonName.middleName is invalid
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.middleName is valid <strong>Should</strong> fail
+	 *            validation if PersonName.familyName is invalid
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.familyName is valid <strong>Should</strong> fail
+	 *            validation if PersonName.familyName2 is invalid
+	 *            <strong>Should</strong> pass validation if
+	 *            PersonName.familyName2 is valid <strong>Should</strong> pass
+	 *            validation if regex string is null <strong>Should</strong>
+	 *            pass validation if regex string is empty
+	 *            <strong>Should</strong> not validate against regex for blank
+	 *            names
 	 * @deprecated as of 2.2.0, use {@link #validate(Object, Errors)}
 	 */
 	@Deprecated
-	public void validatePersonName(PersonName personName, Errors errors, boolean arrayInd, boolean testInd) {
-		
+	public void validatePersonName(PersonName personName, Errors errors,
+			boolean arrayInd, boolean testInd) {
+
 		if (personName == null) {
 			errors.reject("error.name");
 			return;
 		}
 		// Make sure they assign a name
 		if (StringUtils.isBlank(personName.getGivenName())
-		        || StringUtils.isBlank(personName.getGivenName().replaceAll("\"", ""))) {
-			errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "Patient.names.required.given.family");
+				|| StringUtils.isBlank(personName.getGivenName().replaceAll(
+						"\"", ""))) {
+			errors.rejectValue(getFieldKey("givenName", arrayInd, testInd),
+					"Patient.names.required.given.family");
 		}
 
-		// Make sure the entered name value is sensible 
-		String namePattern = Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
+		// Make sure the entered name value is sensible
+		String namePattern = Context.getAdministrationService()
+				.getGlobalProperty(
+						OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
 		if (StringUtils.isNotBlank(namePattern)) {
-			if (StringUtils.isNotBlank(personName.getGivenName()) && !personName.getGivenName().matches(namePattern)) {
-				errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "GivenName.invalid");
+			if (StringUtils.isNotBlank(personName.getGivenName())
+					&& !personName.getGivenName().matches(namePattern)) {
+				errors.rejectValue(getFieldKey("givenName", arrayInd, testInd),
+						"GivenName.invalid");
 			}
-			if (StringUtils.isNotBlank(personName.getMiddleName()) && !personName.getMiddleName().matches(namePattern)) {
-				errors.rejectValue(getFieldKey("middleName", arrayInd, testInd), "MiddleName.invalid");
+			if (StringUtils.isNotBlank(personName.getMiddleName())
+					&& !personName.getMiddleName().matches(namePattern)) {
+				errors.rejectValue(
+						getFieldKey("middleName", arrayInd, testInd),
+						"MiddleName.invalid");
 			}
-			if (StringUtils.isNotBlank(personName.getFamilyName()) && !personName.getFamilyName().matches(namePattern)) {
-				errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "FamilyName.invalid");
+			if (StringUtils.isNotBlank(personName.getFamilyName())
+					&& !personName.getFamilyName().matches(namePattern)) {
+				errors.rejectValue(
+						getFieldKey("familyName", arrayInd, testInd),
+						"FamilyName.invalid");
 			}
-			if (StringUtils.isNotBlank(personName.getFamilyName2()) && !personName.getFamilyName2().matches(namePattern)) {
-				errors.rejectValue(getFieldKey("familyName2", arrayInd, testInd), "FamilyName2.invalid");
+			if (StringUtils.isNotBlank(personName.getFamilyName2())
+					&& !personName.getFamilyName2().matches(namePattern)) {
+				errors.rejectValue(
+						getFieldKey("familyName2", arrayInd, testInd),
+						"FamilyName2.invalid");
 			}
 		}
-		ValidateUtil.validateFieldLengths(errors, personName.getClass(), "prefix", "givenName", "middleName",
-		    "familyNamePrefix", "familyName", "familyName2", "familyNameSuffix", "degree", "voidReason");
+
+		// Check for leading/trailing spaces in names (RA-543)
+		if (StringUtils.isNotBlank(personName.getGivenName())
+				&& (personName.getGivenName().startsWith(" ") || personName
+						.getGivenName().endsWith(" "))) {
+			errors.rejectValue(getFieldKey("givenName", arrayInd, testInd),
+					"GivenName.invalid");
+		}
+		if (StringUtils.isNotBlank(personName.getMiddleName())
+				&& (personName.getMiddleName().startsWith(" ") || personName
+						.getMiddleName().endsWith(" "))) {
+			errors.rejectValue(getFieldKey("middleName", arrayInd, testInd),
+					"MiddleName.invalid");
+		}
+		if (StringUtils.isNotBlank(personName.getFamilyName())
+				&& (personName.getFamilyName().startsWith(" ") || personName
+						.getFamilyName().endsWith(" "))) {
+			errors.rejectValue(getFieldKey("familyName", arrayInd, testInd),
+					"FamilyName.invalid");
+		}
+		if (StringUtils.isNotBlank(personName.getFamilyName2())
+				&& (personName.getFamilyName2().startsWith(" ") || personName
+						.getFamilyName2().endsWith(" "))) {
+			errors.rejectValue(getFieldKey("familyName2", arrayInd, testInd),
+					"FamilyName2.invalid");
+		}
+		ValidateUtil.validateFieldLengths(errors, personName.getClass(),
+				"prefix", "givenName", "middleName", "familyNamePrefix",
+				"familyName", "familyName2", "familyNameSuffix", "degree",
+				"voidReason");
 	}
-	
+
 	/***********************************************************************************************************
-	 * @param field the field name
-	 * @param arrayInd indicates whether or not a names[0] array needs to be prepended to field
+	 * @param field
+	 *            the field name
+	 * @param arrayInd
+	 *            indicates whether or not a names[0] array needs to be
+	 *            prepended to field
 	 * @return formated
 	 */
 	private String getFieldKey(String field, boolean arrayInd, boolean testInd) {
-		return testInd ? field : arrayInd ? "names[0]." + field : "name." + field;
+		return testInd ? field : arrayInd ? "names[0]." + field : "name."
+				+ field;
 	}
-	
+
 }
