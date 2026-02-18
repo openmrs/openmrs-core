@@ -46,6 +46,7 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UnchangeableObjectException;
+import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
@@ -61,6 +62,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -373,6 +377,21 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 					order.setAutoExpireDate(cal.getTime());
 				}
 			}
+		}
+
+		if (orderContext != null) {
+				Errors errors = new BeanPropertyBindingResult(order, "order");
+				Validator orderValidator = Context.getRegisteredComponent("orderValidator", Validator.class);
+				orderValidator.validate(order, errors);
+
+				if (order instanceof DrugOrder) {
+					Validator drugOrderValidator = Context.getRegisteredComponent("drugOrderValidator", Validator.class);
+					drugOrderValidator.validate(order, errors);
+				}
+
+				if (errors.hasErrors()) {
+					throw new ValidationException(errors.toString());
+				}
 		}
 		
 		return dao.saveOrder(order);
