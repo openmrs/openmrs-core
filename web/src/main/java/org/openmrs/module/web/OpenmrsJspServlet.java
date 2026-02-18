@@ -39,23 +39,18 @@ public class OpenmrsJspServlet extends JspServlet {
 	
 	public static final String OPENMRS_TLD_SCAN_NEEDED = "OPENMRS_TLD_SCAN_NEEDED";
 
-	
-	
 	@Override
-public void init(ServletConfig config) {
+public void init(ServletConfig config)  throws ServletException {
 
     try {
         Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
         super.init(config);
 
     } catch (Exception e) {
-        log.error("Unexpected error during OpenmrsJspServlet initialization", e);
+        log.error("An unexpected error occurred", e);
         throw new RuntimeException("Failed to initialize OpenmrsJspServlet", e);
     }
 }
-
-	
-	
 	@Override
 public void service(HttpServletRequest request, HttpServletResponse response) {
 

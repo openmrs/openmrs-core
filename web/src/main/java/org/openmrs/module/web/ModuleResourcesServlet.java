@@ -47,11 +47,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		return f.lastModified();
 	}
-	
-	
 	@Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     try {
         log.debug("In service method for module servlet: {}", request.getPathInfo());
 
@@ -75,7 +72,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         }
 
     } catch (Exception e) {
-        log.error("Unexpected error in ModuleResourcesServlet#doGet", e);
+        log.error("An unexpected error occurred", e);
 
         try {
             if (!response.isCommitted()) {
@@ -87,7 +84,6 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         }
     }
 }
-	
 	/**
 	 * Turns the given request/path into a File object
 	 *
