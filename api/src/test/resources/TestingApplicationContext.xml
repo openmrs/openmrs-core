@@ -14,10 +14,8 @@
 <!-- Beans to add to the current Application context definition -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!-- 
 		Tell the service context to use the system classloader to load classes instead of
@@ -31,7 +29,7 @@
 	</bean>
 
 	<bean id="nameSupport"
-	      class="org.openmrs.layout.name.NameSupport">
+		  class="org.openmrs.layout.name.NameSupport">
 	</bean>
 
 	<!-- 
@@ -39,8 +37,8 @@
 		as possible jar files that could contain mapping files
 	-->
 	<bean id="proj001MappingResources"
-		class="org.springframework.beans.factory.config.ListFactoryBean"
-		parent="moduleTestingMappingJarLocations">
+		  class="org.springframework.beans.factory.config.ListFactoryBean"
+		  parent="moduleTestingMappingJarLocations">
 		<property name="sourceList">
 			<list merge="true">
 				<value>classpath*:*.omod</value>
@@ -49,7 +47,7 @@
 	</bean>
 
 	<bean id="mappingJarResources" class="org.springframework.beans.factory.config.ListFactoryBean"
-		parent="proj001MappingResources">
+		  parent="proj001MappingResources">
 		<property name="sourceList">
 			<list merge="true">
 
@@ -57,12 +55,14 @@
 		</property>
 	</bean>
 
-	<bean id="serviceTestBeanImpl" class="org.openmrs.api.cache.ServiceTestBeanImpl" />
-	
+	<bean id="serviceTestBeanImpl" class="org.openmrs.api.cache.ServiceTestBeanImpl"/>
+
 	<bean id="serviceTestBean" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="target" ref="serviceTestBeanImpl"/>
 		<property name="preInterceptors" ref="serviceInterceptors"/>
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
+
 </beans>
+
