@@ -43,10 +43,16 @@ public class PatientValidator extends PersonValidator {
 		return Patient.class.isAssignableFrom(c);
 	}
 	
-	/**
-	 * Validates the given Patient. Currently just checks for errors in identifiers. TODO: Check for
-	 * errors in all Patient fields.
-	 * 
+/**
+ * Validates the given Patient.
+ *
+ * <p>
+ * Note: Validation of person-related attributes such as names is handled by
+ * {@link PersonValidator}. This validator focuses on patient-specific validation
+ * rules, including identifier validation.
+ * </p>
+ */
+
 	 * @param obj The patient to validate.
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
