@@ -1,0 +1,399 @@
+@startuml Provider & User Management System - Domain Model
+!theme cerulean-outline
+title Provider & User Management System - Domain Model\n(OpenMRS Core - Provider & User Management Domain)
+
+' This model defines the conceptual domain entities for Provider & User Management
+' References shared entities from: patient-management-domain-model.puml
+' Focuses on conceptual entities without database-specific implementation details
+
+' Color Legend - aligned with DOMAIN_COLOR_STANDARDS.md:
+' - LightBlue (Person): Person demographic entities (from Patient Management)
+' - LightGreen (Patient): Patient-specific entities (from Patient Management)
+' - Orange (Provider): Healthcare provider entities (Provider & User Management Domain)
+' - LightGray (Location): Location and facility entities (from Patient Management)
+' - LightYellow (Clinical): Clinical care episode entities (from Patient Management)
+' - LightCyan (Concept): Clinical vocabulary and concept entities (from Patient Management)
+' - LightCoral (UserManagement): User account and security entities (Provider & User Management Domain)
+' - LightSteelBlue (Authentication): Authentication and session entities (Provider & User Management Domain)
+' - Wheat (Authorization): Role and privilege entities (Provider & User Management Domain)
+
+skinparam class {
+    ' Shared entities from other domain models
+    BackgroundColor<<Person>> LightBlue
+    BackgroundColor<<Patient>> LightGreen
+    BackgroundColor<<Location>> LightGray
+    BackgroundColor<<Clinical>> LightYellow
+    BackgroundColor<<Concept>> LightCyan
+    
+    ' Provider & User Management specific entities
+    BackgroundColor<<Provider>> Orange
+    BackgroundColor<<UserManagement>> LightCoral
+    BackgroundColor<<Authentication>> LightSteelBlue
+    BackgroundColor<<Authorization>> Wheat
+    
+    ' Border colors for better distinction
+    BorderColor<<Person>> DarkBlue
+    BorderColor<<Patient>> DarkGreen
+    BorderColor<<Location>> DarkGray
+    BorderColor<<Clinical>> DarkOrange
+    BorderColor<<Concept>> DarkCyan
+    BorderColor<<Provider>> DarkOrange
+    BorderColor<<UserManagement>> DarkRed
+    BorderColor<<Authentication>> SteelBlue
+    BorderColor<<Authorization>> DarkGoldenRod
+}
+
+' === SHARED ENTITIES (referenced from patient-management-domain-model.puml) ===
+entity Person <<Person>> {
+    birthdate
+    birthdateEstimated
+    dead
+    deathDate
+    (from Patient Management)
+}
+
+entity PersonName <<Person>> {
+    preferred
+    givenName
+    middleName
+    familyName
+    familyNamePrefix
+    familyNameSuffix
+    (from Patient Management)
+}
+
+entity PersonAddress <<Person>> {
+    preferred
+    address1
+    address2
+    cityVillage
+    stateProvince
+    country
+    postalCode
+    (from Patient Management)
+}
+
+entity Location <<Location>> {
+    name
+    description
+    (from Patient Management)
+}
+
+entity Encounter <<Clinical>> {
+    encounterDatetime
+    encounterType
+    (from Patient Management)
+}
+
+entity Concept <<Concept>> {
+    name
+    description
+    conceptClass
+    datatype
+    (from Patient Management)
+}
+
+' === PROVIDER MANAGEMENT ENTITIES ===
+
+' Core Provider Entity
+entity Provider <<Provider>> {
+    identifier
+    name
+    retired
+    retireReason
+}
+
+entity ProviderAttribute <<Provider>> {
+    value
+    voided
+    voidReason
+}
+
+entity ProviderAttributeType <<Provider>> {
+    name
+    description
+    datatypeClassname
+    preferredHandlerClassname
+    handlerConfig
+    minOccurs
+    maxOccurs
+    required
+    retired
+}
+
+entity ProviderRole <<Provider>> {
+    role
+    relationship
+    startDate
+    endDate
+}
+
+' Provider Specialization and Credentials
+entity ProviderSpecialty <<Provider>> {
+    specialtyName
+    specialtyDescription
+    certificationRequired
+    boardCertification
+}
+
+entity ProviderCredential <<Provider>> {
+    credentialType
+    credentialNumber
+    issuingAuthority
+    issueDate
+    expirationDate
+    verificationStatus
+}
+
+entity ProviderLicense <<Provider>> {
+    licenseNumber
+    licenseType
+    issuingState
+    issuingCountry
+    issueDate
+    expirationDate
+    licenseStatus
+}
+
+entity ProviderEducation <<Provider>> {
+    degree
+    institution
+    graduationYear
+    fieldOfStudy
+    certificationBody
+}
+
+' Provider Availability and Schedule
+entity ProviderAvailability <<Provider>> {
+    dayOfWeek
+    startTime
+    endTime
+    availabilityType
+    location
+    capacity
+}
+
+entity ProviderSchedule <<Provider>> {
+    scheduleDate
+    startTime
+    endTime
+    scheduleType
+    appointmentCapacity
+    notes
+}
+
+entity ProviderWorkShift <<Provider>> {
+    shiftName
+    shiftType
+    startDateTime
+    endDateTime
+    breakSchedule
+    onCallStatus
+}
+
+' === USER MANAGEMENT ENTITIES ===
+
+' Core User Entity
+entity User <<UserManagement>> {
+    systemId
+    username
+    creator
+    dateCreated
+    changedBy
+    dateChanged
+    retired
+    retiredBy
+    dateRetired
+    retireReason
+}
+
+entity UserProperty <<UserManagement>> {
+    property
+    value
+}
+
+entity UserRole <<Authorization>> {
+    role
+    description
+}
+
+entity Role <<Authorization>> {
+    roleName
+    description
+    uuid
+}
+
+entity Privilege <<Authorization>> {
+    privilege
+    description
+}
+
+entity RoleRole <<Authorization>> {
+    parentRole
+    childRole
+}
+
+' User Session and Authentication
+entity UserSession <<Authentication>> {
+    sessionId
+    startDatetime
+    endDatetime
+    ipAddress
+    userAgent
+    sessionStatus
+}
+
+entity LoginAttempt <<Authentication>> {
+    username
+    attemptDatetime
+    ipAddress
+    successful
+    failureReason
+    userAgent
+}
+
+entity PasswordHistory <<Authentication>> {
+    passwordHash
+    dateCreated
+    salt
+    algorithm
+}
+
+entity UserSecurityQuestion <<Authentication>> {
+    question
+    answerHash
+    dateCreated
+}
+
+' User Preferences and Configuration
+entity UserPreference <<UserManagement>> {
+    preferenceName
+    preferenceValue
+    preferenceType
+    defaultValue
+}
+
+entity UserConfiguration <<UserManagement>> {
+    configurationKey
+    configurationValue
+    configurationType
+    scope
+}
+
+entity UserProfile <<UserManagement>> {
+    profileType
+    profileData
+    visibility
+    lastUpdated
+}
+
+' User Activity and Audit
+entity UserActivity <<UserManagement>> {
+    activityType
+    activityDatetime
+    description
+    ipAddress
+    userAgent
+    sessionId
+}
+
+entity AuditLog <<UserManagement>> {
+    action
+    objectType
+    objectId
+    previousValue
+    newValue
+    actionDatetime
+    reason
+}
+
+' === RELATIONSHIPS ===
+
+' Provider Core Relationships
+Provider }o--o| Person : "may be person"
+Provider ||--o{ ProviderAttribute : "has attributes"
+ProviderAttribute }o--|| ProviderAttributeType : "of type"
+Provider ||--o{ ProviderRole : "has roles"
+ProviderRole }o--|| Concept : "role concept"
+
+' Provider Specialization Relationships
+Provider ||--o{ ProviderSpecialty : "has specialties"
+Provider ||--o{ ProviderCredential : "has credentials"
+Provider ||--o{ ProviderLicense : "has licenses"
+Provider ||--o{ ProviderEducation : "has education"
+ProviderSpecialty }o--|| Concept : "specialty concept"
+ProviderCredential }o--|| Concept : "credential type concept"
+ProviderLicense }o--|| Concept : "license type concept"
+
+' Provider Availability Relationships
+Provider ||--o{ ProviderAvailability : "has availability"
+Provider ||--o{ ProviderSchedule : "has schedules"
+Provider ||--o{ ProviderWorkShift : "works shifts"
+ProviderAvailability }o--|| Location : "available at location"
+ProviderSchedule }o--|| Location : "scheduled at location"
+ProviderWorkShift }o--|| Location : "shift at location"
+
+' User Core Relationships
+User }o--o| Person : "may be person"
+User }o--o| Provider : "may be provider"
+User ||--o{ UserProperty : "has properties"
+User ||--o{ UserRole : "assigned roles"
+UserRole }o--|| Role : "references role"
+Role ||--o{ Privilege : "has privileges"
+Role ||--o{ RoleRole : "parent of roles"
+Role ||--o{ RoleRole : "child of roles"
+
+' User Authentication Relationships
+User ||--o{ UserSession : "has sessions"
+User ||--o{ LoginAttempt : "login attempts"
+User ||--o{ PasswordHistory : "password history"
+User ||--o{ UserSecurityQuestion : "security questions"
+
+' User Preferences Relationships
+User ||--o{ UserPreference : "has preferences"
+User ||--o{ UserConfiguration : "has configurations"
+User ||--o{ UserProfile : "has profiles"
+
+' User Activity Relationships
+User ||--o{ UserActivity : "performs activities"
+UserSession ||--o{ UserActivity : "activities in session"
+User ||--o{ AuditLog : "subject of audits"
+
+' Encounter Provider Relationships
+Encounter }o--o{ Provider : "involves providers"
+ProviderRole }o--|| Encounter : "provider role in encounter"
+
+' === DOMAIN NOTES ===
+note right of Provider : Healthcare provider entity representing\nindividuals or organizations that\ndeliver healthcare services
+note right of User : System user account for accessing\nOpenMRS with authentication\nand authorization controls
+note right of ProviderRole : Specific role a provider plays\nin healthcare delivery with\nrelationship context
+note right of UserRole : Assignment of system roles\nto users for authorization\nand access control
+note right of ProviderSpecialty : Medical specialties and areas\nof expertise for healthcare\nproviders
+note right of ProviderCredential : Professional credentials,\ncertifications, and qualifications\nof healthcare providers
+note right of UserSession : Active user sessions with\nauthentication state and\nsecurity tracking
+note right of Role : System roles defining sets\nof privileges and permissions\nfor application access
+note right of Privilege : Specific system permissions\nfor accessing functionality\nand data
+note bottom of ProviderAvailability : Provider availability schedules\nfor appointment booking\nand care delivery
+note bottom of UserActivity : User activity tracking for\nsecurity, auditing, and\nusage analytics
+note bottom of PasswordHistory : Password change history\nfor security compliance\nand policy enforcement
+note left of UserPreference : User-specific preferences\nfor application behavior\nand interface customization
+note left of AuditLog : Comprehensive audit trail\nof system changes and\nuser actions
+
+' Reference note
+note top : This model defines the Provider & User Management domain entities.\nShared entities (Person, PersonName, PersonAddress, Location, Encounter, Concept)\nare referenced from patient-management-domain-model.puml
+
+' Color Legend Table
+legend right
+|= Color |= Description |= Domain |
+|<back:LightBlue>   </back>| Person demographics | Patient Management |
+|<back:LightGreen>   </back>| Patient entities | Patient Management |
+|<back:LightGray>   </back>| Locations | Patient Management |
+|<back:LightYellow>   </back>| Clinical episodes | Patient Management |
+|<back:LightCyan>   </back>| Clinical concepts | Patient Management |
+|<back:Orange>   </back>| Healthcare providers | Provider & User Management |
+|<back:LightCoral>   </back>| User management | Provider & User Management |
+|<back:LightSteelBlue>   </back>| Authentication | Provider & User Management |
+|<back:Wheat>   </back>| Authorization | Provider & User Management |
+endlegend
+
+@enduml

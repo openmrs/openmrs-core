@@ -1,0 +1,52 @@
+@startuml OpenMRS_Programs_and_Workflows_Domain
+!theme plain
+skinparam linetype ortho
+skinparam packageStyle rectangle
+title OpenMRS Programs & Workflows Domain Model
+
+entity "patient_program" {
+  location_id : INT <<FK>>
+  outcome_concept_id : INT <<FK>>
+  date_enrolled : datetime(0)
+  date_completed : datetime(0)
+}
+
+entity "patient_program_attribute" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "patient_state" {
+  encounter_id : INT <<FK>>
+  form_namespace_and_path : VARCHAR(255)
+  start_date : date
+  end_date : date
+}
+
+entity "program" {
+  outcomes_concept_id : INT <<FK>>
+  description : TEXT
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "program_attribute_type" {
+  description : VARCHAR(1024)
+  datatype : VARCHAR(255)
+  datatype_config : TEXT
+  ... (additional columns)
+}
+
+entity "program_workflow" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "program_workflow_state" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+' Relationships
+
+@enduml

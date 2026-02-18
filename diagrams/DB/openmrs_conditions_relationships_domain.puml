@@ -1,0 +1,31 @@
+@startuml OpenMRS_Conditions_and_Relationships_Domain
+!theme plain
+skinparam linetype ortho
+skinparam packageStyle rectangle
+title OpenMRS Conditions & Relationships Domain Model
+
+entity "conditions" {
+  encounter_id : INT <<FK>>
+  condition_coded : INT
+  condition_non_coded : VARCHAR(255)
+  condition_coded_name : INT
+  form_namespace_and_path : VARCHAR(255)
+  additional_detail : VARCHAR(255)
+  previous_version : INT
+  ... (additional columns)
+}
+
+entity "relationship" {
+  start_date : datetime(0)
+  end_date : datetime(0)
+}
+
+entity "relationship_type" {
+  description : VARCHAR(255)
+  retired_by : INT
+  date_retired : datetime(0)
+}
+
+' Relationships
+
+@enduml

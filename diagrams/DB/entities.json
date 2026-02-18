@@ -1,0 +1,5108 @@
+{
+  "ConceptMapType": {
+    "table_name": "concept_map_type",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ConceptMapType.java",
+    "columns": [
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptMapTypeId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@Column(name = \"concept_map_type_id\")",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "conceptMapTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptMapTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "isHidden",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "FieldAnswer": {
+    "table_name": "field_answer",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/FieldAnswer.java",
+    "columns": [
+      {
+        "name": "5656L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateCreated",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_created\", length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "dirty",
+        "type": "boolean",
+        "annotations": [
+          "@Transient"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "false",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "true",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "concept",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "true",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "creator",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "true",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateCreated",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "true",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "field",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "answer_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "User",
+        "join_column": "creator",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Field",
+        "join_column": "field_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "ConceptReferenceRange": {
+    "table_name": "concept_reference_range",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ConceptReferenceRange.java",
+    "columns": [
+      {
+        "name": "47329L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptReferenceRangeId",
+        "type": "Integer",
+        "annotations": [
+          "@DocumentId",
+          "@Id",
+          "@Column(name = \"concept_reference_range_id\")",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "criteria",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"criteria\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "conceptReferenceRangeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "criteria",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptNumeric",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "ConceptNumeric",
+        "join_column": "concept_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "Diagnosis": {
+    "table_name": "encounter_diagnosis",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/Diagnosis.java",
+    "columns": [
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "diagnosisId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+          "@Column(name = \"diagnosis_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "diagnosis",
+        "type": "CodedOrFreeText",
+        "annotations": [
+          "@Embedded",
+          "@AttributeOverrides({ @AttributeOverride(name = \"nonCoded\", column = @Column(name = \"diagnosis_non_coded\")) })",
+          "@AssociationOverrides({ @AssociationOverride(name = \"coded\", joinColumns = @JoinColumn(name = \"diagnosis_coded\")),",
+          "@AssociationOverride(name = \"specificName\", joinColumns = @JoinColumn(name = \"diagnosis_coded_name\")) })"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "certainty",
+        "type": "ConditionVerificationStatus",
+        "annotations": [
+          "@Enumerated(EnumType.STRING)",
+          "@JdbcTypeCode(SqlTypes.VARCHAR)",
+          "@Column(length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "rank",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name=\"dx_rank\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "formNamespaceAndPath",
+        "type": "String",
+        "annotations": [
+          "@Column(name=\"form_namespace_and_path\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "Constructor",
+        "type": "no-arg",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounter",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "diagnosis",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "certainty",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "rank",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounter",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "diagnosis",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "certainty",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "rank",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "formNamespaceAndPath",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "diagnosisId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounter",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "diagnosis",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "certainty",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "rank",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "condition",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "formNamespaceAndPath",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Encounter",
+        "join_column": "encounter_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Condition",
+        "join_column": "condition_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Patient",
+        "join_column": "patient_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "Allergy": {
+    "table_name": "allergy",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/Allergy.java",
+    "columns": [
+      {
+        "name": "1",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "allergyId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+          "@Column(name = \"allergy_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "allergen",
+        "type": "Allergen",
+        "annotations": [
+          "@Embedded"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "comments",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"comments\", length = 1024)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "allergen",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "severity",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "comments",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "reactions",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "allergyId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "allergyId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "allergen",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "severity",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "comments",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "reactions",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounter",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Patient",
+        "join_column": "patient_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "severity_concept_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Encounter",
+        "join_column": "encounter_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "ConceptClass": {
+    "table_name": "concept_class",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ConceptClass.java",
+    "columns": [
+      {
+        "name": "33473L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptClassId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"concept_class_id\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "conceptClassId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptClassId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "ConceptReferenceTermMap": {
+    "table_name": "concept_reference_term_map",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ConceptReferenceTermMap.java",
+    "columns": [
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptReferenceTermMapId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"concept_reference_term_map_id\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "conceptReferenceTermMapId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "termB",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptReferenceTermMapId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "termA",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "termB",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "obj",
+        "type": "(ConceptReferenceTermMap)",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "obj",
+        "type": "==",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "3",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "ConceptReferenceTerm",
+        "join_column": "term_a_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "ConceptReferenceTerm",
+        "join_column": "term_b_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "FormResource": {
+    "table_name": "form_resource",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/FormResource.java",
+    "columns": [
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "formResourceId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"form_resource_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "name",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"name\", length = 255, nullable = true)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "valueReference",
+        "type": "String",
+        "annotations": [
+          "@Lob",
+          "@Column(name = \"value_reference\", length = 65535, nullable = true)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "datatypeClassname",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"datatype\", length = 255)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "datatypeConfig",
+        "type": "String",
+        "annotations": [
+          "@Lob",
+          "@Column(name = \"datatype_config\", length = 65535)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "preferredHandlerClassname",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"preferred_handler\", length = 255)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "handlerConfig",
+        "type": "String",
+        "annotations": [
+          "@Lob",
+          "@Column(name = \"handler_config\", length = 65535)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "false",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "typedValue",
+        "type": "Object",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateChanged",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_changed\", length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "form",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "formResourceId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "name",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "datatypeClassname",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "datatypeConfig",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "preferredHandlerClassname",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "handlerConfig",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "typedValue",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "true",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "valueToPersist",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "changedBy",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateChanged",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Form",
+        "join_column": "form_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "User",
+        "join_column": "changed_by",
+        "mapped_by": null
+      }
+    ]
+  },
+  "ConceptReferenceTerm": {
+    "table_name": "concept_reference_term",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ConceptReferenceTerm.java",
+    "columns": [
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptReferenceTermId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"concept_reference_term_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "code",
+        "type": "String",
+        "annotations": [
+          "@GenericField",
+          "@Column(name = \"code\", nullable = false, length = 255)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "version",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"version\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "conceptReferenceTermId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "source",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "code",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptReferenceTermId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptSource",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "code",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "version",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptReferenceTermMaps",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "ConceptSource",
+        "join_column": "concept_source_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "PatientProgram": {
+    "table_name": "patient_program",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/PatientProgram.java",
+    "columns": [
+      {
+        "name": "0L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patientProgramId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+          "@Column(name = \"patient_program_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "dateEnrolled",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_enrolled\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "dateCompleted",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_completed\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "state",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "concept",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateCompleted",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateEnrolled",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patientProgramId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "program",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "states",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "location",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "attributes",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Patient",
+        "join_column": "patient_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Program",
+        "join_column": "program_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Location",
+        "join_column": "location_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "outcome_concept_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "PatientState": {
+    "table_name": "patient_state",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/PatientState.java",
+    "columns": [
+      {
+        "name": "0L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patientStateId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"patient_state_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "startDate",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"start_date\", length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "endDate",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"end_date\", length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "patientProgram",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patientStatusId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "state",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "endDate",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "startDate",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounter",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "PatientProgram",
+        "join_column": "patient_program_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "ProgramWorkflowState",
+        "join_column": "state",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Encounter",
+        "join_column": "encounter_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "ObsReferenceRange": {
+    "table_name": "obs_reference_range",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ObsReferenceRange.java",
+    "columns": [
+      {
+        "name": "473299L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "obsReferenceRangeId",
+        "type": "Integer",
+        "annotations": [
+          "@DocumentId",
+          "@Id",
+          "@Column(name = \"obs_reference_range_id\")",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "obsReferenceRangeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "obs",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "OneToOne",
+        "target_entity": "Obs",
+        "join_column": "obs_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "ConceptStateConversion": {
+    "table_name": "concept_state_conversion",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ConceptStateConversion.java",
+    "columns": [
+      {
+        "name": "3214511L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptStateConversionId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"concept_state_conversion_id\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "concept",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptStateConversionId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "programWorkflow",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "programWorkflowState",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "concept_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "ProgramWorkflow",
+        "join_column": "program_workflow_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "ProgramWorkflowState",
+        "join_column": "program_workflow_state_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "PatientIdentifierType": {
+    "table_name": "patient_identifier_type",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/PatientIdentifierType.java",
+    "columns": [
+      {
+        "name": "211231L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patientIdentifierTypeId",
+        "type": "Integer",
+        "annotations": [
+          "@DocumentId",
+          "@Id",
+          "@GeneratedValue(generator = \"native\")",
+          "@GenericGenerator(name = \"native\", strategy = \"native\")",
+          "@Column(name = \"patient_identifier_type_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "format",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"format\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "formatDescription",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"format_description\", length = 250)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "validator",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"validator\", length = 200)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "locationBehavior",
+        "type": "LocationBehavior",
+        "annotations": [
+          "@Enumerated(EnumType.STRING)",
+          "@JdbcTypeCode(SqlTypes.VARCHAR)",
+          "@Column(name = \"location_behavior\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "uniquenessBehavior",
+        "type": "UniquenessBehavior",
+        "annotations": [
+          "@Enumerated(EnumType.STRING)",
+          "@JdbcTypeCode(SqlTypes.VARCHAR)",
+          "@Column(name = \"uniqueness_behavior\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "patientIdentifierTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "formatDescription",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "required",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "locationBehavior",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "uniquenessBehavior",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "format",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patientIdentifierTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "validator",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "User": {
+    "table_name": "users",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/User.java",
+    "columns": [
+      {
+        "name": "userId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"user_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "systemId",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"system_id\", nullable = false, length = 50)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "username",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"username\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "email",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"email\", length = 255, unique = true)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "userProperties",
+        "type": "String>",
+        "annotations": [
+          "@ElementCollection",
+          "@CollectionTable(name = \"user_property\", joinColumns = @JoinColumn(name = \"user_id\", nullable = false))",
+          "@MapKeyColumn(name = \"property\", length = 255)",
+          "@Column(name = \"property_value\", length = Integer.MAX_VALUE)",
+          "@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.DETACH })",
+          "@NotAudited"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": "=",
+        "annotations": [
+          "@Transient"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "dateCreated",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_created\", nullable = false, length = 19)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "dateChanged",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_changed\", length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "retired",
+        "type": "boolean",
+        "annotations": [
+          "@Column(name = \"retired\", nullable = false, length = 1)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "dateRetired",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_retired\", length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "retireReason",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"retire_reason\", length = 255)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "userId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "person",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "tmprole",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "roles",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "systemId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "userId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "person",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "username",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "email",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "systemId",
+        "type": ":",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "userProperties",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "proficientLocalesProperty",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "creator",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateCreated",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "changedBy",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateChanged",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "retired",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "retiredBy",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateRetired",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "retireReason",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Person",
+        "join_column": "person_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToMany",
+        "target_entity": "Role",
+        "join_column": "user_role",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "User",
+        "join_column": "creator",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "User",
+        "join_column": "changed_by",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "User",
+        "join_column": "retired_by",
+        "mapped_by": null
+      }
+    ]
+  },
+  "ConceptSource": {
+    "table_name": "concept_reference_source",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ConceptSource.java",
+    "columns": [
+      {
+        "name": "375L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptSourceId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"concept_source_id\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "hl7Code",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"hl7_code\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "uniqueId",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"unique_id\", length = 250, unique = true)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "conceptSourceId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptSourceId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "hl7Code",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "uniqueId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "PersonAttributeType": {
+    "table_name": "person_attribute_type",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/PersonAttributeType.java",
+    "columns": [
+      {
+        "name": "2112313431211L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "personAttributeTypeId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+          "@Column(name = \"person_attribute_type_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "format",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"format\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "foreignKey",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"foreign_key\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "sortWeight",
+        "type": "Double",
+        "annotations": [
+          "@Column(name = \"sort_weight\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "false",
+        "type": "=",
+        "annotations": [
+          "@GenericField",
+          "@Column(name = \"searchable\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "myPersonAttributeTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "format",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "foreignKey",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "sortWeight",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "newPersonAttributeTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "searchable",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "editPrivilege",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Privilege",
+        "join_column": "edit_privilege",
+        "mapped_by": null
+      }
+    ]
+  },
+  "ProviderRole": {
+    "table_name": "provider_role",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ProviderRole.java",
+    "columns": [
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "providerRoleId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+          "@Column(name = \"provider_role_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "id",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "id",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "DrugReferenceMap": {
+    "table_name": "drug_reference_map",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/DrugReferenceMap.java",
+    "columns": [
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "drugReferenceMapId",
+        "type": "Integer",
+        "annotations": [
+          "@DocumentId",
+          "@Column(name = \"drug_reference_map_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "dateCreated",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_created\", nullable = false, length = 19)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "dateChanged",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_changed\", length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "term",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptMapType",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "drugReferenceMapId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "drug",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptReferenceTerm",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptMapType",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "creator",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateCreated",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "changedBy",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateChanged",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Drug",
+        "join_column": "drug_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "ConceptReferenceTerm",
+        "join_column": "term_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "ConceptMapType",
+        "join_column": "concept_map_type",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "User",
+        "join_column": "creator",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "User",
+        "join_column": "changed_by",
+        "mapped_by": null
+      }
+    ]
+  },
+  "ProgramAttributeType": {
+    "table_name": "program_attribute_type",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ProgramAttributeType.java",
+    "columns": [
+      {
+        "name": "programAttributeTypeId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"program_attribute_type_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "programAttributeTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "ConceptAnswer": {
+    "table_name": "concept_answer",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ConceptAnswer.java",
+    "columns": [
+      {
+        "name": "3744L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptAnswerId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"concept_answer_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "dateCreated",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_created\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "sortWeight",
+        "type": "Double",
+        "annotations": [
+          "@Column(name = \"sort_weight\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "conceptAnswerId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "answerConcept",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "answerConcept",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "d",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "answerConcept",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "answerDrug",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "concept",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conceptAnswerId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "creator",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateCreated",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "sortWeight",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "0",
+        "type": ":",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "concept_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "answer_concept",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Drug",
+        "join_column": "answer_drug",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "User",
+        "join_column": "creator",
+        "mapped_by": null
+      }
+    ]
+  },
+  "Encounter": {
+    "table_name": "encounter",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/Encounter.java",
+    "columns": [
+      {
+        "name": "2L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounterId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+          "@Column(name = \"encounter_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "encounterDatetime",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"encounter_datetime\", nullable = false, length = 19)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "encounterId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounterDatetime",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounterId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounterType",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "location",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "obs",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "orders",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "diagnoses",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conditions",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounterProviders",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "form",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "visit",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "false",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "true",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "allergies",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Patient",
+        "join_column": "patient_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Location",
+        "join_column": "location_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Form",
+        "join_column": "form_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "EncounterType",
+        "join_column": "encounter_type",
+        "mapped_by": null
+      },
+      {
+        "type": "OneToMany",
+        "target_entity": "Order",
+        "join_column": null,
+        "mapped_by": "encounter"
+      },
+      {
+        "type": "OneToMany",
+        "target_entity": "Diagnosis",
+        "join_column": null,
+        "mapped_by": "encounter"
+      },
+      {
+        "type": "OneToMany",
+        "target_entity": "Condition",
+        "join_column": null,
+        "mapped_by": "encounter"
+      },
+      {
+        "type": "OneToMany",
+        "target_entity": "Obs",
+        "join_column": null,
+        "mapped_by": "encounter"
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Visit",
+        "join_column": "visit_id",
+        "mapped_by": null
+      },
+      {
+        "type": "OneToMany",
+        "target_entity": "Allergy",
+        "join_column": null,
+        "mapped_by": "encounter"
+      }
+    ]
+  },
+  "PersonAddress": {
+    "table_name": "person_address",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/PersonAddress.java",
+    "columns": [
+      {
+        "name": "343333L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "personAddressId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@Column(name = \"person_address_id\")",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "false",
+        "type": "=",
+        "annotations": [
+          "@Column(name = \"preferred\", length = 1, nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "address1",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address1\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address2",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address2\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address3",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address3\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address4",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address4\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address5",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address5\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address6",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address6\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address7",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address7\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address8",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address8\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address9",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address9\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address10",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address10\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address11",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address11\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address12",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address12\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address13",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address13\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address14",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address14\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address15",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address15\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "cityVillage",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"city_village\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "countyDistrict",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"county_district\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "stateProvince",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"state_province\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "country",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"country\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "postalCode",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"postal_code\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "latitude",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"latitude\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "longitude",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"longitude\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "startDate",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"start_date\", length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "endDate",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"end_date\", length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "personAddressId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address1",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address2",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "cityVillage",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "country",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "preferred",
+        "type": ":",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "preferred",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "latitude",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "longitude",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "person",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "personAddressId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "postalCode",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "stateProvince",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "countyDistrict",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "0",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "1",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address3",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address4",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address6",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address5",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "startDate",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "endDate",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": "==",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address7",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address8",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address9",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address10",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address11",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address12",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address13",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address14",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address15",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Person",
+        "join_column": "person_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "Condition": {
+    "table_name": "conditions",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/Condition.java",
+    "columns": [
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conditionId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+          "@Column(name = \"condition_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "condition",
+        "type": "CodedOrFreeText",
+        "annotations": [
+          "@Embedded",
+          "@AttributeOverrides({ @AttributeOverride(name = \"nonCoded\", column = @Column(name = \"condition_non_coded\")) })",
+          "@AssociationOverrides({ @AssociationOverride(name = \"coded\", joinColumns = @JoinColumn(name = \"condition_coded\")),",
+          "@AssociationOverride(name = \"specificName\", joinColumns = @JoinColumn(name = \"condition_coded_name\")) })"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "clinicalStatus",
+        "type": "ConditionClinicalStatus",
+        "annotations": [
+          "@Enumerated(EnumType.STRING)",
+          "@JdbcTypeCode(SqlTypes.VARCHAR)",
+          "@Column(name = \"clinical_status\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "verificationStatus",
+        "type": "ConditionVerificationStatus",
+        "annotations": [
+          "@Enumerated(EnumType.STRING)",
+          "@JdbcTypeCode(SqlTypes.VARCHAR)",
+          "@Column(name = \"verification_status\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "additionalDetail",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"additional_detail\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "onsetDate",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"onset_date\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "endDate",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"end_date\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "endReason",
+        "type": "String",
+        "annotations": [
+          "@Transient"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "condition",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "clinicalStatus",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "verificationStatus",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "previousVersion",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "additionalDetail",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": ":",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": ":",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "conditionId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "condition",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "clinicalStatus",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "verificationStatus",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "previousVersion",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "additionalDetail",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": ":",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": ":",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": ":",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": ":",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "endReason",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounter",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Condition",
+        "join_column": "previous_version",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Patient",
+        "join_column": "patient_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Encounter",
+        "join_column": "encounter_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "Location": {
+    "table_name": "location",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/Location.java",
+    "columns": [
+      {
+        "name": "455634L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "1",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "locationId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@Column(name = \"location_id\")",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address1",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address1\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address2",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address2\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "cityVillage",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"city_village\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "stateProvince",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"state_province\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "country",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"country\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "postalCode",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"postal_code\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "latitude",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"latitude\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "longitude",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"longitude\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "countyDistrict",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"county_district\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address3",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address3\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address4",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address4\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address6",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address6\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address5",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address5\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address7",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address7\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address8",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address8\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address9",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address9\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address10",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address10\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address11",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address11\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address12",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address12\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address13",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address13\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address14",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address14\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "address15",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"address15\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "tags",
+        "type": "Set<LocationTag>",
+        "annotations": [
+          "@Independent"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "locationId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address1",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address2",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "cityVillage",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "country",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "latitude",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "locationId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "longitude",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "postalCode",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "stateProvince",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "countyDistrict",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "type",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "parentLocationId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "childLocations",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "this",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "tags",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address3",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address4",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address6",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address5",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address7",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address8",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address9",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address10",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address11",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address12",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address13",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address14",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "address15",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "location_type_concept_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Location",
+        "join_column": "parent_location",
+        "mapped_by": null
+      },
+      {
+        "type": "OneToMany",
+        "target_entity": "Location",
+        "join_column": null,
+        "mapped_by": "parentLocation"
+      }
+    ]
+  },
+  "OrderType": {
+    "table_name": "order_type",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/OrderType.java",
+    "columns": [
+      {
+        "name": "23232L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "orderTypeId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"order_type_id\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "javaClassName",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"java_class_name\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "conceptClasses",
+        "type": "Set<ConceptClass>",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "orderTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "orderTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "javaClassName",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "parent",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "OrderType",
+        "join_column": "parent",
+        "mapped_by": null
+      }
+    ]
+  },
+  "VisitType": {
+    "table_name": "visit_type",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/VisitType.java",
+    "columns": [
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "visitTypeId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+          "@Column(name = \"visit_type_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "visitTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "visitTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "Visit": {
+    "table_name": "visit",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/Visit.java",
+    "columns": [
+      {
+        "name": "visitId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+          "@Column(name = \"visit_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "startDatetime",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_started\", nullable = false, length = 19)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "stopDatetime",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_stopped\", length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "visitId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "visitType",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "startDatetime",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "visitId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "visitType",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "indication",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "location",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "startDatetime",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "stopDatetime",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "id",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "visitId",
+        "type": "+",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounters",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Patient",
+        "join_column": "patient_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "VisitType",
+        "join_column": "visit_type_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "indication_concept_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Location",
+        "join_column": "location_id",
+        "mapped_by": null
+      },
+      {
+        "type": "OneToMany",
+        "target_entity": "Encounter",
+        "join_column": null,
+        "mapped_by": "visit"
+      }
+    ]
+  },
+  "OrderGroup": {
+    "table_name": "order_group",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/OrderGroup.java",
+    "columns": [
+      {
+        "name": "72232L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "orderGroupId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = \"order_group_id_seq\")",
+          "@GenericGenerator(name = \"order_group_id_seq\", strategy = \"native\", parameters = @Parameter(name = \"sequence\", value = \"order_group_order_group_id_seq\"))",
+          "@Column(name = \"order_group_id\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "orderGroupId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounter",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "orders",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "1",
+        "type": "+",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "size",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "2",
+        "type": "/",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "2",
+        "type": "/",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "orderSet",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "parentOrderGroup",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "orderGroupReason",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "previousOrderGroup",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "nestedOrderGroups",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Patient",
+        "join_column": "patient_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Encounter",
+        "join_column": "encounter_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "OrderSet",
+        "join_column": "order_set_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "OrderGroup",
+        "join_column": "parent_order_group",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "order_group_reason",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "OrderGroup",
+        "join_column": "previous_order_group",
+        "mapped_by": null
+      },
+      {
+        "type": "OneToMany",
+        "target_entity": "OrderGroup",
+        "join_column": null,
+        "mapped_by": "parentOrderGroup"
+      }
+    ]
+  },
+  "MedicationDispense": {
+    "table_name": "medication_dispense",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/MedicationDispense.java",
+    "columns": [
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "medicationDispenseId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+          "@Column(name = \"medication_dispense_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "event",
+        "type": "dispensing",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "quantity",
+        "type": "Double",
+        "annotations": [
+          "@Column(name = \"quantity\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "dose",
+        "type": "Double",
+        "annotations": [
+          "@Column(name = \"dose\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "asNeeded",
+        "type": "Boolean",
+        "annotations": [
+          "@Column(name = \"as_needed\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "dosingInstructions",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"dosing_instructions\", length=65535)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "datePrepared",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_prepared\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "dateHandedOver",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_handed_over\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "wasSubstituted",
+        "type": "Boolean",
+        "annotations": [
+          "@Column(name = \"was_substituted\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "medicationDispenseId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "patient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounter",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "concept",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "drug",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "location",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dispenser",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "drugOrder",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "status",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "statusReason",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "type",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "quantity",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "quantityUnits",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dose",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "doseUnits",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "route",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "frequency",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "asNeeded",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dosingInstructions",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "datePrepared",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateHandedOver",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "wasSubstituted",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "substitutionType",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "substitutionReason",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Patient",
+        "join_column": "patient_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Encounter",
+        "join_column": "encounter_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "concept",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Drug",
+        "join_column": "drug_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Location",
+        "join_column": "location_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Provider",
+        "join_column": "dispenser",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "DrugOrder",
+        "join_column": "drug_order_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "status",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "status_reason",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "type",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "quantity_units",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "dose_units",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "route",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "OrderFrequency",
+        "join_column": "frequency",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "substitution_type",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "substitution_reason",
+        "mapped_by": null
+      }
+    ]
+  },
+  "DrugIngredient": {
+    "table_name": "drug_ingredient",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/DrugIngredient.java",
+    "columns": [
+      {
+        "name": "94023L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "strength",
+        "type": "Double",
+        "annotations": [
+          "@Column(name = \"strength\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "drug",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "ingredient",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "strength",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "units",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Drug",
+        "join_column": "drug_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "ingredient_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Concept",
+        "join_column": "units",
+        "mapped_by": null
+      }
+    ]
+  },
+  "ProviderAttributeType": {
+    "table_name": "provider_attribute_type",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/ProviderAttributeType.java",
+    "columns": [
+      {
+        "name": "providerAttributeTypeId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@Column(name = \"provider_attribute_type_id\")",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "providerAttributeTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "VisitAttributeType": {
+    "table_name": "visit_attribute_type",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/VisitAttributeType.java",
+    "columns": [
+      {
+        "name": "visitAttributeTypeId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@Column(name = \"visit_attribute_type_id\")",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "visitAttributeTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "EncounterRole": {
+    "table_name": "encounter_role",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/EncounterRole.java",
+    "columns": [
+      {
+        "name": "encounterRoleId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"encounter_role_id\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "encounterRoleId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "encounterRoleId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "Relationship": {
+    "table_name": "relationship",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/Relationship.java",
+    "columns": [
+      {
+        "name": "323423L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "relationshipId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"relationship_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "startDate",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"start_date\",length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "endDate",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"end_date\", length = 19)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "relationshipId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "personA",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "personB",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "type",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "personA",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "type",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "relationshipId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "personB",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "startDate",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "endDate",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "personB",
+        "type": "+",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Person",
+        "join_column": "person_a",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "RelationshipType",
+        "join_column": "relationship",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Person",
+        "join_column": "person_b",
+        "mapped_by": null
+      }
+    ]
+  },
+  "LocationAttributeType": {
+    "table_name": "location_attribute_type",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/LocationAttributeType.java",
+    "columns": [
+      {
+        "name": "locationAttributeTypeId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"location_attribute_type_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "locationAttributeTypeId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "PersonMergeLog": {
+    "table_name": "person_merge_log",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/person/PersonMergeLog.java",
+    "columns": [
+      {
+        "name": "1L",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "personMergeLogId",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@Column(name = \"person_merge_log_id\")",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "serializedMergedData",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"merged_data\", nullable = false, columnDefinition = \"LONGTEXT\")"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "personMergeLogData",
+        "type": "PersonMergeLogData",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "personMergeLogId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "winner",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "loser",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "serializedMergedData",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "personMergeLogData",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Person",
+        "join_column": "winner_person_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "Person",
+        "join_column": "loser_person_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "AlertRecipient": {
+    "table_name": "notification_alert_recipient",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/notification/AlertRecipient.java",
+    "columns": [
+      {
+        "name": "false",
+        "type": "=",
+        "annotations": [
+          "@Column(name = \"alert_read\", length = 1)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "dateChanged",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"date_changed\", length = 19, updatable = false, insertable = false)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "recipientId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"user_id\", nullable = false, updatable = false, insertable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "a",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "a",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "read",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "alert",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "dateChanged",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "recipient",
+        "type": "+",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "alertRead",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "user",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "recipientId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ManyToOne",
+        "target_entity": "Alert",
+        "join_column": "alert_id",
+        "mapped_by": null
+      },
+      {
+        "type": "ManyToOne",
+        "target_entity": "User",
+        "join_column": "user_id",
+        "mapped_by": null
+      }
+    ]
+  },
+  "Template": {
+    "table_name": "notification_template",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/notification/Template.java",
+    "columns": [
+      {
+        "name": "id",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+          "@Column(name = \"template_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "name",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"name\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "template",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"template\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "ordinal",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"ordinal\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "sender",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"sender\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "recipients",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"recipients\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "subject",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"subject\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "data",
+        "type": "Map",
+        "annotations": [
+          "@Transient"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "content",
+        "type": "String",
+        "annotations": [
+          "@Transient"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "id",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "name",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "template",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "id",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "name",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "template",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "recipients",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "sender",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "subject",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "ordinal",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "data",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "content",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "TaskDefinition": {
+    "table_name": "scheduler_task_config",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/scheduler/TaskDefinition.java",
+    "columns": [
+      {
+        "name": "id",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"task_config_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "taskClass",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"schedulable_class\", length = 1024)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "null",
+        "type": "=",
+        "annotations": [
+          "@Transient"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "startTime",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"start_time\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "lastExecutionTime",
+        "type": "Date",
+        "annotations": [
+          "@Column(name = \"last_execution_time\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "repeatInterval",
+        "type": "Long",
+        "annotations": [
+          "@Column(name = \"repeat_interval\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "startOnStartup",
+        "type": "Boolean",
+        "annotations": [
+          "@Column(name = \"start_on_startup\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "startTimePattern",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"start_time_pattern\", length = 50)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "started",
+        "type": "Boolean",
+        "annotations": [
+          "@Column(name = \"started\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "properties",
+        "type": "String>",
+        "annotations": [
+          "@MapKeyColumn(name = \"name\", length = 100)",
+          "@Column(name = \"value\", length = 1024)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "id",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "taskClass",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "id",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "properties",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "taskClass",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "startTime",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "lastExecutionTime",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "repeatInterval",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "pattern",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "startOnStartup",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "started",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "1000",
+        "type": "/",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "taskInstance",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "ClobDatatypeStorage": {
+    "table_name": "clob_datatype_storage",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/api/db/ClobDatatypeStorage.java",
+    "columns": [
+      {
+        "name": "id",
+        "type": "Integer",
+        "annotations": [
+          "@Id",
+          "@Column(name = \"id\")",
+          "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "id",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "value",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "SerializedObject": {
+    "table_name": "serialized_object",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/api/db/SerializedObject.java",
+    "columns": [
+      {
+        "name": "id",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"serialized_object_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "type",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"type\", nullable = false, length = 255)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "subtype",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"subtype\", nullable = false, length = 255)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "serializationClass",
+        "type": "OpenmrsSerializer>",
+        "annotations": [
+          "@Column(name = \"serialization_class\", nullable = false, length = 255)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "serializedData",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"serialized_data\", length = 16777215)"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "id",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "type",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "subtype",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "serializationClass",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "serializedData",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "OpenmrsRevisionEntity": {
+    "table_name": "revision_entity",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/api/db/hibernate/envers/OpenmrsRevisionEntity.java",
+    "columns": [
+      {
+        "name": "changedBy",
+        "type": "Integer",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "changedOn",
+        "type": "Date",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "userId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "changedOn",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "HL7InArchive": {
+    "table_name": "hl7_in_archive",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/hl7/HL7InArchive.java",
+    "columns": [
+      {
+        "name": "hl7InArchiveId",
+        "type": "int",
+        "annotations": [
+          "@Column(name = \"hl7_in_archive_id\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "messageState",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"message_state\")"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "false",
+        "type": "=",
+        "annotations": [
+          "@Transient"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "hl7InArchiveId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "messageState",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "loaded",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  },
+  "HL7InError": {
+    "table_name": "hl7_in_error",
+    "file_path": "/Users/shashivelur/Projects/openmrs-core/api/src/main/java/org/openmrs/hl7/HL7InError.java",
+    "columns": [
+      {
+        "name": "16777215",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "hl7InErrorId",
+        "type": "Integer",
+        "annotations": [
+          "@Column(name = \"hl7_in_error_id\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "error",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"error\", nullable = false)"
+        ],
+        "nullable": false
+      },
+      {
+        "name": "errorDetails",
+        "type": "String",
+        "annotations": [
+          "@Column(name = \"error_details\", length = MAX_ERROR_DETAILS_LENGTH)",
+          "@Lob"
+        ],
+        "nullable": true
+      },
+      {
+        "name": "hl7InErrorId",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "error",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      },
+      {
+        "name": "errorDetails",
+        "type": "=",
+        "annotations": [],
+        "nullable": true
+      }
+    ],
+    "relationships": []
+  }
+}

@@ -1,0 +1,114 @@
+@startuml OpenMRS Core Dependencies
+!theme cerulean-outline
+title OpenMRS Core - Component Dependencies\n(Direct and First-Level Transitive Dependencies Only)
+
+' Layout directives for 16:9 aspect ratio
+!define DIRECTION left to right direction
+DIRECTION
+
+' Define component styles
+skinparam component {
+    BackgroundColor<<OpenMRS>> LightBlue
+    BackgroundColor<<WAR>> LightGreen
+    BackgroundColor<<External>> LightYellow
+    BackgroundColor<<Database>> LightPink
+    BackgroundColor<<Framework>> Orange
+}
+
+' Define arrow styles for different dependency types
+skinparam arrow {
+    Color Black
+}
+
+' Adjust spacing and sizing for widescreen
+skinparam componentStyle uml2
+skinparam wrapWidth 200
+skinparam maxMessageSize 150
+
+' OpenMRS Core Components (Left side)
+package "OpenMRS Core" <<OpenMRS>> {
+    component "openmrs-api" <<OpenMRS>>
+    component "openmrs-web" <<OpenMRS>>
+    component "openmrs-webapp" <<WAR>>
+    component "openmrs-tools" <<OpenMRS>>
+    component "openmrs-test" <<OpenMRS>>
+    component "openmrs-liquibase" <<OpenMRS>>
+}
+
+' OpenMRS Extension Components
+component "org.openmrs.liquibase.ext:type-converter" <<OpenMRS>>
+
+' Framework Dependencies (Center-right)
+package "Core Frameworks" <<Framework>> {
+    component "spring-core" <<Framework>>
+    component "spring-web" <<Framework>>
+    component "spring-webmvc" <<Framework>>
+    component "hibernate-core" <<Framework>>
+    component "liquibase-core" <<Framework>>
+}
+
+' External Dependencies (Right side)
+package "External Libraries" <<External>> {
+    component "commons-lang3" <<External>>
+    component "commons-io" <<External>>
+    component "jackson-core" <<Framework>>
+    component "velocity" <<External>>
+    component "guava" <<External>>
+}
+
+' Infrastructure (Far right)
+package "Infrastructure" {
+    component "mysql-connector-java" <<Database>>
+    component "jakarta.servlet-api" <<Framework>>
+    component "slf4j-api" <<Framework>>
+    component "log4j-core" <<Framework>>
+}
+
+' COMPILE-TIME Dependencies (Solid arrows)
+' Primary Dependencies (API to Core Frameworks)
+"openmrs-api" --> "spring-core" : <<compile>>
+"openmrs-api" --> "hibernate-core" : <<compile>>
+"openmrs-api" --> "liquibase-core" : <<compile>>
+"openmrs-api" --> "commons-lang3" : <<compile>>
+"openmrs-api" --> "commons-io" : <<compile>>
+"openmrs-api" --> "jackson-core" : <<compile>>
+"openmrs-api" --> "velocity" : <<compile>>
+"openmrs-api" --> "guava" : <<compile>>
+"openmrs-api" --> "slf4j-api" : <<compile>>
+"openmrs-api" --> "log4j-core" : <<compile>>
+
+' Web Module Compile Dependencies
+"openmrs-web" --> "openmrs-api" : <<compile>>
+"openmrs-web" --> "spring-web" : <<compile>>
+"openmrs-web" --> "spring-webmvc" : <<compile>>
+"openmrs-web" --> "jakarta.servlet-api" : <<compile>>
+
+' WebApp Dependencies
+"openmrs-webapp" --> "openmrs-api" : <<compile>>
+"openmrs-webapp" --> "openmrs-web" : <<compile>>
+
+' Liquibase Compile Dependencies
+"openmrs-liquibase" --> "slf4j-api" : <<compile>>
+
+' OpenMRS Extension Dependencies
+"openmrs-api" --> "org.openmrs.liquibase.ext:type-converter" : <<compile>>
+
+' RUNTIME Dependencies (Dashed arrows)
+"openmrs-api" ..> "mysql-connector-java" : <<runtime>>
+"openmrs-liquibase" ..> "mysql-connector-java" : <<runtime>>
+
+' Layout hints for better 16:9 arrangement
+"openmrs-api" -[hidden]-> "openmrs-web"
+"openmrs-web" -[hidden]-> "openmrs-webapp"
+
+' Legend
+legend top right
+  |= Dependency Type |= Arrow Style |= Description |
+  | Compile-time | ---> | Required for compilation and runtime |
+  | Runtime-only | ...> | Required only at runtime |
+endlegend
+
+note top of "openmrs-webapp" : WAR File
+note bottom of "OpenMRS Core" : Multi-module Project\n(Direct and first-level dependencies only)
+
+@enduml

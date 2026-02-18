@@ -1,0 +1,65 @@
+@startuml OpenMRS_Visits_and_Locations_Domain
+!theme plain
+skinparam linetype ortho
+skinparam packageStyle rectangle
+title OpenMRS Visits & Locations Domain Model
+
+entity "location" {
+  location_type_concept_id : INT <<FK>>
+  description : VARCHAR(255)
+  postal_code : VARCHAR(50)
+  address1 : VARCHAR(255)
+  address2 : VARCHAR(255)
+  ... (additional columns)
+}
+
+entity "location_attribute" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "location_attribute_type" {
+  description : VARCHAR(1024)
+  datatype : VARCHAR(255)
+  datatype_config : TEXT
+  ... (additional columns)
+}
+
+entity "location_tag" {
+  description : VARCHAR(255)
+  retired_by : INT
+  date_retired : datetime(0)
+}
+
+entity "location_tag_map" {
+}
+
+entity "visit" {
+  indication_concept_id : INT <<FK>>
+  location_id : INT <<FK>>
+  date_stopped : datetime(0)
+  changed_by : INT
+}
+
+entity "visit_attribute" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "visit_attribute_type" {
+  description : VARCHAR(1024)
+  datatype : VARCHAR(255)
+  datatype_config : TEXT
+  ... (additional columns)
+}
+
+entity "visit_type" {
+  description : VARCHAR(1024)
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+' Relationships
+visit }o--|| location : location_id
+
+@enduml

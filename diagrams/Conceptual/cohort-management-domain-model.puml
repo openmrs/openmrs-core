@@ -1,0 +1,439 @@
+@startuml Cohort Management System - Domain Model
+!theme cerulean-outline
+title Cohort Management System - Domain Model\n(OpenMRS Core - Cohort Management Domain)
+
+' This model defines the conceptual domain entities for Cohort Management
+' References shared entities from: patient-management-domain-model.puml, clinical-data-management-domain-model.puml, provider-user-management-domain-model.puml
+' Focuses on conceptual entities without database-specific implementation details
+' Follows FMC domain modeling principles - conceptual entities not technical implementations
+
+' Define entity colors and styles - STANDARDIZED ACROSS ALL DOMAIN MODELS
+' Color Legend:
+' - LightBlue (Person): Person demographic entities
+' - LightGreen (Patient): Patient-specific entities
+' - LightYellow (Clinical): Clinical care episode entities
+' - LightCyan (Concept): Clinical vocabulary and concept entities
+' - Orange (Provider): Healthcare provider entities
+' - Plum (Cohort): All Cohort Management domain entities
+
+skinparam class {
+    ' Shared entities from other domain models
+    BackgroundColor<<Person>> LightBlue
+    BackgroundColor<<Patient>> LightGreen
+    BackgroundColor<<Clinical>> LightYellow
+    BackgroundColor<<Concept>> LightCyan
+    BackgroundColor<<Provider>> Orange
+    
+    ' Cohort Management specific entities - all use same color and categorization
+    BackgroundColor<<Cohort>> Plum
+    
+    ' Border colors for better distinction
+    BorderColor<<Person>> DarkBlue
+    BorderColor<<Patient>> DarkGreen
+    BorderColor<<Clinical>> DarkOrange
+    BorderColor<<Concept>> DarkCyan
+    BorderColor<<Provider>> DarkOrange
+    BorderColor<<Cohort>> DarkMagenta
+}
+
+' === SHARED ENTITIES (referenced from other domain models) ===
+
+entity Patient <<Patient>> {
+    patientIdentifiers
+    (from Patient Management)
+}
+
+entity Provider <<Provider>> {
+    identifier
+    name
+    (from Provider & User Management)
+}
+
+entity Encounter <<Clinical>> {
+    encounterDatetime
+    encounterType
+    (from Clinical Data Management)
+}
+
+entity Observation <<Clinical>> {
+    observationDatetime
+    value
+    (from Patient Management)
+}
+
+entity Concept <<Concept>> {
+    name
+    description
+    conceptClass
+    datatype
+    (from Patient Management)
+}
+
+entity Person <<Person>> {
+    birthdate
+    gender
+    (from Patient Management)
+}
+
+' === COHORT MANAGEMENT CORE ENTITIES ===
+
+' Core Cohort Entity
+entity PatientGroup <<Cohort>> {
+    groupName
+    description
+    groupPurpose
+    groupType
+    creationDatetime
+    groupStatus
+    groupCategory
+    targetSize
+    actualSize
+}
+
+entity PatientGroupMembership <<Cohort>> {
+    membershipStartDate
+    membershipEndDate
+    membershipReason
+    membershipStatus
+    membershipPriority
+    enrollmentSource
+    membershipRole
+}
+
+' Cohort Definition and Criteria
+entity PatientGroupDefinition <<Cohort>> {
+    definitionName
+    definitionDescription
+    definitionPurpose
+    definitionLogic
+    evaluationFrequency
+    definitionStatus
+    definitionVersion
+}
+
+entity SelectionCriteria <<Cohort>> {
+    criteriaName
+    criteriaDescription
+    criteriaType
+    criteriaLogic
+    criteriaOperator
+    criteriaValue
+    criteriaPriority
+}
+
+entity InclusionCriteria <<Cohort>> {
+    inclusionRule
+    inclusionDescription
+    inclusionCondition
+    requiredAttributes
+    minimumOccurrences
+    timeConstraints
+}
+
+entity ExclusionCriteria <<Cohort>> {
+    exclusionRule
+    exclusionDescription
+    exclusionCondition
+    disqualifyingAttributes
+    exclusionPeriod
+    exclusionReason
+}
+
+entity EligibilityRule <<Cohort>> {
+    ruleName
+    ruleDescription
+    ruleCondition
+    evaluationOrder
+    ruleWeight
+    applicabilityPeriod
+}
+
+entity ClinicalCriteria <<Cohort>> {
+    clinicalCondition
+    requiredDiagnosis
+    requiredProcedures
+    requiredMedications
+    laboratoryCriteria
+    vitalSignsCriteria
+}
+
+entity DemographicCriteria <<Cohort>> {
+    ageRange
+    genderRequirement
+    locationCriteria
+    educationLevel
+    occupationCriteria
+    socialEconomicStatus
+}
+
+entity TemporalCriteria <<Cohort>> {
+    timeWindow
+    enrollmentPeriod
+    followupDuration
+    observationPeriod
+    exclusionWindow
+    relativeDateCriteria
+}
+
+' Cohort Operations and Set Theory
+entity PatientGroupUnion <<Cohort>> {
+    operationName
+    operationDescription
+    operationType
+    operationDatetime
+    resultingGroupSize
+    operationParameters
+}
+
+entity PatientGroupIntersection <<Cohort>> {
+    intersectionName
+    intersectionDescription
+    intersectionCriteria
+    intersectionDatetime
+    commonMemberCount
+    intersectionParameters
+}
+
+entity PatientGroupDifference <<Cohort>> {
+    differenceName
+    differenceDescription
+    differenceOperation
+    differenceDatetime
+    excludedMemberCount
+    differenceParameters
+}
+
+entity PatientGroupComplement <<Cohort>> {
+    complementName
+    complementDescription
+    complementScope
+    complementDatetime
+    complementSize
+    basePopulation
+}
+
+' Cohort Analysis and Reporting
+entity PatientGroupAnalysis <<Cohort>> {
+    analysisName
+    analysisDescription
+    analysisType
+    analysisDatetime
+    analysisParameters
+    analysisPeriod
+}
+
+entity CohortStatistics <<Cohort>> {
+    statisticType
+    statisticValue
+    measurementDatetime
+    statisticDescription
+    confidenceInterval
+    significanceLevel
+}
+
+entity CohortDemographics <<Cohort>> {
+    ageDistribution
+    genderDistribution
+    locationDistribution
+    ethnicityDistribution
+    educationDistribution
+    occupationDistribution
+}
+
+entity CohortOutcome <<Cohort>> {
+    outcomeName
+    outcomeDescription
+    outcomeType
+    outcomeValue
+    measurementDate
+    outcomeCategory
+}
+
+entity CohortBenchmark <<Cohort>> {
+    benchmarkName
+    benchmarkDescription
+    benchmarkValue
+    comparisonGroup
+    benchmarkDatetime
+    benchmarkCategory
+}
+
+entity PatientGroupComparison <<Cohort>> {
+    comparisonName
+    comparisonDescription
+    comparisonType
+    comparisonDatetime
+    comparisonResult
+    statisticalSignificance
+}
+
+entity CohortReport <<Cohort>> {
+    reportTitle
+    reportDescription
+    reportType
+    generationDatetime
+    reportPeriod
+    reportFormat
+}
+
+' Cohort Workflow and Management
+entity CohortEnrollmentProcess <<Cohort>> {
+    processName
+    processDescription
+    enrollmentSteps
+    approvalRequired
+    enrollmentCriteria
+    processStatus
+}
+
+entity PatientRecruitment <<Cohort>> {
+    recruitmentMethod
+    recruitmentSource
+    recruitmentDatetime
+    recruitmentStatus
+    recruitmentGoals
+    recruitmentCriteria
+}
+
+entity CohortMonitoring <<Cohort>> {
+    monitoringFrequency
+    monitoringCriteria
+    monitoringDatetime
+    monitoringStatus
+    monitoringAlerts
+    monitoringThresholds
+}
+
+entity MembershipTransition <<Cohort>> {
+    transitionType
+    transitionDatetime
+    transitionReason
+    transitionStatus
+    fromStatus
+    toStatus
+}
+
+entity CohortMaintenance <<Cohort>> {
+    maintenanceType
+    maintenanceSchedule
+    maintenanceDatetime
+    maintenanceReason
+    maintenanceStatus
+    maintenanceActions
+}
+
+' Cohort Quality and Validation
+entity CohortValidation <<Cohort>> {
+    validationType
+    validationCriteria
+    validationDatetime
+    validationStatus
+    validationResult
+    validationErrors
+}
+
+entity DataIntegrityCheck <<Cohort>> {
+    checkType
+    checkCriteria
+    checkDatetime
+    integrityStatus
+    anomaliesFound
+    correctionActions
+}
+
+entity MembershipAudit <<Cohort>> {
+    auditType
+    auditDatetime
+    auditFindings
+    auditStatus
+    complianceLevel
+    auditRecommendations
+}
+
+' === RELATIONSHIPS ===
+
+' Core Cohort Relationships
+Patient ||--o{ PatientGroupMembership : "has memberships"
+PatientGroupMembership }o--|| PatientGroup : "member of group"
+PatientGroup }o--|| PatientGroupDefinition : "defined by"
+PatientGroup }o--|| Provider : "managed by"
+
+' Cohort Definition Relationships
+PatientGroupDefinition ||--o{ SelectionCriteria : "contains criteria"
+SelectionCriteria }o--|| InclusionCriteria : "includes patients by"
+SelectionCriteria }o--|| ExclusionCriteria : "excludes patients by"
+PatientGroupDefinition ||--o{ EligibilityRule : "governed by rules"
+EligibilityRule }o--|| ClinicalCriteria : "based on clinical"
+EligibilityRule }o--|| DemographicCriteria : "based on demographics"
+EligibilityRule }o--|| TemporalCriteria : "based on time"
+
+' Clinical Criteria Relationships
+ClinicalCriteria }o--|| Concept : "references concepts"
+ClinicalCriteria }o--|| Encounter : "evaluates encounters"
+ClinicalCriteria }o--|| Observation : "evaluates observations"
+DemographicCriteria }o--|| Person : "evaluates person attributes"
+
+' Cohort Operations Relationships
+PatientGroup ||--o{ PatientGroupUnion : "participates in unions"
+PatientGroup ||--o{ PatientGroupIntersection : "participates in intersections"
+PatientGroup ||--o{ PatientGroupDifference : "participates in differences"
+PatientGroup ||--o{ PatientGroupComplement : "has complements"
+PatientGroupUnion }o--|| PatientGroup : "results in group"
+PatientGroupIntersection }o--|| PatientGroup : "results in group"
+PatientGroupDifference }o--|| PatientGroup : "results in group"
+PatientGroupComplement }o--|| PatientGroup : "results in group"
+
+' Analysis and Reporting Relationships
+PatientGroup ||--o{ PatientGroupAnalysis : "subject of analysis"
+PatientGroupAnalysis ||--o{ CohortStatistics : "generates statistics"
+PatientGroupAnalysis ||--o{ CohortDemographics : "produces demographics"
+PatientGroup ||--o{ CohortOutcome : "measures outcomes"
+PatientGroup ||--o{ CohortBenchmark : "compared to benchmarks"
+PatientGroup ||--o{ PatientGroupComparison : "compared with groups"
+PatientGroupAnalysis }o--|| CohortReport : "documented in reports"
+CohortReport }o--|| Provider : "generated by"
+
+' Workflow and Management Relationships
+PatientGroup }o--|| CohortEnrollmentProcess : "follows enrollment process"
+PatientGroupMembership }o--|| PatientRecruitment : "result of recruitment"
+PatientGroup ||--o{ CohortMonitoring : "monitored by"
+PatientGroupMembership ||--o{ MembershipTransition : "undergoes transitions"
+PatientGroup ||--o{ CohortMaintenance : "maintained through"
+Provider }o--|| CohortEnrollmentProcess : "manages process"
+Provider }o--|| CohortMonitoring : "performs monitoring"
+
+' Quality and Validation Relationships
+PatientGroup ||--o{ CohortValidation : "validated by"
+PatientGroup ||--o{ DataIntegrityCheck : "checked for integrity"
+PatientGroupMembership ||--o{ MembershipAudit : "audited for compliance"
+CohortValidation }o--|| Provider : "performed by"
+DataIntegrityCheck }o--|| Provider : "conducted by"
+MembershipAudit }o--|| Provider : "audited by"
+
+' === DOMAIN NOTES ===
+note right of PatientGroup : A conceptual collection of patients\nidentified for a specific purpose\nsuch as research, treatment, or analysis
+note right of PatientGroupMembership : Represents a patient's participation\nin a cohort with temporal boundaries\nand membership-specific attributes
+note right of PatientGroupDefinition : Formal specification of criteria\nand rules for identifying and\nincluding patients in a cohort
+note right of SelectionCriteria : Logical rules and conditions\nthat determine patient eligibility\nfor cohort membership
+note bottom of PatientGroupUnion : Mathematical set operation\ncombining multiple cohorts\ninto a larger patient group
+note bottom of CohortStatistics : Quantitative measurements\nand analytical results\nderived from cohort data
+note bottom of ClinicalCriteria : Medical conditions, procedures,\ndiagnoses, and clinical events\nused for patient selection
+note left of PatientGroupAnalysis : Systematic examination of\ncohort characteristics, patterns,\nand outcomes over time
+note left of CohortEnrollmentProcess : Structured workflow for\nidentifying, recruiting, and\nenrolling patients into cohorts
+note left of CohortValidation : Quality assurance processes\nensuring cohort integrity\nand compliance with criteria
+
+' Reference note
+note top : This model defines the Cohort Management domain entities.\nShared entities (Patient, Provider, Encounter, Observation, Concept, Person)\nare referenced from patient-management-domain-model.puml.\nFocuses on core conceptual entities following FMC principles -\nimplementation details and database-specific mechanisms are excluded for conceptual clarity.\nCohort represents organized collections of patients for research, treatment, or analytical purposes.
+
+' Color Legend Table
+legend right
+|= Color |= Description |= Domain |
+|<back:LightBlue>   </back>| Person demographics | Shared |
+|<back:LightGreen>   </back>| Patient entities | Shared |
+|<back:LightYellow>   </back>| Clinical episodes | Shared |
+|<back:LightCyan>   </back>| Concepts & vocabulary | Shared |
+|<back:Orange>   </back>| Healthcare providers | Shared |
+|<back:Plum>   </back>| Cohort Management | Cohort Management |
+endlegend
+
+@enduml

@@ -1,0 +1,64 @@
+@startuml hl7-archives-migrate-thread
+title OpenMRS HL7 Archives Migration Background Thread Activity Diagram
+
+start
+
+:Hl7InArchivesMigrateThread.run();
+note right: /hl7/Hl7InArchivesMigrateThread.java, line 116
+
+:Context.openSession();
+note right: Open database session\n(Hl7InArchivesMigrateThread.java, line 118)
+
+:Context.setUserContext(userContext);
+note right: Set user context for authentication\n(Hl7InArchivesMigrateThread.java, line 119)
+
+:setTransferStatus(Status.RUNNING);
+note right: Mark migration as running\n(Hl7InArchivesMigrateThread.java, line 120)
+
+while (isActive() and transferStatus == Status.RUNNING?) is (yes)
+  if (isActive()?) then (yes)
+    :Context.getHL7Service().migrateHl7InArchivesToFileSystem(progressStatusMap);
+    note right: Migrate HL7 archives from database to filesystem\n(Hl7InArchivesMigrateThread.java, line 126)
+    
+    partition "migrateHl7InArchivesToFileSystem()" {
+      :Query HL7 archives older than daysKept;
+      note right: Find archives to migrate based on age
+      
+      while (more archives to migrate?) is (yes)
+        :Read archive data from database;
+        :Write archive data to filesystem;
+        :Delete archive from database;
+        :progressStatusMap.increment("numberTransferred");
+        note right: Track successful transfers\nHandle exceptions by incrementing "numberOfFailedTransfers"
+      endwhile (no)
+    }
+  endif
+  
+  if (transferStatus != Status.STOPPED?) then (yes)
+    :setTransferStatus(Status.COMPLETED);
+    note right: Mark as completed if not manually stopped\n(Hl7InArchivesMigrateThread.java, line 131)
+  endif
+  
+  note left: Handle APIException by logging as debug\n"Unable to migrate HL7 archive"\n(Hl7InArchivesMigrateThread.java, line 137)
+  
+  :Thread.sleep(HL7Constants.THREAD_SLEEP_PERIOD);
+  note right: Wait before retrying\n(Hl7InArchivesMigrateThread.java, line 140)\nHandle InterruptedException by logging "Hl7 in archive migration thread has been abnormally interrupted"
+  
+  note right: Handle general Exception by setting transferStatus=ERROR\nand logging "Some error occurred while migrating hl7 archives"\n(Hl7InArchivesMigrateThread.java, line 147-148)
+endwhile (no)
+
+:Context.closeSession();
+note right: Clean up database session\n(Hl7InArchivesMigrateThread.java, line 152)
+
+:setActive(false);
+note right: Mark thread as inactive\n(Hl7InArchivesMigrateThread.java, line 153)
+
+stop
+
+floating note right
+  Migration can be stopped by calling:
+  stopMigration() which sets transferStatus = STOPPED and active = false
+  (Hl7InArchivesMigrateThread.java, line 160-162)
+end note
+
+@enduml

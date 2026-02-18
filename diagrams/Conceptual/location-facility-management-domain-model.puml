@@ -1,0 +1,344 @@
+@startuml Location & Facility Management System - Domain Model
+!theme cerulean-outline
+title Location & Facility Management System - Domain Model\n(OpenMRS Core - Location & Facility Management Domain)
+
+' This model defines the conceptual domain entities for Location & Facility Management
+' References shared entities from: patient-management-domain-model.puml
+' Focuses on conceptual entities without database-specific implementation details
+
+' Define entity colors and styles - consistent with other domain models
+' Color Legend - aligned with DOMAIN_COLOR_STANDARDS.md:
+' - LightGreen (Patient): Patient-specific entities (from Patient Management)
+' - Orange (Provider): Healthcare provider entities (from Patient Management)
+' - LightYellow (Clinical): Clinical care episode entities (from Patient Management)
+' - LightCyan (Concept): Clinical vocabulary and concept entities (from Patient Management)
+' - LightGray (Location): All Location & Facility Management entities (Location & Facility Management Domain)
+
+skinparam class {
+    ' Shared entities from other domain models
+    BackgroundColor<<Patient>> LightGreen
+    BackgroundColor<<Provider>> Orange
+    BackgroundColor<<Clinical>> LightYellow
+    BackgroundColor<<Concept>> LightCyan
+    
+    ' Location & Facility Management specific entities - all use same color
+    BackgroundColor<<Location>> LightGray
+    
+    ' Border colors for better distinction
+    BorderColor<<Patient>> DarkGreen
+    BorderColor<<Provider>> DarkOrange
+    BorderColor<<Clinical>> DarkOrange
+    BorderColor<<Concept>> DarkCyan
+    BorderColor<<Location>> DarkGray
+}
+
+' === SHARED ENTITIES (referenced from other domain models) ===
+entity Patient <<Patient>> {
+    patientIdentifiers
+    (from Patient Management)
+}
+
+entity Provider <<Provider>> {
+    identifier
+    name
+    (from Provider & User Management)
+}
+
+entity Visit <<Clinical>> {
+    startDatetime
+    stopDatetime
+    visitType
+    (from Clinical Data Management)
+}
+
+entity Encounter <<Clinical>> {
+    encounterDatetime
+    encounterType
+    (from Clinical Data Management)
+}
+
+entity PatientProgram <<Clinical>> {
+    dateEnrolled
+    dateCompleted
+    (from Patient Management)
+}
+
+entity Concept <<Concept>> {
+    name
+    description
+    conceptClass
+    datatype
+    (from Clinical Data Management)
+}
+
+' === LOCATION & FACILITY MANAGEMENT CORE ENTITIES ===
+
+' Core Location Entity
+entity HealthcareFacility <<Location>> {
+    name
+    description
+    facilityCode
+    operationalStatus
+    serviceCapacity
+}
+
+entity FacilityType <<Location>> {
+    typeName
+    description
+    levelOfCare
+    serviceScope
+}
+
+entity ServiceArea <<Location>> {
+    areaName
+    description
+    functionalPurpose
+    accessRestrictions
+}
+
+' Geographic and Administrative Entities
+entity GeographicLocation <<Location>> {
+    name
+    description
+    administrativeLevel
+    jurisdictionType
+}
+
+entity AdministrativeRegion <<Location>> {
+    regionName
+    regionCode
+    governanceLevel
+    parentRegion
+}
+
+entity Country <<Location>> {
+    countryName
+    countryCode
+    continent
+    timezone
+}
+
+entity StateProvince <<Location>> {
+    stateName
+    stateCode
+    capital
+    region
+}
+
+entity CityVillage <<Location>> {
+    cityName
+    municipalityType
+    population
+    urbanRural
+}
+
+entity CountyDistrict <<Location>> {
+    districtName
+    districtCode
+    administrativeCenter
+}
+
+' Spatial and Coordinate Entities
+entity SpatialCoordinate <<Location>> {
+    latitude
+    longitude
+    altitude
+    coordinateSystem
+    accuracy
+}
+
+entity SpatialBoundary <<Location>> {
+    boundaryType
+    boundaryDefinition
+    area
+    perimeter
+}
+
+entity GeographicReference <<Location>> {
+    referenceName
+    referenceType
+    landmarkDescription
+    visibility
+}
+
+' Physical Address Components
+entity PhysicalAddress <<Location>> {
+    streetNumber
+    streetName
+    buildingName
+    unitNumber
+    addressLine1
+    addressLine2
+    postalCode
+    mailingAddress
+}
+
+entity AddressComponent <<Location>> {
+    componentType
+    componentValue
+    componentLevel
+    standardFormat
+}
+
+' Location Categorization and Classification
+entity LocationClassification <<Location>> {
+    classificationName
+    classificationCriteria
+    classificationPurpose
+}
+
+entity FacilityRole <<Location>> {
+    roleName
+    roleDescription
+    serviceResponsibility
+    operationalAuthority
+}
+
+entity ServiceDomain <<Location>> {
+    domainName
+    domainDescription
+    serviceTypes
+    targetPopulation
+}
+
+' Location Relationships and Hierarchy
+entity LocationHierarchy <<Location>> {
+    hierarchyType
+    hierarchyLevel
+    parentChild
+    organizationalStructure
+}
+
+entity FacilityNetwork <<Location>> {
+    networkName
+    networkType
+    collaborationType
+    serviceIntegration
+}
+
+entity ReferralRelationship <<Location>> {
+    referralType
+    referralDirection
+    serviceType
+    referralCriteria
+}
+
+' Location Attributes and Extensions
+entity LocationProperty <<Location>> {
+    propertyName
+    propertyValue
+    propertyType
+    validityPeriod
+}
+
+entity LocationConfiguration <<Location>> {
+    configurationName
+    configurationValue
+    configurationType
+    applicationScope
+}
+
+entity OperationalSchedule <<Location>> {
+    scheduleType
+    operatingHours
+    serviceAvailability
+    seasonalVariation
+}
+
+' === RELATIONSHIPS ===
+
+' Core Location and Facility Relationships
+HealthcareFacility }o--|| FacilityType : "of type"
+HealthcareFacility ||--o{ ServiceArea : "contains areas"
+HealthcareFacility }o--|| GeographicLocation : "located at"
+ServiceArea }o--|| HealthcareFacility : "within facility"
+ServiceArea }o--|| ServiceDomain : "serves domain"
+
+' Geographic and Administrative Relationships
+GeographicLocation }o--|| Country : "within country"
+GeographicLocation }o--|| StateProvince : "within state/province"
+GeographicLocation }o--|| CityVillage : "within city/village"
+GeographicLocation }o--|| CountyDistrict : "within county/district"
+AdministrativeRegion }o--|| Country : "within country"
+AdministrativeRegion }o--o| AdministrativeRegion : "parent region"
+StateProvince }o--|| Country : "part of country"
+CityVillage }o--|| StateProvince : "within state/province"
+CountyDistrict }o--|| StateProvince : "within state/province"
+
+' Spatial and Coordinate Relationships
+GeographicLocation ||--|| SpatialCoordinate : "has coordinates"
+HealthcareFacility ||--o| SpatialCoordinate : "positioned at"
+GeographicLocation ||--o{ SpatialBoundary : "defined by boundaries"
+SpatialCoordinate }o--o| GeographicReference : "referenced by"
+SpatialBoundary }o--|| GeographicReference : "anchored to"
+
+' Physical Address Relationships
+GeographicLocation ||--|| PhysicalAddress : "has address"
+HealthcareFacility ||--|| PhysicalAddress : "postal address"
+PhysicalAddress ||--o{ AddressComponent : "composed of components"
+AddressComponent }o--|| Concept : "component type concept"
+
+' Location Classification and Organization
+HealthcareFacility ||--o{ LocationClassification : "classified by"
+HealthcareFacility ||--o{ FacilityRole : "performs roles"
+FacilityType }o--|| Concept : "type concept"
+LocationClassification }o--|| Concept : "classification concept"
+FacilityRole }o--|| Concept : "role concept"
+ServiceDomain }o--|| Concept : "domain concept"
+
+' Location Hierarchy and Network Relationships
+HealthcareFacility ||--o{ LocationHierarchy : "part of hierarchy"
+LocationHierarchy }o--|| HealthcareFacility : "parent facility"
+LocationHierarchy }o--|| HealthcareFacility : "child facility"
+HealthcareFacility ||--o{ FacilityNetwork : "member of networks"
+FacilityNetwork ||--o{ ReferralRelationship : "enables referrals"
+ReferralRelationship }o--|| HealthcareFacility : "refers from"
+ReferralRelationship }o--|| HealthcareFacility : "refers to"
+
+' Location Configuration and Properties
+HealthcareFacility ||--o{ LocationProperty : "has properties"
+HealthcareFacility ||--|| LocationConfiguration : "configured by"
+HealthcareFacility ||--|| OperationalSchedule : "operates by schedule"
+ServiceArea ||--|| OperationalSchedule : "scheduled operations"
+
+' Shared Entity Relationships (from other domain models)
+Patient ||--o{ Visit : "has visits"
+Visit }o--|| HealthcareFacility : "occurs at facility"
+Visit }o--|| ServiceArea : "in service area"
+Encounter }o--|| HealthcareFacility : "takes place at"
+Encounter }o--|| ServiceArea : "within area"
+Provider }o--o| HealthcareFacility : "practices at"
+Provider }o--o| ServiceArea : "provides services in"
+PatientProgram }o--|| HealthcareFacility : "enrolled at"
+
+' === DOMAIN NOTES ===
+note right of HealthcareFacility : Physical locations where healthcare\nservices are provided with\noperational capabilities and infrastructure
+note right of FacilityType : Classification of healthcare facilities\nbased on services, capacity,\nand level of care provided
+note right of ServiceArea : Functional areas within facilities\norganized by clinical specialty\nor administrative purpose
+note right of GeographicLocation : Administrative and geographic\ncontexts that establish\njurisdictional boundaries
+note right of AdministrativeRegion : Governmental or administrative\ndivisions that provide\norganizational structure
+note right of SpatialCoordinate : Precise geographic positioning\nfor navigation, logistics,\nand spatial analysis
+note right of PhysicalAddress : Structured postal addressing\nfor mail delivery, directions,\nand location identification
+note right of LocationHierarchy : Organizational relationships\nbetween facilities for\nmanagement and coordination
+note right of FacilityNetwork : Collaborative relationships\nbetween facilities for\nshared services and referrals
+note right of ReferralRelationship : Formal pathways for\npatient transfers and\nservice coordination
+note bottom of LocationClassification : Systematic categorization\nof locations for reporting,\nplanning, and resource allocation
+note bottom of ServiceDomain : Scope of services and\ntarget populations served\nby specific locations
+note bottom of OperationalSchedule : Time-based availability\nof services and facilities\nfor planning and access
+note left of LocationProperty : Flexible attributes for\nlocation-specific information\nand operational parameters
+note left of LocationConfiguration : System settings and\nparameters for location\nmanagement and operations
+
+' Reference note
+note top : This model defines the Location & Facility Management domain entities.\nShared entities (Patient, Provider, Visit, Encounter, PatientProgram, Concept)\nare referenced from patient-management-domain-model.puml.\nFocuses on core conceptual entities - implementation details like\nflexible attribute mechanisms are excluded for conceptual clarity.
+
+' Color Legend Table
+legend right
+|= Color |= Description |= Domain |
+|<back:LightGreen>   </back>| Patient entities | Patient Management |
+|<back:Orange>   </back>| Healthcare providers | Patient Management |
+|<back:LightYellow>   </back>| Clinical episodes | Patient Management |
+|<back:LightCyan>   </back>| Clinical concepts | Patient Management |
+|<back:LightGray>   </back>| Location & Facility Management | Location & Facility Management |
+endlegend
+
+@enduml

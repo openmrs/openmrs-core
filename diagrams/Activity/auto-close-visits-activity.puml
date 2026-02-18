@@ -1,0 +1,29 @@
+@startuml auto-close-visits-task
+title OpenMRS Auto Close Visits Batch Job Activity Diagram
+
+start
+
+:AutoCloseVisitsTask.execute();
+note right: /scheduler/tasks/AutoCloseVisitsTask.java, line 34
+
+if (isExecuting?) then (no)
+  :log.debug("Starting Auto Close Visits Task...");
+  note right: Log task start\n(AutoCloseVisitsTask.java, line 36)
+  
+  :startExecuting();
+  note right: Set execution flag to prevent concurrent runs\n(AutoCloseVisitsTask.java, line 38)
+  
+  :Context.getVisitService().stopVisits(new Date());
+  note right: Close all active visits matching auto-close criteria\n(AutoCloseVisitsTask.java, line 40)\nStops all unvoided active visits that match visit types\nfrom global property GP_VISIT_TYPES_TO_AUTO_CLOSE
+  
+  :stopExecuting();
+  note right: Clear execution flag (in finally block)\n(AutoCloseVisitsTask.java, line 45)\nExecuted even if exception occurs
+else (yes)
+  :Skip execution (already running);
+  note right: Prevent concurrent execution\n(isExecuting flag is true)
+endif
+
+note right: If exception occurs during stopVisits():\nlog.error("Error while auto closing visits:", e)\n(AutoCloseVisitsTask.java, lines 41-43)
+
+stop
+@enduml
