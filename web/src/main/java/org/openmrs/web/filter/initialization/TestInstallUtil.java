@@ -159,7 +159,11 @@ public class TestInstallUtil {
 					//Convert the names of .omod files located in nested directories so that they get
 					//created under the module repo directory when being copied
 					if (fileName.contains(System.getProperty("file.separator"))) {
-						fileName = new File(entry.getName()).getName();
+						String entryName = entry.getName();
+						if (entryName.contains("..") || entryName.contains("/") || entryName.contains("\\")) {
+							throw new IOException("Blocked unsafe zip entry name: " + entryName);
+						}
+						fileName = new File(entryName).getName();
 					}
 					
 					log.debug("Extracting module file: {}", fileName);
@@ -186,6 +190,13 @@ public class TestInstallUtil {
 					FileUtils.cleanDirectory(moduleRepository);
 
 					final File zipEntryFile = new File(moduleRepository, fileName);
+					
+					String canonicalRepoPath = moduleRepository.getCanonicalPath();
+					String canonicalTargetPath = zipEntryFile.getCanonicalPath();
+
+					if (!canonicalTargetPath.startsWith(canonicalRepoPath)) {
+						throw new IOException("Blocked unsafe file path: " + fileName);
+					}
 
 					if (!zipEntryFile.toPath().normalize().startsWith(moduleRepository.toPath().normalize())) {
 						throw new IOException("Bad zip entry");

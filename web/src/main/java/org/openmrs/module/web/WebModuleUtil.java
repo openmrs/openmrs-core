@@ -185,7 +185,13 @@ public class WebModuleUtil {
 						log.debug("Moving file from: {} to {}", name, absPath);
 						
 						// get the output file
-						File outFile = new File(absPath.toString().replace("/", File.separator));
+						String safePath = absPath.toString();
+
+						// basic path traversal protection
+						if (safePath.contains("..") || safePath.contains("\\") || safePath.contains("//")) {
+							throw new IllegalArgumentException("Unsafe file path detected: " + safePath);
+						}
+						File outFile = new File(safePath.replace("/", File.separator));
 						if (entry.isDirectory()) {
 							if (!outFile.exists()) {
 								outFile.mkdirs();
@@ -782,7 +788,15 @@ public class WebModuleUtil {
 		
 		// clear the module messages
 		String messagesPath = realPath + "/WEB-INF/";
-		File folder = new File(messagesPath.replace("/", File.separator));
+		// Normalize separators
+		String safePath = messagesPath.replace("/", File.separator);
+
+		// Detect basic path traversal patterns
+		if (safePath.contains("..")) {
+			throw new IllegalArgumentException("Invalid path: potential path traversal detected: " + safePath);
+		}
+
+		File folder = new File(safePath);
 		
 		File[] files = folder.listFiles();
 		if (folder.exists() && files != null) {
@@ -833,8 +847,22 @@ public class WebModuleUtil {
 		String realPath = getRealPath(servletContext);
 		
 		// delete the web files from the webapp
-		String absPath = realPath + "/WEB-INF/view/module/" + moduleId;
-		File moduleWebFolder = new File(absPath.replace("/", File.separator));
+		String absPath = realPath + "/WEB-INF/web/module/" + moduleId;
+
+		// normalize path separator
+		String safePath = absPath.replace("/", File.separator);
+
+		// Basic path traversal protection
+		if (safePath.contains("..")) {
+			throw new UnsupportedOperationException(
+				"Attempted to access '" + safePath +
+					"' but this was rejected because it contains '..', which may indicate " +
+					"a path traversal or zip-slip style attack."
+			);
+		}
+
+		File moduleWebFolder = new File(safePath);
+
 		if (moduleWebFolder.exists()) {
 			try {
 				OpenmrsUtil.deleteDirectory(moduleWebFolder);
