@@ -32,46 +32,65 @@ public class ModuleServlet extends HttpServlet {
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleServlet.class);
 	
+
+	//here
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.debug("In service method for module servlet: " + request.getPathInfo());
-		String servletName = request.getPathInfo();
-		int end = servletName.indexOf("/", 1);
-		
-		String moduleId = null;
-		if (end > 0) {
-			moduleId = servletName.substring(1, end);
-		}
-		
-		log.debug("ModuleId: " + moduleId);
-		Module mod = ModuleFactory.getModuleById(moduleId);
-		 
-		// where in the path to start trimming
-		int start = 1;
-		if (mod != null) {
-			log.debug("Module with id " + moduleId + " found.  Looking for servlet name after " + moduleId + " in url path");
-			start = moduleId.length() + 2;
-			// this skips over the moduleId that is in the path
-		}
-		
-		end = servletName.indexOf("/", start);
-		if (end == -1 || end > servletName.length()) {
-			end = servletName.length();
-		}
-		servletName = servletName.substring(start, end);
-		
-		log.debug("Servlet name: " + servletName);
-		
-		HttpServlet servlet = WebModuleUtil.getServlet(servletName);
-		
-		if (servlet == null) {
-			log.warn("No servlet with name: " + servletName + " was found");
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			return;
-		}
-		
-		servlet.service(request, response);
-	}
+protected void service(HttpServletRequest request, HttpServletResponse response) {
+
+    try {
+        log.debug("In service method for module servlet: {}", request.getPathInfo());
+
+        String servletName = request.getPathInfo();
+        int end = servletName.indexOf("/", 1);
+
+        String moduleId = null;
+        if (end > 0) {
+            moduleId = servletName.substring(1, end);
+        }
+
+        log.debug("ModuleId: {}", moduleId);
+        Module mod = ModuleFactory.getModuleById(moduleId);
+
+        int start = 1;
+        if (mod != null) {
+            log.debug("Module with id {} found. Looking for servlet name after {} in url path",
+                    moduleId, moduleId);
+            start = moduleId.length() + 2;
+        }
+
+        end = servletName.indexOf("/", start);
+        if (end == -1 || end > servletName.length()) {
+            end = servletName.length();
+        }
+
+        servletName = servletName.substring(start, end);
+
+        log.debug("Servlet name: {}", servletName);
+
+        HttpServlet servlet = WebModuleUtil.getServlet(servletName);
+
+        if (servlet == null) {
+            log.warn("No servlet with name: {} was found", servletName);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        servlet.service(request, response);
+
+    } catch (Exception e) {
+        log.error("Unexpected error in ModuleServlet#service", e);
+
+        try {
+            if (!response.isCommitted()) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "An unexpected error occurred while processing the request.");
+            }
+        } catch (IOException ioException) {
+            log.error("Failed to send error response", ioException);
+        }
+    }
+}// to here
+
 
 	/**
 	 * Internal implementation of the ServletConfig interface, to be passed to module servlets when

@@ -48,30 +48,45 @@ public class ModuleResourcesServlet extends HttpServlet {
 		return f.lastModified();
 	}
 	
+	// here
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		log.debug("In service method for module servlet: " + request.getPathInfo());
-		
-		File f = getFile(request);
-		if (f == null) {
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			return;
-		}
-		
-		response.setDateHeader("Last-Modified", f.lastModified());
-		response.setContentLength(Long.valueOf(f.length()).intValue());
-		String mimeType = getServletContext().getMimeType(f.getName());
-		response.setContentType(mimeType);
-		
-		FileInputStream is = new FileInputStream(f);
-		try {
-			OpenmrsUtil.copyFile(is, response.getOutputStream());
-		}
-		finally {
-			OpenmrsUtil.closeStream(is);
-		}
-	}
+protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+
+    try {
+        log.debug("In service method for module servlet: {}", request.getPathInfo());
+
+        File f = getFile(request);
+        if (f == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        response.setDateHeader("Last-Modified", f.lastModified());
+        response.setContentLength(Long.valueOf(f.length()).intValue());
+
+        String mimeType = getServletContext().getMimeType(f.getName());
+        response.setContentType(mimeType);
+
+        FileInputStream is = new FileInputStream(f);
+        try {
+            OpenmrsUtil.copyFile(is, response.getOutputStream());
+        } finally {
+            OpenmrsUtil.closeStream(is);
+        }
+
+    } catch (Exception e) {
+        log.error("Unexpected error in ModuleResourcesServlet#doGet", e);
+
+        try {
+            if (!response.isCommitted()) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "An unexpected error occurred while processing the request.");
+            }
+        } catch (IOException ioException) {
+            log.error("Failed to send error response", ioException);
+        }
+    }
+}// to here
 	
 	/**
 	 * Turns the given request/path into a File object
