@@ -27,7 +27,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This class tests the hibernate alert data access. TODO Consider changing this and all subsequent
+ * This class tests the hibernate alert data access. 
  * tests to use dbunit
  */
 public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
@@ -79,7 +79,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void getAllAlerts_shouldReturnOnlyNonExpiredAllerts() {
+	public void getAllAlerts_shouldReturnOnlyNonExpiredAlerts() {
 		Assertions.assertEquals(hibernateAlertDAO.getAllAlerts(false).size(), 1);
 	}
 
