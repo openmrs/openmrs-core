@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.junit.jupiter.api.Test;
 
-public class PatientIdentifierTest {
+class PatientIdentifierTest {
 
 	@Test
 	void copy_shouldReturnNewInstance() {
