@@ -302,6 +302,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		if (role.hasChildRoles()) {
 			throw new CannotDeleteRoleWithChildrenException();
 		}
+
+		// Manually remove this child from all parents to update the cache
+		if (role.getInheritedRoles() != null) {
+			
+			for (Role parent : new HashSet<>(role.getInheritedRoles())) {
+				if (parent.getChildRoles() != null && parent.getChildRoles().contains(role)) {
+					parent.getChildRoles().remove(role);
+					dao.saveRole(parent); // updating the cache
+				}
+			}
+		}
 		
 		dao.deleteRole(role);
 	}
