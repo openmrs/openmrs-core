@@ -3332,5 +3332,29 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifierException patientIdentifierException = assertThrows(PatientIdentifierException.class, () -> patientService.getIdentifierValidator("com.example.InvalidIdentifierValidator"));
 		assertEquals("Could not find patient identifier validator com.example.InvalidIdentifierValidator", patientIdentifierException.getMessage());
 	}
+	/**
+	 * @see PatientService#savePatient(Patient)
+	 * @verifies update patient date changed
+	 */
+	@Test
+	public void savePatient_shouldUpdatePatientDateChanged() throws Exception {
+		// 1. Get an existing patient
+		Patient patient = patientService.getPatient(2);
+		Date initialDateChanged = patient.getDateChanged();
 
+		// 2. Wait a split second
+		Thread.sleep(10);
+
+		// 3. Update the patient
+		patientService.savePatient(patient);
+
+		// 4. Assertions (Universal Style - No messages to avoid version conflicts)
+		// This will work on ANY JUnit version.
+		assertNotNull(patient.getDateChanged());
+		assertTrue(patient.getDateChanged().after(initialDateChanged));
+	}
+	
+	
+	
+	
 }
