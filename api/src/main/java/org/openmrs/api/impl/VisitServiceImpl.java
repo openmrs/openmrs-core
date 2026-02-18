@@ -28,6 +28,8 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
@@ -38,6 +40,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,16 +54,29 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class VisitServiceImpl extends BaseOpenmrsService implements VisitService, RefByUuid {
 	
-	@Autowired
-	private VisitDAO dao;
+	private final VisitDAO dao;
+	private final AdministrationService administrationService;
+	private final EncounterService encounterService;
+	private final VisitService self;
 	
-	/**
-	 * Method used to inject the visit data access object.
-	 *
-	 * @param dao the visit data access object.
-	 */
-	public void setVisitDAO(VisitDAO dao) {
+	public VisitServiceImpl(VisitDAO dao,
+	                       AdministrationService administrationService,
+	                       EncounterService encounterService) {
 		this.dao = dao;
+		this.administrationService = administrationService;
+		this.encounterService = encounterService;
+		this.self = this;
+	}
+	
+	@Autowired
+	public VisitServiceImpl(VisitDAO dao,
+	                       @Lazy AdministrationService administrationService,
+	                       @Lazy EncounterService encounterService,
+	                       @Lazy VisitService self) {
+		this.dao = dao;
+		this.administrationService = administrationService;
+		this.encounterService = encounterService;
+		this.self = self;
 	}
 	
 	public VisitDAO getVisitDAO() {
@@ -126,7 +142,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public VisitType retireVisitType(VisitType visitType, String reason) {
-		return Context.getVisitService().saveVisitType(visitType);
+		return self.saveVisitType(visitType);
 	}
 	
 	/**
@@ -134,7 +150,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public VisitType unretireVisitType(VisitType visitType) {
-		return Context.getVisitService().saveVisitType(visitType);
+		return self.saveVisitType(visitType);
 	}
 	
 	/**
@@ -198,7 +214,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		
 		visit.setStopDatetime(stopDate);
 		
-		return Context.getVisitService().saveVisit(visit);
+		return self.saveVisit(visit);
 	}
 	
 	/**
@@ -214,7 +230,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public Visit unvoidVisit(Visit visit) throws APIException {
-		return Context.getVisitService().saveVisit(visit);
+		return self.saveVisit(visit);
 	}
 	
 	/**
@@ -225,7 +241,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		if (visit.getVisitId() == null) {
 			return;
 		}
-		if (!Context.getEncounterService().getEncountersByVisit(visit, true).isEmpty()) {
+		if (!encounterService.getEncountersByVisit(visit, true).isEmpty()) {
 			throw new APIException("Visit.purge.inUse", (Object[]) null);
 		}
 		dao.deleteVisit(visit);
@@ -265,7 +281,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 			return Collections.emptyList();
 		}
 		
-		return Context.getVisitService().getVisits(null, Collections.singletonList(patient), null, null, null, null, null,
+		return getVisits(null, Collections.singletonList(patient), null, null, null, null, null,
 		    null, null, true, false);
 	}
 	
@@ -275,7 +291,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	@Override
 	@Transactional(readOnly = true)
 	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException {
-		return Context.getVisitService().getVisitsByPatient(patient, false, false);
+		return self.getVisitsByPatient(patient, false, false);
 	}
 	
 	/**
@@ -342,7 +358,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public VisitAttributeType unretireVisitAttributeType(VisitAttributeType visitAttributeType) {
-		return Context.getVisitService().saveVisitAttributeType(visitAttributeType);
+		return self.saveVisitAttributeType(visitAttributeType);
 	}
 	
 	/**
@@ -396,7 +412,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	}
 	
 	private List<VisitType> getVisitTypesToStop() {
-		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
+		String gpValue = administrationService.getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
 		if (StringUtils.isBlank(gpValue)) {
 			return Collections.emptyList();
 		} else {
@@ -416,7 +432,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	
 	private List<VisitType> getVisitTypesFromVisitTypeNames(String[] visitTypeNames) {
 		List<VisitType> result = new ArrayList<>();
-		for (VisitType visitType : Context.getVisitService().getAllVisitTypes()) {
+		for (VisitType visitType : self.getAllVisitTypes()) {
 			if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase())) {
 				result.add(visitType);
 			}

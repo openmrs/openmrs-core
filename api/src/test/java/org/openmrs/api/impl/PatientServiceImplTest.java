@@ -33,6 +33,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.openmrs.Concept;
 import org.openmrs.Location;
@@ -44,13 +45,20 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateIdentifierException;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientServiceTest;
+import org.openmrs.api.PersonService;
+import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.UserService;
+import org.openmrs.api.VisitService;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.test.jupiter.BaseContextMockTest;
 
 /**
@@ -61,27 +69,61 @@ import org.openmrs.test.jupiter.BaseContextMockTest;
  */
 public class PatientServiceImplTest extends BaseContextMockTest {
 
-	private PatientServiceImpl patientService;
+	@Mock
+	private PersonService personService;
 
 	@Mock
-	AdministrationService administrationService;
+	private VisitService visitService;
 
 	@Mock
-	ConceptService conceptService;
+	private EncounterService encounterService;
 
 	@Mock
-	ObsService obsService;
+	private ObsService obsService;
 
 	@Mock
-	LocationService locationService;
+	private ProgramWorkflowService programWorkflowService;
+
+	@Mock
+	private OrderService orderService;
+
+	@Mock
+	private MessageSourceService messageSourceService;
+
+	@Mock
+	private UserService userService;
+
+	@Mock
+	private AdministrationService administrationService;
+
+	@Mock
+	private ConceptService conceptService;
+
+	@Mock
+	private LocationService locationService;
 
 	@Mock
 	private PatientDAO patientDaoMock;
 
+	private PatientServiceImpl patientService;
+
 	@BeforeEach
 	public void before() {
-		patientService = new PatientServiceImpl();
-		patientService.setPatientDAO(patientDaoMock);
+		patientService = new PatientServiceImpl(
+			patientDaoMock,
+			personService,
+			visitService,
+			encounterService,
+			obsService,
+			programWorkflowService,
+			orderService,
+			messageSourceService,
+			userService,
+			administrationService,
+			conceptService,
+			locationService,
+			new java.util.HashMap<>()
+		);
 		this.contextMockHelper.setPatientService(patientService);
 	}
 

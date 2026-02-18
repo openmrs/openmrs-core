@@ -38,6 +38,7 @@ import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,18 +56,18 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	
 	private static final Logger log = LoggerFactory.getLogger(ProgramWorkflowServiceImpl.class);
 	
-	@Autowired
-	protected ProgramWorkflowDAO dao;
-        
-	public ProgramWorkflowServiceImpl() {
+	private final ProgramWorkflowDAO dao;
+	private final ProgramWorkflowService self;
+	
+	public ProgramWorkflowServiceImpl(ProgramWorkflowDAO dao) {
+		this.dao = dao;
+		this.self = this;
 	}
 	
-	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#setProgramWorkflowDAO(org.openmrs.api.db.ProgramWorkflowDAO)
-	 */
-	@Override
-	public void setProgramWorkflowDAO(ProgramWorkflowDAO dao) {
+	@Autowired
+	public ProgramWorkflowServiceImpl(ProgramWorkflowDAO dao, @Lazy ProgramWorkflowService self) {
 		this.dao = dao;
+		this.self = self;
 	}
 	
 	// **************************
@@ -130,7 +131,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public Program getProgram(String name) {
-		return Context.getProgramWorkflowService().getProgramByName(name);
+		return self.getProgramByName(name);
 	}
 	
 	/**
@@ -158,7 +159,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Override
 	@Transactional(readOnly = true)
 	public List<Program> getAllPrograms() throws APIException {
-		return Context.getProgramWorkflowService().getAllPrograms(true);
+		return self.getAllPrograms(true);
 	}
 	
 	/**
@@ -184,7 +185,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Override
 	public void purgeProgram(Program program) throws APIException {
-		Context.getProgramWorkflowService().purgeProgram(program, false);
+		self.purgeProgram(program, false);
 	}
 	
 	/**
@@ -195,7 +196,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		if (cascade && !program.getAllWorkflows().isEmpty()) {
 			throw new APIException("Program.cascade.purging.not.implemented", (Object[]) null);
 		}
-		for (PatientProgram patientProgram : Context.getProgramWorkflowService().getPatientPrograms(null, program, null,
+		for (PatientProgram patientProgram : self.getPatientPrograms(null, program, null,
 		    null, null, null, true)) {
 			purgePatientProgram(patientProgram);
 		}
@@ -322,7 +323,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Override
 	public void purgePatientProgram(PatientProgram patientProgram) throws APIException {
-		Context.getProgramWorkflowService().purgePatientProgram(patientProgram, false);
+		self.purgePatientProgram(patientProgram, false);
 		
 	}
 	
@@ -346,7 +347,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public PatientProgram voidPatientProgram(PatientProgram patientProgram, String reason) {
 		patientProgram.setVoided(true);
 		patientProgram.setVoidReason(reason);
-		return Context.getProgramWorkflowService().savePatientProgram(patientProgram); // The savePatientProgram method handles all of the voiding defaults and cascades
+		return self.savePatientProgram(patientProgram); // The savePatientProgram method handles all of the voiding defaults and cascades
 	}
 	
 	/**
@@ -365,7 +366,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 				state.setVoidReason(null);
 			}
 		}
-		return Context.getProgramWorkflowService().savePatientProgram(patientProgram); // The savePatientProgram method handles all of the unvoiding defaults
+		return self.savePatientProgram(patientProgram); // The savePatientProgram method handles all of the unvoiding defaults
 	}
 	
 	/**
@@ -375,7 +376,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Transactional(readOnly = true)
 	public List<Concept> getPossibleOutcomes(Integer programId) {
 		List<Concept> possibleOutcomes = new ArrayList<>();
-		Program program = Context.getProgramWorkflowService().getProgram(programId);
+		Program program = self.getProgram(programId);
 		if (program == null) {
 			return possibleOutcomes;
 		}
@@ -433,7 +434,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Override
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion) throws APIException {
-		Context.getProgramWorkflowService().purgeConceptStateConversion(conceptStateConversion, false);
+		self.purgeConceptStateConversion(conceptStateConversion, false);
 	}
 	
 	/**
@@ -493,7 +494,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 				// 
 				// #1067 - We should explicitly save the patient program rather than let 
 				// Hibernate do so when it flushes the session.
-				Context.getProgramWorkflowService().savePatientProgram(patientProgram);
+				self.savePatientProgram(patientProgram);
 			}
 		}
 	}

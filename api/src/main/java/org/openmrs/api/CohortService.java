@@ -34,13 +34,6 @@ import org.openmrs.util.PrivilegeConstants;
 public interface CohortService extends OpenmrsService {
 	
 	/**
-	 * Sets the CohortDAO for this service to use
-	 * 
-	 * @param dao
-	 */
-	public void setCohortDAO(CohortDAO dao);
-	
-	/**
 	 * Save a cohort to the database (create if new, or update if changed) This method will throw an
 	 * exception if any patientIds in the Cohort don't exist.
 	 * 

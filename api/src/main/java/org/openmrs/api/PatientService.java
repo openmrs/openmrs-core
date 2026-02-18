@@ -43,14 +43,6 @@ import org.openmrs.util.PrivilegeConstants;
 public interface PatientService extends OpenmrsService {
 	
 	/**
-	 * Sets the DAO for this service. This is done by DI and Spring. See the
-	 * applicationContext-service.xml definition file.
-	 * 
-	 * @param dao DAO for this service
-	 */
-	public void setPatientDAO(PatientDAO dao);
-		
-	/**
 	 * Saved the given <code>patient</code> to the database
 	 * 
 	 * @param patient patient to be created or updated

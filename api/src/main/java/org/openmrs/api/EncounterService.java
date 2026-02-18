@@ -39,14 +39,6 @@ import org.openmrs.util.PrivilegeConstants;
 public interface EncounterService extends OpenmrsService {
 	
 	/**
-	 * Set the given <code>dao</code> on this encounter service. The dao will act as the conduit
-	 * through with all encounter calls get to the database
-	 * 
-	 * @param dao
-	 */
-	public void setEncounterDAO(EncounterDAO dao);
-	
-	/**
 	 * Saves a new encounter or updates an existing encounter. If an existing encounter, this method
 	 * will automatically apply encounter.patient to all encounter.obs.patient
 	 * 

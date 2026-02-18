@@ -43,14 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public interface ProgramWorkflowService extends OpenmrsService {
 	
-	/**
-	 * Setter for the ProgramWorkflow DataAccessObject (DAO). The DAO is used for saving and
-	 * retrieving from the database
-	 * 
-	 * @param dao - The DAO for this service
-	 */
-	public void setProgramWorkflowDAO(ProgramWorkflowDAO dao);
-	
 	// **************************
 	// PROGRAM
 	// **************************

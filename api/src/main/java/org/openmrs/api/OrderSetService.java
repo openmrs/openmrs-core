@@ -27,14 +27,6 @@ import org.openmrs.util.PrivilegeConstants;
 public interface OrderSetService extends OpenmrsService {
 	
 	/**
-	 * Setter for the OrderSet data access object. The dao is used for saving and getting orders
-	 * to/from the database
-	 *
-	 * @param dao The data access object to use
-	 */
-	void setOrderSetDAO(OrderSetDAO dao);
-	
-	/**
 	 * Save or update the given <code>orderSet</code> in the database. If the OrderSet is retired
 	 * it will set retired by and retired date.
 	 * If OrderSetMembers are retired, it will set retired by and retired date.

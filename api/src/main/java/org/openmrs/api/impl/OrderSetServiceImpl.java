@@ -27,21 +27,25 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderSetDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("orderSetService")
 public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetService, RefByUuid {
 	
-	@Autowired
-	protected OrderSetDAO dao;
+	private final OrderSetDAO dao;
+	private final OrderSetService self;
 	
-	/**
-	 * @see org.openmrs.api.OrderSetService#setOrderSetDAO(org.openmrs.api.db.OrderSetDAO)
-	 */
-	@Override
-	public void setOrderSetDAO(OrderSetDAO dao) {
+	public OrderSetServiceImpl(OrderSetDAO dao) {
 		this.dao = dao;
+		this.self = this;
+	}
+	
+	@Autowired
+	public OrderSetServiceImpl(OrderSetDAO dao, @Lazy OrderSetService self) {
+		this.dao = dao;
+		this.self = self;
 	}
 	
 	@Override
@@ -189,7 +193,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	@Override
 	@Transactional(readOnly = false)
 	public OrderSetAttributeType unretireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
-		return Context.getOrderSetService().saveOrderSetAttributeType(orderSetAttributeType);
+		return self.saveOrderSetAttributeType(orderSetAttributeType);
 	}
 
 	/**

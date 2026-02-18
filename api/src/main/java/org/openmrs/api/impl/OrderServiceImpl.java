@@ -32,11 +32,14 @@ import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.TestOrder;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.AmbiguousOrderException;
 import org.openmrs.api.CannotDeleteObjectInUseException;
 import org.openmrs.api.CannotStopDiscontinuationOrderException;
 import org.openmrs.api.CannotStopInactiveOrderException;
 import org.openmrs.api.CannotUnvoidOrderException;
+import org.openmrs.api.CannotUpdateObjectInUseException;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.MissingRequiredPropertyException;
@@ -57,6 +60,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,20 +96,31 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
 	
-	@Autowired
-	protected OrderDAO dao;
-	
+	private final OrderDAO dao;
 	private static OrderNumberGenerator orderNumberGenerator = null;
-
-	public OrderServiceImpl() {
-	}
 	
-	/**
-	 * @see org.openmrs.api.OrderService#setOrderDAO(org.openmrs.api.db.OrderDAO)
-	 */
-	@Override
-	public void setOrderDAO(OrderDAO dao) {
+	private final AdministrationService administrationService;
+	private final ConceptService conceptService;
+	private final OrderService self;
+
+	public OrderServiceImpl(OrderDAO dao,
+	                       AdministrationService administrationService,
+	                       ConceptService conceptService) {
 		this.dao = dao;
+		this.administrationService = administrationService;
+		this.conceptService = conceptService;
+		this.self = this;
+	}
+
+	@Autowired
+	public OrderServiceImpl(OrderDAO dao,
+	                       @Lazy AdministrationService administrationService,
+	                       @Lazy ConceptService conceptService,
+	                       @Lazy OrderService self) {
+		this.dao = dao;
+		this.administrationService = administrationService;
+		this.conceptService = conceptService;
+		this.self = self;
 	}
 	
 	/**
@@ -121,7 +136,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws APIException {
-		return saveOrderGroup(orderGroup, null);
+		return self.saveOrderGroup(orderGroup, null);
 	}
 
 	/**
@@ -141,13 +156,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		for (Order order : orders) {
 			if (order.getId() == null) {
 				order.setEncounter(orderGroup.getEncounter());
-				Context.getOrderService().saveOrder(order, orderContext);
+				self.saveOrder(order, orderContext);
 			}
 		}
 		Set<OrderGroup> nestedGroups = orderGroup.getNestedOrderGroups();
 		if (nestedGroups != null) {
 			for (OrderGroup nestedGroup : nestedGroups) {
-				Context.getOrderService().saveOrderGroup(nestedGroup, orderContext);
+				self.saveOrderGroup(nestedGroup, orderContext);
 			}
 		}
 		return orderGroup;
@@ -404,7 +419,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	private OrderNumberGenerator getOrderNumberGenerator() {
 		if (orderNumberGenerator == null) {
-			String generatorBeanId = Context.getAdministrationService().getGlobalProperty(
+			String generatorBeanId = administrationService.getGlobalProperty(
 			    OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID);
 			if (StringUtils.hasText(generatorBeanId)) {
 				orderNumberGenerator = Context.getRegisteredComponent(generatorBeanId, OrderNumberGenerator.class);
@@ -658,11 +673,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public String getNewOrderNumber(OrderContext orderContext) throws APIException {
-		return ORDER_NUMBER_PREFIX + Context.getOrderService().getNextOrderNumberSeedSequenceValue();
+		return ORDER_NUMBER_PREFIX + self.getNextOrderNumberSeedSequenceValue();
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
+	 * @see org.openmrs.api.OrderService#getOrderByOrdfsaveOrderTypeerNumber(java.lang.String)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -918,7 +933,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderFrequency unretireOrderFrequency(OrderFrequency orderFrequency) {
-		return Context.getOrderService().saveOrderFrequency(orderFrequency);
+		return self.saveOrderFrequency(orderFrequency);
 	}
 	
 	/**
@@ -1071,7 +1086,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public OrderType getOrderTypeByConcept(Concept concept) {
-		return Context.getOrderService().getOrderTypeByConceptClass(concept.getConceptClass());
+		return self.getOrderTypeByConceptClass(concept.getConceptClass());
 	}
 
 	/**
@@ -1159,9 +1174,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	@Override
 	public Concept getNonCodedDrugConcept() {
-		String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_DRUG_ORDER_DRUG_OTHER);
+		String conceptUuid = administrationService.getGlobalProperty(OpenmrsConstants.GP_DRUG_ORDER_DRUG_OTHER);
 		if (StringUtils.hasText(conceptUuid)) {
-			return Context.getConceptService().getConceptByUuid(conceptUuid);
+			return conceptService.getConceptByUuid(conceptUuid);
 		}
 		return null;
 	}
@@ -1179,8 +1194,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {
-		String conceptUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
-		Concept concept = Context.getConceptService().getConceptByUuid(conceptUuid);
+		String conceptUuid = administrationService.getGlobalProperty(globalProperty);
+		Concept concept = conceptService.getConceptByUuid(conceptUuid);
 		if (concept != null && concept.getSet()) {
 			return concept.getSetMembers();
 		}
@@ -1236,7 +1251,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason)throws APIException {
-		return Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
+		return self.saveOrderGroupAttributeType(orderGroupAttributeType);
 	}
 
 	/**
@@ -1244,7 +1259,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws APIException {
-		return Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
+		return self.saveOrderGroupAttributeType(orderGroupAttributeType);
 	}
 
 	/**
@@ -1313,7 +1328,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderAttributeType retireOrderAttributeType(OrderAttributeType orderAttributeType, String reason)throws APIException {
-		return Context.getOrderService().saveOrderAttributeType(orderAttributeType);
+		return self.saveOrderAttributeType(orderAttributeType);
 	}
 
 	/**
@@ -1321,7 +1336,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderAttributeType unretireOrderAttributeType(OrderAttributeType orderAttributeType)throws APIException {
-		return Context.getOrderService().saveOrderAttributeType(orderAttributeType);
+		return self.saveOrderAttributeType(orderAttributeType);
 	}
 
 	/**
