@@ -31,11 +31,9 @@ public class ModuleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1239820102030303L;
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleServlet.class);
-	
-
-	
+    
 	@Override
-protected void service(HttpServletRequest request, HttpServletResponse response) {
+protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     try {
         log.debug("In service method for module servlet: {}", request.getPathInfo());
@@ -78,7 +76,7 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
         servlet.service(request, response);
 
     } catch (Exception e) {
-        log.error("Unexpected error in ModuleServlet#service", e);
+        log.error("An unexpected error occured", e);
 
         try {
             if (!response.isCommitted()) {
@@ -90,8 +88,6 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
         }
     }
 }
-
-
 	/**
 	 * Internal implementation of the ServletConfig interface, to be passed to module servlets when
 	 * they are first loaded
