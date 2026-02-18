@@ -2,12 +2,23 @@
 
 [![Build Status](https://travis-ci.org/openmrs/openmrs-core.svg?branch=master)](https://travis-ci.org/openmrs/openmrs-core) [![Coverage Status](https://coveralls.io/repos/github/openmrs/openmrs-core/badge.svg?branch=master)](https://coveralls.io/github/openmrs/openmrs-core?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a51303ee46c34775a7c31c8d6016da6b)](https://www.codacy.com/app/openmrs/openmrs-core?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=openmrs/openmrs-core&amp;utm_campaign=Badge_Grade)
 
-api: [![API](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=api%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=api%2Fpom.xml)
-test: [![test](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=test%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=test%2Fpom.xml)
-tools: [![tools](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=tools%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=tools%2Fpom.xml)
-web: [![web](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=web%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=web%2Fpom.xml)
-webapp: [![webapp](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=webapp%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=webapp%2Fpom.xml)
-DPGA: [![DPG Badge](https://img.shields.io/badge/Verified-DPG-3333AB?logo=data:image/svg%2bxml;base64,PHN2ZyB3aWR0aD0iMzEiIGhlaWdodD0iMzMiIHZpZXdCb3g9IjAgMCAzMSAzMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0LjIwMDggMjEuMzY3OEwxMC4xNzM2IDE4LjAxMjRMMTEuNTIxOSAxNi40MDAzTDEzLjk5MjggMTguNDU5TDE5LjYyNjkgMTIuMjExMUwyMS4xOTA5IDEzLjYxNkwxNC4yMDA4IDIxLjM2NzhaTTI0LjYyNDEgOS4zNTEyN0wyNC44MDcxIDMuMDcyOTdMMTguODgxIDUuMTg2NjJMMTUuMzMxNCAtMi4zMzA4MmUtMDVMMTEuNzgyMSA1LjE4NjYyTDUuODU2MDEgMy4wNzI5N0w2LjAzOTA2IDkuMzUxMjdMMCAxMS4xMTc3TDMuODQ1MjEgMTYuMDg5NUwwIDIxLjA2MTJMNi4wMzkwNiAyMi44Mjc3TDUuODU2MDEgMjkuMTA2TDExLjc4MjEgMjYuOTkyM0wxNS4zMzE0IDMyLjE3OUwxOC44ODEgMjYuOTkyM0wyNC44MDcxIDI5LjEwNkwyNC42MjQxIDIyLjgyNzdMMzAuNjYzMSAyMS4wNjEyTDI2LjgxNzYgMTYuMDg5NUwzMC42NjMxIDExLjExNzdMMjQuNjI0MSA5LjM1MTI3WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==)](https://digitalpublicgoods.net/r/openmrs)
+### API
+ [![API](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=api%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=api%2Fpom.xml)
+
+### Test
+ [![test](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=test%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=test%2Fpom.xml)
+
+### Tools
+ [![tools](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=tools%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=tools%2Fpom.xml)
+
+### Web
+ [![web](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=web%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=web%2Fpom.xml)
+
+ ### Webapp
+ [![webapp](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=webapp%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=webapp%2Fpom.xml)
+ 
+### DPGA
+ [![DPG Badge](https://img.shields.io/badge/Verified-DPG-3333AB?logo=data:image/svg%2bxml;base64,PHN2ZyB3aWR0aD0iMzEiIGhlaWdodD0iMzMiIHZpZXdCb3g9IjAgMCAzMSAzMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0LjIwMDggMjEuMzY3OEwxMC4xNzM2IDE4LjAxMjRMMTEuNTIxOSAxNi40MDAzTDEzLjk5MjggMTguNDU5TDE5LjYyNjkgMTIuMjExMUwyMS4xOTA5IDEzLjYxNkwxNC4yMDA4IDIxLjM2NzhaTTI0LjYyNDEgOS4zNTEyN0wyNC44MDcxIDMuMDcyOTdMMTguODgxIDUuMTg2NjJMMTUuMzMxNCAtMi4zMzA4MmUtMDVMMTEuNzgyMSA1LjE4NjYyTDUuODU2MDEgMy4wNzI5N0w2LjAzOTA2IDkuMzUxMjdMMCAxMS4xMTc3TDMuODQ1MjEgMTYuMDg5NUwwIDIxLjA2MTJMNi4wMzkwNiAyMi44Mjc3TDUuODU2MDEgMjkuMTA2TDExLjc4MjEgMjYuOTkyM0wxNS4zMzE0IDMyLjE3OUwxOC44ODEgMjYuOTkyM0wyNC44MDcxIDI5LjEwNkwyNC42MjQxIDIyLjgyNzdMMzAuNjYzMSAyMS4wNjEyTDI2LjgxNzYgMTYuMDg5NUwzMC42NjMxIDExLjExNzdMMjQuNjI0MSA5LjM1MTI3WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==)](https://digitalpublicgoods.net/r/openmrs)
 
 OpenMRS is a patient-based medical record system focusing on giving providers a free customizable electronic medical record system (EMR).
 
