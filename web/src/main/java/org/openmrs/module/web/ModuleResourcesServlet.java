@@ -48,7 +48,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 		return f.lastModified();
 	}
 	
-	// here
+	
 	@Override
 protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 
@@ -86,7 +86,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) {
             log.error("Failed to send error response", ioException);
         }
     }
-}// to here
+}
 	
 	/**
 	 * Turns the given request/path into a File object

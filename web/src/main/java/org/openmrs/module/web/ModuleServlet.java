@@ -33,7 +33,7 @@ public class ModuleServlet extends HttpServlet {
 	private static final Logger log = LoggerFactory.getLogger(ModuleServlet.class);
 	
 
-	//here
+	
 	@Override
 protected void service(HttpServletRequest request, HttpServletResponse response) {
 
@@ -89,7 +89,7 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
             log.error("Failed to send error response", ioException);
         }
     }
-}// to here
+}
 
 
 	/**
