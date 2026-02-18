@@ -117,7 +117,7 @@
 		<tomcatVersion>11.0.18</tomcatVersion>
 		<jodaTimeVersion>2.14.0</jodaTimeVersion>
 		<guavaVersion>33.5.0-jre</guavaVersion>
-		<awsSdkS3Version>2.32.13</awsSdkS3Version>
+		<awsSdkS3Version>2.41.31</awsSdkS3Version>
 
 		<!-- Testing -->
 		<junit4Version>4.13.2</junit4Version>
