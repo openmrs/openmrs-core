@@ -12,19 +12,13 @@ package org.openmrs.validator;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.CustomDosingInstructions;
 import org.openmrs.Drug;
