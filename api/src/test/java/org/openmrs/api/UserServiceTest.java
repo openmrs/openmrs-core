@@ -141,7 +141,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		((Patient) personToMakeUser).getIdentifiers().size();
 		Context.clearSession();
 		// this is the user object we'll be saving
-		User user = new User(personToMakeUser);
+		User user = new User(personToMakeUser,"testuser");
 		
 		user.setUsername("bwolfe");
 		user.setSystemId("asdf");
@@ -370,7 +370,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Person person = new Person();
 		person.addName(new PersonName("jane", "sue", "doe"));
 		person.setGender("F");
-		return new User(person);
+		return new User(person, "testuser");
 	}
 
 	private String decorateWithLuhnIdentifier(String value) {

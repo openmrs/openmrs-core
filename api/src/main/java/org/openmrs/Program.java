@@ -80,12 +80,14 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	/**
-	 * Constructor with name
+	 * Constructs a Program with all required values for persistence.
 	 *
-	 * @since 1.10
+	 * @param name the program name
+	 * @param concept the program concept
 	 */
-	public Program(String name) {
+	public Program(String name, Concept concept) {
 		setName(name);
+		setConcept(concept);
 	}
 	
 	// ******************

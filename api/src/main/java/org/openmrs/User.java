@@ -147,10 +147,17 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	public User(Integer userId) {
 		this.userId = userId;
 	}
-	
-	/** constructor with person object */
-	public User(Person person) {
-		this.person = person;
+
+	/**
+	 * Required-values constructor for creating a User
+	 * that can be persisted via the service layer.
+	 *
+	 * @param person the associated person (required)
+	 * @param username the unique username (required)
+	 */
+	public User(Person person, String username) {
+		setPerson(person);
+		setUsername(username);
 	}
 	
 	/**

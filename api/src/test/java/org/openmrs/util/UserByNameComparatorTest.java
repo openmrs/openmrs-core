@@ -36,16 +36,19 @@ public class UserByNameComparatorTest {
 		
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
-		User user1 = new User(person1);
+		User user1 = new User(person1, "user1");
+
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleNamf", "familyName"));
-		User user2 = new User(person2);
+		User user2 = new User(person2, "user2");
+
 		Person person3 = new Person();
 		person3.addName(new PersonName("givenName", "middleNamg", "familyName"));
-		User user3 = new User(person3);
+		User user3 = new User(person3, "user3");
+
 		Person person4 = new Person();
 		person4.addName(new PersonName("givenName", "middleNamh", "familyName"));
-		User user4 = new User(person4);
+		User user4 = new User(person4, "user4");
 		
 		List<User> listToSort = new ArrayList<>();
 		// add the users randomly
