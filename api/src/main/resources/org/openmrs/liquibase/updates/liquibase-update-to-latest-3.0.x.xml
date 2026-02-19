@@ -101,6 +101,11 @@
 		<addColumn tableName="relationship_type">
 			<column name="name" type="VARCHAR(255)"/>
 		</addColumn>
+		<sql>
+			UPDATE relationship_type
+			SET name = CONCAT(a_is_to_b, '/', b_is_to_a)
+			WHERE name IS NULL;
+		</sql>
 	</changeSet>
 
 	<changeSet id="TRUNK-5881-2026-01-22" author="Chinmay7070">
