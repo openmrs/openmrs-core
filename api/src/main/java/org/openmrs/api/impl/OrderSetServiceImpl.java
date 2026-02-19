@@ -220,6 +220,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	}
 
     @Override
+	@Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public <T> T getRefByUuid(Class<T> type, String uuid) {
         if (OrderSetMember.class.equals(type)) {

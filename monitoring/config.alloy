@@ -1,0 +1,84 @@
+logging {
+  level = "warn"
+}
+
+discovery.docker "linux" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "docker_logs" {
+  targets = discovery.docker.linux.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container_name"
+  }
+
+  rule {
+    action       = "replace"
+    replacement  = "docker"
+    target_label = "job"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "service_name"
+  }
+}
+
+loki.source.docker "docker_logs" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.docker_logs.output
+  forward_to = [loki.process.docker_process.receiver]
+}
+
+loki.process "docker_process" {
+  forward_to = [loki.write.local.receiver]
+
+  stage.drop {
+    expression = ".*(msg=\\\"(error notifying scheduler about finished query|error processing requests from scheduler|error health checking|error notifying frontend about finished query|error getting ingester clients)\\\"|msg=\\\"write operation failed\\\" details=\\\"entry too far behind).*"
+  }
+
+  stage.multiline {
+    firstline = "^(?i)((\\d{4}-\\d{2}-\\d{2}|\\d{2}-[a-z]{3}-\\d{4})|(trace|debug|info|warning|warn|error|fatal|panic|note))"
+    max_wait_time = "3s"
+  }
+
+  stage.regex {
+    expression = "(?i)(?P<level>trace|debug|info|warning|warn|error|fatal|panic|note)"
+  }
+
+  stage.labels {
+    values = {
+      level = "level",
+    }
+  }
+
+  stage.match {
+    selector = "{level=~\"(?i)warn(ing)?\"}"
+    stage.static_labels {
+      values = { level = "warn" }
+    }
+  }
+
+  stage.match {
+    selector = "{level=~\"(?i)(info|note)\"}"
+    stage.static_labels {
+      values = { level = "info" }
+    }
+  }
+
+  stage.match {
+    selector = "{level=~\"(?i)(error|fatal|panic)\"}"
+    stage.static_labels {
+      values = { level = "error" }
+    }
+  }
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
