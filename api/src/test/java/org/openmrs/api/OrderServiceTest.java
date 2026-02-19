@@ -4539,4 +4539,68 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	// Test-only subclass
 	public static class MyTestOrder extends TestOrder { }
+
+	/**
+	 * @see OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldSaveOrderWithIntent() {
+		TestOrder order = new TestOrder();
+		// Changed to Patient 7 to match Encounter 3
+		order.setPatient(patientService.getPatient(7));
+		order.setConcept(conceptService.getConcept(5497));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order.setOrderType(orderService.getOrderType(2)); // OrderType 2 is TestOrder
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setOrderer(providerService.getProvider(1));
+		order.setDateActivated(new Date());
+		order.setIntent(Order.Intent.PLAN);
+
+		Order savedOrder = orderService.saveOrder(order, null);
+
+		assertNotNull(savedOrder.getId());
+		assertEquals(Order.Intent.PLAN, savedOrder.getIntent());
+	}
+
+	/**
+	 * @see OrderService#updateOrderIntent(Order, Order.Intent)
+	 */
+	@Test
+	public void updateOrderIntent_shouldUpdateIntentCorrectly() {
+		// Use an existing order from the database
+		Order order = orderService.getOrder(1);
+
+		Order updatedOrder = orderService.updateOrderIntent(order, Order.Intent.PLAN);
+		Context.flushSession();
+
+		assertEquals(Order.Intent.PLAN, updatedOrder.getIntent());
+	}
+
+	/**
+	 * @see Order#cloneForRevision()
+	 */
+	@Test
+	public void cloneForRevision_shouldCopyIntent() {
+		Order order = new Order();
+		order.setIntent(Order.Intent.PLAN);
+
+		Order revisedOrder = order.cloneForRevision();
+
+		assertEquals(Order.Intent.PLAN, revisedOrder.getIntent());
+	}
+
+	/**
+	 * @see Order#cloneForDiscontinuing()
+	 */
+	@Test
+	public void cloneForDiscontinuing_shouldCopyIntent() {
+		Order order = new Order();
+		order.setIntent(Order.Intent.PROPOSAL);
+
+		Order discontinueOrder = order.cloneForDiscontinuing();
+
+		assertEquals(Order.Intent.PROPOSAL, discontinueOrder.getIntent());
+	}
+
+	
 }

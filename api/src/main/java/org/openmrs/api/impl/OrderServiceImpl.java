@@ -570,7 +570,23 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		return saveOrderInternal(order, null);
 	}
-	
+
+	/**
+	 * @see org.openmrs.api.OrderService#updateOrderIntent(org.openmrs.Order, org.openmrs.Order.Intent)
+	 * @since 3.0.0
+	 */
+	@Override
+	public Order updateOrderIntent(Order order, Order.Intent intent) throws APIException {
+		if (order == null || intent == null) {
+			throw new APIException("Order and Intent are required and cannot be null");
+		}
+
+		// This bypasses the standard Hibernate dirty-check for unchangeable objects
+		setProperty(order, "intent", intent);
+
+		return saveOrderInternal(order, null);
+	}
+
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */

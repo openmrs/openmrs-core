@@ -118,5 +118,17 @@
 			<column name="changed_by" type="int"/>
 		</addColumn>
 	</changeSet>
+
+	<changeSet id="TRUNK-6560-2026-02-19" author="Abhisy2506">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="orders" columnName="intent"/></not>
+		</preConditions>
+		<comment>Adding intent column to orders table for FHIR alignment</comment>
+		<addColumn tableName="orders">
+			<column name="intent" type="varchar(50)" defaultValue="ORDER">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
 	
 </databaseChangeLog>

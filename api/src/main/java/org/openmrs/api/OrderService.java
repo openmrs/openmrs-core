@@ -313,6 +313,21 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public Order updateOrderFulfillerStatus(Order order, Order.FulfillerStatus orderFulfillerStatus, String fullFillerComment, String accessionNumber);
+
+	/**
+	 * Updates the intent of an order and persists it
+	 *
+	 * @param order the order whose intent should be updated
+	 * @param intent the new Order.Intent value
+	 * @return the updated order
+	 * @throws APIException
+	 *
+	 * <strong>Should</strong> set the new intent
+	 * <strong>Should</strong> save the updated order
+	 * <strong>Should</strong> not update if order is null
+	 */
+	@Authorized(PrivilegeConstants.EDIT_ORDERS)
+	public Order updateOrderIntent(Order order, Order.Intent intent) throws APIException;
 	
 	/**
 	 * Gets the order identified by a given order number
