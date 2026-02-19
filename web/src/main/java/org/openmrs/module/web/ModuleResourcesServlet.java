@@ -72,7 +72,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
         }
 
     } catch (Exception e) {
-        log.error("An unexpected error occurred", e);
+        log.error("Unexpected errorin ModuleResourcesServlet#doGet", e);
 
         try {
             if (!response.isCommitted()) {

@@ -76,7 +76,7 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
         servlet.service(request, response);
 
     } catch (Exception e) {
-        log.error("An unexpected error occured", e);
+        log.error("Unexpected error in ModuleServlet#service", e);
 
         try {
             if (!response.isCommitted()) {
