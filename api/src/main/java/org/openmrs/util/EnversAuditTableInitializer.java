@@ -12,6 +12,7 @@ package org.openmrs.util;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.hibernate.boot.Metadata;
 import org.hibernate.service.ServiceRegistry;
@@ -83,7 +84,8 @@ public class EnversAuditTableInitializer {
 		String auditTableSuffix = hibernateProperties.getProperty("org.hibernate.envers.audit_table_suffix", "_audit");
 
 		Map<String, Object> settings = (Map) hibernateProperties;
-		ExecutionOptions executionOptions = getExecutionOptions(settings);
+		AtomicBoolean hasErrors = new AtomicBoolean(false);
+		ExecutionOptions executionOptions = getExecutionOptions(settings, hasErrors);
 		SchemaMigrator schemaMigrator = serviceRegistry.getService(SchemaManagementTool.class).getSchemaMigrator(settings);
 
 		TargetDescriptor targetDescriptor = getTargetDescriptor();
@@ -109,7 +111,11 @@ public class EnversAuditTableInitializer {
 			return hasPrefix && hasSuffix;
 		}, targetDescriptor);
 
-		log.info("Successfully created/updated Envers audit tables using Hibernate SchemaManagementTool.");
+		if (hasErrors.get()) {
+			log.warn("Envers audit table migration completed with errors.");
+		} else {
+			log.info("Successfully created/updated Envers audit tables using Hibernate SchemaManagementTool.");
+		}
 	}
 
 	private static TargetDescriptor getTargetDescriptor() {
@@ -126,7 +132,7 @@ public class EnversAuditTableInitializer {
 		};
 	}
 
-	private static ExecutionOptions getExecutionOptions(Map<String, Object> settings) {
+	private static ExecutionOptions getExecutionOptions(Map<String, Object> settings, AtomicBoolean hasErrors) {
 		return new ExecutionOptions() {
 			@Override
 			public Map<String, Object> getConfigurationValues() {
@@ -140,7 +146,10 @@ public class EnversAuditTableInitializer {
 
 			@Override
 			public ExceptionHandler getExceptionHandler() {
-				return throwable -> log.warn("Schema migration encountered an issue: {}", throwable.getMessage());
+				return throwable -> {
+					hasErrors.set(true);
+					log.warn("Schema migration encountered an issue: {}", throwable.getMessage());
+				};
 			}
 		};
 	}
