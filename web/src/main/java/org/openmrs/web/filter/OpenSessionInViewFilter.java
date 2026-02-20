@@ -38,6 +38,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class OpenSessionInViewFilter extends OncePerRequestFilter {
 
+	private volatile SessionFactory sessionFactory;
+
 	@Override
 	protected boolean shouldNotFilterAsyncDispatch() {
 		return false;
@@ -52,9 +54,13 @@ public class OpenSessionInViewFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
-		SessionFactory sf = WebApplicationContextUtils
-			.getRequiredWebApplicationContext(getServletContext())
-			.getBean("sessionFactory", SessionFactory.class);
+		SessionFactory sf = this.sessionFactory;
+		if (sf == null) {
+			sf = WebApplicationContextUtils
+				.getRequiredWebApplicationContext(getServletContext())
+				.getBean("sessionFactory", SessionFactory.class);
+			this.sessionFactory = sf;
+		}
 
 		if (TransactionSynchronizationManager.hasResource(sf)) {
 			filterChain.doFilter(request, response);
@@ -63,13 +69,15 @@ public class OpenSessionInViewFilter extends OncePerRequestFilter {
 
 		Session session = sf.openSession();
 		session.setHibernateFlushMode(FlushMode.MANUAL);
-		SessionHolder holder = new SessionHolder(session);
-		TransactionSynchronizationManager.bindResource(sf, holder);
+		TransactionSynchronizationManager.bindResource(sf, new SessionHolder(session));
 		try {
 			filterChain.doFilter(request, response);
 		} finally {
-			TransactionSynchronizationManager.unbindResource(sf);
-			session.close();
+			try {
+				TransactionSynchronizationManager.unbindResource(sf);
+			} finally {
+				session.close();
+			}
 		}
 	}
 }
