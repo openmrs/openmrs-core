@@ -30,23 +30,19 @@ class PatientIdentifierTest {
 	@Test
 	void copy_shouldCopyAllFields() {
 		PatientIdentifier original = new PatientIdentifier();
-		original.setPatientIdentifierId(1);
 		original.setIdentifier("12345");
 		original.setIdentifierType(new PatientIdentifierType(1));
 		original.setLocation(new Location(1));
 		original.setPreferred(true);
 		original.setVoided(false);
-		original.setUuid("test-uuid");
 
 		PatientIdentifier copy = original.copy();
 
-		assertEquals(original.getPatientIdentifierId(), copy.getPatientIdentifierId());
 		assertEquals(original.getIdentifier(), copy.getIdentifier());
 		assertEquals(original.getIdentifierType(), copy.getIdentifierType());
 		assertEquals(original.getLocation(), copy.getLocation());
 		assertEquals(original.getPreferred(), copy.getPreferred());
 		assertEquals(original.getVoided(), copy.getVoided());
-		assertEquals(original.getUuid(), copy.getUuid());
 	}
 
 	@Test

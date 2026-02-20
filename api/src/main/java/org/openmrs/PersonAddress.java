@@ -195,7 +195,6 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	public PersonAddress copy() {
 		PersonAddress address = new PersonAddress();
-		address.setPersonAddressId(getPersonAddressId());
 		address.setPerson(getPerson());
 		address.setPreferred(getPreferred());
 		address.setAddress1(getAddress1());
@@ -230,7 +229,6 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 		address.setDateVoided(getDateVoided());
 		address.setVoidedBy(getVoidedBy());
 		address.setVoidReason(getVoidReason());
-		address.setUuid(getUuid());
 		return address;
 	}
 	

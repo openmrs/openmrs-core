@@ -184,7 +184,6 @@ public class PersonAddressTest {
 	@Test
 	void copy_shouldCopyAllAddressFields() {
 		PersonAddress original = new PersonAddress();
-		original.setPersonAddressId(1);
 		original.setAddress1("123 Main St");
 		original.setAddress2("Apt 4");
 		original.setAddress3("Building B");
@@ -197,11 +196,9 @@ public class PersonAddressTest {
 		original.setStartDate(new Date(1000L));
 		original.setEndDate(new Date(2000L));
 		original.setPreferred(true);
-		original.setUuid("test-uuid");
 
 		PersonAddress copy = original.copy();
 
-		assertEquals(original.getPersonAddressId(), copy.getPersonAddressId());
 		assertEquals(original.getAddress1(), copy.getAddress1());
 		assertEquals(original.getAddress2(), copy.getAddress2());
 		assertEquals(original.getAddress3(), copy.getAddress3());
@@ -214,7 +211,6 @@ public class PersonAddressTest {
 		assertEquals(original.getStartDate(), copy.getStartDate());
 		assertEquals(original.getEndDate(), copy.getEndDate());
 		assertEquals(original.getPreferred(), copy.getPreferred());
-		assertEquals(original.getUuid(), copy.getUuid());
 	}
 
 	@Test

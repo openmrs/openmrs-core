@@ -308,7 +308,6 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 */
 	public PatientIdentifier copy() {
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
-		patientIdentifier.setPatientIdentifierId(getPatientIdentifierId());
 		patientIdentifier.setPatient(getPatient());
 		patientIdentifier.setIdentifier(getIdentifier());
 		patientIdentifier.setIdentifierType(getIdentifierType());
@@ -323,7 +322,6 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 		patientIdentifier.setDateVoided(getDateVoided());
 		patientIdentifier.setVoidedBy(getVoidedBy());
 		patientIdentifier.setVoidReason(getVoidReason());
-		patientIdentifier.setUuid(getUuid());
 		return patientIdentifier;
 	}
 	
