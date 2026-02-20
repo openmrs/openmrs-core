@@ -89,7 +89,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@JoinColumn(name = "voided_by")	
 	private User voidedBy;
 	
-	@Column(name = "date_voided", length = 19)	
+	@Column(name = "date_voided")	
 	private Date dateVoided;
 	
 	@Column(name = "void_reason", length = 255)
@@ -117,7 +117,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@JoinColumn(name = "changed_by")	
 	private User changedBy;
 	
-	@Column(name = "date_changed", length = 19)	
+	@Column(name = "date_changed")	
 	private Date dateChanged;
 	
 	// Constructors
