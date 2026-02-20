@@ -1,0 +1,350 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "panels": [
+    {
+      "datasource": "Loki",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 11,
+        "x": 13,
+        "y": 0
+      },
+      "id": 3,
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"docker\", service_name=~\"$service\", level=~\"$level\"} |= \"$search\" [$__interval])) by (service_name, level)",
+          "legendFormat": "{{service_name}} {{level}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Log Volume",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Loki",
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 0,
+        "y": 5
+      },
+      "id": 5,
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+			  {
+				  "targetBlank": false,
+				  "title": "Filter Errors",
+				  "url": "?${__all_variables}&var-level=error"
+			  }
+          ],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"docker\", service_name=~\"$service\", level=~\"(?i)error\"} |= \"$search\" [$__range]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Errors Count",
+      "type": "stat"
+    },
+    {
+      "datasource": "Loki",
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Filter Warnings",
+              "url": "?${__all_variables}&var-level=warn"
+            }
+          ],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "yellow",
+                "value": null
+              }
+            ]
+          }
+        }
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 4,
+        "y": 5
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"docker\", service_name=~\"$service\", level=~\"(?i)warn.*\"} |= \"$search\" [$__range]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Warnings Count",
+      "type": "stat"
+    },
+    {
+      "datasource": "Loki",
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Show All",
+              "url": "?${__all_variables}&var-level=$__all"
+            }
+          ],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        }
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 8,
+        "y": 5
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"docker\", service_name=~\"$service\"} |= \"$search\" [$__range]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Logs Count",
+      "type": "stat"
+    },
+    {
+      "gridPos": {
+        "h": 5,
+        "w": 13,
+        "x": 0,
+        "y": 0
+      },
+      "id": 8,
+      "options": {
+        "content": "Please use filters above to select services, log levels, search query or time period for displayed logs. You may also want to disable auto-refresh in the top right corner so that the panel stops scrolling the logs. To export logs that you see, click the `Logs` panel, type `i` and then click the `Download logs` button. You may also copy a single log line by clicking on it and then the copy icon.",
+        "mode": "markdown"
+      },
+      "title": "Welcome",
+      "type": "text"
+    },
+    {
+      "datasource": "Loki",
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2,
+      "options": {
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "targets": [
+        {
+          "expr": "{job=\"docker\", service_name=~\"$service\", level=~\"$level\"} |= \"$search\"",
+          "refId": "A"
+        }
+      ],
+      "title": "Logs",
+      "type": "logs"
+    },
+    {
+      "datasource": "Loki",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "id": 4,
+      "options": {
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "targets": [
+        {
+          "expr": "{job=\"docker\", service_name=~\"$service\", level=~\"(?i)error\"} |= \"$search\"",
+          "refId": "A"
+        }
+      ],
+      "title": "Error Logs",
+      "type": "logs"
+    }
+  ],
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "text": [
+			  "api",
+			  "db"
+		  ],
+          "value": [
+			  "api",
+			  "db"
+		  ]
+        },
+        "datasource": "Loki",
+        "definition": "label_values(service_name)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Service",
+        "multi": true,
+        "name": "service",
+        "options": [],
+        "query": "label_values(service_name)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Loki",
+        "definition": "label_values(level)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Level",
+        "multi": true,
+        "name": "level",
+        "options": [],
+        "query": "label_values(level)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 0,
+        "label": "Search",
+        "name": "search",
+        "options": [],
+        "query": "",
+        "skipUrlSync": false,
+        "type": "textbox"
+      }
+    ]
+  },
+  "refresh": "5s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "title": "Logs",
+  "uid": "logs",
+  "version": 1
+}

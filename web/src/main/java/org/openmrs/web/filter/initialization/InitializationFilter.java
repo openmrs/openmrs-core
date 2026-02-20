@@ -1014,8 +1014,7 @@ public class InitializationFilter extends StartupFilter {
 		String databaseConnectionFinalUrl) {
 		try {
 			// verify connection
-			//Set Database Driver using driver String
-			Class.forName(loadedDriverString).newInstance();
+			DatabaseUtil.loadDatabaseDriver(databaseConnectionFinalUrl, loadedDriverString);
 			try (Connection ignored = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword)) {
 				return true;
 			}
