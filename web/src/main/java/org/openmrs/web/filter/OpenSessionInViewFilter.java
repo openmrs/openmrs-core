@@ -99,9 +99,11 @@ public class OpenSessionInViewFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 		} finally {
 			if (!participate) {
-				SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.unbindResource(sf);
-				log.debug("Closing Hibernate Session in OpenSessionInViewFilter");
-				sessionHolder.getSession().close();
+				Object value = TransactionSynchronizationManager.unbindResource(sf);
+				if (value instanceof SessionHolder sessionHolder) {
+					log.debug("Closing Hibernate Session in OpenSessionInViewFilter");
+					sessionHolder.getSession().close();
+				}
 			}
 		}
 	}
