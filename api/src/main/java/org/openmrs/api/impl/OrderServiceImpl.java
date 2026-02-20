@@ -573,7 +573,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 
 	/**
 	 * @see org.openmrs.api.OrderService#updateOrderIntent(org.openmrs.Order, org.openmrs.Order.Intent)
-	 * @since 3.0.0
 	 */
 	@Override
 	public Order updateOrderIntent(Order order, Order.Intent intent) throws APIException {

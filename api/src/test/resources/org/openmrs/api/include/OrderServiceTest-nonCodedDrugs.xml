@@ -22,7 +22,7 @@
     <orders order_id="584" order_type_id="1" order_number="1" urgency="ROUTINE" order_action="NEW" concept_id="5584"
             orderer="1" instructions="2x daily" date_activated="2008-09-19 00:00:00.0"
             creator="1" date_created="2008-08-19 00:0:00.0" voided="false" patient_id="2" uuid="584de0a3-05o4-4p4a-be03-e01b4c4b9584"
-            care_setting="1" encounter_id="6" intent="ORDER" />
+            care_setting="1" encounter_id="6" INTENT="ORDER" />
     <drug_order order_id="584"  dose="3" dose_units="50" as_needed="false" frequency="1" drug_non_coded="non coded drug Crocine"
                 dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10"
                 drug_inventory_id="100"

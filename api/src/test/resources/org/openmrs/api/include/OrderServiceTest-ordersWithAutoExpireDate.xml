@@ -40,11 +40,11 @@
     <orders order_id="201" order_type_id="17" order_number="ORD-101" urgency="ROUTINE" order_action="NEW"
             concept_id="5497" orderer="1" date_activated="2008-11-19 09:24:10.0"
             auto_expire_date="2008-11-23 09:24:09.0" patient_id="12" care_setting="1" encounter_id="16"
-            uuid="7d96f25c-4949-4f72-9931-d808fbc226de" date_created="2008-11-19 09:24:10.0" creator="1" voided="0" intent="ORDER" />
+            uuid="7d96f25c-4949-4f72-9931-d808fbc226de" date_created="2008-11-19 09:24:10.0" creator="1" voided="0" INTENT="ORDER" />
     <orders order_id="202" order_type_id="1" order_number="ORD-103" urgency="ROUTINE" order_action="NEW" concept_id="88"
             orderer="1" date_activated="2008-11-19 09:24:10.0" auto_expire_date="2008-11-23 09:24:09.0" patient_id="12"
             care_setting="1" encounter_id="16" uuid="9d96f25c-4949-4f72-9931-d808fbc226de"
-            date_created="2008-12-19 09:24:10.0" creator="1" voided="0" intent="ORDER" />
+            date_created="2008-12-19 09:24:10.0" creator="1" voided="0" INTENT="ORDER" />
     <drug_order order_id="202" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1"
                 dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51"
                 num_refills="10" dispense_as_written="0" duration="4" duration_units="1001"/>
@@ -55,11 +55,11 @@
             date_stopped="2008-10-19 00:00:01.1" auto_expire_date="2008-10-29 00:00:01.1"
             creator="1" date_created="2008-10-19 00:0:00.0" voided="false" patient_id="12"
             uuid="584de0a3-05o4-4p4a-8921-e01b4c4b9584"
-            care_setting="1" encounter_id="18" intent="ORDER" />
+            care_setting="1" encounter_id="18" INTENT="ORDER" />
     <orders order_id="204" order_type_id="17" order_number="1" urgency="ROUTINE" order_action="NEW" concept_id="5497"
             orderer="1" instructions="2x daily" date_activated="2008-10-19 01:00:00.0" previous_order_id="203"
             auto_expire_date="2008-10-29 00:00:00.0"
             creator="1" date_created="2008-10-19 00:0:00.0" voided="false" patient_id="12"
             uuid="584de0a3-05o4-1038-8921-e01b4c4b9584"
-            care_setting="1" encounter_id="18" intent="ORDER" />
+            care_setting="1" encounter_id="18" INTENT="ORDER" />
 </dataset>
