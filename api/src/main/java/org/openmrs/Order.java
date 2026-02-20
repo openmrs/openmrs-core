@@ -95,13 +95,19 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	/**
 	 * Valid values for the clinical intention of an order.
 	 * Aligns with the FHIR RequestIntent ValueSet.
-	 * * @since 3.0.0
+	 * @see <a href="https://www.hl7.org/fhir/R4/valueset-request-intent.html">FHIR RequestIntent</a>
+	 * @since 3.0.0
 	 */
 	public enum Intent {
 		PROPOSAL, 
 		PLAN, 
 		ORDER, 
-		FILLER_ORDER
+		FILLER_ORDER,
+		DIRECTIVE,
+		ORIGINAL_ORDER,
+		REFLEX_ORDER,
+		INSTANCE_ORDER,
+		OPTION
 	}
 	
 	
@@ -223,13 +229,12 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 
 	/**
 	 * Represents the clinical intention of this order, aligning with FHIR standards.
-	 * Valid values include PROPOSAL, PLAN, ORDER, and FILLER_ORDER.
 	 * @see Intent
 	 * @since 3.0.0
 	 */
 	@Enumerated(EnumType.STRING)
 	@JdbcTypeCode(SqlTypes.VARCHAR)
-	@Column(name = "intent", length = 50)
+	@Column(name = "intent", length = 50, nullable = false)
 	private Intent intent = Intent.ORDER;
 	
 	/**

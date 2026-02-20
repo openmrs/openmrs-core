@@ -126,9 +126,8 @@
 		<comment>Adding intent column to orders table for FHIR alignment</comment>
 		<addColumn tableName="orders">
 			<column name="intent" type="varchar(50)" defaultValue="ORDER">
-				<constraints nullable="true"/>
+				<constraints nullable="false"/>
 			</column>
 		</addColumn>
 	</changeSet>
-	
 </databaseChangeLog>

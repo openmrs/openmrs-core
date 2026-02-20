@@ -19,7 +19,7 @@
     <orders order_id="2000" order_type_id="1" order_number="ORD-2000" urgency="ROUTINE" order_action="NEW"
             concept_id="1100" orderer="1" date_activated="2014-08-01 09:24:10.0" date_stopped="2014-08-10 00:00:00.0"
             creator="1" date_created="2008-10-19 09:24:10.0" voided="false" patient_id="2"
-            uuid="56b9196c-bcac-4c2f-b3a2-123464a96439" care_setting="1" encounter_id="6"/>
+            uuid="56b9196c-bcac-4c2f-b3a2-123464a96439" care_setting="1" encounter_id="6" intent="ORDER" />
     <concept concept_id="1002" retired="0" datatype_id="4" class_id="11" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="6be8113a-f1a3-43bb-b661-a273a1490360"/>
     <concept_name concept_name_id="2002" concept_id="1002" name="Tablet" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="4a6def87-5766-40f6-80ce-014g73b126df"/>
     <drug drug_id="3001" concept_id="1100" name="Cetirizine 200mg" dosage_form="1002" combination="false" strength="2ml"

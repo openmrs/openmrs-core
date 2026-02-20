@@ -12,7 +12,7 @@
 -->
 <dataset>
   <!-- order that is a assigned to Observation -->
-  <orders order_id="42" order_type_id="2" order_number="42" urgency="ROUTINE" order_action="NEW" concept_id="5497" patient_id="7" orderer="1" date_activated="2012-08-19 00:00:00.0" creator="1" date_created="2012-01-19 12:24:10.0" voided="true" uuid="1c96f25c-4949-4f72-9931-d808fbcdb615" care_setting="1" encounter_id="3" />
+  <orders order_id="42" order_type_id="2" order_number="42" urgency="ROUTINE" order_action="NEW" concept_id="5497" patient_id="7" orderer="1" date_activated="2012-08-19 00:00:00.0" creator="1" date_created="2012-01-19 12:24:10.0" voided="true" uuid="1c96f25c-4949-4f72-9931-d808fbcdb615" care_setting="1" encounter_id="3" intent="ORDER" />
 
   <concept concept_id="1" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="4a5048b1-cf85-4c64-9339-7cab41e5e364"/>
   <concept_numeric concept_id="1" hi_absolute="50.0" low_absolute="2.0" allow_decimal="false"/>
