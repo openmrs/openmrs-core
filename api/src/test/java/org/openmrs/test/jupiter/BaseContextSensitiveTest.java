@@ -312,6 +312,12 @@ public abstract class BaseContextSensitiveTest {
 		if (runtimeProperties == null)
 			runtimeProperties = TestUtil.getRuntimeProperties(getWebappName());
 		
+		// ensure runtimeProperties is not null
+		if (runtimeProperties == null) {
+			// Fallback to an empty properties object to avoid NullPointerExceptions
+			runtimeProperties = new Properties();
+		}
+		
 		// if we're using the in-memory hypersonic database, add those
 		// connection properties here to override what is in the runtime
 		// properties
@@ -336,12 +342,27 @@ public abstract class BaseContextSensitiveTest {
 			String url = System.getProperty("databaseUrl");
 			String username = System.getProperty("databaseUsername");
 			String password = System.getProperty("databasePassword");
+			String driver = System.getProperty("databaseDriver");
+			String dialect = System.getProperty("databaseDialect");
+			
+			// Validate that all required system properties are present
+			if (url == null || username == null || password == null || driver == null || dialect == null) {
+				String msg = "Required database system properties are missing. When using -DuseInMemoryDatabase=false, "
+						+ "the following system properties must be set: databaseUrl, databaseUsername, databasePassword, "
+						+ "databaseDriver, and databaseDialect. "
+						+ "These should be set by Containers.ensureDatabaseRunning() or manually. "
+						+ "Example:\n"
+						+ "mvn -DuseInMemoryDatabase=false -Ddatabase=postgres -DdatabaseUrl=<jdbc> -DdatabaseUsername=<user> "
+						+ "-DdatabasePassword=<pass> -DdatabaseDriver=org.postgresql.Driver -DdatabaseDialect=org.hibernate.dialect.PostgreSQL95Dialect test";
+				log.error(msg);
+				throw new IllegalStateException(msg);
+			}
 			
 			runtimeProperties.setProperty(Environment.URL, url);
-			runtimeProperties.setProperty(Environment.DRIVER, System.getProperty("databaseDriver"));
+			runtimeProperties.setProperty(Environment.DRIVER, driver);
 			runtimeProperties.setProperty(Environment.USER, username);
 			runtimeProperties.setProperty(Environment.PASS, password);
-			runtimeProperties.setProperty(Environment.DIALECT, System.getProperty("databaseDialect"));
+			runtimeProperties.setProperty(Environment.DIALECT, dialect);
 			
 			// these properties need to be set in case the user has this exact
 			// phrasing in their runtime file.
