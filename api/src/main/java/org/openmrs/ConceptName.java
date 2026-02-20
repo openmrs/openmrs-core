@@ -24,7 +24,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -96,12 +95,11 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@Column(name = "void_reason", length = 255)
 	private String voidReason;
 	
-	@ManyToMany(cascade = CascadeType.MERGE)
+	@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	@JoinTable(
 			name = "concept_name_tag_map",
 			joinColumns = @JoinColumn(name = "concept_name_id"),
-			inverseJoinColumns = @JoinColumn(name = "concept_name_tag_id")
-	)	
+			inverseJoinColumns = @JoinColumn(name = "concept_name_tag_id"))
 	private Collection<ConceptNameTag> tags;
 	@Column(name = "concept_name_type", length = 50)
 	
