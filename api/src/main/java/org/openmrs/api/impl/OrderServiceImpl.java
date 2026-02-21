@@ -657,7 +657,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @param orderContext
 	 */
 	@Override
-	@Transactional(propagation = Propagation.SUPPORTS)
 	public String getNewOrderNumber(OrderContext orderContext) throws APIException {
 		return ORDER_NUMBER_PREFIX + Context.getOrderService().getNextOrderNumberSeedSequenceValue();
 	}
@@ -695,7 +694,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public Long getNextOrderNumberSeedSequenceValue() {
+	public synchronized Long getNextOrderNumberSeedSequenceValue() {
 		return dao.getNextOrderNumberSeedSequenceValue();
 	}
 	

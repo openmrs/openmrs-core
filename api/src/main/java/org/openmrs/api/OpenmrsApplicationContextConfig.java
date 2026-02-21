@@ -34,8 +34,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
+import org.springframework.orm.jpa.hibernate.HibernateTransactionManager;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.TransactionManager;
 
@@ -60,9 +59,7 @@ public class OpenmrsApplicationContextConfig {
 	
 	@Bean
 	public TransactionManager transactionManager(SessionFactory sessionFactory) {
-		JpaTransactionManager transactionManager = new JpaTransactionManager(sessionFactory);
-		transactionManager.setJpaDialect(new HibernateJpaDialect());
-		return transactionManager;
+		return new HibernateTransactionManager(sessionFactory);
 	}
 	
 	@Bean
