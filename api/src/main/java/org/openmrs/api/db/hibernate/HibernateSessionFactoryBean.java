@@ -27,11 +27,15 @@ import org.hibernate.Interceptor;
 import org.hibernate.boot.Metadata;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.integrator.spi.Integrator;
+import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
+import org.jspecify.annotations.NonNull;
+import org.openmrs.api.APIException;
 import org.openmrs.api.cache.CacheConfig;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.util.EnversAuditTableInitializer;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +79,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	 * as 'private' instead of 'protected'
 	 */
 	@Override
-	public void setMappingResources(String... mappingResources) {
+	public void setMappingResources(String @NonNull ... mappingResources) {
 		Collections.addAll(this.mappingResources, mappingResources);
 		
 		super.setMappingResources(this.mappingResources.toArray(new String[] {}));
@@ -87,7 +91,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	 * It adds to the set instead of overwriting it with each call.
 	 */
 	@Override
-	public void setPackagesToScan(String... packagesToScan) {
+	public void setPackagesToScan(String @NonNull ... packagesToScan) {
 		this.packagesToScan.addAll(Arrays.asList(packagesToScan));
 		
 		super.setPackagesToScan(this.packagesToScan.toArray(new String[0]));
@@ -129,7 +133,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 			Object key = entry.getKey();
 			String prop = (String) key;
 			String value = (String) entry.getValue();
-			log.trace("Setting module property: " + prop + ":" + value);
+			log.trace("Setting module property: {}:{}", prop, value);
 			config.setProperty(prop, value);
 			if (!prop.startsWith("hibernate")) {
 				config.setProperty("hibernate." + prop, value);
@@ -143,7 +147,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 			Object key = entry.getKey();
 			String prop = (String) key;
 			String value = (String) entry.getValue();
-			log.trace("Setting property: " + prop + ":" + value);
+			log.trace("Setting property: {}:{}", prop, value);
 			config.setProperty(prop, value);
 			if (!prop.startsWith("hibernate")) {
 				config.setProperty("hibernate." + prop, value);
@@ -186,8 +190,8 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 			value = value.replace("%APPLICATION_DATA_DIRECTORY%", applicationDataDirectory);
 			entry.setValue(value);
 		}
-		
-		log.debug("Setting global Hibernate Session Interceptor for SessionFactory, Interceptor: " + chainingInterceptor);
+
+		log.debug("Setting global Hibernate Session Interceptor for SessionFactory, Interceptor: {}", chainingInterceptor);
 		
 		// make sure all autowired interceptors are put onto our chaining interceptor
 		// sort on the keys so that the devs/modules have some sort of control over the order of the interceptors 
@@ -221,6 +225,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory,
 			SessionFactoryServiceRegistry serviceRegistry) {
 		this.metadata = metadata;
+		generateEnversAuditTables(metadata, sessionFactory.getServiceRegistry());
 	}
 
 	@Override
@@ -233,5 +238,14 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	 */
 	public Metadata getMetadata() {
 		return metadata;
+	}
+
+	private void generateEnversAuditTables(Metadata metadata, ServiceRegistry serviceRegistry) {
+		try {
+			Properties hibernateProperties = getHibernateProperties();
+			EnversAuditTableInitializer.initialize(metadata, hibernateProperties, serviceRegistry);
+		} catch (Exception e) {
+			throw new APIException("An error occurred while initializing the Envers audit tables", e);
+		}
 	}
 }
