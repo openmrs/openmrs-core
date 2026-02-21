@@ -9,11 +9,15 @@
  */
 package org.openmrs.validator;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Collection;
 
+import org.openmrs.annotation.Handler;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
-import org.openmrs.annotation.Handler;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,8 +84,7 @@ public class PatientValidator extends PersonValidator {
 		Boolean preferredIdentifierChosen = false;
 		//Voided patients have only voided identifiers since they were voided with the patient, 
 		//so get all otherwise get the active ones
-		Collection<PatientIdentifier> identifiers = patient.getVoided() ? patient.getIdentifiers() : patient
-		        .getActiveIdentifiers();
+		Collection<PatientIdentifier> identifiers = patient.getVoided() ? patient.getIdentifiers() : patient.getActiveIdentifiers();
 		for (PatientIdentifier pi : identifiers) {
 			if (pi.getPreferred()) {
 				preferredIdentifierChosen = true;
@@ -90,16 +93,48 @@ public class PatientValidator extends PersonValidator {
 		if (!preferredIdentifierChosen && identifiers.size() != 1) {
 			errors.reject("error.preferredIdentifier");
 		}
-		int index = 0;
-		if (!errors.hasErrors() && patient.getIdentifiers() != null) {
-			// Validate PatientIdentifers
-			for (PatientIdentifier identifier : patient.getIdentifiers()) {
-				errors.pushNestedPath("identifiers[" + index + "]");
-				patientIdentifierValidator.validate(identifier, errors);
-				errors.popNestedPath();
-				index++;
-			}
+
+        if (!patient.getVoided()) {
+    		Collection<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes(false);
+
+    		List<String> missingRequiredIdentifiers = new ArrayList<>();
+
+    		for (PatientIdentifierType type : identifierTypes) {
+        		if (Boolean.TRUE.equals(type.getRequired())) {
+            		boolean found = false;
+            		for (PatientIdentifier pi : patient.getActiveIdentifiers()) {
+                		if (!pi.getVoided() && pi.getIdentifierType() != null && pi.getIdentifierType().getId().equals(type.getId())) {
+                    		found = true;
+                    		break;
+                		}
+            		}
+
+            		if (!found) {
+                			missingRequiredIdentifiers.add(type.getName());
+            		}
+        		}
+    		}
+
+    		if (!missingRequiredIdentifiers.isEmpty()) {
+        		errors.rejectValue(
+              "identifiers",
+          "Patient.missingRequiredIdentifier",
+            		new Object[] { String.join(", ", missingRequiredIdentifiers) },
+    null
+        		);
+   			}
 		}
+		
+		int index = 0;
+    	if (!errors.hasErrors() && patient.getIdentifiers() != null) {
+
+        	for (PatientIdentifier identifier : patient.getIdentifiers()) {
+            	errors.pushNestedPath("identifiers[" + index + "]");
+           		patientIdentifierValidator.validate(identifier, errors);
+            	errors.popNestedPath();
+            	index++;
+        	}
+    	}
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 	}
 }
