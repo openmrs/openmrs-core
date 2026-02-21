@@ -40,16 +40,38 @@ public class OpenmrsJspServlet extends JspServlet {
 	public static final String OPENMRS_TLD_SCAN_NEEDED = "OPENMRS_TLD_SCAN_NEEDED";
 
 	@Override
-	public void init(ServletConfig config) throws ServletException {
-		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		super.init(config);
-	}
-	
+public void init(ServletConfig config)  throws ServletException {
+
+    try {
+        Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+        super.init(config);
+
+    } catch (Exception e) {
+        log.error("Unexpected error in OpenmrsJspServlet#init", e);
+        throw new RuntimeException("Failed to initialize OpenmrsJspServlet", e);
+    }
+}
 	@Override
-	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		rescanTldsIfNeeded();
-		super.service(request, response);
-	}
+public void service(HttpServletRequest request, HttpServletResponse response) {
+
+    try {
+        rescanTldsIfNeeded();
+        super.service(request, response);
+
+    } catch (Exception e) {
+        log.error("Unexpected error in OpenmrsJspServlet#service", e);
+
+        try {
+            if (!response.isCommitted()) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "An unexpected error occurred while processing the request.");
+            }
+        } catch (IOException ioException) {
+            log.error("Failed to send error response", ioException);
+        }
+    }
+}
+
 
 	protected synchronized void rescanTldsIfNeeded() throws ServletException {
 		if (getBooleanAttribute(OPENMRS_TLD_SCAN_NEEDED, true)) {
