@@ -11,6 +11,7 @@ package org.openmrs.parameter;
 
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.Location;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
@@ -37,6 +38,8 @@ public class OrderSearchCriteria {
 	private final Collection<OrderType> orderTypes;
 
 	private final Visit visit;
+
+	private final Location location;
 	
 	/**
 	 * Accession Number to match on; performs an exact match, case-insensitive
@@ -107,6 +110,7 @@ public class OrderSearchCriteria {
 	 * @param orderNumber to match on; performs exact match if specifed
 	 * @param activatedOnOrBeforeDate orders must have dateActivated on or before this date
 	 * @param activatedOnOrAfterDate orders must have dateActivated on or after this date
+	 * @param location filters by encounter location
 	 * @param includeVoided whether to include the voided orders or not
 	 */
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
@@ -156,6 +160,41 @@ public class OrderSearchCriteria {
 		this.excludeDiscontinueOrders = excludeDiscontinueOrders;
 		this.includeVoided = includeVoided;
 		this.visit = visit;
+		this.location = null;
+	}
+
+	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
+							   Collection<OrderType> orderTypes, String accessionNumber, String orderNumber,
+							   Date activatedOnOrBeforeDate, Date activatedOnOrAfterDate, boolean isStopped,
+							   Date autoExpireOnOrBeforeDate,
+							   Date canceledOrExpiredOnOrBeforeDate,
+							   Order.Action action,
+							   Order.FulfillerStatus fulfillerStatus,
+							   Boolean includeNullFulfillerStatus,
+							   boolean excludeCanceledAndExpired,
+							   boolean excludeDiscontinueOrders,
+							   boolean includeVoided,
+							   Visit visit,
+							   Location location) {
+		this.patient = patient;
+		this.careSetting = careSetting;
+		this.concepts = concepts;
+		this.orderTypes = orderTypes;
+		this.accessionNumber = accessionNumber;
+		this.orderNumber = orderNumber;
+		this.activatedOnOrBeforeDate = activatedOnOrBeforeDate;
+		this.activatedOnOrAfterDate = activatedOnOrAfterDate;
+		this.isStopped = isStopped;
+		this.autoExpireOnOrBeforeDate = autoExpireOnOrBeforeDate;
+		this.canceledOrExpiredOnOrBeforeDate = canceledOrExpiredOnOrBeforeDate;
+		this.action = action;
+		this.fulfillerStatus = fulfillerStatus;
+		this.includeNullFulfillerStatus = includeNullFulfillerStatus;
+		this.excludeCanceledAndExpired = excludeCanceledAndExpired;
+		this.excludeDiscontinueOrders = excludeDiscontinueOrders;
+		this.includeVoided = includeVoided;
+		this.visit = visit;
+		this.location = location;
 	}
 
 	/**
@@ -212,6 +251,11 @@ public class OrderSearchCriteria {
 	 * @since 2.7.0
 	 */
 	public Visit getVisit() { return visit; }
+
+	/**
+	 * @return filters by encounter location
+	 */
+	public Location getLocation() { return location; }
 	
 	/**
 	 * @return the accession number to match on; must be case-insensitive exact-match
