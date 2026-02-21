@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Calendar;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.openmrs.Concept;
@@ -30,6 +31,7 @@ import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Validator for the Obs class. This class checks for anything set on the Obs object that will cause
@@ -46,7 +48,7 @@ import org.springframework.validation.Validator;
 public class ObsValidator implements Validator {
 	
 	public static final int VALUE_TEXT_MAX_LENGTH = 65535;
-	
+
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 * <strong>Should</strong> support Obs class
@@ -109,6 +111,14 @@ public class ObsValidator implements Validator {
 		if (obs.getObsDatetime() == null) {
 			errors.rejectValue("obsDatetime", "error.null");
 		}
+
+		if (obs.getObsDatetime() != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(obs.getObsDatetime());
+            if (cal.get(Calendar.YEAR) < OpenmrsConstants.MINIMUM_VALID_DATE_YEAR) {
+                errors.rejectValue("obsDatetime", "Obs.error.date.invalid", "Invalid value");
+            }
+        }
 		
 		boolean isObsGroup = obs.hasGroupMembers(true);
 		// if this is an obs group (i.e., parent) make sure that it has no values (other than valueGroupId) set

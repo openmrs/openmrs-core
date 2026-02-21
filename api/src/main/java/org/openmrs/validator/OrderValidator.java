@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import java.util.Date;
+import java.util.Calendar;
 
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -19,6 +20,7 @@ import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Validates the {@link Order} class.
@@ -28,6 +30,8 @@ import org.springframework.validation.Validator;
 @Handler(supports = { Order.class })
 public class OrderValidator implements Validator {
 	
+	private static final String DATE_ACTIVATED = "dateActivated";
+
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 * 
@@ -104,24 +108,30 @@ public class OrderValidator implements Validator {
 	private void validateDateActivated(Order order, Errors errors) {
 		Date dateActivated = order.getDateActivated();
 		if (dateActivated != null) {
+			Calendar cal = Calendar.getInstance();
+            cal.setTime(dateActivated);
+            if (cal.get(Calendar.YEAR) < OpenmrsConstants.MINIMUM_VALID_DATE_YEAR) {
+                errors.rejectValue(DATE_ACTIVATED, "Order.error.date.invalid", "Invalid value");
+            }
+			
 			if (dateActivated.after(new Date())) {
-				errors.rejectValue("dateActivated", "Order.error.dateActivatedInFuture");
+				errors.rejectValue(DATE_ACTIVATED, "Order.error.dateActivatedInFuture");
 				return;
 			}
 			Date dateStopped = order.getDateStopped();
 			if (dateStopped != null && dateActivated.after(dateStopped)) {
-				errors.rejectValue("dateActivated", "Order.error.dateActivatedAfterDiscontinuedDate");
+				errors.rejectValue(DATE_ACTIVATED, "Order.error.dateActivatedAfterDiscontinuedDate");
 				errors.rejectValue("dateStopped", "Order.error.dateActivatedAfterDiscontinuedDate");
 			}
 			Date autoExpireDate = order.getAutoExpireDate();
 			if (autoExpireDate != null && dateActivated.after(autoExpireDate)) {
-				errors.rejectValue("dateActivated", "Order.error.dateActivatedAfterAutoExpireDate");
+				errors.rejectValue(DATE_ACTIVATED, "Order.error.dateActivatedAfterAutoExpireDate");
 				errors.rejectValue("autoExpireDate", "Order.error.dateActivatedAfterAutoExpireDate");
 			}
 			Encounter encounter = order.getEncounter();
 			if (encounter != null && encounter.getEncounterDatetime() != null
 			        && encounter.getEncounterDatetime().after(dateActivated)) {
-				errors.rejectValue("dateActivated", "Order.error.encounterDatetimeAfterDateActivated");
+				errors.rejectValue(DATE_ACTIVATED, "Order.error.encounterDatetimeAfterDateActivated");
 			}
 		}
 	}
@@ -136,9 +146,16 @@ public class OrderValidator implements Validator {
 	private void validateScheduledDate(Order order, Errors errors) {
 		boolean isUrgencyOnScheduledDate = (order.getUrgency() != null && order.getUrgency().equals(
 		    Order.Urgency.ON_SCHEDULED_DATE));
-		if (order.getScheduledDate() != null && !isUrgencyOnScheduledDate) {
-			errors.rejectValue("urgency", "Order.error.urgencyNotOnScheduledDate");
-		}
+		if (order.getScheduledDate() != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(order.getScheduledDate());
+            if (cal.get(Calendar.YEAR) < OpenmrsConstants.MINIMUM_VALID_DATE_YEAR) {
+                errors.rejectValue("scheduledDate", "Order.error.date.invalid", "Invalid value");
+            }
+            if (!isUrgencyOnScheduledDate) {
+                errors.rejectValue("urgency", "Order.error.urgencyNotOnScheduledDate");
+            }
+        }
 		if (isUrgencyOnScheduledDate && order.getScheduledDate() == null) {
 			errors.rejectValue("scheduledDate", "Order.error.scheduledDateNullForOnScheduledDateUrgency");
 		}

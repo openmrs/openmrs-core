@@ -404,4 +404,40 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		new PatientProgramValidator().validate(pp, errors);
 		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfDateEnrolledYearIsBefore1000() {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, 999);
+		program.setDateEnrolled(cal.getTime());
+		
+		BindException errors = new BindException(program, "program");
+		new PatientProgramValidator().validate(program, errors);
+		
+		assertTrue(errors.hasFieldErrors("dateEnrolled"));
+		assertEquals("PatientProgram.error.date.invalid", errors.getFieldError("dateEnrolled").getCode());
+	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfDateCompletedYearIsBefore1000() {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, 999);
+		program.setDateCompleted(cal.getTime());
+		
+		BindException errors = new BindException(program, "program");
+		new PatientProgramValidator().validate(program, errors);
+		
+		assertTrue(errors.hasFieldErrors("dateCompleted"));
+		assertEquals("PatientProgram.error.date.invalid", errors.getFieldError("dateCompleted").getCode());
+	}
 }

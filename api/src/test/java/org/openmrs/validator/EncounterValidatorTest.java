@@ -222,4 +222,24 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
+
+	/**
+     * @see EncounterValidator#validate(Object,Errors)
+     */
+    @Test
+    public void validate_shouldFailIfEncounterDatetimeYearIsBefore1000() {
+        Calendar cal = new GregorianCalendar();
+        cal.set(Calendar.YEAR, 999);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        
+        encounter.setPatient(new Patient(1));
+        encounter.setEncounterType(new EncounterType(1));
+        encounter.setEncounterDatetime(cal.getTime());
+        
+        encounterValidator.validate(encounter, errors);
+        
+        assertTrue(errors.hasFieldErrors("encounterDatetime"));
+        assertEquals("Encounter.error.date.invalid", errors.getFieldError("encounterDatetime").getCode());
+    }
 }

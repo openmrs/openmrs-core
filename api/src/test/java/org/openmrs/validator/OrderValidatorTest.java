@@ -505,4 +505,44 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		assertEquals("Order.error.orderPatientAndOrderGroupPatientMismatch", errors.getFieldError("patient")
 		        .getCode());
 	}
+
+	/**
+	 * @see OrderValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfDateActivatedYearIsBefore1000() {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, 999);
+		order.setDateActivated(cal.getTime());
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		assertTrue(errors.hasFieldErrors("dateActivated"));
+		assertEquals("Order.error.date.invalid", errors.getFieldError("dateActivated").getCode());
+	}
+
+	/**
+	 * @see OrderValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfScheduledDateYearIsBefore1000() {
+		Order order = new Order();
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, 999);
+		order.setScheduledDate(cal.getTime());
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		assertTrue(errors.hasFieldErrors("scheduledDate"));
+		assertEquals("Order.error.date.invalid", errors.getFieldError("scheduledDate").getCode());
+	}
 }
