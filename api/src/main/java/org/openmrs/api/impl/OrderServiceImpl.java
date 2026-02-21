@@ -657,6 +657,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @param orderContext
 	 */
 	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public String getNewOrderNumber(OrderContext orderContext) throws APIException {
 		return ORDER_NUMBER_PREFIX + Context.getOrderService().getNextOrderNumberSeedSequenceValue();
 	}
