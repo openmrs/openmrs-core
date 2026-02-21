@@ -695,7 +695,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public synchronized Long getNextOrderNumberSeedSequenceValue() {
+	public Long getNextOrderNumberSeedSequenceValue() {
 		return dao.getNextOrderNumberSeedSequenceValue();
 	}
 	
