@@ -370,12 +370,14 @@
 								<goal>prepare-agent</goal>
 							</goals>
 						</execution>
+						<execution>
+							<id>report</id>
+							<phase>test</phase>
+							<goals>
+								<goal>report</goal>
+							</goals>
+						</execution>
 					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.eluder.coveralls</groupId>
-					<artifactId>coveralls-maven-plugin</artifactId>
-					<version>4.3.0</version>
 				</plugin>
 				<plugin>
 					<groupId>com.mycila</groupId>
@@ -721,12 +723,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -747,12 +749,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -773,12 +775,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.4</version>
+						<version>1.18.5</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
