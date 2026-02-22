@@ -14,7 +14,7 @@ package org.openmrs.util;
  * (CWE-117). Replaces carriage return (CR), line feed (LF), and tab characters with underscores so
  * that an attacker cannot forge log entries by injecting log entry separators.
  * 
- * @since 2.7.0
+ * @since 3.0.0
  * @see <a href="https://cwe.mitre.org/data/definitions/117.html">CWE-117</a>
  */
 public final class LogSanitizer {
