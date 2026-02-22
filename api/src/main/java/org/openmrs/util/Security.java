@@ -250,10 +250,10 @@ public class Security {
 		}
 		catch (GeneralSecurityException e) {
 			try {
-				// Suppress SonarCloud warning
-				@SuppressWarnings("java:S5542")
+				// Legacy fallback decryption for existing CBC data.
+				// codeql[java/weak-cryptographic-algorithm]
 				// lgtm[java/weak-cryptographic-algorithm]
-				// codeql[java/weak-cryptographic-algorithm] Legacy fallback decryption for existing CBC data
+				@SuppressWarnings("java:S5542") // Sonar
 				Cipher legacyCipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION_LEGACY);
 				IvParameterSpec ivSpec = new IvParameterSpec(initVector);
 				legacyCipher.init(Cipher.DECRYPT_MODE, secret, ivSpec);
