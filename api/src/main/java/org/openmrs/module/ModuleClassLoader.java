@@ -163,7 +163,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param parent parent <code>ClassLoader</code>
 	 */
 	public ModuleClassLoader(final Module module, final ClassLoader parent) {
-		this(module, getUrls(module), parent);
+		this(module, getModuleUrls(module), parent);
 	}
 	
 	/**
@@ -204,7 +204,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param module Module in which to look
 	 * @return List&lt;URL&gt; of all urls found (and cached) in the module
 	 */
-	private static List<URL> getUrls(final Module module) {
+	private static List<URL> getModuleUrls(final Module module) {
 		List<URL> result = new LinkedList<>();
 		
 		//if in dev mode, add development folder to the classpath
@@ -512,12 +512,12 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param module Module in which to get urls
 	 * @param existingUrls Array of URLs to skip
 	 * @return List&lt;URL&gt; of new unique urls
-	 * @see #getUrls(Module)
+	 * @see #getModuleUrls(Module)
 	 */
-	private static List<URL> getUrls(final Module module, final URL[] existingUrls) {
+	private static List<URL> getModuleUrls(final Module module, final URL[] existingUrls) {
 		List<URL> urls = Arrays.asList(existingUrls);
 		List<URL> result = new LinkedList<>();
-		for (URL url : getUrls(module)) {
+		for (URL url : getModuleUrls(module)) {
 			if (!urls.contains(url)) {
 				result.add(url);
 			}
@@ -567,7 +567,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see org.openmrs.module.ModuleClassLoader#modulesSetChanged()
 	 */
 	protected void modulesSetChanged() {
-		List<URL> newUrls = getUrls(getModule(), getURLs());
+		List<URL> newUrls = getModuleUrls(getModule(), getURLs());
 		for (URL u : newUrls) {
 			addURL(u);
 		}
