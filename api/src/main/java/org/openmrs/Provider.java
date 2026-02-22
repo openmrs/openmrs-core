@@ -9,6 +9,17 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,19 +29,32 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "provider")
 @Audited
+@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true)) })
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	private static final Logger log = LoggerFactory.getLogger(Provider.class);
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "provider_id")
 	private Integer providerId;
 	
+	@ManyToOne(cascade = CascadeType.MERGE)
+	@JoinColumn(name = "person_id")
 	private Person person;
 	
+	@Column(name = "identifier", length = 255)
 	private String identifier;
 	
+	@ManyToOne
+	@JoinColumn(name = "role_id")
 	private Concept role;
 	
+	@ManyToOne
+	@JoinColumn(name = "speciality_id")
 	private Concept speciality;
 
 	private ProviderRole providerRole;
