@@ -103,9 +103,7 @@ public class DatabaseUtil {
 				connectionDriver = H2_DRIVER;
 			}
 		}
-		if (log.isInfoEnabled()) {
-			log.info("Set database driver class as {}", OpenmrsUtil.sanitizeForLogging(connectionDriver));
-		}
+		log.info("Set database driver class as {}", OpenmrsUtil.sanitizeForLogging(connectionDriver));
 		return connectionDriver;
 	}
 	
