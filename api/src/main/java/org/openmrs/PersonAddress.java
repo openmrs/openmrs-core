@@ -195,6 +195,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	public PersonAddress copy() {
 		PersonAddress address = new PersonAddress();
+		address.setUuid(null); // Explicitly set UUID to null so a new one will be assigned on save
 		address.setPerson(getPerson());
 		address.setPreferred(getPreferred());
 		address.setAddress1(getAddress1());

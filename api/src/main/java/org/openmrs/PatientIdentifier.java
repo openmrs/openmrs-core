@@ -308,6 +308,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 */
 	public PatientIdentifier copy() {
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
+		patientIdentifier.setUuid(null); // Explicitly set UUID to null so a new one will be assigned on save
 		patientIdentifier.setPatient(getPatient());
 		patientIdentifier.setIdentifier(getIdentifier());
 		patientIdentifier.setIdentifierType(getIdentifierType());

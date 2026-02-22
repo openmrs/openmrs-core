@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.Date;
@@ -199,17 +200,6 @@ public class PersonAddressTest {
 		original.setAddress13("Extra 2");
 		original.setAddress14("Extra 3");
 		original.setAddress15("Extra 4");
-		original.setCityVillage("Springfield");
-		original.setStateProvince("IL");
-		original.setCountry("USA");
-		original.setPostalCode("62701");
-		original.setLatitude("39.7817");
-		original.setLongitude("-89.6501");
-		original.setStartDate(new Date(1000L));
-		original.setEndDate(new Date(2000L));
-		original.setPreferred(true);
-		original.setPersonAddressId(42);
-		original.setUuid("original-uuid");
 
 		PersonAddress copy = original.copy();
 
@@ -228,6 +218,23 @@ public class PersonAddressTest {
 		assertEquals(original.getAddress13(), copy.getAddress13());
 		assertEquals(original.getAddress14(), copy.getAddress14());
 		assertEquals(original.getAddress15(), copy.getAddress15());
+	}
+
+	@Test
+	void copy_shouldCopyAddressMetadata() {
+		PersonAddress original = new PersonAddress();
+		original.setCityVillage("Springfield");
+		original.setStateProvince("IL");
+		original.setCountry("USA");
+		original.setPostalCode("62701");
+		original.setLatitude("39.7817");
+		original.setLongitude("-89.6501");
+		original.setStartDate(new Date(1000L));
+		original.setEndDate(new Date(2000L));
+		original.setPreferred(true);
+
+		PersonAddress copy = original.copy();
+
 		assertEquals(original.getCityVillage(), copy.getCityVillage());
 		assertEquals(original.getStateProvince(), copy.getStateProvince());
 		assertEquals(original.getCountry(), copy.getCountry());
@@ -237,7 +244,16 @@ public class PersonAddressTest {
 		assertEquals(original.getStartDate(), copy.getStartDate());
 		assertEquals(original.getEndDate(), copy.getEndDate());
 		assertEquals(original.getPreferred(), copy.getPreferred());
-		// Assert personAddressId and uuid are null in the copy
+	}
+
+	@Test
+	void copy_shouldNotCopyIdAndUuid() {
+		PersonAddress original = new PersonAddress();
+		original.setPersonAddressId(42);
+		original.setUuid("original-uuid");
+
+		PersonAddress copy = original.copy();
+
 		assertNull(copy.getPersonAddressId());
 		assertNull(copy.getUuid());
 	}
