@@ -77,36 +77,44 @@ public class DatabaseUtil {
 				log.debug("set user defined Database driver class: {}", OpenmrsUtil.sanitizeForLogging(connectionDriver));
 			}
 		} else {
-			if (connectionUrl.contains("jdbc:mysql")) {
-				Class.forName(MYSQL_DRIVER);
-				connectionDriver = MYSQL_DRIVER;
-			} else if (connectionUrl.contains("jdbc:mariadb")) {
-				Class.forName(MARIADB_DRIVER);
-				connectionDriver = MARIADB_DRIVER;
-			} else if (connectionUrl.contains("jdbc:hsqldb")) {
-				Class.forName(HSQLDB_DRIVER);
-				connectionDriver = HSQLDB_DRIVER;
-			} else if (connectionUrl.contains("jdbc:postgresql")) {
-				Class.forName(POSTGRESQL_DRIVER);
-				connectionDriver = POSTGRESQL_DRIVER;
-			} else if (connectionUrl.contains("jdbc:oracle")) {
-				Class.forName(ORACLE_DRIVER);
-				connectionDriver = ORACLE_DRIVER;
-			} else if (connectionUrl.contains("jdbc:jtds")) {
-				Class.forName(JTDS_DRIVER);
-				connectionDriver = JTDS_DRIVER;
-			} else if (connectionUrl.contains("sqlserver")) {
-				Class.forName(SQLSERVER_DRIVER);
-				connectionDriver = SQLSERVER_DRIVER;
-			} else if (connectionUrl.contains("jdbc:h2")) {
-				Class.forName(H2_DRIVER);
-				connectionDriver = H2_DRIVER;
-			}
+			connectionDriver = detectDriverFromUrl(connectionUrl);
 		}
 		if (log.isInfoEnabled()) {
 			log.info("Set database driver class as {}", OpenmrsUtil.sanitizeForLogging(connectionDriver));
 		}
 		return connectionDriver;
+	}
+	
+	private static String detectDriverFromUrl(String connectionUrl) throws ClassNotFoundException {
+		String driver;
+		if (connectionUrl.contains("jdbc:mysql")) {
+			Class.forName(MYSQL_DRIVER);
+			driver = MYSQL_DRIVER;
+		} else if (connectionUrl.contains("jdbc:mariadb")) {
+			Class.forName(MARIADB_DRIVER);
+			driver = MARIADB_DRIVER;
+		} else if (connectionUrl.contains("jdbc:hsqldb")) {
+			Class.forName(HSQLDB_DRIVER);
+			driver = HSQLDB_DRIVER;
+		} else if (connectionUrl.contains("jdbc:postgresql")) {
+			Class.forName(POSTGRESQL_DRIVER);
+			driver = POSTGRESQL_DRIVER;
+		} else if (connectionUrl.contains("jdbc:oracle")) {
+			Class.forName(ORACLE_DRIVER);
+			driver = ORACLE_DRIVER;
+		} else if (connectionUrl.contains("jdbc:jtds")) {
+			Class.forName(JTDS_DRIVER);
+			driver = JTDS_DRIVER;
+		} else if (connectionUrl.contains("sqlserver")) {
+			Class.forName(SQLSERVER_DRIVER);
+			driver = SQLSERVER_DRIVER;
+		} else if (connectionUrl.contains("jdbc:h2")) {
+			Class.forName(H2_DRIVER);
+			driver = H2_DRIVER;
+		} else {
+			driver = null;
+		}
+		return driver;
 	}
 	
 	/**
