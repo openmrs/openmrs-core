@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 @Audited
 @Entity
 @Table(name = "patient_identifier")
-public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
+public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PatientIdentifier> {
 	
 	public static final long serialVersionUID = 1123121L;
 	
@@ -299,21 +299,31 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	}
 
 	/**
-	 * bitwise copy of the PatientIdentifier object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
-	 * PatientIdentifier.patient object in this object AND the cloned object will point at the same
-	 * patient
+	 * Creates a copy of this PatientIdentifier object. This performs a field-by-field copy of the object,
+	 * excluding the patientIdentifierId and uuid fields. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT.
+	 * The PatientIdentifier.patient object in this object AND the copied object will point at the same patient.
 	 *
 	 * @return New PatientIdentifier object
 	 * @since 2.2.0
 	 */
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		}
-		catch (CloneNotSupportedException e) {
-			throw new InternalError("PatientIdentifier should be cloneable");
-		}
+	public PatientIdentifier copy() {
+		PatientIdentifier patientIdentifier = new PatientIdentifier();
+		patientIdentifier.setUuid(null); // Explicitly set UUID to null so a new one will be assigned on save
+		patientIdentifier.setPatient(getPatient());
+		patientIdentifier.setIdentifier(getIdentifier());
+		patientIdentifier.setIdentifierType(getIdentifierType());
+		patientIdentifier.setLocation(getLocation());
+		patientIdentifier.setPatientProgram(getPatientProgram());
+		patientIdentifier.setPreferred(getPreferred());
+		patientIdentifier.setCreator(getCreator());
+		patientIdentifier.setDateCreated(getDateCreated());
+		patientIdentifier.setChangedBy(getChangedBy());
+		patientIdentifier.setDateChanged(getDateChanged());
+		patientIdentifier.setVoided(getVoided());
+		patientIdentifier.setDateVoided(getDateVoided());
+		patientIdentifier.setVoidedBy(getVoidedBy());
+		patientIdentifier.setVoidReason(getVoidReason());
+		return patientIdentifier;
 	}
 	
 	/**

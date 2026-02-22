@@ -865,7 +865,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				}
 			}
 			if (!containsAddress) {
-				PersonAddress tmpAddress = (PersonAddress) newAddress.clone();
+				PersonAddress tmpAddress = newAddress.copy();
 				tmpAddress.setPersonAddressId(null);
 				tmpAddress.setVoided(false);
 				tmpAddress.setVoidedBy(null);
