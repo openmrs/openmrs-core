@@ -71,7 +71,6 @@ public class CohortTest {
 		Cohort cohort = new Cohort("name", "description", patients);
 		
 		String[] actualIds = StringUtils.split(cohort.getCommaSeparatedPatientIds(), ',');
-		Set<Integer> actualIdSet = new HashSet<>();
 		Set<Integer> actualIdSet = Arrays.stream(actualIds)
               .map(Integer::valueOf)
               .collect(Collectors.toSet());
