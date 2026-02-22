@@ -15,6 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
 
@@ -212,5 +217,22 @@ public class SecurityTest {
 		actual = Security.decrypt(encrypted);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 	}
-	
+
+	@Test
+	void decrypt_shouldDecryptLegacyCBCData() throws Exception {
+		String secretMessage = "ThisIsOldData";
+		byte[] key = new byte[16]; 
+		byte[] iv = new byte[16];  
+		for (int i=0; i<16; i++) { key[i] = (byte)i; iv[i] = (byte)i; }
+		// codeql[java/weak-cryptographic-algorithm] 
+		Cipher oldCipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION_LEGACY);
+		SecretKeySpec secretSpec = new SecretKeySpec(key, "AES");
+		oldCipher.init(Cipher.ENCRYPT_MODE, secretSpec, new IvParameterSpec(iv));
+		byte[] encryptedBytes = oldCipher.doFinal(secretMessage.getBytes(StandardCharsets.UTF_8));
+		String legacyEncryptedString = Base64.getEncoder().encodeToString(encryptedBytes);
+
+		String result = Security.decrypt(legacyEncryptedString, iv, key);
+
+		assertEquals(secretMessage, result);
+	}
 }
