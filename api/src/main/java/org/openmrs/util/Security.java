@@ -252,8 +252,8 @@ public class Security {
 			try {
 				// Suppress SonarCloud warning
 				@SuppressWarnings("java:S5542")
-				// Suppress CodeQL warning (Legacy fallback)
-				// lgtm [java/weak-cryptographic-algorithm]
+				// lgtm[java/weak-cryptographic-algorithm]
+				// codeql[java/weak-cryptographic-algorithm] Legacy fallback decryption for existing CBC data
 				Cipher legacyCipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION_LEGACY);
 				IvParameterSpec ivSpec = new IvParameterSpec(initVector);
 				legacyCipher.init(Cipher.DECRYPT_MODE, secret, ivSpec);
