@@ -299,9 +299,9 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	}
 
 	/**
-	 * bitwise copy of the PatientIdentifier object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
-	 * PatientIdentifier.patient object in this object AND the cloned object will point at the same
-	 * patient
+	 * Creates a copy of this PatientIdentifier object. This performs a field-by-field copy of the object,
+	 * excluding the patientIdentifierId and uuid fields. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT.
+	 * The PatientIdentifier.patient object in this object AND the copied object will point at the same patient.
 	 *
 	 * @return New PatientIdentifier object
 	 * @since 2.2.0

@@ -35,6 +35,9 @@ class PatientIdentifierTest {
 		original.setLocation(new Location(1));
 		original.setPreferred(true);
 		original.setVoided(false);
+		original.setPatientProgram(new PatientProgram(99));
+		original.setPatientIdentifierId(77);
+		original.setUuid("original-uuid");
 
 		PatientIdentifier copy = original.copy();
 
@@ -43,6 +46,10 @@ class PatientIdentifierTest {
 		assertEquals(original.getLocation(), copy.getLocation());
 		assertEquals(original.getPreferred(), copy.getPreferred());
 		assertEquals(original.getVoided(), copy.getVoided());
+		assertEquals(original.getPatientProgram(), copy.getPatientProgram());
+		// Assert patientIdentifierId and uuid are null in the copy
+		assertNull(copy.getPatientIdentifierId());
+		assertNull(copy.getUuid());
 	}
 
 	@Test

@@ -187,6 +187,18 @@ public class PersonAddressTest {
 		original.setAddress1("123 Main St");
 		original.setAddress2("Apt 4");
 		original.setAddress3("Building B");
+		original.setAddress4("Floor 2");
+		original.setAddress5("Near Park");
+		original.setAddress6("Block 7");
+		original.setAddress7("Zone 9");
+		original.setAddress8("Sector 12");
+		original.setAddress9("Area 15");
+		original.setAddress10("Landmark X");
+		original.setAddress11("PO Box 123");
+		original.setAddress12("Extra 1");
+		original.setAddress13("Extra 2");
+		original.setAddress14("Extra 3");
+		original.setAddress15("Extra 4");
 		original.setCityVillage("Springfield");
 		original.setStateProvince("IL");
 		original.setCountry("USA");
@@ -196,12 +208,26 @@ public class PersonAddressTest {
 		original.setStartDate(new Date(1000L));
 		original.setEndDate(new Date(2000L));
 		original.setPreferred(true);
+		original.setPersonAddressId(42);
+		original.setUuid("original-uuid");
 
 		PersonAddress copy = original.copy();
 
 		assertEquals(original.getAddress1(), copy.getAddress1());
 		assertEquals(original.getAddress2(), copy.getAddress2());
 		assertEquals(original.getAddress3(), copy.getAddress3());
+		assertEquals(original.getAddress4(), copy.getAddress4());
+		assertEquals(original.getAddress5(), copy.getAddress5());
+		assertEquals(original.getAddress6(), copy.getAddress6());
+		assertEquals(original.getAddress7(), copy.getAddress7());
+		assertEquals(original.getAddress8(), copy.getAddress8());
+		assertEquals(original.getAddress9(), copy.getAddress9());
+		assertEquals(original.getAddress10(), copy.getAddress10());
+		assertEquals(original.getAddress11(), copy.getAddress11());
+		assertEquals(original.getAddress12(), copy.getAddress12());
+		assertEquals(original.getAddress13(), copy.getAddress13());
+		assertEquals(original.getAddress14(), copy.getAddress14());
+		assertEquals(original.getAddress15(), copy.getAddress15());
 		assertEquals(original.getCityVillage(), copy.getCityVillage());
 		assertEquals(original.getStateProvince(), copy.getStateProvince());
 		assertEquals(original.getCountry(), copy.getCountry());
@@ -211,6 +237,9 @@ public class PersonAddressTest {
 		assertEquals(original.getStartDate(), copy.getStartDate());
 		assertEquals(original.getEndDate(), copy.getEndDate());
 		assertEquals(original.getPreferred(), copy.getPreferred());
+		// Assert personAddressId and uuid are null in the copy
+		assertNull(copy.getPersonAddressId());
+		assertNull(copy.getUuid());
 	}
 
 	@Test

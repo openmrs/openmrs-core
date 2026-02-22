@@ -187,9 +187,9 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	}
 	
 	/**
-	 * bitwise copy of the personAddress object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
-	 * PersonAddress.person object in this object AND the cloned object will point at the same
-	 * person
+	 * Creates a copy of this PersonAddress object. This performs a field-by-field copy of the object,
+	 * excluding the personAddressId and uuid fields. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT.
+	 * The PersonAddress.person object in this object AND the copied object will point at the same person.
 	 *
 	 * @return New PersonAddress object
 	 */
