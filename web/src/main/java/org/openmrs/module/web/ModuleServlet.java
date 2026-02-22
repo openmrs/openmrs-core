@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,42 +35,52 @@ public class ModuleServlet extends HttpServlet {
 	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.debug("In service method for module servlet: " + request.getPathInfo());
+		if (log.isDebugEnabled()) {
+			log.debug("In service method for module servlet: {}", OpenmrsUtil.sanitizeForLogging(request.getPathInfo()));
+		}
 		String servletName = request.getPathInfo();
 		int end = servletName.indexOf("/", 1);
-		
+
 		String moduleId = null;
 		if (end > 0) {
 			moduleId = servletName.substring(1, end);
 		}
-		
-		log.debug("ModuleId: " + moduleId);
+
+		if (log.isDebugEnabled()) {
+			log.debug("ModuleId: {}", OpenmrsUtil.sanitizeForLogging(moduleId));
+		}
 		Module mod = ModuleFactory.getModuleById(moduleId);
-		 
+
 		// where in the path to start trimming
 		int start = 1;
 		if (mod != null) {
-			log.debug("Module with id " + moduleId + " found.  Looking for servlet name after " + moduleId + " in url path");
+			if (log.isDebugEnabled()) {
+				log.debug("Module with id {} found.  Looking for servlet name after {} in url path", OpenmrsUtil.sanitizeForLogging(moduleId), OpenmrsUtil.sanitizeForLogging(moduleId));
+			}
 			start = moduleId.length() + 2;
 			// this skips over the moduleId that is in the path
 		}
-		
+
 		end = servletName.indexOf("/", start);
 		if (end == -1 || end > servletName.length()) {
 			end = servletName.length();
 		}
 		servletName = servletName.substring(start, end);
-		
-		log.debug("Servlet name: " + servletName);
-		
+
+		if (log.isDebugEnabled()) {
+			log.debug("Servlet name: {}", OpenmrsUtil.sanitizeForLogging(servletName));
+		}
+
 		HttpServlet servlet = WebModuleUtil.getServlet(servletName);
-		
+
 		if (servlet == null) {
-			log.warn("No servlet with name: " + servletName + " was found");
+			if (log.isWarnEnabled()) {
+				log.warn("No servlet with name: {} was found", OpenmrsUtil.sanitizeForLogging(servletName));
+			}
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
-		
+
 		servlet.service(request, response);
 	}
 

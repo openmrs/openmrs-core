@@ -19,8 +19,7 @@ import java.lang.annotation.Target;
 import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
 
 /**
- * Annotation used to indicate that a method allows empty strings.
- * 
+ * Annotation used to indicate that a method allows empty strings 
  * <pre>
  * &#064;AllowEmptyStrings
  * public void setName(String name);
