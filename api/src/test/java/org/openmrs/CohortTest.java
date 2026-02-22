@@ -72,7 +72,9 @@ public class CohortTest {
 		
 		String[] actualIds = StringUtils.split(cohort.getCommaSeparatedPatientIds(), ',');
 		Set<Integer> actualIdSet = new HashSet<>();
-		Arrays.stream(actualIds).forEach(id -> actualIdSet.add(Integer.valueOf(id)));
+		Set<Integer> actualIdSet = Arrays.stream(actualIds)
+              .map(Integer::valueOf)
+              .collect(Collectors.toSet());
 		assertEquals(new HashSet<>(Arrays.asList(ids)), actualIdSet);
 		
 	}
