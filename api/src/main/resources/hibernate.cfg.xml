@@ -37,7 +37,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetMember.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflow.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflowState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderFrequency.hbm.xml" />
 
 		<!-- HL7 -->

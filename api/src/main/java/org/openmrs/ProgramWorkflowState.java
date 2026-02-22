@@ -9,11 +9,27 @@
  */
 package org.openmrs;
 
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 
 /**
  * ProgramWorkflowState
  */
+@Entity
+@Table(name = "program_workflow_state")
+@AttributeOverrides({
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true, length = 255))
+})
 @Audited
 public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	
@@ -22,15 +38,23 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "program_workflow_state_id")
 	private Integer programWorkflowStateId;
-	
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "program_workflow_id", nullable = false)
 	private ProgramWorkflow programWorkflow;
-	
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
+	@Column(name = "initial", nullable = false, length = 1)
 	private Boolean initial;
 	
+	@Column(name = "terminal", nullable = false, length = 1)
 	private Boolean terminal;
 	
 	// ******************
