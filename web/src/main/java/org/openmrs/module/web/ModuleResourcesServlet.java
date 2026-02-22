@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleUtil;
+import org.openmrs.util.LogSanitizer;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,9 @@ public class ModuleResourcesServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		log.debug("In service method for module servlet: " + request.getPathInfo());
+		if (log.isDebugEnabled()) {
+			log.debug("In service method for module servlet: {}", LogSanitizer.sanitize(request.getPathInfo()));
+		}
 		
 		File f = getFile(request);
 		if (f == null) {
