@@ -225,7 +225,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory,
 			SessionFactoryServiceRegistry serviceRegistry) {
 		this.metadata = metadata;
-		generateEnversAuditTables(metadata, bootstrapContext.getServiceRegistry());
+		generateEnversAuditTables(metadata, serviceRegistry);
 	}
 
 	@Override
