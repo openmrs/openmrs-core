@@ -34,9 +34,11 @@ public class ModuleServlet extends HttpServlet {
 	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String pathInfo = request.getPathInfo();
+		String sanitizedPathInfo = pathInfo == null ? null : pathInfo.replaceAll("[\n\r]", "_");
 		log.debug("In service method for module servlet: {}",
-		    request.getPathInfo() == null ? null : request.getPathInfo().replaceAll("[\n\r]", "_"));
-		String servletName = request.getPathInfo();
+		    sanitizedPathInfo);
+		String servletName = pathInfo;
 		int end = servletName.indexOf("/", 1);
 		
 		String moduleId = null;

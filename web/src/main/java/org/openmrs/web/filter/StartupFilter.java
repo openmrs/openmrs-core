@@ -132,7 +132,6 @@ public abstract class StartupFilter implements Filter {
 				// writes the actual file path to the response
 				Path filePath = Paths.get(filterConfig.getServletContext().getRealPath(servletPath)).normalize();
 				Path fullFilePath = filePath;
-				
 				String pathInfo = httpRequest.getPathInfo();
 				if (pathInfo != null) {
 					fullFilePath = fullFilePath.resolve(pathInfo);
@@ -142,7 +141,6 @@ public abstract class StartupFilter implements Filter {
 						return;
 					}
 				}
-				
 				String contentType = httpRequest.getServletContext().getMimeType(fullFilePath.toString());
 				if (contentType == null || contentType.isEmpty()) {
 					try {
