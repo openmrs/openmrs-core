@@ -112,11 +112,7 @@ public class ConceptReferenceRangeUtility {
 
     	VelocityEngine velocityEngine = new VelocityEngine();
     	try {
-        Properties props = new Properties();
-        props.put("runtime.log.logsystem.class", Log4JLogChute.class.getName());
-        props.put("runtime.log.logsystem.log4j.category", "velocity");
-        props.put("runtime.log.logsystem.log4j.logger", "velocity");
-        velocityEngine.init(props);
+        velocityEngine.init();
     	}
     	catch (Exception e) {
         throw new APIException("Failed to create the velocity engine: " + e.getMessage(), e);
