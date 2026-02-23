@@ -123,12 +123,19 @@
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="orders" columnName="intent"/></not>
 		</preConditions>
-		<comment>Adding intent column to orders table for FHIR alignment</comment>
+		<comment>Adding intent column to orders table for FHIR alignment (TRUNK-6560)</comment>
 		<addColumn tableName="orders">
-			<column name="intent" type="varchar(50)" defaultValue="ORDER">
-				<constraints nullable="false"/>
-			</column>
+			<column name="intent" type="varchar(50)"/>
 		</addColumn>
+		<update tableName="orders">
+			<column name="intent" value="ORDER"/>
+			<where>intent IS NULL</where>
+		</update>
+		<addNotNullConstraint
+			tableName="orders"
+			columnName="intent"
+			defaultNullValue="ORDER"
+			columnDataType="varchar(50)"/>
 	</changeSet>
 	<changeSet id="TRUNK-5891-2026-01-22" author="Chinmay7070">
 		<comment>Add audit columns required by ProgramWorkflowState JPA mapping for TRUNK-5891</comment>
