@@ -136,8 +136,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		personService = Context.getPersonService();
 		adminService = Context.getAdministrationService();
 		locationService = Context.getLocationService();
-
-		updateSearchIndex();
 	}
 	
 	private void voidOrders(Collection<Patient> patientsWithOrders) {
