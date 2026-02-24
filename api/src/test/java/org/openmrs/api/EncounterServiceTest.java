@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -293,7 +294,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// file
 		Location loc2 = new Location(2);
 		EncounterType encType2 = new EncounterType(2);
-		Date d2 = new Date();
+		Date d2 = DateUtils.addDays(origDate, 10);
 		Patient pat2 = new Patient(2);
 		
 		encounter.setLocation(loc2);
@@ -586,6 +587,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// fetch the encounter to delete from the db
 		Encounter encounterToDelete = es.getEncounter(1);
+		List<Integer> existingObsIds = new ArrayList<>();
+		List<Integer> existingOrderIds = new ArrayList<>();
+		for (Obs o : encounterToDelete.getAllObs(true)) {
+			existingObsIds.add(o.getObsId());
+		}
+		for (Order o : encounterToDelete.getOrders()) {
+			existingOrderIds.add(o.getOrderId());
+		}
 		
 		es.purgeEncounter(encounterToDelete, true);
 		
@@ -593,12 +602,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Encounter e = es.getEncounter(encounterToDelete.getEncounterId());
 		assertNull(e, "We shouldn't find the encounter after deletion");
 		
-		ObsService obsService = Context.getObsService();
-		assertNull(obsService.getObs(1));
-		assertNull(obsService.getObs(2));
-		assertNull(obsService.getObs(3));
-		
-		assertNull(Context.getOrderService().getOrder(1));
+		assertFalse(existingObsIds.isEmpty());
+		for (Integer obsId : existingObsIds) {
+			assertNull(Context.getObsService().getObs(obsId));
+		}
+
+		assertFalse(existingOrderIds.isEmpty());
+		for (Integer orderId : existingOrderIds) {
+			assertNull(Context.getOrderService().getOrder(orderId));
+		}
 	}
 	
 	/**
@@ -681,7 +693,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(obsWithDifferentDateBefore);
 		assertEquals(2, obsWithSameDateBefore.size());
 		
-		Date newDate = new Date();
+		Date newDate = DateUtils.addDays(enc.getEncounterDatetime(), 10);
 		enc.setEncounterDatetime(newDate);
 		
 		// save the encounter. The obs should pick up the encounter's date
@@ -1026,11 +1038,20 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// get a nonvoided encounter that has some obs
 		Encounter encounter = encounterService.getEncounter(1);
+		List<Integer> orderIds = new ArrayList<>();
+		for (Order order : encounter.getOrders()) {
+			orderIds.add(order.getOrderId());
+			assertFalse(order.getVoided());
+		}
+		assertFalse(orderIds.isEmpty());
+		
 		encounterService.voidEncounter(encounter, "Just Testing");
 		
-		Order order = Context.getOrderService().getOrder(1);
-		assertTrue(order.getVoided());
-		assertEquals("Just Testing", order.getVoidReason());
+		for (Integer orderId : orderIds) {
+			Order order = Context.getOrderService().getOrder(orderId);
+			assertTrue(order.getVoided());
+			assertEquals("Just Testing", order.getVoidReason());
+		}
 	}
 	
 	/**
@@ -1238,9 +1259,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		        .setIncludeVoided(false).createEncounterSearchCriteria();
 		encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(4, encounters.size());
-		assertEquals(3, encounters.get(0).getEncounterId().intValue());
-		assertEquals(4, encounters.get(1).getEncounterId().intValue());
-		assertEquals(5, encounters.get(2).getEncounterId().intValue());
+		assertEquals(6, encounters.get(0).getEncounterId().intValue());
+		assertEquals(3, encounters.get(1).getEncounterId().intValue());
+		assertEquals(4, encounters.get(2).getEncounterId().intValue());
+		assertEquals(5, encounters.get(3).getEncounterId().intValue());
 	}
 	
 	/**
@@ -3242,6 +3264,37 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		assertEquals(2, orderGroups.size(), "Two New Order Groups Get Saved");
+	}
+
+	@Test
+	public void shouldFailToSaveEncounterIfChangesWouldResultInInvalidOrders() {
+		Date today = new  Date();
+		Date yesterday = DateUtils.addDays(today, -1);
+		executeDataSet(ORDER_SET);
+		Encounter encounter = new Encounter();
+		encounter.setPatient(Context.getPatientService().getPatient(3));
+		encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+		encounter.setEncounterDatetime(yesterday);
+		
+		Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(3).withConcept(1000)
+			.withCareSetting(1).withOrderer(1).withDateActivated(yesterday)
+			.withOrderType(17).withUrgency(Order.Urgency.ROUTINE).build();
+		
+		encounter.addOrder(order);
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		encounter.setEncounterDatetime(today);
+		ValidationException validationError = null;
+		try {
+			Context.getEncounterService().saveEncounter(encounter);
+		}
+		catch (ValidationException e) {
+			validationError = e;
+		}
+		assertNotNull(validationError);
+		String expectedError = "dateActivated: Date activated cannot be before that of the associated encounter";
+		assertThat(validationError.getMessage(), containsString(expectedError));
+		
 	}
 	
 	@Test
