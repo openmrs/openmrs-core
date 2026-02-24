@@ -44,6 +44,7 @@ public class Security {
 	private static final int GCM_TAG_LENGTH_BITS = 128;
 	private static final int GCM_TAG_LENGTH_BYTES = GCM_TAG_LENGTH_BITS / 8;
 	private static final int GCM_IV_LENGTH_BYTES = 12;
+	private static final byte ENCRYPTION_VERSION_GCM_WITH_IV = 1;
 
 	private Security() {
 	}
@@ -217,9 +218,10 @@ public class Security {
 		byte[] initVector = generateRandomInitVector();
 		try {
 			byte[] encrypted = encryptBytes(text.getBytes(StandardCharsets.UTF_8), initVector, secretKey);
-			byte[] combined = new byte[initVector.length + encrypted.length];
-			System.arraycopy(initVector, 0, combined, 0, initVector.length);
-			System.arraycopy(encrypted, 0, combined, initVector.length, encrypted.length);
+			byte[] combined = new byte[1 + initVector.length + encrypted.length];
+			combined[0] = ENCRYPTION_VERSION_GCM_WITH_IV;
+			System.arraycopy(initVector, 0, combined, 1, initVector.length);
+			System.arraycopy(encrypted, 0, combined, 1 + initVector.length, encrypted.length);
 			return new String(Base64.getEncoder().encode(combined), StandardCharsets.UTF_8);
 		}
 		catch (GeneralSecurityException e) {
@@ -270,6 +272,19 @@ public class Security {
 		}
 		catch (IllegalArgumentException e) {
 			throw new APIException("could.not.decrypt.text", null, e);
+		}
+		
+		if (decoded.length >= 1 + GCM_IV_LENGTH_BYTES + GCM_TAG_LENGTH_BYTES
+		        && decoded[0] == ENCRYPTION_VERSION_GCM_WITH_IV) {
+			byte[] initVector = Arrays.copyOfRange(decoded, 1, 1 + GCM_IV_LENGTH_BYTES);
+			byte[] cipherText = Arrays.copyOfRange(decoded, 1 + GCM_IV_LENGTH_BYTES, decoded.length);
+			try {
+				byte[] original = decryptBytes(cipherText, initVector, secretKey);
+				return new String(original, StandardCharsets.UTF_8);
+			}
+			catch (GeneralSecurityException e) {
+				// fall back to other formats below
+			}
 		}
 		
 		if (decoded.length >= GCM_IV_LENGTH_BYTES + GCM_TAG_LENGTH_BYTES) {

@@ -193,10 +193,11 @@ public class SecurityTest {
 		String encrypted = Security.encrypt(expected);
 		
 		byte[] combined = Base64.getDecoder().decode(encrypted);
-		assertTrue(combined.length > 12 + 16);
+		assertTrue(combined.length > 1 + 12 + 16);
+		assertEquals(1, combined[0]);
 		
-		byte[] initVector = Arrays.copyOfRange(combined, 0, 12);
-		byte[] cipherText = Arrays.copyOfRange(combined, 12, combined.length);
+		byte[] initVector = Arrays.copyOfRange(combined, 1, 13);
+		byte[] cipherText = Arrays.copyOfRange(combined, 13, combined.length);
 		String cipherOnly = Base64.getEncoder().encodeToString(cipherText);
 		
 		String actual = Security.decrypt(cipherOnly, initVector, Security.getSavedSecretKey());
