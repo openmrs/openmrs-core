@@ -10,12 +10,21 @@
 package org.openmrs.util;
 
 import java.nio.charset.StandardCharsets;
+import java.net.IDN;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Random;
+import java.util.Set;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -338,6 +347,226 @@ public class Security {
 		SecretKey skey = kgen.generateKey();
 
 		return skey.getEncoded();
+	}
+
+	/**
+	 * Validates outbound URLs used in server-side requests to reduce SSRF risk.
+	 * Only http/https are allowed. If {@link OpenmrsConstants#GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS}
+	 * is set, the host must match the allowlist; otherwise, private/local/reserved
+	 * addresses are blocked.
+	 *
+	 * @param url the URL to validate
+	 * @throws SecurityException if the URL is unsafe for server-side requests
+	 */
+	public static void validateUrlForServerRequest(URL url) {
+		if (url == null) {
+			throw new APIException("url.cannot.be.null", (Object[]) null);
+		}
+
+		String protocol = url.getProtocol();
+		if (!"http".equalsIgnoreCase(protocol) && !"https".equalsIgnoreCase(protocol)) {
+			throw new SecurityException("Only http/https URLs are allowed for server-side requests");
+		}
+
+		String host = url.getHost();
+		if (!StringUtils.hasText(host)) {
+			throw new SecurityException("URL host is required for server-side requests");
+		}
+
+		String normalizedHost = normalizeHost(host);
+		if (!StringUtils.hasText(normalizedHost)) {
+			throw new SecurityException("URL host is required for server-side requests");
+		}
+
+		Set<String> allowedHosts = getAllowedOutboundUrlHosts();
+		if (!allowedHosts.isEmpty() && !isHostAllowed(normalizedHost, allowedHosts)) {
+			throw new SecurityException("URL host is not in the allowed list");
+		}
+
+		if (allowedHosts.isEmpty()) {
+			enforcePublicAddress(normalizedHost);
+		}
+	}
+
+	private static Set<String> getAllowedOutboundUrlHosts() {
+		String configuredHosts = Context.getRuntimeProperties()
+		        .getProperty(OpenmrsConstants.GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS);
+		if (!StringUtils.hasText(configuredHosts) && Context.isSessionOpen()) {
+			try {
+				configuredHosts = Context.getAdministrationService()
+				        .getGlobalProperty(OpenmrsConstants.GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS, "");
+			}
+			catch (Exception e) {
+				log.debug("Unable to read allowed outbound URL hosts global property", e);
+			}
+		}
+
+		if (!StringUtils.hasText(configuredHosts)) {
+			return Collections.emptySet();
+		}
+
+		Set<String> hosts = new LinkedHashSet<>();
+		for (String entry : configuredHosts.split(",")) {
+			String normalized = normalizeAllowListEntry(entry);
+			if (StringUtils.hasText(normalized)) {
+				hosts.add(normalized);
+			}
+		}
+		return hosts;
+	}
+
+	private static String normalizeAllowListEntry(String entry) {
+		if (!StringUtils.hasText(entry)) {
+			return "";
+		}
+
+		String trimmed = entry.trim();
+		boolean allowSubdomains = trimmed.startsWith(".");
+		String value = allowSubdomains ? trimmed.substring(1) : trimmed;
+		String host = value;
+
+		if (value.contains("://")) {
+			try {
+				URL url = new URL(value);
+				if (StringUtils.hasText(url.getHost())) {
+					host = url.getHost();
+				}
+			}
+			catch (MalformedURLException e) {
+				// fall back to the provided value
+			}
+		} else if (value.contains("/")) {
+			host = value.substring(0, value.indexOf('/'));
+		}
+
+		String normalized = normalizeHost(host);
+		if (!StringUtils.hasText(normalized)) {
+			return "";
+		}
+
+		return allowSubdomains ? "." + normalized : normalized;
+	}
+
+	private static String normalizeHost(String host) {
+		String normalized = host.trim().toLowerCase(Locale.ROOT);
+		if (normalized.startsWith("[") && normalized.endsWith("]")) {
+			normalized = normalized.substring(1, normalized.length() - 1);
+		}
+		if (normalized.endsWith(".")) {
+			normalized = normalized.substring(0, normalized.length() - 1);
+		}
+		if (normalized.contains(":")) {
+			return normalized;
+		}
+		try {
+			return IDN.toASCII(normalized);
+		}
+		catch (IllegalArgumentException e) {
+			return normalized;
+		}
+	}
+
+	private static boolean isHostAllowed(String host, Set<String> allowedHosts) {
+		for (String allowed : allowedHosts) {
+			if (allowed.startsWith(".")) {
+				String suffix = allowed.substring(1);
+				if (host.equals(suffix) || host.endsWith("." + suffix)) {
+					return true;
+				}
+			} else if (host.equals(allowed)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static void enforcePublicAddress(String host) {
+		try {
+			for (InetAddress address : InetAddress.getAllByName(host)) {
+				if (isPrivateOrLocalAddress(address)) {
+					throw new SecurityException("URL host resolves to a private or local address");
+				}
+			}
+		}
+		catch (UnknownHostException e) {
+			log.debug("Unable to resolve host for SSRF validation: {}", host, e);
+		}
+	}
+
+	private static boolean isPrivateOrLocalAddress(InetAddress address) {
+		if (address.isAnyLocalAddress() || address.isLoopbackAddress() || address.isLinkLocalAddress()
+		        || address.isSiteLocalAddress() || address.isMulticastAddress()) {
+			return true;
+		}
+
+		byte[] bytes = address.getAddress();
+		if (bytes.length == 4) {
+			int b0 = bytes[0] & 0xFF;
+			int b1 = bytes[1] & 0xFF;
+			int b2 = bytes[2] & 0xFF;
+			return isPrivateOrLocalIpv4(b0, b1, b2);
+		} else if (bytes.length == 16) {
+			int first = bytes[0] & 0xFF;
+			if ((first & 0xFE) == 0xFC) {
+				return true; // fc00::/7
+			}
+			if (isIpv4MappedOrCompatible(bytes)) {
+				int b0 = bytes[12] & 0xFF;
+				int b1 = bytes[13] & 0xFF;
+				int b2 = bytes[14] & 0xFF;
+				return isPrivateOrLocalIpv4(b0, b1, b2);
+			}
+		}
+
+		return false;
+	}
+
+	private static boolean isPrivateOrLocalIpv4(int b0, int b1, int b2) {
+		if (b0 == 0) {
+			return true; // 0.0.0.0/8
+		}
+		if (b0 == 100 && (b1 & 0xC0) == 0x40) {
+			return true; // 100.64.0.0/10
+		}
+		if (b0 == 192 && b1 == 0 && b2 == 0) {
+			return true; // 192.0.0.0/24
+		}
+		if (b0 == 192 && b1 == 0 && b2 == 2) {
+			return true; // 192.0.2.0/24
+		}
+		if (b0 == 198 && (b1 == 18 || b1 == 19)) {
+			return true; // 198.18.0.0/15
+		}
+		if (b0 == 198 && b1 == 51 && b2 == 100) {
+			return true; // 198.51.100.0/24
+		}
+		if (b0 == 203 && b1 == 0 && b2 == 113) {
+			return true; // 203.0.113.0/24
+		}
+		if (b0 >= 240) {
+			return true; // 240.0.0.0/4
+		}
+		return false;
+	}
+
+	private static boolean isIpv4MappedOrCompatible(byte[] bytes) {
+		boolean allZero = true;
+		for (int i = 0; i < 12; i++) {
+			if (bytes[i] != 0) {
+				allZero = false;
+				break;
+			}
+		}
+		if (allZero) {
+			return true; // ::w.x.y.z
+		}
+
+		for (int i = 0; i < 10; i++) {
+			if (bytes[i] != 0) {
+				return false;
+			}
+		}
+		return (bytes[10] == (byte) 0xFF && bytes[11] == (byte) 0xFF);
 	}
 
 }

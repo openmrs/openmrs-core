@@ -23,13 +23,13 @@ public class HttpUrlTest {
 	
 	@Test
 	public void constructor_shouldNotThrowExceptionIfItIsAnHttpUrl() throws MalformedURLException {
-		HttpUrl url = new HttpUrl("http://something");
+		HttpUrl url = new HttpUrl("http://93.184.216.34");
 		assertThat(url, notNullValue());
 	}
 
 	@Test
 	public void constructor_shouldNotThrowExceptionIfItIsAnHttpsUrl() throws MalformedURLException {
-		HttpUrl url = new HttpUrl("https://something");
+		HttpUrl url = new HttpUrl("https://93.184.216.34");
 		assertThat(url, notNullValue());
 	}
 	
@@ -47,11 +47,11 @@ public class HttpUrlTest {
 	
 	@Test
 	public void toString_shouldReturnUrl() throws MalformedURLException {
-		assertThat(new HttpUrl("http://something").toString(), is("http://something"));
+		assertThat(new HttpUrl("http://93.184.216.34").toString(), is("http://93.184.216.34"));
 	}
 
 	@Test
 	public void toString_shouldReturnUrlHttps() throws MalformedURLException {
-		assertThat(new HttpUrl("https://something").toString(), is("https://something"));
+		assertThat(new HttpUrl("https://93.184.216.34").toString(), is("https://93.184.216.34"));
 	}
 }

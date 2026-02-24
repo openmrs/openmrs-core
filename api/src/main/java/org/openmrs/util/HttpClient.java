@@ -76,7 +76,9 @@ public class HttpClient {
 
 				// get redirect url from "location" header field
 				String newUrl = connection.getHeaderField("Location");
-				connection = (HttpURLConnection)new URL(newUrl).openConnection();
+				URL redirectUrl = new URL(newUrl);
+				Security.validateUrlForServerRequest(redirectUrl);
+				connection = (HttpURLConnection) redirectUrl.openConnection();
 
 				log.info("Redirection to : " + newUrl);
 
