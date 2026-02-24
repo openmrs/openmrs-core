@@ -10,7 +10,9 @@
 package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -3263,6 +3265,37 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		assertEquals(2, orderGroups.size(), "Two New Order Groups Get Saved");
+	}
+
+	@Test
+	public void shouldFailToSaveEncounterIfChangesWouldResultInInvalidOrders() {
+		Date today = new  Date();
+		Date yesterday = DateUtils.addDays(today, -1);
+		executeDataSet(ORDER_SET);
+		Encounter encounter = new Encounter();
+		encounter.setPatient(Context.getPatientService().getPatient(3));
+		encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+		encounter.setEncounterDatetime(yesterday);
+		
+		Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(3).withConcept(1000)
+			.withCareSetting(1).withOrderer(1).withDateActivated(yesterday)
+			.withOrderType(17).withUrgency(Order.Urgency.ROUTINE).build();
+		
+		encounter.addOrder(order);
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		encounter.setEncounterDatetime(today);
+		ValidationException validationError = null;
+		try {
+			Context.getEncounterService().saveEncounter(encounter);
+		}
+		catch (ValidationException e) {
+			validationError = e;
+		}
+		assertNotNull(validationError);
+		String expectedError = "dateActivated: Date activated cannot be before that of the associated encounter";
+		assertThat(validationError.getMessage(), containsString(expectedError));
+		
 	}
 	
 	@Test
