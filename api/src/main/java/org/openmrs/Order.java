@@ -91,6 +91,26 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		DECLINED,
 		COMPLETED
 	}
+
+	/**
+	 * Valid values for the clinical intention of an order.
+	 * Aligns with the FHIR RequestIntent ValueSet.
+	 * @see <a href="https://www.hl7.org/fhir/R4/valueset-request-intent.html">FHIR RequestIntent</a>
+	 * @since 3.0.0
+	 */
+	public enum Intent {
+		PROPOSAL, 
+		PLAN, 
+		ORDER, 
+		FILLER_ORDER,
+		DIRECTIVE,
+		ORIGINAL_ORDER,
+		REFLEX_ORDER,
+		INSTANCE_ORDER,
+		OPTION
+	}
+	
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	@Column(name = "order_id")
@@ -206,6 +226,16 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "fulfiller_status", length = 50)
 	private FulfillerStatus fulfillerStatus;
+
+	/**
+	 * Represents the clinical intention of this order, aligning with FHIR standards.
+	 * @see Intent
+	 * @since 3.0.0
+	 */
+	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "intent", length = 50, nullable = false)
+	private Intent intent = Intent.ORDER;
 	
 	/**
 	 * Represents the comment that goes along with with fulfiller status
@@ -274,6 +304,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		target.setFulfillerComment(getFulfillerComment());
 		target.setFulfillerStatus(getFulfillerStatus());
 		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
+		target.setIntent(getIntent());
 		return target;
 	}
 	
@@ -825,7 +856,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		newOrder.setPreviousOrder(this);
 		newOrder.setPatient(getPatient());
 		newOrder.setOrderType(getOrderType());
-		
+		newOrder.setIntent(getIntent());
 		return newOrder;
 	}
 	
@@ -874,7 +905,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		target.setFulfillerStatus(getFulfillerStatus());
 		target.setFulfillerComment(getFulfillerComment());
 		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
-		
+		target.setIntent(getIntent());
 		return target;
 	}
 	
@@ -1015,6 +1046,21 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	public void setFulfillerComment(String fulfillerComment) {
 		this.fulfillerComment = fulfillerComment;		
 	}
+	
+	/**
+	 * @return the intent
+     */
+	public Intent getIntent() {
+		return intent;
+	}
+
+	/**
+	 * @param intent the intent to set
+	 */
+	public void setIntent(Intent intent) {
+		this.intent = intent;
+	}
+
 	
 	/**
 	 * @return Returns the formNamespaceAndPath.
