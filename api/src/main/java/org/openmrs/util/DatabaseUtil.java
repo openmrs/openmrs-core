@@ -9,6 +9,12 @@
  */
 package org.openmrs.util;
 
+import org.hibernate.Session;
+import org.openmrs.api.db.DAOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,12 +26,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.hibernate.Session;
-import org.openmrs.api.db.DAOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
  * Utility class that provides database related methods
@@ -47,8 +47,8 @@ public class DatabaseUtil {
 	private static final String JTDS_DRIVER = "net.sourceforge.jtds.jdbc.Driver";
 	private static final String SQLSERVER_DRIVER = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
 
-	private static final Set<String> ALLOWED_JDBC_DRIVERS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(MYSQL_DRIVER, MYSQL_LEGACY_DRIVER, MARIADB_DRIVER, POSTGRESQL_DRIVER,
-			H2_DRIVER, HSQLDB_DRIVER, ORACLE_DRIVER, SQLSERVER_DRIVER, JTDS_DRIVER)));
+	private static final List<String> ALLOWED_JDBC_DRIVERS = Collections.unmodifiableList(Arrays.asList(MYSQL_DRIVER, MYSQL_LEGACY_DRIVER, MARIADB_DRIVER, POSTGRESQL_DRIVER,
+			H2_DRIVER, HSQLDB_DRIVER, ORACLE_DRIVER, SQLSERVER_DRIVER, JTDS_DRIVER));
 	
 	private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 
