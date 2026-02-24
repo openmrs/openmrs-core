@@ -9,35 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -88,6 +59,35 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -293,7 +293,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// file
 		Location loc2 = new Location(2);
 		EncounterType encType2 = new EncounterType(2);
-		Date d2 = new Date();
+		Date d2 = DateUtils.addDays(origDate, 10);
 		Patient pat2 = new Patient(2);
 		
 		encounter.setLocation(loc2);
@@ -586,6 +586,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// fetch the encounter to delete from the db
 		Encounter encounterToDelete = es.getEncounter(1);
+		List<Integer> existingObsIds = new ArrayList<>();
+		List<Integer> existingOrderIds = new ArrayList<>();
+		for (Obs o : encounterToDelete.getAllObs(true)) {
+			existingObsIds.add(o.getObsId());
+		}
+		for (Order o : encounterToDelete.getOrders()) {
+			existingOrderIds.add(o.getOrderId());
+		}
 		
 		es.purgeEncounter(encounterToDelete, true);
 		
@@ -593,12 +601,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Encounter e = es.getEncounter(encounterToDelete.getEncounterId());
 		assertNull(e, "We shouldn't find the encounter after deletion");
 		
-		ObsService obsService = Context.getObsService();
-		assertNull(obsService.getObs(1));
-		assertNull(obsService.getObs(2));
-		assertNull(obsService.getObs(3));
-		
-		assertNull(Context.getOrderService().getOrder(1));
+		assertFalse(existingObsIds.isEmpty());
+		for (Integer obsId : existingObsIds) {
+			assertNull(Context.getObsService().getObs(obsId));
+		}
+
+		assertFalse(existingOrderIds.isEmpty());
+		for (Integer orderId : existingOrderIds) {
+			assertNull(Context.getOrderService().getOrder(orderId));
+		}
 	}
 	
 	/**
@@ -681,7 +692,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(obsWithDifferentDateBefore);
 		assertEquals(2, obsWithSameDateBefore.size());
 		
-		Date newDate = new Date();
+		Date newDate = DateUtils.addDays(enc.getEncounterDatetime(), 10);
 		enc.setEncounterDatetime(newDate);
 		
 		// save the encounter. The obs should pick up the encounter's date
@@ -1026,11 +1037,20 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// get a nonvoided encounter that has some obs
 		Encounter encounter = encounterService.getEncounter(1);
+		List<Integer> orderIds = new ArrayList<>();
+		for (Order order : encounter.getOrders()) {
+			orderIds.add(order.getOrderId());
+			assertFalse(order.getVoided());
+		}
+		assertFalse(orderIds.isEmpty());
+		
 		encounterService.voidEncounter(encounter, "Just Testing");
 		
-		Order order = Context.getOrderService().getOrder(1);
-		assertTrue(order.getVoided());
-		assertEquals("Just Testing", order.getVoidReason());
+		for (Integer orderId : orderIds) {
+			Order order = Context.getOrderService().getOrder(orderId);
+			assertTrue(order.getVoided());
+			assertEquals("Just Testing", order.getVoidReason());
+		}
 	}
 	
 	/**
@@ -1238,9 +1258,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		        .setIncludeVoided(false).createEncounterSearchCriteria();
 		encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(4, encounters.size());
-		assertEquals(3, encounters.get(0).getEncounterId().intValue());
-		assertEquals(4, encounters.get(1).getEncounterId().intValue());
-		assertEquals(5, encounters.get(2).getEncounterId().intValue());
+		assertEquals(6, encounters.get(0).getEncounterId().intValue());
+		assertEquals(3, encounters.get(1).getEncounterId().intValue());
+		assertEquals(4, encounters.get(2).getEncounterId().intValue());
+		assertEquals(5, encounters.get(3).getEncounterId().intValue());
 	}
 	
 	/**

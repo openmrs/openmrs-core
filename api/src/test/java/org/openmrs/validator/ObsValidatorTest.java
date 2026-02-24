@@ -38,6 +38,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 
 /**
  * Tests methods on the {@link ObsValidator} class.
@@ -481,6 +482,9 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		inValidChild.setVoided(true);
 		errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
+		for (ObjectError error : errors.getAllErrors()) {
+			System.out.println(error.getDefaultMessage());
+		}
 		assertFalse(errors.hasErrors());
 	}
 	
