@@ -27,6 +27,8 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.ParseErrorException;
 import org.joda.time.LocalTime;
 import org.openmrs.Concept;
+import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
@@ -497,5 +499,35 @@ public class ConceptReferenceRangeUtility {
 			onDate = new Date();
 		}
 		return Context.getProgramWorkflowService().getPatientPrograms(patient, null, null, onDate, onDate, null, false);
+	}
+
+	/**
+	 * Loads the reference range from the ConceptNumeric if no reference ranges are associated with
+	 * this concept and person.
+	 * 
+	 * @param conceptNumeric A {@link ConceptNumeric} to extract the default values from
+	 * @return a {@link ConceptReferenceRange} containing the reference range from the concept
+	 */
+	private static ConceptReferenceRange getDefaultReferenceRange(ConceptNumeric conceptNumeric) {
+		if (conceptNumeric == null || (
+			conceptNumeric.getHiAbsolute() == null &&
+			conceptNumeric.getHiCritical() == null &&
+			conceptNumeric.getHiNormal() == null &&
+			conceptNumeric.getLowAbsolute() == null &&
+			conceptNumeric.getLowCritical() == null &&
+			conceptNumeric.getLowNormal() == null
+		)) {
+			return null;
+		}
+		
+		ConceptReferenceRange defaultReferenceRange = new ConceptReferenceRange();
+		defaultReferenceRange.setConceptNumeric(conceptNumeric);
+		defaultReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+		defaultReferenceRange.setHiCritical(conceptNumeric.getHiCritical());
+		defaultReferenceRange.setHiNormal(conceptNumeric.getHiNormal());
+		defaultReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+		defaultReferenceRange.setLowCritical(conceptNumeric.getLowCritical());
+		defaultReferenceRange.setLowNormal(conceptNumeric.getLowNormal());
+		return defaultReferenceRange;
 	}
 }

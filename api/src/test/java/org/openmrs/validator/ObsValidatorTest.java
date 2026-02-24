@@ -34,7 +34,9 @@ import org.openmrs.Obs;
 import org.openmrs.ObsReferenceRange;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ConceptReferenceRangeContext;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
@@ -562,7 +564,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	public void getReferenceRange_shouldReturnCorrectRangeWhenHiAbsoluteAndLowAbsoluteAreNull() {
 		Obs obs = getObs(10, 4091, 50.0);
 
-		ConceptReferenceRange referenceRange = obsValidator.getReferenceRange(obs);
+		ConceptReferenceRange referenceRange = Context.getConceptService().getConceptReferenceRange(new ConceptReferenceRangeContext(obs));
 		
 		assertNotNull(referenceRange.getHiCritical());
 		assertNotNull(referenceRange.getHiNormal());
@@ -574,13 +576,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ObsValidator#getReferenceRange(Obs)
+	 * @see ConceptService#getConceptReferenceRange(ConceptReferenceRangeContext)
 	 */
 	@Test
 	public void getReferenceRange_shouldConceptReferenceRangeWhenNoReferenceRangeDefined() {
 		Obs obs = getObs(1, 5497, 0.0);
 		
-		ConceptReferenceRange referenceRange = obsValidator.getReferenceRange(obs);
+		ConceptReferenceRange referenceRange = Context.getConceptService().getConceptReferenceRange(new ConceptReferenceRangeContext(obs));
 
 		assertNotNull(referenceRange);
 		assertEquals(2500.0, referenceRange.getHiAbsolute());

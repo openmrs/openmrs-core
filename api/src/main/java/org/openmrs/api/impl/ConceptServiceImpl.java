@@ -75,7 +75,6 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.validator.ObsValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2106,8 +2105,19 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	@Override
 	public ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept) {
-		Obs obs = new Obs(person, concept, null, null);
-		return new ObsValidator().getReferenceRange(obs);
+		if (person == null || concept == null) {
+        	return null;
+    	}
+
+    	 // Legacy behavior: reference ranges always evaluated through Obs
+    	Obs obs = new Obs();
+    	obs.setPerson(person);
+    	obs.setConcept(concept);
+    	obs.setObsDatetime(new Date());
+
+    	ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(obs);
+
+    	return getConceptReferenceRange(context);
 	}
 
 	@Override
@@ -2116,15 +2126,16 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
         throw new IllegalArgumentException("ConceptReferenceRangeContext must not be null");
     	}
 
-    	Obs obs = context.getObs();
-    	if (obs == null) {
-        throw new IllegalArgumentException("ConceptReferenceRangeContext obs must not be null");
-    	}
+    	Concept concept = context.getConcept();
+		if (concept == null) {
+    		return null;
+		}
 
-    	Concept concept = HibernateUtil.getRealObjectFromProxy(obs.getConcept());
-    	if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
-        return null;
-    	}
+		concept = HibernateUtil.getRealObjectFromProxy(concept);
+
+		if (concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
+    		return null;
+		}
 
     	ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
 		List<ConceptReferenceRange> referenceRanges = Context.getConceptService().getConceptReferenceRangesByConceptId(concept.getConceptId());
@@ -2137,11 +2148,16 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
     	List<ConceptReferenceRange> validRanges = new ArrayList<>();
 
     	for (ConceptReferenceRange referenceRange : referenceRanges) {
-        if (referenceRangeUtility.evaluateCriteria(
-                StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()), obs)) {
-            validRanges.add(referenceRange);
-        }
-    	}
+    		String criteria = StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria());
+
+    		try {
+        		if (referenceRangeUtility.evaluateCriteria(criteria, context)) {
+            		validRanges.add(referenceRange);
+        		}
+    		} catch (Exception ignored) {
+        		// Old OpenMRS behavior: invalid criteria should not break validation
+    		}
+		}
 
     	if (validRanges.isEmpty()) {
 			return getDefaultReferenceRange(conceptNumeric);

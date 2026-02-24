@@ -25,7 +25,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ConceptReferenceRangeContext;
 import org.openmrs.api.db.hibernate.HibernateUtil;
-import org.openmrs.util.ConceptReferenceRangeUtility;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -261,7 +261,8 @@ public class ObsValidator implements Validator {
 	 * @param errors Errors to record validation issues
 	 */
 	private void validateConceptReferenceRange(Obs obs, Errors errors, boolean atRootNode) {
-		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs);
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(obs);
+		ConceptReferenceRange conceptReferenceRange = Context.getConceptService().getConceptReferenceRange(context);
 
 		if (conceptReferenceRange != null) {
 			validateAbsoluteRanges(obs, conceptReferenceRange, errors, atRootNode);
@@ -273,21 +274,6 @@ public class ObsValidator implements Validator {
 			setObsReferenceRange(obs);
 		}
 		setObsInterpretation(obs);
-	}
-
-	/**
-	 * Evaluates the criteria and return the most strict {@link ConceptReferenceRange} for a given concept
-	 * and patient contained in an observation.
-	 * It considers all valid ranges that match the criteria for the person.
-	 *
-	 * @param obs containing The concept and patient for whom the range is being evaluated
-	 * @return The strictest {@link ConceptReferenceRange}, or null if no valid range is found
-	 * 
-	 * @since 2.7.0
-	 */
-	public ConceptReferenceRange getReferenceRange(Obs obs) {
-		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(obs);
-    	return Context.getConceptService().getConceptReferenceRange(context);
 	}
 
 	/**
