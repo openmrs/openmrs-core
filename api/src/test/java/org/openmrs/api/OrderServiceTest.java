@@ -271,6 +271,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
 		throws InterruptedException {
 
+		String javaVersion = System.getProperty("java.version");
+		if (javaVersion.startsWith("1.8") || javaVersion.startsWith("8")) {
+			System.out.println("Ignoring test on Java 1.8 due to hanging.  See TRUNK-6465");
+			return;
+		}
+		
 		int N = 50;
 		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(50));
 		List<Thread> threads = new ArrayList<>();
