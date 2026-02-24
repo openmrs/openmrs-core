@@ -99,7 +99,6 @@ public class ConceptReferenceRangeUtility {
 
     	if (patient != null) {
         velocityContext.put("patient", patient);
-        velocityContext.put("person", patient);
     	}
 
     	if (context.getEncounter() != null) {
