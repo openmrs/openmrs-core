@@ -9,6 +9,16 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import org.hibernate.envers.Audited;
 
 /**
@@ -18,17 +28,30 @@ import org.hibernate.envers.Audited;
  * 
  * @since 1.10
  */
+@Entity
+@Table(name = "order_frequency")
+@AttributeOverrides({
+	@AttributeOverride(name = "name", column = @Column(name = "name")),
+	@AttributeOverride(name = "description", column = @Column(name = "description"))
+})
 @Audited
 public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "order_frequency_id")
 	private Integer orderFrequencyId;
-	
+
+	@Column(name = "frequency_per_day")
 	private Double frequencyPerDay;
-	
+
+	@Column(name = "uuid", unique = true)
 	private String uuid;
-	
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "concept_id", nullable = false, unique = true)
 	private Concept concept;
 	
 	/**
