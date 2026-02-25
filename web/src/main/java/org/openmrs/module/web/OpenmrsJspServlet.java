@@ -47,7 +47,7 @@ public void init(ServletConfig config)  throws ServletException {
         super.init(config);
 
     } catch (Exception e) {
-        log.error("Unexpected error in OpenmrsJspServlet#init", e);
+        log.error("An unexpected error occurred while processing a request", e);
         throw new RuntimeException("Failed to initialize OpenmrsJspServlet", e);
     }
 }
