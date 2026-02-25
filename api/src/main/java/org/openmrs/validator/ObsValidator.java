@@ -10,9 +10,11 @@
 package org.openmrs.validator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -26,6 +28,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.Validator;
 
 /**
@@ -84,7 +87,7 @@ public class ObsValidator implements Validator {
 			return;
 		}
 		List<Obs> ancestors = new ArrayList<>();
-		validateHelper(obs, errors, ancestors, true);
+		validateHelper(obs, errors, ancestors);
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
 		    "comment", "voidReason");
 	}
@@ -96,50 +99,49 @@ public class ObsValidator implements Validator {
 	 * @param obs
 	 * @param errors
 	 * @param ancestors
-	 * @param atRootNode whether or not this is the obs that validate() was originally called on. If
-	 *            not then we shouldn't reject fields by name.
 	 */
-	private void validateHelper(Obs obs, Errors errors, List<Obs> ancestors, boolean atRootNode) {
+	private void validateHelper(Obs obs, Errors errors, List<Obs> ancestors) {
+		boolean inGroupMember = !ancestors.isEmpty();
 		if (obs.getPersonId() == null) {
-			errors.rejectValue("person", "error.null");
+			rejectValue(errors, obs, inGroupMember, "person", "error.null");
 		}
 		if (obs.getObsDatetime() == null) {
-			errors.rejectValue("obsDatetime", "error.null");
+			rejectValue(errors, obs, inGroupMember, "obsDatetime", "error.null");
 		}
 		
 		boolean isObsGroup = obs.hasGroupMembers(true);
 		// if this is an obs group (i.e., parent) make sure that it has no values (other than valueGroupId) set
 		if (isObsGroup) {
 			if (obs.getValueCoded() != null) {
-				errors.rejectValue("valueCoded", "error.not.null");
+				rejectValue(errors, obs, inGroupMember, "valueCoded", "error.not.null");
 			}
 			
 			if (obs.getValueDrug() != null) {
-				errors.rejectValue("valueDrug", "error.not.null");
+				rejectValue(errors, obs, inGroupMember, "valueDrug", "error.not.null");
 			}
 			
 			if (obs.getValueDatetime() != null) {
-				errors.rejectValue("valueDatetime", "error.not.null");
+				rejectValue(errors, obs, inGroupMember, "valueDatetime", "error.not.null");
 			}
 			
 			if (obs.getValueNumeric() != null) {
-				errors.rejectValue("valueNumeric", "error.not.null");
+				rejectValue(errors, obs, inGroupMember, "valueNumeric", "error.not.null");
 			}
 			
 			if (obs.getValueModifier() != null) {
-				errors.rejectValue("valueModifier", "error.not.null");
+				rejectValue(errors, obs, inGroupMember, "valueModifier", "error.not.null");
 			}
 			
 			if (obs.getValueText() != null) {
-				errors.rejectValue("valueText", "error.not.null");
+				rejectValue(errors, obs, inGroupMember, "valueText", "error.not.null");
 			}
 			
 			if (obs.getValueBoolean() != null) {
-				errors.rejectValue("valueBoolean", "error.not.null");
+				rejectValue(errors, obs, inGroupMember, "valueBoolean", "error.not.null");
 			}
 			
 			if (obs.getValueComplex() != null) {
-				errors.rejectValue("valueComplex", "error.not.null");
+				rejectValue(errors, obs, inGroupMember, "valueComplex", "error.not.null");
 			}
 			
 		}
@@ -148,72 +150,44 @@ public class ObsValidator implements Validator {
 		        && obs.getValueComplex() == null && obs.getValueDatetime() == null && obs.getValueDrug() == null
 		        && obs.getValueModifier() == null && obs.getValueNumeric() == null && obs.getValueText() == null
 		        && obs.getComplexData() == null) {
-			errors.reject("error.noValue");
+			reject(errors, obs, inGroupMember, "error.noValue");
 		}
 		
 		// make sure there is a concept associated with the obs
 		Concept c = obs.getConcept();
 		if (c == null) {
-			errors.rejectValue("concept", "error.null");
+			rejectValue(errors, obs, inGroupMember, "concept", "error.null");
 		}
 		// if there is a concept, and this isn't a group, perform validation tests specific to the concept datatype
 		else if (!isObsGroup) {
 			ConceptDatatype dt = c.getDatatype();
 			if (dt != null) {
 				if (dt.isBoolean() && obs.getValueBoolean() == null) {
-					if (atRootNode) {
-						errors.rejectValue("valueBoolean", "error.null");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
+					rejectValue(errors, obs, inGroupMember, "valueBoolean", "error.null");
 				} else if (dt.isCoded() && obs.getValueCoded() == null) {
-					if (atRootNode) {
-						errors.rejectValue("valueCoded", "error.null");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
+					rejectValue(errors, obs, inGroupMember, "valueCoded", "error.null");
 				} else if ((dt.isDateTime() || dt.isDate() || dt.isTime()) && obs.getValueDatetime() == null) {
-					if (atRootNode) {
-						errors.rejectValue("valueDatetime", "error.null");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
+					rejectValue(errors, obs, inGroupMember, "valueDatetime", "error.null");
 				} else if (dt.isNumeric() && obs.getValueNumeric() == null) {
-					if (atRootNode) {
-						errors.rejectValue("valueNumeric", "error.null");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
+					rejectValue(errors, obs, inGroupMember, "valueNumeric", "error.null");
 				} else if (dt.isNumeric()) {
 					ConceptNumeric cn = Context.getConceptService().getConceptNumeric(c.getConceptId());
 					// If the concept numeric is not precise, the value cannot be a float, so raise an error 
 					if (!cn.getAllowDecimal() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
-						if (atRootNode) {
-							errors.rejectValue("valueNumeric", "Obs.error.precision");
-						} else {
-							errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-						}
+						rejectValue(errors, obs, inGroupMember, "valueNumeric", "Obs.error.precision");
 					}
 					
-					validateConceptReferenceRange(obs, errors, atRootNode);
+					validateConceptReferenceRange(obs, errors, inGroupMember);
 				} else if (dt.isText() && obs.getValueText() == null) {
-					if (atRootNode) {
-						errors.rejectValue("valueText", "error.null");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
+					rejectValue(errors, obs, inGroupMember, "valueText", "error.null");
 				}
 				
 				//If valueText is longer than the maxlength, raise an error as well.
 				if (dt.isText() && obs.getValueText() != null && obs.getValueText().length() > VALUE_TEXT_MAX_LENGTH) {
-					if (atRootNode) {
-						errors.rejectValue("valueText", "error.exceededMaxLengthOfField");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
+					rejectValue(errors, obs, inGroupMember, "valueText", "error.exceededMaxLengthOfField");
 				}
 			} else { // dt is null
-				errors.rejectValue("concept", "must have a datatype");
+				rejectValue(errors, obs, inGroupMember, "concept", "must have a datatype");
 			}
 		}
 		
@@ -223,15 +197,27 @@ public class ObsValidator implements Validator {
 		}
 		
 		if (ancestors.contains(obs)) {
-			errors.rejectValue("groupMembers", "Obs.error.groupContainsItself");
+			rejectValue(errors, obs, inGroupMember, "groupMembers", "Obs.error.groupContainsItself");
 		}
 		
 		Set<Obs> groupMembers = obs.getGroupMembers();
 		if (groupMembers != null && !groupMembers.isEmpty()) {
+			List<Obs> orderedGroupMembers = new ArrayList<>(groupMembers);
+			orderedGroupMembers.sort(Comparator.comparing(Obs::getUuid, Comparator.nullsLast(String::compareTo)));
 			ancestors.add(obs);
-			for (Obs child : groupMembers) {
+			for (int index = 0; index < orderedGroupMembers.size(); index++) {
+				Obs child = orderedGroupMembers.get(index);
 				if (!child.getVoided()) {
-					validateHelper(child, errors, ancestors, false);
+					if (ancestors.contains(child)) {
+						rejectValue(errors, obs, inGroupMember, "groupMembers", "Obs.error.groupContainsItself");
+						continue;
+					}
+					errors.pushNestedPath("groupMembers[" + index + "]");
+					try {
+						validateHelper(child, errors, ancestors);
+					} finally {
+						errors.popNestedPath();
+					}
 				}
 			}
 			ancestors.remove(ancestors.size() - 1);
@@ -259,11 +245,11 @@ public class ObsValidator implements Validator {
 	 * @param obs Observation to validate
 	 * @param errors Errors to record validation issues
 	 */
-	private void validateConceptReferenceRange(Obs obs, Errors errors, boolean atRootNode) {
+	private void validateConceptReferenceRange(Obs obs, Errors errors, boolean inGroupMember) {
 		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs);
 
 		if (conceptReferenceRange != null) {
-			validateAbsoluteRanges(obs, conceptReferenceRange, errors, atRootNode);
+			validateAbsoluteRanges(obs, conceptReferenceRange, errors, inGroupMember);
 			
 			if (obs.getId() == null) {
 				setObsReferenceRange(obs, conceptReferenceRange);
@@ -413,41 +399,70 @@ public class ObsValidator implements Validator {
 	 * @param conceptReferenceRange ConceptReferenceRange containing the range values
 	 * @param errors Errors to record validation issues
 	 */
-	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors, boolean atRootNode) {
+	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors, boolean inGroupMember) {
 		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
-			if (atRootNode) {
-				errors.rejectValue(
-					"valueNumeric",
-					"error.value.outOfRange.high",
-					new Object[] { conceptReferenceRange.getHiAbsolute() },
-					null
-				);
-			} else {
-				errors.rejectValue(
-					"groupMembers",
-					"Obs.error.inGroupMember",
-					new Object[] {},
-					null
-				);
-			}
+			rejectValue(
+				errors,
+				obs,
+				inGroupMember,
+				"valueNumeric",
+				"error.value.outOfRange.high",
+				new Object[] { conceptReferenceRange.getHiAbsolute(), obs.getValueNumeric() }
+			);
 		}
 		
 		if (conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
-			if (atRootNode) {
-				errors.rejectValue(
-					"valueNumeric",
-					"error.value.outOfRange.low",
-					new Object[] { conceptReferenceRange.getLowAbsolute() },
-					null
-				);
-			} else {
-				errors.rejectValue(
-					"groupMembers",
-					"Obs.error.inGroupMember",
-					new Object[] { },
-					null
-				);
-			}
+			rejectValue(
+				errors,
+				obs,
+				inGroupMember,
+				"valueNumeric",
+				"error.value.outOfRange.low",
+				new Object[] { conceptReferenceRange.getLowAbsolute(), obs.getValueNumeric() }
+			);
+		}
+	}
+
+	private String getGroupMemberIdentifier(Obs obs) {
+		String identifier = null;
+		Concept concept = obs.getConcept();
+		if (concept != null && concept.getName() != null) {
+			identifier = concept.getName().getName();
+		}
+		
+		String obsId = obs.getObsId() != null ? obs.getObsId().toString() : obs.getUuid();
+		if (StringUtils.isNotBlank(identifier)) {
+			return identifier + " (" + obsId + ")";
+		}
+		return obsId;
+	}
+
+	private void rejectValue(Errors errors, Obs obs, boolean inGroupMember, String field, String errorCode) {
+		rejectValue(errors, obs, inGroupMember, field, errorCode, null);
+	}
+
+	private void rejectValue(Errors errors, Obs obs, boolean inGroupMember, String field, String errorCode, Object[] args) {
+		int fieldErrorCount = errors.getFieldErrorCount();
+		errors.rejectValue(field, errorCode, args, null);
+		if (inGroupMember) {
+			FieldError fieldError = errors.getFieldErrors().get(fieldErrorCount);
+			String message = Context.getMessageSourceService().getMessage(fieldError, Context.getLocale());
+			String detail = field + ": " + message;
+			errors.reject("Obs.error.inGroupMember", new Object[] { getGroupMemberIdentifier(obs), detail }, null);
+		}
+	}
+
+	private void reject(Errors errors, Obs obs, boolean inGroupMember, String errorCode) {
+		reject(errors, obs, inGroupMember, errorCode, null);
+	}
+
+	private void reject(Errors errors, Obs obs, boolean inGroupMember, String errorCode, Object[] args) {
+		int globalErrorCount = errors.getGlobalErrorCount();
+		errors.reject(errorCode, args, null);
+		if (inGroupMember) {
+			String message = Context.getMessageSourceService().getMessage(errors.getGlobalErrors().get(globalErrorCount),
+			    Context.getLocale());
+			errors.reject("Obs.error.inGroupMember", new Object[] { getGroupMemberIdentifier(obs), message }, null);
 		}
 	}
 
