@@ -72,7 +72,8 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
         }
 
     } catch (Exception e) {
-        log.error("Unexpected errorin ModuleResourcesServlet#doGet", e);
+        log.error("An unexpected error occurred while processing a request for ", 
+         request.getPathInfo(), e);
 
         try {
             if (!response.isCommitted()) {
@@ -80,7 +81,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
                         "An unexpected error occurred while processing the request.");
             }
         } catch (IOException ioException) {
-            log.error("Failed to send error response", ioException);
+            log.warn("Failed to send error response", ioException);
         }
     }
 }

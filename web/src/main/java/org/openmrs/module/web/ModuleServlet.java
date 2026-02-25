@@ -76,7 +76,8 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
         servlet.service(request, response);
 
     } catch (Exception e) {
-        log.error("Unexpected error in ModuleServlet#service", e);
+        log.error("An unexpected error occurred while processing a request for ", 
+         request.getPathInfo(), e);
 
         try {
             if (!response.isCommitted()) {
@@ -84,7 +85,7 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
                         "An unexpected error occurred while processing the request.");
             }
         } catch (IOException ioException) {
-            log.error("Failed to send error response", ioException);
+            log.warn("Failed to send error response", ioException);
         }
     }
 }
