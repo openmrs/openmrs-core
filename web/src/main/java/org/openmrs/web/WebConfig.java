@@ -35,6 +35,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter;
+import org.springframework.web.servlet.view.AbstractUrlBasedView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
@@ -59,7 +61,18 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public ViewResolver jspViewResolver() {
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver() {
+            @Override
+            protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+                // Strip leading slash to prevent double-slash paths (e.g. /WEB-INF/view//portlets/login.jsp)
+                // which Jetty 12 rejects. Module controllers like PortletController return view names
+                // starting with "/" (e.g. "/portlets/login").
+                if (viewName.startsWith("/")) {
+                    viewName = viewName.substring(1);
+                }
+                return super.buildView(viewName);
+            }
+        };
         viewResolver.setViewClass(JstlView.class);
         viewResolver.setPrefix("/WEB-INF/view/");
         viewResolver.setSuffix(".jsp");
@@ -169,6 +182,11 @@ public class WebConfig implements WebMvcConfigurer {
         SimpleUrlHandlerMapping handlerMapping = new SimpleUrlHandlerMapping();
         handlerMapping.setOrder(99);
         return handlerMapping;
+    }
+
+    @Bean
+    public SimpleControllerHandlerAdapter simpleControllerHandlerAdapter() {
+        return new SimpleControllerHandlerAdapter();
     }
 
 }

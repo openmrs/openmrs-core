@@ -174,6 +174,14 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-co
 ```
 If you change backend, you need to rebuild the search index by going to Legacy UI -> Administration -> Search Index. Alternatively, you can rebuild the search index using the `searchindexupdate` REST endpoint.
 
+### Running with Grafana
+
+OpenMRS can run with Grafana for monitoring logs. You can run it with:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.grafana.yml up
+```
+Grafana will be available at http://localhost:3000. Use admin as username and see docker-compose.grafana.yml for the initial password.
+
 ## Navigating the repository
 
 The project tree is set up as follows:
@@ -308,4 +316,3 @@ Talk to us on [OpenMRS Talk](https://talk.openmrs.org/)
 ## License
 
 [MPL 2.0 w/ HD](http://openmrs.org/license/) © [OpenMRS Inc.](http://www.openmrs.org/)
-
