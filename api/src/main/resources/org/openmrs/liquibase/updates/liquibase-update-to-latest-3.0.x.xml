@@ -129,5 +129,15 @@
 			<column name="description" type="varchar(255)"/>
 		</addColumn>
 	</changeSet>
+
+	<changeSet id="TRUNK-5819-2026-02-24" author="mohini-chaudhari2">
+		<comment>Add audit columns required by OrderFrequency JPA mapping for TRUNK-5819</comment>
+		<addColumn tableName="order_frequency">
+			<column name="date_changed" type="datetime"/>
+			<column name="changed_by" type="int"/>
+			<column name="name" type="varchar(255)"/>
+            <column name="description" type="varchar(255)"/>
+		</addColumn>
+	</changeSet>
 	
 </databaseChangeLog>
