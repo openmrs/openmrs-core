@@ -16,6 +16,7 @@ overlay: 50,
 overlayClass: 'jqmOverlay',
 closeClass: 'jqmClose',
 trigger: '.jqModal',
+// NOTE: ajax and ajaxText insert HTML into the DOM; callers must provide trusted input only.
 ajax: F,
 ajaxText: '',
 target: F,
