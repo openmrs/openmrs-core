@@ -31,8 +31,7 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(name = "order_frequency")
 @AttributeOverrides({
-	@AttributeOverride(name = "name", column = @Column(name = "name")),
-	@AttributeOverride(name = "description", column = @Column(name = "description"))
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true, length = 255))
 })
 @Audited
 public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
