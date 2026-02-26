@@ -9,21 +9,23 @@
  */
 package org.openmrs.util;
 
+import org.hibernate.Session;
+import org.openmrs.api.db.DAOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.hibernate.Session;
-import org.openmrs.api.db.DAOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
  * Utility class that provides database related methods

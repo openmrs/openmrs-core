@@ -50,11 +50,11 @@
 		<!-- spring-test 6.2.12 is used because Spring 7.0.3's spring-test requires JUnit 6.x which is -->
 		<!-- not yet supported by maven-surefire-plugin 3.5.4. Spring test 6.2.12 works with JUnit 5.x. -->
 		<springTestVersion>6.2.12</springTestVersion>
-		<hibernateVersion>7.2.4.Final</hibernateVersion>
+		<hibernateVersion>7.2.5.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.2.2.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.0.Final</hibernateValidatorVersion>
-		<luceneVersion>10.3.2</luceneVersion>
+		<luceneVersion>10.4.0</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.2.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
@@ -84,6 +84,7 @@
 		<commonsLang3Version>3.20.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
 		<commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
+		<commonsFileupload2JakartaVersion>2.0.0-M1</commonsFileupload2JakartaVersion>
 		<commonsValidatorVersion>1.10.1</commonsValidatorVersion>
 
 		<!-- Velocity -->
@@ -370,6 +371,11 @@
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
 				<version>${commonsFileuploadVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-fileupload2-jakarta</artifactId>
+				<version>${commonsFileupload2JakartaVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-validator</groupId>
