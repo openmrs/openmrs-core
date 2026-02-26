@@ -209,6 +209,20 @@ public class InitializationFilter extends StartupFilter {
 	}
 
 	/**
+	 * Sanitizes input for logging to prevent log injection attacks. Replaces carriage return and line
+	 * feed characters with underscores.
+	 *
+	 * @param input the string to sanitize for logging
+	 * @return sanitized string safe for logging, or null if input is null
+	 */
+	private static String sanitizeForLog(String input) {
+		if (input == null) {
+			return null;
+		}
+		return input.replaceAll("[\\r\\n]", "_");
+	}
+
+	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
 	 *
 	 * @param httpRequest
@@ -474,7 +488,10 @@ public class InitializationFilter extends StartupFilter {
 			checkLocaleAttributes(httpRequest);
 			referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE,
 			    httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
-			log.info("Locale stored in session is " + httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+			if (log.isInfoEnabled()) {
+				Object localeAttribute = httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE);
+				log.info("Locale stored in session is {}", sanitizeForLog(String.valueOf(localeAttribute)));
+			}
 
 			httpResponse.setContentType("text/html");
 			// otherwise do step one of the wizard
@@ -969,7 +986,9 @@ public class InitializationFilter extends StartupFilter {
 			// if user has changed locale parameter to new one
 			// or chooses it parameter at first page loading
 			if (storedLocale == null || !storedLocale.equals(localeParameter)) {
-				log.info("Stored locale parameter to session " + localeParameter);
+				if (log.isInfoEnabled()) {
+					log.info("Stored locale parameter to session {}", sanitizeForLog(localeParameter));
+				}
 				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
 			}
 			if (rememberLocale) {
@@ -1213,7 +1232,7 @@ public class InitializationFilter extends StartupFilter {
 		} catch (SQLException sqlex) {
 			if (!silent) {
 				// log and add error
-				log.warn("error executing sql: " + sql, sqlex);
+				log.warn("error executing sql: {}", sanitizeForLog(sql), sqlex);
 				errors.put("Error executing sql: " + sql + " - " + sqlex.getMessage(), null);
 			}
 		} catch (InstantiationException | ClassNotFoundException | IllegalAccessException e) {
