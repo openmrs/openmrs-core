@@ -19,6 +19,8 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -355,10 +357,17 @@ public class Security {
 	 * is set, the host must match the allowlist; otherwise, private/local/reserved
 	 * addresses are blocked.
 	 *
+	 * <p>In blacklist mode (no allowlist configured), the hostname is resolved once and the
+	 * validated addresses are returned. Callers MUST use {@link #buildSafeUrl(URL, InetAddress)}
+	 * with one of the returned addresses to open the connection so the hostname is never
+	 * re-resolved, preventing DNS-rebinding / TOCTOU attacks. In allowlist mode an empty list
+	 * is returned and callers may use the original URL directly.</p>
+	 *
 	 * @param url the URL to validate
+	 * @return resolved {@link InetAddress} list in blacklist mode; empty list in allowlist mode
 	 * @throws SecurityException if the URL is unsafe for server-side requests
 	 */
-	public static void validateUrlForServerRequest(URL url) {
+	public static List<InetAddress> validateUrlForServerRequest(URL url) {
 		if (url == null) {
 			throw new APIException("url.cannot.be.null", (Object[]) null);
 		}
@@ -383,9 +392,24 @@ public class Security {
 			throw new SecurityException("URL host is not in the allowed list");
 		}
 
-		if (allowedHosts.isEmpty()) {
-			enforcePublicAddress(normalizedHost);
-		}
+		// Always resolve DNS once and return the addresses so every caller connects via the
+		// resolved IP, preventing DNS-rebinding / TOCTOU in both allowlist and blacklist modes.
+		// In blacklist mode the addresses are also checked against private/reserved ranges.
+		return resolveAndValidatePublicAddresses(normalizedHost, allowedHosts.isEmpty());
+	}
+
+	/**
+	 * Builds a URL replacing the hostname in {@code original} with the numeric IP of
+	 * {@code resolvedAddress}. Use with the return value of {@link #validateUrlForServerRequest}
+	 * to open connections without re-resolving DNS.
+	 *
+	 * @param original        the original URL
+	 * @param resolvedAddress one address returned by {@link #validateUrlForServerRequest}
+	 * @return a new URL whose host is the numeric IP address
+	 * @throws MalformedURLException if the reconstructed URL is invalid
+	 */
+	public static URL buildSafeUrl(URL original, InetAddress resolvedAddress) throws MalformedURLException {
+		return new URL(original.getProtocol(), resolvedAddress.getHostAddress(), original.getPort(), original.getFile());
 	}
 
 	private static Set<String> getAllowedOutboundUrlHosts() {
@@ -480,17 +504,24 @@ public class Security {
 		return false;
 	}
 
-	private static void enforcePublicAddress(String host) {
+	private static List<InetAddress> resolveAndValidatePublicAddresses(String host, boolean enforceBlacklist) {
+		InetAddress[] addresses;
 		try {
-			for (InetAddress address : InetAddress.getAllByName(host)) {
-				if (isPrivateOrLocalAddress(address)) {
-					throw new SecurityException("URL host resolves to a private or local address");
-				}
-			}
+			addresses = InetAddress.getAllByName(host);
 		}
 		catch (UnknownHostException e) {
-			log.debug("Unable to resolve host for SSRF validation: {}", host, e);
+			// Fail closed: an unresolvable host is not safe to connect to.
+			throw new SecurityException("URL host could not be resolved: " + host, e);
 		}
+
+		List<InetAddress> validated = new ArrayList<>(addresses.length);
+		for (InetAddress address : addresses) {
+			if (enforceBlacklist && isPrivateOrLocalAddress(address)) {
+				throw new SecurityException("URL host resolves to a private or local address");
+			}
+			validated.add(address);
+		}
+		return validated;
 	}
 
 	private static boolean isPrivateOrLocalAddress(InetAddress address) {

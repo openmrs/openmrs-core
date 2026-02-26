@@ -18,8 +18,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
@@ -230,8 +232,10 @@ public class TestInstallUtil {
 	protected static boolean testConnection(String urlString) {
 		try {
 			URL url = new URL(urlString);
-			Security.validateUrlForServerRequest(url);
-			HttpURLConnection urlConnect = (HttpURLConnection) url.openConnection();
+			// Resolve DNS once and connect via IP to prevent DNS-rebinding / TOCTOU.
+			List<InetAddress> resolved = Security.validateUrlForServerRequest(url);
+			URL safeUrl = resolved.isEmpty() ? url : Security.buildSafeUrl(url, resolved.get(0));
+			HttpURLConnection urlConnect = (HttpURLConnection) safeUrl.openConnection();
 			//wait for 15sec
 			urlConnect.setConnectTimeout(15000);
 			urlConnect.setUseCaches(false);
@@ -277,8 +281,10 @@ public class TestInstallUtil {
 	private static HttpURLConnection createConnection(String url) 
 			throws IOException, MalformedURLException {
 		URL requestUrl = new URL(url);
-		Security.validateUrlForServerRequest(requestUrl);
-		final HttpURLConnection result = (HttpURLConnection) requestUrl.openConnection();
+		// Resolve DNS once and connect via IP to prevent DNS-rebinding / TOCTOU.
+		List<InetAddress> resolved = Security.validateUrlForServerRequest(requestUrl);
+		URL safeUrl = resolved.isEmpty() ? requestUrl : Security.buildSafeUrl(requestUrl, resolved.get(0));
+		final HttpURLConnection result = (HttpURLConnection) safeUrl.openConnection();
 		result.setRequestMethod("POST");
 		result.setConnectTimeout(15000);
 		result.setUseCaches(false);
