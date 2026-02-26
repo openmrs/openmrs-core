@@ -46,7 +46,7 @@ open:function(s,t){var h=H[s],c=h.c,cc='.'+c.closeClass,z=(parseInt(h.w.css('z-i
  h.o=(o)?o.addClass(c.overlayClass).prependTo('body'):F;
  if(ie6){$('html,body').css({height:'100%',width:'100%'});if(o){o=o.css({position:'absolute'})[0];for(var y in {Top:1,Left:1})o.style.setExpression(y.toLowerCase(),"(_=(document.documentElement.scroll"+y+" || document.body.scroll"+y+"))+'px'");}}
 
- if(c.ajax) {var r=c.target||h.w,u=c.ajax,r=jqmFind(r,h.w),u=(u.substr(0,1) == '@')?$(t&&(t.nodeType||t.jquery)?t:[]).attr(u.substring(1)):u;
+ if(c.ajax) {var r=c.target||h.w,u=c.ajax,r=jqmFind(r,h.w),u=(u.substr(0,1) == '@')?(t&&t.nodeType?t.getAttribute(u.substring(1)):undefined):u;
   r.html(c.ajaxText).load(u,function(){if(c.onLoad)c.onLoad.call(this,h);if(cc)h.w.jqmAddClose($(cc,h.w));e(h);});}
  else if(cc)h.w.jqmAddClose($(cc,h.w));
 
