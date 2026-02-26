@@ -10,15 +10,13 @@
 package org.openmrs.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Base64;
 import java.util.Base64.Decoder;
-import java.net.InetAddress;
 import java.net.URL;
-import java.util.List;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
@@ -265,8 +263,8 @@ public class SecurityTest {
 		try {
 			updatedProperties.remove(propertyName);
 			Context.setRuntimeProperties(updatedProperties);
-			List<InetAddress> resolved = Security.validateUrlForServerRequest(new URL("http://93.184.216.34"));
-			assertFalse(resolved.isEmpty());
+			URL safeUrl = Security.validateUrlForServerRequest(new URL("http://93.184.216.34"));
+			assertNotNull(safeUrl);
 		}
 		finally {
 			Context.setRuntimeProperties(previousProperties);
@@ -282,9 +280,9 @@ public class SecurityTest {
 		try {
 			updatedProperties.setProperty(propertyName, "localhost");
 			Context.setRuntimeProperties(updatedProperties);
-			List<InetAddress> resolved = Security.validateUrlForServerRequest(new URL("http://localhost"));
-			// In allowlist mode DNS is still resolved once (to get a safe IP for connection).
-			assertFalse(resolved.isEmpty());
+			URL safeUrl = Security.validateUrlForServerRequest(new URL("http://localhost"));
+			// DNS is resolved once; returned URL host is the numeric IP.
+			assertNotNull(safeUrl);
 		}
 		finally {
 			Context.setRuntimeProperties(previousProperties);

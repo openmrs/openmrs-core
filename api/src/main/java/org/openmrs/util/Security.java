@@ -19,8 +19,6 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -357,17 +355,15 @@ public class Security {
 	 * is set, the host must match the allowlist; otherwise, private/local/reserved
 	 * addresses are blocked.
 	 *
-	 * <p>In blacklist mode (no allowlist configured), the hostname is resolved once and the
-	 * validated addresses are returned. Callers MUST use {@link #buildSafeUrl(URL, InetAddress)}
-	 * with one of the returned addresses to open the connection so the hostname is never
-	 * re-resolved, preventing DNS-rebinding / TOCTOU attacks. In allowlist mode an empty list
-	 * is returned and callers may use the original URL directly.</p>
+	 * <p>DNS is resolved exactly once inside this method. The returned URL has the hostname
+	 * replaced with the resolved numeric IP address so callers can open a connection without
+	 * ever re-resolving the hostname, preventing DNS-rebinding / TOCTOU attacks.</p>
 	 *
 	 * @param url the URL to validate
-	 * @return resolved {@link InetAddress} list in blacklist mode; empty list in allowlist mode
+	 * @return a safe URL whose host is the resolved numeric IP address
 	 * @throws SecurityException if the URL is unsafe for server-side requests
 	 */
-	public static List<InetAddress> validateUrlForServerRequest(URL url) {
+	public static URL validateUrlForServerRequest(URL url) {
 		if (url == null) {
 			throw new APIException("url.cannot.be.null", (Object[]) null);
 		}
@@ -392,24 +388,16 @@ public class Security {
 			throw new SecurityException("URL host is not in the allowed list");
 		}
 
-		// Always resolve DNS once and return the addresses so every caller connects via the
-		// resolved IP, preventing DNS-rebinding / TOCTOU in both allowlist and blacklist modes.
-		// In blacklist mode the addresses are also checked against private/reserved ranges.
-		return resolveAndValidatePublicAddresses(normalizedHost, allowedHosts.isEmpty());
-	}
-
-	/**
-	 * Builds a URL replacing the hostname in {@code original} with the numeric IP of
-	 * {@code resolvedAddress}. Use with the return value of {@link #validateUrlForServerRequest}
-	 * to open connections without re-resolving DNS.
-	 *
-	 * @param original        the original URL
-	 * @param resolvedAddress one address returned by {@link #validateUrlForServerRequest}
-	 * @return a new URL whose host is the numeric IP address
-	 * @throws MalformedURLException if the reconstructed URL is invalid
-	 */
-	public static URL buildSafeUrl(URL original, InetAddress resolvedAddress) throws MalformedURLException {
-		return new URL(original.getProtocol(), resolvedAddress.getHostAddress(), original.getPort(), original.getFile());
+		// Resolve DNS once, validate, and build a safe URL with the numeric IP as host.
+		// The caller opens this returned URL directly - the original tainted URL is never used
+		// for connection, so there is no second DNS lookup and no DNS-rebinding / TOCTOU window.
+		InetAddress resolved = resolveAndValidatePublicAddress(normalizedHost, allowedHosts.isEmpty());
+		try {
+			return new URL(protocol, resolved.getHostAddress(), url.getPort(), url.getFile());
+		}
+		catch (MalformedURLException e) {
+			throw new SecurityException("Failed to build safe URL", e);
+		}
 	}
 
 	private static Set<String> getAllowedOutboundUrlHosts() {
@@ -504,7 +492,7 @@ public class Security {
 		return false;
 	}
 
-	private static List<InetAddress> resolveAndValidatePublicAddresses(String host, boolean enforceBlacklist) {
+	private static InetAddress resolveAndValidatePublicAddress(String host, boolean enforceBlacklist) {
 		InetAddress[] addresses;
 		try {
 			addresses = InetAddress.getAllByName(host);
@@ -514,14 +502,12 @@ public class Security {
 			throw new SecurityException("URL host could not be resolved: " + host, e);
 		}
 
-		List<InetAddress> validated = new ArrayList<>(addresses.length);
 		for (InetAddress address : addresses) {
 			if (enforceBlacklist && isPrivateOrLocalAddress(address)) {
 				throw new SecurityException("URL host resolves to a private or local address");
 			}
-			validated.add(address);
 		}
-		return validated;
+		return addresses[0];
 	}
 
 	private static boolean isPrivateOrLocalAddress(InetAddress address) {

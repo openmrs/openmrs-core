@@ -14,12 +14,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -79,10 +77,9 @@ public class HttpClient {
 				// get redirect url from "location" header field
 				String newUrl = connection.getHeaderField("Location");
 				URL redirectUrl = new URL(newUrl);
-				// Resolve DNS once and connect via IP to prevent DNS-rebinding / TOCTOU.
-				List<InetAddress> resolved = Security.validateUrlForServerRequest(redirectUrl);
-				URL safeRedirectUrl = resolved.isEmpty() ? redirectUrl : Security.buildSafeUrl(redirectUrl, resolved.get(0));
-				connection = (HttpURLConnection) safeRedirectUrl.openConnection();
+				// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric
+				// IP as host, preventing DNS-rebinding / TOCTOU attacks.
+				connection = (HttpURLConnection) Security.validateUrlForServerRequest(redirectUrl).openConnection();
 
 				log.info("Redirection to : " + newUrl);
 

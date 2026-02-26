@@ -11,10 +11,8 @@ package org.openmrs.util;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -35,10 +33,9 @@ public class HttpUrl {
 		
 		URL parsed = new URL(url);
 		try {
-			// Validate and resolve DNS once. In blacklist mode use the resolved IP for the
-			// connection to prevent DNS-rebinding / TOCTOU; in allowlist mode use original URL.
-			List<InetAddress> resolved = Security.validateUrlForServerRequest(parsed);
-			this.url = resolved.isEmpty() ? parsed : Security.buildSafeUrl(parsed, resolved.get(0));
+			// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric
+			// IP as host, preventing DNS-rebinding / TOCTOU attacks.
+			this.url = Security.validateUrlForServerRequest(parsed);
 		}
 		catch (SecurityException e) {
 			MalformedURLException exception = new MalformedURLException(e.getMessage());

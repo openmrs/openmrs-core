@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -58,8 +57,6 @@ import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import java.net.InetAddress;
-import java.util.List;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -670,10 +667,9 @@ public class ModuleUtil {
 	public static InputStream getURLStream(URL url) {
 		InputStream in = null;
 		try {
-			// Resolve DNS once and connect via IP to prevent DNS-rebinding / TOCTOU.
-			List<InetAddress> resolved = Security.validateUrlForServerRequest(url);
-			URL safeUrl = resolved.isEmpty() ? url : Security.buildSafeUrl(url, resolved.get(0));
-			URLConnection uc = safeUrl.openConnection();
+			// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric
+			// IP as host, preventing DNS-rebinding / TOCTOU attacks.
+			URLConnection uc = Security.validateUrlForServerRequest(url).openConnection();
 			uc.setDefaultUseCaches(false);
 			uc.setUseCaches(false);
 			uc.setRequestProperty("Cache-Control", "max-age=0,no-cache");
@@ -732,11 +728,10 @@ public class ModuleUtil {
 					        || redirects >= 5) {
 						throw new SecurityException("illegal URL redirect");
 					}
-					// Resolve DNS once and connect via IP to prevent DNS-rebinding / TOCTOU.
-					List<InetAddress> resolvedTarget = Security.validateUrlForServerRequest(target);
-					URL safeTarget = resolvedTarget.isEmpty() ? target : Security.buildSafeUrl(target, resolvedTarget.get(0));
+					// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric
+					// IP as host, preventing DNS-rebinding / TOCTOU attacks.
 					redir = true;
-					c = safeTarget.openConnection();
+					c = Security.validateUrlForServerRequest(target).openConnection();
 					redirects++;
 				}
 			}
