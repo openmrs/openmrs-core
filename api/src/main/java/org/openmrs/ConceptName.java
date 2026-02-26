@@ -14,8 +14,21 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -27,52 +40,84 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 import org.openmrs.api.db.hibernate.search.bridge.LocaleValueBridge;
+import org.openmrs.api.db.hibernate.type.StringEnumType;
 
 /**
  * ConceptName is the real world term used to express a Concept within the idiom of a particular
  * locale.
  */
+@Entity
+@Table(name = "concept_name")
+@BatchSize(size = 25)
 @Indexed
 @Audited
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "concept_name_id")
 	@DocumentId
 	private Integer conceptNameId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "concept_id", nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Concept concept;
 	
+	@Column(name = "name", length = 255, nullable = false)
 	@FullTextField(analyzer = SearchAnalysis.NAME_ANALYZER)
 	private String name;
 	
+	@Column(name = "locale", length = 50, nullable = false)
 	@KeywordField(valueBridge = @ValueBridgeRef(type = LocaleValueBridge.class))
 	private Locale locale; 
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
+	@Column(name = "voided", length = 1, nullable = false)
 	@GenericField
 	private Boolean voided = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 	
+	@Column(name = "date_voided")
 	private Date dateVoided;
 	
+	@Column(name = "void_reason", length = 255)
 	private String voidReason;
 	
+	@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+	@JoinTable(
+			name = "concept_name_tag_map",
+			joinColumns = @JoinColumn(name = "concept_name_id"),
+			inverseJoinColumns = @JoinColumn(name = "concept_name_tag_id"))
 	private Collection<ConceptNameTag> tags;
 	
+	@Column(name = "concept_name_type", length = 50)
+	@Type(value = StringEnumType.class, parameters = {
+			@org.hibernate.annotations.Parameter(name = "enumClass", value = "org.openmrs.api.ConceptNameType")
+	})
 	@GenericField
 	private ConceptNameType conceptNameType;
 	
+	@Column(name = "locale_preferred", length = 1, nullable = false)
 	@GenericField
 	private Boolean localePreferred = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed")
 	private Date dateChanged;
 	
 	// Constructors

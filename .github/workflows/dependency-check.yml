@@ -18,26 +18,27 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: 'maven'
       - name: Build project with Maven
-        run: mvn clean install
+        run: mvn clean install -DskipTests
       - name: Run OWASP Dependency-Check
         uses: dependency-check/Dependency-Check_Action@main
         id: Depcheck
-        continue-on-error: true
         env:
           JAVA_HOME: /opt/jdk
         with:
           project: 'openmrs-core'
           path: '.'
-          format: 'HTML'
+          format: 'ALL'
           out: 'reports'
           args: >
-            --failOnCVSS 8
+            --failOnCVSS 6.2
             --enableRetired
             --suppression dependency-check-suppressions.xml
+            --nvdApiKey ${{ secrets.NVD_API_KEY }}
       - name: Upload Test results
         if: always()
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v6
         with:
            name: Dependency Check report
            path: ${{github.workspace}}/reports
