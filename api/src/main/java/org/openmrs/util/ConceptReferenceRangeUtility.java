@@ -61,10 +61,10 @@ public class ConceptReferenceRangeUtility {
 		if (obs == null) {
 			throw new IllegalArgumentException("Failed to evaluate criteria with reason: Obs is null");
 		}
-
+		
 		if (obs.getPerson() == null) {
-        	throw new IllegalArgumentException("Failed to evaluate criteria with reason: patient is null");
-    	}
+			throw new IllegalArgumentException("Failed to evaluate criteria with reason: patient is null");
+		}
 		
 		if (StringUtils.isBlank(criteria)) {
         	throw new IllegalArgumentException("Failed to evaluate criteria with reason: criteria is empty");
