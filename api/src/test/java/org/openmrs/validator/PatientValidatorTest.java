@@ -190,7 +190,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		patient.addIdentifier(patientIdentifier1);
 		
 		patient
-		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+				.setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
@@ -203,35 +203,35 @@ public class PatientValidatorTest extends PersonValidatorTest {
  	*/
 	@Test
 	public void validate_shouldFailIfRequiredIdentifierIsMissing() {
-    	PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
-    	patientIdentifierType.setRequired(true);
-    	patientIdentifierType.setRetired(false);
-    	Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		patientIdentifierType.setRequired(true);
+		patientIdentifierType.setRetired(false);
+		Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
 
-    	Patient patient = new Patient();
+		Patient patient = new Patient();
 
-    	PersonName pName = new PersonName();
+		PersonName pName = new PersonName();
    		pName.setGivenName("Tom");
-    	pName.setMiddleName("E.");
-    	pName.setFamilyName("Patient");
-    	patient.addName(pName);
+		pName.setMiddleName("E.");
+		pName.setFamilyName("Patient");
+		patient.addName(pName);
 		patient.setGender("male");
 		patient.setBirthdate(new Date());
 
-    	PersonAddress pAddress = new PersonAddress();
-    	pAddress.setAddress1("123 My street");
-    	pAddress.setAddress2("Apt 402");
-    	pAddress.setCityVillage("Anywhere city");
-    	pAddress.setCountry("Some Country");
+		PersonAddress pAddress = new PersonAddress();
+		pAddress.setAddress1("123 My street");
+		pAddress.setAddress2("Apt 402");
+		pAddress.setCityVillage("Anywhere city");
+		pAddress.setCountry("Some Country");
    	 	patient.addAddress(pAddress);
 
-    	Errors errors = new BindException(patient, "patient");
-    	validator.validate(patient, errors);
+		Errors errors = new BindException(patient, "patient");
+		validator.validate(patient, errors);
 
-    	assertTrue(errors.hasFieldErrors("identifiers"));
+		assertTrue(errors.hasFieldErrors("identifiers"));
 		assertEquals(
-   "Patient.missingRequiredIdentifier",
-    		errors.getFieldError("identifiers").getCode()
+			"Patient.missingRequiredIdentifier",
+			errors.getFieldError("identifiers").getCode()
 		);
 	}
 
@@ -240,38 +240,38 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	 */
 	@Test
 	public void validate_shouldPassIfRequiredIdentifierIsPresent() {
-    	PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
-    	patientIdentifierType.setRequired(true);
-    	patientIdentifierType.setRetired(false);
-    	Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		patientIdentifierType.setRequired(true);
+		patientIdentifierType.setRetired(false);
+		Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
 
-    	Patient patient = new Patient();
+		Patient patient = new Patient();
 
-    	PersonName pName = new PersonName();
-    	pName.setGivenName("Tom");
-    	pName.setMiddleName("E.");
-    	pName.setFamilyName("Patient");
-    	patient.addName(pName);
+		PersonName pName = new PersonName();
+		pName.setGivenName("Tom");
+		pName.setMiddleName("E.");
+		pName.setFamilyName("Patient");
+		patient.addName(pName);
 		patient.setGender("male");
 		patient.setBirthdate(new Date());
 
-    	PersonAddress pAddress = new PersonAddress();
-    	pAddress.setAddress1("123 My street");
-    	pAddress.setAddress2("Apt 402");
-    	pAddress.setCityVillage("Anywhere city");
-    	pAddress.setCountry("Some Country");
-    	patient.addAddress(pAddress);
+		PersonAddress pAddress = new PersonAddress();
+		pAddress.setAddress1("123 My street");
+		pAddress.setAddress2("Apt 402");
+		pAddress.setCityVillage("Anywhere city");
+		pAddress.setCountry("Some Country");
+		patient.addAddress(pAddress);
 
-    	PatientIdentifier patientIdentifier = new PatientIdentifier();
-    	patientIdentifier.setLocation(new Location(1));
-    	patientIdentifier.setIdentifier("012345678");
-    	patientIdentifier.setDateCreated(new Date());
-    	patientIdentifier.setIdentifierType(patientIdentifierType);
-    	patientIdentifier.setPreferred(true);
-    	patient.addIdentifier(patientIdentifier);
+		PatientIdentifier patientIdentifier = new PatientIdentifier();
+		patientIdentifier.setLocation(new Location(1));
+		patientIdentifier.setIdentifier("012345678");
+		patientIdentifier.setDateCreated(new Date());
+		patientIdentifier.setIdentifierType(patientIdentifierType);
+		patientIdentifier.setPreferred(true);
+		patient.addIdentifier(patientIdentifier);
 
-    	Errors errors = new BindException(patient, "patient");
-    	validator.validate(patient, errors);
+		Errors errors = new BindException(patient, "patient");
+		validator.validate(patient, errors);
 
    		assertFalse(errors.hasErrors());
 	}
@@ -282,35 +282,35 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	@Test
 	public void validate_shouldIgnoreRetiredRequiredIdentifierTypes() {
 		for (PatientIdentifierType pit : Context.getPatientService().getAllPatientIdentifierTypes(false)) {
-        	pit.setRequired(false);
-        	pit.setRetired(false);
-        	Context.getPatientService().savePatientIdentifierType(pit);
-    	}
+			pit.setRequired(false);
+			pit.setRetired(false);
+			Context.getPatientService().savePatientIdentifierType(pit);
+		}
 
-    	PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
-    	patientIdentifierType.setRequired(true);
-    	patientIdentifierType.setRetired(true);
-    	Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		patientIdentifierType.setRequired(true);
+		patientIdentifierType.setRetired(true);
+		Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
 
-    	Patient patient = new Patient();
+		Patient patient = new Patient();
 
-    	PersonName pName = new PersonName();
-    	pName.setGivenName("Tom");
-    	pName.setMiddleName("E.");
-    	pName.setFamilyName("Patient");
-    	patient.addName(pName);
+		PersonName pName = new PersonName();
+		pName.setGivenName("Tom");
+		pName.setMiddleName("E.");
+		pName.setFamilyName("Patient");
+		patient.addName(pName);
 		patient.setGender("male");
 		patient.setBirthdate(new Date());
 
-    	PersonAddress pAddress = new PersonAddress();
-    	pAddress.setAddress1("123 My street");
+		PersonAddress pAddress = new PersonAddress();
+		pAddress.setAddress1("123 My street");
    	 	pAddress.setAddress2("Apt 402");
-    	pAddress.setCityVillage("Anywhere city");
-    	pAddress.setCountry("Some Country");
-    	patient.addAddress(pAddress);
+		pAddress.setCityVillage("Anywhere city");
+		pAddress.setCountry("Some Country");
+		patient.addAddress(pAddress);
 
 		Errors errors = new BindException(patient, "patient");
-    	validator.validate(patient, errors);
+		validator.validate(patient, errors);
 
 		assertFalse(errors.hasFieldErrors("identifiers"));
 	}
@@ -320,43 +320,43 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	*/
 	@Test
 	public void validate_shouldFailIfRequiredIdentifierIsVoided() {
-    	PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
-    	patientIdentifierType.setRequired(true);
-    	patientIdentifierType.setRetired(false);
-    	Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		patientIdentifierType.setRequired(true);
+		patientIdentifierType.setRetired(false);
+		Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
 
-    	Patient patient = new Patient();
+		Patient patient = new Patient();
 
-    	PersonName pName = new PersonName();
-    	pName.setGivenName("Tom");
-    	pName.setMiddleName("E.");
-    	pName.setFamilyName("Patient");
-    	patient.addName(pName);
+		PersonName pName = new PersonName();
+		pName.setGivenName("Tom");
+		pName.setMiddleName("E.");
+		pName.setFamilyName("Patient");
+		patient.addName(pName);
 		patient.setGender("male");
 		patient.setBirthdate(new Date());
 
-    	PersonAddress pAddress = new PersonAddress();
-    	pAddress.setAddress1("123 My street");
-    	pAddress.setAddress2("Apt 402");
-    	pAddress.setCityVillage("Anywhere city");
-    	pAddress.setCountry("Some Country");
-    	patient.addAddress(pAddress);
+		PersonAddress pAddress = new PersonAddress();
+		pAddress.setAddress1("123 My street");
+		pAddress.setAddress2("Apt 402");
+		pAddress.setCityVillage("Anywhere city");
+		pAddress.setCountry("Some Country");
+		patient.addAddress(pAddress);
 
-    	PatientIdentifier patientIdentifier = new PatientIdentifier();
-    	patientIdentifier.setLocation(new Location(1));
-    	patientIdentifier.setIdentifier("012345678");
+		PatientIdentifier patientIdentifier = new PatientIdentifier();
+		patientIdentifier.setLocation(new Location(1));
+		patientIdentifier.setIdentifier("012345678");
    		patientIdentifier.setDateCreated(new Date());
-    	patientIdentifier.setIdentifierType(patientIdentifierType);
-    	patientIdentifier.setVoided(true);
-    	patient.addIdentifier(patientIdentifier);
+		patientIdentifier.setIdentifierType(patientIdentifierType);
+		patientIdentifier.setVoided(true);
+		patient.addIdentifier(patientIdentifier);
 
-    	Errors errors = new BindException(patient, "patient");
-    	validator.validate(patient, errors);
+		Errors errors = new BindException(patient, "patient");
+		validator.validate(patient, errors);
 
-    	assertTrue(errors.hasFieldErrors("identifiers"));
+		assertTrue(errors.hasFieldErrors("identifiers"));
 		assertEquals(
-   "Patient.missingRequiredIdentifier",
-    		errors.getFieldError("identifiers").getCode()
+			"Patient.missingRequiredIdentifier",
+			errors.getFieldError("identifiers").getCode()
 		);
 	}
 
@@ -366,39 +366,39 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	@Test
 	public void validate_shouldPassWithRequiredAndNonRequiredIdentifiers() {
 
-    	List<PatientIdentifierType> types = Context.getPatientService().getAllPatientIdentifierTypes(false);
+		List<PatientIdentifierType> types = Context.getPatientService().getAllPatientIdentifierTypes(false);
 
-    	PatientIdentifierType requiredType = types.get(0);
-    	requiredType.setRequired(true);
-    	requiredType.setRetired(false);
-    	Context.getPatientService().savePatientIdentifierType(requiredType);
+		PatientIdentifierType requiredType = types.get(0);
+		requiredType.setRequired(true);
+		requiredType.setRetired(false);
+		Context.getPatientService().savePatientIdentifierType(requiredType);
 
-    	PatientIdentifierType optionalType = types.get(1);
-    	optionalType.setRequired(false);
-    	optionalType.setRetired(false);
-    	Context.getPatientService().savePatientIdentifierType(optionalType);
+		PatientIdentifierType optionalType = types.get(1);
+		optionalType.setRequired(false);
+		optionalType.setRetired(false);
+		Context.getPatientService().savePatientIdentifierType(optionalType);
 
-    	Patient patient = new Patient();
-    	patient.addName(new PersonName("Tom", "", "Patient"));
+		Patient patient = new Patient();
+		patient.addName(new PersonName("Tom", "", "Patient"));
    		patient.setGender("male");
-    	patient.setBirthdate(new Date());
+		patient.setBirthdate(new Date());
 
-    	PatientIdentifier requiredIdentifier = new PatientIdentifier();
-    	requiredIdentifier.setIdentifier("REQ123");
-    	requiredIdentifier.setIdentifierType(requiredType);
-    	requiredIdentifier.setLocation(new Location(1));
-    	patient.addIdentifier(requiredIdentifier);
+		PatientIdentifier requiredIdentifier = new PatientIdentifier();
+		requiredIdentifier.setIdentifier("REQ123");
+		requiredIdentifier.setIdentifierType(requiredType);
+		requiredIdentifier.setLocation(new Location(1));
+		patient.addIdentifier(requiredIdentifier);
 
-    	PatientIdentifier optionalIdentifier = new PatientIdentifier();
-    	optionalIdentifier.setIdentifier("OPT456");
-    	optionalIdentifier.setIdentifierType(optionalType);
-    	optionalIdentifier.setLocation(new Location(1));
-    	patient.addIdentifier(optionalIdentifier);
+		PatientIdentifier optionalIdentifier = new PatientIdentifier();
+		optionalIdentifier.setIdentifier("OPT456");
+		optionalIdentifier.setIdentifierType(optionalType);
+		optionalIdentifier.setLocation(new Location(1));
+		patient.addIdentifier(optionalIdentifier);
 
-    	Errors errors = new BindException(patient, "patient");
-    	validator.validate(patient, errors);
+		Errors errors = new BindException(patient, "patient");
+		validator.validate(patient, errors);
 
-    	assertFalse(errors.hasFieldErrors("identifiers"));
+		assertFalse(errors.hasFieldErrors("identifiers"));
 	}
 
 	/**
@@ -407,34 +407,34 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	@Test
 	public void validate_shouldPassIfVoidedRequiredIdentifierReplaced() {
 
-    	PatientIdentifierType type = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		PatientIdentifierType type = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
 
-    	type.setRequired(true);
-    	type.setRetired(false);
-    	Context.getPatientService().savePatientIdentifierType(type);
+		type.setRequired(true);
+		type.setRetired(false);
+		Context.getPatientService().savePatientIdentifierType(type);
 
-    	Patient patient = new Patient();
-    	patient.addName(new PersonName("Tom", "", "Patient"));
-    	patient.setGender("male");
-    	patient.setBirthdate(new Date());
+		Patient patient = new Patient();
+		patient.addName(new PersonName("Tom", "", "Patient"));
+		patient.setGender("male");
+		patient.setBirthdate(new Date());
 
-    	PatientIdentifier oldIdentifier = new PatientIdentifier();
-    	oldIdentifier.setIdentifier("OLD123");
-    	oldIdentifier.setIdentifierType(type);
-    	oldIdentifier.setLocation(new Location(1));
-    	oldIdentifier.setVoided(true);
-    	patient.addIdentifier(oldIdentifier);
+		PatientIdentifier oldIdentifier = new PatientIdentifier();
+		oldIdentifier.setIdentifier("OLD123");
+		oldIdentifier.setIdentifierType(type);
+		oldIdentifier.setLocation(new Location(1));
+		oldIdentifier.setVoided(true);
+		patient.addIdentifier(oldIdentifier);
 
-    	PatientIdentifier newIdentifier = new PatientIdentifier();
-    	newIdentifier.setIdentifier("NEW456");
-    	newIdentifier.setIdentifierType(type);
-    	newIdentifier.setLocation(new Location(1));
-    	patient.addIdentifier(newIdentifier);
+		PatientIdentifier newIdentifier = new PatientIdentifier();
+		newIdentifier.setIdentifier("NEW456");
+		newIdentifier.setIdentifierType(type);
+		newIdentifier.setLocation(new Location(1));
+		patient.addIdentifier(newIdentifier);
 
    		Errors errors = new BindException(patient, "patient");
-    	validator.validate(patient, errors);
+		validator.validate(patient, errors);
 
-    	assertFalse(errors.hasFieldErrors("identifiers"));
+		assertFalse(errors.hasFieldErrors("identifiers"));
 	}
 
 	/**
@@ -444,21 +444,21 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	@Test
 	public void validate_shouldNotFailForVoidedPatientWithoutRequiredIdentifier() {
 
-    	PatientIdentifierType type = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		PatientIdentifierType type = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
 
-    	type.setRequired(true);
-    	type.setRetired(false);
-    	Context.getPatientService().savePatientIdentifierType(type);
+		type.setRequired(true);
+		type.setRetired(false);
+		Context.getPatientService().savePatientIdentifierType(type);
 
-    	Patient patient = new Patient();
-    	patient.setVoided(true);
-    	patient.addName(new PersonName("Tom", "", "Patient"));
-    	patient.setGender("male");
-    	patient.setBirthdate(new Date());
+		Patient patient = new Patient();
+		patient.setVoided(true);
+		patient.addName(new PersonName("Tom", "", "Patient"));
+		patient.setGender("male");
+		patient.setBirthdate(new Date());
 
-    	Errors errors = new BindException(patient, "patient");
-    	validator.validate(patient, errors);
+		Errors errors = new BindException(patient, "patient");
+		validator.validate(patient, errors);
 
-    	assertFalse(errors.hasFieldErrors("identifiers"));
+		assertFalse(errors.hasFieldErrors("identifiers"));
 	}
 }
