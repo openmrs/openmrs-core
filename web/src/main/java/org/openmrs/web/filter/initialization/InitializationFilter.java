@@ -1573,22 +1573,30 @@ public class InitializationFilter extends StartupFilter {
 							private int i = 1;
 							
 							private String message;
+                                                   
+                                                   private int totalToRun;
 							
 							public PrintingChangeSetExecutorCallback(String message) {
 								this.message = message;
 							}
+                                                   
+                                                   public PrintingChangeSetExecutorCallback(String message, int totalToRun) {
+                                                           this.message = message;
+                                                           this.totalToRun = totalToRun;
+                                                   }
 							
 							/**
 							 * @see ChangeSetExecutorCallback#executing(liquibase.changelog.ChangeSet, int)
 							 */
 							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
-								setMessage(message + " (" + i++ + "/" + numChangeSetsToRun + "): Author: "
+                                                           int effectiveTotal = totalToRun > 0 ? totalToRun : numChangeSetsToRun;
+                                                           setMessage(message + " (" + i++ + "/" + effectiveTotal + "): Author: "
 									+ changeSet.getAuthor() + " Comments: " + changeSet.getComments() + " Description: "
 									+ changeSet.getDescription());
-								float numChangeSetsToRunFloat = (float) numChangeSetsToRun;
+                                                           float effectiveTotalFloat = (float) effectiveTotal;
 								float j = (float) i;
-								setCompletedPercentage(Math.round(j * 100 / numChangeSetsToRunFloat));
+                                                           setCompletedPercentage(Math.round(j * 100 / effectiveTotalFloat));
 							}
 							
 						}
@@ -1703,11 +1711,17 @@ public class InitializationFilter extends StartupFilter {
 							List<String> changelogs = changeLogVersionFinder
 								.getUpdateFileNames(changeLogVersionFinder.getUpdateVersionsGreaterThan(version));
 							
+							int totalChangeSets = DatabaseUpdater
+							        .getUnrunDatabaseChanges(changelogs.toArray(new String[0])).size();
+							
+							PrintingChangeSetExecutorCallback updateCallback =
+							        new PrintingChangeSetExecutorCallback("Updating the database",
+							                totalChangeSets);
+							
 							for (String changelog : changelogs) {
 								log.debug("applying Liquibase changelog '{}'", changelog);
 								
-								DatabaseUpdater.executeChangelog(changelog,
-									new PrintingChangeSetExecutorCallback("executing Liquibase changelog " + changelog));
+								DatabaseUpdater.executeChangelog(changelog, updateCallback);
 							}
 							addExecutedTask(WizardTask.UPDATE_TO_LATEST);
 						}
