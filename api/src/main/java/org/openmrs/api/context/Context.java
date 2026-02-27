@@ -35,6 +35,7 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.OrderSetService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PatientChartSummaryService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
@@ -42,6 +43,8 @@ import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.db.ContextDAO;
+import org.openmrs.ai.AiChatService;
+import org.openmrs.event.ClinicalEventService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -469,6 +472,30 @@ public class Context {
 	 */
 	public static MedicationDispenseService getMedicationDispenseService(){
 		return getServiceContext().getMedicationDispenseService();
+	}
+
+	/**
+	 * @return patient chart summary service for aggregating clinical data
+	 * @since 3.0.0
+	 */
+	public static PatientChartSummaryService getPatientChartSummaryService(){
+		return getServiceContext().getPatientChartSummaryService();
+	}
+
+	/**
+	 * @return AI chat service for natural language clinical queries
+	 * @since 3.0.0
+	 */
+	public static AiChatService getAiChatService(){
+		return getServiceContext().getAiChatService();
+	}
+
+	/**
+	 * @return clinical event service for publishing/subscribing to clinical data changes
+	 * @since 3.0.0
+	 */
+	public static ClinicalEventService getClinicalEventService(){
+		return getServiceContext().getClinicalEventService();
 	}
 
 	/**

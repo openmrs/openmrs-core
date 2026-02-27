@@ -599,4 +599,22 @@ public class PrivilegeConstants {
 
 	@AddOnStartup(description = "Able to delete Medication Dispenses")
 	public static final String DELETE_MEDICATION_DISPENSE = "Delete Medication Dispense";
+
+	/**
+	 * @since 3.0.0
+	 */
+	@AddOnStartup(description = "Able to get patient chart summaries for AI and clinical decision support")
+	public static final String GET_PATIENT_CHART_SUMMARY = "Get Patient Chart Summary";
+
+	/**
+	 * @since 3.0.0
+	 */
+	@AddOnStartup(description = "Able to query patient charts using AI-powered natural language queries")
+	public static final String QUERY_PATIENT_CHART_AI = "Query Patient Chart with AI";
+
+	/**
+	 * @since 3.0.0
+	 */
+	@AddOnStartup(description = "Able to manage AI service configuration settings")
+	public static final String MANAGE_AI_CONFIGURATION = "Manage AI Configuration";
 }

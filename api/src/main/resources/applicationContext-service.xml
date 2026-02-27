@@ -71,6 +71,8 @@
 		<property name="conditionService" ref="conditionService"/>
 		<property name="diagnosisService" ref="diagnosisService"/>
 		<property name="medicationDispenseService" ref="medicationDispenseService"/>
+		<property name="patientChartSummaryService" ref="patientChartSummaryService"/>
+		<property name="clinicalEventService" ref="clinicalEventService"/>
 		<property name="orderSetService" ref="orderSetService"/>
 		<property name="formService" ref="formService"/>
 		<property name="administrationService" ref="adminService"/>

@@ -1255,6 +1255,27 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_LOG_LEVEL = "log.level";
 	
 	/**
+	 * Global property key that controls whether AI features are enabled.
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String GLOBAL_PROPERTY_AI_ENABLED = "ai.enabled";
+	
+	/**
+	 * Global property key that identifies the active AI provider module.
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String GLOBAL_PROPERTY_AI_PROVIDER = "ai.provider";
+	
+	/**
+	 * Global property key that sets the maximum context size (in characters) for AI queries.
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String GLOBAL_PROPERTY_AI_MAX_CONTEXT_SIZE = "ai.maxContextSize";
+	
+	/**
 	 * It points to a directory where 'openmrs.log' is stored.
 	 *
 	 * @since 1.9.2

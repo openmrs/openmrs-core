@@ -34,6 +34,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.OrderSetService;
+import org.openmrs.api.PatientChartSummaryService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
@@ -42,6 +43,8 @@ import org.openmrs.api.SerializationService;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
+import org.openmrs.ai.AiChatService;
+import org.openmrs.event.ClinicalEventService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -255,6 +258,54 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setMedicationDispenseService(MedicationDispenseService medicationDispenseService) {
 		setService(MedicationDispenseService.class, medicationDispenseService);
+	}
+
+	/**
+	 * @return patient chart summary related service
+	 * @since 3.0.0
+	 */
+	public PatientChartSummaryService getPatientChartSummaryService() {
+		return getService(PatientChartSummaryService.class);
+	}
+
+	/**
+	 * @param patientChartSummaryService patient chart summary related service
+	 * @since 3.0.0
+	 */
+	public void setPatientChartSummaryService(PatientChartSummaryService patientChartSummaryService) {
+		setService(PatientChartSummaryService.class, patientChartSummaryService);
+	}
+
+	/**
+	 * @return AI chat related service
+	 * @since 3.0.0
+	 */
+	public AiChatService getAiChatService() {
+		return getService(AiChatService.class);
+	}
+
+	/**
+	 * @param aiChatService AI chat related service
+	 * @since 3.0.0
+	 */
+	public void setAiChatService(AiChatService aiChatService) {
+		setService(AiChatService.class, aiChatService);
+	}
+
+	/**
+	 * @return clinical event related service
+	 * @since 3.0.0
+	 */
+	public ClinicalEventService getClinicalEventService() {
+		return getService(ClinicalEventService.class);
+	}
+
+	/**
+	 * @param clinicalEventService clinical event related service
+	 * @since 3.0.0
+	 */
+	public void setClinicalEventService(ClinicalEventService clinicalEventService) {
+		setService(ClinicalEventService.class, clinicalEventService);
 	}
 	
 	/**
