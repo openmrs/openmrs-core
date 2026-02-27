@@ -15,6 +15,7 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 
 /**
  * Context used to evaluate concept reference ranges independently of a fully populated Obs. This
@@ -38,10 +39,20 @@ public class ConceptReferenceRangeContext {
 	 */
 	public ConceptReferenceRangeContext(Obs obs) {
 		this.obs = obs;
-		this.patient = obs.getPerson() instanceof Patient ? (Patient) obs.getPerson() : null;
-		this.concept = obs.getConcept();
-		this.effectiveDate = obs.getObsDatetime();
-		this.encounter = obs.getEncounter();
+
+		Object personObject = HibernateUtil.getRealObjectFromProxy(obs.getPerson());
+		this.patient = personObject instanceof Patient ? (Patient) personObject : null;
+		Object conceptObject = obs.getConcept() != null
+            	? HibernateUtil.getRealObjectFromProxy(obs.getConcept())
+            	: null;
+    	this.concept = conceptObject instanceof Concept ? (Concept) conceptObject : null;
+
+    	Object encounterObject = obs.getEncounter() != null
+            	? HibernateUtil.getRealObjectFromProxy(obs.getEncounter())
+            	: null;
+    	this.encounter = encounterObject instanceof Encounter ? (Encounter) encounterObject : null;
+
+    	this.effectiveDate = obs.getObsDatetime();
 	}
 	
 	/**
@@ -91,14 +102,18 @@ public class ConceptReferenceRangeContext {
 		return encounter;
 	}
 	
-	/** Required by ConceptServiceImpl */
+	/**
+ 	 * The clinical moment for which the reference range is evaluated.
+ 	 * Needed for time-dependent calculations such as age-based ranges.
+ 	 */
 	public Date getEffectiveDate() {
 		return effectiveDate;
 	}
 	
 	/**
-	 * Optional Obs, if this context was constructed from one.
-	 */
+ 	 * The underlying Obs if this context originates from a persisted observation.
+ 	 * May be null when evaluating a prospective or not-yet-saved observation.
+ 	 */
 	public Obs getObs() {
 		return obs;
 	}
