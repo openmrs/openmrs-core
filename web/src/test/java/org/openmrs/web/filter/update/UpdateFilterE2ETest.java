@@ -14,8 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.Map;
 
@@ -33,7 +31,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
  * These tests verify the page-to-page navigation, authentication gating, and
  * model state changes without requiring a real database or Spring context.
  */
-public class UpdateFilterE2ETest {
+class UpdateFilterE2ETest {
 	
 	private TestableUpdateFilter filter;
 	
@@ -67,7 +65,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@BeforeEach
-	public void setup() throws Exception {
+	void setup() throws Exception {
 		filter = new TestableUpdateFilter();
 		// Initialize the updateFilterModel via reflection since init() requires FilterConfig
 		setUpdateFilterModel(new UpdateFilterModel(null, null) {
@@ -86,7 +84,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@AfterEach
-	public void cleanup() throws Exception {
+	void cleanup() throws Exception {
 		setDatabaseUpdateInProgress(false);
 		setAuthenticatedSuccessfully(false);
 		UpdateFilter.setUpdatesRequired(true);
@@ -96,7 +94,7 @@ public class UpdateFilterE2ETest {
 	// ========== GET Request ==========
 	
 	@Test
-	public void doGet_shouldRenderMaintenancePage() throws Exception {
+	void doGet_shouldRenderMaintenancePage() throws Exception {
 		request.getSession().setAttribute("locale", "en");
 		
 		filter.doGet(request, response);
@@ -105,7 +103,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@Test
-	public void doGet_shouldPassLocaleToReferenceMap() throws Exception {
+	void doGet_shouldPassLocaleToReferenceMap() throws Exception {
 		// checkLocaleAttributesForFirstTime sets the locale from request locale,
 		// so we set the request locale to English which is always available
 		request.addPreferredLocale(java.util.Locale.ENGLISH);
@@ -120,7 +118,7 @@ public class UpdateFilterE2ETest {
 	// ========== Maintenance Page (authentication) ==========
 	
 	@Test
-	public void maintenancePage_shouldRenderReviewChangesOnSuccessfulAuth() throws Exception {
+	void maintenancePage_shouldRenderReviewChangesOnSuccessfulAuth() throws Exception {
 		filter.authResult = true;
 		request.setParameter("page", "maintenance.vm");
 		request.setParameter("username", "admin");
@@ -132,7 +130,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@Test
-	public void maintenancePage_shouldRenderMaintenancePageOnFailedAuth() throws Exception {
+	void maintenancePage_shouldRenderMaintenancePageOnFailedAuth() throws Exception {
 		filter.authResult = false;
 		request.setParameter("page", "maintenance.vm");
 		request.setParameter("username", "bad_user");
@@ -145,7 +143,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@Test
-	public void maintenancePage_shouldSetAuthenticatedSuccessfullyOnValidLogin() throws Exception {
+	void maintenancePage_shouldSetAuthenticatedSuccessfullyOnValidLogin() throws Exception {
 		filter.authResult = true;
 		request.setParameter("page", "maintenance.vm");
 		request.setParameter("username", "admin");
@@ -157,7 +155,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@Test
-	public void maintenancePage_shouldShowProgressWhenUpdateAlreadyInProgress() throws Exception {
+	void maintenancePage_shouldShowProgressWhenUpdateAlreadyInProgress() throws Exception {
 		filter.authResult = true;
 		setDatabaseUpdateInProgress(true);
 		request.setParameter("page", "maintenance.vm");
@@ -175,7 +173,7 @@ public class UpdateFilterE2ETest {
 	// ========== Review Changes Page ==========
 	
 	@Test
-	public void reviewChangesPage_shouldRedirectToMaintenanceIfNotAuthenticated() throws Exception {
+	void reviewChangesPage_shouldRedirectToMaintenanceIfNotAuthenticated() throws Exception {
 		setAuthenticatedSuccessfully(false);
 		request.setParameter("page", "reviewchanges.vm");
 		
@@ -185,7 +183,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@Test
-	public void reviewChangesPage_shouldRenderReviewChangesWhenAuthenticated() throws Exception {
+	void reviewChangesPage_shouldRenderReviewChangesWhenAuthenticated() throws Exception {
 		setAuthenticatedSuccessfully(true);
 		request.setParameter("page", "reviewchanges.vm");
 		
@@ -195,7 +193,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@Test
-	public void reviewChangesPage_shouldSetUpdateJobStartedFlag() throws Exception {
+	void reviewChangesPage_shouldSetUpdateJobStartedFlag() throws Exception {
 		setAuthenticatedSuccessfully(true);
 		request.setParameter("page", "reviewchanges.vm");
 		
@@ -206,7 +204,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@Test
-	public void reviewChangesPage_shouldIndicateAlreadyInProgressWhenAnotherUpdateRunning() throws Exception {
+	void reviewChangesPage_shouldIndicateAlreadyInProgressWhenAnotherUpdateRunning() throws Exception {
 		setAuthenticatedSuccessfully(true);
 		setDatabaseUpdateInProgress(true);
 		request.setParameter("page", "reviewchanges.vm");
@@ -221,7 +219,7 @@ public class UpdateFilterE2ETest {
 	// ========== AJAX Progress Endpoint ==========
 	
 	@Test
-	public void progressAjax_shouldReturnJsonContentType() throws Exception {
+	void progressAjax_shouldReturnJsonContentType() throws Exception {
 		// Use a real response so we can check content type and written content
 		MockHttpServletResponse realResponse = new MockHttpServletResponse();
 		TestableUpdateFilter ajaxFilter = new TestableUpdateFilter() {
@@ -248,7 +246,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@Test
-	public void progressAjax_shouldWriteJsonResponseBody() throws Exception {
+	void progressAjax_shouldWriteJsonResponseBody() throws Exception {
 		MockHttpServletResponse realResponse = new MockHttpServletResponse();
 		request.setParameter("page", "updateProgress.vm.ajaxRequest");
 		
@@ -263,7 +261,7 @@ public class UpdateFilterE2ETest {
 	// ========== Full Flow: Login -> Review Changes ==========
 	
 	@Test
-	public void fullFlow_shouldNavigateFromLoginToReviewChanges() throws Exception {
+	void fullFlow_shouldNavigateFromLoginToReviewChanges() throws Exception {
 		// Step 1: GET -> maintenance page
 		filter.doGet(request, response);
 		assertEquals("maintenance.vm", filter.lastRenderedTemplate);
@@ -291,7 +289,7 @@ public class UpdateFilterE2ETest {
 	// ========== Full Flow: Failed Login Retry ==========
 	
 	@Test
-	public void fullFlow_shouldAllowRetryAfterFailedLogin() throws Exception {
+	void fullFlow_shouldAllowRetryAfterFailedLogin() throws Exception {
 		// Step 1: Failed login
 		filter.authResult = false;
 		request.setParameter("page", "maintenance.vm");
@@ -315,7 +313,7 @@ public class UpdateFilterE2ETest {
 	// ========== Security: Unauthenticated Access ==========
 	
 	@Test
-	public void reviewChangesPage_shouldBlockDirectAccessWithoutLogin() throws Exception {
+	void reviewChangesPage_shouldBlockDirectAccessWithoutLogin() throws Exception {
 		// Try to go directly to review changes without authenticating
 		request.setParameter("page", "reviewchanges.vm");
 		
@@ -325,7 +323,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@Test
-	public void fullFlow_shouldBlockReviewChangesAfterFailedAuth() throws Exception {
+	void fullFlow_shouldBlockReviewChangesAfterFailedAuth() throws Exception {
 		// Failed authentication
 		filter.authResult = false;
 		request.setParameter("page", "maintenance.vm");
@@ -345,7 +343,7 @@ public class UpdateFilterE2ETest {
 	// ========== Locale Handling ==========
 	
 	@Test
-	public void maintenancePage_shouldPassLocaleFromSessionToReferenceMap() throws Exception {
+	void maintenancePage_shouldPassLocaleFromSessionToReferenceMap() throws Exception {
 		filter.authResult = true;
 		// Pre-set the locale in the session before the POST
 		request.getSession().setAttribute("locale", "es");
@@ -363,7 +361,7 @@ public class UpdateFilterE2ETest {
 	// ========== Multiple Users Scenario ==========
 	
 	@Test
-	public void reviewChangesPage_shouldReportInProgressWhenSecondUserTriesToRunUpdates() throws Exception {
+	void reviewChangesPage_shouldReportInProgressWhenSecondUserTriesToRunUpdates() throws Exception {
 		// First user authenticates and triggers update
 		filter.authResult = true;
 		request.setParameter("page", "maintenance.vm");
@@ -393,7 +391,7 @@ public class UpdateFilterE2ETest {
 	// ========== skipFilter ==========
 	
 	@Test
-	public void skipFilter_shouldReturnFalseWhenUpdatesRequired() {
+	void skipFilter_shouldReturnFalseWhenUpdatesRequired() {
 		UpdateFilter.setUpdatesRequired(true);
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		
@@ -403,7 +401,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@Test
-	public void skipFilter_shouldReturnTrueWhenNoUpdatesRequired() {
+	void skipFilter_shouldReturnTrueWhenNoUpdatesRequired() {
 		UpdateFilter.setUpdatesRequired(false);
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		
@@ -413,7 +411,7 @@ public class UpdateFilterE2ETest {
 	}
 	
 	@Test
-	public void skipFilter_shouldReturnFalseForAjaxProgressRequestEvenWhenNoUpdatesRequired() {
+	void skipFilter_shouldReturnFalseForAjaxProgressRequestEvenWhenNoUpdatesRequired() {
 		UpdateFilter.setUpdatesRequired(false);
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		req.setParameter("page", "updateProgress.vm.ajaxRequest");

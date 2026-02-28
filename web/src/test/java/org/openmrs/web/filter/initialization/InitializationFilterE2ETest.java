@@ -23,6 +23,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -32,7 +34,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
  * for each installation path (simple, advanced, testing) without requiring a database
  * or Spring context.
  */
-public class InitializationFilterE2ETest {
+class InitializationFilterE2ETest {
 	
 	private TestableInitializationFilter filter;
 	
@@ -56,7 +58,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		filter = new TestableInitializationFilter();
 		filter.wizardModel = new InitializationWizardModel();
 		request = new MockHttpServletRequest();
@@ -64,14 +66,14 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		InitializationFilter.setInstallationStarted(false);
 	}
 	
 	// ========== Language Selection (chooselang.vm) ==========
 	
 	@Test
-	public void chooseLangPage_shouldRenderInstallMethodPageOnPost() throws Exception {
+	void chooseLangPage_shouldRenderInstallMethodPageOnPost() throws Exception {
 		request.setParameter("page", "chooselang.vm");
 		request.setParameter("locale", "en");
 		
@@ -81,7 +83,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void chooseLangPage_shouldStoreLocaleInSession() throws Exception {
+	void chooseLangPage_shouldStoreLocaleInSession() throws Exception {
 		request.setParameter("page", "chooselang.vm");
 		request.setParameter("locale", "fr");
 		
@@ -93,7 +95,7 @@ public class InitializationFilterE2ETest {
 	// ========== Install Method Selection (installmethod.vm) ==========
 	
 	@Test
-	public void installMethodPage_shouldNavigateToSimpleSetupWhenSimpleSelected() throws Exception {
+	void installMethodPage_shouldNavigateToSimpleSetupWhenSimpleSelected() throws Exception {
 		request.setParameter("page", "installmethod.vm");
 		request.setParameter("install_method", "simple");
 		
@@ -104,7 +106,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void installMethodPage_shouldNavigateToDatabaseSetupWhenAdvancedSelected() throws Exception {
+	void installMethodPage_shouldNavigateToDatabaseSetupWhenAdvancedSelected() throws Exception {
 		request.setParameter("page", "installmethod.vm");
 		request.setParameter("install_method", "advanced");
 		
@@ -117,7 +119,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void installMethodPage_shouldNavigateToRemoteDetailsWhenTestingSelected() throws Exception {
+	void installMethodPage_shouldNavigateToRemoteDetailsWhenTestingSelected() throws Exception {
 		request.setParameter("page", "installmethod.vm");
 		request.setParameter("install_method", "testing");
 		
@@ -129,7 +131,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void installMethodPage_shouldGoBackToChooseLangWhenBackClicked() throws Exception {
+	void installMethodPage_shouldGoBackToChooseLangWhenBackClicked() throws Exception {
 		request.setParameter("page", "installmethod.vm");
 		request.setParameter("back", "Back");
 		
@@ -141,7 +143,7 @@ public class InitializationFilterE2ETest {
 	// ========== Simple Setup (simplesetup.vm) ==========
 	
 	@Test
-	public void simpleSetup_shouldGoBackToInstallMethodWhenBackClicked() throws Exception {
+	void simpleSetup_shouldGoBackToInstallMethodWhenBackClicked() throws Exception {
 		request.setParameter("page", "simplesetup.vm");
 		request.setParameter("back", "Back");
 		
@@ -151,7 +153,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void simpleSetup_shouldShowErrorWhenDatabaseRootPasswordEmpty() throws Exception {
+	void simpleSetup_shouldShowErrorWhenDatabaseRootPasswordEmpty() throws Exception {
 		request.setParameter("page", "simplesetup.vm");
 		request.setParameter("database_root_password", "");
 		
@@ -162,7 +164,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void simpleSetup_shouldSetMysqlDefaultsWhenMysqlSelected() throws Exception {
+	void simpleSetup_shouldSetMysqlDefaultsWhenMysqlSelected() throws Exception {
 		request.setParameter("page", "simplesetup.vm");
 		request.setParameter("database_type", "mysql");
 		request.setParameter("database_root_password", "rootpass");
@@ -180,7 +182,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void simpleSetup_shouldSetPostgresqlDefaultsWhenPostgresqlSelected() throws Exception {
+	void simpleSetup_shouldSetPostgresqlDefaultsWhenPostgresqlSelected() throws Exception {
 		request.setParameter("page", "simplesetup.vm");
 		request.setParameter("database_type", "postgresql");
 		request.setParameter("database_root_password", "pgpass");
@@ -193,30 +195,26 @@ public class InitializationFilterE2ETest {
 	
 	// ========== Database Setup - Advanced (databasesetup.vm) ==========
 	
-	@Test
-	public void databaseSetup_shouldGoBackToInstallMethodForAdvancedInstall() throws Exception {
-		filter.wizardModel.installMethod = "advanced";
-		request.setParameter("page", "databasesetup.vm");
+	@ParameterizedTest
+	@CsvSource({
+		"advanced, databasesetup.vm, installmethod.vm",
+		"testing, databasesetup.vm, remotedetails.vm",
+		"simple, wizardcomplete.vm, simplesetup.vm",
+		"advanced, wizardcomplete.vm, implementationidsetup.vm"
+	})
+	void backNavigation_shouldReturnToCorrectPageForInstallMethod(String installMethod, String page,
+			String expectedTemplate) throws Exception {
+		filter.wizardModel.installMethod = installMethod;
+		request.setParameter("page", page);
 		request.setParameter("back", "Back");
 		
 		filter.doPost(request, response);
 		
-		assertEquals("installmethod.vm", filter.lastRenderedTemplate);
+		assertEquals(expectedTemplate, filter.lastRenderedTemplate);
 	}
 	
 	@Test
-	public void databaseSetup_shouldGoBackToRemoteDetailsForTestingInstall() throws Exception {
-		filter.wizardModel.installMethod = "testing";
-		request.setParameter("page", "databasesetup.vm");
-		request.setParameter("back", "Back");
-		
-		filter.doPost(request, response);
-		
-		assertEquals("remotedetails.vm", filter.lastRenderedTemplate);
-	}
-	
-	@Test
-	public void databaseSetup_shouldShowErrorWhenConnectionStringEmpty() throws Exception {
+	void databaseSetup_shouldShowErrorWhenConnectionStringEmpty() throws Exception {
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "");
 		request.setParameter("database_driver", "");
@@ -227,7 +225,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseSetup_shouldSetExistingDatabaseWhenYesSelected() throws Exception {
+	void databaseSetup_shouldSetExistingDatabaseWhenYesSelected() throws Exception {
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "jdbc:h2:mem:test");
 		request.setParameter("database_driver", "org.h2.Driver");
@@ -241,7 +239,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseSetup_shouldSetNewDatabaseWhenNoSelected() throws Exception {
+	void databaseSetup_shouldSetNewDatabaseWhenNoSelected() throws Exception {
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "jdbc:h2:mem:test");
 		request.setParameter("database_driver", "org.h2.Driver");
@@ -260,7 +258,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseSetup_shouldRequireNewDatabaseNameWhenCreatingNew() throws Exception {
+	void databaseSetup_shouldRequireNewDatabaseNameWhenCreatingNew() throws Exception {
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "jdbc:h2:mem:test");
 		request.setParameter("database_driver", "org.h2.Driver");
@@ -275,7 +273,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseSetup_shouldNavigateToDatabaseTablesAndUserOnSuccess() throws Exception {
+	void databaseSetup_shouldNavigateToDatabaseTablesAndUserOnSuccess() throws Exception {
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "jdbc:h2:mem:test");
 		request.setParameter("database_driver", "org.h2.Driver");
@@ -289,7 +287,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseSetup_shouldSetStepNumber3ForTestingInstall() throws Exception {
+	void databaseSetup_shouldSetStepNumber3ForTestingInstall() throws Exception {
 		filter.wizardModel.installMethod = "testing";
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "jdbc:h2:mem:test");
@@ -306,7 +304,7 @@ public class InitializationFilterE2ETest {
 	// ========== Database Tables and User (databasetablesanduser.vm) ==========
 	
 	@Test
-	public void databaseTablesAndUser_shouldGoBackToDatabaseSetup() throws Exception {
+	void databaseTablesAndUser_shouldGoBackToDatabaseSetup() throws Exception {
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("back", "Back");
 		
@@ -316,7 +314,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseTablesAndUser_shouldSetCreateTablesWhenYesSelected() throws Exception {
+	void databaseTablesAndUser_shouldSetCreateTablesWhenYesSelected() throws Exception {
 		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("create_tables", "yes");
@@ -334,7 +332,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseTablesAndUser_shouldSetCreateUserWhenNoExistingUser() throws Exception {
+	void databaseTablesAndUser_shouldSetCreateUserWhenNoExistingUser() throws Exception {
 		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("create_tables", "yes");
@@ -351,7 +349,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseTablesAndUser_shouldRequireUsernameWhenExistingUserSelected() throws Exception {
+	void databaseTablesAndUser_shouldRequireUsernameWhenExistingUserSelected() throws Exception {
 		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("current_database_user", "yes");
@@ -364,7 +362,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseTablesAndUser_shouldRequirePasswordWhenExistingUserSelected() throws Exception {
+	void databaseTablesAndUser_shouldRequirePasswordWhenExistingUserSelected() throws Exception {
 		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("current_database_user", "yes");
@@ -377,7 +375,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseTablesAndUser_shouldNavigateToOtherRuntimePropsForAdvancedInstall() throws Exception {
+	void databaseTablesAndUser_shouldNavigateToOtherRuntimePropsForAdvancedInstall() throws Exception {
 		filter.wizardModel.installMethod = "advanced";
 		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
@@ -391,7 +389,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseTablesAndUser_shouldNavigateToWizardCompleteForTestingInstall() throws Exception {
+	void databaseTablesAndUser_shouldNavigateToWizardCompleteForTestingInstall() throws Exception {
 		filter.wizardModel.installMethod = "testing";
 		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
@@ -407,7 +405,7 @@ public class InitializationFilterE2ETest {
 	// ========== Other Runtime Properties (otherruntimeproperties.vm) ==========
 	
 	@Test
-	public void otherRuntimeProps_shouldGoBackToDatabaseTablesAndUser() throws Exception {
+	void otherRuntimeProps_shouldGoBackToDatabaseTablesAndUser() throws Exception {
 		request.setParameter("page", "otherruntimeproperties.vm");
 		request.setParameter("back", "Back");
 		
@@ -417,7 +415,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void otherRuntimeProps_shouldSetModuleWebAdminWhenYes() throws Exception {
+	void otherRuntimeProps_shouldSetModuleWebAdminWhenYes() throws Exception {
 		filter.wizardModel.createTables = true;
 		request.setParameter("page", "otherruntimeproperties.vm");
 		request.setParameter("module_web_admin", "yes");
@@ -430,7 +428,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void otherRuntimeProps_shouldSetAutoUpdateDatabaseWhenYes() throws Exception {
+	void otherRuntimeProps_shouldSetAutoUpdateDatabaseWhenYes() throws Exception {
 		filter.wizardModel.createTables = true;
 		request.setParameter("page", "otherruntimeproperties.vm");
 		request.setParameter("module_web_admin", "no");
@@ -443,7 +441,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void otherRuntimeProps_shouldNavigateToAdminUserSetupWhenCreatingTables() throws Exception {
+	void otherRuntimeProps_shouldNavigateToAdminUserSetupWhenCreatingTables() throws Exception {
 		filter.wizardModel.createTables = true;
 		request.setParameter("page", "otherruntimeproperties.vm");
 		request.setParameter("module_web_admin", "yes");
@@ -455,7 +453,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void otherRuntimeProps_shouldSkipAdminSetupWhenNotCreatingTables() throws Exception {
+	void otherRuntimeProps_shouldSkipAdminSetupWhenNotCreatingTables() throws Exception {
 		filter.wizardModel.createTables = false;
 		request.setParameter("page", "otherruntimeproperties.vm");
 		request.setParameter("module_web_admin", "yes");
@@ -469,7 +467,7 @@ public class InitializationFilterE2ETest {
 	// ========== Admin User Setup (adminusersetup.vm) ==========
 	
 	@Test
-	public void adminUserSetup_shouldGoBackToOtherRuntimeProps() throws Exception {
+	void adminUserSetup_shouldGoBackToOtherRuntimeProps() throws Exception {
 		request.setParameter("page", "adminusersetup.vm");
 		request.setParameter("back", "Back");
 		
@@ -478,44 +476,26 @@ public class InitializationFilterE2ETest {
 		assertEquals("otherruntimeproperties.vm", filter.lastRenderedTemplate);
 	}
 	
-	@Test
-	public void adminUserSetup_shouldShowErrorWhenPasswordsDoNotMatch() throws Exception {
+	@ParameterizedTest
+	@CsvSource({
+		"Admin123, DifferentPass1, install.error.adminPswdMatch",
+		"'', '', install.error.adminPswdEmpty",
+		"weak, weak, install.error.adminPswdWeak"
+	})
+	void adminUserSetup_shouldShowErrorForInvalidPassword(String password, String confirmPassword,
+			String errorKey) throws Exception {
 		request.setParameter("page", "adminusersetup.vm");
-		request.setParameter("new_admin_password", "Admin123");
-		request.setParameter("new_admin_password_confirm", "DifferentPass1");
+		request.setParameter("new_admin_password", password);
+		request.setParameter("new_admin_password_confirm", confirmPassword);
 		
 		filter.doPost(request, response);
 		
-		assertTrue(getErrors().containsKey("install.error.adminPswdMatch"));
+		assertTrue(getErrors().containsKey(errorKey));
 		assertEquals("adminusersetup.vm", filter.lastRenderedTemplate);
 	}
 	
 	@Test
-	public void adminUserSetup_shouldShowErrorWhenPasswordEmpty() throws Exception {
-		request.setParameter("page", "adminusersetup.vm");
-		request.setParameter("new_admin_password", "");
-		request.setParameter("new_admin_password_confirm", "");
-		
-		filter.doPost(request, response);
-		
-		assertTrue(getErrors().containsKey("install.error.adminPswdEmpty"));
-		assertEquals("adminusersetup.vm", filter.lastRenderedTemplate);
-	}
-	
-	@Test
-	public void adminUserSetup_shouldShowErrorWhenPasswordWeak() throws Exception {
-		request.setParameter("page", "adminusersetup.vm");
-		request.setParameter("new_admin_password", "weak");
-		request.setParameter("new_admin_password_confirm", "weak");
-		
-		filter.doPost(request, response);
-		
-		assertTrue(getErrors().containsKey("install.error.adminPswdWeak"));
-		assertEquals("adminusersetup.vm", filter.lastRenderedTemplate);
-	}
-	
-	@Test
-	public void adminUserSetup_shouldNavigateToImplementationIdSetupOnSuccess() throws Exception {
+	void adminUserSetup_shouldNavigateToImplementationIdSetupOnSuccess() throws Exception {
 		request.setParameter("page", "adminusersetup.vm");
 		request.setParameter("new_admin_password", "Admin123");
 		request.setParameter("new_admin_password_confirm", "Admin123");
@@ -529,7 +509,7 @@ public class InitializationFilterE2ETest {
 	// ========== Implementation ID Setup (implementationidsetup.vm) ==========
 	
 	@Test
-	public void implementationIdSetup_shouldGoBackToAdminUserSetupWhenCreatingTables() throws Exception {
+	void implementationIdSetup_shouldGoBackToAdminUserSetupWhenCreatingTables() throws Exception {
 		filter.wizardModel.createTables = true;
 		request.setParameter("page", "implementationidsetup.vm");
 		request.setParameter("back", "Back");
@@ -540,7 +520,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void implementationIdSetup_shouldGoBackToOtherRuntimePropsWhenNotCreatingTables() throws Exception {
+	void implementationIdSetup_shouldGoBackToOtherRuntimePropsWhenNotCreatingTables() throws Exception {
 		filter.wizardModel.createTables = false;
 		request.setParameter("page", "implementationidsetup.vm");
 		request.setParameter("back", "Back");
@@ -551,7 +531,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void implementationIdSetup_shouldSetImplementationDetails() throws Exception {
+	void implementationIdSetup_shouldSetImplementationDetails() throws Exception {
 		request.setParameter("page", "implementationidsetup.vm");
 		request.setParameter("implementation_name", "Test Clinic");
 		request.setParameter("implementation_id", "TESTCLINIC");
@@ -568,7 +548,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void implementationIdSetup_shouldRejectIdWithCaret() throws Exception {
+	void implementationIdSetup_shouldRejectIdWithCaret() throws Exception {
 		request.setParameter("page", "implementationidsetup.vm");
 		request.setParameter("implementation_name", "Test");
 		request.setParameter("implementation_id", "INVALID^ID");
@@ -582,7 +562,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void implementationIdSetup_shouldRejectIdWithPipe() throws Exception {
+	void implementationIdSetup_shouldRejectIdWithPipe() throws Exception {
 		request.setParameter("page", "implementationidsetup.vm");
 		request.setParameter("implementation_name", "Test");
 		request.setParameter("implementation_id", "INVALID|ID");
@@ -595,7 +575,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void implementationIdSetup_shouldAcceptEmptyImplementationId() throws Exception {
+	void implementationIdSetup_shouldAcceptEmptyImplementationId() throws Exception {
 		request.setParameter("page", "implementationidsetup.vm");
 		request.setParameter("implementation_name", "");
 		request.setParameter("implementation_id", "");
@@ -610,29 +590,7 @@ public class InitializationFilterE2ETest {
 	// ========== Wizard Complete (wizardcomplete.vm) ==========
 	
 	@Test
-	public void wizardComplete_shouldGoBackToSimpleSetupForSimpleInstall() throws Exception {
-		filter.wizardModel.installMethod = "simple";
-		request.setParameter("page", "wizardcomplete.vm");
-		request.setParameter("back", "Back");
-		
-		filter.doPost(request, response);
-		
-		assertEquals("simplesetup.vm", filter.lastRenderedTemplate);
-	}
-	
-	@Test
-	public void wizardComplete_shouldGoBackToImplementationIdForAdvancedInstall() throws Exception {
-		filter.wizardModel.installMethod = "advanced";
-		request.setParameter("page", "wizardcomplete.vm");
-		request.setParameter("back", "Back");
-		
-		filter.doPost(request, response);
-		
-		assertEquals("implementationidsetup.vm", filter.lastRenderedTemplate);
-	}
-	
-	@Test
-	public void wizardComplete_shouldBuildCorrectTaskListForAdvancedWithNewDatabase() throws Exception {
+	void wizardComplete_shouldBuildCorrectTaskListForAdvancedWithNewDatabase() throws Exception {
 		filter.wizardModel.installMethod = "advanced";
 		filter.wizardModel.hasCurrentOpenmrsDatabase = false;
 		filter.wizardModel.createDatabaseUser = true;
@@ -650,7 +608,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void wizardComplete_shouldBuildCorrectTaskListForExistingDatabase() throws Exception {
+	void wizardComplete_shouldBuildCorrectTaskListForExistingDatabase() throws Exception {
 		filter.wizardModel.installMethod = "advanced";
 		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
 		filter.wizardModel.createDatabaseUser = false;
@@ -667,7 +625,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void wizardComplete_shouldSetTestingTasksForTestingInstall() throws Exception {
+	void wizardComplete_shouldSetTestingTasksForTestingInstall() throws Exception {
 		filter.wizardModel.installMethod = "testing";
 		filter.wizardModel.hasCurrentOpenmrsDatabase = false;
 		filter.wizardModel.createDatabaseUser = false;
@@ -683,7 +641,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void wizardComplete_shouldRenderProgressPage() throws Exception {
+	void wizardComplete_shouldRenderProgressPage() throws Exception {
 		filter.wizardModel.installMethod = "advanced";
 		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
 		filter.wizardModel.createDatabaseUser = false;
@@ -698,7 +656,7 @@ public class InitializationFilterE2ETest {
 	// ========== Installation Already Started ==========
 	
 	@Test
-	public void doPost_shouldRenderProgressWhenInstallationAlreadyStarted() throws Exception {
+	void doPost_shouldRenderProgressWhenInstallationAlreadyStarted() throws Exception {
 		InitializationFilter.setInstallationStarted(true);
 		request.setParameter("page", "installmethod.vm");
 		request.setParameter("install_method", "simple");
@@ -711,7 +669,7 @@ public class InitializationFilterE2ETest {
 	// ========== Full Flow: Advanced Installation Path ==========
 	
 	@Test
-	public void fullAdvancedFlow_shouldNavigateCorrectlyThroughAllSteps() throws Exception {
+	void fullAdvancedFlow_shouldNavigateCorrectlyThroughAllSteps() throws Exception {
 		// Step 1: Choose Language -> Install Method
 		request.setParameter("page", "chooselang.vm");
 		request.setParameter("locale", "en");
@@ -790,7 +748,7 @@ public class InitializationFilterE2ETest {
 	// ========== Full Flow: Advanced with Back Navigation ==========
 	
 	@Test
-	public void fullAdvancedFlow_shouldSupportBackNavigationThroughSteps() throws Exception {
+	void fullAdvancedFlow_shouldSupportBackNavigationThroughSteps() throws Exception {
 		// Navigate forward: chooselang -> installmethod -> databasesetup
 		request.setParameter("page", "chooselang.vm");
 		filter.doPost(request, response);
@@ -821,7 +779,7 @@ public class InitializationFilterE2ETest {
 	// ========== Full Flow: Advanced with Existing DB (no table creation) ==========
 	
 	@Test
-	public void advancedExistingDb_shouldSkipAdminSetupWhenNotCreatingTables() throws Exception {
+	void advancedExistingDb_shouldSkipAdminSetupWhenNotCreatingTables() throws Exception {
 		filter.wizardModel.installMethod = "advanced";
 		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
 		filter.wizardModel.createTables = false;
@@ -838,7 +796,7 @@ public class InitializationFilterE2ETest {
 	// ========== Wizard Model State Preservation ==========
 	
 	@Test
-	public void wizardModel_shouldPreserveStateAcrossSteps() throws Exception {
+	void wizardModel_shouldPreserveStateAcrossSteps() throws Exception {
 		// Step 1: Install method
 		request.setParameter("page", "installmethod.vm");
 		request.setParameter("install_method", "advanced");
@@ -865,7 +823,7 @@ public class InitializationFilterE2ETest {
 	// ========== goBack via image click (back.x / back.y) ==========
 	
 	@Test
-	public void backNavigation_shouldWorkWithImageClickCoordinates() throws Exception {
+	void backNavigation_shouldWorkWithImageClickCoordinates() throws Exception {
 		request.setParameter("page", "installmethod.vm");
 		request.setParameter("back.x", "10");
 		request.setParameter("back.y", "20");
@@ -878,7 +836,7 @@ public class InitializationFilterE2ETest {
 	// ========== Database Tables and User - Create User Validation ==========
 	
 	@Test
-	public void databaseTablesAndUser_shouldRequireCreateUserUsernameWhenCreatingNewUser() throws Exception {
+	void databaseTablesAndUser_shouldRequireCreateUserUsernameWhenCreatingNewUser() throws Exception {
 		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("current_database_user", "no");
@@ -891,7 +849,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseTablesAndUser_shouldRequireCreateUserPasswordWhenCreatingNewUser() throws Exception {
+	void databaseTablesAndUser_shouldRequireCreateUserPasswordWhenCreatingNewUser() throws Exception {
 		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("current_database_user", "no");
@@ -906,7 +864,7 @@ public class InitializationFilterE2ETest {
 	// ========== Database Setup - Validation for Existing DB ==========
 	
 	@Test
-	public void databaseSetup_shouldRequireCurrentDatabaseNameWhenExistingSelected() throws Exception {
+	void databaseSetup_shouldRequireCurrentDatabaseNameWhenExistingSelected() throws Exception {
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "jdbc:h2:mem:test");
 		request.setParameter("database_driver", "org.h2.Driver");
@@ -919,7 +877,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseSetup_shouldRequireCreateUsernameWhenCreatingNewDb() throws Exception {
+	void databaseSetup_shouldRequireCreateUsernameWhenCreatingNewDb() throws Exception {
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "jdbc:h2:mem:test");
 		request.setParameter("database_driver", "org.h2.Driver");
@@ -934,7 +892,7 @@ public class InitializationFilterE2ETest {
 	}
 	
 	@Test
-	public void databaseSetup_shouldRequireCreatePasswordWhenCreatingNewDb() throws Exception {
+	void databaseSetup_shouldRequireCreatePasswordWhenCreatingNewDb() throws Exception {
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "jdbc:h2:mem:test");
 		request.setParameter("database_driver", "org.h2.Driver");
