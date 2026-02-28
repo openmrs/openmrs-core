@@ -91,7 +91,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		Module module = ModuleUtil.getModuleForPath(path);
 		if (module == null) {
-			log.warn("No module handles the path: " + path);
+			log.warn("No module handles the path: {}", path);
 			return null;
 		}
 		
@@ -116,13 +116,12 @@ public class ModuleResourcesServlet extends HttpServlet {
 			Path requestedPath = requestedFile.toPath().normalize();
 
 			if (!requestedPath.startsWith(basePath)) {
-				log.warn("Path traversal attempt blocked. Requested: '"
-					+ requestedPath + "' is outside base: '" + basePath + "'");
+				log.warn("Path traversal attempt blocked. Requested: '{}' is outside base: '{}'", requestedPath, basePath);
 				return null;
 			}
 
 			if (!requestedFile.exists() || !requestedFile.isFile()) {
-				log.warn("No file with path '" + requestedFile + "' exists for module '" + module.getModuleId() + "'");
+				log.warn("No file with path '{}' exists for module '{}'", requestedFile, module.getModuleId());
 				return null;
 			}
 
