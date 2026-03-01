@@ -272,7 +272,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("doseUnits"));
 	}
-
+	
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -286,14 +286,14 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("dose"));
 		assertEquals("DrugOrder.error.doseZeroOrLess", errors.getFieldError("dose").getCode());
-
+		
 		order.setDose(-1.0);
 		errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("dose"));
 		assertEquals("DrugOrder.error.doseZeroOrLess", errors.getFieldError("dose").getCode());
 	}
-
+	
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
