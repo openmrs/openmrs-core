@@ -64,7 +64,7 @@ public class WebConfig implements WebMvcConfigurer {
      * RequestMappingHandlerAdapter with {@link OpenmrsBindingInitializer}.
      */
     @Bean
-    SmartInitializingSingleton configureBindingInitializer(ObjectProvider<RequestMappingHandlerAdapter> adapterProvider) {
+    public SmartInitializingSingleton configureBindingInitializer(ObjectProvider<RequestMappingHandlerAdapter> adapterProvider) {
         return () -> {
             RequestMappingHandlerAdapter adapter = adapterProvider.getObject();
             WebBindingInitializer existingInitializer = adapter.getWebBindingInitializer();
