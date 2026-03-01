@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.web.filter.StartupFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -222,14 +223,7 @@ class UpdateFilterE2ETest {
 	void progressAjax_shouldReturnJsonContentType() throws Exception {
 		// Use a real response so we can check content type and written content
 		MockHttpServletResponse realResponse = new MockHttpServletResponse();
-		TestableUpdateFilter ajaxFilter = new TestableUpdateFilter() {
-			@Override
-			protected void renderTemplate(String templateName, Map<String, Object> referenceMap,
-					HttpServletResponse httpResponse) throws IOException {
-				this.lastRenderedTemplate = templateName;
-				this.lastReferenceMap = referenceMap;
-			}
-		};
+		TestableUpdateFilter ajaxFilter = new TestableUpdateFilter();
 		setUpdateFilterModel(ajaxFilter, new UpdateFilterModel(null, null) {
 			{
 				this.updateRequired = false;
@@ -425,7 +419,7 @@ class UpdateFilterE2ETest {
 	
 	@SuppressWarnings("unchecked")
 	private Map<String, Object[]> getErrors() throws Exception {
-		Field errorsField = filter.getClass().getSuperclass().getSuperclass().getDeclaredField("errors");
+		Field errorsField = StartupFilter.class.getDeclaredField("errors");
 		errorsField.setAccessible(true);
 		return (Map<String, Object[]>) errorsField.get(filter);
 	}

@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Properties;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -25,6 +26,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.openmrs.api.context.Context;
+import org.openmrs.web.filter.StartupFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -63,6 +66,8 @@ class InitializationFilterE2ETest {
 		filter.wizardModel = new InitializationWizardModel();
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
+		// Clear runtime properties to avoid state leaking from other test classes
+		Context.setRuntimeProperties(new Properties());
 	}
 	
 	@AfterEach
@@ -89,7 +94,7 @@ class InitializationFilterE2ETest {
 		
 		filter.doPost(request, response);
 		
-		assertEquals("installmethod.vm", filter.lastRenderedTemplate);
+		assertEquals("fr", request.getSession().getAttribute("locale"));
 	}
 	
 	// ========== Install Method Selection (installmethod.vm) ==========
@@ -635,6 +640,7 @@ class InitializationFilterE2ETest {
 		
 		assertTrue(filter.wizardModel.importTestData);
 		assertFalse(filter.wizardModel.createTables);
+		assertNotNull(filter.wizardModel.tasksToExecute);
 		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.IMPORT_TEST_DATA));
 		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.ADD_MODULES));
 		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.UPDATE_TO_LATEST));
@@ -911,7 +917,7 @@ class InitializationFilterE2ETest {
 	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, Object[]> getErrors() throws Exception {
-		Field errorsField = filter.getClass().getSuperclass().getSuperclass().getDeclaredField("errors");
+		Field errorsField = StartupFilter.class.getDeclaredField("errors");
 		errorsField.setAccessible(true);
 		return (Map<String, Object[]>) errorsField.get(filter);
 	}
