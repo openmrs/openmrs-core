@@ -11,7 +11,8 @@ package org.openmrs.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openmrs.util.OpenmrsJacksonLocaleModule;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -62,16 +63,19 @@ public class WebConfig implements WebMvcConfigurer {
      * This restores the Platform 2.x behavior where openmrs-servlet.xml configured the
      * RequestMappingHandlerAdapter with {@link OpenmrsBindingInitializer}.
      */
-    @Autowired
-    public void configureBindingInitializer(RequestMappingHandlerAdapter adapter) {
-        WebBindingInitializer existingInitializer = adapter.getWebBindingInitializer();
-        OpenmrsBindingInitializer openmrsInitializer = new OpenmrsBindingInitializer();
-        adapter.setWebBindingInitializer(binder -> {
-            if (existingInitializer != null) {
-                existingInitializer.initBinder(binder);
-            }
-            openmrsInitializer.initBinder(binder);
-        });
+    @Bean
+    SmartInitializingSingleton configureBindingInitializer(ObjectProvider<RequestMappingHandlerAdapter> adapterProvider) {
+        return () -> {
+            RequestMappingHandlerAdapter adapter = adapterProvider.getObject();
+            WebBindingInitializer existingInitializer = adapter.getWebBindingInitializer();
+            OpenmrsBindingInitializer openmrsInitializer = new OpenmrsBindingInitializer();
+            adapter.setWebBindingInitializer(binder -> {
+                if (existingInitializer != null) {
+                    existingInitializer.initBinder(binder);
+                }
+                openmrsInitializer.initBinder(binder);
+            });
+        };
     }
 
     @Bean
