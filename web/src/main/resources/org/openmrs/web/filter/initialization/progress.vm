@@ -323,7 +323,7 @@
             
         }, "json");
         
-        setTimeout("showProgress()", 200);
+        setTimeout("showProgress()", 500);
     }
             
     function updateProgressBar(progressBarId, completedPercentage){
