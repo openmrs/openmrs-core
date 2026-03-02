@@ -358,6 +358,7 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 		} else {
 			log.debug("Participating in existing session, so not releasing session through synchronization manager");
+			participate.remove();
 		}
 	}
 	
