@@ -10,9 +10,11 @@
 package org.openmrs.validator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Collection;
-
+import java.util.Set;
+import java.util.HashSet;
 import org.openmrs.annotation.Handler;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -98,29 +100,32 @@ public class PatientValidator extends PersonValidator {
 		if (!patient.getVoided()) {
 			Collection<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes(false);
 
-			List<String> missingRequiredIdentifiers = new ArrayList<>();
-
+			// Step 1: collect all required identifier types
+			Set<PatientIdentifierType> requiredTypes = new HashSet<>();
 			for (PatientIdentifierType type : identifierTypes) {
-				if (Boolean.TRUE.equals(type.getRequired())) {
-					boolean found = false;
-					for (PatientIdentifier pi : patient.getActiveIdentifiers()) {
-						if (!pi.getVoided() && pi.getIdentifierType() != null && pi.getIdentifierType().getId().equals(type.getId())) {
-							found = true;
-							break;
-						}
-					}
-
-					if (!found) {
-							missingRequiredIdentifiers.add(type.getName());
-					}
+				if (type.getRequired()) {
+					requiredTypes.add(type);
 				}
 			}
 
-			if (!missingRequiredIdentifiers.isEmpty()) {
+			// Step 2: remove the ones the patient already has
+			for (PatientIdentifier pi : patient.getActiveIdentifiers()) {
+				if (!pi.getVoided() && pi.getIdentifierType() != null) {
+					requiredTypes.remove(pi.getIdentifierType());
+				}
+			}
+
+			// Step 3: remaining = missing
+			List<String> missingRequiredIdentifiers = new ArrayList<>();
+			
+			if (!requiredTypes.isEmpty()) {
+				missingRequiredIdentifiers = requiredTypes.stream()
+					.map(PatientIdentifierType::getName)
+					.collect(Collectors.toList());
 				errors.rejectValue(
 					"identifiers",
 					"Patient.missingRequiredIdentifier",
-					new Object[] { String.join(", ", missingRequiredIdentifiers) },
+					new Object[]{String.join(", ", missingRequiredIdentifiers)},
 					null
 				);
 			}
