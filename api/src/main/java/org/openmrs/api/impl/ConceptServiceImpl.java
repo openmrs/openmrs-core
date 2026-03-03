@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -46,6 +47,7 @@ import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptReferenceRange;
+import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -68,10 +70,11 @@ import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.validator.ObsValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2102,8 +2105,126 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	@Override
 	public ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept) {
-		Obs obs = new Obs(person, concept, null, null);
-		return new ObsValidator().getReferenceRange(obs);
+		if (person == null || concept == null) {
+			return null;
+		}
+		return Context.getConceptService().getConceptReferenceRange(
+			new ConceptReferenceRangeContext(person, concept, null));
+	}
+
+	@Override
+	public ConceptReferenceRange getConceptReferenceRange(ConceptReferenceRangeContext context) {
+		if (context == null) {
+			throw new IllegalArgumentException("ConceptReferenceRangeContext must not be null");
+		}
+
+		Concept concept = HibernateUtil.getRealObjectFromProxy(context.getConcept());
+		if (!(concept instanceof ConceptNumeric) || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
+			return null;
+		}
+		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
+
+		List<ConceptReferenceRange> referenceRanges =
+			Context.getConceptService().getConceptReferenceRangesByConceptId(concept.getConceptId());
+
+		if (referenceRanges.isEmpty()) {
+			return getDefaultReferenceRange(conceptNumeric);
+		}
+
+		ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
+		List<ConceptReferenceRange> validRanges = new ArrayList<>();
+
+		for (ConceptReferenceRange referenceRange : referenceRanges) {
+			if (referenceRangeUtility.evaluateCriteria(
+					StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()), context)) {
+				validRanges.add(referenceRange);
+			}
+		}
+
+		if (validRanges.isEmpty()) {
+			ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
+			if (defaultReferenceRange != null) {
+				return defaultReferenceRange;
+			}
+			return null;
+		}
+
+		return findStrictestReferenceRange(validRanges);
+	}
+
+	/**
+	 * Returns a reference range derived from the ConceptNumeric's own range fields.
+	 * Used as a fallback when no ConceptReferenceRange records exist or match.
+	 */
+	private static ConceptReferenceRange getDefaultReferenceRange(ConceptNumeric conceptNumeric) {
+		if (conceptNumeric == null || (
+			conceptNumeric.getHiAbsolute() == null &&
+			conceptNumeric.getHiCritical() == null &&
+			conceptNumeric.getHiNormal() == null &&
+			conceptNumeric.getLowAbsolute() == null &&
+			conceptNumeric.getLowCritical() == null &&
+			conceptNumeric.getLowNormal() == null
+		)) {
+			return null;
+		}
+
+		ConceptReferenceRange defaultReferenceRange = new ConceptReferenceRange();
+		defaultReferenceRange.setConceptNumeric(conceptNumeric);
+		defaultReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+		defaultReferenceRange.setHiCritical(conceptNumeric.getHiCritical());
+		defaultReferenceRange.setHiNormal(conceptNumeric.getHiNormal());
+		defaultReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+		defaultReferenceRange.setLowCritical(conceptNumeric.getLowCritical());
+		defaultReferenceRange.setLowNormal(conceptNumeric.getLowNormal());
+		return defaultReferenceRange;
+	}
+
+	/**
+	 * Combines multiple matching reference ranges into one by selecting the strictest bound for
+	 * each limit. For low bounds, the highest value is strictest; for high bounds, the lowest.
+	 * For example, ranges 80-150 and 60-140 combine to 80-140.
+	 */
+	private static ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
+		if (conceptReferenceRanges.size() == 1) {
+			return conceptReferenceRanges.get(0);
+		}
+
+		ConceptReferenceRange strictestRange = new ConceptReferenceRange();
+		strictestRange.setConceptNumeric(conceptReferenceRanges.get(0).getConceptNumeric());
+
+		for (ConceptReferenceRange conceptReferenceRange : conceptReferenceRanges) {
+			if (conceptReferenceRange.getLowAbsolute() != null &&
+					(strictestRange.getLowAbsolute() == null || strictestRange.getLowAbsolute() < conceptReferenceRange.getLowAbsolute())) {
+				strictestRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
+			}
+
+			if (conceptReferenceRange.getLowCritical() != null &&
+					(strictestRange.getLowCritical() == null || strictestRange.getLowCritical() < conceptReferenceRange.getLowCritical())) {
+				strictestRange.setLowCritical(conceptReferenceRange.getLowCritical());
+			}
+
+			if (conceptReferenceRange.getLowNormal() != null &&
+					(strictestRange.getLowNormal() == null || strictestRange.getLowNormal() < conceptReferenceRange.getLowNormal())) {
+				strictestRange.setLowNormal(conceptReferenceRange.getLowNormal());
+			}
+
+			if (conceptReferenceRange.getHiNormal() != null &&
+					(strictestRange.getHiNormal() == null || strictestRange.getHiNormal() > conceptReferenceRange.getHiNormal())) {
+				strictestRange.setHiNormal(conceptReferenceRange.getHiNormal());
+			}
+
+			if (conceptReferenceRange.getHiCritical() != null &&
+					(strictestRange.getHiCritical() == null || strictestRange.getHiCritical() > conceptReferenceRange.getHiCritical())) {
+				strictestRange.setHiCritical(conceptReferenceRange.getHiCritical());
+			}
+
+			if (conceptReferenceRange.getHiAbsolute() != null &&
+					(strictestRange.getHiAbsolute() == null || strictestRange.getHiAbsolute() > conceptReferenceRange.getHiAbsolute())) {
+				strictestRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
+			}
+		}
+
+		return strictestRange;
 	}
 
 	/***
