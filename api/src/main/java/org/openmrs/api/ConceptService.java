@@ -30,6 +30,7 @@ import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptReferenceRange;
+import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -2038,7 +2039,19 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept);
-	
+
+	/**
+	 * Get the appropriate concept reference range for a given context. The context specifies the
+	 * person, concept, and optionally a date at which to evaluate reference range criteria.
+	 *
+	 * @param context the context containing person, concept, and optional date
+	 * @return the matching ConceptReferenceRange, or null if none found
+	 *
+	 * @since 3.0.0, 2.9.0, 2.8.5, 2.7.9
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	ConceptReferenceRange getConceptReferenceRange(ConceptReferenceRangeContext context);
+
 	/**
 	 * Completely purge a <code>ConceptReferenceRange</code> from the database.
 	 * 
