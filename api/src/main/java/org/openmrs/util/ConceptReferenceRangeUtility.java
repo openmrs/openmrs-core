@@ -26,12 +26,10 @@ import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.runtime.log.Log4JLogChute;
 import org.joda.time.LocalTime;
 import org.openmrs.Concept;
-import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 
 /**
  * A utility class that evaluates the concept ranges 
@@ -57,52 +55,21 @@ public class ConceptReferenceRangeUtility {
 		if (obs == null) {
 			throw new IllegalArgumentException("Failed to evaluate criteria with reason: Obs is null");
 		}
-
+		
 		if (obs.getPerson() == null) {
 			throw new IllegalArgumentException("Failed to evaluate criteria with reason: patient is null");
 		}
-
+		
 		if (StringUtils.isBlank(criteria)) {
 			throw new IllegalArgumentException("Failed to evaluate criteria with reason: criteria is empty");
 		}
-
-		return evaluateCriteria(criteria, new ConceptReferenceRangeContext(obs));
-	}
-
-	/**
-	 * Evaluates criteria against a {@link ConceptReferenceRangeContext}. When the context was
-	 * constructed from an Obs, {@code $obs} is available in the expression; otherwise only
-	 * {@code $patient}, {@code $fn}, {@code $context}, {@code $date}, and {@code $encounter}
-	 * are available.
-	 *
-	 * @param criteria the criteria string to evaluate
-	 * @param context the evaluation context
-	 * @return true if the criteria evaluates to true, false otherwise
-	 *
-	 * @since 3.0.0, 2.9.0, 2.8.5, 2.7.9
-	 */
-	public boolean evaluateCriteria(String criteria, ConceptReferenceRangeContext context) {
-		if (context == null) {
-			throw new IllegalArgumentException("Failed to evaluate criteria with reason: context is null");
-		}
-
-		if (context.getPerson() == null) {
-			throw new IllegalArgumentException("Failed to evaluate criteria with reason: patient is null");
-		}
-
-		if (StringUtils.isBlank(criteria)) {
-			throw new IllegalArgumentException("Failed to evaluate criteria with reason: criteria is empty");
-		}
-
+		
 		VelocityContext velocityContext = new VelocityContext();
 		velocityContext.put("fn", this);
-		velocityContext.put("patient", HibernateUtil.getRealObjectFromProxy(context.getPerson()));
-		velocityContext.put("context", context);
-
-		velocityContext.put("obs", context.getObs());
-		velocityContext.put("encounter", context.getEncounter());
-		velocityContext.put("date", context.getDate());
-
+		velocityContext.put("obs", obs);
+		
+		velocityContext.put("patient", obs.getPerson());
+		
 		VelocityEngine velocityEngine = new VelocityEngine();
 		try {
 			Properties props = new Properties();
@@ -114,10 +81,10 @@ public class ConceptReferenceRangeUtility {
 		catch (Exception e) {
 			throw new APIException("Failed to create the velocity engine: " + e.getMessage(), e);
 		}
-
+		
 		StringWriter writer = new StringWriter();
 		String wrappedCriteria = "#set( $criteria = " + criteria + " )$criteria";
-
+		
 		try {
 			velocityEngine.evaluate(velocityContext, writer, ConceptReferenceRangeUtility.class.getName(), wrappedCriteria);
 			return Boolean.parseBoolean(writer.toString());
@@ -129,7 +96,7 @@ public class ConceptReferenceRangeUtility {
 			throw new APIException("An error occurred while evaluating criteria: ", e);
 		}
 	}
-
+	
 	/**
 	 * Gets the latest Obs by concept.
 	 *
@@ -140,9 +107,6 @@ public class ConceptReferenceRangeUtility {
 	 * @return Obs latest Obs
 	 */
 	public Obs getLatestObs(String conceptRef, Person person) {
-		if (person == null) {
-			return null;
-		}
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
 
 		if (concept != null) {
