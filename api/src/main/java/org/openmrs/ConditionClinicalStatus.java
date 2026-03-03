@@ -41,6 +41,8 @@ public enum ConditionClinicalStatus {
 	 * 
 	 * @deprecated as of 2.6.0
 	 * */
+
+	@Deprecated(since = "2.6.0", forRemoval = false)
 	HISTORY_OF,
 	
 	/**
