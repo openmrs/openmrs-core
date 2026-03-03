@@ -2113,24 +2113,19 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 
 	@Override
-	@Transactional(readOnly = true)
 	public ConceptReferenceRange getConceptReferenceRange(ConceptReferenceRangeContext context) {
 		if (context == null) {
 			throw new IllegalArgumentException("ConceptReferenceRangeContext must not be null");
 		}
 
 		Concept concept = HibernateUtil.getRealObjectFromProxy(context.getConcept());
-		if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
-			return null;
-		}
-
-		if (!(concept instanceof ConceptNumeric)) {
+		if (!(concept instanceof ConceptNumeric) || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
 			return null;
 		}
 		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
 
 		List<ConceptReferenceRange> referenceRanges =
-			getConceptReferenceRangesByConceptId(concept.getConceptId());
+			Context.getConceptService().getConceptReferenceRangesByConceptId(concept.getConceptId());
 
 		if (referenceRanges.isEmpty()) {
 			return getDefaultReferenceRange(conceptNumeric);
