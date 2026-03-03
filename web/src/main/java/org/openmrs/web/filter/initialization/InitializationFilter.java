@@ -1591,11 +1591,12 @@ public class InitializationFilter extends StartupFilter {
 							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
 								int effectiveTotal = totalToRun > 0 ? totalToRun : numChangeSetsToRun;
-								setMessage(message + " (" + i++ + "/" + effectiveTotal + "): Author: " + changeSet.getAuthor() + " Comments: " + changeSet.getComments() + " Description: "
+								setMessage(message + " (" + i + "/" + effectiveTotal + "): Author: " + changeSet.getAuthor() + " Comments: " + changeSet.getComments() + " Description: "
 								+ changeSet.getDescription());
 								float effectiveTotalFloat = (float) effectiveTotal;
 								float j = (float) i;
 								setCompletedPercentage(Math.round(j * 100 / effectiveTotalFloat));
+								i++;
 							}
 							
 						}
