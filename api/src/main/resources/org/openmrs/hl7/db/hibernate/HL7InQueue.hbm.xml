@@ -18,11 +18,13 @@
 	<class name="org.openmrs.hl7.HL7InQueue" table="hl7_in_queue">
 
 		<id name="HL7InQueueId" type="int" column="hl7_in_queue_id" unsaved-value="0">
-			<generator class="identity">
+			<generator class="native">
 				<param name="sequence">hl7_in_queue_hl7_in_queue_id_seq</param>
 			</generator>
 		</id>
 
+		<discriminator column="hl7_in_queue_id" insert="false" />
+		
 		<many-to-one name="HL7Source" class="org.openmrs.hl7.HL7Source" not-null="true">
 			<column name="hl7_source" />
 		</many-to-one>

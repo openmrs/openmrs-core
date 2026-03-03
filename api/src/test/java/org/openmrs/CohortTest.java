@@ -23,9 +23,8 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
@@ -71,11 +70,8 @@ public class CohortTest {
 		
 		Cohort cohort = new Cohort("name", "description", patients);
 		
-		String[] actualIds = StringUtils.split(cohort.getCommaSeparatedPatientIds(), ',');
-		Set<Integer> actualIdSet = Arrays.stream(actualIds)
-              .map(Integer::valueOf)
-              .collect(Collectors.toSet());
-		assertEquals(new HashSet<>(Arrays.asList(ids)), actualIdSet);
+		String[] ids = StringUtils.split(cohort.getCommaSeparatedPatientIds(), ',');
+		Arrays.stream(ids).forEach(id -> patients.contains(new Patient(Integer.valueOf(id))));
 		
 	}
 

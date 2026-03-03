@@ -11,8 +11,8 @@ package org.openmrs;
 
 import org.hibernate.envers.Audited;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 
 /**

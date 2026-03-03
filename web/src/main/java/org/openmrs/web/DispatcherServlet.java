@@ -9,8 +9,8 @@
  */
 package org.openmrs.web;
 
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletException;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
@@ -75,7 +75,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 	}
 	
 	/**
-	 * @see jakarta.servlet.GenericServlet#init(jakarta.servlet.ServletConfig)
+	 * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
 	 */
 	@Override
 	public void init(ServletConfig config) throws ServletException {

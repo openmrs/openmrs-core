@@ -12,8 +12,7 @@ package org.openmrs.api.context;
 import org.openmrs.User;
 
 /**
- * A basic implementation of {@link Authenticated} that contains the necessary elements for an
- * OpenMRS authentication.
+ * A basic implementation of {@link Authenticated} that contains the necessary elements for an OpenMRS authentication.
  * 
  * @since 2.3.0
  */

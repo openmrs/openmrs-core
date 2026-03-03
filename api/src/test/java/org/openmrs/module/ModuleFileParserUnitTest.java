@@ -20,7 +20,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
-import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -66,7 +65,9 @@ import org.w3c.dom.ls.LSSerializer;
  * Tests {@link ModuleFileParser} without a database but with file IO (so technically not a unit test but close).
  */
 public class ModuleFileParserUnitTest extends BaseContextMockTest {
-	
+
+	private static DocumentBuilderFactory documentBuilderFactory;
+
 	private static DocumentBuilder documentBuilder;
 	
 	@TempDir
@@ -79,7 +80,8 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 
 	@BeforeAll
 	public static void setUp() throws ParserConfigurationException {
-		documentBuilder = createDocumentBuilder();
+		documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		documentBuilder = documentBuilderFactory.newDocumentBuilder();
 	}
 
 	@BeforeEach

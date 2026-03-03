@@ -9,11 +9,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.Query;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -40,8 +40,6 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific ProgramWorkflow related functions.<br>
@@ -52,13 +50,19 @@ import org.springframework.stereotype.Repository;
  * @see org.openmrs.api.db.ProgramWorkflowDAO
  * @see org.openmrs.api.ProgramWorkflowService
  */
-@Repository("programWorkflowDAO")
 public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	
-	private final SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
-	@Autowired
-	public HibernateProgramWorkflowDAO(SessionFactory sessionFactory) {
+	public HibernateProgramWorkflowDAO() {
+	}
+	
+	/**
+	 * Hibernate Session Factory
+	 *
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -71,7 +75,8 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public Program saveProgram(Program program) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), program);
+		sessionFactory.getCurrentSession().saveOrUpdate(program);
+		return program;
 	}
 	
 	/**
@@ -142,7 +147,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public void deleteProgram(Program program) throws DAOException {
-		sessionFactory.getCurrentSession().remove(program);
+		sessionFactory.getCurrentSession().delete(program);
 	}
 	
 	// **************************
@@ -157,9 +162,9 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
                 CustomDatatypeUtil.saveAttributesIfNecessary(patientProgram);
 
 		if (patientProgram.getPatientProgramId() == null) {
-			sessionFactory.getCurrentSession().persist(patientProgram);
+			sessionFactory.getCurrentSession().save(patientProgram);
 		} else {
-			patientProgram = HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), patientProgram);
+			sessionFactory.getCurrentSession().merge(patientProgram);
 		}
                 
 		return patientProgram;
@@ -254,7 +259,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public void deletePatientProgram(PatientProgram patientProgram) throws DAOException {
-		sessionFactory.getCurrentSession().remove(patientProgram);
+		sessionFactory.getCurrentSession().delete(patientProgram);
 	}
 	
 	/**
@@ -263,9 +268,9 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	@Override
 	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion csc) throws DAOException {
 		if (csc.getConceptStateConversionId() == null) {
-			sessionFactory.getCurrentSession().persist(csc);
+			sessionFactory.getCurrentSession().save(csc);
 		} else {
-			csc = HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), csc);
+			sessionFactory.getCurrentSession().merge(csc);
 		}
 		return csc;
 	}
@@ -297,7 +302,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public void deleteConceptStateConversion(ConceptStateConversion csc) {
-		sessionFactory.getCurrentSession().remove(csc);
+		sessionFactory.getCurrentSession().delete(csc);
 	}
 	
 	/**
@@ -439,7 +444,8 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 
 	@Override
 	public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType programAttributeType) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), programAttributeType);
+		sessionFactory.getCurrentSession().saveOrUpdate(programAttributeType);
+		return programAttributeType;
 	}
 
 	@Override
@@ -449,7 +455,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 
 	@Override
 	public void purgeProgramAttributeType(ProgramAttributeType type) {
-		sessionFactory.getCurrentSession().remove(type);
+		sessionFactory.getCurrentSession().delete(type);
 	}
 
 	@Override
@@ -480,7 +486,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 			return patientProgramAttributes;
 		}
 		String commaSeperatedPatientIds = StringUtils.join(patientIds, ",");
-		List<Object> list = sessionFactory.getCurrentSession().createNativeQuery(
+		List<Object> list = sessionFactory.getCurrentSession().createSQLQuery(
 				"SELECT p.patient_id as person_id, " +
 						" concat('{',group_concat(DISTINCT (coalesce(concat('\"',ppt.name,'\":\"', COALESCE (cn.name, ppa.value_reference),'\"'))) SEPARATOR ','),'}') AS patientProgramAttributeValue  " +
 						" from patient p " +
@@ -488,7 +494,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 						" join patient_program_attribute ppa on pp.patient_program_id = ppa.patient_program_id and ppa.voided=0" +
 						" join program_attribute_type ppt on ppa.attribute_type_id = ppt.program_attribute_type_id and ppt.name ='" + attributeName + "' "+
 						" LEFT OUTER JOIN concept_name cn on ppa.value_reference = cn.concept_id and cn.concept_name_type= 'FULLY_SPECIFIED' and cn.voided=0 and ppt.datatype like '%ConceptDataType%'" +
-						" group by p.patient_id", Object.class)
+						" group by p.patient_id")
 				.addScalar("person_id", StandardBasicTypes.INTEGER)
 				.addScalar("patientProgramAttributeValue", StandardBasicTypes.STRING)
 				.list();

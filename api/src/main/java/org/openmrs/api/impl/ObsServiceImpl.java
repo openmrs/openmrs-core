@@ -9,8 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -30,7 +28,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
@@ -42,9 +39,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -52,24 +46,21 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @see org.openmrs.api.ObsService
  */
-@Service("obsService")
 @Transactional
-public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, RefByUuid {
+public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 
 	private static final Logger log = LoggerFactory.getLogger(ObsServiceImpl.class);
+
 	/**
 	 * The data access object for the obs service
 	 */
-	@Autowired
 	protected ObsDAO dao;
 	
 	/**
 	 * Report handlers that have been registered. This is filled via {@link #setHandlers(Map)} and
 	 * spring's applicationContext-service.xml object
 	 */
-	@Autowired
-	@Qualifier("handlers")
-	private Map<String, ComplexObsHandler> handlers;
+	private static Map<String, ComplexObsHandler> handlers = null;
 	
 	/**
 	 * Default empty constructor for this obs service
@@ -214,7 +205,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		}
 
 		if(refreshNeeded) {
-			Context.flushSession();
 			Context.refreshEntity(obs);
 		}
 		return obs;
@@ -618,12 +608,21 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	@Override
 	public void setHandlers(Map<String, ComplexObsHandler> newHandlers) throws APIException {
 		if (newHandlers == null) {
-			this.handlers = null;
+			ObsServiceImpl.setStaticHandlers(null);
 			return;
 		}
 		for (Map.Entry<String, ComplexObsHandler> entry : newHandlers.entrySet()) {
 			registerHandler(entry.getKey(), entry.getValue());
 		}
+	}
+	
+	/**
+	 * Sets handlers using static method
+	 *
+	 * @param currentHandlers
+	 */
+	private static void setStaticHandlers(Map<String, ComplexObsHandler> currentHandlers) {
+		ObsServiceImpl.handlers = currentHandlers;
 	}
 	
 	/**
@@ -679,19 +678,4 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	public void removeHandler(String key) {
 		handlers.remove(key);
 	}
-	
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getRefByUuid(Class<T> type, String uuid) {
-        if (Obs.class.equals(type)) {
-            return (T) getObsByUuid(uuid);
-        }
-        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
-    }
-
-    @Override
-    public List<Class<?>> getRefTypes() {
-        return Arrays.asList(Obs.class);
-    }
-
 }

@@ -35,7 +35,7 @@ public class DatabaseIT implements LiquibaseProvider {
 	
 	private static final Logger log = LoggerFactory.getLogger(DatabaseIT.class);
 
-	public static String CONNECTION_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=LEGACY;NON_KEYWORDS=VALUE";
+	public static String CONNECTION_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
 	
 	private static final String CONTEXT = "some context";
 	
@@ -44,7 +44,7 @@ public class DatabaseIT implements LiquibaseProvider {
 	protected static final String PASSWORD = "test";
 	
 	@BeforeEach
-	public void setup() throws Exception {
+	public void setup() throws SQLException, ClassNotFoundException {
 		this.initializeDatabase();
 	}
 	

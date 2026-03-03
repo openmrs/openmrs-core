@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
@@ -30,7 +30,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
-import org.hibernate.dialect.PostgreSQLDialect;
+import org.hibernate.dialect.PostgreSQL82Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Location;
@@ -49,39 +49,6 @@ public class HibernateUtil {
 	}
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateUtil.class);
-	
-	/**
-	 * Persists a new entity or merges a detached entity, emulating the old Hibernate
-	 * {@code saveOrUpdate()} behavior. For entities that are already managed, this is a no-op.
-	 * For new entities (no identifier), {@code persist()} is used which modifies the entity in-place.
-	 * For existing entities (with identifier), the existing managed instance is merged.
-	 *
-	 * @param session the Hibernate session
-	 * @param entity the entity to save or update
-	 * @since 3.0.0
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T saveOrUpdate(Session session, T entity) {
-		if (session.contains(entity)) {
-			return entity;
-		}
-		Object id = session.getSessionFactory().getPersistenceUnitUtil().getIdentifier(entity);
-		if (id == null) {
-			session.persist(entity);
-			return entity;
-		} else {
-			// Check if the entity already exists in the DB
-			Class<?> entityClass = org.hibernate.Hibernate.getClass(entity);
-			Object existing = session.get(entityClass, id);
-			if (existing == null) {
-				// Entity has an assigned ID but doesn't exist in DB yet - persist it
-				session.persist(entity);
-				return entity;
-			} else {
-				return (T) session.merge(entity);
-			}
-		}
-	}
 	
 	private static Dialect dialect = null;
 	
@@ -117,7 +84,7 @@ public class HibernateUtil {
 		
 		if (isPostgreSQLDialect == null) {
 			// check and cache the dialect
-			isPostgreSQLDialect = PostgreSQLDialect.class.getName()
+			isPostgreSQLDialect = PostgreSQL82Dialect.class.getName()
 			        .equals(getDialect(sessionFactory).getClass().getName());
 		}
 		
@@ -138,7 +105,7 @@ public class HibernateUtil {
 		}
 		
 		SessionFactoryImplementor implementor = (SessionFactoryImplementor) sessionFactory;
-		dialect = implementor.getJdbcServices().getDialect();
+		dialect = implementor.getDialect();
 		
 		log.debug("Getting dialect for session: {}", dialect);
 		

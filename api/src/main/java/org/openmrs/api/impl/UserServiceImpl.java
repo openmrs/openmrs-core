@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -23,7 +22,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
@@ -35,7 +34,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CannotDeleteRoleWithChildrenException;
 import org.openmrs.api.InvalidActivationKeyException;
-import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -52,9 +50,7 @@ import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -64,13 +60,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.api.UserService
  * @see org.openmrs.api.context.Context
  */
-@Service("userService")
 @Transactional
-public class UserServiceImpl extends BaseOpenmrsService implements UserService, RefByUuid {
+public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 	
-	@Autowired
 	protected UserDAO dao;
 	
 	private static final int MAX_VALID_TIME = 12 * 60 * 60 * 1000; //Period of 12 hours
@@ -828,25 +822,4 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	public String getLastLoginTime(User user) {
 		return dao.getLastLoginTime(user);
 	}
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getRefByUuid(Class<T> type, String uuid) {
-        if (Role.class.equals(type)) {
-            return (T) getRoleByUuid(uuid);
-        }
-        if (Privilege.class.equals(type)) {
-            return (T) getPrivilegeByUuid(uuid);
-        }
-        if (User.class.equals(type)) {
-            return (T) getUserByUuid(uuid);
-        }
-        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
-    }
-
-    @Override
-    public List<Class<?>> getRefTypes() {
-        return Arrays.asList(Role.class, Privilege.class, User.class);
-    }
-
 }

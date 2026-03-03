@@ -14,7 +14,6 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -51,7 +50,9 @@ import org.w3c.dom.ls.LSSerializer;
 public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 	private static final String LOGIC_MODULE_PATH = "org/openmrs/module/include/logic-0.2.omod";
-	
+
+	private static DocumentBuilderFactory documentBuilderFactory;
+
 	private static DocumentBuilder documentBuilder;
 
 
@@ -63,7 +64,8 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 	@BeforeAll
 	public static void setUp() throws ParserConfigurationException {
-		documentBuilder = createDocumentBuilder();
+		documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		documentBuilder = documentBuilderFactory.newDocumentBuilder();
 	}
 
 	@Test

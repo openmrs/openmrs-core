@@ -52,7 +52,7 @@ public class HibernateOpenmrsObjectDAO<T extends BaseOpenmrsObject> implements O
 	 */
 	@Override
 	public void delete(T persistent) {
-		sessionFactory.getCurrentSession().remove(persistent);
+		sessionFactory.getCurrentSession().delete(persistent);
 	}
 	
 	/**
@@ -60,7 +60,8 @@ public class HibernateOpenmrsObjectDAO<T extends BaseOpenmrsObject> implements O
 	 */
 	@Override
 	public T saveOrUpdate(T persistent) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), persistent);
+		sessionFactory.getCurrentSession().saveOrUpdate(persistent);
+		return persistent;
 	}
 	
 }

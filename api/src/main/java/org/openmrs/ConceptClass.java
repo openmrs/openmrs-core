@@ -9,14 +9,16 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Cacheable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Cacheable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
@@ -68,7 +70,12 @@ public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_class_id_seq")
+	@GenericGenerator(
+			name = "concept_class_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "concept_class_concept_class_id_seq")
+	)
 	@Column(name = "concept_class_id", nullable = false)
 	private Integer conceptClassId;
 	

@@ -12,7 +12,7 @@ package org.openmrs;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 
 /**

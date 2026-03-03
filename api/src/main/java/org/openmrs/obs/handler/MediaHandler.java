@@ -9,7 +9,7 @@
  */
 package org.openmrs.obs.handler;
 
-import jakarta.activation.MimetypesFileTypeMap;
+import javax.activation.MimetypesFileTypeMap;
 import java.io.IOException;
 import java.io.InputStream;
 

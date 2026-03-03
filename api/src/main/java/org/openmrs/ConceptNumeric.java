@@ -14,7 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 
 /**
@@ -66,7 +66,6 @@ public class ConceptNumeric extends Concept {
 	 * @param conceptId key for this numeric concept
 	 */
 	public ConceptNumeric(Integer conceptId) {
-		this();
 		setConceptId(conceptId);
 	}
 	

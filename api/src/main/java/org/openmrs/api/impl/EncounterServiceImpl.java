@@ -9,8 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -42,7 +40,6 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
@@ -53,8 +50,6 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,11 +62,9 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.EncounterService
  */
-@Service("encounterService")
 @Transactional
-public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService, RefByUuid {
+public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService {
 	
-	@Autowired
 	private EncounterDAO dao;
 	
 	/**
@@ -1013,25 +1006,4 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		return saveEncounter(encounterCopy);
 	}
-	
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getRefByUuid(Class<T> type, String uuid) {
-        if (EncounterRole.class.equals(type)) {
-            return (T) getEncounterRoleByUuid(uuid);
-        }
-        if (Encounter.class.equals(type)) {
-            return (T) getEncounterByUuid(uuid);
-        }
-        if (EncounterType.class.equals(type)) {
-            return (T) getEncounterTypeByUuid(uuid);
-        }
-        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
-    }
-
-    @Override
-    public List<Class<?>> getRefTypes() {
-        return Arrays.asList(EncounterRole.class, Encounter.class, EncounterType.class);
-    }
-
 }

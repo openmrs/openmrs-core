@@ -10,16 +10,18 @@
 package org.openmrs;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -39,7 +41,12 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_answer_id_seq")
+	@GenericGenerator(
+			name = "concept_answer_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "concept_answer_concept_answer_id_seq")
+	)
 	@Column(name = "concept_answer_id")
 	private Integer conceptAnswerId;
 	

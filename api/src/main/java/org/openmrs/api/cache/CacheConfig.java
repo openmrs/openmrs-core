@@ -20,9 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.text.CaseUtils;
-import org.infinispan.commons.configuration.io.ConfigurationResourceResolver;
 import org.infinispan.commons.dataconversion.MediaType;
 import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
 import org.infinispan.configuration.parsing.ParserRegistry;
@@ -37,6 +36,7 @@ import org.jgroups.protocols.UDP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -122,10 +122,10 @@ public class CacheConfig {
 			// Skip already defined caches.
 			InputStream fullConfig = buildFullConfig(yaml, configFile,
 				baseConfigBuilder.getNamedConfigurationBuilders().keySet(), cacheType);
-			parser.parse(fullConfig, baseConfigBuilder, ConfigurationResourceResolver.DEFAULT,
+			parser.parse(fullConfig, baseConfigBuilder, null,
 				MediaType.APPLICATION_YAML);
 		}
-
+		
 		DefaultCacheManager cacheManager = new DefaultCacheManager(baseConfigBuilder, true);
 		return new SpringEmbeddedCacheManager(cacheManager);
 	}

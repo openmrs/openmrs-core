@@ -9,10 +9,10 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -32,8 +32,6 @@ import org.openmrs.VisitType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.VisitDAO;
 import org.openmrs.parameter.VisitSearchCriteria;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -42,13 +40,11 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @since 1.9
  */
-@Repository("visitDAO")
 public class HibernateVisitDAO implements VisitDAO {
 	
-	private final SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
-	@Autowired
-	public HibernateVisitDAO(SessionFactory sessionFactory) {
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -128,7 +124,8 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional
 	public VisitType saveVisitType(VisitType visitType) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), visitType);
+		sessionFactory.getCurrentSession().saveOrUpdate(visitType);
+		return visitType;
 	}
 	
 	/**
@@ -137,7 +134,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional
 	public void purgeVisitType(VisitType visitType) {
-		sessionFactory.getCurrentSession().remove(visitType);
+		sessionFactory.getCurrentSession().delete(visitType);
 	}
 	
 	/**
@@ -164,7 +161,8 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional
 	public Visit saveVisit(Visit visit) throws DAOException {
-		return HibernateUtil.saveOrUpdate(getCurrentSession(), visit);
+		getCurrentSession().saveOrUpdate(visit);
+		return visit;
 	}
 	
 	/**
@@ -173,7 +171,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional
 	public void deleteVisit(Visit visit) throws DAOException {
-		getCurrentSession().remove(visit);
+		getCurrentSession().delete(visit);
 	}
 	
 	/**
@@ -342,7 +340,8 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional
 	public VisitAttributeType saveVisitAttributeType(VisitAttributeType visitAttributeType) {
-		return HibernateUtil.saveOrUpdate(getCurrentSession(), visitAttributeType);
+		getCurrentSession().saveOrUpdate(visitAttributeType);
+		return visitAttributeType;
 	}
 	
 	/**
@@ -351,7 +350,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional
 	public void deleteVisitAttributeType(VisitAttributeType visitAttributeType) {
-		getCurrentSession().remove(visitAttributeType);
+		getCurrentSession().delete(visitAttributeType);
 	}
 	
 	/**

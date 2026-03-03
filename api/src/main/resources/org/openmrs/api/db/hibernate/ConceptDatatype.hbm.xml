@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ConceptDatatype" table="concept_datatype" mutable="false">
+	
+		<cache usage="read-only"/>
+
+		<id name="conceptDatatypeId" type="java.lang.Integer" column="concept_datatype_id" unsaved-value="0">
+			<generator class="native">
+				<param name="sequence">concept_datatype_concept_datatype_id_seq</param>
+			</generator>
+		</id>
+				
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="38" unique="true" />
+
+		<property name="name" type="java.lang.String" not-null="true"
+			length="255" />
+
+		<property name="description" type="java.lang.String" length="255" />
+
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+
+		<property name="hl7Abbreviation" type="java.lang.String"
+			column="hl7_abbreviation" not-null="false" length="3" />
+
+		<many-to-one name="creator" class="User" not-null="true" />
+
+		<many-to-one name="retiredBy" class="org.openmrs.User"
+			column="retired_by" />
+		<property name="dateRetired" type="java.util.Date"
+			column="date_retired" length="19" />
+		<property name="retireReason" type="java.lang.String"
+			column="retire_reason" length="255" />
+		<property name="retired" type="boolean" length="1"
+			not-null="true" />
+
+	</class>
+
+</hibernate-mapping>

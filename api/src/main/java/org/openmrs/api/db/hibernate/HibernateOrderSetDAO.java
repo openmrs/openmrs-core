@@ -9,9 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -22,10 +22,6 @@ import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderSetDAO;
-
-import org.openmrs.api.db.OrderSetDAO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderSetDAO that
@@ -39,13 +35,22 @@ import org.springframework.stereotype.Repository;
  * @see org.openmrs.api.db.OrderSetDAO
  * @since 1.12
  */
-@Repository("orderSetDAO")
 public class HibernateOrderSetDAO implements OrderSetDAO {
 	
-	private final SessionFactory sessionFactory;
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
 	
-	@Autowired
-	public HibernateOrderSetDAO(SessionFactory sessionFactory) {
+	public HibernateOrderSetDAO() {
+	}
+	
+	/**
+	 * Set session factory
+	 *
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -55,7 +60,8 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	@Override
 	public OrderSet save(OrderSet orderSet) throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
-		return HibernateUtil.saveOrUpdate(session, orderSet);
+		session.saveOrUpdate(orderSet);
+		return orderSet;
 	}
 	
 	/**
@@ -135,7 +141,8 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	 */
 	@Override
 	public OrderSetAttributeType saveOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderSetAttributeType);
+		sessionFactory.getCurrentSession().saveOrUpdate(orderSetAttributeType);
+		return orderSetAttributeType;
 	}
 
 	/**
@@ -143,7 +150,7 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	 */
 	@Override
 	public void deleteOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
-		sessionFactory.getCurrentSession().remove(orderSetAttributeType);
+		sessionFactory.getCurrentSession().delete(orderSetAttributeType);
 	}
 
 	/**

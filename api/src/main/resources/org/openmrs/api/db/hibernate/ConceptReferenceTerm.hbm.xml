@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ConceptReferenceTerm" table="concept_reference_term">
+
+		<id name="conceptReferenceTermId" type="java.lang.Integer" column="concept_reference_term_id">
+			<generator class="native">
+				<param name="sequence">concept_reference_term_concept_reference_term_id_seq</param>
+			</generator>
+		</id>
+		
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true" />
+
+		<many-to-one name="conceptSource" column="concept_source_id" class="ConceptSource" not-null="true"/>
+					
+		<property name="code" type="java.lang.String" column="code" length="255" not-null="true" />
+		
+		<property name="name" type="java.lang.String" column="name" length="255" update="true" />
+		
+		<property name="version" type="java.lang.String" column="version" length="50" />
+		
+		<property name="description" type="java.lang.String" column="description" length="255" />
+		
+		<many-to-one name="creator" class="User" column="creator" not-null="true" />
+		
+		<property name="dateCreated" type="java.util.Date" column="date_created" length="19" not-null="true"/>
+		
+		<many-to-one name="changedBy" class="User" column="changed_by" />
+		
+		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
+		
+		<property name="retired" type="java.lang.Boolean" column="retired" length="1" not-null="true"/>
+		
+		<many-to-one name="retiredBy" class="User" column="retired_by" />
+		
+		<property name="dateRetired" type="java.util.Date" column="date_retired" length="19" />
+		
+		<property name="retireReason" type="java.lang.String" column="retire_reason" length="255" />
+		
+		<set name="conceptReferenceTermMaps" inverse="true" cascade="all-delete-orphan, delete">
+			<key column="term_a_id" not-null="true" />
+			<one-to-many class="ConceptReferenceTermMap" />
+		</set>
+
+	</class>
+
+</hibernate-mapping>

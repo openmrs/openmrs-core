@@ -9,7 +9,7 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Cacheable;
+import javax.persistence.Cacheable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;

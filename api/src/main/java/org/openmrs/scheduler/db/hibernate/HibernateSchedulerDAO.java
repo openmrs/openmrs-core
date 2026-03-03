@@ -9,9 +9,9 @@
  */
 package org.openmrs.scheduler.db.hibernate;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -22,13 +22,10 @@ import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.scheduler.db.SchedulerDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.stereotype.Repository;
 
 /**
  */
-@Repository("schedulerDAO")
 public class HibernateSchedulerDAO implements SchedulerDAO {
 	
 	/**
@@ -36,13 +33,23 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 */
 	private static final Logger log = LoggerFactory.getLogger(HibernateSchedulerDAO.class);
 	
-	private final SessionFactory sessionFactory;
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
 	
 	/**
-	 * Constructor with SessionFactory injection
+	 * Default Public constructor
 	 */
-	@Autowired
-	public HibernateSchedulerDAO(SessionFactory sessionFactory) {
+	public HibernateSchedulerDAO() {
+	}
+	
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -55,7 +62,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	@Override
 	public void createTask(TaskDefinition task) throws DAOException {
 		// add all data minus the password as a new user
-		sessionFactory.getCurrentSession().persist(task);
+		sessionFactory.getCurrentSession().save(task);
 	}
 	
 	/**
@@ -148,7 +155,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 */
 	@Override
 	public void deleteTask(TaskDefinition taskConfig) throws DAOException {
-		sessionFactory.getCurrentSession().remove(taskConfig);
+		sessionFactory.getCurrentSession().delete(taskConfig);
 	}
 	
 	/**

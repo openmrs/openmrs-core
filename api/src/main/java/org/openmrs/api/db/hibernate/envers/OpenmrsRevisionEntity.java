@@ -10,13 +10,12 @@
 
 package org.openmrs.api.db.hibernate.envers;
 
-import java.util.Date;
-
+import org.hibernate.envers.DefaultRevisionEntity;
 import org.hibernate.envers.RevisionEntity;
-import org.hibernate.envers.RevisionMapping;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * Custom revision entity for OpenMRS application
@@ -25,7 +24,7 @@ import jakarta.persistence.Table;
 @RevisionEntity(OpenmrsRevisionEntityListener.class)
 @Entity
 @Table(name = "revision_entity")
-public class OpenmrsRevisionEntity extends RevisionMapping {
+public class OpenmrsRevisionEntity extends DefaultRevisionEntity {
 
 	private Integer changedBy;
 	

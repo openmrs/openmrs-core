@@ -9,15 +9,15 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.CacheRetrieveMode;
-import jakarta.persistence.CacheStoreMode;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import javax.persistence.CacheRetrieveMode;
+import javax.persistence.CacheStoreMode;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.NativeQuery;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterProvider;
@@ -49,8 +49,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.parameter.EncounterSearchCriteria;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific dao for the {@link EncounterService} All calls should be made on the
@@ -59,16 +57,19 @@ import org.springframework.stereotype.Repository;
  * @see EncounterDAO
  * @see EncounterService
  */
-@Repository("encounterDAO")
 public class HibernateEncounterDAO implements EncounterDAO {
 
 	/**
 	 * Hibernate session factory
 	 */
-	private final SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
-	@Autowired
-	public HibernateEncounterDAO(SessionFactory sessionFactory) {
+	/**
+	 * Set session factory
+	 *
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -77,7 +78,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public Encounter saveEncounter(Encounter encounter) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounter);
+		sessionFactory.getCurrentSession().saveOrUpdate(encounter);
+		return encounter;
 	}
 	
 	/**
@@ -85,7 +87,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public void deleteEncounter(Encounter encounter) throws DAOException {
-		sessionFactory.getCurrentSession().remove(encounter);
+		sessionFactory.getCurrentSession().delete(encounter);
 	}
 	
 	/**
@@ -181,7 +183,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public EncounterType saveEncounterType(EncounterType encounterType) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounterType);
+		sessionFactory.getCurrentSession().saveOrUpdate(encounterType);
+		return encounterType;
 	}
 	
 	/**
@@ -189,7 +192,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public void deleteEncounterType(EncounterType encounterType) throws DAOException {
-		sessionFactory.getCurrentSession().remove(encounterType);
+		sessionFactory.getCurrentSession().delete(encounterType);
 	}
 	
 	/**
@@ -264,11 +267,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		FlushMode flushMode = session.getHibernateFlushMode();
 		session.setHibernateFlushMode(FlushMode.MANUAL);
 		try {
-			NativeQuery<Date> sql = session
-				.createNativeQuery(
-					"select encounter_datetime from encounter where encounter_id = :encounterId", Date.class);
-			sql.setParameter("encounterId", encounter.getEncounterId());
-			return sql.uniqueResult();
+			SQLQuery sql = session
+			        .createSQLQuery("select encounter_datetime from encounter where encounter_id = :encounterId");
+			sql.setInteger("encounterId", encounter.getEncounterId());
+			return (Date) sql.uniqueResult();
 		}
 		finally {
 			session.setHibernateFlushMode(flushMode);
@@ -332,10 +334,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		FlushMode flushMode = session.getHibernateFlushMode();
 		session.setHibernateFlushMode(FlushMode.MANUAL);
 		try {
-			NativeQuery<Integer> sql = session.createNativeQuery("select location_id from encounter where encounter_id = :encounterId",
-				Integer.class);
-			sql.setParameter("encounterId", encounter.getEncounterId());
-			return Context.getLocationService().getLocation(sql.uniqueResult());
+			SQLQuery sql = session.createSQLQuery("select location_id from encounter where encounter_id = :encounterId");
+			sql.setInteger("encounterId", encounter.getEncounterId());
+			return Context.getLocationService().getLocation((Integer) sql.uniqueResult());
 		}
 		finally {
 			session.setHibernateFlushMode(flushMode);
@@ -361,8 +362,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		);
 
 		TypedQuery<Encounter> query = session.createQuery(cq);
-		query.setHint("jakarta.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-		query.setHint("jakarta.persistence.cache.storeMode", CacheStoreMode.BYPASS);
+		query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+		query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.BYPASS);
 
 		Map<Integer, List<Encounter>> encountersBypatient = new HashMap<>();
 		List<Encounter> allEncounters = query.getResultList();
@@ -533,7 +534,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounterRole);
+		sessionFactory.getCurrentSession().saveOrUpdate(encounterRole);
+		return encounterRole;
 	}
 	
 	/**
@@ -541,7 +543,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public void deleteEncounterRole(EncounterRole encounterRole) throws DAOException {
-		sessionFactory.getCurrentSession().remove(encounterRole);
+		sessionFactory.getCurrentSession().delete(encounterRole);
 	}
 	
 	/**
@@ -635,13 +637,11 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		// Query for Encounters
 		CriteriaQuery<Encounter> encounterQuery = cb.createQuery(Encounter.class);
 		Root<Encounter> encounterRoot = encounterQuery.from(Encounter.class);
-		Join<Encounter, Visit> visitJoin = encounterRoot.join("visit", JoinType.LEFT);
-
 		encounterQuery.where(createEncountersByPatientPredicates(cb, encounterRoot, patient, includeVoided, query)
 			.toArray(new Predicate[]{}));
 		encounterQuery.orderBy(
-			cb.desc(visitJoin.get("startDatetime")),
-			cb.desc(visitJoin.get("visitId")),
+			cb.desc(encounterRoot.get("visit").get("startDatetime")),
+			cb.desc(encounterRoot.get("visit").get("visitId")),
 			cb.desc(encounterRoot.get("encounterDatetime")),
 			cb.desc(encounterRoot.get("encounterId")));
 

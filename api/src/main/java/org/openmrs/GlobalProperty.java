@@ -9,10 +9,10 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Cacheable;
+import javax.persistence.Cacheable;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;

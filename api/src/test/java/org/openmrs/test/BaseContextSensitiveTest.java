@@ -111,14 +111,8 @@ import org.xml.sax.InputSource;
  */
 @ContextConfiguration(locations = { "classpath:applicationContext-service.xml",
         "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
-@TestExecutionListeners(
-	listeners = {
-		TransactionalTestExecutionListener.class,
-		SkipBaseSetupAnnotationExecutionListener.class,
-		StartModuleExecutionListener.class
-	},
-	mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
-)
+@TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
+        StartModuleExecutionListener.class })
 @Transactional
 @Rollback
 @Deprecated
@@ -321,7 +315,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// properties
 		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000;MODE=LEGACY;NON_KEYWORDS=VALUE;IGNORECASE=TRUE";
+			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
@@ -842,7 +836,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
-		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection, getSchemaPattern());
+		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
 		DatabaseConfig config = dbUnitConn.getConfig();
 		
 		if (useInMemoryDatabase()) {
@@ -854,15 +848,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		
 		return dbUnitConn;
-	}
-
-	protected String getSchemaPattern() {
-		if (useInMemoryDatabase()) {
-			return "PUBLIC";
-		}
-		else {
-			return "public";
-		}
 	}
 	
 	/**
@@ -884,8 +869,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
 			
 			// find all the tables for this connection
-			String[] types = { "TABLE" };
-			ResultSet resultSet = connection.getMetaData().getTables(System.getProperty("databaseName"), "PUBLIC", "%", types);
+			ResultSet resultSet = connection.getMetaData().getTables(System.getProperty("databaseName"), "PUBLIC", "%", null);
 			DefaultDataSet dataset = new DefaultDataSet();
 			while (resultSet.next()) {
 				String tableName = resultSet.getString(3);
@@ -913,8 +897,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	public void clearHibernateCache() {
 		SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
-		sf.getCache().evictCollectionData();
-		sf.getCache().evictEntityData();
+		sf.getCache().evictCollectionRegions();
+		sf.getCache().evictEntityRegions();
 	}
 	
 	/**
@@ -941,7 +925,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			Context.openSession();
 		}
 		
-		// The skipBaseSetup flag is controlled by the @SkipBaseSetup annotation.
+		// The skipBaseSetup flag is controlled by the @SkipBaseSetup annotation. 		if (useInMemoryDatabase()) {
 		if (!skipBaseSetup) {
 			if (!isBaseSetup) {
 				

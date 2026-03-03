@@ -9,7 +9,7 @@
  */
 package org.openmrs.util.databasechange;
 
-import jakarta.persistence.Entity;
+import javax.persistence.Entity;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

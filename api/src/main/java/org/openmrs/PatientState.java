@@ -11,17 +11,19 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * PatientState
@@ -38,7 +40,12 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	// ******************
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "patient_state_id_seq")
+	@GenericGenerator(
+		name = "patient_state_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "patient_state_patient_state_id_seq")
+	)
 	@Column(name = "patient_state_id")
 	private Integer patientStateId;
 

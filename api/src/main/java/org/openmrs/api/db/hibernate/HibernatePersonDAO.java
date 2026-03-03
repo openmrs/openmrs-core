@@ -9,11 +9,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.NativeQuery;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -40,8 +40,6 @@ import org.openmrs.person.PersonMergeLog;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific Person database methods. <br>
@@ -56,7 +54,6 @@ import org.springframework.stereotype.Repository;
  * @see org.openmrs.api.PersonService
  * @see org.openmrs.api.context.Context
  */
-@Repository("personDAO")
 public class HibernatePersonDAO implements PersonDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernatePersonDAO.class);
@@ -64,16 +61,23 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * Hibernate session factory
 	 */
-	private final SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
-	private final SearchSessionFactory searchSessionFactory;
+	private SearchSessionFactory searchSessionFactory;
 	
-	@Autowired
-	public HibernatePersonDAO(SessionFactory sessionFactory, SearchSessionFactory searchSessionFactory) {
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
+	}
+
+	public void setSearchSessionFactory(SearchSessionFactory searchSessionFactory) {
 		this.searchSessionFactory = searchSessionFactory;
 	}
-	
+
 	/**
 	 * This method executes a Lucene search on persons based on the soundex filter with one search name given
 	 * 
@@ -310,7 +314,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public void deletePersonAttributeType(PersonAttributeType type) {
-		sessionFactory.getCurrentSession().remove(type);
+		sessionFactory.getCurrentSession().delete(type);
 	}
 	
 	/**
@@ -319,7 +323,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), type);
+		sessionFactory.getCurrentSession().saveOrUpdate(type);
+		return type;
 	}
 	
 	/**
@@ -557,7 +562,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), relationshipType);
+		sessionFactory.getCurrentSession().saveOrUpdate(relationshipType);
+		return relationshipType;
 	}
 	
 	/**
@@ -566,7 +572,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException {
-		sessionFactory.getCurrentSession().remove(relationshipType);
+		sessionFactory.getCurrentSession().delete(relationshipType);
 	}
 	
 	/**
@@ -584,7 +590,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public Person savePerson(Person person) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), person);
+		sessionFactory.getCurrentSession().saveOrUpdate(person);
+		return person;
 	}
 	
 	/**
@@ -593,7 +600,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public Relationship saveRelationship(Relationship relationship) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), relationship);
+		sessionFactory.getCurrentSession().saveOrUpdate(relationship);
+		return relationship;
 	}
 	
 	/**
@@ -602,7 +610,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public void deleteRelationship(Relationship relationship) throws DAOException {
-		sessionFactory.getCurrentSession().remove(relationship);
+		sessionFactory.getCurrentSession().delete(relationship);
 	}
 	
 	/**
@@ -618,7 +626,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			if (address.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(address);
 			} else {
-				sessionFactory.getCurrentSession().remove(address);
+				sessionFactory.getCurrentSession().delete(address);
 			}
 		}
 		person.setAddresses(null);
@@ -627,7 +635,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			if (attribute.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(attribute);
 			} else {
-				sessionFactory.getCurrentSession().remove(attribute);
+				sessionFactory.getCurrentSession().delete(attribute);
 			}
 		}
 		person.setAttributes(null);
@@ -636,13 +644,13 @@ public class HibernatePersonDAO implements PersonDAO {
 			if (name.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(name);
 			} else {
-				sessionFactory.getCurrentSession().remove(name);
+				sessionFactory.getCurrentSession().delete(name);
 			}
 		}
 		person.setNames(null);
 		
 		// finally, just tell hibernate to delete our object
-		sessionFactory.getCurrentSession().remove(person);
+		sessionFactory.getCurrentSession().delete(person);
 	}
 	
 	/**
@@ -658,20 +666,18 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public String getSavedPersonAttributeTypeName(PersonAttributeType personAttributeType) {
-		NativeQuery<String> sql = sessionFactory.getCurrentSession().createNativeQuery(
-		    "select name from person_attribute_type where person_attribute_type_id = :personAttributeTypeId",
-			String.class);
+		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
+		    "select name from person_attribute_type where person_attribute_type_id = :personAttributeTypeId");
 		sql.setParameter("personAttributeTypeId", personAttributeType.getId());
-		return sql.uniqueResult();
+		return (String) sql.uniqueResult();
 	}
 
 	@Override
 	public Boolean getSavedPersonAttributeTypeSearchable(PersonAttributeType personAttributeType) {
-		NativeQuery<Boolean> sql = sessionFactory.getCurrentSession().createNativeQuery(
-			"select searchable from person_attribute_type where person_attribute_type_id = :personAttributeTypeId",
-			Boolean.class);
+		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
+			"select searchable from person_attribute_type where person_attribute_type_id = :personAttributeTypeId");
 		sql.setParameter("personAttributeTypeId", personAttributeType.getId());
-		return sql.uniqueResult();
+		return (Boolean) sql.uniqueResult();
 	}
 
 	/**
@@ -692,7 +698,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), personMergeLog);
+		sessionFactory.getCurrentSession().saveOrUpdate(personMergeLog);
+		return personMergeLog;
 	}
 	
 	/**
@@ -801,7 +808,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonName savePersonName(PersonName personName) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), personName);
+		sessionFactory.getCurrentSession().saveOrUpdate(personName);
+		return personName;
 	}
 	
 	/**
@@ -810,7 +818,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonAddress savePersonAddress(PersonAddress personAddress) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), personAddress);
+		sessionFactory.getCurrentSession().saveOrUpdate(personAddress);
+		return personAddress;
 	}
 	
 }

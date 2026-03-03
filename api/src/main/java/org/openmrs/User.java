@@ -9,6 +9,21 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,27 +35,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.persistence.Cacheable;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapKeyColumn;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.openmrs.api.context.Context;
@@ -72,13 +75,19 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_user_id_seq")
+	@GenericGenerator(
+		name = "users_user_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "users_user_id_seq")
+	)
 	@Column(name = "user_id")
 	private Integer userId;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name = "person_id", nullable = false)
-	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@Cascade(CascadeType.SAVE_UPDATE)
 	private Person person;
 
 	@Column(name = "system_id", nullable = false, length = 50)
@@ -90,17 +99,18 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	@Column(name = "email", length = 255, unique = true)
 	private String email;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role"))
+	@LazyCollection(LazyCollectionOption.FALSE)
 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH })
+	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT })
 	private Set<Role> roles;
 
 	@ElementCollection
 	@CollectionTable(name = "user_property", joinColumns = @JoinColumn(name = "user_id", nullable = false))
 	@MapKeyColumn(name = "property", length = 255)
 	@Column(name = "property_value", length = Integer.MAX_VALUE)
-	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH })
+	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT })
 	@NotAudited
 	private Map<String, String> userProperties;
 
@@ -110,14 +120,14 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	@Transient
 	private String parsedProficientLocalesProperty = "";
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 
 	@Column(name = "date_created", nullable = false, length = 19)
 	private Date dateCreated;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 
@@ -127,7 +137,7 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	@Column(name = "retired", nullable = false, length = 1)
 	private boolean retired;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 

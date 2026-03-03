@@ -9,16 +9,18 @@
  */
 package org.openmrs.api.db;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.BaseChangeableOpenmrsMetadata;
 import org.openmrs.serialization.OpenmrsSerializer;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Object representation of a Serialized Object as stored in the database.
@@ -29,7 +31,12 @@ import jakarta.persistence.Table;
 public class SerializedObject extends BaseChangeableOpenmrsMetadata {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "serialized_object_id_seq")
+	@GenericGenerator(
+		name = "serialized_object_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "serialized_object_serialized_object_id_seq")
+	)
 	@Column(name = "serialized_object_id")
 	private Integer id;
 

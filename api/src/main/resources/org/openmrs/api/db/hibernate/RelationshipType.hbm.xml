@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">   
+<hibernate-mapping package="org.openmrs">
+
+<class name="RelationshipType" table="relationship_type">
+
+	<id name="relationshipTypeId" type="java.lang.Integer" column="relationship_type_id" unsaved-value="0">
+		<generator class="native">
+			<param name="sequence">relationship_type_relationship_type_id_seq</param>
+		</generator>
+	</id>
+
+    
+
+    <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+
+    <property name="aIsToB" type="java.lang.String" not-null="true" length="50" access="field" column="a_is_to_b"/> <!-- Accessing field so we don't have to use getaIsToB() -->
+    
+    <property name="bIsToA" type="java.lang.String" not-null="true" length="50" access="field" column="b_is_to_a"/> <!-- Accessing field so we don't have to use getbIsToA() -->
+    
+    <property name="description" type="java.lang.String" length="255"/>
+    
+    <property name="preferred" type="boolean" not-null="true"/>
+    
+    <property name="weight" type="java.lang.Integer" not-null="true" length="255"/>
+    
+    <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19"/>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one name="creator" class="org.openmrs.User" not-null="true">
+        <column name="creator" />
+    </many-to-one>
+    
+    <many-to-one name="retiredBy" class="User" column="retired_by" />
+	<property name="dateRetired" type="java.util.Date"
+			column="date_retired" length="19" />
+	<property name="retireReason" type="java.lang.String"
+			column="retire_reason" length="255" />
+	<property name="retired" type="boolean" column="retired"
+			length="1" not-null="true" />
+
+    <many-to-one name="changedBy" class="org.openmrs.User" column="changed_by"/>
+    <property name="dateChanged" type="java.util.Date"
+              column="date_changed" length="19"/>
+</class>
+</hibernate-mapping>

@@ -11,26 +11,27 @@ package org.openmrs;
 
 import java.util.Date;
 
-import jakarta.persistence.FetchType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.NotYetPersistedException;
 import org.openmrs.customdatatype.SingleCustomValue;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 
 /**
  * A FormResource is meant as a way for modules to add arbitrary information to
@@ -54,7 +55,12 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "form_resource_form_resource_id_seq")
+	@GenericGenerator(
+		name = "form_resource_form_resource_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "form_resource_form_resource_id_seq")
+	)
 	@Column(name = "form_resource_id")
 	private Integer formResourceId;
 
@@ -87,7 +93,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	private transient Object typedValue;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	

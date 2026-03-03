@@ -136,6 +136,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		personService = Context.getPersonService();
 		adminService = Context.getAdministrationService();
 		locationService = Context.getLocationService();
+
+		updateSearchIndex();
 	}
 	
 	private void voidOrders(Collection<Patient> patientsWithOrders) {
@@ -2278,7 +2280,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//retrieve notPreferredPatient and save it with a new attribute
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
-		PersonAttribute attribute = new PersonAttribute();
+		PersonAttribute attribute = new PersonAttribute(2);
 		attribute.setValue("5089");
 		attribute.setAttributeType(personService.getPersonAttributeType(1));
 		notPreferred.addAttribute(attribute);

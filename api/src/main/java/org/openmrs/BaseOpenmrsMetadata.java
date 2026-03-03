@@ -9,14 +9,14 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -41,16 +41,17 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	private String name;
 	
 	@Column(name = "description", length = 255)
+	@Lob
 	private String description;
 	
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "creator")
 	private User creator;
 	
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
@@ -64,7 +65,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Column(name = "date_retired")
 	private Date dateRetired;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 	
@@ -191,6 +192,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 */
 	@Override
 	@Deprecated
+	@JsonIgnore
 	public Boolean isRetired() {
 		return getRetired();
 	}

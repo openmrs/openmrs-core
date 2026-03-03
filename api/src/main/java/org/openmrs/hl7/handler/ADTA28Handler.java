@@ -38,7 +38,6 @@ import ca.uhn.hl7v2.model.v25.datatype.XPN;
 import ca.uhn.hl7v2.model.v25.message.ADT_A05;
 import ca.uhn.hl7v2.model.v25.segment.MSH;
 import ca.uhn.hl7v2.model.v25.segment.PID;
-import org.springframework.stereotype.Component;
 
 /* HL7 using HAPI to handle ADT A28 Messages
  * 
@@ -93,7 +92,6 @@ import org.springframework.stereotype.Component;
  * 
  *  NOTE:  The ones with (*) could be useful in the near future.
  */
-@Component
 public class ADTA28Handler implements Application {
 	
 	private static final Logger log = LoggerFactory.getLogger(ADTA28Handler.class);

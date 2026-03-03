@@ -26,21 +26,22 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.apache.velocity.tools.Scope;
 import org.apache.velocity.tools.ToolContext;
 import org.apache.velocity.tools.ToolManager;
@@ -103,8 +104,8 @@ public abstract class StartupFilter implements Filter {
 	/**
 	 * The web.xml file sets this {@link StartupFilter} to be the first filter for all requests.
 	 *
-	 * @see jakarta.servlet.Filter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse,
-	 *      jakarta.servlet.FilterChain)
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
+	 *      javax.servlet.FilterChain)
 	 */
 	@Override
 	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -202,6 +203,12 @@ public abstract class StartupFilter implements Filter {
 			velocityEngine = new VelocityEngine();
 			
 			Properties props = new Properties();
+			props.setProperty(RuntimeConstants.RUNTIME_LOG, "startup_wizard_vel.log");
+			// Linux requires setting logging properties to initialize Velocity Context.
+			props.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+			    "org.apache.velocity.runtime.log.CommonsLogLogChute");
+			props.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, "initial_wizard_velocity");
+			
 			// so the vm pages can import the header/footer
 			props.setProperty(RuntimeConstants.RESOURCE_LOADER, "class");
 			props.setProperty("class.resource.loader.description", "Velocity Classpath Resource Loader");
@@ -296,7 +303,7 @@ public abstract class StartupFilter implements Filter {
 	}
 	
 	/**
-	 * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
+	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -305,7 +312,7 @@ public abstract class StartupFilter implements Filter {
 	}
 	
 	/**
-	 * @see jakarta.servlet.Filter#destroy()
+	 * @see javax.servlet.Filter#destroy()
 	 */
 	@Override
 	public void destroy() {

@@ -9,13 +9,6 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
 /**
@@ -24,18 +17,12 @@ import org.hibernate.envers.Audited;
  *
  * @since 1.9
  */
-@Entity
-@Table(name = "encounter_role")
-@BatchSize(size = 25)
 @Audited
 public class EncounterRole extends BaseChangeableOpenmrsMetadata {
 	
 	public static final String UNKNOWN_ENCOUNTER_ROLE_UUID = "a0b03050-c99b-11e0-9572-0800200c9a66";
 	
 	// Fields
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "encounter_role_id", nullable = false)
 	private Integer encounterRoleId;
 	
 	// Constructors

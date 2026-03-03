@@ -11,7 +11,6 @@ package org.openmrs.aop;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.User;
@@ -23,15 +22,11 @@ import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.MethodBeforeAdvice;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 /**
  * This class provides the authorization AOP advice performed before every service layer method
  * call.
  */
-@Component("authorizationInterceptor")
 public class AuthorizationAdvice implements MethodBeforeAdvice {
 	
 	/**
@@ -123,7 +118,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private void throwUnauthorized(User user, Method method, Collection<String> attrs) {
 		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
-		    new Object[] { StringUtils.join(attrs, ",") }, Locale.getDefault()));
+		    new Object[] { StringUtils.join(attrs, ",") }, null));
 	}
 	
 	/**
@@ -136,7 +131,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private void throwUnauthorized(User user, Method method, String attr) {
 		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
-		    new Object[] { attr }, Locale.getDefault()));
+		    new Object[] { attr }, null));
 	}
 	
 	/**

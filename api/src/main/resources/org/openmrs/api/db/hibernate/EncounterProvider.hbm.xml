@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="EncounterProvider" table="encounter_provider"
+		batch-size="25">
+
+		<id name="encounterProviderId" type="int" column="encounter_provider_id"
+			unsaved-value="undefined">
+			<generator class="native">
+				<param name="sequence">encounter_provider_encounter_provider_id_seq</param>
+			</generator>
+		</id>
+
+		<property name="uuid" type="java.lang.String" column="uuid"
+			length="38" unique="true" />
+			
+		<property name="dateCreated" type="java.util.Date" column="date_created"
+			not-null="true" length="19" />
+		<property name="voided" type="java.lang.Boolean" column="voided"
+			length="1" not-null="true" />
+		<property name="dateVoided" type="java.util.Date" column="date_voided"
+			length="19" />
+		<property name="voidReason" type="java.lang.String" column="void_reason"
+			length="255" />
+		<property name="dateChanged" type="java.util.Date" column="date_changed"
+			not-null="false" length="19" />
+
+		<!-- Associations -->
+		<many-to-one name="changedBy" class="User" column="changed_by" />
+
+		<many-to-one name="creator" class="User" not-null="true" />
+
+		<many-to-one name="voidedBy" class="User">
+			<column name="voided_by" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to Provider -->
+
+		<many-to-one name="provider" class="Provider" not-null="true">
+			<column name="provider_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to Encounter -->
+
+		<many-to-one name="encounter" class="Encounter" not-null="true">
+			<column name="encounter_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to Encounter Role -->
+
+		<many-to-one name="encounterRole" class="EncounterRole"
+			not-null="true">
+			<column name="encounter_role_id" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

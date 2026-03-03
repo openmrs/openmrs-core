@@ -9,10 +9,10 @@
  */
 package org.openmrs.notification.db.hibernate;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -22,26 +22,32 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openmrs.User;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.db.AlertDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific implementation of the
  */
-@Repository("alertDAO")
 public class HibernateAlertDAO implements AlertDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateAlertDAO.class);
 	
-	private final SessionFactory sessionFactory;
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
 	
-	@Autowired
-	public HibernateAlertDAO(SessionFactory sessionFactory) {
+	public HibernateAlertDAO() {
+	}
+	
+	/**
+	 * Set session factory
+	 *
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -50,7 +56,8 @@ public class HibernateAlertDAO implements AlertDAO {
 	 */
 	@Override
 	public Alert saveAlert(Alert alert) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), alert);
+		sessionFactory.getCurrentSession().saveOrUpdate(alert);
+		return alert;
 	}
 	
 	/**
@@ -66,7 +73,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	 */
 	@Override
 	public void deleteAlert(Alert alert) throws DAOException {
-		sessionFactory.getCurrentSession().remove(alert);
+		sessionFactory.getCurrentSession().delete(alert);
 	}
 	
 	/**

@@ -11,18 +11,9 @@ package org.openmrs.notification;
 
 import java.util.Map;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import org.hibernate.envers.Audited;
 import org.openmrs.BaseOpenmrsObject;
 
-@Entity
-@Table(name = "notification_template")
 @Audited
 public class Template extends BaseOpenmrsObject {
 	
@@ -32,34 +23,23 @@ public class Template extends BaseOpenmrsObject {
 	private static final long serialVersionUID = -1782906754736853557L;
 	
 	// Persisted
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "template_id")
 	private Integer id;
-
-	@Column(name = "name", nullable = false)
+	
 	private String name;
-
-	@Column(name = "template", nullable = false)
+	
 	private String template;
-
-	@Column(name = "ordinal", nullable = false)
+	
 	private Integer ordinal;
-
-	@Column(name = "sender", nullable = false)
+	
 	private String sender;
-
-	@Column(name = "recipients", nullable = false)
+	
 	private String recipients;
-
-	@Column(name = "subject", nullable = false)
+	
 	private String subject;
 	
 	// Not persisted
-	@Transient
 	private Map data;
-
-	@Transient
+	
 	private String content;
 	
 	public Template() {

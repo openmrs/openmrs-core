@@ -12,8 +12,8 @@ package org.openmrs.module.web.filter;
 import java.util.Collections;
 import java.util.Enumeration;
 
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletContext;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 
 /**
  * This class is an implementation of FilterConfig for use in instantiating Filters from Modules
@@ -48,7 +48,7 @@ public class ModuleFilterConfig implements FilterConfig {
 	}
 	
 	/**
-	 * @see jakarta.servlet.FilterConfig#getFilterName()
+	 * @see javax.servlet.FilterConfig#getFilterName()
 	 */
 	@Override
 	public String getFilterName() {
@@ -56,7 +56,7 @@ public class ModuleFilterConfig implements FilterConfig {
 	}
 	
 	/**
-	 * @see jakarta.servlet.FilterConfig#getInitParameter(java.lang.String)
+	 * @see javax.servlet.FilterConfig#getInitParameter(java.lang.String)
 	 */
 	@Override
 	public String getInitParameter(String paramName) {
@@ -64,7 +64,7 @@ public class ModuleFilterConfig implements FilterConfig {
 	}
 	
 	/**
-	 * @see jakarta.servlet.FilterConfig#getInitParameterNames()
+	 * @see javax.servlet.FilterConfig#getInitParameterNames()
 	 */
 	@Override
 	public Enumeration<String> getInitParameterNames() {

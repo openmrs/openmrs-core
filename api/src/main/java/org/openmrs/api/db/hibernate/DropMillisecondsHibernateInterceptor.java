@@ -9,10 +9,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Date;
 
-import org.hibernate.Interceptor;
+import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.openmrs.util.DateUtil;
 import org.springframework.stereotype.Component;
@@ -42,15 +43,15 @@ import org.springframework.stereotype.Component;
  * @since 2.0
  */
 @Component
-public class DropMillisecondsHibernateInterceptor implements Interceptor {
+public class DropMillisecondsHibernateInterceptor extends EmptyInterceptor {
 
 	@Override
-	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
+	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
 		return removeMillisecondsFromDateFields(currentState);
 	}
 
 	@Override
-	public boolean onSave(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
+	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		return removeMillisecondsFromDateFields(state);
 	}
 

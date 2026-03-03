@@ -10,11 +10,14 @@
     graphic logo is a trademark of OpenMRS Inc.
 
 -->
-<databaseChangeLog
-        logicalFilePath="liquibase-schema-only.xml"
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+<databaseChangeLog 
+	logicalFilePath="liquibase-schema-only.xml"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd 
+		http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="rasztabigab (generated)" id="1616003709353-1">
@@ -303,7 +306,7 @@
             <column autoIncrement="true" name="concept_class_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column defaultValue="" name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="VARCHAR(255)"/>
@@ -339,7 +342,7 @@
             <column autoIncrement="true" name="concept_datatype_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column defaultValue="" name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="hl7_abbreviation" type="VARCHAR(3)"/>
@@ -372,7 +375,7 @@
             <column name="description" type="TEXT">
                 <constraints nullable="false"/>
             </column>
-            <column name="locale" type="VARCHAR(50)">
+            <column defaultValue="" name="locale" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="creator" type="INT">
@@ -425,10 +428,10 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column defaultValueComputed="NULL" name="concept_id" type="INT"/>
-            <column name="name" type="VARCHAR(255)">
+            <column defaultValue="" name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="locale" type="VARCHAR(50)">
+            <column defaultValue="" name="locale" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueBoolean="false" name="locale_preferred" type="BOOLEAN"/>
@@ -513,7 +516,7 @@
             </column>
             <column defaultValueComputed="NULL" name="concept_id" type="INT"/>
             <column defaultValueComputed="NULL" name="encounter_id" type="INT"/>
-            <column name="original_text" type="VARCHAR(255)">
+            <column defaultValue="" name="original_text" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="final_text" type="VARCHAR(255)"/>
@@ -531,7 +534,7 @@
             </column>
             <column defaultValueComputed="NULL" name="changed_by" type="INT"/>
             <column defaultValueComputed="NULL" name="date_changed" type="datetime"/>
-            <column name="locale" type="VARCHAR(50)">
+            <column defaultValue="" name="locale" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="uuid" type="CHAR(38)">
@@ -581,13 +584,13 @@
             <column autoIncrement="true" name="concept_source_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(50)">
+            <column defaultValue="" name="name" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="TEXT">
                 <constraints nullable="false"/>
             </column>
-            <column name="hl7_code" type="VARCHAR(50)"/>
+            <column defaultValue="" name="hl7_code" type="VARCHAR(50)"/>
             <column defaultValueNumeric="0" name="creator" type="INT">
                 <constraints nullable="false"/>
             </column>
@@ -1009,7 +1012,7 @@
             <column autoIncrement="true" name="encounter_type_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(50)">
+            <column defaultValue="" name="name" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="TEXT"/>
@@ -1039,7 +1042,7 @@
             <column autoIncrement="true" name="field_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column defaultValue="" name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="TEXT"/>
@@ -1115,10 +1118,10 @@
             <column autoIncrement="true" name="form_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column defaultValue="" name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="version" type="VARCHAR(50)">
+            <column defaultValue="" name="version" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueComputed="NULL" name="build" type="INT"/>
@@ -1209,7 +1212,7 @@
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-45">
         <createTable tableName="global_property">
-            <column name="property" type="VARCHAR(255)">
+            <column defaultValue="" name="property" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="property_value" type="TEXT"/>
@@ -1258,7 +1261,7 @@
             <column name="hl7_data" type="TEXT">
                 <constraints nullable="false"/>
             </column>
-            <column name="error" type="VARCHAR(255)">
+            <column defaultValue="" name="error" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="error_details" type="MEDIUMTEXT"/>
@@ -1298,7 +1301,7 @@
             <column autoIncrement="true" name="hl7_source_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column defaultValue="" name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="TEXT"/>
@@ -1318,7 +1321,7 @@
             <column autoIncrement="true" name="location_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column defaultValue="" name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="VARCHAR(255)"/>
@@ -1888,7 +1891,7 @@
             <column autoIncrement="true" name="order_type_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column defaultValue="" name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="TEXT"/>
@@ -2020,7 +2023,7 @@
             <column defaultValueNumeric="0" name="patient_id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="identifier" type="VARCHAR(50)">
+            <column defaultValue="" name="identifier" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="identifier_type" type="INT">
@@ -2054,7 +2057,7 @@
             <column autoIncrement="true" name="patient_identifier_type_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(50)">
+            <column defaultValue="" name="name" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="TEXT"/>
@@ -2192,7 +2195,7 @@
             <column autoIncrement="true" name="person_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="gender" type="VARCHAR(50)"/>
+            <column defaultValue="" name="gender" type="VARCHAR(50)"/>
             <column defaultValueComputed="NULL" name="birthdate" type="date"/>
             <column defaultValueBoolean="false" name="birthdate_estimated" type="BOOLEAN">
                 <constraints nullable="false"/>
@@ -2284,7 +2287,7 @@
             <column defaultValueNumeric="0" name="person_id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="VARCHAR(50)">
+            <column defaultValue="" name="value" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="person_attribute_type_id" type="INT">
@@ -2314,7 +2317,7 @@
             <column autoIncrement="true" name="person_attribute_type_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(50)">
+            <column defaultValue="" name="name" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="TEXT"/>
@@ -2777,7 +2780,7 @@
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-97">
         <createTable tableName="role">
-            <column name="role" type="VARCHAR(50)">
+            <column defaultValue="" name="role" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="description" type="VARCHAR(255)"/>
@@ -2788,7 +2791,7 @@
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-98">
         <createTable tableName="role_privilege">
-            <column name="role" type="VARCHAR(50)">
+            <column defaultValue="" name="role" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="privilege" type="VARCHAR(255)">
@@ -2798,10 +2801,10 @@
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-99">
         <createTable tableName="role_role">
-            <column name="parent_role" type="VARCHAR(50)">
+            <column defaultValue="" name="parent_role" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="child_role" type="VARCHAR(50)">
+            <column defaultValue="" name="child_role" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
         </createTable>
@@ -2906,10 +2909,10 @@
             <column defaultValueNumeric="0" name="user_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="property" type="VARCHAR(100)">
+            <column defaultValue="" name="property" type="VARCHAR(100)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="property_value" type="VARCHAR(255)">
+            <column defaultValue="" name="property_value" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -2919,7 +2922,7 @@
             <column defaultValueNumeric="0" name="user_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="role" type="VARCHAR(50)">
+            <column defaultValue="" name="role" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
         </createTable>
@@ -2929,7 +2932,7 @@
             <column autoIncrement="true" name="user_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="system_id" type="VARCHAR(50)">
+            <column defaultValue="" name="system_id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="username" type="VARCHAR(50)"/>

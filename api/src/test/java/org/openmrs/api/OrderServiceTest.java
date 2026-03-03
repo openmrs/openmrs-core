@@ -20,49 +20,33 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.openmrs.Allergy;
-import org.openmrs.AllergyReaction;
 import org.openmrs.CareSetting;
-import org.openmrs.Cohort;
-import org.openmrs.CohortMembership;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
-import org.openmrs.ConceptProposal;
-import org.openmrs.ConceptSet;
-import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
-import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptReferenceTerm;
-import org.openmrs.ConceptSource;
-import org.openmrs.ConceptStateConversion;
-import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
-import org.openmrs.DiagnosisAttributeType;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
 import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterProvider;
-import org.openmrs.EncounterRole;
-import org.openmrs.EncounterType;
 import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.LocationAttributeType;
-import org.openmrs.LocationTag;
 import org.openmrs.MedicationDispense;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderAttribute;
 import org.openmrs.OrderAttributeType;
-import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderGroupAttribute;
@@ -70,23 +54,15 @@ import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.OrderSet;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.PersonAddress;
-import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
-import org.openmrs.Privilege;
-import org.openmrs.Program;
 import org.openmrs.ProgramAttributeType;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
-import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderRole;
-import org.openmrs.ReferralOrder;
 import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.User;
@@ -94,32 +70,22 @@ import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.FormResource;
-import org.openmrs.ConceptAttribute;
-import org.openmrs.LocationAttribute;
-import org.openmrs.VisitAttribute;
-import org.openmrs.DiagnosisAttribute;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.ClobDatatypeStorage;
-import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.SerializedObject;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
 import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
 import org.openmrs.api.impl.OrderServiceImpl;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
-import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertRecipient;
-import org.openmrs.notification.Template;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.parameter.OrderSearchCriteriaBuilder;
-import org.openmrs.person.PersonMergeLog;
-import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
@@ -305,6 +271,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
 		throws InterruptedException {
 
+		String javaVersion = System.getProperty("java.version");
+		if (javaVersion.startsWith("1.8") || javaVersion.startsWith("8")) {
+			System.out.println("Ignoring test on Java 1.8 due to hanging.  See TRUNK-6465");
+			return;
+		}
+		
 		int N = 50;
 		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(50));
 		List<Thread> threads = new ArrayList<>();
@@ -2807,53 +2779,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
-	 */
-	@Test
-	public void getOrderTypesByClassName_shouldReturnOrderTypesForTheGivenJavaClassName() {
-		List<OrderType> drugOrderTypes = orderService.getOrderTypesByClassName(DrugOrder.class.getName(), false);
-
-		assertNotNull(drugOrderTypes);
-		assertEquals(1, drugOrderTypes.size());
-		assertEquals("Drug order", drugOrderTypes.get(0).getName());
-
-		List<OrderType> testOrderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getName(), false);
-
-		assertNotNull(testOrderTypes);
-		assertEquals(2, testOrderTypes.size());
-		assertEquals("Test order", testOrderTypes.get(0).getName());
-	}
-
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean, boolean)
-	 */
-	@Test
-	public void getOrderTypesByClassName_shouldReturnOrderTypesForTestOrderAndItsSubclasses() {
-		// create and save a new OrderType for MyTestOrder
-		OrderType myTestOrderType = new OrderType();
-		myTestOrderType.setName("My Test Order");
-		myTestOrderType.setJavaClassName(MyTestOrder.class.getName());
-		Context.getOrderService().saveOrderType(myTestOrderType);
-		
-		List<OrderType> polymorphicTestOrderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getName(), true, false);
-		
-		assertNotNull(polymorphicTestOrderTypes);
-
-		// should include the original TestOrder types + the new subclass
-		assertEquals(3, polymorphicTestOrderTypes.size());
-		assertTrue(polymorphicTestOrderTypes.stream()
-			.anyMatch(ot -> MyTestOrder.class.getName().equals(ot.getJavaClassName())));
-	}
-
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
-	 */
-	@Test
-	public void getOrderTypesByClassName_shouldThrowAPIExceptionForNullJavaClassName() {
-		assertThrows(APIException.class, () -> orderService.getOrderTypesByClassName(null, false));
-	}
-
-	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
@@ -2918,7 +2843,50 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
-	public void saveOrder_shouldFailIfTheJavaTypeOfThePreviousOrderDoesNotMatch() {
+	public void saveOrder_shouldFailIfTheJavaTypeOfThePreviousOrderDoesNotMatch() throws Exception {
+
+		HibernateSessionFactoryBean sessionFactoryBean = (HibernateSessionFactoryBean) applicationContext
+			.getBean("&sessionFactory");
+		Configuration configuration = sessionFactoryBean.getConfiguration();
+
+		HibernateAdministrationDAO adminDAO = (HibernateAdministrationDAO) applicationContext.getBean("adminDAO");
+		StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder()
+			.configure().applySettings(configuration.getProperties()).build();
+
+		Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
+			.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
+			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
+			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+			.addAnnotatedClass(MedicationDispense.class)
+			.addAnnotatedClass(ProviderAttributeType.class)
+			.addAnnotatedClass(ConceptMapType.class)
+			.addAnnotatedClass(Relationship.class)
+			.addAnnotatedClass(Location.class)
+			.addAnnotatedClass(PersonAddress.class)
+			.addAnnotatedClass(PersonAttributeType.class)
+			.addAnnotatedClass(User.class)
+			.addAnnotatedClass(LocationAttributeType.class)
+			.addAnnotatedClass(SerializedObject.class)
+			.addAnnotatedClass(PatientState.class)
+			.addAnnotatedClass(DrugIngredient.class)
+			.addAnnotatedClass(DrugReferenceMap.class)
+			.addAnnotatedClass(AlertRecipient.class)
+			.addAnnotatedClass(PatientIdentifierType.class)
+			.addAnnotatedClass(ProgramAttributeType.class)
+			.addAnnotatedClass(HL7InError.class)
+			.addAnnotatedClass(OrderType.class)
+			.addAnnotatedClass(ConceptAnswer.class)
+			.addAnnotatedClass(ConceptClass.class)
+			.addAnnotatedClass(FormResource.class)
+			.addAnnotatedClass(VisitType.class)
+			.addAnnotatedClass(ProviderRole.class)
+			.getMetadataBuilder().build();
+
+
+		Field field = adminDAO.getClass().getDeclaredField("metadata");
+		field.setAccessible(true);
+		field.set(adminDAO, metaData);
+
 		Order order = orderService.getOrder(7);
 		assertTrue(OrderUtilTest.isActiveOrder(order, null));
 		Order discontinuationOrder = new SomeTestOrder();
@@ -4297,7 +4265,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroup.setPatient(encounter.getPatient());
 		orderGroup.setEncounter(encounter);
 
-		Order firstOrder = new OrderBuilder().withAction(Order.Action.NEW).withConcept(10).withOrderer(1)
+		Order firstOrder = new OrderBuilder().withAction(Order.Action.NEW).withPatient(1).withConcept(10).withOrderer(1)
 			.withEncounter(3).withDateActivated(new Date()).withOrderType(17)
 			.withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).build();
 
@@ -4444,7 +4412,4 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	private Date truncateToSeconds(Date date) {
 		return DateUtils.truncate(date, Calendar.SECOND);
 	}
-
-	// Test-only subclass
-	public static class MyTestOrder extends TestOrder { }
 }

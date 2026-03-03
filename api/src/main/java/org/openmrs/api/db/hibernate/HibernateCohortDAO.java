@@ -9,11 +9,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,8 +24,6 @@ import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.api.db.DAOException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate implementation of the CohortDAO
@@ -34,15 +32,17 @@ import org.springframework.stereotype.Repository;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.CohortService
  */
-@Repository("cohortDAO")
 public class HibernateCohortDAO implements CohortDAO {
 	
 	private static final String VOIDED = "voided";
+	private SessionFactory sessionFactory;
 	
-	private final SessionFactory sessionFactory;
-	
-	@Autowired
-	public HibernateCohortDAO(SessionFactory sessionFactory) {
+	/**
+	 * Auto generated method comment
+	 *
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -108,7 +108,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	 */
 	@Override
 	public Cohort deleteCohort(Cohort cohort) throws DAOException {
-		sessionFactory.getCurrentSession().remove(cohort);
+		sessionFactory.getCurrentSession().delete(cohort);
 		return null;
 	}
 
@@ -168,7 +168,8 @@ public class HibernateCohortDAO implements CohortDAO {
 	 */
 	@Override
 	public Cohort saveCohort(Cohort cohort) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cohort);
+		sessionFactory.getCurrentSession().saveOrUpdate(cohort);
+		return cohort;
 	}
 
 	@Override
@@ -202,6 +203,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	
 	@Override
 	public CohortMembership saveCohortMembership(CohortMembership cohortMembership) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cohortMembership);
+		sessionFactory.getCurrentSession().saveOrUpdate(cohortMembership);
+		return cohortMembership;
 	}
 }

@@ -36,13 +36,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.Filter;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -78,8 +78,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 public class WebModuleUtil {
 
@@ -762,7 +760,12 @@ public class WebModuleUtil {
 	private static Document getDWRModuleXML(InputStream inputStream, String realPath) {
 		Document dwrmodulexml;
 		try {
-			DocumentBuilder db = createDocumentBuilder();
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+
+			// When asked to resolve external entities (such as a DTD) we return an InputSource
+			// with no data at the end, causing the parser to ignore the DTD.
+			db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
 			dwrmodulexml = db.parse(inputStream);
 		}
 		catch (Exception e) {
@@ -1025,8 +1028,11 @@ public class WebModuleUtil {
 	}
 	
 	public static void createDwrModulesXml(String realPath) {
+		
 		try {
-			DocumentBuilder docBuilder = createDocumentBuilder();
+			
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			
 			// root elements
 			Document doc = docBuilder.newDocument();
@@ -1043,7 +1049,7 @@ public class WebModuleUtil {
 			transformer.transform(source, result);
 			
 		}
-		catch (APIException pce) {
+		catch (ParserConfigurationException pce) {
 			log.error("Failed to parse document", pce);
 		}
 		catch (TransformerException tfe) {

@@ -17,8 +17,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.core.annotation.AnnotationUtils;
-
 /**
  * Annotation attributes metadata implementation used for authorization method interception.
  * <p>
@@ -68,12 +66,14 @@ public class AuthorizedAnnotationAttributes {
 	 */
 	public Collection<String> getAttributes(Class<?> target) {
 		Set<String> attributes = new HashSet<>();
-
-		Authorized authorized = AnnotationUtils.findAnnotation(target, Authorized.class);
-		if (authorized != null) {
-			Collections.addAll(attributes, authorized.value());
+		for (Annotation annotation : target.getAnnotations()) {
+			// check for Secured annotations
+			if (annotation instanceof Authorized) {
+				Authorized attr = (Authorized) annotation;
+				Collections.addAll(attributes, attr.value());
+				break;
+			}
 		}
-		
 		return attributes;
 	}
 	
@@ -85,12 +85,15 @@ public class AuthorizedAnnotationAttributes {
 	 */
 	public Collection<String> getAttributes(Method method) {
 		Set<String> attributes = new HashSet<>();
-
-		Authorized authorized = AnnotationUtils.findAnnotation(method, Authorized.class);
-		if (authorized != null) {
-			Collections.addAll(attributes, authorized.value());
-		}
 		
+		for (Annotation annotation : method.getAnnotations()) {
+			// check for Secured annotations
+			if (annotation instanceof Authorized) {
+				Authorized attr = (Authorized) annotation;
+				Collections.addAll(attributes, attr.value());
+				break;
+			}
+		}
 		return attributes;
 	}
 	
@@ -103,9 +106,12 @@ public class AuthorizedAnnotationAttributes {
 	 * @see org.openmrs.annotation.Authorized#requireAll()
 	 */
 	public boolean getRequireAll(Class<?> target) {
-		Authorized authorized = AnnotationUtils.findAnnotation(target, Authorized.class);
-		if (authorized != null) {
-			return authorized.requireAll();
+		for (Annotation annotation : target.getAnnotations()) {
+			// check for Secured annotations
+			if (annotation instanceof Authorized) {
+				Authorized attr = (Authorized) annotation;
+				return attr.requireAll();
+			}
 		}
 		return false;
 	}
@@ -119,9 +125,12 @@ public class AuthorizedAnnotationAttributes {
 	 * @see org.openmrs.annotation.Authorized#requireAll()
 	 */
 	public boolean getRequireAll(Method method) {
-		Authorized authorized = AnnotationUtils.findAnnotation(method, Authorized.class);
-		if (authorized != null) {
-			return authorized.requireAll();
+		for (Annotation annotation : method.getAnnotations()) {
+			// check for Secured annotations
+			if (annotation instanceof Authorized) {
+				Authorized attr = (Authorized) annotation;
+				return attr.requireAll();
+			}
 		}
 		return false;
 	}
@@ -133,9 +142,14 @@ public class AuthorizedAnnotationAttributes {
 	 * @return boolean true/false whether this method is annotated for OpenMRS
 	 */
 	public boolean hasAuthorizedAnnotation(Method method) {
-		Authorized authorized = AnnotationUtils.findAnnotation(method, Authorized.class);
-	
-		return (authorized != null);
+		for (Annotation annotation : method.getAnnotations()) {
+			// check for Secured annotations
+			if (annotation instanceof Authorized) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public Collection<?> getAttributes(Class<?> clazz, Class<?> filter) {

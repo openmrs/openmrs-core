@@ -14,14 +14,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,8 +36,6 @@ import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific Provider related functions. This class should not be used directly. All calls
@@ -45,13 +43,11 @@ import org.springframework.stereotype.Repository;
  *
  * @since 1.9
  */
-@Repository("providerDAO")
 public class HibernateProviderDAO implements ProviderDAO {
 	
-	private final SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
-	@Autowired
-	public HibernateProviderDAO(SessionFactory sessionFactory) {
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -72,7 +68,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public Provider saveProvider(Provider provider) {
-		return HibernateUtil.saveOrUpdate(getSession(), provider);
+		getSession().saveOrUpdate(provider);
+		return provider;
 	}
 	
 	/**
@@ -80,7 +77,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public void deleteProvider(Provider provider) {
-		getSession().remove(provider);
+		getSession().delete(provider);
 	}
 	
 	/**
@@ -349,7 +346,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public ProviderAttributeType saveProviderAttributeType(ProviderAttributeType providerAttributeType) {
-		return HibernateUtil.saveOrUpdate(getSession(), providerAttributeType);
+		getSession().saveOrUpdate(providerAttributeType);
+		return providerAttributeType;
 	}
 	
 	/* (non-Javadoc)
@@ -357,7 +355,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public void deleteProviderAttributeType(ProviderAttributeType providerAttributeType) {
-		getSession().remove(providerAttributeType);
+		getSession().delete(providerAttributeType);
 	}
 	
 	/**
@@ -448,7 +446,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public ProviderRole saveProviderRole(ProviderRole providerRole) {
-		return HibernateUtil.saveOrUpdate(getSession(), providerRole);
+		getSession().saveOrUpdate(providerRole);
+		return providerRole;
 	}
 
 	/**
@@ -456,6 +455,6 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public void deleteProviderRole(ProviderRole providerRole) {
-		getSession().remove(providerRole);
+		getSession().delete(providerRole);
 	}
 }

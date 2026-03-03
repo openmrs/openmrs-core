@@ -117,13 +117,13 @@
 <td>jar</td>
 <td><a class="externalLink" href="https://glassfish.dev.java.net/public/CDDLv1.0.html">Common Development and Distribution License (CDDL) v1.0</a></td></tr>
 <tr class="a">
-<td>jakarta.servlet</td>
+<td>javax.servlet</td>
 <td>jsp-api</td>
 <td>2.0</td>
 <td>jar</td>
 <td>-</td></tr>
 <tr class="b">
-<td>jakarta.validation</td>
+<td>javax.validation</td>
 <td>validation-api</td>
 <td>1.0.0.GA</td>
 <td>jar</td>
@@ -182,6 +182,18 @@
 <td>0.9.14</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2</a>, <a class="externalLink" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution 3.0</a></td></tr>
+<tr class="b">
+<td>org.codehaus.jackson</td>
+<td><a class="externalLink" href="http://jackson.codehaus.org">jackson-core-asl</a></td>
+<td>1.9.13</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
+<tr class="a">
+<td>org.codehaus.jackson</td>
+<td><a class="externalLink" href="http://jackson.codehaus.org">jackson-mapper-asl</a></td>
+<td>1.9.13</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
 <tr class="b">
 <td>org.codehaus.sonar-plugins.java</td>
 <td><a class="externalLink" href="http://sonar-plugins.codehaus.org/java/sonar-jacoco-listeners">sonar-jacoco-listeners</a></td>
@@ -473,8 +485,8 @@
 <th>Type</th>
 <th>License</th></tr>
 <tr class="b">
-<td>jakarta.servlet</td>
-<td><a class="externalLink" href="http://servlet-spec.java.net">jakarta.servlet-api</a></td>
+<td>javax.servlet</td>
+<td><a class="externalLink" href="http://servlet-spec.java.net">javax.servlet-api</a></td>
 <td>3.0.1</td>
 <td>jar</td>
 <td><a class="externalLink" href="https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html">CDDL + GPLv2 with classpath exception</a></td></tr></table></div></div>

@@ -50,8 +50,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import static org.openmrs.util.XmlUtils.createDocumentBuilder;
-
 /**
  * This class will parse an OpenMRS module, specifically its {@code config.xml} file into a {@link org.openmrs.module.Module} object.
  * <p>Typical usage is:
@@ -289,7 +287,8 @@ public class ModuleFileParser {
 	}
 
 	private DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
-		DocumentBuilder db = createDocumentBuilder();;
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
 
 		// When asked to resolve external entities (such as a
 		// DTD) we return an InputSource

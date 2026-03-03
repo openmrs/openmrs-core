@@ -48,8 +48,6 @@ public final class Daemon {
 	
 	private static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
 	
-	private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-	
 	/**
 	 * private constructor to override the default constructor to prevent it from being instantiated.
 	 */
@@ -78,17 +76,15 @@ public final class Daemon {
 	 */
 	public static Module startModule(final Module module, final boolean isOpenmrsStartup,
 	        final AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
-		var possibleFrame = STACK_WALKER.walk(s -> 
-			s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst()
-		);
+		StackTraceElement[] stack = new Exception().getStackTrace();
+		if (stack.length < 2) {
+			throw new APIException("Could not determine where startModule() was called from");
+		}
+		StackTraceElement caller = stack[1];
+		String callerClass = caller.getClassName();
 		
-		if (possibleFrame.isEmpty()) {
-			throw new APIException("Could not determine if module was called from appropriate place");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!Daemon.class.equals(callerClass) && !ModuleFactory.class.equals(callerClass)) {
-				throw new APIException("Module.factory.only", new Object[] { callerClass.getName() });
-			}
+		if (!Daemon.class.getName().equals(callerClass) && !ModuleFactory.class.getName().equals(callerClass)) {
+			throw new APIException("Module.factory.only", new Object[] { callerClass });
 		}
 		
 		Future<Module> moduleStartFuture = runInDaemonThreadInternal(() -> ModuleFactory.startModuleInternal(module, isOpenmrsStartup, applicationContext));
@@ -125,17 +121,15 @@ public final class Daemon {
 	 */
 	public static User createUser(User user, String password, List<String> roleNames) throws Exception {
 		// quick check to make sure we're only being called by ourselves
-		var possibleFrame = STACK_WALKER.walk(s ->
-			s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst()
-		);
-
-		if (possibleFrame.isEmpty()) {
+		StackTraceElement[] stack = new Exception().getStackTrace();
+		if (stack.length < 2) {
 			throw new APIException("Could not determine where createUser() was called from");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!HibernateContextDAO.class.equals(callerClass)) {
-				throw new APIException("Context.DAO.only", new Object[] { callerClass.getName() });
-			}
+		}
+		StackTraceElement caller = stack[1];
+		String callerClass = caller.getClassName();
+		
+		if (!HibernateContextDAO.class.getName().equals(callerClass)) {
+			throw new APIException("Context.DAO.only", new Object[] { callerClass });
 		}
 
 		// create a new thread and execute that task in it
@@ -181,17 +175,22 @@ public final class Daemon {
 	 */
 	public static void executeScheduledTask(final Task task) throws Exception {
 		// quick check to make sure we're only being called by ourselves
-		var possibleFrame = STACK_WALKER.walk(s ->
-			s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst()
-		);
-
-		if (possibleFrame.isEmpty()) {
-			throw new APIException("Could not determine where executeScheduledClass() was called from");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!TimerSchedulerTask.class.isAssignableFrom(callerClass)) {
-				throw new APIException("Scheduler.timer.task.only", new Object[] { callerClass.getName() });
-			}
+		StackTraceElement[] stack = new Exception().getStackTrace();
+		if (stack.length < 2) {
+			throw new APIException("Could not determine where executeScheduledTask() was called from");
+		}
+		StackTraceElement caller = stack[1];
+		String callerClass = caller.getClassName();
+		
+		Class<?> callerClazz;
+		try {
+			callerClazz = Class.forName(callerClass);
+		} catch (ClassNotFoundException e) {
+			throw new APIException("Could not determine where executeScheduledTask() was called from", e);
+		}
+		
+		if (!TimerSchedulerTask.class.isAssignableFrom(callerClazz)) {
+			throw new APIException("Scheduler.timer.task.only", new Object[] { callerClass });
 		}
 		
 		Future<?> scheduleTaskFuture = runInDaemonThreadInternal(() -> TimerSchedulerTask.execute(task));
@@ -314,16 +313,14 @@ public final class Daemon {
 		Boolean b = isDaemonThread.get();
 		if (b == null || !b) {
 			// Allow functions in Daemon and WebDaemon to be treated as a DaemonThread
-			var possibleFrame = STACK_WALKER.walk(s ->
-				s.skip(2).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst()
-			);
-
-			if (possibleFrame.isEmpty()) {
-				throw new APIException("Could not determine where isDaemonThread() was called from");
-			} else {
-				var callerClass = possibleFrame.get();
-				return Daemon.class.equals(callerClass) || "org.openmrs.web.WebDaemon".equals(callerClass.getName());
+			StackTraceElement[] stack = new Exception().getStackTrace();
+			if (stack.length < 3) {
+				throw new APIException("Could not determine where change password was called from");
 			}
+			StackTraceElement caller = stack[2];
+			String callerClass = caller.getClassName();
+			
+			return Daemon.class.getName().equals(callerClass) || "org.openmrs.web.WebDaemon".equals(callerClass);
 		} else {
 			return true;
 		}
@@ -337,17 +334,15 @@ public final class Daemon {
 	 * @since 1.9
 	 */
 	public static void runStartupForService(final OpenmrsService service) throws ModuleException {
-		var possibleFrame = STACK_WALKER.walk(s ->
-			s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst()
-		);
-
-		if (possibleFrame.isEmpty()) {
-			throw new APIException("Could not determine where executeScheduledClass() was called from");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!ServiceContext.class.equals(callerClass)) {
-				throw new APIException("Service.context.only", new Object[] { callerClass.getName() });
-			}
+		StackTraceElement[] stack = new Exception().getStackTrace();
+		if (stack.length < 2) {
+			throw new APIException("Could not determine where change password was called from");
+		}
+		StackTraceElement caller = stack[1];
+		String callerClass = caller.getClassName();
+		
+		if (!ServiceContext.class.getName().equals(callerClass)) {
+			throw new APIException("Service.context.only", new Object[] { callerClass });
 		}
 		
 		Future<?> future = runInDaemonThreadInternal(service::onStartup);

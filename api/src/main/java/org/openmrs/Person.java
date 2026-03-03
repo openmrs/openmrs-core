@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Cacheable;
-import jakarta.persistence.Transient;
+import javax.persistence.Cacheable;
+import javax.persistence.Transient;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
@@ -963,19 +963,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @since 2.7.0
 	 */
 	public Integer getAgeInMonths() {
-		return getAgeInMonths(null);
-	}
-
-	/**
-	 * Convenience method to get the age of a person in months on a given date 
-	 * 
-	 * @param onDate (null defaults to today)
-	 * @return the age in months as an Integer   
-	 * 
-	 * @since 3.0.0
-	 */ 
-	public Integer getAgeInMonths(Date onDate){
-		return getAgeInChronoUnit(ChronoUnit.MONTHS, onDate);
+		return getAgeInChronoUnit(ChronoUnit.MONTHS);
 	}
 
 	/**
@@ -986,19 +974,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @since 2.7.0
 	 */
 	public Integer getAgeInWeeks() {
-		return getAgeInWeeks(null);
-	}
-
-	/**
-	 * Convenience method to get the age of a person in weeks on a given date 
-	 *
-	 * @param onDate (null defaults to today)
-	 * @return the age in weeks as an Integer   
-	 * 
-	 * @since 3.0.0
-	 */
-	public Integer getAgeInWeeks(Date onDate){
-		return getAgeInChronoUnit(ChronoUnit.WEEKS, onDate);
+		return getAgeInChronoUnit(ChronoUnit.WEEKS);
 	}
 
 	/**
@@ -1009,19 +985,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @since 2.7.0
 	 */
 	public Integer getAgeInDays() {
-		return getAgeInDays(null);
-	}
-
-	/**
-	 * Convenience method to get the age of a person in days on a given date 
-	 *
-	 * @param onDate (null defaults to today)
-	 * @return the age in days as an Integer   
-	 * 
-	 * @since 3.0.0
-	 */
-	public Integer getAgeInDays(Date onDate){
-		return getAgeInChronoUnit(ChronoUnit.DAYS, onDate);
+		return getAgeInChronoUnit(ChronoUnit.DAYS);
 	}
 
 	/**
@@ -1032,7 +996,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 *
 	 * @since 2.7.0
 	 */
-	private Integer getAgeInChronoUnit(ChronoUnit chronoUnit, Date onDate) {
+	private Integer getAgeInChronoUnit(ChronoUnit chronoUnit) {
 		if (this.birthdate == null) {
 			return null;
 		}
@@ -1040,11 +1004,6 @@ public class Person extends BaseChangeableOpenmrsData {
 		LocalDate birthDate = new java.sql.Date(this.birthdate.getTime()).toLocalDate();
 		LocalDate endDate = LocalDate.now();
 
-		// If date is given then use that as end date
-		if(onDate != null){
-			endDate =  new java.sql.Date(onDate.getTime()).toLocalDate();
-		}
-		
 		// If date given is after date of death then use date of death as end date
 		if (this.deathDate != null) {
 			LocalDate deathDate = new java.sql.Date(this.deathDate.getTime()).toLocalDate();

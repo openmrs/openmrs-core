@@ -9,9 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.NonUniqueResultException;
-import jakarta.persistence.Query;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.Query;
 
 public class JpaUtils {
 

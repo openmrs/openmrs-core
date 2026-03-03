@@ -9,23 +9,21 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
-import org.hibernate.type.SqlTypes;
 
 /**
  * PatientIdentifierType
@@ -35,7 +33,7 @@ import org.hibernate.type.SqlTypes;
 @Audited
 @AttributeOverrides({
 	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50)),
-	@AttributeOverride(name = "description", column = @Column(name = "description", length = 65535))
+	@AttributeOverride(name = "description", column = @Column(name = "description", length = 65535, columnDefinition = "text"))
 })
 public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	
@@ -81,7 +79,8 @@ public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	// Fields
 	@DocumentId
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
 	@Column(name = "patient_identifier_type_id")
 	private Integer patientIdentifierTypeId;
 
@@ -99,12 +98,10 @@ public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	private String validator;
 
 	@Enumerated(EnumType.STRING)
-	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "location_behavior", length = 50)
 	private LocationBehavior locationBehavior;
 
 	@Enumerated(EnumType.STRING)
-	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "uniqueness_behavior", length = 50)
 	private UniquenessBehavior uniquenessBehavior;
 	

@@ -16,17 +16,13 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderRole;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
-import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -38,11 +34,9 @@ import java.util.Map;
  * 
  * @since 1.9
  */
-@Service("providerService")
 @Transactional
-public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderService, RefByUuid {
+public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderService {
 	
-	@Autowired
 	private ProviderDAO dao;
 	
 	/**
@@ -346,30 +340,6 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
 		return dao.getAllProviderRoles(includeRetired);
 	}
-	
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getRefByUuid(Class<T> type, String uuid) {
-        if (ProviderAttributeType.class.equals(type)) {
-            return (T) getProviderAttributeTypeByUuid(uuid);
-        }
-        if (ProviderRole.class.equals(type)) {
-            return (T) getProviderRoleByUuid(uuid);
-        }
-        if (Provider.class.equals(type)) {
-            return (T) getProviderByUuid(uuid);
-        }
-        if (ProviderAttribute.class.equals(type)) {
-            return (T) getProviderAttributeByUuid(uuid);
-        }
-        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
-    }
-
-    @Override
-    public List<Class<?>> getRefTypes() {
-        return Arrays.asList(ProviderAttributeType.class, ProviderRole.class, Provider.class, ProviderAttribute.class);
-    }
-
 
 	/**
 	 * @see ProviderService#saveProviderRole(ProviderRole)

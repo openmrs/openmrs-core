@@ -11,7 +11,7 @@ package org.openmrs;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
-import jakarta.persistence.Cacheable;
+import javax.persistence.Cacheable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;

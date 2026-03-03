@@ -57,8 +57,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import static org.openmrs.util.XmlUtils.createDocumentBuilder;
-
 /**
  * The MigrationHelper will be removed from openmrs-core. If you need the code migrate it to your code base.
  * 
@@ -97,8 +95,11 @@ public class MigrationHelper {
 	 */
 	@Deprecated
 	public static Document parseXml(String xml) throws ParserConfigurationException {
-		DocumentBuilder builder = createDocumentBuilder();
+		DocumentBuilder builder = factory.newDocumentBuilder();
 		try {
+			// Disable resolution of external entities. See TRUNK-3942 
+			builder.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+			
 			return builder.parse(new InputSource(new StringReader(xml)));
 		}
 		catch (IOException | SAXException ex) {

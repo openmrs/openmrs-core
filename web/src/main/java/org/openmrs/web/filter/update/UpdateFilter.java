@@ -35,15 +35,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -320,7 +320,7 @@ public class UpdateFilter extends StartupFilter {
 		try {
 			connection = DatabaseUpdater.getConnection();
 			
-			String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and retired = false";
+			String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and retired = '0'";
 			PreparedStatement statement = null;
 			try {
 				statement = connection.prepareStatement(select);
@@ -371,7 +371,7 @@ public class UpdateFilter extends StartupFilter {
 			// we may not have upgraded User to have retired instead of voided yet, so if the query above fails, we try
 			// again the old way
 			if (connection != null) {
-				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = false";
+				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = '0'";
 				PreparedStatement statement = null;
 				try {
 					statement = connection.prepareStatement(select);
@@ -483,7 +483,7 @@ public class UpdateFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
+	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -702,45 +702,42 @@ public class UpdateFilter extends StartupFilter {
 							}
 							
 						}
-
 						
 						try {
-							if (DatabaseUpdater.updatesRequired()) {
-								setMessage("Updating the database to the latest version");
-
-								ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
-								ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
-
-								List<String> changelogs = new ArrayList<>();
-								List<String> warnings = new ArrayList<>();
-
-								String version = changeLogDetective.getInitialLiquibaseSnapshotVersion(DatabaseUpdater.CONTEXT,
-									new DatabaseUpdaterLiquibaseProvider());
-
-								log.debug(
-									"updating the database with versions of liquibase-update-to-latest files greater than '{}'",
-									version);
-
-								changelogs.addAll(changeLogVersionFinder
-									.getUpdateFileNames(changeLogVersionFinder.getUpdateVersionsGreaterThan(version)));
-
-								log.debug("found applicable Liquibase update change logs: {}", changelogs);
-
-								for (String changelog : changelogs) {
-									log.debug("applying Liquibase changelog '{}'", changelog);
-
-									List<String> currentWarnings = DatabaseUpdater.executeChangelog(changelog,
-										new PrintingChangeSetExecutorCallback("executing Liquibase changelog :" + changelog));
-
-									if (currentWarnings != null) {
-										warnings.addAll(currentWarnings);
-									}
+							setMessage("Updating the database to the latest version");
+							
+							ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
+							ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
+							
+							List<String> changelogs = new ArrayList<>();
+							List<String> warnings = new ArrayList<>();
+							
+							String version = changeLogDetective.getInitialLiquibaseSnapshotVersion(DatabaseUpdater.CONTEXT,
+							    new DatabaseUpdaterLiquibaseProvider());
+							
+							log.debug(
+							    "updating the database with versions of liquibase-update-to-latest files greater than '{}'",
+							    version);
+							
+							changelogs.addAll(changeLogVersionFinder
+							        .getUpdateFileNames(changeLogVersionFinder.getUpdateVersionsGreaterThan(version)));
+							
+							log.debug("found applicable Liquibase update change logs: {}", changelogs);
+							
+							for (String changelog : changelogs) {
+								log.debug("applying Liquibase changelog '{}'", changelog);
+								
+								List<String> currentWarnings = DatabaseUpdater.executeChangelog(changelog,
+								    new PrintingChangeSetExecutorCallback("executing Liquibase changelog :" + changelog));
+								
+								if (currentWarnings != null) {
+									warnings.addAll(currentWarnings);
 								}
-								executingChangesetId = null; // clear out the last changeset
-
-								if (CollectionUtils.isNotEmpty(warnings)) {
-									reportWarnings(warnings);
-								}
+							}
+							executingChangesetId = null; // clear out the last changeset
+							
+							if (CollectionUtils.isNotEmpty(warnings)) {
+								reportWarnings(warnings);
 							}
 						}
 						catch (InputRequiredException inputRequired) {

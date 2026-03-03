@@ -17,21 +17,27 @@ import org.openmrs.api.db.TemplateDAO;
 import org.openmrs.notification.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
-@Repository("templateDAO")
 public class HibernateTemplateDAO implements TemplateDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateTemplateDAO.class);
 	
-	private final SessionFactory sessionFactory;
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
 	
-	@Autowired
-	public HibernateTemplateDAO(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+	public HibernateTemplateDAO() {
 	}
 	
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
@@ -51,12 +57,12 @@ public class HibernateTemplateDAO implements TemplateDAO {
 	public List<Template> getTemplatesByName(String name) {
 		log.info("Get template " + name);
 		return sessionFactory.getCurrentSession().createQuery("from Template as template where template.name = ?")
-		        .setParameter(0, name).list();
+		        .setString(0, name).list();
 	}
 	
 	@Override
 	public void createTemplate(Template template) throws DAOException {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), template);
+		sessionFactory.getCurrentSession().saveOrUpdate(template);
 	}
 	
 	@Override
@@ -64,13 +70,14 @@ public class HibernateTemplateDAO implements TemplateDAO {
 		if (template.getId() == null) {
 			createTemplate(template);
 		} else {
-			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), template);
+			template = (Template) sessionFactory.getCurrentSession().merge(template);
+			sessionFactory.getCurrentSession().saveOrUpdate(template);
 		}
 	}
 	
 	@Override
 	public void deleteTemplate(Template template) throws DAOException {
-		sessionFactory.getCurrentSession().remove(template);
+		sessionFactory.getCurrentSession().delete(template);
 	}
 	
 }

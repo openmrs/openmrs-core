@@ -10,7 +10,6 @@
 package org.openmrs.patient.impl;
 
 import org.openmrs.patient.UnallowedIdentifierException;
-import org.springframework.stereotype.Component;
 
 /**
  * The Verhoeff Check Digit Validator catches all single errors and all adjacent transpositions.
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Component;
  * "Verhoeff's Decimal Error Detection". The Laws of Cryptography with Java Code. p 54. San Antonio,
  * TX: 2003. http://www.cs.utsa.edu/~wagner/lawsbookcolor/laws.pdf
  */
-@Component
 public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidator {
 	
 	private static final String ALLOWED_CHARS = "0123456789";

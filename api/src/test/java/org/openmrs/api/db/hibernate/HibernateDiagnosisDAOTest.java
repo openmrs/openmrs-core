@@ -49,23 +49,25 @@ public class HibernateDiagnosisDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldSaveDiagnosis() {
 		CodedOrFreeText codedOrFreeText = new CodedOrFreeText(new Concept(4),
-			null, "non coded");
+			new ConceptName(5089), "non coded");
+		int diagnosisId = 5;
 		
 		Diagnosis diagnosis = new Diagnosis();
 		diagnosis.setEncounter(new Encounter(3));
 		diagnosis.setRank(2);
+		diagnosis.setId(diagnosisId);
 		diagnosis.setCertainty(ConditionVerificationStatus.CONFIRMED);
 		diagnosis.setPatient(new Patient(2));
 		diagnosis.setCondition(new Condition());
 		diagnosis.setDiagnosis(codedOrFreeText);
+		diagnosis.setUuid("4e663d96-6b78-11e0-93c3-18a9b5e044dc");
 		diagnosis.setCreator(new User(1));
 		diagnosis.setVoided(false);
 		diagnosis.setDateCreated(new Date());
 
 		diagnosisDAO.saveDiagnosis(diagnosis);
 
-		assertNotNull(diagnosis.getDiagnosisId());
-		Diagnosis savedDiagnosis = diagnosisDAO.getDiagnosisById(diagnosis.getDiagnosisId());
+		Diagnosis savedDiagnosis = diagnosisDAO.getDiagnosisById(diagnosisId);
 		
 		assertEquals(diagnosis.getUuid(), savedDiagnosis.getUuid());
 		assertEquals(diagnosis.getVoided(), savedDiagnosis.getVoided());

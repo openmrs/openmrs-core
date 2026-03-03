@@ -9,11 +9,6 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.Table;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.envers.Audited;
 
 /**
@@ -21,10 +16,6 @@ import org.hibernate.envers.Audited;
  * 
  * @since 2.5.0
  */
-@Entity
-@Table(name = "referral_order")
-@PrimaryKeyJoinColumn(name = "order_id") 
-@OnDelete(action = OnDeleteAction.CASCADE) 
 @Audited
 public class ReferralOrder extends ServiceOrder {
 

@@ -9,8 +9,8 @@
  */
 package org.openmrs.web;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.ModuleException;

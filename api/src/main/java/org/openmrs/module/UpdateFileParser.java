@@ -24,8 +24,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import static org.openmrs.util.XmlUtils.createDocumentBuilder;
-
 /**
  * This class will parse an xml update.rdf file
  *
@@ -70,7 +68,12 @@ public class UpdateFileParser {
 				InputSource inputSource = new InputSource(stringReader);
 				inputSource.setSystemId("./");
 				
-				DocumentBuilder db = createDocumentBuilder();
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				DocumentBuilder db = dbf.newDocumentBuilder();
+				
+				// Disable resolution of external entities. See TRUNK-3942 
+				db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+				
 				updateDoc = db.parse(inputSource);
 			}
 			catch (Exception e) {

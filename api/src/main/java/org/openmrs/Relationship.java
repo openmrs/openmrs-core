@@ -9,16 +9,18 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -33,7 +35,12 @@ public class Relationship extends BaseChangeableOpenmrsData {
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "relationship_id_seq")
+	@GenericGenerator(
+		name = "relationship_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "relationship_relationship_id_seq")
+	)
 	@Column(name = "relationship_id")
 	private Integer relationshipId;
 	@ManyToOne(optional = false)

@@ -11,8 +11,8 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.NativeQuery;
 import org.openmrs.PersonAttribute;
 
 public class PersonAttributeHelper {
@@ -71,10 +71,9 @@ public class PersonAttributeHelper {
 	}
 	
 	private List<PersonAttribute> getPersonAttributeList(String queryString) {
-		NativeQuery<PersonAttribute> query = sessionFactory.getCurrentSession()
-			.createNativeQuery(queryString, PersonAttribute.class);
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(queryString).addEntity(PersonAttribute.class);
 		
-		return query.getResultList();
+		return query.list();
 	}
 	
 	private PersonAttribute getPersonAttribute(List<PersonAttribute> personAttributeList, String personAttributeValue) {

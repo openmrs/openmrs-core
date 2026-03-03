@@ -44,7 +44,6 @@ import org.openmrs.api.OrderContext;
 import org.openmrs.api.OrderEntryException;
 import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
@@ -56,8 +55,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -84,15 +81,13 @@ import static org.openmrs.Order.Action.REVISE;
  * 
  * @see org.openmrs.api.OrderService
  */
-@Service("orderService")
 @Transactional
-public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener, RefByUuid {
+public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
 	
-	@Autowired
 	protected OrderDAO dao;
 	
 	private static OrderNumberGenerator orderNumberGenerator = null;
@@ -271,13 +266,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			orderType = getOrderTypeByConcept(order.getConcept());
 		}
 		if (orderType == null && order instanceof DrugOrder) {
-			orderType = getDefaultOrderType(DrugOrder.class, OrderType.DRUG_ORDER_TYPE_UUID);
+			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
 		}
 		if (orderType == null && order instanceof TestOrder) {
-			orderType = getDefaultOrderType(TestOrder.class, OrderType.TEST_ORDER_TYPE_UUID);
+			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
 		}
 		if (orderType == null && order instanceof ReferralOrder) {
-			orderType = getDefaultOrderType(ReferralOrder.class, OrderType.REFERRAL_ORDER_TYPE_UUID);
+			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.REFERRAL_ORDER_TYPE_UUID);
 		}
 		if (orderType == null) {
 			throw new OrderEntryException("Order.type.cannot.determine");
@@ -313,21 +308,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 
 	private boolean areDrugOrdersOfSameOrderableAndOverlappingSchedule(Order firstOrder, Order secondOrder) {
 		return firstOrder.hasSameOrderableAs(secondOrder)
-			&& !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
-			&& OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
-			&& firstOrder.getOrderType().equals(getDefaultOrderType(DrugOrder.class, OrderType.DRUG_ORDER_TYPE_UUID));
-	}
-
-	private OrderType getDefaultOrderType(Class<? extends Order> orderSubclass, String fallbackUuid) {
-		OrderType type = getOrderTypeByUuid(fallbackUuid);
-		
-		if (type == null) {
-			List<OrderType> types = getOrderTypesByClassName(orderSubclass.getName(), true, false);
-			if (types.size() == 1) {
-				type = types.get(0);
-			}
-		}
-		return type;
+		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
+		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
+		        && firstOrder.getOrderType().equals(
+		            Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
 	}
 
 	private boolean isDrugOrder(Order order) {
@@ -1074,47 +1058,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public OrderType getOrderTypeByConcept(Concept concept) {
 		return Context.getOrderService().getOrderTypeByConceptClass(concept.getConceptClass());
 	}
-
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeRetired) throws APIException {
-		return dao.getOrderTypesByClassName(javaClassName, includeRetired);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean, boolean)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeSubclasses, boolean includeRetired) throws APIException {
-		if (!StringUtils.hasText(javaClassName)) {
-			throw new APIException("javaClassName cannot be null");
-		}
-		
-		if (!includeSubclasses) {
-			return getOrderTypesByClassName(javaClassName, includeRetired);
-		}
-
-		Class<?> superClass;
-		try {
-			superClass = Context.loadClass(javaClassName);
-		} catch (ClassNotFoundException e) {
-			throw new APIException("Invalid javaClassName: " + javaClassName, e);
-		}
-
-		return getOrderTypes(includeRetired).stream()
-			.filter(ot -> {
-				try {
-					Class<?> c = Context.loadClass(ot.getJavaClassName());
-					return superClass.isAssignableFrom(c);
-				} catch (Exception ignore) {
-					return false;
-				}
-			}).toList();
-	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getDrugRoutes()
@@ -1350,43 +1293,4 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public OrderAttribute getOrderAttributeByUuid(String uuid)throws APIException {
 		return dao.getOrderAttributeByUuid(uuid);
 	}
-	
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getRefByUuid(Class<T> type, String uuid) {
-        if (OrderType.class.equals(type)) {
-            return (T) getOrderTypeByUuid(uuid);
-        }
-        if (CareSetting.class.equals(type)) {
-            return (T) getCareSettingByUuid(uuid);
-        }
-        if (OrderGroup.class.equals(type)) {
-            return (T) getOrderGroupByUuid(uuid);
-        }
-        if (OrderFrequency.class.equals(type)) {
-            return (T) getOrderFrequencyByUuid(uuid);
-        }
-        if (OrderAttributeType.class.equals(type)) {
-            return (T) getOrderAttributeTypeByUuid(uuid);
-        }
-        if (OrderAttribute.class.equals(type)) {
-            return (T) getOrderAttributeByUuid(uuid);
-        }
-        if (Order.class.equals(type)) {
-            return (T) getOrderByUuid(uuid);
-        }
-        if (OrderGroupAttribute.class.equals(type)) {
-            return (T) getOrderGroupAttributeByUuid(uuid);
-        }
-        if (OrderGroupAttributeType.class.equals(type)) {
-            return (T) getOrderGroupAttributeTypeByUuid(uuid);
-        }
-        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
-    }
-
-    @Override
-    public List<Class<?>> getRefTypes() {
-        return Arrays.asList(OrderType.class, CareSetting.class, OrderGroup.class, OrderFrequency.class, OrderAttributeType.class, OrderAttribute.class, Order.class, OrderGroupAttribute.class, OrderGroupAttributeType.class);
-    }
-
 }

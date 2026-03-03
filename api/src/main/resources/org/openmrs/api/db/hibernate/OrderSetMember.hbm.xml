@@ -18,11 +18,12 @@
     <class name="OrderSetMember" table="order_set_member">
 
         <id name="orderSetMemberId" type="int" column="order_set_member_id" unsaved-value="0">
-            <generator class="identity">
+            <generator class="native">
                 <param name="sequence">order_set_member_order_set_member_id_seq</param>
             </generator>
         </id>
 
+        <discriminator column="order_set_member_id" insert="false" />
 
         <many-to-one name="orderType" class="OrderType" not-null="true">
             <column name="order_type"/>

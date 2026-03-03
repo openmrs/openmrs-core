@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.interceptor.CacheInterceptor;
 
 public class CacheConfigTest extends BaseContextSensitiveTest {
 
@@ -40,7 +39,7 @@ public class CacheConfigTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldContainSpecificCacheConfigurations(){
 		String[] expectedCaches = {"conceptDatatype", "subscription", "userSearchLocales", "conceptIdsByMapping", 
-			"testCache", "serializerWhiteListTypes"};
+			"testCache"};
 		Collection<String> actualCaches = cacheManager.getCacheNames();
 		assertThat(actualCaches, containsInAnyOrder(expectedCaches));
 	}

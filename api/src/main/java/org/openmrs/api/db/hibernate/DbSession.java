@@ -12,9 +12,8 @@ package org.openmrs.api.db.hibernate;
 import java.io.Serializable;
 import java.sql.Connection;
 
-import jakarta.persistence.Query;
-import jakarta.persistence.criteria.CriteriaQuery;
 import org.hibernate.CacheMode;
+import org.hibernate.Criteria;
 import org.hibernate.Filter;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
@@ -23,19 +22,22 @@ import org.hibernate.LobHelper;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
 import org.hibernate.NaturalIdLoadAccess;
+import org.hibernate.Query;
 import org.hibernate.ReplicationMode;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.Session.LockRequest;
 import org.hibernate.SessionEventListener;
 import org.hibernate.SessionFactory;
 import org.hibernate.SharedSessionBuilder;
 import org.hibernate.SimpleNaturalIdLoadAccess;
 import org.hibernate.Transaction;
 import org.hibernate.TransientObjectException;
+import org.hibernate.TypeHelper;
 import org.hibernate.UnknownProfileException;
 import org.hibernate.jdbc.ReturningWork;
 import org.hibernate.jdbc.Work;
 import org.hibernate.procedure.ProcedureCall;
-import org.hibernate.query.NativeQuery;
 import org.hibernate.stat.SessionStatistics;
 
 /**
@@ -112,13 +114,13 @@ public class DbSession {
 	}
 	
 	/**
-	 * Create a {@link NativeQuery} instance for the given SQL query string.
+	 * Create a {@link SQLQuery} instance for the given SQL query string.
 	 *
 	 * @param queryString The SQL query
 	 * @return The query instance for manipulation and execution
 	 */
-	public <T> NativeQuery<T> createSQLQuery(String queryString, Class<T> type) {
-		return getSession().createNativeQuery(queryString, type);
+	public SQLQuery createSQLQuery(String queryString) {
+		return getSession().createSQLQuery(queryString);
 	}
 	
 	/**
@@ -126,7 +128,7 @@ public class DbSession {
 	 *
 	 * @param name The name given to the template
 	 * @return The ProcedureCall
-	 * @see jakarta.persistence.NamedStoredProcedureQuery
+	 * @see javax.persistence.NamedStoredProcedureQuery
 	 */
 	public ProcedureCall getNamedProcedureCall(String name) {
 		return getSession().getNamedProcedureCall(name);
@@ -166,13 +168,46 @@ public class DbSession {
 	}
 	
 	/**
-	 * Create {@link CriteriaQuery} instance for the given class (entity or subclasses/implementors).
+	 * Create {@link Criteria} instance for the given class (entity or subclasses/implementors).
 	 *
 	 * @param persistentClass The class, which is an entity, or has entity subclasses/implementors
 	 * @return The criteria instance for manipulation and execution
 	 */
-	public <T> CriteriaQuery<T> createCriteria(Class<T> persistentClass) {
-		return getSession().getCriteriaBuilder().createQuery(persistentClass);
+	public Criteria createCriteria(Class persistentClass) {
+		return getSession().createCriteria(persistentClass);
+	}
+	
+	/**
+	 * Create {@link Criteria} instance for the given class (entity or subclasses/implementors),
+	 * using a specific alias.
+	 *
+	 * @param persistentClass The class, which is an entity, or has entity subclasses/implementors
+	 * @param alias The alias to use
+	 * @return The criteria instance for manipulation and execution
+	 */
+	public Criteria createCriteria(Class persistentClass, String alias) {
+		return getSession().createCriteria(persistentClass, alias);
+	}
+	
+	/**
+	 * Create {@link Criteria} instance for the given entity name.
+	 *
+	 * @param entityName The entity name @return The criteria instance for manipulation and
+	 *            execution
+	 */
+	public Criteria createCriteria(String entityName) {
+		return getSession().createCriteria(entityName);
+	}
+	
+	/**
+	 * Create {@link Criteria} instance for the given entity name, using a specific alias.
+	 *
+	 * @param entityName The entity name
+	 * @param alias The alias to use
+	 * @return The criteria instance for manipulation and execution
+	 */
+	public Criteria createCriteria(String entityName, String alias) {
+		return getSession().createCriteria(entityName, alias);
 	}
 	
 	/**
@@ -260,9 +295,7 @@ public class DbSession {
 	
 	/**
 	 * End the session by releasing the JDBC connection and cleaning up. It is not strictly
-	 * necessary to close the session. If you’re running inside a Spring‐managed
-	 * transaction, Spring will automatically close the session and return the Connection
-	 * to the pool when the transaction commits.
+	 * necessary to close the session but you must at least {@link #disconnect()} it.
 	 *
 	 * @return the connection provided by the application or null.
 	 * @throws HibernateException Indicates problems cleaning up.
@@ -335,6 +368,7 @@ public class DbSession {
 	 * 
 	 * @see Session#setReadOnly(Object,boolean) To override this session's read-only/modifiable
 	 *      setting for entities and proxies loaded by a Query:
+	 * @see Query#setReadOnly(boolean)
 	 * @param readOnly true, the default for loaded entities/proxies is read-only; false, the
 	 *            default for loaded entities/proxies is modifiable
 	 */
@@ -351,7 +385,7 @@ public class DbSession {
 	 * @throws TransientObjectException if the instance is transient or associated with a different
 	 *             session
 	 */
-	public Object getIdentifier(Object object) {
+	public Serializable getIdentifier(Object object) {
 		return getSession().getIdentifier(object);
 	}
 	
@@ -388,7 +422,7 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(Class theClass, Serializable id, LockOptions lockOptions) {
-		return getSession().get(theClass, id, lockOptions);
+		return getSession().load(theClass, id, lockOptions);
 	}
 	
 	/**
@@ -401,7 +435,7 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(String entityName, Serializable id, LockOptions lockOptions) {
-		return getSession().get(entityName, id, lockOptions);
+		return getSession().load(entityName, id, lockOptions);
 	}
 	
 	/**
@@ -418,7 +452,7 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(Class theClass, Serializable id) {
-		return getSession().getReference(theClass, id);
+		return getSession().load(theClass, id);
 	}
 	
 	/**
@@ -435,7 +469,7 @@ public class DbSession {
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(String entityName, Serializable id) {
-		return getSession().getReference(entityName, id);
+		return getSession().load(entityName, id);
 	}
 	
 	/**
@@ -483,9 +517,8 @@ public class DbSession {
 	 * @param object a transient instance of a persistent class
 	 * @return the generated identifier
 	 */
-	public Object save(Object object) {
-		getSession().persist(object);
-		return getSession().getIdentifier(object);
+	public Serializable save(Object object) {
+		return getSession().save(object);
 	}
 	
 	/**
@@ -498,9 +531,8 @@ public class DbSession {
 	 * @param object a transient instance of a persistent class
 	 * @return the generated identifier
 	 */
-	public Object save(String entityName, Object object) {
-		getSession().persist(entityName, object);
-		return getSession().getIdentifier(object);
+	public Serializable save(String entityName, Object object) {
+		return getSession().save(entityName, object);
 	}
 	
 	/**
@@ -516,7 +548,7 @@ public class DbSession {
 	 * @see Session#update(Object object)
 	 */
 	public void saveOrUpdate(Object object) {
-		HibernateUtil.saveOrUpdate(getSession(), object);
+		getSession().saveOrUpdate(object);
 	}
 	
 	/**
@@ -533,7 +565,7 @@ public class DbSession {
 	 * @see Session#update(String,Object)
 	 */
 	public void saveOrUpdate(String entityName, Object object) {
-		HibernateUtil.saveOrUpdate(getSession(), object);
+		getSession().saveOrUpdate(entityName, object);
 	}
 	
 	/**
@@ -545,7 +577,7 @@ public class DbSession {
 	 * @param object a detached instance containing updated state
 	 */
 	public void update(Object object) {
-		HibernateUtil.saveOrUpdate(getSession(), object);
+		getSession().update(object);
 	}
 	
 	/**
@@ -558,7 +590,7 @@ public class DbSession {
 	 * @param object a detached instance containing updated state
 	 */
 	public void update(String entityName, Object object) {
-		HibernateUtil.saveOrUpdate(getSession(), object);
+		getSession().update(entityName, object);
 	}
 	
 	/**
@@ -630,7 +662,7 @@ public class DbSession {
 	 * @param object the instance to be removed
 	 */
 	public void delete(Object object) {
-		getSession().remove(object);
+		getSession().delete(object);
 	}
 	
 	/**
@@ -643,19 +675,22 @@ public class DbSession {
 	 * @param object the instance to be removed
 	 */
 	public void delete(String entityName, Object object) {
-		getSession().remove(object);
+		getSession().delete(entityName, object);
 	}
 	
 	/**
-	 * Obtain a lock on the given entity, with the given {@link LockMode lock mode}.
+	 * Build a LockRequest that specifies the LockMode, pessimistic lock timeout and lock scope.
+	 * timeout and scope is ignored for optimistic locking. After building the LockRequest, call
+	 * LockRequest.lock to perform the requested locking.
 	 * <p>
-	 * This replaces the removed {@code buildLockRequest(LockOptions)} API.
+	 * Example usage:
+	 * {@code session.buildLockRequest().setLockMode(LockMode.PESSIMISTIC_WRITE).setTimeOut(60000).lock(entity);}
 	 *
-	 * @param object a persistent instance
-	 * @param lockMode the lock mode
+	 * @param lockOptions contains the lock level
+	 * @return a lockRequest that can be used to lock the passed object.
 	 */
-	public void lock(Object object, LockMode lockMode) {
-		getSession().lock(object, lockMode);
+	public LockRequest buildLockRequest(LockOptions lockOptions) {
+		return getSession().buildLockRequest(lockOptions);
 	}
 	
 	/**
@@ -688,7 +723,7 @@ public class DbSession {
 	 * @param object a persistent or detached instance
 	 */
 	public void refresh(String entityName, Object object) {
-		getSession().refresh(object);
+		getSession().refresh(entityName, object);
 	}
 	
 	/**
@@ -713,7 +748,7 @@ public class DbSession {
 	 * @param lockOptions contains the lock mode to use
 	 */
 	public void refresh(String entityName, Object object, LockOptions lockOptions) {
-		getSession().refresh(object, lockOptions);
+		getSession().refresh(entityName, object, lockOptions);
 	}
 	
 	/**
@@ -724,6 +759,20 @@ public class DbSession {
 	 */
 	public LockMode getCurrentLockMode(Object object) {
 		return getSession().getCurrentLockMode(object);
+	}
+	
+	/**
+	 * Create a {@link Query} instance for the given collection and filter string. Contains an
+	 * implicit {@code FROM} element named {@code this} which refers to the defined table for the
+	 * collection elements, as well as an implicit {@code WHERE} restriction for this particular
+	 * collection instance's key value.
+	 *
+	 * @param collection a persistent collection
+	 * @param queryString a Hibernate query fragment.
+	 * @return The query instance for manipulation and execution
+	 */
+	public Query createFilter(Object collection, String queryString) {
+		return getSession().createFilter(collection, queryString);
 	}
 	
 	/**
@@ -937,6 +986,7 @@ public class DbSession {
 	 * 
 	 * @see org.hibernate.Session#setDefaultReadOnly(boolean) To override this session's
 	 *      read-only/modifiable setting for entities and proxies loaded by a Query:
+	 * @see Query#setReadOnly(boolean)
 	 * @param entityOrProxy an entity or HibernateProxy
 	 * @param readOnly {@code true} if the entity or proxy should be made read-only; {@code false}
 	 *            if the entity or proxy should be made modifiable
@@ -967,6 +1017,34 @@ public class DbSession {
 	 */
 	public <T> T doReturningWork(ReturningWork<T> work) throws HibernateException {
 		return getSession().doReturningWork(work);
+	}
+	
+	/**
+	 * Disconnect the session from its underlying JDBC connection. This is intended for use in cases
+	 * where the application has supplied the JDBC connection to the session and which require
+	 * long-sessions (aka, conversations).
+	 * <p>
+	 * It is considered an error to call this method on a session which was not opened by supplying
+	 * the JDBC connection and an exception will be thrown.
+	 * <p>
+	 * For non-user-supplied scenarios, normal transaction management already handles disconnection
+	 * and reconnection automatically.
+	 *
+	 * @return the application-supplied connection or {@code null}
+	 * @see #reconnect(Connection)
+	 */
+	Connection disconnect() {
+		return getSession().disconnect();
+	}
+	
+	/**
+	 * Reconnect to the given JDBC connection.
+	 *
+	 * @param connection a JDBC connection
+	 * @see #disconnect()
+	 */
+	void reconnect(Connection connection) {
+		getSession().reconnect(connection);
 	}
 	
 	/**
@@ -1006,6 +1084,19 @@ public class DbSession {
 	 */
 	public void disableFetchProfile(String name) throws UnknownProfileException {
 		getSession().disableFetchProfile(name);
+	}
+	
+	/**
+	 * Convenience access to the {@link TypeHelper} associated with this session's
+	 * {@link SessionFactory}.
+	 * <p>
+	 * Equivalent to calling {@link #getSessionFactory()}.{@link SessionFactory#getTypeHelper
+	 * getTypeHelper()}
+	 *
+	 * @return The {@link TypeHelper} associated with this session's {@link SessionFactory}
+	 */
+	public TypeHelper getTypeHelper() {
+		return getSession().getTypeHelper();
 	}
 	
 	/**

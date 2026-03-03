@@ -13,25 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.persistence.Access;
-import jakarta.persistence.AccessType;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
-import jakarta.persistence.Table;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
-
-
 
 /**
  * Contains a group of {@link org.openmrs.Order}s that are ordered together within a single encounter,often driven by an {@link org.openmrs.OrderSet}. 
@@ -40,50 +23,27 @@ import org.openmrs.api.APIException;
  * 
  * @since 1.12
  */
-@Entity
-@Table(name = "order_group")
 @Audited
 public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	
 	public static final long serialVersionUID = 72232L;
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "order_group_id", nullable = false)
 	private Integer orderGroupId;
 	
-	@ManyToOne
-	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 	
-	@ManyToOne
-	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 	
-	@ManyToOne
-	@JoinColumn(name = "order_set_id")
+	private List<Order> orders;
+	
 	private OrderSet orderSet;
-
-	@ManyToOne
-	@JoinColumn(name = "parent_order_group")
+	
 	private OrderGroup parentOrderGroup;
 
-	@ManyToOne
-	@JoinColumn(name = "order_group_reason")
 	private Concept orderGroupReason;
 
-	@ManyToOne
-	@JoinColumn(name = "previous_order_group")
 	private OrderGroup previousOrderGroup;
-
-	@OneToMany(mappedBy = "orderGroup", fetch = FetchType.LAZY)
-	@OrderBy("sort_weight asc")
-	private List<Order> orders = new ArrayList<>();
-
-	@Access(AccessType.FIELD)
-	@OneToMany(mappedBy = "parentOrderGroup", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
-	@OrderBy("orderGroupId asc")
-	@BatchSize(size = 25)
+	
 	private Set<OrderGroup> nestedOrderGroups;
 
 	/**

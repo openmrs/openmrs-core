@@ -12,6 +12,7 @@ package org.openmrs.api.db.hibernate;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,6 @@ import org.hibernate.search.mapper.orm.work.SearchIndexingPlan;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.type.StandardBasicTypes;
-import org.openmrs.ConceptName;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
@@ -49,10 +49,10 @@ import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.hibernate.SessionHolder;
+import org.springframework.orm.hibernate5.SessionFactoryUtils;
+import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
@@ -61,7 +61,6 @@ import org.springframework.stereotype.Repository;
  * @see ContextDAO
  * @see Context
  */
-@Repository("contextDAO")
 public class HibernateContextDAO implements ContextDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
@@ -71,19 +70,27 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * Hibernate session factory
 	 */
-	private final SessionFactory sessionFactory;
-	
-	private final SearchSessionFactory searchSessionFactory;
-	
-	private final UserDAO userDao;
+	private SessionFactory sessionFactory;
 	
 	@Autowired
-	public HibernateContextDAO(SessionFactory sessionFactory, SearchSessionFactory searchSessionFactory, UserDAO userDao) {
+	private SearchSessionFactory searchSessionFactory;
+	
+	private UserDAO userDao;
+	
+	/**
+	 * Session factory to use for this DAO. This is usually injected by spring and its application
+	 * context.
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-		this.searchSessionFactory = searchSessionFactory;
-		this.userDao = userDao;
 	}
 	
+	public void setUserDAO(UserDAO userDao) {
+		this.userDao = userDao;
+	}
+
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
@@ -295,7 +302,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @param user the User to save
 	 */
 	private void saveUserProperties(User user) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), user);
+		sessionFactory.getCurrentSession().update(user);
 	}
 	
 	/**
@@ -349,7 +356,7 @@ public class HibernateContextDAO implements ContextDAO {
 				try {
 					if (value instanceof SessionHolder) {
 						Session session = ((SessionHolder) value).getSession();
-						session.close();
+						SessionFactoryUtils.closeSession(session);
 					}
 				}
 				catch (RuntimeException e) {
@@ -383,7 +390,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void evictEntity(OpenmrsObject obj) {
-		sessionFactory.getCache().evictEntityData(obj.getClass(), obj.getId());
+		sessionFactory.getCache().evictEntity(obj.getClass(), obj.getId());
 	}
 
 	/**
@@ -391,8 +398,8 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void evictAllEntities(Class<?> entityClass) {
-		sessionFactory.getCache().evictEntityData(entityClass);
-		sessionFactory.getCache().evictCollectionData();
+		sessionFactory.getCache().evictEntityRegion(entityClass);
+		sessionFactory.getCache().evictCollectionRegions();
 		sessionFactory.getCache().evictQueryRegions();
 	}
 
@@ -521,7 +528,7 @@ public class HibernateContextDAO implements ContextDAO {
 		Session session = sessionFactory.getCurrentSession();
 		SearchSession searchSession = searchSessionFactory.getSearchSession();
 		SearchIndexingPlan indexingPlan = searchSession.indexingPlan();
-
+		
 		//Prepare session for batch work
 		session.flush();
 		indexingPlan.execute();
@@ -529,7 +536,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 		//Purge all search indexes of the given type
 		Search.mapping(sessionFactory).scope(type).workspace().purge();
-
+		
 		FlushMode flushMode = session.getHibernateFlushMode();
 		CacheMode cacheMode = session.getCacheMode();
 		try {
@@ -542,7 +549,7 @@ public class HibernateContextDAO implements ContextDAO {
 				while (results.next()) {
 					index++;
 					//index each element
-					indexingPlan.addOrUpdate(results.get());
+					indexingPlan.addOrUpdate(results.get(0));
 					if (index % 1000 == 0) {
 						//apply changes to search indexes
 						indexingPlan.execute();
@@ -647,9 +654,9 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	public Connection getDatabaseConnection() {
 		try {
-			return sessionFactory.getCurrentSession().doReturningWork(connection -> connection);
+			return SessionFactoryUtils.getDataSource(sessionFactory).getConnection();
 		}
-		catch (HibernateException e) {
+		catch (SQLException e) {
 			throw new RuntimeException("Unable to retrieve a database connection", e);
 		}
 	}

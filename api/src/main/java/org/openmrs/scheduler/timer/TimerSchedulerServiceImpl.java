@@ -9,8 +9,6 @@
  */
 package org.openmrs.scheduler.timer;
 
-
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -25,7 +23,6 @@ import java.util.TreeMap;
 import java.util.WeakHashMap;
 
 import org.openmrs.api.APIException;
-import org.openmrs.api.RefByUuid;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerException;
@@ -38,17 +35,14 @@ import org.openmrs.scheduler.db.SchedulerDAO;
 import org.openmrs.util.OpenmrsMemento;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Simple scheduler service that uses JDK timer to trigger and execute scheduled tasks.
  */
-@Service("schedulerService")
 @Transactional
-public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements SchedulerService, RefByUuid {
+public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements SchedulerService {
 	
 	/**
 	 * Logger
@@ -78,7 +72,6 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	/**
 	 * Global data access object context
 	 */
-	@Autowired
 	private SchedulerDAO schedulerDAO;
 	
 	/**
@@ -556,18 +549,4 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 		return getSchedulerDAO().getTaskByUuid(uuid);
 	}
 	
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getRefByUuid(Class<T> type, String uuid) {
-        if (TaskDefinition.class.equals(type)) {
-            return (T) getTaskByUuid(uuid);
-        }
-        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
-    }
-
-    @Override
-    public List<Class<?>> getRefTypes() {
-        return Arrays.asList(TaskDefinition.class);
-    }
-
 }

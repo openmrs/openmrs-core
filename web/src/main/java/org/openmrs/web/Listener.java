@@ -41,12 +41,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpSessionEvent;
-import jakarta.servlet.http.HttpSessionListener;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -70,8 +70,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 /**
  * Our Listener class performs the basic starting functions for our webapp. Basic needs for starting
@@ -434,8 +432,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		File dwrFile = Paths.get(servletContext.getRealPath(""), "WEB-INF", "dwr-modules.xml").toFile();
 		
 		try {
-			DocumentBuilder db = createDocumentBuilder();
-
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			// When asked to resolve external entities (such as a DTD) we return an InputSource
+			// with no data at the end, causing the parser to ignore the DTD.
+			db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
 			Document doc = db.parse(dwrFile);
 			Element elem = doc.getDocumentElement();
 			elem.setTextContent("");
@@ -446,7 +447,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
 			log.debug("Error clearing dwr-modules.xml", e);
 			dwrFile.delete();
-			
 			OutputStreamWriter writer = null;
 			try {
 				writer = new OutputStreamWriter(new FileOutputStream(dwrFile), StandardCharsets.UTF_8);
@@ -454,7 +454,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
 			}
 			catch (IOException io) {
-				log.error("Unable to clear out the {} file.  Please redeploy the openmrs war file", dwrFile.getAbsolutePath(), io);
+				log.error(
+				    "Unable to clear out the " + dwrFile.getAbsolutePath() + " file.  Please redeploy the openmrs war file",
+				    io);
 			}
 			finally {
 				if (writer != null) {
@@ -462,7 +464,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 						writer.close();
 					}
 					catch (IOException io) {
-						log.warn("Couldn't close Writer: {}", String.valueOf(io));
+						log.warn("Couldn't close Writer: " + io);
 					}
 				}
 			}
@@ -612,7 +614,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * Called when the webapp is shut down properly Must call Context.shutdown() and then shutdown
 	 * all the web layers of the modules
 	 *
-	 * @see org.springframework.web.context.ContextLoaderListener#contextDestroyed(jakarta.servlet.ServletContextEvent)
+	 * @see org.springframework.web.context.ContextLoaderListener#contextDestroyed(javax.servlet.ServletContextEvent)
 	 */
 	@SuppressWarnings("squid:S1215")
 	@Override

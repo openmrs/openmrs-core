@@ -609,7 +609,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
 		
 		concept = Context.getConceptService().saveConcept(concept);
-		assertEquals(concept.getConceptId(), conceptId);
+		assertTrue(concept.getConceptId().equals(conceptId));
 	}
 
 	/**

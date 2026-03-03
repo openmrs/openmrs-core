@@ -17,12 +17,13 @@
 
 	<class name="org.openmrs.notification.Alert" table="notification_alert">
 		
-		<id name="alertId" type="java.lang.Integer" column="alert_id" unsaved-value="null">
-			<generator class="identity">
+		<id name="alertId" type="int" column="alert_id" unsaved-value="0">
+			<generator class="native">
 				<param name="sequence">notification_alert_alert_id_seq</param>
 			</generator>
 		</id>
 		
+		<discriminator column="alert_id" insert="false" />
 		
 		<property name="text" type="java.lang.String" not-null="true" length="512" />
 		

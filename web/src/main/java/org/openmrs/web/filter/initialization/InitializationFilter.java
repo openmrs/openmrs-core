@@ -36,13 +36,13 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.zip.ZipInputStream;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import liquibase.changelog.ChangeSet;
 import org.apache.commons.io.IOUtils;
@@ -1107,7 +1107,7 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
+	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -1185,8 +1185,6 @@ public class InitializationFilter extends StartupFilter {
 			// TODO how to get the driver for the other dbs...
 			if (isCurrentDatabase(DATABASE_MYSQL)) {
 				Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-			}else if(isCurrentDatabase(DATABASE_MARIADB)){
-				Class.forName("org.mariadb.jdbc.Driver").newInstance();
 			} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 				Class.forName("org.postgresql.Driver").newInstance();
 				replacedSql = replacedSql.replaceAll("`", "\"");
@@ -1548,6 +1546,18 @@ public class InitializationFilter extends StartupFilter {
 						runtimeProperties.put("connection.password", connectionPassword.toString());
 						if (StringUtils.hasText(wizardModel.databaseDriver)) {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
+						}
+						if (finalDatabaseConnectionString.contains(DATABASE_POSTGRESQL)) {
+							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL82Dialect");
+						}
+						if (finalDatabaseConnectionString.contains(DATABASE_SQLSERVER)) {
+							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
+						}
+						if (finalDatabaseConnectionString.contains(DATABASE_H2)) {
+							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+						}
+						if (finalDatabaseConnectionString.contains(DATABASE_MARIADB)) {
+							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
 						}
 						runtimeProperties.put("module.allow_web_admin", "" + wizardModel.moduleWebAdmin);
 						runtimeProperties.put("auto_update_database", "" + wizardModel.autoUpdateDatabase);

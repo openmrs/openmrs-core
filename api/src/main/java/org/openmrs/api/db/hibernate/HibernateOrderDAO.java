@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.NativeQuery;
 import org.openmrs.Concept;
 import org.openmrs.CareSetting;
 import org.openmrs.ConceptClass;
@@ -40,15 +39,15 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.persistence.FlushModeType;
-import jakarta.persistence.Query;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.metamodel.Attribute;
-import jakarta.persistence.metamodel.EntityType;
+import javax.persistence.FlushModeType;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.EntityType;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -56,8 +55,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
@@ -70,7 +67,6 @@ import org.springframework.stereotype.Repository;
  * @see org.openmrs.api.OrderService
  * @see org.openmrs.api.db.OrderDAO
  */
-@Repository("orderDAO")
 public class HibernateOrderDAO implements OrderDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateOrderDAO.class);
@@ -78,10 +74,17 @@ public class HibernateOrderDAO implements OrderDAO {
 	/**
 	 * Hibernate session factory
 	 */
-	private final SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
-	@Autowired
-	public HibernateOrderDAO(SessionFactory sessionFactory) {
+	public HibernateOrderDAO() {
+	}
+	
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -91,7 +94,9 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public Order saveOrder(Order order) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), order);
+		sessionFactory.getCurrentSession().saveOrUpdate(order);
+		
+		return order;
 	}
 	
 	/**
@@ -100,7 +105,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public void deleteOrder(Order order) throws DAOException {
-		sessionFactory.getCurrentSession().remove(order);
+		sessionFactory.getCurrentSession().delete(order);
 	}
 	
 	/**
@@ -352,7 +357,7 @@ public class HibernateOrderDAO implements OrderDAO {
 			sql = " SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id "
 			        + " FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id = :orderId";
 		}
-		NativeQuery<Object[]> query = sessionFactory.getCurrentSession().createNativeQuery(sql, Object[].class);
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setParameter("orderId", order.getOrderId());
 		
 		//prevent jpa from flushing before fetching the list
@@ -366,7 +371,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderGroup);
+		sessionFactory.getCurrentSession().saveOrUpdate(orderGroup);
+		return orderGroup;
 	}
 	
 	/**
@@ -442,7 +448,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		globalProperty.setPropertyValue(String.valueOf(gpNumericValue + 1));
 		
-		sessionFactory.getCurrentSession().persist(globalProperty);
+		sessionFactory.getCurrentSession().save(globalProperty);
 		
 		return gpNumericValue;
 	}
@@ -660,7 +666,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderFrequency);
+		sessionFactory.getCurrentSession().saveOrUpdate(orderFrequency);
+		return orderFrequency;
 	}
 	
 	/**
@@ -668,7 +675,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public void purgeOrderFrequency(OrderFrequency orderFrequency) {
-		sessionFactory.getCurrentSession().remove(orderFrequency);
+		sessionFactory.getCurrentSession().delete(orderFrequency);
 	}
 	
 	/**
@@ -774,38 +781,14 @@ public class HibernateOrderDAO implements OrderDAO {
 		    "from OrderType where :conceptClass in elements(conceptClasses)").setParameter("conceptClass", conceptClass)
 		        .uniqueResult();
 	}
-
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String, boolean)
-	 */
-	@Override
-	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeRetired) throws DAOException {
-		if (StringUtils.isBlank(javaClassName)) {
-			throw new APIException("javaClassName cannot be null");
-		}
-		
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder cb = session.getCriteriaBuilder();
-		CriteriaQuery<OrderType> cq = cb.createQuery(OrderType.class);
-		Root<OrderType> root = cq.from(OrderType.class);
-
-		List<Predicate> predicates = new ArrayList<>();
-		if (!includeRetired) {
-			predicates.add(cb.isFalse(root.get("retired")));
-		}
-		predicates.add(cb.equal(root.get("javaClassName"), javaClassName));
-		
-		cq.where(predicates.toArray(new Predicate[]{}));
-		
-		return session.createQuery(cq).getResultList();
-	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
 	 */
 	@Override
 	public OrderType saveOrderType(OrderType orderType) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderType);
+		sessionFactory.getCurrentSession().saveOrUpdate(orderType);
+		return orderType;
 	}
 	
 	/**
@@ -813,7 +796,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public void purgeOrderType(OrderType orderType) {
-		sessionFactory.getCurrentSession().remove(orderType);
+		sessionFactory.getCurrentSession().delete(orderType);
 	}
 	
 	/**
@@ -921,7 +904,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderGroupAttributeType);
+		sessionFactory.getCurrentSession().saveOrUpdate(orderGroupAttributeType);
+		return orderGroupAttributeType;
 	}
 	
 	/**
@@ -929,7 +913,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws DAOException{
-		sessionFactory.getCurrentSession().remove(orderGroupAttributeType);
+		sessionFactory.getCurrentSession().delete(orderGroupAttributeType);
 	}
 
 	/**
@@ -1002,7 +986,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderAttributeType saveOrderAttributeType(OrderAttributeType orderAttributeType) throws DAOException {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderAttributeType);
+		sessionFactory.getCurrentSession().saveOrUpdate(orderAttributeType);
+		return orderAttributeType;
 	}
 
 	/**
@@ -1011,7 +996,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public void deleteOrderAttributeType(OrderAttributeType orderAttributeType) throws DAOException {
-		sessionFactory.getCurrentSession().remove(orderAttributeType);
+		sessionFactory.getCurrentSession().delete(orderAttributeType);
 	}
 
 	/**

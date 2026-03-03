@@ -9,14 +9,14 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,22 +31,21 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LocationDAO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate location-related database functions
  */
-@Repository("locationDAO")
 public class HibernateLocationDAO implements LocationDAO {
 	
-	private final SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
-	@Autowired
-	public HibernateLocationDAO(SessionFactory sessionFactory) {
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#setSessionFactory(org.hibernate.SessionFactory)
+	 */
+	@Override
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
 	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#saveLocation(org.openmrs.Location)
@@ -64,7 +63,8 @@ public class HibernateLocationDAO implements LocationDAO {
 			}
 		}
 		
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), location);
+		sessionFactory.getCurrentSession().saveOrUpdate(location);
+		return location;
 	}
 	
 	/**
@@ -122,7 +122,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public void deleteLocation(Location location) {
-		sessionFactory.getCurrentSession().remove(location);
+		sessionFactory.getCurrentSession().delete(location);
 	}
 	
 	/**
@@ -130,7 +130,8 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public LocationTag saveLocationTag(LocationTag tag) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), tag);
+		sessionFactory.getCurrentSession().saveOrUpdate(tag);
+		return tag;
 	}
 	
 	/**
@@ -200,7 +201,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public void deleteLocationTag(LocationTag tag) {
-		sessionFactory.getCurrentSession().remove(tag);
+		sessionFactory.getCurrentSession().delete(tag);
 	}
 	
 	/**
@@ -350,7 +351,8 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType) {
-		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), locationAttributeType);
+		sessionFactory.getCurrentSession().saveOrUpdate(locationAttributeType);
+		return locationAttributeType;
 	}
 	
 	/**
@@ -358,7 +360,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public void deleteLocationAttributeType(LocationAttributeType locationAttributeType) {
-		sessionFactory.getCurrentSession().remove(locationAttributeType);
+		sessionFactory.getCurrentSession().delete(locationAttributeType);
 	}
 	
 	/**
