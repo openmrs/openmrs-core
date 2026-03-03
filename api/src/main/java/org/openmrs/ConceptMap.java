@@ -55,7 +55,7 @@ public class ConceptMap extends BaseConceptMap {
 	@IndexedEmbedded
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne(optional = false)
-	@Cascade(CascadeType.SAVE_UPDATE)
+	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
 	@JoinColumn(name = "concept_reference_term_id", nullable = false)
 	private ConceptReferenceTerm conceptReferenceTerm;
 	

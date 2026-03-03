@@ -17,7 +17,7 @@
 	<class name="org.openmrs.OrderFrequency" table="order_frequency">
 
 		<id name="orderFrequencyId" type="java.lang.Integer" column="order_frequency_id">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">order_frequency_order_frequency_id_seq</param>
 			</generator>
 		</id>

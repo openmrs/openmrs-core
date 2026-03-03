@@ -76,7 +76,7 @@ Execute the following
 
 ```bash
 cd openmrs-core
-mvn clean package
+./mvnw clean package
 ```
 
 This will generate the OpenMRS application in `webapp/target/openmrs.war` which you will have to deploy into an application server like for example [tomcat](https://tomcat.apache.org/) or [jetty](http://www.eclipse.org/jetty/).
@@ -87,7 +87,7 @@ For development purposes you can simply deploy the `openmrs.war` into the applic
 
 ```bash
 cd openmrs-core/webapp
-mvn jetty:run
+../mvnw jetty:run
 ```
 
 To run Jetty on a custom port, use the `jetty.http.port` property:
@@ -173,6 +173,14 @@ OpenMRS can run with ElasticSearch backend instead of the in-built Lucene index.
 docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.es.yml up
 ```
 If you change backend, you need to rebuild the search index by going to Legacy UI -> Administration -> Search Index. Alternatively, you can rebuild the search index using the `searchindexupdate` REST endpoint.
+
+### Running with Grafana
+
+OpenMRS can run with Grafana for monitoring logs. You can run it with:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.grafana.yml up
+```
+Grafana will be available at http://localhost:3000. Use admin as username and see docker-compose.grafana.yml for the initial password.
 
 ## Navigating the repository
 
@@ -308,4 +316,3 @@ Talk to us on [OpenMRS Talk](https://talk.openmrs.org/).
 ## License
 
 [MPL 2.0 w/ HD](http://openmrs.org/license/) © [OpenMRS Inc.](http://www.openmrs.org/)
-

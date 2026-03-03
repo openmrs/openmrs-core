@@ -22,9 +22,12 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Allergy;
 import org.openmrs.AllergyReaction;
 import org.openmrs.CareSetting;
+import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptSet;
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -45,7 +48,9 @@ import org.openmrs.DrugReferenceMap;
 import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
 import org.openmrs.EncounterRole;
+import org.openmrs.EncounterType;
 import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -70,6 +75,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Privilege;
 import org.openmrs.Program;
@@ -78,6 +84,7 @@ import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderRole;
+import org.openmrs.ReferralOrder;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.SimpleDosingInstructions;
@@ -967,6 +974,34 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		EditedOrderDoesNotMatchPreviousException exception = assertThrows(EditedOrderDoesNotMatchPreviousException.class, () -> orderService.saveOrder(order, null));
 		assertThat(exception.getMessage(), is("The orderable of the previous order and the new one order don't match"));
+	}
+
+	/**
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPassIfConceptInPreviousOrderDoesNotMatchWhenActionIsNew() {
+		Order previousOrder = orderService.getOrder(7);
+		assertTrue(OrderUtilTest.isActiveOrder(previousOrder, null));
+
+		TestOrder order = new TestOrder();
+		order.setAction(Action.NEW);
+		order.setPatient(previousOrder.getPatient());
+		order.setCareSetting(previousOrder.getCareSetting());
+		order.setOrderer(providerService.getProvider(1));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderType(previousOrder.getOrderType());
+		order.setDateActivated(new Date());
+		order.setPreviousOrder(previousOrder);
+
+		Concept newConcept = conceptService.getConcept(5089);
+		assertNotEquals(previousOrder.getConcept(), newConcept);
+		order.setConcept(newConcept);
+
+		Order savedOrder = orderService.saveOrder(order, null);
+		assertNotNull(savedOrder);
+		assertEquals(Action.NEW, savedOrder.getAction());
+		assertEquals(previousOrder, savedOrder.getPreviousOrder());
 	}
 
 	/**
@@ -2883,87 +2918,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
-	public void saveOrder_shouldFailIfTheJavaTypeOfThePreviousOrderDoesNotMatch() throws Exception {
-
-		HibernateSessionFactoryBean sessionFactoryBean = (HibernateSessionFactoryBean) applicationContext
-			.getBean("&sessionFactory");
-		Configuration configuration = sessionFactoryBean.getConfiguration();
-
-		HibernateAdministrationDAO adminDAO = (HibernateAdministrationDAO) applicationContext.getBean("adminDAO");
-		StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder()
-			.configure().applySettings(configuration.getProperties()).build();
-
-		Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
-				.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
-				.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
-				.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
-				.addAnnotatedClass(DiagnosisAttributeType.class)
-				.addAnnotatedClass(MedicationDispense.class)
-				.addAnnotatedClass(ProviderAttributeType.class)
-				.addAnnotatedClass(ConceptMapType.class)
-				.addAnnotatedClass(Relationship.class)
-		        .addAnnotatedClass(RelationshipType.class)
-				.addAnnotatedClass(Location.class)
-				.addAnnotatedClass(PersonAddress.class)
-				.addAnnotatedClass(PersonAttributeType.class)
-				.addAnnotatedClass(User.class)
-				.addAnnotatedClass(LocationAttributeType.class)
-				.addAnnotatedClass(SerializedObject.class)
-				.addAnnotatedClass(PatientState.class)
-				.addAnnotatedClass(DrugIngredient.class)
-				.addAnnotatedClass(DrugReferenceMap.class)
-				.addAnnotatedClass(AlertRecipient.class)
-				.addAnnotatedClass(PatientIdentifierType.class)
-			    .addAnnotatedClass(PatientIdentifier.class)
-				.addAnnotatedClass(ProgramAttributeType.class)
-				.addAnnotatedClass(HL7InError.class)
-				.addAnnotatedClass(OrderType.class)
-				.addAnnotatedClass(CohortMembership.class)
-				.addAnnotatedClass(OrderAttributeType.class)
-				.addAnnotatedClass(OrderSetAttributeType.class)
-				.addAnnotatedClass(OrderGroupAttributeType.class)
-			    .addAnnotatedClass(ConceptReferenceTermMap.class)
-			    .addAnnotatedClass(ConceptReferenceTerm.class)
-				.addAnnotatedClass(ConceptAnswer.class)
-			    .addAnnotatedClass(ConceptDescription.class)
-			    .addAnnotatedClass(ConceptClass.class)
-			    .addAnnotatedClass(ConceptMap.class)
-				.addAnnotatedClass(FormResource.class)
-				.addAnnotatedClass(VisitType.class)
-				.addAnnotatedClass(ProviderRole.class)
-				.addAnnotatedClass(EncounterRole.class)
-				.addAnnotatedClass(PatientProgram.class)
-				.addAnnotatedClass(HL7InArchive.class)
-				.addAnnotatedClass(PersonMergeLog.class)
-				.addAnnotatedClass(ClobDatatypeStorage.class)
-				.addAnnotatedClass(ConceptSource.class)
-        		.addAnnotatedClass(TaskDefinition.class)
-				.addAnnotatedClass(ConceptStateConversion.class)
-				.addAnnotatedClass(OrderGroup.class)
-				.addAnnotatedClass(Template.class)
-		    	.addAnnotatedClass(Drug.class)
-			    .addAnnotatedClass(AllergyReaction.class)
-				.addAnnotatedClass(ConceptAttributeType.class)
-				.addAnnotatedClass(Program.class)
-				.addAnnotatedClass(ConceptNameTag.class)
-			    .addAnnotatedClass(CareSetting.class) 
-				.addAnnotatedClass(LocationTag.class)
-			    .addAnnotatedClass(org.openmrs.Field.class)
-				.addAnnotatedClass(Privilege.class)
-				.addAnnotatedClass(LoginCredential.class)
-				.addAnnotatedClass(ConceptDatatype.class)
-				.addAnnotatedClass(ProviderAttribute.class)
-				.addAnnotatedClass(ConceptAttribute.class)
-				.addAnnotatedClass(LocationAttribute.class)
-				.addAnnotatedClass(VisitAttribute.class)
-				.addAnnotatedClass(DiagnosisAttribute.class)
-				.getMetadataBuilder().build();
-
-
-		Field field = adminDAO.getClass().getDeclaredField("metadata");
-		field.setAccessible(true);
-		field.set(adminDAO, metaData);
-
+	public void saveOrder_shouldFailIfTheJavaTypeOfThePreviousOrderDoesNotMatch() {
 		Order order = orderService.getOrder(7);
 		assertTrue(OrderUtilTest.isActiveOrder(order, null));
 		Order discontinuationOrder = new SomeTestOrder();

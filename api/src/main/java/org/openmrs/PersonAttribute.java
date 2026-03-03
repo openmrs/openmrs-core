@@ -16,6 +16,14 @@ import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.Date;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -47,6 +55,8 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.PersonAttributeType
  * @see org.openmrs.Attributable
  */
+@Entity
+@Table(name = "person_attribute")
 @Indexed
 @Audited
 @Cacheable
@@ -58,19 +68,27 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	private static final Logger log = LoggerFactory.getLogger(PersonAttribute.class);
 	
 	// Fields
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "person_attribute_id")
 	@DocumentId
 	private Integer personAttributeId;
 
+	@ManyToOne
+	@JoinColumn(name = "person_id")
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@AssociationInverseSide(inversePath = @ObjectPath({
 		@PropertyValue(propertyName = "attributes")
 	}))
 	private Person person;
 
+	@ManyToOne
+	@JoinColumn(name = "person_attribute_type_id", nullable = false)
 	@IndexedEmbedded
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private PersonAttributeType attributeType;
-	
+
+	@Column(name = "value", nullable = false, length = 50)
 	@FullTextField(name="valuePhrase", analyzer = SearchAnalysis.PHRASE_ANALYZER)
 	@FullTextField(name = "valueExact", analyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "valueStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)

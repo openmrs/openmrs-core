@@ -187,7 +187,7 @@ public class PersonQuery {
 		}).toPredicate();
 	}
 	
-	private void applyPersonFilters(SearchPredicateFactory predicateFactory, BooleanPredicateOptionsCollector<?> b,
+	private void applyPersonFilters(SearchPredicateFactory predicateFactory, BooleanPredicateOptionsCollector<?, ?> b,
 	        boolean includeVoided, Boolean patientsOnly, Boolean dead, Integer birthyear, String gender) {
 		if (!includeVoided) {
 			b.filter(predicateFactory.match().field("voided").matching(false));

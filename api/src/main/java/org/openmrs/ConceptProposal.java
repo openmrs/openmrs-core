@@ -11,8 +11,19 @@ package org.openmrs;
 
 import java.util.Date;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsConstants;
+import jakarta.persistence.CascadeType;
 
 /**
  * A ConceptProposal is a temporary holder for concept that should be in the system. When defining
@@ -21,37 +32,62 @@ import org.openmrs.util.OpenmrsConstants;
  * encounter that prompted this proposal is updated with a new observation pointing at the new (or
  * edited) concept.
  */
+@Entity
+@Table(name = "concept_proposal")
 @Audited
 public class ConceptProposal extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 57344L;
 	
 	// Fields
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "concept_proposal_id")
 	private Integer conceptProposalId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "obs_concept_id")
 	private Concept obsConcept;
-	
+
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinColumn(name = "obs_id")
 	private Obs obs;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "concept_id")
 	private Concept mappedConcept;
-	
+
+	@Column(name = "original_text", nullable = false, length = 255)
 	private String originalText;
-	
+
+	@Column(name = "final_text", length = 255)
 	private String finalText;
-	
+
+	@Column(name = "state", nullable = false, length = 32)
 	private String state;
-	
+
+	@Column(name = "comments", length = 255)
 	private String comments;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
-	
+
+	@Column(name = "date_created", nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateCreated;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
-	
+
+	@Column(name = "date_changed")
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateChanged;
 	
 	// Constructors

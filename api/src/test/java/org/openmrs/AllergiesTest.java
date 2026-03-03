@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -177,12 +178,12 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 	public void add_shouldAllowNonDuplicateCodedAllergen(){
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
-		
+
 		Allergy allergy2 = new Allergy();
 		allergy2.setAllergen(new Allergen(null, new Concept(2), null));
-		
+
 		allergies.add(allergy1);
-		allergies.add(allergy2);
+		assertDoesNotThrow(() -> allergies.add(allergy2));
 	}
 	
 	/**
@@ -208,15 +209,15 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 	@Test
 	public void add_shouldAllowNonDuplicateNonCodedAllergen(){
 		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
-		
+
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE1"));
-		
+
 		Allergy allergy2 = new Allergy();
 		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE2"));
-		
+
 		allergies.add(allergy1);
-		allergies.add(allergy2);
+		assertDoesNotThrow(() -> allergies.add(allergy2));
 	}
 	
 	/**
@@ -242,12 +243,12 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 	public void add2_shouldAllowNonDuplicateCodedAllergen(){
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
-		
+
 		Allergy allergy2 = new Allergy();
 		allergy2.setAllergen(new Allergen(null, new Concept(2), null));
-		
+
 		allergies.add(0, allergy1);
-		allergies.add(0, allergy2);
+		assertDoesNotThrow(() -> allergies.add(0, allergy2));
 	}
 	
 	/**
@@ -273,15 +274,15 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 	@Test
 	public void add2_shouldAllowNonDuplicateNonCodedAllergen(){
 		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
-		
+
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE1"));
-		
+
 		Allergy allergy2 = new Allergy();
 		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE2"));
-		
+
 		allergies.add(0, allergy1);
-		allergies.add(0, allergy2);
+		assertDoesNotThrow(() -> allergies.add(0, allergy2));
 	}
 	
 	/**

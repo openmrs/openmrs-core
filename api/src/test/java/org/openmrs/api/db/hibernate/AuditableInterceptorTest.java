@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -125,16 +126,16 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	@Test
 	public void onFlushDirty_shouldNotFailWithNullPreviousState() {
 		AuditableInterceptor interceptor = new AuditableInterceptor();
-		
+
 		User u = new User();
-		
+
 		// sanity check
 		assertTrue(u instanceof Auditable);
-		
+
 		String[] propertyNames = new String[] { "changedBy", "dateChanged" };
 		Object[] currentState = new Object[] { "", null };
-		
-		interceptor.onFlushDirty(u, null, currentState, null, propertyNames, null);
+
+		assertDoesNotThrow(() -> interceptor.onFlushDirty(u, null, currentState, null, propertyNames, null));
 	}
 	
 	/**
@@ -167,10 +168,15 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 			@Override
 			public void execute() {
 				ConceptNumeric weight = Context.getConceptService().getConceptNumeric(5089);
+				Double originalHiAbsolute = weight.getHiAbsolute();
 				Date dateChangedBefore = weight.getDateChanged();
 				weight.setHiAbsolute(75d);
 				Context.getConceptService().saveConcept(weight);
 				assertNotSame(dateChangedBefore, weight.getDateChanged());
+				
+				// Restore the original value since daemon tasks commit outside the test transaction
+				weight.setHiAbsolute(originalHiAbsolute);
+				Context.getConceptService().saveConcept(weight);
 			}
 		}).runTheTask();
 	}

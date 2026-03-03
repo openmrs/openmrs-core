@@ -9,6 +9,7 @@
  */
 package org.openmrs.logic.result;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,17 +41,17 @@ public class ResultTest {
 	
 	@Test
 	public void Result_shouldNotFailWithNullList() {
-		new Result((List<Result>) null);
+		assertDoesNotThrow(() -> new Result((List<Result>) null));
 	}
-	
+
 	@Test
 	public void Result_shouldNotFailWithEmptyList() {
-		new Result(new ArrayList<Result>());
+		assertDoesNotThrow(() -> new Result(new ArrayList<Result>()));
 	}
-	
+
 	@Test
 	public void Result_shouldNotFailWithNullResult() {
-		new Result((Result) null);
+		assertDoesNotThrow(() -> new Result((Result) null));
 	}
 	
 	@Test

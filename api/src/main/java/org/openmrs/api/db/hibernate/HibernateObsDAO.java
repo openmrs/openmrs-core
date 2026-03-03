@@ -64,7 +64,7 @@ public class HibernateObsDAO implements ObsDAO {
 	 */
 	@Override
 	public void deleteObs(Obs obs) throws DAOException {
-		sessionFactory.getCurrentSession().delete(obs);
+		sessionFactory.getCurrentSession().remove(obs);
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class HibernateObsDAO implements ObsDAO {
 			}
 		}
 		
-		sessionFactory.getCurrentSession().saveOrUpdate(obs);
+		obs = HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), obs);
 		
 		return obs;
 	}

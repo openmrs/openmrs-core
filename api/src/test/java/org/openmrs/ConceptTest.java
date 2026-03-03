@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -302,7 +303,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptAnswer ca = new ConceptAnswer(123);
 		Concept c = new Concept();
 		c.setAnswers(null); // make sure the list is null
-		c.addAnswer(ca);
+		assertDoesNotThrow(() -> c.addAnswer(ca));
 	}
 	
 	/**

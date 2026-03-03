@@ -20,7 +20,7 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.openmrs.util.OpenmrsUtil;

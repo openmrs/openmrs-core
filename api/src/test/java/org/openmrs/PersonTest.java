@@ -869,6 +869,48 @@ public class PersonTest extends BaseContextSensitiveTest {
 		person.setDeathDate(Date.from(LocalDate.of(2024, Month.AUGUST, 5).atStartOfDay().toInstant(ZoneOffset.UTC)));
 		assertEquals(4, person.getAgeInDays());
 	}
+
+	/**
+	 * @see Person#getAgeInMonths(Date)
+	 */
+	@Test
+	public void getAgeInMonths_shouldReturnCorrectAgeInMonthsWithGivenDate() {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(2022, Calendar.JANUARY, 15);
+		Calendar onDate = Calendar.getInstance();
+		onDate.set(2023, Calendar.MARCH, 15);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+		assertEquals(14, person.getAgeInMonths(onDate.getTime()));
+	}
+
+	/**
+	 * @see Person#getAgeInWeeks(Date)
+	 */
+	@Test
+	public void getAgeInWeeks_shouldReturnCorrectAgeInWeeksWithGivenDate() {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(2025, Calendar.JANUARY, 1);
+		Calendar onDate = Calendar.getInstance();
+		onDate.set(2025, Calendar.FEBRUARY, 1);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+		assertEquals(4, person.getAgeInWeeks(onDate.getTime()));
+	}
+
+	/**
+	 * @see Person#getAgeInDays(Date)
+	 */
+	@Test
+	public void getAgeInDays_shouldReturnCorrectAgeInDaysWithGivenDate() {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(2025, Calendar.AUGUST, 1);
+		Calendar onDate = Calendar.getInstance();
+		onDate.set(2025, Calendar.AUGUST, 16);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+		assertEquals(15, person.getAgeInDays(onDate.getTime()));
+	}
 	
 	// helper class
 	private static class PersonNameBuilder {

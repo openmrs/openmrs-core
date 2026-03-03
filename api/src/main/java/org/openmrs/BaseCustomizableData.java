@@ -15,6 +15,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OrderBy;
+import org.hibernate.annotations.BatchSize;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
@@ -24,8 +31,13 @@ import org.openmrs.customdatatype.Customizable;
  * @param <A> the type of attribute held
  * @since 1.9
  */
+@MappedSuperclass
 public abstract class BaseCustomizableData<A extends Attribute> extends BaseChangeableOpenmrsData implements Customizable<A> {
-	
+
+	@Access(AccessType.PROPERTY)
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("voided asc")
+	@BatchSize(size = 100)
 	private Set<A> attributes = new LinkedHashSet<>();
 	
 	/**

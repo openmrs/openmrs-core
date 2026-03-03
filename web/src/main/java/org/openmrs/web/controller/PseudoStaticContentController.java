@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.web.servlet.mvc.LastModified;
 
 /**
  * This controller basically passes requests straight through to their views. When interpretJstl is
@@ -33,7 +32,7 @@ import org.springframework.web.servlet.mvc.LastModified;
  * All jstl files are cached in the browser until a server restart or a global property is
  * added/changed/deleted
  */
-public class PseudoStaticContentController implements Controller, LastModified, GlobalPropertyListener {
+public class PseudoStaticContentController implements Controller, GlobalPropertyListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(PseudoStaticContentController.class);
 	
@@ -74,7 +73,6 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 		return new ModelAndView(path);
 	}
 	
-	@Override
 	public long getLastModified(HttpServletRequest request) {
 		
 		// return a mostly constant last modified date for all files passing
