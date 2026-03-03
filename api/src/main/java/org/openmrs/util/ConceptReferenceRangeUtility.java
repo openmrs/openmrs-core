@@ -24,7 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.runtime.log.Log4JLogChute;
 import org.joda.time.LocalTime;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
@@ -77,7 +76,6 @@ public class ConceptReferenceRangeUtility {
 		VelocityEngine velocityEngine = new VelocityEngine();
 		try {
 			Properties props = new Properties();
-			props.put("runtime.log.logsystem.class", Log4JLogChute.class.getName());
 			props.put("runtime.log.logsystem.log4j.category", "velocity");
 			props.put("runtime.log.logsystem.log4j.logger", "velocity");
 			velocityEngine.init(props);

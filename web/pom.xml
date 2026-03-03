@@ -96,14 +96,8 @@
          <artifactId>jcl-over-slf4j</artifactId>
       </dependency>
       <dependency>
-		 <groupId>org.apache.velocity</groupId>
-		 <artifactId>velocity-tools</artifactId>
-		 <exclusions>
-		 	<exclusion>
-		 		<groupId>dom4j</groupId>
-		 		<artifactId>dom4j</artifactId>
-		 	</exclusion>
-		 </exclusions>
+		 <groupId>org.apache.velocity.tools</groupId>
+		 <artifactId>velocity-tools-generic</artifactId>
       </dependency>
       <dependency>
          <groupId>org.owasp.encoder</groupId>
