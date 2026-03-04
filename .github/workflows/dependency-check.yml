@@ -35,7 +35,7 @@ jobs:
             --failOnCVSS 6.2
             --enableRetired
             --suppression dependency-check-suppressions.xml
-            ${{ secrets.NVD_API_KEY && format('--nvdApiKey {0}', secrets.NVD_API_KEY) || '' }}
+            --nvdApiKey ${{ secrets.NVD_API_KEY }}
       - name: Upload Test results
         if: always()
         uses: actions/upload-artifact@v6

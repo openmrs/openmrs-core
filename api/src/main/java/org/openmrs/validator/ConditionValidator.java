@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import org.openmrs.Condition;
+import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -49,6 +50,12 @@ public class ConditionValidator implements Validator {
 		}
 		if(condition.getClinicalStatus() == null){
 			errors.rejectValue("clinicalStatus", "Condition.clinicalStatusShouldNotBeNull", "The clinical status is required");
+		}
+		Patient patient = condition.getPatient();
+		if (condition.getOnsetDate() != null && patient != null && patient.getBirthdate() != null
+		        && condition.getOnsetDate().before(patient.getBirthdate())) {
+			errors.rejectValue("onsetDate", "Condition.error.onsetDateBeforePatientBirthdate",
+			    "Onset date cannot be before patient's date of birth");
 		}
 	}
 }
