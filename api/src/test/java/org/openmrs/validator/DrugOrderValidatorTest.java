@@ -898,6 +898,49 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		assertEquals("DrugOrder.error.drugIsRequired", errors.getFieldError("drug").getCode());
 	}
 
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldFailValidationIfDateActivatedIsBeforePatientBirthdate() {
+		Patient patient = Context.getPatientService().getPatient(2);
+		DrugOrder order = new DrugOrder();
+		order.setPatient(patient);
+		order.setDrug(Context.getConceptService().getDrug(3));
+		Calendar cal = Calendar.getInstance();
+		cal.set(1974, Calendar.JANUARY, 1);
+		order.setDateActivated(cal.getTime());
+
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+
+		assertTrue(errors.hasFieldErrors("dateActivated"));
+		assertEquals("Order.error.dateActivatedBeforePatientBirthdate",
+			errors.getFieldError("dateActivated").getCode());
+	}
+
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldFailValidationIfScheduledDateIsBeforePatientBirthdate() {
+		Patient patient = Context.getPatientService().getPatient(2);
+		DrugOrder order = new DrugOrder();
+		order.setPatient(patient);
+		order.setDrug(Context.getConceptService().getDrug(3));
+		Calendar cal = Calendar.getInstance();
+		cal.set(1974, Calendar.JANUARY, 1);
+		order.setScheduledDate(cal.getTime());
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+
+		assertTrue(errors.hasFieldErrors("scheduledDate"));
+		assertEquals("Order.error.scheduledDateBeforePatientBirthdate",
+			errors.getFieldError("scheduledDate").getCode());
+	}
+
 	@Test
 	public void saveOrder_shouldPassDrugOrderWithNeitherDrugNonCodedNorDrugAreSetForDrugOrderWhenDrugRequiredISNotSet() {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");Patient patient = Context.getPatientService().getPatient(7);
