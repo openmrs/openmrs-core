@@ -113,7 +113,7 @@ public class PatientValidator extends PersonValidator {
 
 			// Step 2: remove the ones the patient already has
 			for (PatientIdentifier pi : patient.getActiveIdentifiers()) {
-				if (!pi.getVoided() && pi.getIdentifierType() != null) {
+				if (pi.getIdentifierType() != null) {
 					requiredTypes.remove(pi.getIdentifierType());
 				}
 			}
