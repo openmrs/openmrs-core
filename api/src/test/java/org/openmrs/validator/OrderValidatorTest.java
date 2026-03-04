@@ -486,6 +486,212 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
+	/**
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldFailIfDateActivatedIsBeforePatientBirthdate() {
+		Patient patient = new Patient();
+		Calendar birthCal = Calendar.getInstance();
+		birthCal.add(Calendar.YEAR, -20);
+		patient.setBirthdate(birthCal.getTime());
+		Order order = new Order();
+		order.setPatient(patient);
+		Calendar activatedCal = Calendar.getInstance();
+		activatedCal.add(Calendar.YEAR, -25);
+		order.setDateActivated(activatedCal.getTime());
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		assertTrue(errors.hasFieldErrors("dateActivated"));
+		assertEquals("Order.error.dateActivatedBeforePatientBirthdate",
+		    errors.getFieldError("dateActivated").getCode());
+	}
+
+	/**
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldPassIfDateActivatedEqualsPatientBirthdate() {
+		Patient patient = new Patient();
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -20);
+		patient.setBirthdate(cal.getTime());
+		Order order = new Order();
+		order.setPatient(patient);
+		order.setDateActivated(new Date(patient.getBirthdate().getTime()));
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		assertFalse(errors.hasFieldErrors("dateActivated"));
+	}
+
+	/**
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldPassIfDateActivatedIsAfterPatientBirthdate() {
+		Patient patient = new Patient();
+		Calendar birthCal = Calendar.getInstance();
+		birthCal.add(Calendar.YEAR, -20);
+		patient.setBirthdate(birthCal.getTime());
+		Order order = new Order();
+		order.setPatient(patient);
+		Calendar activatedCal = Calendar.getInstance();
+		activatedCal.add(Calendar.YEAR, -15);
+		order.setDateActivated(activatedCal.getTime());
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		assertFalse(errors.hasFieldErrors("dateActivated"));
+	}
+
+	/**
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldPassIfDateActivatedIsNullForBirthdateCheck() {
+		Patient patient = new Patient();
+		Calendar birthCal = Calendar.getInstance();
+		birthCal.add(Calendar.YEAR, -20);
+		patient.setBirthdate(birthCal.getTime());
+		Order order = new Order();
+		order.setPatient(patient);
+		// dateActivated not set (null)
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		assertFalse(errors.hasFieldErrors("dateActivated"));
+	}
+
+	/**
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldPassIfPatientBirthdateIsNullForDateActivatedCheck() {
+		Patient patient = new Patient();
+		// birthdate not set (null)
+		Order order = new Order();
+		order.setPatient(patient);
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+		order.setDateActivated(cal.getTime());
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		assertFalse(errors.hasFieldErrors("dateActivated"));
+	}
+
+	/**
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldFailIfScheduledDateIsBeforePatientBirthdate() {
+		Patient patient = new Patient();
+		Calendar birthCal = Calendar.getInstance();
+		birthCal.add(Calendar.YEAR, -20);
+		patient.setBirthdate(birthCal.getTime());
+		Order order = new Order();
+		order.setPatient(patient);
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		Calendar scheduledCal = Calendar.getInstance();
+		scheduledCal.add(Calendar.YEAR, -25);
+		order.setScheduledDate(scheduledCal.getTime());
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		assertTrue(errors.hasFieldErrors("scheduledDate"));
+		assertEquals("Order.error.scheduledDateBeforePatientBirthdate",
+		    errors.getFieldError("scheduledDate").getCode());
+	}
+
+	/**
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldPassIfScheduledDateEqualsPatientBirthdate() {
+		Patient patient = new Patient();
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -20);
+		patient.setBirthdate(cal.getTime());
+		Order order = new Order();
+		order.setPatient(patient);
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		order.setScheduledDate(new Date(patient.getBirthdate().getTime()));
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		assertFalse(errors.hasFieldErrors("scheduledDate"));
+	}
+
+	/**
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldPassIfScheduledDateIsAfterPatientBirthdate() {
+		Patient patient = new Patient();
+		Calendar birthCal = Calendar.getInstance();
+		birthCal.add(Calendar.YEAR, -20);
+		patient.setBirthdate(birthCal.getTime());
+		Order order = new Order();
+		order.setPatient(patient);
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		Calendar scheduledCal = Calendar.getInstance();
+		scheduledCal.add(Calendar.YEAR, -15);
+		order.setScheduledDate(scheduledCal.getTime());
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		assertFalse(errors.hasFieldErrors("scheduledDate"));
+	}
+
+	/**
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldPassIfScheduledDateIsNullForBirthdateCheck() {
+		Patient patient = new Patient();
+		Calendar birthCal = Calendar.getInstance();
+		birthCal.add(Calendar.YEAR, -20);
+		patient.setBirthdate(birthCal.getTime());
+		Order order = new Order();
+		order.setPatient(patient);
+		// scheduledDate not set (null), urgency defaults to ROUTINE
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		assertFalse(errors.hasFieldErrors("scheduledDate"));
+	}
+
+	/**
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldPassIfPatientBirthdateIsNullForScheduledDateCheck() {
+		Patient patient = new Patient();
+		// birthdate not set (null)
+		Order order = new Order();
+		order.setPatient(patient);
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -5);
+		order.setScheduledDate(cal.getTime());
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		assertFalse(errors.hasFieldErrors("scheduledDate"));
+	}
+
 	@Test
 	public void saveOrder_shouldNotSaveOrderIfInvalidOrderGroupPatient() {
 		executeDataSet(ORDER_SET);
