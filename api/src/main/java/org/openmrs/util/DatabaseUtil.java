@@ -167,16 +167,19 @@ public class DatabaseUtil {
 						throw new IllegalArgumentException("Security violation: SELECT ... INTO clauses are forbidden.");
 					}
 					if (plainSelect.getForClause() != null) {
-						throw new IllegalArgumentException("Security violation: SELECT ... FOR UPDATE is not allowed.");
+						throw new IllegalArgumentException("SELECT ... FOR UPDATE is semantically incorrect for single-statement transactions.");
 					}
 				}
 				return false;
 			}
 			
 			return !isSelect;
-			
 		} catch (JSQLParserException e) {
-			throw new IllegalArgumentException("Invalid SQL syntax or illegal query structure detected.", e);
+			if (selectOnly) {
+				throw new IllegalArgumentException("Invalid SQL syntax or illegal query structure detected.", e);
+			}
+			log.warn("Could not parse SQL for security validation, treating as DML: {}", e.getMessage());
+			return true;
 		}
 	}
 	
