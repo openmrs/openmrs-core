@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!-- Test dataset for urgency-based sorting of orders -->
+<dataset>
+  <!-- Test orders with different urgencies for Patient 2 -->
+  
+  <!-- STAT order - highest priority, older date -->
+  <orders order_id="5001" order_type_id="2" order_number="ORD-5001" urgency="STAT" order_action="NEW" 
+          concept_id="5497" orderer="1" fulfiller_status="RECEIVED" 
+          date_activated="2024-01-10 09:00:00.0" 
+          creator="1" date_created="2024-01-10 09:00:00.0" voided="false" 
+          patient_id="2" uuid="uuid-5001-stat-old" care_setting="1" encounter_id="6" />
+  
+  <!-- STAT order - highest priority, newer date -->
+  <orders order_id="5002" order_type_id="2" order_number="ORD-5002" urgency="STAT" order_action="NEW" 
+          concept_id="5497" orderer="1" fulfiller_status="RECEIVED" 
+          date_activated="2024-01-15 10:00:00.0" 
+          creator="1" date_created="2024-01-15 10:00:00.0" voided="false" 
+          patient_id="2" uuid="uuid-5002-stat-new" care_setting="1" encounter_id="6" />
+  
+  <!-- ON_SCHEDULED_DATE order - medium priority -->
+  <orders order_id="5003" order_type_id="2" order_number="ORD-5003" urgency="ON_SCHEDULED_DATE" order_action="NEW" 
+          concept_id="5497" orderer="1" fulfiller_status="RECEIVED" 
+          date_activated="2024-01-12 11:00:00.0" 
+          creator="1" date_created="2024-01-12 11:00:00.0" voided="false" 
+          patient_id="2" uuid="uuid-5003-scheduled" care_setting="1" encounter_id="6" />
+  
+  <!-- ROUTINE order - lower priority, older date -->
+  <orders order_id="5004" order_type_id="2" order_number="ORD-5004" urgency="ROUTINE" order_action="NEW" 
+          concept_id="5497" orderer="1" fulfiller_status="RECEIVED" 
+          date_activated="2024-01-08 08:00:00.0" 
+          creator="1" date_created="2024-01-08 08:00:00.0" voided="false" 
+          patient_id="2" uuid="uuid-5004-routine-old" care_setting="1" encounter_id="6" />
+  
+  <!-- ROUTINE order - lower priority, newer date -->
+  <orders order_id="5005" order_type_id="2" order_number="ORD-5005" urgency="ROUTINE" order_action="NEW" 
+          concept_id="5497" orderer="1" fulfiller_status="RECEIVED" 
+          date_activated="2024-01-20 14:00:00.0" 
+          creator="1" date_created="2024-01-20 14:00:00.0" voided="false" 
+          patient_id="2" uuid="uuid-5005-routine-new" care_setting="1" encounter_id="6" />
+  
+  <!-- Stopped STAT order - for inactive order testing -->
+  <orders order_id="5007" order_type_id="2" order_number="ORD-5007" urgency="STAT" order_action="NEW" 
+          concept_id="5497" orderer="1" fulfiller_status="COMPLETED" 
+          date_activated="2024-01-05 09:00:00.0" 
+          date_stopped="2024-01-22 16:00:00.0" 
+          creator="1" date_created="2024-01-05 09:00:00.0" voided="false" 
+          patient_id="2" uuid="uuid-5007-stat-stopped" care_setting="1" encounter_id="6" />
+  
+  <!-- Stopped ROUTINE order - for inactive order testing -->
+  <orders order_id="5008" order_type_id="2" order_number="ORD-5008" urgency="ROUTINE" order_action="NEW" 
+          concept_id="5497" orderer="1" fulfiller_status="COMPLETED" 
+          date_activated="2024-01-01 08:00:00.0" 
+          date_stopped="2024-01-25 17:00:00.0" 
+          creator="1" date_created="2024-01-01 08:00:00.0" voided="false" 
+          patient_id="2" uuid="uuid-5008-routine-stopped" care_setting="1" encounter_id="6" />
+  
+</dataset>

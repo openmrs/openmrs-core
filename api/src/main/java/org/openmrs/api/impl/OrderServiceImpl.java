@@ -67,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -619,6 +620,95 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			throw new IllegalArgumentException("Patient is required");
 		}
 		return dao.getOrders(patient, null, null, true, true);
+	}
+	
+	/**
+	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
+	 *      org.openmrs.OrderType, boolean, String, String)
+	 */
+	@Override
+	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType,
+	                             boolean includeVoided, String sortBy, String sortOrder) {
+		List<Order> orders = getOrders(patient, careSetting, orderType, includeVoided);
+		
+		if (!StringUtils.hasText(sortBy)) {
+			return orders;
+		}
+		
+		return sortOrders(orders, sortBy, sortOrder);
+	}
+	
+	private List<Order> sortOrders(List<Order> orders, String sortBy, String sortOrder) {
+		List<Order> sortedList = new ArrayList<>(orders);
+		final boolean isAscending = StringUtils.hasText(sortOrder) && sortOrder.equalsIgnoreCase("asc");
+		
+		if (!StringUtils.hasText(sortBy)) {
+			return sortedList;
+		}
+		
+		final String[] sortFields = sortBy.split(",");
+		final boolean sortByUrgency = containsField(sortFields, "urgency");
+		final boolean sortByDate = containsField(sortFields, "dateActivated");
+		
+		Collections.sort(sortedList, new Comparator<Order>() {
+			@Override
+			public int compare(Order o1, Order o2) {
+				int result = 0;
+				
+				if (sortByUrgency) {
+					result = compareByUrgency(o1, o2);
+					if (result != 0) {
+						return isAscending ? -result : result;
+					}
+				}
+				
+				if (sortByDate) {
+					result = compareByDate(o1, o2);
+					return isAscending ? result : -result;
+				}
+				
+				return 0;
+			}
+		});
+		
+		return sortedList;
+	}
+	
+	private int compareByUrgency(Order o1, Order o2) {
+		Order.Urgency urgency1 = o1.getUrgency() != null ? o1.getUrgency() : Order.Urgency.ROUTINE;
+		Order.Urgency urgency2 = o2.getUrgency() != null ? o2.getUrgency() : Order.Urgency.ROUTINE;
+		
+		boolean o1IsUrgent = urgency1 == Order.Urgency.STAT || urgency1 == Order.Urgency.ON_SCHEDULED_DATE;
+		boolean o2IsUrgent = urgency2 == Order.Urgency.STAT || urgency2 == Order.Urgency.ON_SCHEDULED_DATE;
+		
+		if (o1IsUrgent && !o2IsUrgent) {
+			return -1;
+		} else if (!o1IsUrgent && o2IsUrgent) { 
+			return 1;
+		}
+		return 0;
+	}
+	
+	private int compareByDate(Order o1, Order o2) {
+		Date date1 = getOrderSortDate(o1);
+		Date date2 = getOrderSortDate(o2);
+		return date1.compareTo(date2);
+	}
+	
+	private Date getOrderSortDate(Order order) {
+		if (order.getDateStopped() != null) {
+			return order.getDateStopped();
+		}
+		return order.getDateActivated() != null ? order.getDateActivated() : order.getDateCreated();
+	}
+	
+	private boolean containsField(String[] fields, String fieldName) {
+		for (String field : fields) {
+			if (field.trim().equalsIgnoreCase(fieldName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@Override
