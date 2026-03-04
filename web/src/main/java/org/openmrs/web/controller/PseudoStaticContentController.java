@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
+import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
@@ -79,7 +80,9 @@ public class PseudoStaticContentController implements Controller, GlobalProperty
 		// through the jsp (.withjstl) servlet
 		// this allows the files to cache until we say so
 		if (interpretJstl) {
-			log.debug("returning last modified date of : {} for : {}", lastModified, request.getPathInfo());
+			if (log.isDebugEnabled()) {
+				log.debug("returning last modified date of : {} for : {}", lastModified, OpenmrsUtil.sanitizeForLogging(request.getPathInfo()));
+			}
 			return lastModified;
 		}
 		
