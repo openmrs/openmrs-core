@@ -2117,9 +2117,34 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertEquals(expectedHiAbsolute, obsReferenceRange.getHiAbsolute());
 	}
 	
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldVoidTheGivenObsAndSetReferenceRangeForTheNewObs() {
+		Obs obs = buildObservation();
+		Context.getObsService().saveObs(obs, null);
+		
+		ObsReferenceRange originalRange = obs.getReferenceRange();
+		assertNotNull(originalRange);
+		
+		obs.setValueNumeric(77.0);
+		Obs newObs = Context.getObsService().saveObs(obs, "just testing");
+		
+		assertFalse(newObs.getVoided());
+		ObsReferenceRange newRange = newObs.getReferenceRange();
+		assertNotNull(newRange);
+		assertEquals(originalRange.getHiAbsolute(), newRange.getHiAbsolute());
+		assertEquals(originalRange.getHiCritical(), newRange.getHiCritical());
+		assertEquals(originalRange.getHiNormal(), newRange.getHiNormal());
+		assertEquals(originalRange.getLowAbsolute(), newRange.getLowAbsolute());
+		assertEquals(originalRange.getLowCritical(), newRange.getLowCritical());
+		assertEquals(originalRange.getLowNormal(), newRange.getLowNormal());
+	}
+	
 	private Obs buildObservation() {
 		Concept concept = Context.getConceptService().getConcept(4089);
-		Patient patient = new Patient(2);
+		Patient patient = Context.getPatientService().getPatient(2);
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -5);
 		patient.setBirthdate(calendar.getTime());
@@ -2129,7 +2154,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Obs obs = new Obs();
 		obs.setConcept(concept);
 		obs.setPerson(patient);
-		obs.setEncounter(new Encounter(3));
+		obs.setEncounter(Context.getEncounterService().getEncounter(3));
 		obs.setObsDatetime(newDate);
 		obs.setLocation(new Location(1));
 		obs.setValueGroupId(7);

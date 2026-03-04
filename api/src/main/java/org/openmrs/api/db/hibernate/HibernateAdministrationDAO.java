@@ -30,8 +30,6 @@ import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.jdbc.Work;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
-import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.persister.entity.AbstractEntityPersister;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.Type;
@@ -190,7 +188,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	@Override
 	public void deleteGlobalProperty(GlobalProperty property) throws DAOException {
-		sessionFactory.getCurrentSession().delete(property);
+		sessionFactory.getCurrentSession().remove(property);
 	}
 	
 	/**
@@ -202,10 +200,10 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		if (gpObject != null) {
 			gpObject.setPropertyValue(gp.getPropertyValue());
 			gpObject.setDescription(gp.getDescription());
-			sessionFactory.getCurrentSession().update(gpObject);
+			gpObject = HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), gpObject);
 			return gpObject;
 		} else {
-			sessionFactory.getCurrentSession().save(gp);
+			sessionFactory.getCurrentSession().persist(gp);
 			return gp;
 		}
 	}

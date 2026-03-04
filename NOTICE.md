@@ -183,18 +183,6 @@
 <td>jar</td>
 <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2</a>, <a class="externalLink" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution 3.0</a></td></tr>
 <tr class="b">
-<td>org.codehaus.jackson</td>
-<td><a class="externalLink" href="http://jackson.codehaus.org">jackson-core-asl</a></td>
-<td>1.9.13</td>
-<td>jar</td>
-<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
-<tr class="a">
-<td>org.codehaus.jackson</td>
-<td><a class="externalLink" href="http://jackson.codehaus.org">jackson-mapper-asl</a></td>
-<td>1.9.13</td>
-<td>jar</td>
-<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
-<tr class="b">
 <td>org.codehaus.sonar-plugins.java</td>
 <td><a class="externalLink" href="http://sonar-plugins.codehaus.org/java/sonar-jacoco-listeners">sonar-jacoco-listeners</a></td>
 <td>3.1</td>

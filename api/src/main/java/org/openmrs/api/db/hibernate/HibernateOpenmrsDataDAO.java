@@ -11,7 +11,6 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.List;
 
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -37,6 +36,19 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 	}
 	
 	/**
+	 * Gets the attribute name for the voided flag. Person maps it as "personVoided"
+	 * in HBM XML, while other entities use "voided" from BaseOpenmrsData.
+	 */
+	private String getVoidedAttributeName(Root<T> root) {
+		try {
+			root.get("voided");
+			return "voided";
+		} catch (IllegalArgumentException e) {
+			return "personVoided";
+		}
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAll(boolean)
 	 */
 	@Override
@@ -47,7 +59,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 		Root<T> root = cq.from(mappedClass);
 
 		if (!includeVoided) {
-			cq.where(cb.isFalse(root.get("voided")));
+			cq.where(cb.isFalse(root.get(getVoidedAttributeName(root))));
 		}
 
 		return session.createQuery(cq).getResultList();
@@ -64,7 +76,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 		Root<T> root = cq.from(mappedClass);
 
 		if (!includeVoided) {
-			cq.where(cb.isFalse(root.get("voided")));
+			cq.where(cb.isFalse(root.get(getVoidedAttributeName(root))));
 		}
 
 		TypedQuery<T> query = session.createQuery(cq);
@@ -82,16 +94,19 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 	 */
 	@Override
 	public int getAllCount(boolean includeVoided) {
-		
-		String hql = "select count(*)" + " from " + mappedClass;
-		
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<T> root = cq.from(mappedClass);
+
+		cq.select(cb.count(root));
+
 		if (!includeVoided) {
-			hql += " where voided = false";
+			cq.where(cb.isFalse(root.get(getVoidedAttributeName(root))));
 		}
-		Query query = sessionFactory.getCurrentSession().createQuery(hql);
-		
-		Number count = JpaUtils.getSingleResultOrNull(query);
-		
+
+		Long count = session.createQuery(cq).getSingleResult();
+
 		return count == null ? 0 : count.intValue();
 	}
 }

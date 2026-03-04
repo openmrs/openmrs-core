@@ -237,7 +237,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	public void equals_shouldReturnfalseIfHibernateProxyOfOneThingIsComparedtoHibernateProxyofSomething() {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		Session session = sessionFactory.getCurrentSession();
-		assertFalse((session.load(Patient.class, 2)).equals((session.load(Concept.class, 11))));
+		assertFalse((session.getReference(Patient.class, 2)).equals((session.getReference(Concept.class, 11))));
 	}
 
 	/**
@@ -296,8 +296,8 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		TestClass obj = new TestClass();
 		obj.setUuid(uid);
 
-		assertFalse(obj.equals((session.load(Patient.class, 2))));
-		assertFalse((session.load(Patient.class, 2)).equals(obj));
+		assertFalse(obj.equals((session.getReference(Patient.class, 2))));
+		assertFalse((session.getReference(Patient.class, 2)).equals(obj));
 	}
 
 	/**
@@ -408,7 +408,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		Session session = sessionFactory.getCurrentSession();
 
 		Patient patient = (Patient) session.get(Patient.class, 2);
-		Patient patientproxyobject = (Patient) session.load(Patient.class, 2);
+		Patient patientproxyobject = (Patient) session.getReference(Patient.class, 2);
 
 		assertTrue(patient.equals(patientproxyobject));
 	}
@@ -421,6 +421,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		Session session = sessionFactory.getCurrentSession();
 
-		assertTrue(session.load(Patient.class, 2).equals((session.load(Patient.class, 2)))) ;
+		assertTrue(session.getReference(Patient.class, 2).equals((session.getReference(Patient.class, 2)))) ;
 	}
 }

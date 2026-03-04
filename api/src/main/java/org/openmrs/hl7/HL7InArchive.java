@@ -16,8 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
@@ -32,11 +30,7 @@ import org.hibernate.envers.Audited;
 public class HL7InArchive extends HL7QueueItem {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hl7_in_archive_seq")
-	@GenericGenerator(
-			name = "hl7_in_archive_seq",
-			parameters = @Parameter(name = "sequence", value = "hl7_in_archive_hl7_in_archive_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "hl7_in_archive_id")
 	private int hl7InArchiveId;
 

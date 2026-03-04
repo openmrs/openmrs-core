@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,11 +51,9 @@ public class AuditableInterceptor implements Interceptor {
 	 * <strong>Should</strong> return false if dateCreated and creator was not null
 	 * <strong>Should</strong> be called when saving OpenmrsObject
 	 * @return true if the object got the dateCreated and creator fields set
-	 * @see org.hibernate.EmptyInterceptor#onSave(java.lang.Object, java.io.Serializable,
-	 *      java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
 	 */
 	@Override
-	public boolean onSave(Object entity, Serializable id, Object[] entityCurrentState, String[] propertyNames, Type[] types) {
+	public boolean onSave(Object entity, Object id, Object[] entityCurrentState, String[] propertyNames, Type[] types) {
 		return setCreatorAndDateCreatedIfNull(entity, entityCurrentState, propertyNames);
 	}
 	
@@ -68,12 +65,10 @@ public class AuditableInterceptor implements Interceptor {
 	 * <strong>Should</strong> set the changedBy field
 	 * <strong>Should</strong> be called when saving an Auditable
 	 * <strong>Should</strong> not enter into recursion on entity
-	 * @see org.hibernate.EmptyInterceptor#onFlushDirty(java.lang.Object, java.io.Serializable,
-	 *      java.lang.Object[], java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
 	 */
 	
 	@Override
-	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
+	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState,
 	        String[] propertyNames, Type[] types) throws CallbackException {
 		boolean objectWasChanged;
 		
@@ -89,17 +84,17 @@ public class AuditableInterceptor implements Interceptor {
 	}
 	
 	@Override
-	public void onCollectionRecreate(Object collection, Serializable key) throws CallbackException {
+	public void onCollectionRecreate(Object collection, Object key) throws CallbackException {
 		handleCollectionChange(collection);
 	}
 	
 	@Override
-	public void onCollectionUpdate(Object collection, Serializable key) throws CallbackException {
+	public void onCollectionUpdate(Object collection, Object key) throws CallbackException {
 		handleCollectionChange(collection);
 	}
 	
 	@Override
-	public void onCollectionRemove(Object collection, Serializable key) throws CallbackException {
+	public void onCollectionRemove(Object collection, Object key) throws CallbackException {
 		handleCollectionChange(collection);
 	}
 	

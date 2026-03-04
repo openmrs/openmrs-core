@@ -9,7 +9,7 @@
  */
 package org.openmrs;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.envers.Audited;
 
 import jakarta.persistence.Column;
