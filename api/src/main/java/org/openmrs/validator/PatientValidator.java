@@ -9,16 +9,17 @@
  */
 package org.openmrs.validator;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 import java.util.HashSet;
-import org.openmrs.annotation.Handler;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,10 +119,8 @@ public class PatientValidator extends PersonValidator {
 			}
 
 			// Step 3: remaining = missing
-			List<String> missingRequiredIdentifiers = new ArrayList<>();
-			
 			if (!requiredTypes.isEmpty()) {
-				missingRequiredIdentifiers = requiredTypes.stream()
+				List<String> missingRequiredIdentifiers = requiredTypes.stream()
 					.map(PatientIdentifierType::getName)
 					.collect(Collectors.toList());
 				errors.rejectValue(
