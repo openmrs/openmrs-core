@@ -1,0 +1,95 @@
+@startuml OpenMRS Program Workflow State Machine - Detailed
+!theme plain
+skinparam backgroundColor white
+skinparam state {
+  BackgroundColor lightblue
+  BorderColor navy
+  ArrowColor navy
+}
+
+title OpenMRS Program Workflow State Machine - Detailed Implementation
+
+' Patient Program Lifecycle
+state "Patient Program Lifecycle" as PPL {
+  state "Enrolled" as Enrolled : PatientProgram created\ndateEnrolled set
+  state "Active in Program" as ActiveProgram : Patient participating\nin program workflows
+  state "Completed" as Completed : PatientProgram.dateCompleted set\n(terminal state reached)
+  state "Voided" as Voided : Program participation cancelled
+  
+  [*] --> Enrolled : Patient enrolled in program
+  Enrolled --> ActiveProgram : Begin workflow participation
+  ActiveProgram --> Completed : Reach terminal state
+  ActiveProgram --> Voided : Cancel enrollment
+  Completed --> [*] : Program finished
+  Voided --> [*] : Enrollment cancelled
+}
+  
+' Individual Workflow State Management
+state "Workflow State Management" as WSM {
+  state "No Current State" as NoState : New patient in workflow\nor between states
+  state "Initial Workflow State" as InitialState : ProgramWorkflowState\nwith initial=true
+  state "Intermediate State A" as IntermediateA : Regular workflow state
+  state "Intermediate State B" as IntermediateB : Another workflow state
+  state "Terminal Workflow State" as TerminalState : ProgramWorkflowState\nwith terminal=true
+  
+  [*] --> NoState : Patient enters workflow
+  NoState --> InitialState : Must transition to initial state\n(isLegalTransition checks initial=true)
+  InitialState --> IntermediateA : Legal transition\n(fromState != toState)
+  InitialState --> IntermediateB : Alternative path
+  IntermediateA --> IntermediateB : Cross-state transition
+  IntermediateB --> IntermediateA : Bidirectional flow
+  IntermediateA --> TerminalState : Progress to completion
+  IntermediateB --> TerminalState : Reach end state
+  TerminalState --> [*] : Workflow completed\n(sets PatientProgram.dateCompleted)
+}
+
+note right of TerminalState : Terminal states automatically\ncomplete the PatientProgram\nand set dateCompleted
+  
+' State Transition Logic
+state "Transition Validation" as TV {
+  state "Check Legal Transition" as CheckLegal : ProgramWorkflow.isLegalTransition()\nvalidates state changes
+  state "Transition Allowed" as Allowed : Same state transitions blocked\nNull->Initial allowed
+  state "Transition Blocked" as Blocked : Invalid transition attempted
+  
+  CheckLegal --> Allowed : Valid transition
+  CheckLegal --> Blocked : Invalid transition
+  Allowed --> [*] : Proceed with transition
+  Blocked --> [*] : Throw IllegalArgumentException
+}
+
+' ConceptStateConversion Integration
+state "Automatic State Conversion" as ASC {
+  state "Trigger Concept Observed" as TriggerObserved : Obs with trigger concept created
+  state "Find Matching Workflow" as FindWorkflow : ConceptStateConversion\nlookup by concept
+  state "Validate Transition" as ValidateTransition : Check if legal transition\nfrom current state
+  state "Execute Transition" as ExecuteTransition : PatientProgram.transitionToState()
+  state "Conversion Complete" as ConversionComplete : Patient automatically\ntransitioned
+  
+  [*] --> TriggerObserved : Observation triggers conversion
+  TriggerObserved --> FindWorkflow : Look up state conversion rule
+  FindWorkflow --> ValidateTransition : Found matching conversion
+  ValidateTransition --> ExecuteTransition : Legal transition confirmed
+  ValidateTransition --> [*] : Illegal transition - no change
+  ExecuteTransition --> ConversionComplete : State changed automatically
+  ConversionComplete --> [*] : Process complete
+  FindWorkflow --> [*] : No conversion rule found
+}
+
+note top of ASC : ProgramWorkflowService.triggerStateConversion()\nautomatically transitions patients based on\nObservations matching ConceptStateConversion rules
+
+' Patient State History Tracking
+state "State History Management" as SHM {
+  state "Create New PatientState" as CreatePS : New PatientState instance\nstartDate = transition date
+  state "End Previous State" as EndPS : Set endDate on previous\nPatientState
+  state "Multiple Active States" as MultiActive : Different workflows can have\nconcurrent active states
+  
+  [*] --> CreatePS : State transition initiated
+  CreatePS --> EndPS : Close previous state\n(if exists)
+  EndPS --> MultiActive : Multiple workflows\ncan be active simultaneously
+  MultiActive --> [*] : State change complete
+  CreatePS --> MultiActive : No previous state\n(first transition)
+}
+
+note bottom : The Program Workflow system provides a flexible framework for\ntracking patient progression through defined care pathways.\nEach Program can have multiple Workflows, each with their own\nstate machines and transition rules. PatientState instances\nprovide complete audit trail of patient movement through states.
+
+@enduml
