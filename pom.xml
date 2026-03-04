@@ -142,8 +142,6 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.15.0</version>
 					<configuration>
-						<target>${javaCompilerVersion}</target>
-						<source>${javaCompilerVersion}</source>
 						<encoding>UTF-8</encoding>
 					</configuration>
 				</plugin>
@@ -204,9 +202,9 @@
 					<artifactId>maven-java-formatter-plugin</artifactId>
 					<version>0.4</version>
 					<configuration>
-						<compilerSource>${javaCompilerVersion}</compilerSource>
-						<compilerCompliance>${javaCompilerVersion}</compilerCompliance>
-						<compilerTargetPlatform>${javaCompilerVersion}</compilerTargetPlatform>
+						<compilerSource>${maven.compiler.release}</compilerSource>
+						<compilerCompliance>${maven.compiler.release}</compilerCompliance>
+						<compilerTargetPlatform>${maven.compiler.release}</compilerTargetPlatform>
 						<configFile>eclipse/OpenMRSFormatter.xml</configFile>
 						<overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
 					</configuration>
@@ -728,7 +726,7 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.5</version>
+						<version>1.18.7</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -754,7 +752,7 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.5</version>
+						<version>1.18.7</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -780,7 +778,7 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.5</version>
+						<version>1.18.7</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -843,7 +841,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<javaCompilerVersion>21</javaCompilerVersion>
+		<maven.compiler.release>21</maven.compiler.release>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
 
