@@ -132,15 +132,15 @@ public abstract class StartupFilter implements Filter {
 				// writes the actual file path to the response
 				Path filePath = Paths.get(filterConfig.getServletContext().getRealPath(servletPath)).normalize();
 				Path fullFilePath = filePath;
-				
-				if (httpRequest.getPathInfo() != null) {
-					fullFilePath = fullFilePath.resolve(httpRequest.getPathInfo());
+				String pathInfo = httpRequest.getPathInfo();
+				if (pathInfo != null) {
+					fullFilePath = fullFilePath.resolve(pathInfo);
 					if (!(fullFilePath.normalize().startsWith(filePath))) {
-						log.warn("Detected attempted directory traversal in request for {}", httpRequest.getPathInfo());
+						log.warn("Detected attempted directory traversal in request for {}",
+						    pathInfo.replaceAll("[\n\r]", "_"));
 						return;
 					}
 				}
-				
 				String contentType = httpRequest.getServletContext().getMimeType(fullFilePath.toString());
 				if (contentType == null || contentType.isEmpty()) {
 					try {
