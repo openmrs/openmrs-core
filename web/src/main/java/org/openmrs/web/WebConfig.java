@@ -11,6 +11,8 @@ package org.openmrs.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openmrs.util.OpenmrsJacksonLocaleModule;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +30,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.oxm.xstream.XStreamMarshaller;
+import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
@@ -36,6 +39,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -53,6 +57,26 @@ import java.util.Properties;
 @EnableWebMvc
 @ComponentScan(basePackages = "org.openmrs.web.controller")
 public class WebConfig implements WebMvcConfigurer {
+
+    /**
+     * Registers OpenMRS custom property editors globally on the handler adapter.
+     * This restores the Platform 2.x behavior where openmrs-servlet.xml configured the
+     * RequestMappingHandlerAdapter with {@link OpenmrsBindingInitializer}.
+     */
+    @Bean
+    public SmartInitializingSingleton configureBindingInitializer(ObjectProvider<RequestMappingHandlerAdapter> adapterProvider) {
+        return () -> {
+            RequestMappingHandlerAdapter adapter = adapterProvider.getObject();
+            WebBindingInitializer existingInitializer = adapter.getWebBindingInitializer();
+            OpenmrsBindingInitializer openmrsInitializer = new OpenmrsBindingInitializer();
+            adapter.setWebBindingInitializer(binder -> {
+                if (existingInitializer != null) {
+                    existingInitializer.initBinder(binder);
+                }
+                openmrsInitializer.initBinder(binder);
+            });
+        };
+    }
 
     @Bean
     public StandardServletMultipartResolver multipartResolver() {
