@@ -15,6 +15,7 @@ import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderRole;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
@@ -23,6 +24,7 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,17 +44,21 @@ import java.util.Map;
 @Transactional
 public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderService, RefByUuid {
 	
-	@Autowired
-	private ProviderDAO dao;
+	private final ProviderDAO dao;
+	private final AdministrationService administrationService;
+	private final ProviderService self;
 	
-	/**
-	 * Sets the data access object for Concepts. The dao is used for saving and getting concepts
-	 * to/from the database
-	 * 
-	 * @param dao The data access object to use
-	 */
-	public void setProviderDAO(ProviderDAO dao) {
+	public ProviderServiceImpl(ProviderDAO dao, AdministrationService administrationService) {
 		this.dao = dao;
+		this.administrationService = administrationService;
+		this.self = this;
+	}
+	
+	@Autowired
+	public ProviderServiceImpl(ProviderDAO dao, @Lazy AdministrationService administrationService, @Lazy ProviderService self) {
+		this.dao = dao;
+		this.administrationService = administrationService;
+		this.self = self;
 	}
 	
 	/**
@@ -61,7 +67,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	@Transactional(readOnly = true)
 	public List<Provider> getAllProviders() {
-		return Context.getProviderService().getAllProviders(true);
+		return self.getAllProviders(true);
 	}
 	
 	/**
@@ -86,7 +92,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 */
 	@Override
 	public Provider unretireProvider(Provider provider) {
-		return Context.getProviderService().saveProvider(provider);
+		return self.saveProvider(provider);
 	}
 	
 	/**
@@ -142,7 +148,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 		if (person == null) {
 			throw new IllegalArgumentException("Person must not be null");
 		}
-		return Context.getProviderService().getProvidersByPerson(person, true);
+		return self.getProvidersByPerson(person, true);
 	}
 	
 	/**
@@ -151,7 +157,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	@Transactional(readOnly = true)
 	public Integer getCountOfProviders(String query) {
-		return Context.getProviderService().getCountOfProviders(query, false);
+		return self.getCountOfProviders(query, false);
 	}
 	
 	/**
@@ -182,7 +188,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Transactional(readOnly = true)
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributeValues) {
-		return Context.getProviderService().getProviders(query, start, length, attributeValues, true);
+		return self.getProviders(query, start, length, attributeValues, true);
 	}
 	
 	/**
@@ -264,7 +270,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 */
 	@Override
 	public ProviderAttributeType retireProviderAttributeType(ProviderAttributeType providerAttributeType, String reason) {
-		return Context.getProviderService().saveProviderAttributeType(providerAttributeType);
+		return self.saveProviderAttributeType(providerAttributeType);
 	}
 	
 	/**
@@ -272,7 +278,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 */
 	@Override
 	public ProviderAttributeType unretireProviderAttributeType(ProviderAttributeType providerAttributeType) {
-		return Context.getProviderService().saveProviderAttributeType(providerAttributeType);
+		return self.saveProviderAttributeType(providerAttributeType);
 	}
 	
 	/**
@@ -307,7 +313,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	@Transactional(readOnly = true)
 	public Provider getUnknownProvider() {
-		return getProviderByUuid(Context.getAdministrationService().getGlobalProperty(
+		return getProviderByUuid(administrationService.getGlobalProperty(
 		    OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID));
 	}
 

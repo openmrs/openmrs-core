@@ -47,15 +47,10 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	
 	private transient Map<Class<? extends CustomDatatype>, Class<? extends CustomDatatypeHandler>> prioritizedHandlerClasses;
 	
-	@Autowired
-	private DatatypeDAO dao;
+	private final DatatypeDAO dao;
 	
-	/**
-	 * Sets the dao
-	 *
-	 * @param dao the dao to set
-	 */
-	public void setDao(DatatypeDAO dao) {
+	@Autowired
+	public DatatypeServiceImpl(DatatypeDAO dao) {
 		this.dao = dao;
 	}
 	
