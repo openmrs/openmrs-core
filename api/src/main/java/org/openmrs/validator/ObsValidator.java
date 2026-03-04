@@ -13,18 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceRange;
+import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.Obs;
 import org.openmrs.ObsReferenceRange;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.hibernate.HibernateUtil;
-import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -285,125 +283,11 @@ public class ObsValidator implements Validator {
 	 * @since 2.7.0
 	 */
 	public ConceptReferenceRange getReferenceRange(Obs obs) {
-		Concept concept = HibernateUtil.getRealObjectFromProxy(obs.getConcept());
-		if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
+		if (obs == null || obs.getPerson() == null || obs.getConcept() == null) {
 			return null;
 		}
-		
-		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
-
-		List<ConceptReferenceRange> referenceRanges = Context.getConceptService()
-			.getConceptReferenceRangesByConceptId(concept.getConceptId());
-
-		if (referenceRanges.isEmpty()) {
-			return getDefaultReferenceRange(conceptNumeric);
-		}
-
-		ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
-		List<ConceptReferenceRange> validRanges = new ArrayList<>();
-
-		for (ConceptReferenceRange referenceRange : referenceRanges) {
-			if (referenceRangeUtility.evaluateCriteria(StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()), obs)) {
-				validRanges.add(referenceRange);
-			}
-		}
-
-		if (validRanges.isEmpty()) {
-			ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
-			if (defaultReferenceRange != null) {
-				validRanges.add(defaultReferenceRange);
-			} else {
-				return null;
-			}
-		}
-		
-		return findStrictestReferenceRange(validRanges);
-	}
-
-	/**
-	 * Loads the reference range from the ConceptNumeric if no reference ranges are associated with
-	 * this concept and person.
-	 * 
-	 * @param conceptNumeric A {@link ConceptNumeric} to extract the default values from
-	 * @return a {@link ConceptReferenceRange} containing the reference range from the concept
-	 */
-	private static ConceptReferenceRange getDefaultReferenceRange(ConceptNumeric conceptNumeric) {
-		if (conceptNumeric == null || (
-			conceptNumeric.getHiAbsolute() == null &&
-			conceptNumeric.getHiCritical() == null &&
-			conceptNumeric.getHiNormal() == null &&
-			conceptNumeric.getLowAbsolute() == null &&
-			conceptNumeric.getLowCritical() == null &&
-			conceptNumeric.getLowNormal() == null
-		)) {
-			return null;
-		}
-		
-		ConceptReferenceRange defaultReferenceRange = new ConceptReferenceRange();
-		defaultReferenceRange.setConceptNumeric(conceptNumeric);
-		defaultReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
-		defaultReferenceRange.setHiCritical(conceptNumeric.getHiCritical());
-		defaultReferenceRange.setHiNormal(conceptNumeric.getHiNormal());
-		defaultReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
-		defaultReferenceRange.setLowCritical(conceptNumeric.getLowCritical());
-		defaultReferenceRange.setLowNormal(conceptNumeric.getLowNormal());
-		return defaultReferenceRange;
-	}
-
-	/**
-	 * Finds the strictest {@link ConceptReferenceRange} from a list of valid ranges.
-	 * The strictest range is determined separately for each value, e.g., the lowAbsolute will
-	 * be the highest lowAbsolute of any matching range, the lowCritical value will be the
-	 * highest lowCritical value of any matching range.
-	 * e.g.
-	 * If ConceptReferenceRange-1 has a range of 80-150.
-	 * and ConceptReferenceRange-2 has a range of 60-140,
-	 * the "strictest" range will be 80-140. 
-	 *
-	 * @param conceptReferenceRanges A list of valid {@link ConceptReferenceRange} objects
-	 * @return The strictest {@link ConceptReferenceRange} constructed from the strictest bounds
-	 */
-	private ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
-		if (conceptReferenceRanges.size() == 1) {
-			return conceptReferenceRanges.get(0);
-		}
-
-		ConceptReferenceRange strictestRange = new ConceptReferenceRange();
-		strictestRange.setConceptNumeric(conceptReferenceRanges.get(0).getConceptNumeric());
-
-		for (ConceptReferenceRange conceptReferenceRange : conceptReferenceRanges) {
-			if (conceptReferenceRange.getLowAbsolute() != null && 
-					(strictestRange.getLowAbsolute() == null || strictestRange.getLowAbsolute() < conceptReferenceRange.getLowAbsolute())) {
-				strictestRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
-			}
-			
-			if (conceptReferenceRange.getLowCritical() != null && 
-					(strictestRange.getLowCritical() == null || strictestRange.getLowCritical() < conceptReferenceRange.getLowCritical())) {
-				strictestRange.setLowCritical(conceptReferenceRange.getLowCritical());
-			}
-			
-			if (conceptReferenceRange.getLowNormal() != null &&
-					(strictestRange.getLowNormal() == null || strictestRange.getLowNormal() < conceptReferenceRange.getLowNormal())) {
-				strictestRange.setLowNormal(conceptReferenceRange.getLowNormal());
-			}
-			
-			if (conceptReferenceRange.getHiNormal() != null &&
-					(strictestRange.getHiNormal() == null || strictestRange.getHiNormal() > conceptReferenceRange.getHiNormal())) {
-				strictestRange.setHiNormal(conceptReferenceRange.getHiNormal());
-			}
-			
-			if (conceptReferenceRange.getHiCritical() != null &&
-					(strictestRange.getHiCritical() == null || strictestRange.getHiCritical() > conceptReferenceRange.getHiCritical())) {
-				strictestRange.setHiCritical(conceptReferenceRange.getHiCritical());
-			}
-			
-			if (conceptReferenceRange.getHiAbsolute() != null &&
-					(strictestRange.getHiAbsolute() == null || strictestRange.getHiAbsolute() > conceptReferenceRange.getHiAbsolute())) {
-				strictestRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
-			}
-		}
-		
-		return strictestRange;
+		return Context.getConceptService().getConceptReferenceRange(
+			new ConceptReferenceRangeContext(obs));
 	}
 
 	/**
