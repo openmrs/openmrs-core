@@ -1580,7 +1580,7 @@ public class InitializationFilter extends StartupFilter {
 								this.message = message;
 							}
                                                    
-                            public PrintingChangeSetExecutorCallback(String message,int totalToRun) {
+                            public PrintingChangeSetExecutorCallback(String message, int totalToRun) {
                                 this.message = message;
                                 this.totalToRun = totalToRun;
                             }
