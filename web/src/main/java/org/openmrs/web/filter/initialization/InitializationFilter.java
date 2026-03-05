@@ -1574,7 +1574,7 @@ public class InitializationFilter extends StartupFilter {
 							
 							private String message;
                                                    
-                            private int totalToRun;
+                        	private int totalToRun;
 							
 							public PrintingChangeSetExecutorCallback(String message) {
 								this.message = message;
@@ -1649,8 +1649,14 @@ public class InitializationFilter extends StartupFilter {
 										wizardModel.remoteUrl + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form",
 										wizardModel.remoteUsername, wizardModel.remotePassword);
 									
+									setCompletedPercentage(20);
+									setMessage("Downloading test dataset...");
+
 									setCompletedPercentage(40);
-									setMessage("Loading imported test data...");
+									setMessage("Extracting test dataset...");
+									
+									setCompletedPercentage(70);
+									setMessage("Importing test data into database...");
 									importTestDataSet(inData, finalDatabaseConnectionString, connectionUsername,
 										connectionPassword.toString());
 									wizardModel.workLog.add("Imported test data");
@@ -1665,8 +1671,11 @@ public class InitializationFilter extends StartupFilter {
 										wizardModel.remoteUrl + RELEASE_TESTING_MODULE_PATH + "getModules.htm",
 										wizardModel.remoteUsername, wizardModel.remotePassword);
 									
-									setCompletedPercentage(90);
-									setMessage("Adding imported modules...");
+									setCompletedPercentage(50);
+									setMessage("Downloading modules from remote server");
+
+									setCompletedPercentage(80);
+									setMessage("Installing modules...");
 									if (!TestInstallUtil.addZippedTestModules(inModules)) {
 										reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE, "");
 										return;
