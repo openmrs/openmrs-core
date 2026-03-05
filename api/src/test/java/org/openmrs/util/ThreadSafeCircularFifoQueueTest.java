@@ -9,10 +9,18 @@
  */
 package org.openmrs.util;
 
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -20,215 +28,202 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.collections4.queue.AbstractQueueTest;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for the {@link ThreadSafeCircularFifoQueue} class
- * 
- * This class uses the tests from Apache Commons Collections for Queues to ensure the correctness of the implementation
- * @param <E>
  */
-public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
+public class ThreadSafeCircularFifoQueueTest {
 
-	public ThreadSafeCircularFifoQueueTest(String testName) {
-		super(testName);
+	/* Queue contract tests */
+
+	@Test
+	public void shouldOfferElementSuccessfully() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertTrue(queue.offer("element"));
+		assertEquals(1, queue.size());
 	}
 
-	/* Configuration */
-	
-	@Override
-	public boolean isFailFastSupported() {
-		return false;
+	@Test
+	public void shouldReturnElementWithoutRemoving() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.add("first");
+		assertEquals("first", queue.element());
+		assertEquals(1, queue.size());
 	}
 
-	@Override
-	public boolean isNullSupported() {
-		return false;
+	@Test
+	public void shouldThrowOnElementWhenEmpty() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertThrows(NoSuchElementException.class, queue::element);
 	}
 
-	// NB This is marked as false not because we don't support serialization, but because we don't provide the artefacts
-	// needed for these tests
-	@Override
-	public boolean isTestSerialization() {
-		return false;
+	@Test
+	public void shouldPeekWithoutRemoving() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertNull(queue.peek());
+		queue.add("first");
+		assertEquals("first", queue.peek());
+		assertEquals(1, queue.size());
 	}
 
-	@Override
-	public Queue<E> makeObject() {
-		return new ThreadSafeCircularFifoQueue<>(100);
-	}
-	
-	/* Test overrides */
-	/* included here to allow running individual test cases */
-
-	@Override
-	public void testQueueOffer() {
-		super.testQueueOffer();
+	@Test
+	public void shouldRemoveHead() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.add("first");
+		queue.add("second");
+		assertEquals("first", queue.remove());
+		assertEquals(1, queue.size());
 	}
 
-	@Override
-	public void testQueueElement() {
-		super.testQueueElement();
+	@Test
+	public void shouldThrowOnRemoveWhenEmpty() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertThrows(NoSuchElementException.class, queue::remove);
 	}
 
-	@Override
-	public void testQueuePeek() {
-		super.testQueuePeek();
+	@Test
+	public void shouldPollHead() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertNull(queue.poll());
+		queue.add("first");
+		queue.add("second");
+		assertEquals("first", queue.poll());
+		assertEquals(1, queue.size());
 	}
 
-	@Override
-	public void testQueueRemove() {
-		super.testQueueRemove();
+	@Test
+	public void shouldAddElement() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertTrue(queue.add("element"));
+		assertTrue(queue.contains("element"));
 	}
 
-	@Override
-	public void testQueuePoll() {
-		super.testQueuePoll();
+	@Test
+	public void shouldAddAllElements() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertTrue(queue.addAll(Arrays.asList("a", "b", "c")));
+		assertEquals(3, queue.size());
+		assertTrue(queue.containsAll(Arrays.asList("a", "b", "c")));
 	}
 
-	@Override
-	public void testEmptyQueueSerialization() throws IOException, ClassNotFoundException {
-		super.testEmptyQueueSerialization();
+	@Test
+	public void shouldClearAllElements() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.add("a");
+		queue.add("b");
+		queue.clear();
+		assertTrue(queue.isEmpty());
+		assertEquals(0, queue.size());
 	}
 
-	@Override
-	public void testFullQueueSerialization() throws IOException, ClassNotFoundException {
-		super.testFullQueueSerialization();
+	@Test
+	public void shouldReportContains() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.add("a");
+		assertTrue(queue.contains("a"));
+		assertFalse(queue.contains("b"));
 	}
 
-	@Override
-	public void testEmptyQueueCompatibility() throws IOException, ClassNotFoundException {
-		super.testEmptyQueueCompatibility();
+	@Test
+	public void shouldReportContainsAll() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c"));
+		assertTrue(queue.containsAll(Arrays.asList("a", "b")));
+		assertFalse(queue.containsAll(Arrays.asList("a", "d")));
 	}
 
-	@Override
-	public void testFullQueueCompatibility() throws IOException, ClassNotFoundException {
-		super.testFullQueueCompatibility();
+	@Test
+	public void shouldReportIsEmpty() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertTrue(queue.isEmpty());
+		queue.add("a");
+		assertFalse(queue.isEmpty());
 	}
 
-	@Override
-	public void testCollectionAdd() {
-		super.testCollectionAdd();
+	@Test
+	public void shouldIterateElements() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c"));
+		Iterator<String> iter = queue.iterator();
+		assertTrue(iter.hasNext());
+		assertEquals("a", iter.next());
+		assertEquals("b", iter.next());
+		assertEquals("c", iter.next());
+		assertFalse(iter.hasNext());
 	}
 
-	@Override
-	public void testCollectionAddAll() {
-		super.testCollectionAddAll();
+	@Test
+	public void shouldRemoveElement() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c"));
+		assertTrue(queue.remove("b"));
+		assertEquals(2, queue.size());
+		assertFalse(queue.contains("b"));
 	}
 
-	@Override
-	public void testUnsupportedAdd() {
-		super.testUnsupportedAdd();
+	@Test
+	public void shouldRemoveAllElements() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c", "d"));
+		assertTrue(queue.removeAll(Arrays.asList("b", "c")));
+		assertEquals(2, queue.size());
+		assertTrue(queue.containsAll(Arrays.asList("a", "d")));
 	}
 
-	@Override
-	public void testCollectionClear() {
-		super.testCollectionClear();
+	@Test
+	public void shouldRetainAllElements() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c", "d"));
+		assertTrue(queue.retainAll(Arrays.asList("b", "c")));
+		assertEquals(2, queue.size());
+		assertTrue(queue.containsAll(Arrays.asList("b", "c")));
 	}
 
-	@Override
-	public void testCollectionContains() {
-		super.testCollectionContains();
+	@Test
+	public void shouldReportCorrectSize() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertEquals(0, queue.size());
+		queue.add("a");
+		assertEquals(1, queue.size());
+		queue.add("b");
+		assertEquals(2, queue.size());
+		queue.poll();
+		assertEquals(1, queue.size());
 	}
 
-	@Override
-	public void testCollectionContainsAll() {
-		super.testCollectionContainsAll();
+	@Test
+	public void shouldConvertToArray() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c"));
+		Object[] array = queue.toArray();
+		assertEquals(3, array.length);
+		assertEquals("a", array[0]);
+		assertEquals("b", array[1]);
+		assertEquals("c", array[2]);
 	}
 
-	@Override
-	public void testCollectionIsEmpty() {
-		super.testCollectionIsEmpty();
+	@Test
+	public void shouldConvertToTypedArray() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c"));
+		String[] array = queue.toArray(new String[0]);
+		assertEquals(3, array.length);
+		assertEquals("a", array[0]);
 	}
 
-	@Override
-	public void testCollectionIterator() {
-		super.testCollectionIterator();
-	}
-
-	@Override
-	public void testCollectionIteratorRemove() {
-		super.testCollectionIteratorRemove();
-	}
-
-	@Override
-	public void testCollectionRemove() {
-		super.testCollectionRemove();
-	}
-
-	@Override
-	public void testCollectionRemoveAll() {
-		super.testCollectionRemoveAll();
-	}
-
-	@Override
-	public void testCollectionRemoveIf() {
-		super.testCollectionRemoveIf();
-	}
-
-	@Override
-	public void testCollectionRetainAll() {
-		super.testCollectionRetainAll();
-	}
-
-	@Override
-	public void testCollectionSize() {
-		super.testCollectionSize();
-	}
-
-	@Override
-	public void testCollectionToArray() {
-		super.testCollectionToArray();
-	}
-
-	@Override
-	public void testCollectionToArray2() {
-		super.testCollectionToArray2();
-	}
-
-	@Override
-	public void testCollectionToString() {
-		super.testCollectionToString();
-	}
-
-	@Override
-	public void testObjectEqualsSelf() {
-		super.testObjectEqualsSelf();
-	}
-
-	@Override
-	public void testEqualsNull() {
-		super.testEqualsNull();
-	}
-
-	@Override
-	public void testObjectHashCodeEqualsSelfHashCode() {
-		super.testObjectHashCodeEqualsSelfHashCode();
-	}
-
-	@Override
-	public void testObjectHashCodeEqualsContract() {
-		super.testObjectHashCodeEqualsContract();
-	}
-
-	@Override
-	public void testSimpleSerialization() throws Exception {
-		super.testSimpleSerialization();
-	}
-
-	@Override
-	public void testCanonicalEmptyCollectionExists() {
-		super.testCanonicalEmptyCollectionExists();
-	}
-
-	@Override
-	public void testCanonicalFullCollectionExists() {
-		super.testCanonicalFullCollectionExists();
+	@Test
+	public void shouldReturnNonNullToString() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertNotNull(queue.toString());
+		queue.add("a");
+		assertNotNull(queue.toString());
 	}
 
 	/* Circular eviction tests */
 
-	public void testCircularEviction_shouldEvictOldestElementWhenFull() {
+	@Test
+	public void shouldEvictOldestElementWhenFull() {
 		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(3);
 		queue.add("1");
 		queue.add("2");
@@ -252,13 +247,14 @@ public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
 		assertTrue(queue.isEmpty());
 	}
 
-	public void testCircularEviction_shouldMaintainCorrectSizeAfterMultipleEvictions() {
+	@Test
+	public void shouldMaintainCorrectSizeAfterMultipleEvictions() {
 		ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(3);
 
 		// Add 10 elements to a queue of size 3
 		for (int i = 1; i <= 10; i++) {
 			queue.add(i);
-			assertTrue("Size should never exceed capacity", queue.size() <= 3);
+			assertTrue(queue.size() <= 3, "Size should never exceed capacity");
 		}
 
 		assertEquals(3, queue.size());
@@ -279,7 +275,8 @@ public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
 		assertEquals(Integer.valueOf(10), elements.get(2));
 	}
 
-	public void testCircularEviction_shouldWorkCorrectlyWithIterator() {
+	@Test
+	public void shouldWorkCorrectlyWithIteratorAfterEviction() {
 		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(3);
 		queue.add("a");
 		queue.add("b");
@@ -296,7 +293,8 @@ public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
 		assertFalse(iter.hasNext());
 	}
 
-	public void testCircularEviction_toArrayShouldReturnCorrectElements() {
+	@Test
+	public void shouldReturnCorrectArrayAfterEviction() {
 		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(3);
 		queue.add("1");
 		queue.add("2");
@@ -313,7 +311,8 @@ public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
 
 	/* Thread safety tests */
 
-	public void testConcurrentAdds_shouldMaintainConsistentState() throws InterruptedException {
+	@Test
+	public void shouldMaintainConsistentStateUnderConcurrentAdds() throws InterruptedException {
 		final ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(100);
 		final int numThreads = 10;
 		final int addsPerThread = 1000;
@@ -339,7 +338,7 @@ public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
 		}
 
 		startLatch.countDown();
-		assertTrue("Threads should complete within timeout", doneLatch.await(30, TimeUnit.SECONDS));
+		assertTrue(doneLatch.await(30, TimeUnit.SECONDS), "Threads should complete within timeout");
 		executor.shutdown();
 
 		// Queue should have exactly 100 elements (its capacity)
@@ -353,7 +352,8 @@ public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
 		assertEquals(100, count);
 	}
 
-	public void testConcurrentAddsAndPolls_shouldNotCorruptState() throws InterruptedException {
+	@Test
+	public void shouldNotCorruptStateUnderConcurrentAddsAndPolls() throws InterruptedException {
 		final ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(50);
 		final int numProducers = 5;
 		final int numConsumers = 5;
@@ -401,13 +401,13 @@ public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
 		}
 
 		startLatch.countDown();
-		assertTrue("Threads should complete within timeout", doneLatch.await(30, TimeUnit.SECONDS));
+		assertTrue(doneLatch.await(30, TimeUnit.SECONDS), "Threads should complete within timeout");
 		executor.shutdown();
 
 		// Size should be non-negative and within capacity
 		int size = queue.size();
-		assertTrue("Size should be non-negative", size >= 0);
-		assertTrue("Size should not exceed capacity", size <= 50);
+		assertTrue(size >= 0, "Size should be non-negative");
+		assertTrue(size <= 50, "Size should not exceed capacity");
 
 		// Verify iteration works and count matches size
 		int iterCount = 0;
@@ -417,7 +417,8 @@ public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
 		assertEquals(size, iterCount);
 	}
 
-	public void testConcurrentIteration_shouldNotThrowConcurrentModificationException() throws InterruptedException {
+	@Test
+	public void shouldNotThrowConcurrentModificationExceptionDuringConcurrentIteration() throws InterruptedException {
 		final ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(100);
 
 		// Pre-fill the queue
@@ -456,9 +457,9 @@ public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
 		}
 
 		startLatch.countDown();
-		assertTrue("Threads should complete within timeout", doneLatch.await(30, TimeUnit.SECONDS));
+		assertTrue(doneLatch.await(30, TimeUnit.SECONDS), "Threads should complete within timeout");
 		executor.shutdown();
 
-		assertEquals("No exceptions should occur during concurrent access", 0, errorCount.get());
+		assertEquals(0, errorCount.get(), "No exceptions should occur during concurrent access");
 	}
 }

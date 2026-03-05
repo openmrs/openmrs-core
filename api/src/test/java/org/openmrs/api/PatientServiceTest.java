@@ -384,7 +384,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	// *
 	// * Note: if enabled, this test will be considerably slower
 	// *
-	// * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
+	// * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#getRuntimeProperties()
 	// */
 	//* @Override
 	//* public Properties getRuntimeProperties() {
