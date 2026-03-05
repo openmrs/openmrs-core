@@ -48,6 +48,11 @@ Same pattern applies for all five base classes listed above.
 | `@org.junit.AfterClass` | `@org.junit.jupiter.api.AfterAll` |
 | `@org.junit.Ignore` | `@org.junit.jupiter.api.Disabled` |
 | `@org.junit.Rule` | Use `@ExtendWith` or `@RegisterExtension` instead |
+| `@RunWith(SpringRunner.class)` | `@ExtendWith(SpringExtension.class)` |
+
+> **Note:** If your test extends one of the OpenMRS base test classes (e.g. `BaseContextSensitiveTest`),
+> you do **not** need `@ExtendWith(SpringExtension.class)` — the base class already includes it.
+> You only need the explicit annotation if your test configures its own Spring context independently.
 
 ### 3. Replace JUnit 4 Assertions with JUnit 5
 
@@ -138,6 +143,7 @@ If your module POM explicitly declares JUnit 4 dependencies, replace them:
 | `package org.junit.internal.matchers does not exist` | JUnit 4 internals removed | Use `org.hamcrest.TypeSafeMatcher` |
 | `cannot find symbol: class ExpectedException` | JUnit 4 rules removed | Use `assertThrows()` |
 | `method assertEquals in Assert cannot be applied` | Different parameter order | Move message string to last parameter |
+| `cannot find symbol: class SpringRunner` | JUnit 4 runner removed | Use `@ExtendWith(SpringExtension.class)` or extend a base test class |
 
 ## Further Reading
 
