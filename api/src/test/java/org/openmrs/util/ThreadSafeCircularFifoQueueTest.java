@@ -11,6 +11,7 @@ package org.openmrs.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -459,7 +460,7 @@ class ThreadSafeCircularFifoQueueTest {
 	@Test
 	void shouldNotEqualNull() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
-		assertFalse(queue.equals(null));
+		assertNotEquals(null, queue);
 	}
 
 	@Test
