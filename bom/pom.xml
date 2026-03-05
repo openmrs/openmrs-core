@@ -79,7 +79,6 @@
 
 		<!-- Apache Commons -->
 		<commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
-		<commonsCollections4Version>4.4</commonsCollections4Version>
 		<commonsIoVersion>2.21.0</commonsIoVersion>
 		<commonsLang3Version>3.20.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
@@ -121,7 +120,6 @@
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 
 		<!-- Testing -->
-		<junit4Version>4.13.2</junit4Version>
 		<junitVersion>5.11.4</junitVersion>
 		<mockitoVersion>5.22.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
@@ -339,12 +337,6 @@
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
 				<version>${commonsCollectionsVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-collections4</artifactId>
-				<version>${commonsCollections4Version}</version>
-				<type>test-jar</type>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
@@ -626,11 +618,6 @@
 
 			<!-- Testing -->
 			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit4Version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter</artifactId>
 				<version>${junitVersion}</version>
@@ -651,11 +638,6 @@
 				<version>${junitVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.junit.vintage</groupId>
-				<artifactId>junit-vintage-engine</artifactId>
-				<version>${junitVersion}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${mockitoVersion}</version>
@@ -664,11 +646,6 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
 				<version>${mockitoVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-core</artifactId>
-				<version>${hamcrestVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>

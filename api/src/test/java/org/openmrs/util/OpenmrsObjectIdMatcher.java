@@ -10,9 +10,8 @@
 package org.openmrs.util;
 
 import org.hamcrest.Description;
-import org.junit.internal.matchers.TypeSafeMatcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.PersonName;
 
 import java.util.Set;
 
