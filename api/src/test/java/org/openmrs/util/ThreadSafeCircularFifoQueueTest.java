@@ -50,6 +50,19 @@ class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
+	void shouldOfferMultipleElementsSequentially() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		String[] elements = {"a", "b", "c", "d", "e"};
+		int size = 0;
+		for (String element : elements) {
+			assertTrue(queue.offer(element));
+			size++;
+			assertEquals(size, queue.size());
+			assertTrue(queue.contains(element));
+		}
+	}
+
+	@Test
 	void shouldReturnElementWithoutRemoving() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.add("first");
@@ -64,12 +77,47 @@ class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
+	void shouldDrainViaElementAndRemove() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		List<String> elements = Arrays.asList("a", "b", "c", "d", "e");
+		queue.addAll(elements);
+		List<String> confirmed = new ArrayList<>(elements);
+		for (int i = 0; i < elements.size(); i++) {
+			String head = queue.element();
+			assertTrue(confirmed.contains(head));
+			assertEquals(head, queue.remove());
+			confirmed.remove(head);
+			assertEquals(confirmed.size(), queue.size());
+		}
+		assertThrows(NoSuchElementException.class, queue::element);
+		assertThrows(NoSuchElementException.class, queue::remove);
+	}
+
+	@Test
 	void shouldPeekWithoutRemoving() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertNull(queue.peek());
 		queue.add("first");
 		assertEquals("first", queue.peek());
 		assertEquals(1, queue.size());
+	}
+
+	@Test
+	void shouldDrainViaPeekAndPoll() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		List<String> elements = Arrays.asList("a", "b", "c", "d", "e");
+		queue.addAll(elements);
+		List<String> confirmed = new ArrayList<>(elements);
+		for (int i = 0; i < elements.size(); i++) {
+			String head = queue.peek();
+			assertNotNull(head);
+			assertTrue(confirmed.contains(head));
+			assertEquals(head, queue.poll());
+			confirmed.remove(head);
+			assertEquals(confirmed.size(), queue.size());
+		}
+		assertNull(queue.peek());
+		assertNull(queue.poll());
 	}
 
 	@Test
@@ -105,11 +153,40 @@ class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
+	void shouldAddMultipleElementsIndividually() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		String[] elements = {"a", "b", "c", "d", "e"};
+		int size = 0;
+		for (String element : elements) {
+			assertTrue(queue.add(element));
+			size++;
+			assertEquals(size, queue.size());
+			assertTrue(queue.contains(element));
+		}
+	}
+
+	@Test
 	void shouldAddAllElements() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertTrue(queue.addAll(Arrays.asList("a", "b", "c")));
 		assertEquals(3, queue.size());
 		assertTrue(queue.containsAll(Arrays.asList("a", "b", "c")));
+	}
+
+	@Test
+	void shouldWorkWithHeterogeneousElements() {
+		Queue<Object> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.add("string");
+		queue.add(Integer.valueOf(42));
+		queue.add(Double.valueOf(3.14));
+		queue.add(Long.valueOf(100L));
+		queue.add(Short.valueOf((short) 7));
+		assertEquals(5, queue.size());
+		assertTrue(queue.contains("string"));
+		assertTrue(queue.contains(Integer.valueOf(42)));
+		assertTrue(queue.contains(Double.valueOf(3.14)));
+		assertEquals("string", queue.poll());
+		assertEquals(Integer.valueOf(42), queue.poll());
 	}
 
 	@Test
@@ -128,6 +205,13 @@ class ThreadSafeCircularFifoQueueTest {
 		queue.add("a");
 		assertTrue(queue.contains("a"));
 		assertFalse(queue.contains("b"));
+	}
+
+	@Test
+	void shouldReturnFalseForContainsNull() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.add("a");
+		assertFalse(queue.contains(null));
 	}
 
 	@Test
@@ -168,12 +252,28 @@ class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
+	void shouldReturnFalseWhenRemovingNonExistentElement() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c"));
+		assertFalse(queue.remove("z"));
+		assertEquals(3, queue.size());
+	}
+
+	@Test
 	void shouldRemoveAllElements() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.addAll(Arrays.asList("a", "b", "c", "d"));
 		assertTrue(queue.removeAll(Arrays.asList("b", "c")));
 		assertEquals(2, queue.size());
 		assertTrue(queue.containsAll(Arrays.asList("a", "d")));
+	}
+
+	@Test
+	void shouldReturnFalseWhenRemoveAllWithNonExistentElements() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c"));
+		assertFalse(queue.removeAll(Arrays.asList("x", "y", "z")));
+		assertEquals(3, queue.size());
 	}
 
 	@Test
@@ -212,9 +312,18 @@ class ThreadSafeCircularFifoQueueTest {
 	void shouldConvertToTypedArray() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.addAll(Arrays.asList("a", "b", "c"));
-		String[] array = queue.toArray(new String[0]);
-		assertEquals(3, array.length);
-		assertEquals("a", array[0]);
+		// Undersized array — should allocate new
+		String[] undersized = queue.toArray(new String[0]);
+		assertEquals(3, undersized.length);
+		assertEquals("a", undersized[0]);
+		assertEquals("b", undersized[1]);
+		assertEquals("c", undersized[2]);
+		// Exact-size array — should reuse
+		String[] exact = queue.toArray(new String[3]);
+		assertEquals(3, exact.length);
+		assertEquals("a", exact[0]);
+		assertEquals("b", exact[1]);
+		assertEquals("c", exact[2]);
 	}
 
 	@Test
@@ -296,6 +405,87 @@ class ThreadSafeCircularFifoQueueTest {
 		Iterator<String> iter = queue.iterator();
 		assertFalse(iter.hasNext());
 		assertThrows(NoSuchElementException.class, iter::next);
+	}
+
+	@Test
+	void shouldThrowOnIteratorRemoveBeforeNext() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.add("a");
+		Iterator<String> iter = queue.iterator();
+		assertThrows(IllegalStateException.class, iter::remove);
+	}
+
+	@Test
+	void shouldThrowOnIteratorDoubleRemove() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c"));
+		Iterator<String> iter = queue.iterator();
+		iter.next();
+		iter.remove();
+		assertThrows(IllegalStateException.class, iter::remove);
+	}
+
+	@Test
+	void shouldDrainAllViaIteratorRemove() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c", "d", "e"));
+		Iterator<String> iter = queue.iterator();
+		while (iter.hasNext()) {
+			iter.next();
+			iter.remove();
+		}
+		assertTrue(queue.isEmpty());
+		assertEquals(0, queue.size());
+	}
+
+	@Test
+	void shouldThrowOnNextBeyondEnd() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.add("a");
+		Iterator<String> iter = queue.iterator();
+		iter.next();
+		assertThrows(NoSuchElementException.class, iter::next);
+	}
+
+	/* Object contract tests */
+
+	@Test
+	void shouldEqualSelf() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.add("a");
+		assertEquals(queue, queue);
+	}
+
+	@Test
+	void shouldNotEqualNull() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertFalse(queue.equals(null));
+	}
+
+	@Test
+	void shouldHaveRepeatableHashCode() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c"));
+		assertEquals(queue.hashCode(), queue.hashCode());
+	}
+
+	@Test
+	void shouldSerializeEmptyQueue() throws Exception {
+		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(10);
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+			oos.writeObject(queue);
+		}
+
+		@SuppressWarnings("unchecked")
+		ThreadSafeCircularFifoQueue<String> deserialized =
+			(ThreadSafeCircularFifoQueue<String>) new ObjectInputStream(
+				new ByteArrayInputStream(baos.toByteArray())).readObject();
+
+		assertEquals(0, deserialized.size());
+		assertTrue(deserialized.isEmpty());
+		assertNull(deserialized.poll());
 	}
 
 	/* Circular eviction tests */
