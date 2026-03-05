@@ -16,8 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -218,6 +223,79 @@ class ThreadSafeCircularFifoQueueTest {
 		assertNotNull(queue.toString());
 		queue.add("a");
 		assertNotNull(queue.toString());
+	}
+
+	@Test
+	void shouldRejectNullElements() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		assertThrows(NullPointerException.class, () -> queue.add(null));
+		assertThrows(NullPointerException.class, () -> queue.offer(null));
+		assertTrue(queue.isEmpty());
+	}
+
+	@Test
+	void shouldRemoveViaIterator() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList("a", "b", "c"));
+		Iterator<String> iter = queue.iterator();
+		assertEquals("a", iter.next());
+		iter.remove();
+		assertEquals(2, queue.size());
+		assertFalse(queue.contains("a"));
+		assertEquals("b", iter.next());
+		iter.remove();
+		assertEquals(1, queue.size());
+		assertTrue(queue.contains("c"));
+	}
+
+	@Test
+	void shouldRemoveIfMatchingPredicate() {
+		Queue<Integer> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.addAll(Arrays.asList(1, 2, 3, 4, 5));
+		assertTrue(queue.removeIf(n -> n % 2 == 0));
+		assertEquals(3, queue.size());
+		assertFalse(queue.contains(2));
+		assertFalse(queue.contains(4));
+		assertTrue(queue.containsAll(Arrays.asList(1, 3, 5)));
+	}
+
+	@Test
+	void shouldSerializeAndDeserialize() throws Exception {
+		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(5);
+		queue.addAll(Arrays.asList("a", "b", "c"));
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+			oos.writeObject(queue);
+		}
+
+		@SuppressWarnings("unchecked")
+		ThreadSafeCircularFifoQueue<String> deserialized =
+			(ThreadSafeCircularFifoQueue<String>) new ObjectInputStream(
+				new ByteArrayInputStream(baos.toByteArray())).readObject();
+
+		assertEquals(queue.size(), deserialized.size());
+		assertEquals("a", deserialized.poll());
+		assertEquals("b", deserialized.poll());
+		assertEquals("c", deserialized.poll());
+		assertTrue(deserialized.isEmpty());
+	}
+
+	@Test
+	void shouldHandleEmptyCollectionOperations() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		queue.add("a");
+		assertFalse(queue.removeAll(Collections.emptyList()));
+		assertFalse(queue.retainAll(Arrays.asList("a")));
+		assertEquals(1, queue.size());
+	}
+
+	@Test
+	void shouldIterateEmptyQueue() {
+		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
+		Iterator<String> iter = queue.iterator();
+		assertFalse(iter.hasNext());
+		assertThrows(NoSuchElementException.class, iter::next);
 	}
 
 	/* Circular eviction tests */
