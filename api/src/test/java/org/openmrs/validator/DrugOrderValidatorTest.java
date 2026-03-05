@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.SQLException;
@@ -186,7 +187,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		OutpatientOrder.setNumRefills(null);
 		Errors OutpatientOrderErrors = new BindException(OutpatientOrder, "order");
 		new DrugOrderValidator().validate(OutpatientOrder, OutpatientOrderErrors);
-		assertTrue(OutpatientOrder.getCareSetting().getCareSettingType() == CareSetting.CareSettingType.OUTPATIENT);
+		assertSame(CareSetting.CareSettingType.OUTPATIENT, OutpatientOrder.getCareSetting().getCareSettingType());
 		assertFalse(OutpatientOrderErrors.hasFieldErrors("quantity"));
 		assertFalse(OutpatientOrderErrors.hasFieldErrors("quantityUnits"));
 		assertFalse(OutpatientOrderErrors.hasFieldErrors("numRefills"));

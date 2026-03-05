@@ -33,19 +33,19 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for the {@link ThreadSafeCircularFifoQueue} class
  */
-public class ThreadSafeCircularFifoQueueTest {
+class ThreadSafeCircularFifoQueueTest {
 
 	/* Queue contract tests */
 
 	@Test
-	public void shouldOfferElementSuccessfully() {
+	void shouldOfferElementSuccessfully() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertTrue(queue.offer("element"));
 		assertEquals(1, queue.size());
 	}
 
 	@Test
-	public void shouldReturnElementWithoutRemoving() {
+	void shouldReturnElementWithoutRemoving() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.add("first");
 		assertEquals("first", queue.element());
@@ -53,13 +53,13 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldThrowOnElementWhenEmpty() {
+	void shouldThrowOnElementWhenEmpty() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertThrows(NoSuchElementException.class, queue::element);
 	}
 
 	@Test
-	public void shouldPeekWithoutRemoving() {
+	void shouldPeekWithoutRemoving() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertNull(queue.peek());
 		queue.add("first");
@@ -68,7 +68,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldRemoveHead() {
+	void shouldRemoveHead() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.add("first");
 		queue.add("second");
@@ -77,13 +77,13 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldThrowOnRemoveWhenEmpty() {
+	void shouldThrowOnRemoveWhenEmpty() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertThrows(NoSuchElementException.class, queue::remove);
 	}
 
 	@Test
-	public void shouldPollHead() {
+	void shouldPollHead() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertNull(queue.poll());
 		queue.add("first");
@@ -93,14 +93,14 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldAddElement() {
+	void shouldAddElement() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertTrue(queue.add("element"));
 		assertTrue(queue.contains("element"));
 	}
 
 	@Test
-	public void shouldAddAllElements() {
+	void shouldAddAllElements() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertTrue(queue.addAll(Arrays.asList("a", "b", "c")));
 		assertEquals(3, queue.size());
@@ -108,7 +108,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldClearAllElements() {
+	void shouldClearAllElements() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.add("a");
 		queue.add("b");
@@ -118,7 +118,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldReportContains() {
+	void shouldReportContains() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.add("a");
 		assertTrue(queue.contains("a"));
@@ -126,7 +126,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldReportContainsAll() {
+	void shouldReportContainsAll() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.addAll(Arrays.asList("a", "b", "c"));
 		assertTrue(queue.containsAll(Arrays.asList("a", "b")));
@@ -134,7 +134,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldReportIsEmpty() {
+	void shouldReportIsEmpty() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertTrue(queue.isEmpty());
 		queue.add("a");
@@ -142,7 +142,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldIterateElements() {
+	void shouldIterateElements() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.addAll(Arrays.asList("a", "b", "c"));
 		Iterator<String> iter = queue.iterator();
@@ -154,7 +154,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldRemoveElement() {
+	void shouldRemoveElement() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.addAll(Arrays.asList("a", "b", "c"));
 		assertTrue(queue.remove("b"));
@@ -163,7 +163,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldRemoveAllElements() {
+	void shouldRemoveAllElements() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.addAll(Arrays.asList("a", "b", "c", "d"));
 		assertTrue(queue.removeAll(Arrays.asList("b", "c")));
@@ -172,7 +172,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldRetainAllElements() {
+	void shouldRetainAllElements() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.addAll(Arrays.asList("a", "b", "c", "d"));
 		assertTrue(queue.retainAll(Arrays.asList("b", "c")));
@@ -181,7 +181,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldReportCorrectSize() {
+	void shouldReportCorrectSize() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertEquals(0, queue.size());
 		queue.add("a");
@@ -193,7 +193,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldConvertToArray() {
+	void shouldConvertToArray() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.addAll(Arrays.asList("a", "b", "c"));
 		Object[] array = queue.toArray();
@@ -204,7 +204,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldConvertToTypedArray() {
+	void shouldConvertToTypedArray() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		queue.addAll(Arrays.asList("a", "b", "c"));
 		String[] array = queue.toArray(new String[0]);
@@ -213,7 +213,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldReturnNonNullToString() {
+	void shouldReturnNonNullToString() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
 		assertNotNull(queue.toString());
 		queue.add("a");
@@ -223,7 +223,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	/* Circular eviction tests */
 
 	@Test
-	public void shouldEvictOldestElementWhenFull() {
+	void shouldEvictOldestElementWhenFull() {
 		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(3);
 		queue.add("1");
 		queue.add("2");
@@ -248,7 +248,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldMaintainCorrectSizeAfterMultipleEvictions() {
+	void shouldMaintainCorrectSizeAfterMultipleEvictions() {
 		ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(3);
 
 		// Add 10 elements to a queue of size 3
@@ -276,7 +276,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldWorkCorrectlyWithIteratorAfterEviction() {
+	void shouldWorkCorrectlyWithIteratorAfterEviction() {
 		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(3);
 		queue.add("a");
 		queue.add("b");
@@ -294,7 +294,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldReturnCorrectArrayAfterEviction() {
+	void shouldReturnCorrectArrayAfterEviction() {
 		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(3);
 		queue.add("1");
 		queue.add("2");
@@ -312,7 +312,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	/* Thread safety tests */
 
 	@Test
-	public void shouldMaintainConsistentStateUnderConcurrentAdds() throws InterruptedException {
+	void shouldMaintainConsistentStateUnderConcurrentAdds() throws InterruptedException {
 		final ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(100);
 		final int numThreads = 10;
 		final int addsPerThread = 1000;
@@ -353,7 +353,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldNotCorruptStateUnderConcurrentAddsAndPolls() throws InterruptedException {
+	void shouldNotCorruptStateUnderConcurrentAddsAndPolls() throws InterruptedException {
 		final ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(50);
 		final int numProducers = 5;
 		final int numConsumers = 5;
@@ -418,7 +418,7 @@ public class ThreadSafeCircularFifoQueueTest {
 	}
 
 	@Test
-	public void shouldNotThrowConcurrentModificationExceptionDuringConcurrentIteration() throws InterruptedException {
+	void shouldNotThrowConcurrentModificationExceptionDuringConcurrentIteration() throws InterruptedException {
 		final ThreadSafeCircularFifoQueue<Integer> queue = new ThreadSafeCircularFifoQueue<>(100);
 
 		// Pre-fill the queue
