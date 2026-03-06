@@ -10,15 +10,17 @@
 package org.openmrs.api.impl;
 
 
-import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -1580,12 +1582,15 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException {
-		List<Patient> patients = new ArrayList<>();
 		if (StringUtils.isBlank(query)) {
-			return patients;
+			return Collections.emptyList();
 		}
-		
-		return dao.getPatients(query, start, length);
+
+		return Optional.ofNullable(dao.getPatients(query, start, length))
+			.orElse(Collections.emptyList())
+			.stream()
+			.filter(Objects::nonNull)
+			.toList();
 	}
 	
 	/**
@@ -1597,8 +1602,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query)) {
 			return Collections.emptyList();
 		}
-		
-		return dao.getPatients(query, includeVoided, start, length);
+
+		return Optional.ofNullable(dao.getPatients(query, includeVoided, start, length))
+			.orElse(Collections.emptyList())
+			.stream()
+			.filter(Objects::nonNull)
+			.toList();
 	}
 	
 	/**
@@ -1609,13 +1618,20 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length) throws APIException {
-		
-		if(identifierTypes == null) {
-			return dao.getPatients(name != null ? name : identifier, start, length);
+
+		List<Patient> patients;
+
+		if (identifierTypes == null) {
+			patients = dao.getPatients(name != null ? name : identifier, start, length);
+		} else {
+			patients = dao.getPatients(name != null ? name : identifier, identifierTypes, matchIdentifierExactly, start, length);
 		}
-		else {
-			return dao.getPatients(name != null ? name : identifier, identifierTypes, matchIdentifierExactly, start, length);
-		}
+
+		return Optional.ofNullable(patients)
+			.orElse(Collections.emptyList())
+			.stream()
+			.filter(Objects::nonNull)
+			.toList();
 	}
 	
 	/**
