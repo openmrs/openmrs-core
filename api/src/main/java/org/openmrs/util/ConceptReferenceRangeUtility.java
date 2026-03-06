@@ -26,6 +26,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.ParseErrorException;
 import org.joda.time.LocalTime;
 import org.openmrs.Concept;
+import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
@@ -33,6 +34,7 @@ import org.openmrs.PatientState;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 
 /**
  * A utility class that evaluates the concept ranges
@@ -58,21 +60,52 @@ public class ConceptReferenceRangeUtility {
 		if (obs == null) {
 			throw new IllegalArgumentException("Failed to evaluate criteria with reason: Obs is null");
 		}
-		
+
 		if (obs.getPerson() == null) {
 			throw new IllegalArgumentException("Failed to evaluate criteria with reason: patient is null");
 		}
-		
+
 		if (StringUtils.isBlank(criteria)) {
 			throw new IllegalArgumentException("Failed to evaluate criteria with reason: criteria is empty");
 		}
-		
+
+		return evaluateCriteria(criteria, new ConceptReferenceRangeContext(obs));
+	}
+
+	/**
+	 * Evaluates criteria against a {@link ConceptReferenceRangeContext}. When the context was
+	 * constructed from an Obs, {@code $obs} is available in the expression; otherwise only
+	 * {@code $patient}, {@code $fn}, {@code $context}, {@code $date}, and {@code $encounter}
+	 * are available.
+	 *
+	 * @param criteria the criteria string to evaluate
+	 * @param context the evaluation context
+	 * @return true if the criteria evaluates to true, false otherwise
+	 *
+	 * @since 3.0.0, 2.9.0, 2.8.5, 2.7.9
+	 */
+	public boolean evaluateCriteria(String criteria, ConceptReferenceRangeContext context) {
+		if (context == null) {
+			throw new IllegalArgumentException("Failed to evaluate criteria with reason: context is null");
+		}
+
+		if (context.getPerson() == null) {
+			throw new IllegalArgumentException("Failed to evaluate criteria with reason: patient is null");
+		}
+
+		if (StringUtils.isBlank(criteria)) {
+			throw new IllegalArgumentException("Failed to evaluate criteria with reason: criteria is empty");
+		}
+
 		VelocityContext velocityContext = new VelocityContext();
 		velocityContext.put("fn", this);
-		velocityContext.put("obs", obs);
-		
-		velocityContext.put("patient", obs.getPerson());
-		
+		velocityContext.put("patient", HibernateUtil.getRealObjectFromProxy(context.getPerson()));
+		velocityContext.put("context", context);
+
+		velocityContext.put("obs", context.getObs());
+		velocityContext.put("encounter", context.getEncounter());
+		velocityContext.put("date", context.getDate());
+
 		VelocityEngine velocityEngine = new VelocityEngine();
 		try {
 			Properties props = new Properties();
@@ -83,10 +116,10 @@ public class ConceptReferenceRangeUtility {
 		catch (Exception e) {
 			throw new APIException("Failed to create the velocity engine: " + e.getMessage(), e);
 		}
-		
+
 		StringWriter writer = new StringWriter();
 		String wrappedCriteria = "#set( $criteria = " + criteria + " )$criteria";
-		
+
 		try {
 			velocityEngine.evaluate(velocityContext, writer, ConceptReferenceRangeUtility.class.getName(), wrappedCriteria);
 			return Boolean.parseBoolean(writer.toString());
@@ -98,16 +131,19 @@ public class ConceptReferenceRangeUtility {
 			throw new APIException("An error occurred while evaluating criteria: ", e);
 		}
 	}
-	
+
 	/**
 	 * Gets the latest Obs by concept.
-	 * 
+	 *
 	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
 	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person person to get obs for
 	 * @return Obs latest Obs
 	 */
 	public Obs getLatestObs(String conceptRef, Person person) {
+		if (person == null) {
+			return null;
+		}
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
 
 		if (concept != null) {
@@ -403,6 +439,9 @@ public class ConceptReferenceRangeUtility {
 	 *  @since 2.8.3
 	 */
 	public boolean isEnrolledInProgram(String uuid, Person person, Date onDate) {
+		if (person == null) {
+			return false;
+		}
 		if (!(person.getIsPatient())) {
 			return false;
 		}
@@ -420,6 +459,9 @@ public class ConceptReferenceRangeUtility {
 	 * @since 2.8.3
 	 */
 	public boolean isInProgramState(String uuid, Person person, Date onDate) {
+		if (person == null) {
+			return false;
+		}
 		if (!(person.getIsPatient())) {
 			return false;
 		}

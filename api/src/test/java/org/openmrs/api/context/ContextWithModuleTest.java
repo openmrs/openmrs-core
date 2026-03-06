@@ -44,7 +44,7 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	/**
 	 * This class file uses the atd and dss modules to test the compatibility
 	 * 
-	 * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
+	 * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#getRuntimeProperties()
 	 */
 	@Override
 	public Properties getRuntimeProperties() {
