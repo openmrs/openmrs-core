@@ -62,6 +62,14 @@
 		   <groupId>org.mockito</groupId>
 		   <artifactId>mockito-junit-jupiter</artifactId>
 	   </dependency>
+	   <dependency>
+		   <groupId>net.bytebuddy</groupId>
+		   <artifactId>byte-buddy</artifactId>
+	   </dependency>
+	   <dependency>
+		   <groupId>net.bytebuddy</groupId>
+		   <artifactId>byte-buddy-agent</artifactId>
+	   </dependency>
 	   <!--hamcrest-core is needed to update JUnit 4 transitive dependency on hamcrest-core as explained in
 		http://hamcrest.org/JavaHamcrest/distributables#upgrading-from-hamcrest-1x and
 		https://github.com/hamcrest/JavaHamcrest/issues/224#issuecomment-449760045
