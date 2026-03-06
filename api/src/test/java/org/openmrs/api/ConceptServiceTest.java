@@ -143,7 +143,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Updates the search index to clean up after each test.
 	 * 
-	 * @see org.openmrs.test.BaseContextSensitiveTest#updateSearchIndex()
+	 * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#updateSearchIndex()
 	 */
 	@BeforeEach
 	@Override
@@ -154,7 +154,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Updates the search index after executing each dataset.
 	 * 
-	 * @see org.openmrs.test.BaseContextSensitiveTest#executeDataSet(org.dbunit.dataset.IDataSet)
+	 * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#executeDataSet(org.dbunit.dataset.IDataSet)
 	 */
 	@Override
 	public void executeDataSet(IDataSet dataset) {

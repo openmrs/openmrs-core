@@ -157,7 +157,7 @@ public class TestUtil {
 	/**
 	 * Print the contents of the given tableName to system.out<br>
 	 * <br>
-	 * Call this from any {@link BaseContextSensitiveTest} child by:
+	 * Call this from any {@link org.openmrs.test.jupiter.BaseContextSensitiveTest} child by:
 	 * TestUtil.printOutTableContents(getConnection(), "encounter");
 	 * 
 	 * @param sqlConnection the connection to use
