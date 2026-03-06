@@ -1192,69 +1192,15 @@
 		 So this profile is required
 		 -->
 		<profile>
-			<id>java17</id>
+			<id>mockito</id>
 			<activation>
-				<jdk>17</jdk>
+				<jdk>[17, )</jdk>
 			</activation>
+			<properties>
+				<mockitoVersion>5.6.0</mockitoVersion>
+			</properties>
 			<dependencyManagement>
 				<dependencies>
-					<dependency>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy</artifactId>
-						<version>1.17.6</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.17.6</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-		</profile>
-
-		<profile>
-			<id>java21</id>
-			<activation>
-				<jdk>21</jdk>
-			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy</artifactId>
-						<version>1.17.6</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.17.6</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-		</profile>
-		
-		<profile>
-			<id>java24</id>
-			<activation>
-				<jdk>24</jdk>
-			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
-					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
