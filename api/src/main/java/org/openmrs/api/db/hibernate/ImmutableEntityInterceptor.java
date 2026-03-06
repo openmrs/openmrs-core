@@ -105,6 +105,10 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 				}
 			}
 			if (CollectionUtils.isNotEmpty(changedProperties)) {
+				// allow changes for new Obs (no obsId yet)
+				if (id == null) {
+					return false;
+				}
 				log.debug("The following fields cannot be changed for {} : {}", getSupportedType(), changedProperties);
 				
 				throw new UnchangeableObjectException("editing.fields.not.allowed", new Object[] { changedProperties,
