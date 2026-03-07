@@ -67,7 +67,7 @@ public class TestInstallUtil {
 		BufferedReader br = null;
 		String errorMsg = null;
 		String[] command = new String[] { "mysql", "--host=" + host, "--port=" + port, "--user=" + user,
-		        "--password=" + pwd, "--database=" + databaseName, "-e", "source " + filePath };
+		        "--password=" + pwd, "--database=" + databaseName };
 		
 		//For stand-alone, use explicit path to the mysql executable.
 		String runDirectory = System.getProperties().getProperty("user.dir");
@@ -78,7 +78,9 @@ public class TestInstallUtil {
 		}
 		
 		try {
-			proc = Runtime.getRuntime().exec(command);
+			ProcessBuilder pb = new ProcessBuilder(command);
+			pb.redirectInput(new File(filePath));
+			proc = pb.start();
 			try {
 				br = new BufferedReader(new InputStreamReader(proc.getErrorStream(), StandardCharsets.UTF_8));
 				String line;
