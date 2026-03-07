@@ -123,6 +123,11 @@ public class OrderValidator implements Validator {
 			        && encounter.getEncounterDatetime().after(dateActivated)) {
 				errors.rejectValue("dateActivated", "Order.error.encounterDatetimeAfterDateActivated");
 			}
+			if (order.getPatient() != null && order.getPatient().getBirthdate() != null
+			        && dateActivated.before(order.getPatient().getBirthdate())) {
+				errors.rejectValue("dateActivated", "Order.error.dateActivatedBeforePatientBirthdate",
+				    "Date activated cannot be before patient's birthdate");
+			}
 		}
 	}
 	
@@ -141,6 +146,12 @@ public class OrderValidator implements Validator {
 		}
 		if (isUrgencyOnScheduledDate && order.getScheduledDate() == null) {
 			errors.rejectValue("scheduledDate", "Order.error.scheduledDateNullForOnScheduledDateUrgency");
+		}
+		Date scheduledDate = order.getScheduledDate();
+		if (scheduledDate != null && order.getPatient() != null && order.getPatient().getBirthdate() != null
+		        && scheduledDate.before(order.getPatient().getBirthdate())) {
+			errors.rejectValue("scheduledDate", "Order.error.scheduledDateBeforePatientBirthdate",
+			    "Scheduled date cannot be before patient's birthdate");
 		}
 	}
 	
