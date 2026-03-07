@@ -319,14 +319,14 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.context.Context#openSession()
 	 */
-	private boolean participate = false;
+	private final ThreadLocal<Boolean> participate = ThreadLocal.withInitial(() -> false);
 	
 	@Override
 	public void openSession() {
 		log.debug("HibernateContext: Opening Hibernate Session");
 		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
 			log.debug("Participating in existing session ({})", sessionFactory.hashCode());
-			participate = true;
+			participate.set(true);
 		} else {
 			log.debug("Registering session with synchronization manager ({})", sessionFactory.hashCode());
 			Session session = sessionFactory.openSession();
@@ -341,8 +341,8 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	public void closeSession() {
 		log.debug("HibernateContext: closing Hibernate Session");
-		if (!participate) {
-			log.debug("Unbinding session from synchronization manager (" + sessionFactory.hashCode() + ")");
+		if (!Boolean.TRUE.equals(participate.get())) {
+			log.debug("Unbinding session from synchronization manager ({})", sessionFactory.hashCode());
 			
 			if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
 				Object value = TransactionSynchronizationManager.unbindResource(sessionFactory);
@@ -358,6 +358,7 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 		} else {
 			log.debug("Participating in existing session, so not releasing session through synchronization manager");
+			participate.remove();
 		}
 	}
 	
