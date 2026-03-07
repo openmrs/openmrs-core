@@ -881,8 +881,6 @@ public class ModuleUtil {
 			}
 		}
 		
-		OpenmrsClassLoader.saveState();
-		SchedulerUtil.shutdown();
 		ServiceContext.destroyInstance();
 		
 		try {
@@ -913,10 +911,6 @@ public class ModuleUtil {
 		
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		
-		OpenmrsClassLoader.restoreState();
-		log.debug("Startup scheduler");
-		SchedulerUtil.startup(Context.getRuntimeProperties());
 		
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
 		
