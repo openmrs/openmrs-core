@@ -9,11 +9,14 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -391,17 +394,244 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		Patient patient = Context.getPatientService().getPatient(6);
-		
+
 		PatientProgram pp = new PatientProgram();
 		pp.setPatient(patient);
 		pp.setProgram(pws.getProgram(1));
 		pp.setDateEnrolled(new Date());
-		
+
 		pp
 		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+
 		BindException errors = new BindException(pp, "program");
 		new PatientProgramValidator().validate(pp, errors);
 		assertTrue(errors.hasFieldErrors("voidReason"));
+	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	void validate_shouldRejectDateEnrolledBeforePatientBirthdate() {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Calendar cal = Calendar.getInstance();
+		cal.set(2000, Calendar.JANUARY, 1);
+		Patient patient = new Patient();
+		patient.setBirthdate(cal.getTime());
+
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		cal.set(1999, Calendar.JANUARY, 1);
+		pp.setDateEnrolled(cal.getTime());
+
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		assertTrue(errors.hasFieldErrors("dateEnrolled"));
+	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectDateEnrolledEqualToPatientBirthdate() {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Calendar cal = Calendar.getInstance();
+		cal.set(2000, Calendar.JANUARY, 1);
+		Date birthdate = cal.getTime();
+		Patient patient = new Patient();
+		patient.setBirthdate(birthdate);
+
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		pp.setDateEnrolled(birthdate);
+
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		assertFalse(errors.hasFieldErrors("dateEnrolled"));
+	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectDateEnrolledAfterPatientBirthdate() {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Calendar cal = Calendar.getInstance();
+		cal.set(2000, Calendar.JANUARY, 1);
+		Patient patient = new Patient();
+		patient.setBirthdate(cal.getTime());
+
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		cal.set(2001, Calendar.JANUARY, 1);
+		pp.setDateEnrolled(cal.getTime());
+
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		assertFalse(errors.hasFieldErrors("dateEnrolled"));
+	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectNullDateEnrolledForBirthdateCheck() {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Calendar cal = Calendar.getInstance();
+		cal.set(2000, Calendar.JANUARY, 1);
+		Patient patient = new Patient();
+		patient.setBirthdate(cal.getTime());
+
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		pp.setDateEnrolled(null);
+
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		assertThat(errors, not(hasFieldErrors("dateEnrolled",
+		    "error.patientProgram.enrolledDateCannotBeBeforeBirthdate")));
+	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectDateEnrolledWhenPatientBirthdateIsNull() {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Patient patient = new Patient();
+		// birthdate intentionally left null
+
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		Calendar cal = Calendar.getInstance();
+		cal.set(2001, Calendar.JANUARY, 1);
+		pp.setDateEnrolled(cal.getTime());
+
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		assertFalse(errors.hasFieldErrors("dateEnrolled"));
+	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	void validate_shouldRejectDateCompletedBeforePatientBirthdate() {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Calendar cal = Calendar.getInstance();
+		cal.set(2000, Calendar.JANUARY, 1);
+		Patient patient = new Patient();
+		patient.setBirthdate(cal.getTime());
+
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		cal.set(2001, Calendar.JANUARY, 1);
+		pp.setDateEnrolled(cal.getTime());
+		cal.set(1999, Calendar.JANUARY, 1);
+		pp.setDateCompleted(cal.getTime());
+
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		assertTrue(errors.hasFieldErrors("dateCompleted"));
+	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectDateCompletedEqualToPatientBirthdate() {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Calendar cal = Calendar.getInstance();
+		cal.set(2000, Calendar.JANUARY, 1);
+		Date birthdate = cal.getTime();
+		Patient patient = new Patient();
+		patient.setBirthdate(birthdate);
+
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		pp.setDateEnrolled(birthdate);
+		pp.setDateCompleted(birthdate);
+
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		assertFalse(errors.hasFieldErrors("dateCompleted"));
+	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectDateCompletedAfterPatientBirthdate() {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Calendar cal = Calendar.getInstance();
+		cal.set(2000, Calendar.JANUARY, 1);
+		Patient patient = new Patient();
+		patient.setBirthdate(cal.getTime());
+
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		cal.set(2001, Calendar.JANUARY, 1);
+		pp.setDateEnrolled(cal.getTime());
+		cal.set(2002, Calendar.JANUARY, 1);
+		pp.setDateCompleted(cal.getTime());
+
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		assertFalse(errors.hasFieldErrors("dateCompleted"));
+	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectNullDateCompletedForBirthdateCheck() {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Calendar cal = Calendar.getInstance();
+		cal.set(2000, Calendar.JANUARY, 1);
+		Patient patient = new Patient();
+		patient.setBirthdate(cal.getTime());
+
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		cal.set(2001, Calendar.JANUARY, 1);
+		pp.setDateEnrolled(cal.getTime());
+		pp.setDateCompleted(null);
+
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		assertThat(errors, not(hasFieldErrors("dateCompleted",
+		    "error.patientProgram.completionDateCannotBeBeforeBirthdate")));
+	}
+
+	/**
+	 * @see PatientProgramValidator#validate(Object,Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectDateCompletedWhenPatientBirthdateIsNull() {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Patient patient = new Patient();
+		// birthdate intentionally left null
+
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		Calendar cal = Calendar.getInstance();
+		cal.set(2001, Calendar.JANUARY, 1);
+		pp.setDateEnrolled(cal.getTime());
+		cal.set(2002, Calendar.JANUARY, 1);
+		pp.setDateCompleted(cal.getTime());
+
+		BindException errors = new BindException(pp, "");
+		new PatientProgramValidator().validate(pp, errors);
+		assertFalse(errors.hasFieldErrors("dateCompleted"));
 	}
 }
