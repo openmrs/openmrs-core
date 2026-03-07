@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -187,10 +187,10 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		OutpatientOrder.setNumRefills(null);
 		Errors OutpatientOrderErrors = new BindException(OutpatientOrder, "order");
 		new DrugOrderValidator().validate(OutpatientOrder, OutpatientOrderErrors);
-		Assert.assertTrue(OutpatientOrder.getCareSetting().getCareSettingType() == CareSetting.CareSettingType.OUTPATIENT);
-		Assert.assertFalse(OutpatientOrderErrors.hasFieldErrors("quantity"));
-		Assert.assertFalse(OutpatientOrderErrors.hasFieldErrors("quantityUnits"));
-		Assert.assertFalse(OutpatientOrderErrors.hasFieldErrors("numRefills"));
+		assertSame(CareSetting.CareSettingType.OUTPATIENT, OutpatientOrder.getCareSetting().getCareSettingType());
+		assertFalse(OutpatientOrderErrors.hasFieldErrors("quantity"));
+		assertFalse(OutpatientOrderErrors.hasFieldErrors("quantityUnits"));
+		assertFalse(OutpatientOrderErrors.hasFieldErrors("numRefills"));
 	}
 	
 	/**
@@ -271,6 +271,50 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("doseUnits"));
+	}
+	
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfDoseIsZero() {
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setDose(0.0);
+		order.setDoseUnits(Context.getConceptService().getConcept(51));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertTrue(errors.hasFieldErrors("dose"));
+		assertEquals("DrugOrder.error.doseZeroOrLess", errors.getFieldError("dose").getCode());
+	}
+	
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfDoseIsNegative() {
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setDose(-1.0);
+		order.setDoseUnits(Context.getConceptService().getConcept(51));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertTrue(errors.hasFieldErrors("dose"));
+		assertEquals("DrugOrder.error.doseZeroOrLess", errors.getFieldError("dose").getCode());
+	}
+	
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfDoseIsGreaterThanZero() {
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setDose(1.0);
+		order.setDoseUnits(Context.getConceptService().getConcept(51));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertFalse(errors.hasFieldErrors("dose"));
 	}
 	
 	/**

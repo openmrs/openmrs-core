@@ -50,7 +50,7 @@
 		<!-- spring-test 6.2.12 is used because Spring 7.0.3's spring-test requires JUnit 6.x which is -->
 		<!-- not yet supported by maven-surefire-plugin 3.5.4. Spring test 6.2.12 works with JUnit 5.x. -->
 		<springTestVersion>6.2.12</springTestVersion>
-		<hibernateVersion>7.2.5.Final</hibernateVersion>
+		<hibernateVersion>7.2.6.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.2.2.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.0.Final</hibernateValidatorVersion>
@@ -79,12 +79,11 @@
 
 		<!-- Apache Commons -->
 		<commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
-		<commonsCollections4Version>4.4</commonsCollections4Version>
 		<commonsIoVersion>2.21.0</commonsIoVersion>
 		<commonsLang3Version>3.20.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
 		<commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
-		<commonsFileupload2JakartaVersion>2.0.0-M1</commonsFileupload2JakartaVersion>
+		<commonsFileupload2JakartaVersion>2.0.0-M5</commonsFileupload2JakartaVersion>
 		<commonsValidatorVersion>1.10.1</commonsValidatorVersion>
 
 		<!-- Velocity -->
@@ -121,9 +120,8 @@
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 
 		<!-- Testing -->
-		<junit4Version>4.13.2</junit4Version>
 		<junitVersion>5.11.4</junitVersion>
-		<mockitoVersion>5.21.0</mockitoVersion>
+		<mockitoVersion>5.22.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<h2Version>2.3.232</h2Version>
 		<dbunitVersion>3.0.0</dbunitVersion>
@@ -341,12 +339,6 @@
 				<version>${commonsCollectionsVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-collections4</artifactId>
-				<version>${commonsCollections4Version}</version>
-				<type>test-jar</type>
-			</dependency>
-			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>${commonsIoVersion}</version>
@@ -374,7 +366,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-fileupload2-jakarta</artifactId>
+				<artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
 				<version>${commonsFileupload2JakartaVersion}</version>
 			</dependency>
 			<dependency>
@@ -626,11 +618,6 @@
 
 			<!-- Testing -->
 			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit4Version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter</artifactId>
 				<version>${junitVersion}</version>
@@ -651,11 +638,6 @@
 				<version>${junitVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.junit.vintage</groupId>
-				<artifactId>junit-vintage-engine</artifactId>
-				<version>${junitVersion}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${mockitoVersion}</version>
@@ -664,11 +646,6 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
 				<version>${mockitoVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-core</artifactId>
-				<version>${hamcrestVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>

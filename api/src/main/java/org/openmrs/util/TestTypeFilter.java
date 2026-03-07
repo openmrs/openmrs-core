@@ -40,10 +40,10 @@ public class TestTypeFilter implements TypeFilter {
 	private static List<String> superClassNamesToExclude = new ArrayList<>();
 	
 	static {
-		superClassNamesToExclude.add("org.openmrs.test.BaseContextSensitiveTest");
-		superClassNamesToExclude.add("org.openmrs.test.BaseModuleContextSensitiveTest");
-		superClassNamesToExclude.add("org.openmrs.web.test.BaseWebContextSensitiveTest");
-		superClassNamesToExclude.add("org.openmrs.web.test.BaseModuleWebContextSensitiveTest");
+		superClassNamesToExclude.add("org.openmrs.test.jupiter.BaseContextSensitiveTest");
+		superClassNamesToExclude.add("org.openmrs.test.jupiter.BaseModuleContextSensitiveTest");
+		superClassNamesToExclude.add("org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest");
+		superClassNamesToExclude.add("org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest");
 		superClassNamesToExclude.add("org.springframework.test.AbstractTransactionalSpringContextTests");
 		superClassNamesToExclude.add("org.openmrs.BaseTest");
 		superClassNamesToExclude.add("junit.framework.TestCase");

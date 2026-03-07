@@ -96,7 +96,7 @@ public class CreateCoreUuids extends BaseContextSensitiveTest {
 	 * Make sure we use the database defined by the runtime properties and not the hsql in-memory
 	 * database
 	 * 
-	 * @see org.openmrs.test.BaseContextSensitiveTest#useInMemoryDatabase()
+	 * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#useInMemoryDatabase()
 	 */
 	@Override
 	public Boolean useInMemoryDatabase() {

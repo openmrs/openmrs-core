@@ -80,13 +80,6 @@
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-collections4</artifactId>
-				<version>4.4</version>
-				<scope>test</scope>
-				<type>test-jar</type>
-			</dependency>
-			<dependency>
 				<groupId>org.reflections</groupId>
 				<artifactId>reflections</artifactId>
 				<version>0.10.2</version>
@@ -130,7 +123,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.4.0</version>
+					<version>3.5.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -142,8 +135,6 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.15.0</version>
 					<configuration>
-						<target>${javaCompilerVersion}</target>
-						<source>${javaCompilerVersion}</source>
 						<encoding>UTF-8</encoding>
 					</configuration>
 				</plugin>
@@ -204,9 +195,9 @@
 					<artifactId>maven-java-formatter-plugin</artifactId>
 					<version>0.4</version>
 					<configuration>
-						<compilerSource>${javaCompilerVersion}</compilerSource>
-						<compilerCompliance>${javaCompilerVersion}</compilerCompliance>
-						<compilerTargetPlatform>${javaCompilerVersion}</compilerTargetPlatform>
+						<compilerSource>${maven.compiler.release}</compilerSource>
+						<compilerCompliance>${maven.compiler.release}</compilerCompliance>
+						<compilerTargetPlatform>${maven.compiler.release}</compilerTargetPlatform>
 						<configFile>eclipse/OpenMRSFormatter.xml</configFile>
 						<overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
 					</configuration>
@@ -702,89 +693,6 @@
 				<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 			</properties>
 		</profile>
-		
-		<!-- When using mockito-core:3.12.4 with Java 17, we get the following error.
-		 java.lang.NullPointerException: Cannot read the array length because "this.buf" is null
-		 mockito-core:5.6.0 does not support Java 8.
-		 So this profile is required
-		 -->
-		<profile>
-			<id>java17</id>
-			<activation>
-				<jdk>17</jdk>
-			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-						<version>5.21.0</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-		</profile>
-
-		<profile>
-			<id>java21</id>
-			<activation>
-				<jdk>21</jdk>
-			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-						<version>5.21.0</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-		</profile>
-		
-		<profile>
-			<id>java24</id>
-			<activation>
-				<jdk>24</jdk>
-			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-						<version>5.21.0</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-		</profile>
 	</profiles>
 
 	<reporting>
@@ -843,7 +751,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<javaCompilerVersion>21</javaCompilerVersion>
+		<maven.compiler.release>21</maven.compiler.release>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
 

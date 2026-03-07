@@ -45,8 +45,8 @@ import org.springframework.context.ApplicationContext;
  * that this class is not needed. In practice it is mostly enough to replace calls to
  * Context.get...Service with fields, which are injected through a constructor.
  * <p>
- * ContextMockHelper is available in tests extending {@link org.openmrs.test.BaseContextMockTest} and
- * {@link org.openmrs.test.BaseContextSensitiveTest}.
+ * ContextMockHelper is available in tests extending {@link org.openmrs.test.jupiter.BaseContextMockTest} and
+ * {@link org.openmrs.test.jupiter.BaseContextSensitiveTest}.
  *
  * @deprecated Avoid using this by not calling Context.get...Service() in your code.
  * @since 1.11, 1.10, 1.9.9
