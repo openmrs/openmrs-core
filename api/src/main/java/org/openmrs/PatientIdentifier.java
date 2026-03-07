@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 @Audited
 @Entity
 @Table(name = "patient_identifier")
-public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
+public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PatientIdentifier> {
 	
 	public static final long serialVersionUID = 1123121L;
 	
@@ -119,6 +119,31 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 		this.identifier = identifier;
 		this.identifierType = type;
 		this.location = location;
+	}
+
+	/**
+	 * Creates a shallow copy of the given PatientIdentifier. This copies the identifier id and uuid,
+	 * and does not deep-copy referenced objects.
+	 *
+	 * @param template the PatientIdentifier to copy
+	 */
+	public PatientIdentifier(PatientIdentifier template) {
+		this.patientIdentifierId = template.getPatientIdentifierId();
+		this.patient = template.getPatient();
+		this.identifier = template.getIdentifier();
+		this.identifierType = template.getIdentifierType();
+		this.location = template.getLocation();
+		this.patientProgram = template.getPatientProgram();
+		this.preferred = template.getPreferred();
+		setUuid(template.getUuid());
+		setCreator(template.getCreator());
+		setDateCreated(template.getDateCreated());
+		setChangedBy(template.getChangedBy());
+		setDateChanged(template.getDateChanged());
+		setVoided(template.getVoided());
+		setDateVoided(template.getDateVoided());
+		setVoidedBy(template.getVoidedBy());
+		setVoidReason(template.getVoidReason());
 	}
 	
 	/**
@@ -298,24 +323,6 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 		this.patientIdentifierId = patientIdentifierId;
 	}
 
-	/**
-	 * bitwise copy of the PatientIdentifier object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
-	 * PatientIdentifier.patient object in this object AND the cloned object will point at the same
-	 * patient
-	 *
-	 * @return New PatientIdentifier object
-	 * @since 2.2.0
-	 */
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		}
-		catch (CloneNotSupportedException e) {
-			throw new InternalError("PatientIdentifier should be cloneable");
-		}
-	}
-	
 	/**
 	 Provides a default comparator.
 	 @since 1.12
