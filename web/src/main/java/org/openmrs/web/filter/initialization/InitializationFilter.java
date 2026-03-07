@@ -1573,22 +1573,30 @@ public class InitializationFilter extends StartupFilter {
 							private int i = 1;
 							
 							private String message;
+                                                   
+                        	private int totalToRun;
 							
 							public PrintingChangeSetExecutorCallback(String message) {
 								this.message = message;
 							}
+                                                   
+                            public PrintingChangeSetExecutorCallback(String message, int totalToRun) {
+                                this.message = message;
+                                this.totalToRun = totalToRun;
+                            }
 							
 							/**
 							 * @see ChangeSetExecutorCallback#executing(liquibase.changelog.ChangeSet, int)
 							 */
 							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
-								setMessage(message + " (" + i++ + "/" + numChangeSetsToRun + "): Author: "
-									+ changeSet.getAuthor() + " Comments: " + changeSet.getComments() + " Description: "
-									+ changeSet.getDescription());
-								float numChangeSetsToRunFloat = (float) numChangeSetsToRun;
+								int effectiveTotal = totalToRun > 0 ? totalToRun : numChangeSetsToRun;
+								setMessage(message + " (" + i + "/" + effectiveTotal + "): Author: " + changeSet.getAuthor() + " Comments: " + changeSet.getComments() + " Description: "
+								+ changeSet.getDescription());
+								float effectiveTotalFloat = (float) effectiveTotal;
 								float j = (float) i;
-								setCompletedPercentage(Math.round(j * 100 / numChangeSetsToRunFloat));
+								setCompletedPercentage(Math.round(j * 100 / effectiveTotalFloat));
+								i++;
 							}
 							
 						}
@@ -1641,8 +1649,14 @@ public class InitializationFilter extends StartupFilter {
 										wizardModel.remoteUrl + RELEASE_TESTING_MODULE_PATH + "generateTestDataSet.form",
 										wizardModel.remoteUsername, wizardModel.remotePassword);
 									
+									setCompletedPercentage(20);
+									setMessage("Downloading test dataset...");
+
 									setCompletedPercentage(40);
-									setMessage("Loading imported test data...");
+									setMessage("Extracting test dataset...");
+									
+									setCompletedPercentage(70);
+									setMessage("Importing test data into database...");
 									importTestDataSet(inData, finalDatabaseConnectionString, connectionUsername,
 										connectionPassword.toString());
 									wizardModel.workLog.add("Imported test data");
@@ -1657,8 +1671,11 @@ public class InitializationFilter extends StartupFilter {
 										wizardModel.remoteUrl + RELEASE_TESTING_MODULE_PATH + "getModules.htm",
 										wizardModel.remoteUsername, wizardModel.remotePassword);
 									
-									setCompletedPercentage(90);
-									setMessage("Adding imported modules...");
+									setCompletedPercentage(50);
+									setMessage("Downloading modules from remote server");
+
+									setCompletedPercentage(80);
+									setMessage("Installing modules...");
 									if (!TestInstallUtil.addZippedTestModules(inModules)) {
 										reportError(ErrorMessageConstants.ERROR_DB_UNABLE_TO_ADD_MODULES, DEFAULT_PAGE, "");
 										return;
@@ -1703,11 +1720,16 @@ public class InitializationFilter extends StartupFilter {
 							List<String> changelogs = changeLogVersionFinder
 								.getUpdateFileNames(changeLogVersionFinder.getUpdateVersionsGreaterThan(version));
 							
+							int totalChangeSets = DatabaseUpdater
+							        .getUnrunDatabaseChanges(changelogs.toArray(new String[0])).size();
+							
+							PrintingChangeSetExecutorCallback updateCallback = new PrintingChangeSetExecutorCallback("Updating the database",
+							totalChangeSets);
+							
 							for (String changelog : changelogs) {
 								log.debug("applying Liquibase changelog '{}'", changelog);
 								
-								DatabaseUpdater.executeChangelog(changelog,
-									new PrintingChangeSetExecutorCallback("executing Liquibase changelog " + changelog));
+								DatabaseUpdater.executeChangelog(changelog, updateCallback);
 							}
 							addExecutedTask(WizardTask.UPDATE_TO_LATEST);
 						}
