@@ -12,6 +12,7 @@ package org.openmrs.module.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -82,32 +83,54 @@ public class ModuleResourcesServlet extends HttpServlet {
 	protected File getFile(HttpServletRequest request) {
 		
 		String path = request.getPathInfo();
+
+		if (path == null || path.contains("\0")) {
+			log.warn("Null or null-byte path rejected");
+			return null;
+		}
 		
 		Module module = ModuleUtil.getModuleForPath(path);
 		if (module == null) {
-			log.warn("No module handles the path: " + path);
+			log.warn("No module handles the path: {}", path);
 			return null;
 		}
 		
 		String relativePath = ModuleUtil.getPathForResource(module, path);
-		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources"
-		        + relativePath;
+		String realPath;
 		
 		//if in dev mode, load resources from the development directory
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		if (devDir != null) {
-			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources" + relativePath;
+			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources";
+		} else{
+			realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources";
 		}
 		
 		realPath = realPath.replace("/", File.separator);
-		
-		File f = new File(realPath);
-		if (!f.exists()) {
-			log.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
+
+		try {
+			File baseDir = new File(realPath).getCanonicalFile();
+			File requestedFile = new File(baseDir, relativePath).getCanonicalFile();
+			
+			Path basePath = baseDir.toPath().normalize();
+			Path requestedPath = requestedFile.toPath().normalize();
+
+			if (!requestedPath.startsWith(basePath)) {
+				log.warn("Path traversal attempt blocked. Requested: '{}' is outside base: '{}'", requestedPath, basePath);
+				return null;
+			}
+
+			if (!requestedFile.exists() || !requestedFile.isFile()) {
+				log.warn("No file with path '{}' exists for module '{}'", requestedFile, module.getModuleId());
+				return null;
+			}
+
+			return requestedFile;
+
+		} catch (IOException e) {
+			log.error("Error resolving canonical path for module resource", e);
 			return null;
 		}
-		
-		return f;
 	}
 	
 }
