@@ -100,8 +100,16 @@ public class ModuleResourcesServlet extends HttpServlet {
 		}
 		
 		realPath = realPath.replace("/", File.separator);
-		
-		File f = new File(realPath);
+		// fix
+		String safePath = realPath;
+		if (safePath.contains("..")) {
+			throw new UnsupportedOperationException(
+				"Attempted to access file '" + safePath +
+					"' but this is rejected because it contains '..' which may indicate " +
+					"a path traversal or zip-slip style attack."
+			);
+		}
+		File f = new File(safePath);
 		if (!f.exists()) {
 			log.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
 			return null;
