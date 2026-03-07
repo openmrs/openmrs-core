@@ -9,11 +9,18 @@
  */
 package org.openmrs.validator;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +88,7 @@ public class PatientValidator extends PersonValidator {
 		//Voided patients have only voided identifiers since they were voided with the patient, 
 		//so get all otherwise get the active ones
 		Collection<PatientIdentifier> identifiers = patient.getVoided() ? patient.getIdentifiers() : patient
-		        .getActiveIdentifiers();
+				.getActiveIdentifiers();
 		for (PatientIdentifier pi : identifiers) {
 			if (pi.getPreferred()) {
 				preferredIdentifierChosen = true;
@@ -90,6 +97,39 @@ public class PatientValidator extends PersonValidator {
 		if (!preferredIdentifierChosen && identifiers.size() != 1) {
 			errors.reject("error.preferredIdentifier");
 		}
+
+		if (!patient.getVoided()) {
+			Collection<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes(false);
+
+			// Step 1: collect all required identifier types
+			Set<PatientIdentifierType> requiredTypes = new HashSet<>();
+			for (PatientIdentifierType type : identifierTypes) {
+				if (type.getRequired()) {
+					requiredTypes.add(type);
+				}
+			}
+
+			// Step 2: remove the ones the patient already has
+			for (PatientIdentifier pi : patient.getActiveIdentifiers()) {
+				if (pi.getIdentifierType() != null) {
+					requiredTypes.remove(pi.getIdentifierType());
+				}
+			}
+
+			// Step 3: remaining = missing
+			if (!requiredTypes.isEmpty()) {
+				List<String> missingRequiredIdentifiers = requiredTypes.stream()
+					.map(PatientIdentifierType::getName)
+					.collect(Collectors.toList());
+				errors.rejectValue(
+					"identifiers",
+					"Patient.missingRequiredIdentifier",
+					new Object[]{String.join(", ", missingRequiredIdentifiers)},
+					null
+				);
+			}
+		}
+		
 		int index = 0;
 		if (!errors.hasErrors() && patient.getIdentifiers() != null) {
 			// Validate PatientIdentifers
