@@ -547,7 +547,7 @@ public final class OpenmrsConstants {
 	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
 	 */
-	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/CBC/PKCS5Padding";
+	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/GCM/NoPadding";
 	
 	public static final String ENCRYPTION_KEY_SPEC = "AES";
 	
