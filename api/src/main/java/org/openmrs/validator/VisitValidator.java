@@ -34,8 +34,10 @@ import org.springframework.validation.Validator;
 @Handler(supports = { Visit.class }, order = 50)
 public class VisitValidator extends BaseCustomizableValidator implements Validator {
 	
+	private static final String STOP_DATETIME = "stopDatetime";
+
 	private static final double ESTIMATED_BIRTHDATE_ERROR_MARGIN = -0.5;
-	
+
 	private static final int ESTIMATED_BIRTHDATE_ERROR_MARGIN_MINIMUM_YEARS = -1;
 	
 	/**
@@ -81,7 +83,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		ValidationUtils.rejectIfEmpty(errors, "startDatetime", "Visit.error.startDate.required");
 		if (visit.getStartDatetime() != null
 		        && OpenmrsUtil.compareWithNullAsLatest(visit.getStartDatetime(), visit.getStopDatetime()) > 0) {
-			errors.rejectValue("stopDatetime", "Visit.error.endDateBeforeStartDate");
+			errors.rejectValue(STOP_DATETIME, "Visit.error.endDateBeforeStartDate");
 		}
 		
 		//If this is not a new visit, validate based on its existing encounters.
@@ -96,7 +98,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 					    "This visit has encounters whose dates cannot be before the start date of the visit.");
 					break;
 				} else if (stopDateTime != null && encounter.getEncounterDatetime().after(stopDateTime)) {
-					errors.rejectValue("stopDatetime", "Visit.encountersCannotBeAfterStopDate",
+					errors.rejectValue(STOP_DATETIME, "Visit.encountersCannotBeAfterStopDate",
 					    "This visit has encounters whose dates cannot be after the stop date of the visit.");
 					break;
 				}
@@ -139,6 +141,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		}
 		
 		validateVisitStartedBeforePatientBirthdate(visit, errors);
+		validateVisitStoppedBeforePatientBirthdate(visit, errors);
 	}
 	
 	/*
@@ -164,6 +167,17 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		}
 	}
 	
+	private void validateVisitStoppedBeforePatientBirthdate(Visit visit, Errors errors) {
+		if (visit.getPatient() == null || visit.getPatient().getBirthdate() == null || visit.getStopDatetime() == null) {
+			return;
+		}
+
+		if (visit.getStopDatetime().before(getPatientBirthdateAdjustedIfEstimated(visit.getPatient()))) {
+			errors.rejectValue(STOP_DATETIME, "Visit.stopDateCannotFallBeforeTheBirthDateOfTheSamePatient",
+			    "Visit stop date cannot fall before the birth date of the same patient");
+		}
+	}
+
 	private Date getPatientBirthdateAdjustedIfEstimated(Patient patient) {
 		Date birthday = patient.getBirthdate();
 		

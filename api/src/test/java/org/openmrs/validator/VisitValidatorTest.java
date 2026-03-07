@@ -748,6 +748,132 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		assertThat(errors, hasFieldErrors("startDatetime", "Visit.startDateCannotFallBeforeTheBirthDateOfTheSamePatient"));
 	}
 	
+	@Test
+	void validate_shouldFailValidationIfStopDateBeforeBirthDate() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(1974, 4, 8);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(false);
+		visit.setPatient(patient);
+		visit.setStartDatetime(calendar.getTime());
+		calendar.set(1974, 4, 7);
+		visit.setStopDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+
+		new VisitValidator().validate(visit, errors);
+
+		assertThat(errors, hasFieldErrors("stopDatetime", "Visit.stopDateCannotFallBeforeTheBirthDateOfTheSamePatient"));
+	}
+
+	@Test
+	void validate_shouldPassValidationIfStopDateOnBirthDate() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(1974, 4, 8);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(false);
+		visit.setPatient(patient);
+		visit.setStartDatetime(calendar.getTime());
+		visit.setStopDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+
+		new VisitValidator().validate(visit, errors);
+
+		assertThat(errors, not(hasFieldErrors("stopDatetime")));
+	}
+
+	@Test
+	void validate_shouldPassValidationIfStopDateAfterBirthDate() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(1974, 4, 8);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(false);
+		visit.setPatient(patient);
+		visit.setStartDatetime(calendar.getTime());
+		calendar.set(1974, 4, 9);
+		visit.setStopDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+
+		new VisitValidator().validate(visit, errors);
+
+		assertThat(errors, not(hasFieldErrors("stopDatetime")));
+	}
+
+	@Test
+	void validate_shouldPassValidationIfStopDateIsNull() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(1974, 4, 8);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(false);
+		visit.setPatient(patient);
+		visit.setStartDatetime(calendar.getTime());
+		// stopDatetime intentionally left null
+		Errors errors = new BindException(visit, "visit");
+
+		new VisitValidator().validate(visit, errors);
+
+		assertThat(errors, not(hasFieldErrors("stopDatetime")));
+	}
+
+	@Test
+	void validate_shouldPassValidationOnStopDateIfPatientBirthDateIsNull() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		// birthdate intentionally left null
+		visit.setPatient(patient);
+		calendar.set(1974, 4, 8);
+		visit.setStartDatetime(calendar.getTime());
+		visit.setStopDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+
+		new VisitValidator().validate(visit, errors);
+
+		assertThat(errors, not(hasFieldErrors("stopDatetime", "Visit.stopDateCannotFallBeforeTheBirthDateOfTheSamePatient")));
+	}
+
+	@Test
+	void validate_shouldPassValidationIfStopDateOnEstimatedBirthDatesGracePeriod() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(2000, 7, 25);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(true);
+		calendar.set(2010, 7, 25);
+		patient.setDeathDate(calendar.getTime());
+		visit.setPatient(patient);
+		calendar.set(1995, 7, 25);
+		visit.setStartDatetime(calendar.getTime());
+		visit.setStopDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+
+		new VisitValidator().validate(visit, errors);
+
+		assertThat(errors, not(hasFieldErrors("stopDatetime")));
+	}
+
+	@Test
+	void validate_shouldFailValidationIfStopDateBeforeEstimatedBirthDatesGracePeriod() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(2000, 7, 25);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(true);
+		calendar.set(2010, 7, 25);
+		patient.setDeathDate(calendar.getTime());
+		visit.setPatient(patient);
+		calendar.set(1995, 7, 24);
+		visit.setStartDatetime(calendar.getTime());
+		visit.setStopDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+
+		new VisitValidator().validate(visit, errors);
+
+		assertThat(errors, hasFieldErrors("stopDatetime", "Visit.stopDateCannotFallBeforeTheBirthDateOfTheSamePatient"));
+	}
+
 	private Date parseIsoDate(String isoDate) {
 		LocalDateTime localDateTime = LocalDateTime.parse(isoDate, DateTimeFormatter.ISO_DATE_TIME);
 		return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
