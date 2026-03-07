@@ -13,7 +13,7 @@
 (function( jQuery ) {
 
 jQuery.ui.autocomplete.prototype.options.autoSelect = true;
-jQuery( ".ui-autocomplete-input" ).live( "blur", function( event ) {
+jQuery(document).on("blur", ".ui-autocomplete-input", function( event ) {
 var autocomplete = jQuery( this ).data( "autocomplete" );
 if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
 
