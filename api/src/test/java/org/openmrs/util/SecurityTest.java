@@ -10,12 +10,17 @@
 package org.openmrs.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Base64;
 import java.util.Base64.Decoder;
+import java.net.URL;
+import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 /**
@@ -211,6 +216,95 @@ public class SecurityTest {
 		assertTrue(StringUtils.hasText(encrypted));
 		actual = Security.decrypt(encrypted);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
+	}
+
+	@Test
+	public void validateUrlForServerRequest_shouldRejectLoopbackAddresses() throws Exception {
+		String propertyName = OpenmrsConstants.GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS;
+		Properties previousProperties = Context.getRuntimeProperties();
+		Properties updatedProperties = new Properties();
+		updatedProperties.putAll(previousProperties);
+		try {
+			updatedProperties.remove(propertyName);
+			Context.setRuntimeProperties(updatedProperties);
+			assertThrows(SecurityException.class,
+			    () -> Security.validateUrlForServerRequest(new URL("http://127.0.0.1")));
+			assertThrows(SecurityException.class,
+			    () -> Security.validateUrlForServerRequest(new URL("http://[::1]/")));
+		}
+		finally {
+			Context.setRuntimeProperties(previousProperties);
+		}
+	}
+
+	@Test
+	public void validateUrlForServerRequest_shouldRejectNonHttpProtocols() throws Exception {
+		String propertyName = OpenmrsConstants.GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS;
+		Properties previousProperties = Context.getRuntimeProperties();
+		Properties updatedProperties = new Properties();
+		updatedProperties.putAll(previousProperties);
+		try {
+			updatedProperties.remove(propertyName);
+			Context.setRuntimeProperties(updatedProperties);
+			assertThrows(SecurityException.class,
+			    () -> Security.validateUrlForServerRequest(new URL("file:///etc/passwd")));
+		}
+		finally {
+			Context.setRuntimeProperties(previousProperties);
+		}
+	}
+
+	@Test
+	public void validateUrlForServerRequest_shouldAllowPublicIp() throws Exception {
+		String propertyName = OpenmrsConstants.GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS;
+		Properties previousProperties = Context.getRuntimeProperties();
+		Properties updatedProperties = new Properties();
+		updatedProperties.putAll(previousProperties);
+		try {
+			updatedProperties.remove(propertyName);
+			Context.setRuntimeProperties(updatedProperties);
+			URL safeUrl = Security.validateUrlForServerRequest(new URL("http://93.184.216.34"));
+			assertNotNull(safeUrl);
+		}
+		finally {
+			Context.setRuntimeProperties(previousProperties);
+		}
+	}
+
+	@Test
+	public void validateUrlForServerRequest_shouldAllowAllowlistedHostsEvenIfLocal() throws Exception {
+		String propertyName = OpenmrsConstants.GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS;
+		Properties previousProperties = Context.getRuntimeProperties();
+		Properties updatedProperties = new Properties();
+		updatedProperties.putAll(previousProperties);
+		try {
+			updatedProperties.setProperty(propertyName, "localhost");
+			Context.setRuntimeProperties(updatedProperties);
+			URL safeUrl = Security.validateUrlForServerRequest(new URL("http://localhost"));
+			// DNS is resolved once; returned URL host is the numeric IP.
+			assertNotNull(safeUrl);
+		}
+		finally {
+			Context.setRuntimeProperties(previousProperties);
+		}
+	}
+
+	@Test
+	public void validateUrlForServerRequest_shouldRejectUnresolvableHosts() throws Exception {
+		String propertyName = OpenmrsConstants.GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS;
+		Properties previousProperties = Context.getRuntimeProperties();
+		Properties updatedProperties = new Properties();
+		updatedProperties.putAll(previousProperties);
+		try {
+			updatedProperties.remove(propertyName);
+			Context.setRuntimeProperties(updatedProperties);
+			// Fail-closed: unresolvable hostname must not silently pass through.
+			assertThrows(SecurityException.class,
+			    () -> Security.validateUrlForServerRequest(new URL("http://this.hostname.does.not.exist.invalid")));
+		}
+		finally {
+			Context.setRuntimeProperties(previousProperties);
+		}
 	}
 	
 }

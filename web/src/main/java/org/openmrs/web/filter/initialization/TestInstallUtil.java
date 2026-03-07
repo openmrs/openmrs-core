@@ -38,6 +38,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.Security;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -228,7 +229,11 @@ public class TestInstallUtil {
 	 */
 	protected static boolean testConnection(String urlString) {
 		try {
-			HttpURLConnection urlConnect = (HttpURLConnection) new URL(urlString).openConnection();
+			URL url = new URL(urlString);
+			// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric IP
+			// as host, preventing DNS-rebinding / TOCTOU attacks.
+			URL safeUrl = Security.validateUrlForServerRequest(url);
+			HttpURLConnection urlConnect = (HttpURLConnection) safeUrl.openConnection();
 			//wait for 15sec
 			urlConnect.setConnectTimeout(15000);
 			urlConnect.setUseCaches(false);
@@ -273,7 +278,11 @@ public class TestInstallUtil {
 	}
 	private static HttpURLConnection createConnection(String url) 
 			throws IOException, MalformedURLException {
-		final HttpURLConnection result = (HttpURLConnection) new URL(url).openConnection();
+		URL requestUrl = new URL(url);
+		// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric IP
+		// as host, preventing DNS-rebinding / TOCTOU attacks.
+		URL safeUrl = Security.validateUrlForServerRequest(requestUrl);
+		final HttpURLConnection result = (HttpURLConnection) safeUrl.openConnection();
 		result.setRequestMethod("POST");
 		result.setConnectTimeout(15000);
 		result.setUseCaches(false);
