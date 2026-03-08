@@ -12,9 +12,13 @@ package org.openmrs.web.filter.util;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Locale.LanguageRange;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -66,6 +70,17 @@ public class CustomResourceLoader {
 		catch (IOException ex) {
 			log.error(ex.getMessage(), ex);
 		}
+	}
+
+	/**
+	 * Constructor for testing purposes that allows injecting a specific
+	 * set of available locales.
+	 *
+	 * @param availableLocales the set of locales to be used as available locales
+	 */
+	protected CustomResourceLoader(Set<Locale> availableLocales) {
+		this.resources = Collections.emptyMap(); 
+		this.availablelocales = availableLocales != null ? availableLocales : new HashSet<>(); 
 	}
 	
 	/**
@@ -129,5 +144,30 @@ public class CustomResourceLoader {
 	 */
 	public Set<Locale> getAvailablelocales() {
 		return availablelocales;
+	}
+
+	/**
+	 * Finds the best matching locale from the available locales based on the
+	 * Accept-Language header value using RFC 4647 language range matching.
+	 *
+	 * @param acceptLanguageHeader the Accept-Language header value from the HTTP request
+	 * @return the best matching {@link Locale} from available locales, or default locale if
+	 *         no match is found or if the header is null/empty
+	 */
+	public Locale findBestMatchLocale(String acceptLanguageHeader) {
+
+		if (acceptLanguageHeader == null || acceptLanguageHeader.trim().isEmpty()) {
+			return LocaleUtility.getDefaultLocale();
+		}
+
+		try {
+			List<LanguageRange> languageRanges = LanguageRange.parse(acceptLanguageHeader);
+			List<Locale> availableLocalesList = new ArrayList<>(getAvailablelocales());
+			Locale matchedLocale = Locale.lookup(languageRanges, availableLocalesList);
+			return matchedLocale != null ? matchedLocale : LocaleUtility.getDefaultLocale();
+		} catch (IllegalArgumentException ex) {
+			log.warn("Failed to parse Accept-Language header: {}", acceptLanguageHeader, ex);
+			return LocaleUtility.getDefaultLocale();
+		}
 	}
 }

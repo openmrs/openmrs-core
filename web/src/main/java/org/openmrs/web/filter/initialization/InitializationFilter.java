@@ -985,21 +985,18 @@ public class InitializationFilter extends StartupFilter {
 			}
 		}
 	}
-	
+
 	/**
 	 * It sets locale parameter for current session when user is making first GET http request to
-	 * application. It retrieves user locale from request object and checks if this locale is supported
-	 * by application. If not, it uses {@link Locale#ENGLISH} by default
+	 * application. It retrieves the best matching locale using the Accept-Language header
+	 * and checks if this locale is supported by application. If not, it uses the default locale.
 	 *
 	 * @param httpRequest the http request object
 	 */
 	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
-		Locale locale = httpRequest.getLocale();
-		if (CustomResourceLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
-			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, locale.toString());
-		} else {
-			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, Locale.ENGLISH.toString());
-		}
+		String acceptLanguageHeader = httpRequest.getHeader("Accept-Language");
+		Locale locale = CustomResourceLoader.getInstance(httpRequest).findBestMatchLocale(acceptLanguageHeader);
+		httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, locale.toString());
 	}
 	
 	/**
