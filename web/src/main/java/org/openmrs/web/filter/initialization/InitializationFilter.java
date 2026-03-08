@@ -988,8 +988,8 @@ public class InitializationFilter extends StartupFilter {
 
 	/**
 	 * It sets locale parameter for current session when user is making first GET http request to
-	 * application. It retrieves user locale from request object and checks if this locale is supported
-	 * application. If not, it uses the default locale.
+	 * application. It retrieves the best matching locale using the Accept-Language header
+	 * and checks if this locale is supported by application. If not, it uses the default locale.
 	 *
 	 * @param httpRequest the http request object
 	 */
