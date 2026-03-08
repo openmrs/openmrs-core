@@ -22,12 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * Unit tests for {@link CustomResourceLoader} locale matching functionality.
  */
-public class CustomResourceLoaderTest {
+class CustomResourceLoaderTest {
 
 	private CustomResourceLoader resourceLoader;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		Set<Locale> availableLocales = new HashSet<>();
 		availableLocales.add(Locale.ENGLISH);
 		availableLocales.add(Locale.FRENCH);
@@ -36,80 +36,80 @@ public class CustomResourceLoaderTest {
 	}
 
 	@Test
-	public void findBestMatchLocale_shouldReturnExactMatch() {
+	void findBestMatchLocale_shouldReturnExactMatch() {
 		Locale result = resourceLoader.findBestMatchLocale("fr");
 		assertEquals(Locale.FRENCH, result);
 	}
 
 	@Test
-	public void findBestMatchLocale_shouldReturnLanguageWhenRegionalLocaleNotAvailable() {
+	void findBestMatchLocale_shouldReturnLanguageWhenRegionalLocaleNotAvailable() {
 		Locale result = resourceLoader.findBestMatchLocale("fr-BE");
 		assertEquals(Locale.FRENCH, result);
 	}
 
 	@Test
-	public void findBestMatchLocale_shouldRespectQualityWeights() {
+	void findBestMatchLocale_shouldRespectQualityWeights() {
 		Locale result = resourceLoader.findBestMatchLocale("fr-BE,fr;q=0.9,en;q=0.8");
 		assertEquals(Locale.FRENCH, result);
 	}
 
 	@Test
-	public void findBestMatchLocale_shouldFallbackWhenHighPriorityLocaleUnavailable() {
+	void findBestMatchLocale_shouldFallbackWhenHighPriorityLocaleUnavailable() {
 		Locale result = resourceLoader.findBestMatchLocale("de;q=0.9,en;q=0.8");
 		assertEquals(Locale.ENGLISH, result);
 	}
 
 	@Test
-	public void findBestMatchLocale_shouldReturnDefaultLocaleForNullHeader() {
+	void findBestMatchLocale_shouldReturnDefaultLocaleForNullHeader() {
 		Locale result = resourceLoader.findBestMatchLocale(null);
 		assertNotNull(result);
 	}
 
 	@Test
-	public void findBestMatchLocale_shouldReturnDefaultLocaleForEmptyHeader() {
+	void findBestMatchLocale_shouldReturnDefaultLocaleForEmptyHeader() {
 		Locale result = resourceLoader.findBestMatchLocale("");
 		assertNotNull(result);
 	}
 
 	@Test
-	public void findBestMatchLocale_shouldReturnDefaultLocaleForWhitespaceHeader() {
+	void findBestMatchLocale_shouldReturnDefaultLocaleForWhitespaceHeader() {
 		Locale result = resourceLoader.findBestMatchLocale("   ");
 		assertNotNull(result);
 	}
 
 	@Test
-	public void findBestMatchLocale_shouldReturnDefaultLocaleWhenNoMatch() {
+	void findBestMatchLocale_shouldReturnDefaultLocaleWhenNoMatch() {
 		Locale result = resourceLoader.findBestMatchLocale("de");
 		assertNotNull(result);
 	}
 
 	@Test
-	public void findBestMatchLocale_shouldReturnFirstMatchWhenMultipleMatch() {
+	void findBestMatchLocale_shouldReturnFirstMatchWhenMultipleMatch() {
 		Locale result = resourceLoader.findBestMatchLocale("en,fr,es");
 		assertEquals(Locale.ENGLISH, result);
 	}
 
 	@Test
-	public void findBestMatchLocale_shouldHandleMalformedHeaderGracefully() {
+	void findBestMatchLocale_shouldHandleMalformedHeaderGracefully() {
 		Locale result = resourceLoader.findBestMatchLocale("this-is-not-valid;;;");
 		assertNotNull(result);
 	}
 
 	@Test
-	public void findBestMatchLocale_shouldHandleComplexAcceptLanguageHeader() {
+	void findBestMatchLocale_shouldHandleComplexAcceptLanguageHeader() {
 		Locale result = resourceLoader.findBestMatchLocale("fr-CH,fr;q=0.9,en;q=0.8,de;q=0.7");
 		assertEquals(Locale.FRENCH, result);
 	}
 
 	@Test
-	public void constructor_shouldHandleNullLocaleSet() {
+	void constructor_shouldHandleNullLocaleSet() {
 		CustomResourceLoader loader = new CustomResourceLoader((Set<Locale>) null);
 		assertNotNull(loader.getAvailablelocales());
 		assertEquals(0, loader.getAvailablelocales().size());
 	}
 
 	@Test
-	public void constructor_shouldHandleEmptyLocaleSet() {
+	void constructor_shouldHandleEmptyLocaleSet() {
 		CustomResourceLoader loader = new CustomResourceLoader(new HashSet<>());
 		assertNotNull(loader.getAvailablelocales());
 		assertEquals(0, loader.getAvailablelocales().size());
