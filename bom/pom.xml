@@ -73,7 +73,7 @@
 		<jakartaValidationVersion>3.1.1</jakartaValidationVersion>
 		<jakartaAnnotationVersion>3.0.0</jakartaAnnotationVersion>
 		<jakartaXmlBindVersion>4.0.5</jakartaXmlBindVersion>
-		<jakartaActivationVersion>2.0.1</jakartaActivationVersion>
+		<angusActivationVersion>2.0.2</angusActivationVersion>
 
 		<!-- Apache Commons -->
 		<commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
@@ -99,7 +99,8 @@
 		<jaxbRuntimeVersion>4.0.6</jaxbRuntimeVersion>
 
 		<!-- Mail -->
-		<javaxMailVersion>1.6.2</javaxMailVersion>
+		<jakartaMailVersion>2.1.3</jakartaMailVersion>
+		<angusMailVersion>2.0.4</angusMailVersion>
 
 		<!-- Database -->
 		<mysqlConnectorVersion>9.6.0</mysqlConnectorVersion>
@@ -216,9 +217,9 @@
 				<version>${jakartaXmlBindVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.activation</groupId>
-				<artifactId>jakarta.activation</artifactId>
-				<version>${jakartaActivationVersion}</version>
+				<groupId>org.eclipse.angus</groupId>
+				<artifactId>angus-activation</artifactId>
+				<version>${angusActivationVersion}</version>
 			</dependency>
 
 			<!-- Spring Framework -->
@@ -479,26 +480,14 @@
 
 			<!-- Mail -->
 			<dependency>
-				<groupId>javax.mail</groupId>
-				<artifactId>javax.mail-api</artifactId>
-				<version>${javaxMailVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>com.sun.activation</groupId>
-						<artifactId>jakarta.activation</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>jakarta.mail</groupId>
+				<artifactId>jakarta.mail-api</artifactId>
+				<version>${jakartaMailVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
-				<version>${javaxMailVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>com.sun.activation</groupId>
-						<artifactId>jakarta.activation</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>org.eclipse.angus</groupId>
+				<artifactId>angus-mail</artifactId>
+				<version>${angusMailVersion}</version>
 			</dependency>
 
 			<!-- Database Drivers -->
