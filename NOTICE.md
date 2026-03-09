@@ -111,11 +111,23 @@
 <td>jar</td>
 <td>-</td></tr>
 <tr class="b">
-<td>javax.mail</td>
-<td><a class="externalLink" href="https://glassfish.dev.java.net/javaee5/mail/">mail</a></td>
-<td>1.4.1</td>
+<td>jakarta.mail</td>
+<td><a class="externalLink" href="https://eclipse-ee4j.github.io/mail-api/">jakarta.mail-api</a></td>
+<td>2.1.3</td>
 <td>jar</td>
-<td><a class="externalLink" href="https://glassfish.dev.java.net/public/CDDLv1.0.html">Common Development and Distribution License (CDDL) v1.0</a></td></tr>
+<td><a class="externalLink" href="https://www.eclipse.org/legal/epl-2.0/">Eclipse Public License 2.0</a></td></tr>
+<tr class="a">
+<td>org.eclipse.angus</td>
+<td><a class="externalLink" href="https://eclipse-ee4j.github.io/angus-mail/">angus-mail</a></td>
+<td>2.0.4</td>
+<td>jar</td>
+<td><a class="externalLink" href="https://www.eclipse.org/legal/epl-2.0/">Eclipse Public License 2.0</a></td></tr>
+<tr class="b">
+<td>org.eclipse.angus</td>
+<td><a class="externalLink" href="https://eclipse-ee4j.github.io/angus-activation/">angus-activation</a></td>
+<td>2.0.2</td>
+<td>jar</td>
+<td><a class="externalLink" href="https://www.eclipse.org/legal/epl-2.0/">Eclipse Public License 2.0</a></td></tr>
 <tr class="a">
 <td>jakarta.servlet</td>
 <td>jsp-api</td>
@@ -438,25 +450,25 @@
 <h3>runtime<a name="runtime"></a></h3><a name="runtime"></a>
 <p>The following dependencies are required to run OpenMRS Core:</p>
 <table border="0" class="bodyTable">
-<tr class="a">
+<tr class="b">
 <th>GroupId</th>
 <th>ArtifactId</th>
 <th>Version</th>
 <th>Type</th>
 <th>License</th></tr>
-<tr class="b">
+<tr class="a">
 <td>mysql</td>
 <td><a class="externalLink" href="http://dev.mysql.com/doc/connector-j/en/">mysql-connector-java</a></td>
 <td>5.1.45</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">The GNU General Public License, Version 2</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>org.slf4j</td>
 <td><a class="externalLink" href="http://www.slf4j.org">slf4j-log4j12</a></td>
 <td>1.6.0</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://www.opensource.org/licenses/mit-license.php">MIT License</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>postgresql</td>
 <td><a class="externalLink" href="http://jdbc.postgresql.org">postgresql</a></td>
 <td>9.0-801.jdbc4</td>
@@ -466,13 +478,13 @@
 <h3>provided<a name="provided"></a></h3><a name="provided"></a>
 <p>The following dependencies can be included when compiling, but should be provided by default when running OpenMRS Core:</p>
 <table border="0" class="bodyTable">
-<tr class="a">
+<tr class="b">
 <th>GroupId</th>
 <th>ArtifactId</th>
 <th>Version</th>
 <th>Type</th>
 <th>License</th></tr>
-<tr class="b">
+<tr class="a">
 <td>jakarta.servlet</td>
 <td><a class="externalLink" href="http://servlet-spec.java.net">jakarta.servlet-api</a></td>
 <td>3.0.1</td>
