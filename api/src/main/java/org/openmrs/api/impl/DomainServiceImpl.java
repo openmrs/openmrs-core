@@ -87,7 +87,6 @@ public class DomainServiceImpl extends BaseOpenmrsService implements DomainServi
      * @throws RuntimeException if no fetcher exists for the given type
      * @throws ClassCastException if the fetched object is not of the expected type
      */
-    @Override
     @Transactional(readOnly = true)
     public <T> T fetchByUuid(Class<T> type, String uuid) {
         Object result = null;
@@ -111,7 +110,6 @@ public class DomainServiceImpl extends BaseOpenmrsService implements DomainServi
      *
      * @return a list of registered domain classes
      */
-    @Override
     public List<Class<?>> getDomainTypes() {
         Set<Class<?>> types = new HashSet<>();
         for (DomainFetcher fetcher : domainFetchers.values()) {

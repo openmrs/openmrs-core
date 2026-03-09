@@ -126,7 +126,7 @@
 							<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
 							<arg>-XDcompilePolicy=simple</arg>
 							<arg>--should-stop=ifError=FLOW</arg>
-							<arg>-Xplugin:ErrorProne -XepDisableAllChecks -Xep:MissingOverride:ERROR -Xep:BadImport:ERROR -Xep:DeadException:ERROR -Xep:AlwaysThrows:ERROR -Xep:ArrayEquals:ERROR -Xep:ArrayToString:ERROR -Xep:CollectionIncompatibleType:ERROR -Xep:EqualsHashCode:ERROR -Xep:EqualsNaN:ERROR -Xep:FormatString:ERROR -Xep:InvalidPatternSyntax:ERROR -Xep:MathAbsoluteNegative:ERROR -Xep:MisusedWeekYear:ERROR -Xep:NonRuntimeAnnotation:ERROR -Xep:NullTernary:ERROR -Xep:ReturnValueIgnored:WARN -Xep:SelfAssignment:ERROR -Xep:SelfComparison:ERROR -Xep:SelfEquals:ERROR -Xep:SizeGreaterThanOrEqualsZero:ERROR -Xep:StreamResourceLeak:WARN -Xep:StringBuilderInitWithChar:ERROR -Xep:UnusedMethod:WARN -Xep:UnusedVariable:WARN</arg>
+							<arg>-Xplugin:ErrorProne -XepDisableAllChecks -Xep:MissingOverride:WARN -Xep:BadImport:ERROR -Xep:DeadException:ERROR -Xep:AlwaysThrows:ERROR -Xep:ArrayEquals:ERROR -Xep:ArrayToString:ERROR -Xep:CollectionIncompatibleType:ERROR -Xep:EqualsHashCode:ERROR -Xep:EqualsNaN:ERROR -Xep:FormatString:ERROR -Xep:InvalidPatternSyntax:ERROR -Xep:MathAbsoluteNegative:ERROR -Xep:MisusedWeekYear:ERROR -Xep:NonRuntimeAnnotation:ERROR -Xep:NullTernary:ERROR -Xep:ReturnValueIgnored:WARN -Xep:SelfAssignment:ERROR -Xep:SelfComparison:ERROR -Xep:SelfEquals:ERROR -Xep:SizeGreaterThanOrEqualsZero:ERROR -Xep:StreamResourceLeak:WARN -Xep:StringBuilderInitWithChar:ERROR -Xep:UnusedMethod:WARN -Xep:UnusedVariable:WARN</arg>
 						</compilerArgs>
 						<annotationProcessorPaths>
 							<path>

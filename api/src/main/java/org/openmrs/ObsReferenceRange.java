@@ -70,7 +70,6 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	@Override
 	public Integer getId() {
 		return getObsReferenceRangeId();
 	}
@@ -78,7 +77,6 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	@Override
 	public void setId(Integer id) {
 		setObsReferenceRangeId(id);
 	}

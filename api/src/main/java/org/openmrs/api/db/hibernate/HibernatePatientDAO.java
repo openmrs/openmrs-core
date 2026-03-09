@@ -185,7 +185,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		return stubInsertNeeded;
 	}
 	
-	@Override
 	public List<Patient> getPatients(String query, List<PatientIdentifierType> identifierTypes,
 		boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException{
 		
@@ -1031,7 +1030,6 @@ public class HibernatePatientDAO implements PatientDAO {
     /**
      * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierByProgram(org.openmrs.PatientProgram)
      */
-    @Override
     public List<PatientIdentifier> getPatientIdentifierByProgram(PatientProgram patientProgram) {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder builder = session.getCriteriaBuilder();

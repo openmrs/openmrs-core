@@ -61,20 +61,17 @@ public abstract class BaseStorageService extends BaseOpenmrsService implements S
 	}
 	
 
-	@Override
 	public String saveData(StreamDataWriter dataWriter, ObjectMetadata metadata, String moduleIdOrGroup) 
 		throws IOException {
 		return saveData(dataWriter, metadata, moduleIdOrGroup, null);
 	}
 
-	@Override
 	public String saveData(StreamDataWriter dataWriter, ObjectMetadata metadata, String moduleIdOrGroup,
 						   String keySuffix) throws IOException {
 		return saveData(streamService.streamData(dataWriter, metadata != null ? metadata.getLength() : null), metadata, 
 			moduleIdOrGroup, keySuffix);
 	}
 
-	@Override
 	public String saveTempData(InputStream inputStream, ObjectMetadata metadata) throws IOException {
 		Path tempFile = Files.createTempFile("openmrs-temp", ".tmp");
 		Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
@@ -82,7 +79,6 @@ public abstract class BaseStorageService extends BaseOpenmrsService implements S
 		return tempFile.getFileName().toString();
 	}
 
-	@Override
 	public String saveTempData(StreamDataWriter writer, ObjectMetadata metadata) throws IOException {
 		return saveTempData(streamService.streamData(writer, metadata != null ? metadata.getLength() : null), metadata);
 	}

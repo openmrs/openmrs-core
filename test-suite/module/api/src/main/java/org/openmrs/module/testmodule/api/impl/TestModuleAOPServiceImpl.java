@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TestModuleAOPServiceImpl  extends BaseOpenmrsService implements TestModuleAOPService {
 	
-	@Override
 	@Cacheable("testModuleCache")
 	public String aopHello() {
 		return "AOP Hello";

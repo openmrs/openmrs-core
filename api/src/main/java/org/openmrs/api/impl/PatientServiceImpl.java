@@ -1633,7 +1633,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * @see PatientService#getPatientIdentifiersByPatientProgram(org.openmrs.PatientProgram)
 	 */
-	@Override
 	public List<PatientIdentifier> getPatientIdentifiersByPatientProgram(PatientProgram patientProgram) {
 		return dao.getPatientIdentifierByProgram(patientProgram);
 	}

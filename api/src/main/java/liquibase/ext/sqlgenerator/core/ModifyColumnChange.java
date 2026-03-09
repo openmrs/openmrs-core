@@ -69,7 +69,6 @@ public class ModifyColumnChange extends AbstractChange implements ChangeWithColu
 		this.tableName = tableName;
 	}
 	
-	@Override
 	@DatabaseChangeProperty(mustEqualExisting = "column", description = "Column constraint and foreign key information. Setting the \"defaultValue\" attribute will specify a default value for the column.")
 	public List<ColumnConfig> getColumns() {
 		return columns;
@@ -80,7 +79,6 @@ public class ModifyColumnChange extends AbstractChange implements ChangeWithColu
 		this.columns = columns;
 	}
 	
-	@Override
 	public void addColumn(ColumnConfig column) {
 		columns.add(column);
 	}
@@ -89,7 +87,6 @@ public class ModifyColumnChange extends AbstractChange implements ChangeWithColu
 		columns.remove(column);
 	}
 	
-	@Override
 	public SqlStatement[] generateStatements(Database database) {
 		ModifyColumnStatement statement = new ModifyColumnStatement(getSchemaName(), getTableName(),
 			getColumns().toArray(new ColumnConfig[0]));
@@ -99,7 +96,6 @@ public class ModifyColumnChange extends AbstractChange implements ChangeWithColu
 		return new SqlStatement[] { statement };
 	}
 	
-	@Override
 	public String getConfirmationMessage() {
 		List<String> names = new ArrayList<>(columns.size());
 		for (ColumnConfig col : columns) {

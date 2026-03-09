@@ -36,13 +36,11 @@ public class DatabaseUpdaterDatabaseIT extends DatabaseIT {
 
 	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 870;
 
-	@Override
 	@BeforeEach
 	public void setup() throws ClassNotFoundException {
 		DatabaseUpdater.setLiquibaseProvider(this);
 	}
 	
-	@Override
 	@AfterEach
 	public void tearDown() {
 		DatabaseUpdater.unsetLiquibaseProvider();

@@ -52,7 +52,6 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 		return new Warnings();
 	}
 
-	@Override
 	public ValidationErrors validate(ModifyColumnStatement statement, Database database,
 									 SqlGeneratorChain sqlGeneratorChain) {
 		ValidationErrors validationErrors = new ValidationErrors();
@@ -72,7 +71,6 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 		return validationErrors;
 	}
 
-	@Override
 	public Sql[] generateSql(ModifyColumnStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
 		List<Sql> sql = new ArrayList<>();
 		for (ColumnConfig column : statement.getColumns()) {

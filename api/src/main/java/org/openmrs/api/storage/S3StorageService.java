@@ -130,7 +130,6 @@ public class S3StorageService extends BaseStorageService implements StorageServi
         this.bucketName = bucketName;
     }
 
-    @Override
     public InputStream getData(String key) throws IOException {
 		CompletableFuture<ResponseInputStream<GetObjectResponse>> object = s3AsyncClient.getObject(
 			GetObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build(), AsyncResponseTransformer.toBlockingInputStream());
@@ -149,7 +148,6 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		return result;
 	}
 
-	@Override
 	public ObjectMetadata getMetadata(String key) throws IOException {
 		HeadObjectRequest request = HeadObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build();
 		CompletableFuture<HeadObjectResponse> headRequest = s3AsyncClient.headObject(request);
@@ -160,7 +158,6 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		return metadata;
     }
 
-    @Override
     public Stream<String> getKeys(String moduleIdOrGroup, String keyPrefix) throws IOException {
 		String key = newKey(moduleIdOrGroup, keyPrefix, null);
 		
@@ -183,7 +180,6 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		}).distinct(); // Remove duplicate subdirectories
 	}
 
-    @Override
     public boolean purgeData(String key) throws IOException {
 		if (exists(key)) {
 			DeleteObjectRequest request = DeleteObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build();
@@ -211,7 +207,6 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		}
 	}
 
-    @Override
     public boolean exists(String key) throws UncheckedIOException {
         HeadObjectRequest request = HeadObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build();
 		CompletableFuture<HeadObjectResponse> headRequest = s3AsyncClient.headObject(request);
@@ -222,7 +217,6 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		}
 	}
 	
-    @Override
     public String saveData(InputStream inputStream, ObjectMetadata metadata,
                            String moduleIdOrGroup, String keySuffix) throws IOException {
 		metadata = (metadata == null) ? new ObjectMetadata() : metadata;

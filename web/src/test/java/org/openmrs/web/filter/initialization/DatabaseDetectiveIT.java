@@ -27,7 +27,6 @@ public class DatabaseDetectiveIT extends DatabaseIT {
 	
 	private Properties properties;
 	
-	@Override
 	@BeforeEach
 	public void setup() throws ClassNotFoundException {
 		databaseDetective = new DatabaseDetective();

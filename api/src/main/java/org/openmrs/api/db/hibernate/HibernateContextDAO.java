@@ -645,7 +645,6 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see ContextDAO#getDatabaseConnection() 
 	 */
-	@Override
 	public Connection getDatabaseConnection() {
 		try {
 			return sessionFactory.getCurrentSession().doReturningWork(connection -> connection);
