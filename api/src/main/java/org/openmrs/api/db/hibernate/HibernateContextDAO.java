@@ -49,6 +49,7 @@ import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.orm.jpa.hibernate.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -325,7 +326,16 @@ public class HibernateContextDAO implements ContextDAO {
 	public void openSession() {
 		log.debug("HibernateContext: Opening Hibernate Session");
 		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
-			log.debug("Participating in existing session ({})", sessionFactory.hashCode());
+			Object resource = TransactionSynchronizationManager.getResource(sessionFactory);
+			if (resource instanceof SessionHolder) {
+				log.debug("Participating in existing session ({})", sessionFactory.hashCode());
+			} else if (resource instanceof EntityManagerHolder emHolder) {
+				log.debug("Converting EntityManagerHolder to SessionHolder ({})", sessionFactory.hashCode());
+				TransactionSynchronizationManager.unbindResource(sessionFactory);
+				Session session = emHolder.getEntityManager().unwrap(Session.class);
+				session.setHibernateFlushMode(FlushMode.MANUAL);
+				TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
+			}
 			participate = true;
 		} else {
 			log.debug("Registering session with synchronization manager ({})", sessionFactory.hashCode());
