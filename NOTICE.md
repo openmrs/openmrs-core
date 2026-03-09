@@ -26,23 +26,22 @@ The following dependencies are licensed under the [Apache License, Version 2.0](
 - Apache Tomcat Jasper (`org.apache.tomcat:tomcat-jasper`)
 - Apache Velocity Engine (`org.apache.velocity:velocity-engine-core`)
 - Apache Velocity Tools (`org.apache.velocity.tools:velocity-tools-generic`)
-- AspectJ (`org.aspectj:aspectjrt`, `aspectjweaver`)
+- AWS SDK for Java (`software.amazon.awssdk:s3`)
 - Google Guava (`com.google.guava:guava`)
+- Groovy (`org.codehaus.groovy:groovy-all`)
 - Hibernate Validator (`org.hibernate.validator:hibernate-validator`)
 - Jackson JSON (`com.fasterxml.jackson.core:jackson-core`, `jackson-annotations`, `jackson-databind`, `com.fasterxml.jackson.datatype:jackson-datatype-jsr310`)
+- JBoss Logging (`org.jboss.logging:jboss-logging`)
 - Joda-Time (`joda-time:joda-time`)
 - Liquibase (`org.liquibase:liquibase-core`)
-- Mockito (`org.mockito:mockito-core`, `mockito-junit-jupiter`)
-- OWASP CSRFGuard (`org.owasp:csrfguard`, `csrfguard-extension-session`)
 - OWASP Java Encoder (`org.owasp.encoder:encoder`)
-- Reflections (`org.reflections:reflections`)
+- S3Mock (`com.adobe.testing:s3mock-testcontainers`)
 - Spring Framework (`org.springframework:spring-core`, `spring-beans`, `spring-context`, `spring-context-support`, `spring-aop`, `spring-orm`, `spring-tx`, `spring-jdbc`, `spring-web`, `spring-webmvc`, `spring-oxm`, `spring-test`)
-- XStream (`com.thoughtworks.xstream:xstream`)
 - Xerces (`xerces:xercesImpl`)
 
-### Eclipse Public License 2.0
+### Eclipse Public License
 
-The following dependencies are licensed under the [Eclipse Public License 2.0](https://www.eclipse.org/legal/epl-2.0/):
+The following dependencies are licensed under the [Eclipse Public License 2.0](https://www.eclipse.org/legal/epl-2.0/) unless otherwise noted:
 
 - Eclipse Angus Activation (`org.eclipse.angus:angus-activation`)
 - Eclipse Angus Mail (`org.eclipse.angus:angus-mail`)
@@ -54,6 +53,7 @@ The following dependencies are licensed under the [Eclipse Public License 2.0](h
 - Jakarta Validation API (`jakarta.validation:jakarta.validation-api`)
 - Jakarta XML Binding API (`jakarta.xml.bind:jakarta.xml.bind-api`)
 - JUnit Jupiter (`org.junit.jupiter:junit-jupiter-api`, `junit-jupiter-engine`, `junit-jupiter-params`)
+- AspectJ (`org.aspectj:aspectjrt`, `aspectjweaver`) — EPL 1.0
 
 ### Eclipse Distribution License 1.0 (BSD)
 
@@ -64,44 +64,46 @@ The following dependencies are licensed under the [Eclipse Public License 2.0](h
 
 The following dependencies are licensed under the [GNU Lesser General Public License](https://www.gnu.org/licenses/lgpl-2.1.html):
 
+- dbUnit (`org.dbunit:dbunit`)
 - Hibernate ORM (`org.hibernate.orm:hibernate-core`, `hibernate-c3p0`, `hibernate-envers`)
 - Hibernate Search (`org.hibernate.search:hibernate-search-mapper-orm`, `hibernate-search-backend-lucene`, `hibernate-search-backend-elasticsearch`)
 - Infinispan (`org.infinispan:infinispan-spring6-embedded`, `infinispan-hibernate-cache-v62`)
 - Javassist (`org.javassist:javassist`)
+- MariaDB Connector/J (`org.mariadb.jdbc:mariadb-java-client`) — LGPL 2.1
 
 ### Mozilla Public License (MPL) / GNU General Public License (GPL) (dual-licensed)
 
 - HAPI HL7 (`ca.uhn.hapi:hapi-base`, `hapi-structures-v23`, `hapi-structures-v24`, `hapi-structures-v25`, `hapi-structures-v26`)
 
+### MPL 2.0 / EPL 1.0 (dual-licensed)
+
+- H2 Database (`com.h2database:h2`)
+
 ### BSD License
 
+The following dependencies are licensed under BSD or BSD-style licenses:
+
 - dom4j (`org.dom4j:dom4j`)
-- H2 Database (`com.h2database:h2`) — MPL 2.0 or EPL 1.0
 - Hamcrest (`org.hamcrest:hamcrest`)
 - Jaxen (`jaxen:jaxen`)
-- PostgreSQL JDBC Driver (`org.postgresql:postgresql`)
+- OWASP CSRFGuard (`org.owasp:csrfguard`, `csrfguard-extension-session`) — BSD 3-Clause
+- PostgreSQL JDBC Driver (`org.postgresql:postgresql`) — PostgreSQL License (BSD-like)
+- Reflections (`org.reflections:reflections`) — WTFPL / BSD
+- XStream (`com.thoughtworks.xstream:xstream`) — BSD 3-Clause
 
 ### MIT License
 
+- Mockito (`org.mockito:mockito-core`, `mockito-junit-jupiter`)
 - SLF4J (`org.slf4j:slf4j-api`, `jcl-over-slf4j`)
+- Testcontainers (`org.testcontainers:testcontainers`, `junit-jupiter`, `mysql`, `postgresql`, `mariadb`)
 
 ### GNU General Public License, Version 2
 
 - MySQL Connector/J (`com.mysql:mysql-connector-j`) — with FOSS License Exception
-- MariaDB Connector/J (`org.mariadb.jdbc:mariadb-java-client`) — LGPL 2.1
 
-### Apache License 2.0 / GNU LGPL 2.1
+### Universal Permissive License 1.0
 
-- Groovy (`org.codehaus.groovy:groovy-all`)
-- dbUnit (`org.dbunit:dbunit`) — LGPL 2.1
-
-### Other
-
-- JBoss Logging (`org.jboss.logging:jboss-logging`) — Apache License 2.0
-- AWS SDK for Java (`software.amazon.awssdk:s3`) — Apache License 2.0
-- GraalVM JavaScript (`org.graalvm.js:js`, `js-scriptengine`) — Universal Permissive License 1.0
-- Testcontainers (`org.testcontainers:testcontainers`, `junit-jupiter`, `mysql`, `postgresql`, `mariadb`) — MIT License
-- S3Mock (`com.adobe.testing:s3mock-testcontainers`) — Apache License 2.0
+- GraalVM JavaScript (`org.graalvm.js:js`, `js-scriptengine`)
 
 ### OpenMRS Modules
 
