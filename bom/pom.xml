@@ -100,7 +100,7 @@
 
 		<!-- Mail -->
 		<jakartaMailVersion>2.1.3</jakartaMailVersion>
-		<angusMailVersion>2.0.4</angusMailVersion>
+		<angusMailVersion>2.0.5</angusMailVersion>
 
 		<!-- Database -->
 		<mysqlConnectorVersion>9.6.0</mysqlConnectorVersion>
