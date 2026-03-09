@@ -52,7 +52,7 @@ jobs:
       - name: Test
         run: mvn test ${{ matrix.test-profile }} --batch-mode --file pom.xml
       - name: Upload SpotBugs reports
-        if: ${{ matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' && always() }}
+        if: ${{ matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' && (success() || failure()) }}
         uses: actions/upload-artifact@v4
         with:
           name: spotbugs-reports

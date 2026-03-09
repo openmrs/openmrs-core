@@ -34,6 +34,8 @@
 		</Or>
 	</Match>
 
+	<!-- TODO Narrow these project-wide exclusions to specific packages as the codebase improves -->
+
 	<!-- Serialization warnings: OpenMRS domain objects use Hibernate-managed serialization -->
 	<Match>
 		<Or>
