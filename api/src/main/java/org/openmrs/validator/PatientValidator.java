@@ -99,7 +99,7 @@ public class PatientValidator extends PersonValidator {
 	private void validatePreferredIdentifier(Patient patient, Errors errors) {
 		boolean preferredIdentifierChosen = false;
 
-		Collection<PatientIdentifier> identifiers = patient.getVoided()
+		Collection<PatientIdentifier> identifiers = Boolean.TRUE.equals(patient.getVoided())
 				? patient.getIdentifiers()
 				: patient.getActiveIdentifiers();
 
