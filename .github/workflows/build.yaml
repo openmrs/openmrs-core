@@ -48,12 +48,9 @@ jobs:
           java-version: ${{ matrix.java-version }}
           cache: 'maven'
       - name: Install dependencies
-        run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true -D"spotbugs.skip"=${{ matrix.java-version != 21 }} --batch-mode --show-version --file pom.xml
+        run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true -D"spotbugs.skip"=${{ matrix.java-version != '21' || matrix.platform != 'ubuntu-latest' }} --batch-mode --show-version --file pom.xml
       - name: Test
         run: mvn test ${{ matrix.test-profile }} --batch-mode --file pom.xml
-      - name: SpotBugs analysis
-        if: ${{ matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' }}
-        run: mvn spotbugs:check --batch-mode --file pom.xml
       - name: Upload SpotBugs reports
         if: ${{ matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' && always() }}
         uses: actions/upload-artifact@v4

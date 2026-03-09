@@ -25,7 +25,7 @@
 
 	<!-- Exclude test classes from most checks -->
 	<Match>
-		<Source name="~.*Test\.java"/>
+		<Source name="~.*(Test|IT)\.java"/>
 		<Or>
 			<Bug pattern="DM_DEFAULT_ENCODING"/>
 			<Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
