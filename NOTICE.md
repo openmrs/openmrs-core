@@ -30,11 +30,11 @@ The following dependencies are licensed under the [Apache License, Version 2.0](
 - Google Guava (`com.google.guava:guava`)
 - Groovy (`org.codehaus.groovy:groovy-all`)
 - Hibernate Validator (`org.hibernate.validator:hibernate-validator`)
+- Infinispan (`org.infinispan:infinispan-spring6-embedded`, `infinispan-hibernate-cache-v62`)
 - Jackson JSON (`com.fasterxml.jackson.core:jackson-core`, `jackson-annotations`, `jackson-databind`, `com.fasterxml.jackson.datatype:jackson-datatype-jsr310`)
 - JBoss Logging (`org.jboss.logging:jboss-logging`)
 - Joda-Time (`joda-time:joda-time`)
 - Liquibase (`org.liquibase:liquibase-core`)
-- OWASP Java Encoder (`org.owasp.encoder:encoder`)
 - S3Mock (`com.adobe.testing:s3mock-testcontainers`)
 - Spring Framework (`org.springframework:spring-core`, `spring-beans`, `spring-context`, `spring-context-support`, `spring-aop`, `spring-orm`, `spring-tx`, `spring-jdbc`, `spring-web`, `spring-webmvc`, `spring-oxm`, `spring-test`)
 - Xerces (`xerces:xercesImpl`)
@@ -53,7 +53,7 @@ The following dependencies are licensed under the [Eclipse Public License 2.0](h
 - Jakarta Validation API (`jakarta.validation:jakarta.validation-api`)
 - Jakarta XML Binding API (`jakarta.xml.bind:jakarta.xml.bind-api`)
 - JUnit Jupiter (`org.junit.jupiter:junit-jupiter-api`, `junit-jupiter-engine`, `junit-jupiter-params`)
-- AspectJ (`org.aspectj:aspectjrt`, `aspectjweaver`) — EPL 1.0
+- AspectJ (`org.aspectj:aspectjrt`, `aspectjweaver`)
 
 ### Eclipse Distribution License 1.0 (BSD)
 
@@ -67,8 +67,7 @@ The following dependencies are licensed under the [GNU Lesser General Public Lic
 - dbUnit (`org.dbunit:dbunit`)
 - Hibernate ORM (`org.hibernate.orm:hibernate-core`, `hibernate-c3p0`, `hibernate-envers`)
 - Hibernate Search (`org.hibernate.search:hibernate-search-mapper-orm`, `hibernate-search-backend-lucene`, `hibernate-search-backend-elasticsearch`)
-- Infinispan (`org.infinispan:infinispan-spring6-embedded`, `infinispan-hibernate-cache-v62`)
-- Javassist (`org.javassist:javassist`)
+- Javassist (`org.javassist:javassist`) — MPL 1.1 / LGPL 2.1 / Apache 2.0 (triple-licensed)
 - MariaDB Connector/J (`org.mariadb.jdbc:mariadb-java-client`) — LGPL 2.1
 
 ### Mozilla Public License (MPL) / GNU General Public License (GPL) (dual-licensed)
@@ -83,12 +82,12 @@ The following dependencies are licensed under the [GNU Lesser General Public Lic
 
 The following dependencies are licensed under BSD or BSD-style licenses:
 
-- dom4j (`org.dom4j:dom4j`)
-- Hamcrest (`org.hamcrest:hamcrest`)
+- dom4j (`org.dom4j:dom4j`) — Plexus License (BSD-style)
+- Hamcrest (`org.hamcrest:hamcrest`) — BSD 3-Clause
 - Jaxen (`jaxen:jaxen`)
-- OWASP CSRFGuard (`org.owasp:csrfguard`, `csrfguard-extension-session`) — BSD 3-Clause
+- OWASP CSRFGuard (`org.owasp:csrfguard`, `csrfguard-extension-session`)
+- OWASP Java Encoder (`org.owasp.encoder:encoder`) — BSD 3-Clause
 - PostgreSQL JDBC Driver (`org.postgresql:postgresql`) — PostgreSQL License (BSD-like)
-- Reflections (`org.reflections:reflections`) — WTFPL / BSD
 - XStream (`com.thoughtworks.xstream:xstream`) — BSD 3-Clause
 
 ### MIT License
@@ -96,6 +95,10 @@ The following dependencies are licensed under BSD or BSD-style licenses:
 - Mockito (`org.mockito:mockito-core`, `mockito-junit-jupiter`)
 - SLF4J (`org.slf4j:slf4j-api`, `jcl-over-slf4j`)
 - Testcontainers (`org.testcontainers:testcontainers`, `junit-jupiter`, `mysql`, `postgresql`, `mariadb`)
+
+### WTFPL / Apache License 2.0
+
+- Reflections (`org.reflections:reflections`)
 
 ### GNU General Public License, Version 2
 
