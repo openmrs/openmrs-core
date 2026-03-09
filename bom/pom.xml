@@ -99,7 +99,7 @@
 		<jaxbRuntimeVersion>4.0.6</jaxbRuntimeVersion>
 
 		<!-- Mail -->
-		<jakartaMailVersion>2.1.3</jakartaMailVersion>
+		<jakartaMailVersion>2.1.5</jakartaMailVersion>
 		<angusMailVersion>2.0.5</angusMailVersion>
 
 		<!-- Database -->
