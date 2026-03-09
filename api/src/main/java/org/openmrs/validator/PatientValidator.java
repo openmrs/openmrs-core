@@ -72,74 +72,90 @@ public class PatientValidator extends PersonValidator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 		log.debug("{}.validate...", this.getClass().getName());
-		
+
 		if (obj == null) {
 			return;
 		}
-		
+
 		super.validate(obj, errors);
-		
+
 		Patient patient = (Patient) obj;
-		
+
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "Person.gender.required");
-		
-		// Make sure they chose a preferred ID
-		Boolean preferredIdentifierChosen = false;
-		//Voided patients have only voided identifiers since they were voided with the patient, 
-		//so get all otherwise get the active ones
-		Collection<PatientIdentifier> identifiers = patient.getVoided() ? patient.getIdentifiers() : patient
-				.getActiveIdentifiers();
+
+		validatePreferredIdentifier(patient, errors);
+
+		if (!Boolean.TRUE.equals(patient.getVoided())) {
+			validateRequiredIdentifiers(patient, errors);
+		}
+
+		validatePatientIdentifiers(patient, errors);
+
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
+	}
+
+	private void validatePreferredIdentifier(Patient patient, Errors errors) {
+		boolean preferredIdentifierChosen = false;
+
+		Collection<PatientIdentifier> identifiers = patient.getVoided()
+				? patient.getIdentifiers()
+				: patient.getActiveIdentifiers();
+
 		for (PatientIdentifier pi : identifiers) {
-			if (pi.getPreferred()) {
+			if (Boolean.TRUE.equals(pi.getPreferred())) {
 				preferredIdentifierChosen = true;
 			}
 		}
+
 		if (!preferredIdentifierChosen && identifiers.size() != 1) {
 			errors.reject("error.preferredIdentifier");
 		}
+	}
 
-		if (!patient.getVoided()) {
-			Collection<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes(false);
+	private void validateRequiredIdentifiers(Patient patient, Errors errors) {
+		Collection<PatientIdentifierType> identifierTypes =
+				Context.getPatientService().getAllPatientIdentifierTypes(false);
 
-			// Step 1: collect all required identifier types
-			Set<PatientIdentifierType> requiredTypes = new HashSet<>();
-			for (PatientIdentifierType type : identifierTypes) {
-				if (type.getRequired()) {
-					requiredTypes.add(type);
-				}
+		Set<PatientIdentifierType> requiredTypes = new HashSet<>();
+
+		for (PatientIdentifierType type : identifierTypes) {
+			if (Boolean.TRUE.equals(type.getRequired())) {
+				requiredTypes.add(type);
 			}
+		}
 
-			// Step 2: remove the ones the patient already has
-			for (PatientIdentifier pi : patient.getActiveIdentifiers()) {
-				if (pi.getIdentifierType() != null) {
-					requiredTypes.remove(pi.getIdentifierType());
-				}
+		for (PatientIdentifier pi : patient.getActiveIdentifiers()) {
+			if (pi.getIdentifierType() != null) {
+				requiredTypes.remove(pi.getIdentifierType());
 			}
+		}
 
-			// Step 3: remaining = missing
-			if (!requiredTypes.isEmpty()) {
-				List<String> missingRequiredIdentifiers = requiredTypes.stream()
+		if (!requiredTypes.isEmpty()) {
+			List<String> missingRequiredIdentifiers = requiredTypes.stream()
 					.map(PatientIdentifierType::getName)
 					.collect(Collectors.toList());
-				errors.rejectValue(
+
+			errors.rejectValue(
 					"identifiers",
 					"Patient.missingRequiredIdentifier",
 					new Object[]{String.join(", ", missingRequiredIdentifiers)},
 					null
-				);
-			}
+			);
 		}
-		
+	}
+
+	private void validatePatientIdentifiers(Patient patient, Errors errors) {
+		if (errors.hasErrors() || patient.getIdentifiers() == null) {
+			return;
+		}
+
 		int index = 0;
-		if (!errors.hasErrors() && patient.getIdentifiers() != null) {
-			// Validate PatientIdentifers
-			for (PatientIdentifier identifier : patient.getIdentifiers()) {
-				errors.pushNestedPath("identifiers[" + index + "]");
-				patientIdentifierValidator.validate(identifier, errors);
-				errors.popNestedPath();
-				index++;
-			}
+
+		for (PatientIdentifier identifier : patient.getIdentifiers()) {
+			errors.pushNestedPath("identifiers[" + index + "]");
+			patientIdentifierValidator.validate(identifier, errors);
+			errors.popNestedPath();
+			index++;
 		}
-		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 	}
 }
