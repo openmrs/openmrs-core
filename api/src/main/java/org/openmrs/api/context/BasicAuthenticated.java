@@ -28,6 +28,7 @@ public class BasicAuthenticated implements Authenticated {
 		this.authenticationScheme = authenticationScheme;
 	}
 	
+	@Override
 	public String getAuthenticationScheme() {
 		return this.authenticationScheme;
 	}
@@ -36,6 +37,7 @@ public class BasicAuthenticated implements Authenticated {
 		this.authenticationScheme = authenticationScheme;
 	}
 	
+	@Override
 	public User getUser() {
 		return this.user;
 	}

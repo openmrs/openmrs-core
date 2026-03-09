@@ -51,6 +51,16 @@ jobs:
         run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --file pom.xml
       - name: Test
         run: mvn test ${{ matrix.test-profile }} --batch-mode --file pom.xml
+      - name: SpotBugs analysis
+        if: ${{ matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' }}
+        run: mvn spotbugs:check --batch-mode --file pom.xml
+      - name: Upload SpotBugs reports
+        if: ${{ matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' && always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: spotbugs-reports
+          path: '**/target/spotbugsXml.xml'
+          retention-days: 14
       - name: Upload coverage to Codecov
         if: ${{ matrix.test-profile == '' && matrix.java-version == '25' && matrix.platform == 'ubuntu-latest' }}
         uses: codecov/codecov-action@v5

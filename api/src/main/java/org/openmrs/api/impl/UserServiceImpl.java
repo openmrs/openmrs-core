@@ -825,6 +825,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	/**
 	 * @see org.openmrs.api.UserService#getLastLoginTime(User)
 	 */
+	@Override
 	public String getLastLoginTime(User user) {
 		return dao.getLastLoginTime(user);
 	}

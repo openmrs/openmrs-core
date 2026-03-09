@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("testModuleService")
 public class TestModuleServiceImpl extends BaseOpenmrsService implements TestModuleService {
 	
+	@Override
 	@Cacheable("testModuleCache")
 	@Transactional(readOnly = true)
 	public String hello() {

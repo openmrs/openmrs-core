@@ -24,6 +24,7 @@ public class TestModuleActivator extends BaseModuleActivator {
 	/**
 	 * @see ModuleActivator#willRefreshContext()
 	 */
+	@Override
 	public void willRefreshContext() {
 		log.info("Refreshing Test Module");
 	}
@@ -31,6 +32,7 @@ public class TestModuleActivator extends BaseModuleActivator {
 	/**
 	 * @see ModuleActivator#contextRefreshed()
 	 */
+	@Override
 	public void contextRefreshed() {
 		log.info("Test Module refreshed");
 	}
@@ -38,6 +40,7 @@ public class TestModuleActivator extends BaseModuleActivator {
 	/**
 	 * @see ModuleActivator#willStart()
 	 */
+	@Override
 	public void willStart() {
 		log.info("Starting Test Module");
 	}
@@ -45,6 +48,7 @@ public class TestModuleActivator extends BaseModuleActivator {
 	/**
 	 * @see ModuleActivator#started()
 	 */
+	@Override
 	public void started() {
 		log.info("Test Module started");
 	}
@@ -52,6 +56,7 @@ public class TestModuleActivator extends BaseModuleActivator {
 	/**
 	 * @see ModuleActivator#willStop()
 	 */
+	@Override
 	public void willStop() {
 		log.info("Stopping Test Module");
 	}
@@ -59,6 +64,7 @@ public class TestModuleActivator extends BaseModuleActivator {
 	/**
 	 * @see ModuleActivator#stopped()
 	 */
+	@Override
 	public void stopped() {
 		log.info("Test Module stopped");
 	}
@@ -66,6 +72,7 @@ public class TestModuleActivator extends BaseModuleActivator {
 	/**
 	 * @see ModuleActivator#setupOnVersionChangeBeforeSchemaChanges(String, String)
 	 */
+	@Override
 	public void setupOnVersionChangeBeforeSchemaChanges(String previousCoreVersion, String previousModuleVersion) {
 		log.info("Preparing upgrade for module from: " + previousModuleVersion);
 	}
@@ -73,6 +80,7 @@ public class TestModuleActivator extends BaseModuleActivator {
 	/**
 	 * @see ModuleActivator#setupOnVersionChange(String, String)
 	 */
+	@Override
 	public void setupOnVersionChange(String previousCoreVersion, String previousModuleVersion) {
 		log.info("Running post-schema setup after upgrade");
 	}

@@ -543,6 +543,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	/**
 	 * @see org.openmrs.api.ObsService#getRevisionObs(org.openmrs.Obs)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Obs getRevisionObs(Obs initialObs) {
 		return dao.getRevisionObs(initialObs);

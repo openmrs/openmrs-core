@@ -114,6 +114,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		log.debug("sending error: {} [{}]", error, message);
 	}
 	
+	@Override
 	public void setContentLength(int length) {
 		//Intentionally left blank to ignore whatever length the caller sets, because
 		//we are going to zip the response and hence end up with a smaller length.

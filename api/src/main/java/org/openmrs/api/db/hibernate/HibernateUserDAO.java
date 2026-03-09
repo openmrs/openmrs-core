@@ -354,6 +354,7 @@ public class HibernateUserDAO implements UserDAO {
 	/**
 	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
 	 */
+	@Override
 	public void changePassword(User u, String pw) throws DAOException {
 		var possibleFrame = STACK_WALKER.walk(s ->
 			s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst()

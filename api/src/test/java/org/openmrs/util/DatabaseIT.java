@@ -53,6 +53,7 @@ public class DatabaseIT implements LiquibaseProvider {
 		this.dropAllDatabaseObjects();
 	}
 	
+	@Override
 	public Liquibase getLiquibase(String filename) throws LiquibaseException, SQLException {
 		Database liquibaseConnection = DatabaseFactory.getInstance()
 		        .findCorrectDatabaseImplementation(new JdbcConnection(getConnection()));
