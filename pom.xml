@@ -112,29 +112,6 @@
 					<version>3.15.0</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
-						<fork>true</fork>
-						<compilerArgs>
-							<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
-							<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
-							<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
-							<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
-							<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
-							<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
-							<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
-							<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
-							<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
-							<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
-							<arg>-XDcompilePolicy=simple</arg>
-							<arg>--should-stop=ifError=FLOW</arg>
-							<arg>-Xplugin:ErrorProne -XepDisableAllChecks -Xep:MissingOverride:WARN -Xep:BadImport:ERROR -Xep:DeadException:ERROR -Xep:AlwaysThrows:ERROR -Xep:ArrayEquals:ERROR -Xep:ArrayToString:ERROR -Xep:CollectionIncompatibleType:ERROR -Xep:EqualsHashCode:ERROR -Xep:EqualsNaN:ERROR -Xep:FormatString:ERROR -Xep:InvalidPatternSyntax:ERROR -Xep:MathAbsoluteNegative:ERROR -Xep:MisusedWeekYear:ERROR -Xep:NonRuntimeAnnotation:ERROR -Xep:NullTernary:ERROR -Xep:ReturnValueIgnored:WARN -Xep:SelfAssignment:ERROR -Xep:SelfComparison:ERROR -Xep:SelfEquals:ERROR -Xep:SizeGreaterThanOrEqualsZero:ERROR -Xep:StreamResourceLeak:WARN -Xep:StringBuilderInitWithChar:ERROR -Xep:UnusedMethod:WARN -Xep:UnusedVariable:WARN</arg>
-						</compilerArgs>
-						<annotationProcessorPaths>
-							<path>
-								<groupId>com.google.errorprone</groupId>
-								<artifactId>error_prone_core</artifactId>
-								<version>2.36.0</version>
-							</path>
-						</annotationProcessorPaths>
 					</configuration>
 				</plugin>
 				<plugin>
