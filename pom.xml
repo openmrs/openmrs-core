@@ -201,7 +201,7 @@
 						<excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
 						<effort>Max</effort>
 						<threshold>Medium</threshold>
-						<!-- TODO Set to true once existing findings are resolved -->
+						<!-- Set to true once existing findings are resolved -->
 						<failOnError>false</failOnError>
 						<xmlOutput>true</xmlOutput>
 						<plugins>
