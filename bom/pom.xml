@@ -73,7 +73,7 @@
 		<jakartaValidationVersion>3.1.1</jakartaValidationVersion>
 		<jakartaAnnotationVersion>3.0.0</jakartaAnnotationVersion>
 		<jakartaXmlBindVersion>4.0.5</jakartaXmlBindVersion>
-		<angusActivationVersion>2.0.2</angusActivationVersion>
+		<angusActivationVersion>2.0.3</angusActivationVersion>
 
 		<!-- Apache Commons -->
 		<commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
