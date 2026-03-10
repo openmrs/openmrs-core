@@ -42,34 +42,34 @@ public class OpenmrsJspServlet extends JspServlet {
 	@Override
 public void init(ServletConfig config)  throws ServletException {
 
-    try {
-        Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-        super.init(config);
+	try {
+	Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+	super.init(config);
 
-    } catch (Exception e) {
-        log.error("An unexpected error occurred while processing a request", e);
-        throw new RuntimeException("Failed to initialize OpenmrsJspServlet", e);
-    }
+	} catch (Exception e) {
+	log.error("An unexpected error occurred while processing a request", e);
+	throw new RuntimeException("Failed to initialize OpenmrsJspServlet", e);
+	}
 }
 	@Override
 public void service(HttpServletRequest request, HttpServletResponse response) {
 
-    try {
-        rescanTldsIfNeeded();
-        super.service(request, response);
+	try {
+	rescanTldsIfNeeded();
+	super.service(request, response);
 
-    } catch (Exception e) {
-        log.error("Unexpected error in OpenmrsJspServlet#service", e);
+	} catch (Exception e) {
+	log.error("Unexpected error in OpenmrsJspServlet#service", e);
 
-        try {
-            if (!response.isCommitted()) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "An unexpected error occurred while processing the request.");
-            }
-        } catch (IOException ioException) {
-            log.error("Failed to send error response", ioException);
-        }
-    }
+	try {
+	if (!response.isCommitted()) {
+	response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+	"An unexpected error occurred while processing the request.");
+	}
+	} catch (IOException ioException) {
+	log.error("Failed to send error response", ioException);
+	}
+	}
 }
 
 

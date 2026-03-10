@@ -49,41 +49,41 @@ public class ModuleResourcesServlet extends HttpServlet {
 	}
 	@Override
 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    try {
-        log.debug("In service method for module servlet: {}", request.getPathInfo());
+	try {
+	log.debug("In service method for module servlet: {}", request.getPathInfo());
 
-        File f = getFile(request);
-        if (f == null) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
+	File f = getFile(request);
+	if (f == null) {
+	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	return;
+	}
 
-        response.setDateHeader("Last-Modified", f.lastModified());
-        response.setContentLength(Long.valueOf(f.length()).intValue());
+	response.setDateHeader("Last-Modified", f.lastModified());
+	response.setContentLength(Long.valueOf(f.length()).intValue());
 
-        String mimeType = getServletContext().getMimeType(f.getName());
-        response.setContentType(mimeType);
+	String mimeType = getServletContext().getMimeType(f.getName());
+	response.setContentType(mimeType);
 
-        FileInputStream is = new FileInputStream(f);
-        try {
-            OpenmrsUtil.copyFile(is, response.getOutputStream());
-        } finally {
-            OpenmrsUtil.closeStream(is);
-        }
+	FileInputStream is = new FileInputStream(f);
+	try {
+	OpenmrsUtil.copyFile(is, response.getOutputStream());
+	} finally {
+	OpenmrsUtil.closeStream(is);
+	}
 
-    } catch (Exception e) {
-        log.error("An unexpected error occurred while processing a request for ", 
-         request.getPathInfo(), e);
+	} catch (Exception e) {
+	log.error("An unexpected error occurred while processing a request for ", 
+	 request.getPathInfo(), e);
 
-        try {
-            if (!response.isCommitted()) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "An unexpected error occurred while processing the request.");
-            }
-        } catch (IOException ioException) {
-            log.warn("Failed to send error response", ioException);
-        }
-    }
+	try {
+	if (!response.isCommitted()) {
+	response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+	"An unexpected error occurred while processing the request.");
+	}
+	} catch (IOException ioException) {
+	log.warn("Failed to send error response", ioException);
+	}
+	}
 }
 	/**
 	 * Turns the given request/path into a File object
