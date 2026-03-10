@@ -55,11 +55,11 @@ The following dependencies are licensed under the [Eclipse Public License 2.0](h
 - Jakarta Servlet JSP API (`jakarta.servlet.jsp:jakarta.servlet.jsp-api`)
 - Jakarta Servlet JSP JSTL API (`jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api`)
 - Jakarta Servlet JSP JSTL (`org.glassfish.web:jakarta.servlet.jsp.jstl`)
-- Jakarta XML Binding API (`jakarta.xml.bind:jakarta.xml.bind-api`)
 - JUnit Jupiter (`org.junit.jupiter:junit-jupiter-api`, `junit-jupiter-engine`, `junit-jupiter-params`)
 
 ### Eclipse Distribution License 1.0 (BSD)
 
+- Jakarta XML Binding API (`jakarta.xml.bind:jakarta.xml.bind-api`)
 - JAXB Runtime (`org.glassfish.jaxb:jaxb-runtime`)
 
 ### GNU Lesser General Public License (LGPL)
