@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 
 /**
  * This is a wrapper around the Url class. It's main purpose is to abstract URL
@@ -25,11 +26,22 @@ public class HttpUrl {
 	public HttpUrl(String url) throws MalformedURLException {
 		if (url == null) {
 			throw new MalformedURLException("Url cannot be null");
-		} else if (!url.startsWith("http://") && !url.startsWith("https://")) {
+		} else if (!url.toLowerCase(Locale.ROOT).startsWith("http://")
+		        && !url.toLowerCase(Locale.ROOT).startsWith("https://")) {
 			throw new MalformedURLException("Not a valid http(s) url");
 		}
 		
-		this.url = new URL(url);
+		URL parsed = new URL(url);
+		try {
+			// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric
+			// IP as host, preventing DNS-rebinding / TOCTOU attacks.
+			this.url = Security.validateUrlForServerRequest(parsed);
+		}
+		catch (SecurityException e) {
+			MalformedURLException exception = new MalformedURLException(e.getMessage());
+			exception.initCause(e);
+			throw exception;
+		}
 	}
 	
 	public HttpURLConnection openConnection() throws IOException {
