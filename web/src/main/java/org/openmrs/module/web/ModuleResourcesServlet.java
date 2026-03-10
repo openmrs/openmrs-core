@@ -12,6 +12,8 @@ package org.openmrs.module.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -100,6 +102,19 @@ public class ModuleResourcesServlet extends HttpServlet {
 		}
 		
 		realPath = realPath.replace("/", File.separator);
+		
+		// Determine the expected base directory and verify the resolved path stays
+		// within it to prevent path traversal attacks (e.g. "/../../../etc/passwd").
+		Path baseDir;
+		if (devDir != null) {
+			baseDir = Paths.get(devDir.getAbsolutePath(), "omod", "target", "classes", "web", "module", "resources").normalize();
+		} else {
+			baseDir = Paths.get(getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources").normalize();
+		}
+		if (!Paths.get(realPath).normalize().startsWith(baseDir)) {
+			log.warn("Possible path traversal attack: resolved path '" + Paths.get(realPath).normalize() + "' is outside the expected base directory '" + baseDir + "'");
+			return null;
+		}
 		
 		File f = new File(realPath);
 		if (!f.exists()) {
