@@ -185,15 +185,12 @@ public class OrderSearchCriteria {
 	 * @param orderTypes the order types to match on; if not specified, matches all order types
 	 * @param activatedOnOrBeforeDate orders must have dateActivated on or before this date
 	 * @param activatedOnOrAfterDate orders must have dateActivated on or after this date
- 	 * @param scheduledOnOrBeforeDate orders must have scheduledDate on or before this date
-	 * @param scheduledOnOrAfterDate orders must have scheduledDate on or after this date
 	 * @param includeVoided whether to include the voided orders or not
 	 */
 	@Deprecated
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
 							   Collection<OrderType> orderTypes, Date activatedOnOrBeforeDate,
-							   Date activatedOnOrAfterDate, Date scheduledOnOrBeforeDate, Date scheduledOnOrAfterDate,
-							   boolean isStopped, Date autoExpireOnOrBeforeDate,
+							   Date activatedOnOrAfterDate, boolean isStopped, Date autoExpireOnOrBeforeDate,
 							   Date canceledOrExpiredOnOrBeforeDate,
 							   Order.Action action,
 							   Order.FulfillerStatus fulfillerStatus,
@@ -203,7 +200,7 @@ public class OrderSearchCriteria {
 							   boolean includeVoided) {
 
 		this(patient, careSetting, concepts, orderTypes, null, null,
-			activatedOnOrBeforeDate, activatedOnOrAfterDate, scheduledOnOrBeforeDate, scheduledOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
+			activatedOnOrBeforeDate, activatedOnOrAfterDate, null, null, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
 			action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided);
 
 	}
