@@ -281,6 +281,35 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasFieldErrors("obsDatetime"));
 		assertTrue(errors.hasFieldErrors("groupMembers"));
 	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldUseNestedFieldErrorsForGroupMembers() {
+		Obs parent = new Obs();
+		parent.setPerson(Context.getPersonService().getPerson(2));
+		parent.setConcept(Context.getConceptService().getConcept(3)); // datatype = N/A
+		parent.setObsDatetime(new Date());
+
+		Obs child = new Obs();
+		child.setPerson(Context.getPersonService().getPerson(2));
+		child.setConcept(Context.getConceptService().getConcept(5089));
+		child.setObsDatetime(new Date());
+
+		Set<Obs> group = new HashSet<>();
+		group.add(child);
+		parent.setGroupMembers(group);
+
+		Errors errors = new BindException(parent, "obs");
+		obsValidator.validate(parent, errors);
+
+		assertTrue(errors.hasErrors());
+		assertTrue(errors.getFieldErrors().stream()
+		        .anyMatch(error -> error.getField().startsWith("groupMembers[")
+		                && error.getField().endsWith(".valueNumeric")));
+		assertFalse(errors.hasFieldErrors("groupMembers"));
+	}
 	
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
