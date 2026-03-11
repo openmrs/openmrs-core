@@ -93,8 +93,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 
 	@BeforeEach
 	public void setup() {
-		pwsi = new ProgramWorkflowServiceImpl();
-		pwsi.setProgramWorkflowDAO(dao);
+		pwsi = new ProgramWorkflowServiceImpl(dao);
 	}
 	
 	/**

@@ -27,6 +27,7 @@ import org.openmrs.Person;
 import org.openmrs.Visit;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
@@ -44,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,29 +62,39 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	/**
 	 * The data access object for the obs service
 	 */
-	@Autowired
-	protected ObsDAO dao;
-	
-	/**
-	 * Report handlers that have been registered. This is filled via {@link #setHandlers(Map)} and
-	 * spring's applicationContext-service.xml object
-	 */
-	@Autowired
-	@Qualifier("handlers")
+	private final ObsDAO dao;
 	private Map<String, ComplexObsHandler> handlers;
+	private final PatientService patientService;
+	private final EncounterService encounterService;
+	private final ConceptService conceptService;
+	private final ObsService self;
 	
-	/**
-	 * Default empty constructor for this obs service
-	 */
-	public ObsServiceImpl() {
+	public ObsServiceImpl(ObsDAO dao,
+	                     Map<String, ComplexObsHandler> handlers,
+	                     PatientService patientService,
+	                     EncounterService encounterService,
+	                     ConceptService conceptService) {
+		this.dao = dao;
+		this.handlers = handlers;
+		this.patientService = patientService;
+		this.encounterService = encounterService;
+		this.conceptService = conceptService;
+		this.self = this;
 	}
 	
-	/**
-	 * @see org.openmrs.api.ObsService#setObsDAO(org.openmrs.api.db.ObsDAO)
-	 */
-	@Override
-	public void setObsDAO(ObsDAO dao) {
+	@Autowired
+	public ObsServiceImpl(ObsDAO dao,
+	                     @Qualifier("handlers") Map<String, ComplexObsHandler> handlers,
+	                     @Lazy PatientService patientService,
+	                     @Lazy EncounterService encounterService,
+	                     @Lazy ConceptService conceptService,
+	                     @Lazy ObsService self) {
 		this.dao = dao;
+		this.handlers = handlers;
+		this.patientService = patientService;
+		this.encounterService = encounterService;
+		this.conceptService = conceptService;
+		this.self = self;
 	}
 	
 	/**
@@ -141,14 +153,14 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 			// we don't write the changes to the database when we save
 			// the fact that the obs is now voided
 			evictObsAndChildren(obs);
-			obs = Context.getObsService().getObs(obs.getObsId());
+			obs = self.getObs(obs.getObsId());
 			//delete the previous file from the appdata/complex_obs folder
 			if (newObs.hasPreviousVersion() && newObs.getPreviousVersion().isComplex()) {
 				ComplexObsHandler handler = getHandler(newObs.getPreviousVersion());
 				handler.purgeComplexData(newObs.getPreviousVersion());
 			}
 			// calling this via the service so that AOP hooks are called
-			Context.getObsService().voidObs(obs, changeMessage);
+			self.voidObs(obs, changeMessage);
 
 		}
 		finally {
@@ -202,13 +214,12 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 			return obs;
 		}
 
-		ObsService os = Context.getObsService();
 		boolean refreshNeeded = false;
 		for (Obs o : obs.getGroupMembers(true)) {
 			if (o.getId() == null) {
-				os.saveObs(o, null);
+				self.saveObs(o, changeMessage);
 			} else {
-				Obs newObs = os.saveObs(o, changeMessage);
+				Obs newObs = saveObs(o, changeMessage);
 				refreshNeeded = !newObs.equals(o) || refreshNeeded;
 			}
 		}
@@ -247,7 +258,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	private void saveObsGroup(Obs obs, String changeMessage){
 		if (obs.isObsGrouping()) {
 			for (Obs o : obs.getGroupMembers(true)) {
-				Context.getObsService().saveObs(o, changeMessage);
+				saveObs(o, changeMessage);
 			}
 		}
 	}
@@ -308,7 +319,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 */
 	@Override
 	public Obs unvoidObs(Obs obs) throws APIException {
-		return Context.getObsService().saveObs(obs,"unvoid obs");
+		return self.saveObs(obs,"unvoid obs");
 	}
 	
 	/**
@@ -338,7 +349,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 */
 	@Override
 	public void purgeObs(Obs obs) throws APIException {
-		Context.getObsService().purgeObs(obs, false);
+		self.purgeObs(obs, false);
 	}
 	
 	/**
@@ -459,15 +470,13 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	public List<Obs> getObservations(String searchString) {
 		
 		// search on patient identifier
-		PatientService ps = Context.getPatientService();
-		List<Patient> patients = ps.getPatients(searchString);
+		List<Patient> patients = patientService.getPatients(searchString);
 		List<Person> persons = new ArrayList<>(patients);
 		
 		// try to search on encounterId
-		EncounterService es = Context.getEncounterService();
 		List<Encounter> encounters = new ArrayList<>();
 		try {
-			Encounter e = es.getEncounter(Integer.valueOf(searchString));
+			Encounter e = encounterService.getEncounter(Integer.valueOf(searchString));
 			if (e != null) {
 				encounters.add(e);
 			}
@@ -479,7 +488,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		List<Obs> returnList = new ArrayList<>();
 		
 		if (!encounters.isEmpty() || !persons.isEmpty()) {
-			returnList = Context.getObsService().getObservations(persons, encounters, null, null, null, null, null, null,
+			returnList = self.getObservations(persons, encounters, null, null, null, null, null, null,
 			    null, null, null, false);
 		}
 		
@@ -505,7 +514,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	public List<Obs> getObservationsByPerson(Person who) {
 		List<Person> whom = new ArrayList<>();
 		whom.add(who);
-		return Context.getObsService().getObservations(whom, null, null, null, null, null, null, null, null, null, null,
+		return self.getObservations(whom, null, null, null, null, null, null, null, null, null, null,
 		    false);
 	}
 	
@@ -523,7 +532,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		List<Concept> questions = new ArrayList<>();
 		questions.add(question);
 		
-		return Context.getObsService().getObservations(whom, null, questions, null, null, null, null, null, null, null,
+		return self.getObservations(whom, null, questions, null, null, null, null, null, null, null,
 		    null, false);
 	}
 	
@@ -590,7 +599,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 				throw new APIException("Obs.error.unable.get.handler", new Object[] { obs });
 			}
 			
-			String handlerString = Context.getConceptService().getConceptComplex(obs.getConcept().getConceptId())
+			String handlerString = conceptService.getConceptComplex(obs.getConcept().getConceptId())
 			        .getHandler();
 			
 			if (handlerString == null) {

@@ -401,46 +401,63 @@ public class Context {
 
 	/**
 	 * @return concept dictionary-related services
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static ConceptService getConceptService() {
 		return getServiceContext().getConceptService();
 	}
 
 	/**
 	 * @return encounter-related services
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static EncounterService getEncounterService() {
 		return getServiceContext().getEncounterService();
 	}
 
 	/**
 	 * @return location services
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static LocationService getLocationService() {
 		return getServiceContext().getLocationService();
 	}
 
 	/**
 	 * @return observation services
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static ObsService getObsService() {
 		return getServiceContext().getObsService();
 	}
 
 	/**
 	 * @return patient-related services
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static PatientService getPatientService() {
 		return getServiceContext().getPatientService();
 	}
 
+	/**
+	 * @return cohort-related services
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
+	 */
+	@Deprecated
 	public static CohortService getCohortService() {
 		return getServiceContext().getCohortService();
 	}
 
 	/**
 	 * @return person-related services
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static PersonService getPersonService() {
 		return getServiceContext().getPersonService();
 	}
@@ -449,7 +466,9 @@ public class Context {
 	 * @return condition-related services
 	 * 
 	 * @since 2.2
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static ConditionService getConditionService(){
 		return getServiceContext().getConditionService();
 	}
@@ -458,7 +477,9 @@ public class Context {
 	 * @return diagnosis-related services
 	 *
 	 * @since 2.2
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static DiagnosisService getDiagnosisService(){
 		return getServiceContext().getDiagnosisService();
 	}
@@ -466,28 +487,36 @@ public class Context {
 	/**
 	 * @return MedicationDispense-related service
 	 * @since 2.6.0
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static MedicationDispenseService getMedicationDispenseService(){
 		return getServiceContext().getMedicationDispenseService();
 	}
 
 	/**
 	 * @return Returns the hl7Service.
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static HL7Service getHL7Service() {
 		return getServiceContext().getHL7Service();
 	}
 
 	/**
 	 * @return user-related services
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static UserService getUserService() {
 		return getServiceContext().getUserService();
 	}
 
 	/**
 	 * @return order service
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static OrderService getOrderService() {
 		return getServiceContext().getOrderService();
 	}
@@ -495,14 +524,18 @@ public class Context {
 	/**
 	 * @return orderSet service
 	 * @since 1.12
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static OrderSetService getOrderSetService() {
 		return getServiceContext().getOrderSetService();
 	}
 
 	/**
 	 * @return form service
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static FormService getFormService() {
 		return getServiceContext().getFormService();
 	}
@@ -510,49 +543,63 @@ public class Context {
 	/**
 	 * @return serialization service
 	 * @since 1.5
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static SerializationService getSerializationService() {
 		return getServiceContext().getSerializationService();
 	}
 
 	/**
 	 * @return logic service
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static LogicService getLogicService() {
 		return getServiceContext().getLogicService();
 	}
 
 	/**
 	 * @return admin-related services
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static AdministrationService getAdministrationService() {
 		return getServiceContext().getAdministrationService();
 	}
 
 	/**
 	 * @return MessageSourceService
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static MessageSourceService getMessageSourceService() {
 		return getServiceContext().getMessageSourceService();
 	}
 
 	/**
 	 * @return scheduler service
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static SchedulerService getSchedulerService() {
 		return getServiceContext().getSchedulerService();
 	}
 
 	/**
 	 * @return alert service
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static AlertService getAlertService() {
 		return getServiceContext().getAlertService();
 	}
 
 	/**
 	 * @return program- and workflow-related services
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static ProgramWorkflowService getProgramWorkflowService() {
 		return getServiceContext().getProgramWorkflowService();
 	}
@@ -561,7 +608,9 @@ public class Context {
 	 * Get the message service.
 	 *
 	 * @return message service
+	 * @deprecated since 3.0.0, use {@link Autowired} instead
 	 */
+	@Deprecated
 	public static MessageService getMessageService() {
 		MessageService ms = getServiceContext().getMessageService();
 		try {
@@ -1377,7 +1426,9 @@ public class Context {
 	/**
 	 * @since 1.9
 	 * @see ServiceContext#getVisitService()
+	 * @deprecated since 3.0.0, use {@link org.springframework.beans.factory.annotation.Autowired} instead
 	 */
+	@Deprecated
 	public static VisitService getVisitService() {
 		return getServiceContext().getVisitService();
 	}
@@ -1385,7 +1436,9 @@ public class Context {
 	/**
 	 * @since 1.9
 	 * @see ServiceContext#getProviderService()
+	 * @deprecated since 3.0.0, use {@link org.springframework.beans.factory.annotation.Autowired} instead
 	 */
+	@Deprecated
 	public static ProviderService getProviderService() {
 		return getServiceContext().getProviderService();
 	}
@@ -1393,7 +1446,9 @@ public class Context {
 	/**
 	 * @since 1.9
 	 * @see ServiceContext#getDatatypeService()
+	 * @deprecated since 3.0.0, use {@link org.springframework.beans.factory.annotation.Autowired} instead
 	 */
+	@Deprecated
 	public static DatatypeService getDatatypeService() {
 		return getServiceContext().getDatatypeService();
 	}
