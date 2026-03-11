@@ -136,8 +136,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		personService = Context.getPersonService();
 		adminService = Context.getAdministrationService();
 		locationService = Context.getLocationService();
-
-		updateSearchIndex();
 	}
 	
 	private void voidOrders(Collection<Patient> patientsWithOrders) {
@@ -386,7 +384,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	// *
 	// * Note: if enabled, this test will be considerably slower
 	// *
-	// * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
+	// * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#getRuntimeProperties()
 	// */
 	//* @Override
 	//* public Properties getRuntimeProperties() {
@@ -2280,7 +2278,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//retrieve notPreferredPatient and save it with a new attribute
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
-		PersonAttribute attribute = new PersonAttribute(2);
+		PersonAttribute attribute = new PersonAttribute();
 		attribute.setValue("5089");
 		attribute.setAttributeType(personService.getPersonAttributeType(1));
 		notPreferred.addAttribute(attribute);

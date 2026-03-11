@@ -61,6 +61,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -230,6 +231,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		for (Order o : encounter.getOrdersWithoutOrderGroups()) {
 			if (o.getOrderId() == null) {
 				orderService.saveOrder(o, null);
+			}
+			else {
+				// Since orders are only saved via the OrderService if they are new, 
+				// we need to explicitly re-validate any existing orders
+				ValidateUtil.validate(o);
 			}
 		}
 		

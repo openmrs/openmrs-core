@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 import jakarta.persistence.Column;
@@ -35,12 +33,7 @@ public class Relationship extends BaseChangeableOpenmrsData {
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "relationship_id_seq")
-	@GenericGenerator(
-		name = "relationship_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "relationship_relationship_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "relationship_id")
 	private Integer relationshipId;
 	@ManyToOne(optional = false)

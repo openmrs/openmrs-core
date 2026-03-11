@@ -26,7 +26,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
 
 /**
  * {@code JacksonSerializer} is a JSON serialization implementation for OpenMRS
@@ -63,7 +62,7 @@ public class JacksonSerializer implements OpenmrsSerializer {
 	public JacksonSerializer(@Qualifier(value = "domainService") DomainService domainService) throws SerializationException {
 		objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new UuidReferenceModule(domainService));
-		objectMapper.registerModule(new Hibernate6Module());
+		objectMapper.registerModule(new HibernateProxyModule());
 		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
 		objectMapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.PUBLIC_ONLY);
 		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

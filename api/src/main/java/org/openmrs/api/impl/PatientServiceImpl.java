@@ -673,7 +673,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// Save the newly update preferred patient
 		// This must be called _after_ voiding the nonPreferred patient so that
 		//  a "Duplicate Identifier" error doesn't pop up.
-		savePatient(preferred);
+		preferred = savePatient(preferred);
 		
 		//save the person merge log
 		PersonMergeLog personMergeLog = new PersonMergeLog();
@@ -989,7 +989,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// Save the newly update preferred patient
 		// This must be called _after_ voiding the nonPreferred patient so that
 		//  a "Duplicate Identifier" error doesn't pop up.
-		savePatient(preferred);
+		preferred = savePatient(preferred);
 		
 		//save the person merge log
 		PersonMergeLog personMergeLog = new PersonMergeLog();

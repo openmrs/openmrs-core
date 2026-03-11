@@ -58,10 +58,10 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	public void saveAlert_shouldSaveAlertToDb() {
 		Alert alert = new Alert();
 		alert.setText("Coding time");
-		alert.setId(5);
 		hibernateAlertDAO.saveAlert(alert);
 
-		Assertions.assertNotNull(hibernateAlertDAO.getAlert(5));
+		Assertions.assertNotNull(alert.getAlertId());
+		Assertions.assertNotNull(hibernateAlertDAO.getAlert(alert.getAlertId()));
 	}
 
 	@Test

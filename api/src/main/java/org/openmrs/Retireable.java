@@ -11,8 +11,6 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
 /**
  * In OpenMRS, data are rarely fully deleted (purged) from the system; rather, they are either
  * voided or retired. When existing data remain valid but should no longer be used for new entries,
@@ -34,7 +32,6 @@ public interface Retireable extends OpenmrsObject {
 	 * @deprecated as of 2.0, use {@link #getRetired()}
 	 */
 	@Deprecated
-	@JsonIgnore
 	public Boolean isRetired();
 	
 	public Boolean getRetired();

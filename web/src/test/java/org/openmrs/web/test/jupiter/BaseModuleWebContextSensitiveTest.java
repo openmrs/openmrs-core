@@ -10,7 +10,6 @@
 package org.openmrs.web.test.jupiter;
 
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
-import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 

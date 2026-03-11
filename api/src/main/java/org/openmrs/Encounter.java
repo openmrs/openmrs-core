@@ -102,7 +102,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	private Set<Obs> obs;
 	
 	@ManyToOne
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@Cascade({ org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.PERSIST })
 	@JoinColumn(name = "visit_id")
 	private Visit visit;
 	

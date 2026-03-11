@@ -9,8 +9,6 @@
  */
 package org.openmrs.web.filter.update;
 
-import javax.xml.crypto.Data;
-import java.util.Collections;
 import java.util.List;
 
 import org.openmrs.liquibase.LiquibaseProvider;

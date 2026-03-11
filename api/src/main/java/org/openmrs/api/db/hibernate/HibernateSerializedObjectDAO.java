@@ -253,7 +253,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 			serializedObject.setRetireReason(dataObj.getVoidReason());
 		}
 		
-		sessionFactory.getCurrentSession().saveOrUpdate(serializedObject);
+		serializedObject = HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), serializedObject);
 		
 		object.setId(serializedObject.getId());
 		return object;
@@ -265,7 +265,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	@Override
 	public void purgeObject(Integer id) throws DAOException {
 		SerializedObject o = getSerializedObject(id);
-		sessionFactory.getCurrentSession().delete(o);
+		sessionFactory.getCurrentSession().remove(o);
 	}
 	
 	/**

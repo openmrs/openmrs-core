@@ -50,6 +50,39 @@ public class HibernateUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateUtil.class);
 	
+	/**
+	 * Persists a new entity or merges a detached entity, emulating the old Hibernate
+	 * {@code saveOrUpdate()} behavior. For entities that are already managed, this is a no-op.
+	 * For new entities (no identifier), {@code persist()} is used which modifies the entity in-place.
+	 * For existing entities (with identifier), the existing managed instance is merged.
+	 *
+	 * @param session the Hibernate session
+	 * @param entity the entity to save or update
+	 * @since 3.0.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T saveOrUpdate(Session session, T entity) {
+		if (session.contains(entity)) {
+			return entity;
+		}
+		Object id = session.getSessionFactory().getPersistenceUnitUtil().getIdentifier(entity);
+		if (id == null) {
+			session.persist(entity);
+			return entity;
+		} else {
+			// Check if the entity already exists in the DB
+			Class<?> entityClass = org.hibernate.Hibernate.getClass(entity);
+			Object existing = session.get(entityClass, id);
+			if (existing == null) {
+				// Entity has an assigned ID but doesn't exist in DB yet - persist it
+				session.persist(entity);
+				return entity;
+			} else {
+				return (T) session.merge(entity);
+			}
+		}
+	}
+	
 	private static Dialect dialect = null;
 	
 	private static Boolean isHSQLDialect = null;

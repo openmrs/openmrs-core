@@ -24,8 +24,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.openmrs.BaseChangeableOpenmrsMetadata;
@@ -44,11 +42,7 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	
 	// Task metadata
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "scheduler_task_config_id_seq")
-	@GenericGenerator(
-			name = "scheduler_task_config_id_seq",
-			parameters = @Parameter(name = "sequence", value = "scheduler_task_config_task_config_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "task_config_id")
 	private Integer id;
 	

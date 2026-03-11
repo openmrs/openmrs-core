@@ -33,8 +33,8 @@ import org.dbunit.operation.DatabaseOperation;
  * This is a runnable java class that migrates/converts the current dbunit xml files to a new schema
  * structure. After running this class, you are able to pick either a folder to convert. Xmls files
  * are recursively found and converted. The
- * {@link BaseContextSensitiveTest#INITIAL_DATA_SET_XML_FILENAME} file is overwritten by values in
- * the database defined by the runtime properties
+ * {@link org.openmrs.test.jupiter.BaseContextSensitiveTest#INITIAL_DATA_SET_XML_FILENAME} file is
+ * overwritten by values in the database defined by the runtime properties
  */
 public class MigrateDataSet {
 	
@@ -44,7 +44,7 @@ public class MigrateDataSet {
 	
 	private static String NEW_UPDATE_FILE = "/home/ben/workspace/openmrs-concept-name-tag/metadata/model/update-to-latest-db.mysqldiff.sql";
 	
-	private static String[] credentials = BaseContextSensitiveTest
+	private static String[] credentials = org.openmrs.test.jupiter.BaseContextSensitiveTest
 	        .askForUsernameAndPassword("Enter your MYSQL DATABASE username and password");
 	
 	private static String tempDatabaseName = "junitmigration";

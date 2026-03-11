@@ -11,7 +11,9 @@ on:
       - master
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   build:
@@ -22,8 +24,7 @@ jobs:
           - windows-latest
         java-version:
           - 21
-#          Current spring version only supports up to java 21
-#          - 24
+          - 25
         isPR:
             - ${{ github.event_name == 'pull_request' }}
         test-profile: ["", "-Pintegration-test -Pskip-default-test", "-Pperformance-test -Pskip-default-test"]
@@ -47,26 +48,19 @@ jobs:
           java-version: ${{ matrix.java-version }}
           cache: 'maven'
       - name: Install dependencies
-        run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --file pom.xml
+        run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true -D"spotbugs.skip"=${{ matrix.java-version != '21' || matrix.platform != 'ubuntu-latest' }} --batch-mode --show-version --file pom.xml
       - name: Test
         run: mvn test ${{ matrix.test-profile }} --batch-mode --file pom.xml
-      # this is necessary to populate the environment variables for Coveralls properly
-      - name: Set branch name and PR number
-        if: ${{  matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' && steps.refs.outcome == 'success' }}
-        id: refs
-        env:
-          BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
-        run: |
-          echo "branch_name=${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_OUTPUT
-          echo "pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_OUTPUT
-      - name: Update coverage data
-        # only send coverage data for Java 21
-        if: ${{  matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' && steps.refs.outcome == 'success' }}
+      - name: Upload SpotBugs reports
+        if: ${{ matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' && (success() || failure()) }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: spotbugs-reports
+          path: '**/target/spotbugsXml.xml'
+          retention-days: 14
+      - name: Upload coverage to Codecov
+        if: ${{ matrix.test-profile == '' && matrix.java-version == '25' && matrix.platform == 'ubuntu-latest' }}
+        uses: codecov/codecov-action@v5
         continue-on-error: true
-        env:
-          CI_NAME: Github
-          CI_BUILD_NUMBER: ${{ github.run_id }}
-          CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
-          CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
-          CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
-        run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+        with:
+          use_oidc: true

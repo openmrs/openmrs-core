@@ -11,7 +11,7 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -470,7 +470,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		validChild.setPerson(Context.getPersonService().getPerson(2));
 		validChild.setConcept(Context.getConceptService().getConcept(5089));
 		validChild.setObsDatetime(new Date());
-		validChild.setValueNumeric(80.0);
+		validChild.setValueNumeric(70.0);
 		obs.addGroupMember(validChild);
 		Obs inValidChild = new Obs();
 		obs.addGroupMember(inValidChild);
