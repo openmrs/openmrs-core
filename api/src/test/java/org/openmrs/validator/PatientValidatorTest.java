@@ -201,7 +201,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 
 	/**
 	* @see PatientValidator#validate(Object,Errors)
- 	*/
+	*/
 	@Test
 	public void validate_shouldFailIfRequiredIdentifierIsMissing() {
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
@@ -212,7 +212,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Patient patient = new Patient();
 
 		PersonName pName = new PersonName();
-   		pName.setGivenName("Tom");
+		pName.setGivenName("Tom");
 		pName.setMiddleName("E.");
 		pName.setFamilyName("Patient");
 		patient.addName(pName);
@@ -224,7 +224,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		pAddress.setAddress2("Apt 402");
 		pAddress.setCityVillage("Anywhere city");
 		pAddress.setCountry("Some Country");
-   	 	patient.addAddress(pAddress);
+		patient.addAddress(pAddress);
 
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
@@ -274,12 +274,12 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
 
-   		assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 
 	/**
- 	* @see PatientValidator#validate(Object,Errors)
- 	*/
+	* @see PatientValidator#validate(Object,Errors)
+	*/
 	@Test
 	public void validate_shouldIgnoreRetiredRequiredIdentifierTypes() {
 		for (PatientIdentifierType pit : Context.getPatientService().getAllPatientIdentifierTypes(false)) {
@@ -305,7 +305,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 
 		PersonAddress pAddress = new PersonAddress();
 		pAddress.setAddress1("123 My street");
-   	 	pAddress.setAddress2("Apt 402");
+		pAddress.setAddress2("Apt 402");
 		pAddress.setCityVillage("Anywhere city");
 		pAddress.setCountry("Some Country");
 		patient.addAddress(pAddress);
@@ -317,7 +317,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 
 	/**
- 	* @see PatientValidator#validate(Object,Errors)
+	* @see PatientValidator#validate(Object,Errors)
 	*/
 	@Test
 	public void validate_shouldFailIfRequiredIdentifierIsVoided() {
@@ -346,7 +346,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setLocation(new Location(1));
 		patientIdentifier.setIdentifier("012345678");
-   		patientIdentifier.setDateCreated(new Date());
+		patientIdentifier.setDateCreated(new Date());
 		patientIdentifier.setIdentifierType(patientIdentifierType);
 		patientIdentifier.setVoided(true);
 		patient.addIdentifier(patientIdentifier);
@@ -362,8 +362,8 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 
 	/**
- 	* @see PatientValidator#validate(Object,Errors)
- 	*/
+	* @see PatientValidator#validate(Object,Errors)
+	*/
 	@Test
 	public void validate_shouldPassWithRequiredAndNonRequiredIdentifiers() {
 
@@ -381,7 +381,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 
 		Patient patient = new Patient();
 		patient.addName(new PersonName("Tom", "", "Patient"));
-   		patient.setGender("male");
+		patient.setGender("male");
 		patient.setBirthdate(new Date());
 
 		PatientIdentifier requiredIdentifier = new PatientIdentifier();
@@ -403,7 +403,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 
 	/**
- 	* @see PatientValidator#validate(Object,Errors)
+	* @see PatientValidator#validate(Object,Errors)
 	*/
 	@Test
 	public void validate_shouldPassIfVoidedRequiredIdentifierReplaced() {
@@ -432,15 +432,15 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		newIdentifier.setLocation(new Location(1));
 		patient.addIdentifier(newIdentifier);
 
-   		Errors errors = new BindException(patient, "patient");
+		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
 
 		assertFalse(errors.hasFieldErrors("identifiers"));
 	}
 
 	/**
- 	* @see PatientValidator#validate(Object,Errors)
- 	*/
+	* @see PatientValidator#validate(Object,Errors)
+	*/
 
 	@Test
 	public void validate_shouldNotFailForVoidedPatientWithoutRequiredIdentifier() {
