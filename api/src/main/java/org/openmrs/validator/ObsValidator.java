@@ -104,7 +104,12 @@ public class ObsValidator implements Validator {
 		if (obs.getObsDatetime() == null) {
 			errors.rejectValue("obsDatetime", "error.null");
 		}
-		
+		if (obs.getObsDatetime() != null && obs.getPerson() != null && obs.getPerson().getBirthdate() != null
+		        && obs.getObsDatetime().before(obs.getPerson().getBirthdate())) {
+			errors.rejectValue("obsDatetime", "Obs.error.obsDatetimeBeforePatientBirthdate",
+			    "Obs datetime cannot be before the patient's date of birth");
+		}
+
 		boolean isObsGroup = obs.hasGroupMembers(true);
 		// if this is an obs group (i.e., parent) make sure that it has no values (other than valueGroupId) set
 		if (isObsGroup) {

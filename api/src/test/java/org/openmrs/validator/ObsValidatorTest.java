@@ -960,5 +960,126 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 		return obs;
 	}
-	
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldRejectObsDatetimeBeforePatientBirthdate() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -10);
+		Date birthdate = cal.getTime();
+
+		Person person = new Person(7);
+		person.setBirthdate(birthdate);
+
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(18));
+		obs.setValueBoolean(false);
+		obs.setObsDatetime(cal.getTime());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertTrue(errors.hasFieldErrors("obsDatetime"));
+		assertTrue(errors.getFieldErrors("obsDatetime").stream()
+		    .anyMatch(fe -> fe.getCode().startsWith("Obs.error.obsDatetimeBeforePatientBirthdate")));
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectObsDatetimeEqualToPatientBirthdate() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -10);
+		Date birthdate = cal.getTime();
+
+		Person person = new Person(7);
+		person.setBirthdate(birthdate);
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(18));
+		obs.setValueBoolean(false);
+		obs.setObsDatetime(birthdate);
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectObsDatetimeAfterPatientBirthdate() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -10);
+		Date birthdate = cal.getTime();
+
+		Person person = new Person(7);
+		person.setBirthdate(birthdate);
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(18));
+		obs.setValueBoolean(false);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectNullObsDatetimeForBirthdateCheck() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -10);
+		Date birthdate = cal.getTime();
+
+		Person person = new Person(7);
+		person.setBirthdate(birthdate);
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(18));
+		obs.setValueBoolean(false);
+		// obsDatetime intentionally null
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.getFieldErrors("obsDatetime").stream()
+		    .anyMatch(fe -> fe.getCode().startsWith("Obs.error.obsDatetimeBeforePatientBirthdate")));
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	void validate_shouldNotRejectObsDatetimeWhenBirthdateIsNull() {
+		Person person = new Person(7);
+		// birthdate intentionally not set
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(18));
+		obs.setValueBoolean(false);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+	}
+
 }
