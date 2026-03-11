@@ -39,6 +39,10 @@ public class OrderSearchCriteriaBuilder {
 
 	private Date activatedOnOrAfterDate;
 
+	private Date scheduledOnOrBeforeDate;
+
+	private Date scheduledOnOrAfterDate;
+
 	private boolean isStopped;
 
 	private Date autoExpireOnOrBeforeDate;
@@ -140,6 +144,24 @@ public class OrderSearchCriteriaBuilder {
 	}
 
 	/**
+	 * @param scheduledOnOrBeforeDate orders must have scheduledDate on or before this date
+	 * @return this builder instance
+	 */
+	public OrderSearchCriteriaBuilder setScheduledOnOrBeforeDate(Date scheduledOnOrBeforeDate) {
+		this.scheduledOnOrBeforeDate = scheduledOnOrBeforeDate;
+		return (this);
+	}
+
+	/**
+	 * @param scheduledOnOrAfterDate orders must have scheduledDate on or after this date
+	 * @return this builder instance
+	 */
+	public OrderSearchCriteriaBuilder setScheduledOnOrAfterDate(Date scheduledOnOrAfterDate) {
+		this.scheduledOnOrAfterDate = scheduledOnOrAfterDate;
+		return (this);
+	}
+
+	/**
 	 *
 	 * @param isStopped
 	 * @return this builde instance
@@ -224,7 +246,7 @@ public class OrderSearchCriteriaBuilder {
 	 */
 	public OrderSearchCriteria build() {
 		return new OrderSearchCriteria(patient, careSetting, concepts, orderTypes, accessionNumber, orderNumber, activatedOnOrBeforeDate,  
-			activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
+			activatedOnOrAfterDate, scheduledOnOrBeforeDate, scheduledOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
 				action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided, visit);
 	}
 }
