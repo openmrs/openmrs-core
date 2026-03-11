@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.ProgramWorkflow;
@@ -35,6 +36,10 @@ import org.springframework.validation.Validator;
 public class PatientProgramValidator implements Validator {
 	
 	private static final Logger log = LoggerFactory.getLogger(PatientProgramValidator.class);
+
+	private static final String DATE_ENROLLED = "dateEnrolled";
+
+	private static final String DATE_COMPLETED = "dateCompleted";
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -89,21 +94,33 @@ public class PatientProgramValidator implements Validator {
 			return;
 		}
 		
-		ValidationUtils.rejectIfEmpty(errors, "dateEnrolled", "error.patientProgram.enrolledDateEmpty");
-		
+		ValidationUtils.rejectIfEmpty(errors, DATE_ENROLLED, "error.patientProgram.enrolledDateEmpty");
+
 		Date today = new Date();
 		if (patientProgram.getDateEnrolled() != null && today.before(patientProgram.getDateEnrolled())) {
-			errors.rejectValue("dateEnrolled", "error.patientProgram.enrolledDateDateCannotBeInFuture");
+			errors.rejectValue(DATE_ENROLLED, "error.patientProgram.enrolledDateDateCannotBeInFuture");
 		}
-		
+
 		if (patientProgram.getDateCompleted() != null && today.before(patientProgram.getDateCompleted())) {
-			errors.rejectValue("dateCompleted", "error.patientProgram.completionDateCannotBeInFuture");
+			errors.rejectValue(DATE_COMPLETED, "error.patientProgram.completionDateCannotBeInFuture");
 		}
-		
+
+		Patient patient = patientProgram.getPatient();
+		if (patient != null && patient.getBirthdate() != null) {
+			if (patientProgram.getDateEnrolled() != null && patientProgram.getDateEnrolled().before(patient.getBirthdate())) {
+				errors.rejectValue(DATE_ENROLLED, "error.patientProgram.enrolledDateCannotBeBeforeBirthdate",
+				    "Enrolled date cannot be before patient's date of birth");
+			}
+			if (patientProgram.getDateCompleted() != null && patientProgram.getDateCompleted().before(patient.getBirthdate())) {
+				errors.rejectValue(DATE_COMPLETED, "error.patientProgram.completionDateCannotBeBeforeBirthdate",
+				    "Completion date cannot be before patient's date of birth");
+			}
+		}
+
 		// if enrollment or complete date of program is in future or complete date has come before enroll date we should throw error
 		if (patientProgram.getDateEnrolled() != null
 		        && OpenmrsUtil.compareWithNullAsLatest(patientProgram.getDateCompleted(), patientProgram.getDateEnrolled()) < 0) {
-			errors.rejectValue("dateCompleted", "error.patientProgram.enrolledDateShouldBeBeforecompletionDate");
+			errors.rejectValue(DATE_COMPLETED, "error.patientProgram.enrolledDateShouldBeBeforecompletionDate");
 		}
 		
 		Set<ProgramWorkflow> workFlows = patientProgram.getProgram().getWorkflows();
