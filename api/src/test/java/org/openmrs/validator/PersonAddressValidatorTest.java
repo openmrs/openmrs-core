@@ -14,13 +14,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Address;
+import org.openmrs.GlobalProperty;
 import org.openmrs.PersonAddress;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -241,5 +244,25 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("address13"), "address13 missing in errors");
 		assertTrue(errors.hasFieldErrors("address14"), "address14 missing in errors");
 		assertTrue(errors.hasFieldErrors("address15"), "address15 missing in errors");
+	}
+
+	/**
+	 * @see PersonAddressValidator#validate(Object, Errors)
+	 */
+	@Test
+	public void validate_shouldPassWhenAddressTemplateInGlobalPropertyIsHtmlEscaped() {
+		Context.getAdministrationService().saveGlobalProperty(
+			new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE,
+				StringEscapeUtils.escapeHtml4(OpenmrsConstants.DEFAULT_ADDRESS_TEMPLATE)));
+
+		PersonAddress personAddress = new PersonAddress();
+		personAddress.setAddress1("Address1");
+		personAddress.setCityVillage("City");
+		personAddress.setStateProvince("State");
+		personAddress.setCountry("Country");
+
+		Errors errors = new BindException(personAddress, "personAddress");
+		validator.validate(personAddress, errors);
+		assertFalse(errors.hasErrors());
 	}
 }
