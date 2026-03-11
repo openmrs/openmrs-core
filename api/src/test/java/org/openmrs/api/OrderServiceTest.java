@@ -1411,6 +1411,58 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see OrderService#updateOrderIntent(org.openmrs.Order, Order.Intent)
+	 */
+	@Test
+	public void updateOrderIntent_shouldSetTheNewIntent() {
+		Order originalOrder = orderService.getOrder(111);
+		assertNotEquals(originalOrder.getIntent(), Order.Intent.PLAN);
+
+		orderService.updateOrderIntent(originalOrder, Order.Intent.PLAN);
+		Context.flushSession();
+		Order updatedOrder = orderService.getOrder(111);
+
+		assertEquals(Order.Intent.PLAN, updatedOrder.getIntent());
+	}
+
+	/**
+	 * @see OrderService#updateOrderIntent(org.openmrs.Order, Order.Intent)
+	 */
+	@Test
+	public void updateOrderIntent_shouldSaveTheChangedOrder() {
+		Order originalOrder = orderService.getOrder(111);
+		Order.Intent originalIntent = originalOrder.getIntent();
+
+		Order updatedOrder = orderService.updateOrderIntent(originalOrder, Order.Intent.PROPOSAL);
+		Context.flushSession();
+
+		assertNotNull(updatedOrder);
+		assertEquals(Order.Intent.PROPOSAL, orderService.getOrder(111).getIntent());
+		assertNotEquals(originalIntent, orderService.getOrder(111).getIntent());
+	}
+
+	/**
+	 * @see OrderService#updateOrderIntent(org.openmrs.Order, Order.Intent)
+	 */
+	@Test
+	public void updateOrderIntent_shouldThrowExceptionIfOrderIsNull() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+			() -> orderService.updateOrderIntent(null, Order.Intent.PLAN));
+		assertThat(exception.getMessage(), is("Order cannot be null"));
+	}
+
+	/**
+	 * @see OrderService#updateOrderIntent(org.openmrs.Order, Order.Intent)
+	 */
+	@Test
+	public void updateOrderIntent_shouldThrowExceptionIfIntentIsNull() {
+		Order order = orderService.getOrder(111);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+			() -> orderService.updateOrderIntent(order, null));
+		assertThat(exception.getMessage(), is("Intent cannot be null"));
+	}
+
+	/**
 	 * @see OrderService#saveOrder(Order, OrderContext)
 	 */
 	@Test

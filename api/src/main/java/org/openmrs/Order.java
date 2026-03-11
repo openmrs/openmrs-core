@@ -91,6 +91,22 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		DECLINED,
 		COMPLETED
 	}
+
+	/**
+	 * Valid values for the intent of an order, aligned with FHIR RequestIntent value set
+	 * @since 3.0.0
+	 */
+	public enum Intent {
+		PROPOSAL,
+		PLAN,
+		DIRECTIVE,
+		ORDER,
+		ORIGINAL_ORDER,
+		REFLEX_ORDER,
+		FILLER_ORDER,
+		INSTANCE_ORDER
+	}
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	@Column(name = "order_id")
@@ -212,6 +228,15 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 */
 	@Column(name = "fulfiller_comment", length = 1024)
 	private String fulfillerComment;
+
+	/**
+	 * Represents the intent of this order, aligned with FHIR ServiceRequest.intent
+	 * @see Intent
+	 */
+	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "intent", length = 50, nullable = false)
+	private Intent intent = Intent.ORDER;
 	
 	// Constructors
 	
@@ -274,6 +299,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		target.setFulfillerComment(getFulfillerComment());
 		target.setFulfillerStatus(getFulfillerStatus());
 		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
+		target.setIntent(getIntent());
 		return target;
 	}
 	
@@ -874,6 +900,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		target.setFulfillerStatus(getFulfillerStatus());
 		target.setFulfillerComment(getFulfillerComment());
 		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
+		target.setIntent(getIntent());
 		
 		return target;
 	}
@@ -1015,6 +1042,22 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	public void setFulfillerComment(String fulfillerComment) {
 		this.fulfillerComment = fulfillerComment;		
 	}
+
+	/**
+	 * Returns the intent of this order.
+	 * 
+	 * @since 3.0.0
+	 * @return the intent of this order
+	 */
+	public Intent getIntent() { return intent; }
+
+	/**
+	 * Sets the intent of this order.
+	 * 
+	 * @param intent the intent to set
+	 * @since 3.0.0
+	 */
+	public void setIntent(Intent intent) { this.intent = intent; }
 	
 	/**
 	 * @return Returns the formNamespaceAndPath.
