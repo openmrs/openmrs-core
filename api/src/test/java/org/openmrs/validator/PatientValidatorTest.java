@@ -9,6 +9,7 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -56,6 +57,8 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		assertTrue(errors.hasErrors());
+		assertTrue(errors.hasGlobalErrors());
+		assertEquals("error.preferredIdentifier", errors.getGlobalError().getCode());
 	}
 	
 	/**
@@ -117,6 +120,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		validator.validate(pa, errors);
 		
 		assertTrue(errors.hasFieldErrors("gender"));
+		assertTrue(errors.getFieldErrors("gender").stream().anyMatch(e -> "Person.gender.required".equals(e.getCode())));
 	}
 	
 	/**
@@ -194,5 +198,6 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		validator.validate(patient, errors);
 		
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertEquals("error.exceededMaxLengthOfField",errors.getFieldError("voidReason").getCode());
 	}
 }
