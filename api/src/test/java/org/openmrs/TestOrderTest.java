@@ -9,19 +9,19 @@
  */
 package org.openmrs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.order.OrderUtilTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 /**
  * Contains tests for TestOrder class
  */
 public class TestOrderTest {
-	
+
 	/**
 	 * @throws Exception
 	 * @see TestOrder#copy()
@@ -30,7 +30,7 @@ public class TestOrderTest {
 	public void copy_shouldCopyAllTestOrderFields() throws Exception {
 		OrderTest.assertThatAllFieldsAreCopied(new TestOrder(), null);
 	}
-	
+
 	/**
 	 * @throws Exception
 	 * @see TestOrder#cloneForRevision()
@@ -38,17 +38,17 @@ public class TestOrderTest {
 	@Test
 	public void cloneForRevision_shouldSetAllTheRelevantFields() throws Exception {
 		TestOrder newTestOrder = new TestOrder();
-		
+
 		OrderGroup orderGroup = new OrderGroup();
 		newTestOrder.setOrderGroup(orderGroup);
-		
+
 		TestOrder revisedTestOrder = newTestOrder.cloneForRevision();
-		
+
 		OrderTest.assertThatAllFieldsAreCopied(revisedTestOrder, "cloneForRevision", "creator", "dateCreated", "action",
 		    "changedBy", "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber",
 		    "orderer", "previousOrder", "dateActivated", "dateStopped", "accessionNumber");
 	}
-	
+
 	/**
 	 * @see TestOrder#cloneForDiscontinuing()
 	 */
@@ -59,22 +59,23 @@ public class TestOrderTest {
 		anOrder.setCareSetting(new CareSetting());
 		anOrder.setConcept(new Concept());
 		anOrder.setOrderType(new OrderType());
-		
+
 		Order orderThatCanDiscontinueTheOrder = anOrder.cloneForDiscontinuing();
-		
+
 		assertEquals(anOrder.getPatient(), orderThatCanDiscontinueTheOrder.getPatient());
-		
+
 		assertEquals(anOrder.getConcept(), orderThatCanDiscontinueTheOrder.getConcept());
-		
+
 		assertEquals(anOrder, orderThatCanDiscontinueTheOrder.getPreviousOrder(), "should set previous order to anOrder");
-		
-		assertEquals(orderThatCanDiscontinueTheOrder.getAction(), Order.Action.DISCONTINUE, "should set new order action to new");
-		
+
+		assertEquals(orderThatCanDiscontinueTheOrder.getAction(), Order.Action.DISCONTINUE,
+		    "should set new order action to new");
+
 		assertEquals(anOrder.getCareSetting(), orderThatCanDiscontinueTheOrder.getCareSetting());
-		
+
 		assertEquals(anOrder.getOrderType(), orderThatCanDiscontinueTheOrder.getOrderType());
 	}
-	
+
 	/**
 	 * @see TestOrder#cloneForRevision()
 	 */
@@ -88,7 +89,7 @@ public class TestOrderTest {
 		order.setAccessionNumber("some number");
 		OrderUtilTest.setDateStopped(order, date);
 		order.setPreviousOrder(new Order());
-		
+
 		Order clone = order.cloneForRevision();
 		assertEquals(Order.Action.DISCONTINUE, clone.getAction());
 		assertEquals(order.getDateActivated(), clone.getDateActivated());

@@ -9,18 +9,18 @@
  */
 package org.openmrs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests methods on the PersonAttribute class
  */
 public class PersonAttributeTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see PersonAttribute#toString()
 	 */
@@ -31,7 +31,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		PersonAttribute attr = new PersonAttribute(type, "6");
 		assertEquals("MARRIED", attr.toString());
 	}
-	
+
 	/**
 	 * @see PersonAttribute#equalsContent(PersonAttribute)
 	 */
@@ -45,10 +45,10 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		pa.setAttributeType(new PersonAttributeType(1));
 		pa.setValue("1");
 		pa.setVoided(false);
-		
+
 		assertTrue(pa.equalsContent(other));
 	}
-	
+
 	/**
 	 * @see PersonAttribute#getHydratedObject()
 	 */
@@ -56,15 +56,15 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	public void getHydratedObject_shouldLoadClassInFormatProperty() {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setFormat("org.openmrs.Concept");
-		
+
 		PersonAttribute pa = new PersonAttribute(2);
 		pa.setAttributeType(type);
 		pa.setValue("5089");
-		
+
 		Concept concept = (Concept) pa.getHydratedObject();
 		assertEquals(5089, concept.getConceptId().intValue());
 	}
-	
+
 	/**
 	 * @see PersonAttribute#getHydratedObject()
 	 */
@@ -72,16 +72,16 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	public void getHydratedObject_shouldLoadUserClassInFormatProperty() {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setFormat("org.openmrs.User");
-		
+
 		PersonAttribute pa = new PersonAttribute(2);
-		
+
 		pa.setAttributeType(type);
 		pa.setValue("1");
-		
+
 		Object value = pa.getHydratedObject();
 		assertTrue((value instanceof User), "should load user class in format property");
 	}
-	
+
 	/**
 	 * @see PersonAttribute#getHydratedObject()
 	 */
@@ -89,16 +89,16 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	public void getHydratedObject_shouldStillLoadClassInFormatPropertyIfNotAttributable() {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setFormat("java.lang.String");
-		
+
 		PersonAttribute pa = new PersonAttribute(2);
-		
+
 		pa.setAttributeType(type);
 		pa.setValue("lalapalooza");
-		
+
 		String value = (String) pa.getHydratedObject();
 		assertEquals("lalapalooza", value);
 	}
-	
+
 	/**
 	 * @see PersonAttribute#voidAttribute(String)
 	 */
@@ -109,5 +109,5 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		pa.voidAttribute("Because");
 		assertTrue(pa.getVoided());
 	}
-	
+
 }

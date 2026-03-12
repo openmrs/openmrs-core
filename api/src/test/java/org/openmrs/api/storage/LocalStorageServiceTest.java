@@ -9,13 +9,6 @@
  */
 package org.openmrs.api.storage;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,6 +23,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.StorageService;
 import org.openmrs.util.OpenmrsUtil;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LocalStorageServiceTest extends BaseStorageServiceTest {
 
@@ -65,8 +63,7 @@ public class LocalStorageServiceTest extends BaseStorageServiceTest {
 			try (InputStream ignored = storageService.getData(key)) {
 				boolean deleted = storageService.purgeData(key);
 				assertThat(deleted, is(true));
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
 		});
@@ -75,15 +72,12 @@ public class LocalStorageServiceTest extends BaseStorageServiceTest {
 	@Test
 	public void saveData_shouldNotAllowToWriteFilesOutsideOfStorageDir() throws IOException {
 		assertThrows(IllegalArgumentException.class, () -> {
-			storageService.saveData((out) -> {}, null, null,
-				"/test");
+			storageService.saveData((out) -> {}, null, null, "/test");
 		});
 
 		String key = null;
 		try {
-			key = storageService.saveData((out) -> {
-					}, null, null,
-					"../test");
+			key = storageService.saveData((out) -> {}, null, null, "../test");
 			assertThat(key, is("../test"));
 			Path testFile = tempDir.resolve("test");
 			assertThat(Files.exists(testFile), is(false));

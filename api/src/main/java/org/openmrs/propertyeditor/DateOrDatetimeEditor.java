@@ -18,17 +18,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.context.Context;
 
 /**
- * Allows a java.util.Date to be converted to/from a String. It tries both Date and Date+Time formats
- * but it does not permit partial dates. 
+ * Allows a java.util.Date to be converted to/from a String. It tries both Date and Date+Time
+ * formats but it does not permit partial dates.
  */
 public class DateOrDatetimeEditor extends PropertyEditorSupport {
-	
+
 	/**
-	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
-	 * <strong>Should</strong> handle date
-	 * <strong>Should</strong> handle date and time
-	 * <strong>Should</strong> fail on partial date
+	 * <p>
+	 * <strong>Should</strong> handle date<br/>
+	 * <strong>Should</strong> handle date and time<br/>
+	 * <strong>Should</strong> fail on partial date<br/>
 	 * <strong>Should</strong> fail on partial date and time
+	 *
+	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
 	@Override
 	public void setAsText(String asString) throws IllegalArgumentException {
@@ -39,23 +41,23 @@ public class DateOrDatetimeEditor extends PropertyEditorSupport {
 		try {
 			// first try date+time
 			setValue(Context.getDateTimeFormat().parse(asString));
-		}
-		catch (ParseException dateTimeEx) {
+		} catch (ParseException dateTimeEx) {
 			// next try just date
 			try {
 				setValue(Context.getDateFormat().parse(asString));
-			}
-			catch (ParseException dateEx) {
+			} catch (ParseException dateEx) {
 				// those were the only two options, so we fail
 				throw new IllegalArgumentException(dateTimeEx);
 			}
 		}
 	}
-	
+
 	/**
-	 * @see java.beans.PropertyEditorSupport#getAsText()
-	 * <strong>Should</strong> print date without time
+	 * <p>
+	 * <strong>Should</strong> print date without time<br/>
 	 * <strong>Should</strong> print date and time with time
+	 *
+	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
 	@Override
 	public String getAsText() {
@@ -69,5 +71,5 @@ public class DateOrDatetimeEditor extends PropertyEditorSupport {
 			return Context.getDateTimeFormat().format(date);
 		}
 	}
-	
+
 }

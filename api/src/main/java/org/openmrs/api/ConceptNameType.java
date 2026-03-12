@@ -28,12 +28,12 @@ import org.openmrs.ConceptName;
  * <br>
  * NOTE: Any name with a null Concept name type is deemed a synonym. ONLY a fully specified name or
  * synonym can be marked as preferred
- * 
+ *
  * @see ConceptName
  * @since Version 1.7
  */
 public enum ConceptNameType {
-	
+
 	FULLY_SPECIFIED,
 	SHORT,
 	INDEX_TERM

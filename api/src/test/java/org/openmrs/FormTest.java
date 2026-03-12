@@ -9,20 +9,20 @@
  */
 package org.openmrs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This class tests the all of the {@link Form} non-trivial object methods.
- * 
+ *
  * @see Form
  */
 public class FormTest {
-	
+
 	/**
 	 * Make sure the Form(Integer) constructor sets the formId
-	 * 
+	 *
 	 * @see Form#Form(Integer)
 	 */
 	@Test

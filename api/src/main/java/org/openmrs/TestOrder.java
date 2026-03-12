@@ -12,6 +12,7 @@ package org.openmrs;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.envers.Audited;
@@ -19,25 +20,25 @@ import org.hibernate.envers.Audited;
 /**
  * This is a type of order that adds tests specific attributes like: laterality, clinical history,
  * etc.
- * 
+ *
  * @since 1.9.2, 1.10
  */
 @Entity
-@Table(name = "test_order") 
-@PrimaryKeyJoinColumn(name = "order_id") 
-@OnDelete(action = OnDeleteAction.CASCADE) 
+@Table(name = "test_order")
+@PrimaryKeyJoinColumn(name = "order_id")
+@OnDelete(action = OnDeleteAction.CASCADE)
 @Audited
 public class TestOrder extends ServiceOrder {
-	
+
 	public static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * Default Constructor
 	 */
 	public TestOrder() {
-		
+
 	}
-	
+
 	/**
 	 * @see org.openmrs.ServiceOrder#copy()
 	 */
@@ -47,10 +48,10 @@ public class TestOrder extends ServiceOrder {
 		super.copyHelper(newOrder);
 		return newOrder;
 	}
-	
+
 	/**
 	 * Creates a discontinuation order for this.
-	 * 
+	 *
 	 * @see org.openmrs.ServiceOrder#cloneForDiscontinuing()
 	 * @return the newly created order
 	 */
@@ -60,11 +61,11 @@ public class TestOrder extends ServiceOrder {
 		super.cloneForDiscontinuingHelper(newOrder);
 		return newOrder;
 	}
-	
+
 	/**
-	 * Creates a TestOrder for revision from this order, sets the previousOrder, action field and
-	 * other test order fields.
-	 * 
+	 * Creates a TestOrder for revision from this order, sets the previousOrder, action field and other
+	 * test order fields.
+	 *
 	 * @return the newly created order
 	 */
 	@Override

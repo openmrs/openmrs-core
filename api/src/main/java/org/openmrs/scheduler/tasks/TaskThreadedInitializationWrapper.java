@@ -26,30 +26,30 @@ import org.slf4j.LoggerFactory;
  * "startup" processes)
  */
 public class TaskThreadedInitializationWrapper implements Task {
-	
-	// Logger 
+
+	// Logger
 	private static final Logger log = LoggerFactory.getLogger(TaskThreadedInitializationWrapper.class);
-	
+
 	private final Task task;
-	
+
 	private boolean initialized = false;
-	
+
 	private final Lock lock = new ReentrantLock();
-	
+
 	private final Condition initializedCond = lock.newCondition();
-	
+
 	/**
 	 * Default constructor to create this wrapper
-	 * 
+	 *
 	 * @param task the Task to wrap around
 	 */
 	public TaskThreadedInitializationWrapper(Task task) {
 		this.task = task;
 	}
-	
+
 	/**
-	 * @see org.openmrs.scheduler.Task#execute() Executes the task defined in the task definition
-	 *      but waits until the initialize method has finished
+	 * @see org.openmrs.scheduler.Task#execute() Executes the task defined in the task definition but
+	 *      waits until the initialize method has finished
 	 */
 	@Override
 	public void execute() {
@@ -58,12 +58,10 @@ public class TaskThreadedInitializationWrapper implements Task {
 			while (!initialized) {
 				initializedCond.await();
 			}
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			log.error("Task could not be initialized hence not be executed.", e);
 			return;
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 
@@ -73,11 +71,10 @@ public class TaskThreadedInitializationWrapper implements Task {
 			log.error("Exception occurred while executing task.", e);
 		}
 	}
-	
+
 	/**
-	 * @see org.openmrs.scheduler.Task#initialize(org.openmrs.scheduler.TaskDefinition) Initializes
-	 *      the task and sets the task definition. This method is non-blocking by executing in a new
-	 *      thread.
+	 * @see org.openmrs.scheduler.Task#initialize(org.openmrs.scheduler.TaskDefinition) Initializes the
+	 *      task and sets the task definition. This method is non-blocking by executing in a new thread.
 	 */
 	@Override
 	public void initialize(final TaskDefinition config) {
@@ -87,13 +84,12 @@ public class TaskThreadedInitializationWrapper implements Task {
 				task.initialize(config);
 				initialized = true;
 				initializedCond.signalAll();
-			}
-			finally {
+			} finally {
 				lock.unlock();
 			}
 		});
 	}
-	
+
 	/**
 	 * @see org.openmrs.scheduler.Task#getTaskDefinition()
 	 */
@@ -101,7 +97,7 @@ public class TaskThreadedInitializationWrapper implements Task {
 	public TaskDefinition getTaskDefinition() {
 		return task != null ? task.getTaskDefinition() : null;
 	}
-	
+
 	/**
 	 * @see org.openmrs.scheduler.Task#isExecuting()
 	 */
@@ -109,7 +105,7 @@ public class TaskThreadedInitializationWrapper implements Task {
 	public boolean isExecuting() {
 		return task.isExecuting();
 	}
-	
+
 	/**
 	 * @see org.openmrs.scheduler.Task#shutdown()
 	 */

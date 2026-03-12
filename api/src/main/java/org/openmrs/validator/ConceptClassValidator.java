@@ -19,7 +19,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates attributes on the {@link ConceptClass} object.
- * 
+ *
  * @since 1.5
  */
 @Handler(supports = { ConceptClass.class }, order = 50)
@@ -27,27 +27,29 @@ public class ConceptClassValidator implements Validator {
 
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return c.equals(ConceptClass.class);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fail validation if user is null or empty or whitespace<br/>
+	 * <strong>Should</strong> fail validation if name is already exist in non retired concept
+	 * class<br/>
+	 * <strong>Should</strong> pass validation if description is null or empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if all required fields have proper values<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if user is null or empty or whitespace
-	 * <strong>Should</strong> fail validation if name is already exist in non retired concept class
-	 * <strong>Should</strong> pass validation if description is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if all required fields have proper values
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
-	
+
 	@Override
 	public void validate(Object obj, Errors errors) {
 		ConceptClass cc = (ConceptClass) obj;
@@ -64,5 +66,5 @@ public class ConceptClassValidator implements Validator {
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "retireReason");
 		}
 	}
-	
+
 }

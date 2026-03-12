@@ -35,9 +35,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * authentication information) is on the Thread.
  */
 public class OpenmrsFilter extends OncePerRequestFilter {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(OpenmrsFilter.class);
-	
+
 	/**
 	 * @see jakarta.servlet.Filter#destroy()
 	 */
@@ -45,11 +45,10 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 	public void destroy() {
 		log.debug("Destroying filter");
 	}
-	
+
 	/**
-	 * This method is called for every request for a page/image/javascript file/etc The main point
-	 * of this is to make sure the user's current userContext is on the session and on the current
-	 * thread
+	 * This method is called for every request for a page/image/javascript file/etc The main point of
+	 * this is to make sure the user's current userContext is on the session and on the current thread
 	 *
 	 * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(jakarta.servlet.http.HttpServletRequest,
 	 *      jakarta.servlet.http.HttpServletResponse, jakarta.servlet.FilterChain)
@@ -57,43 +56,43 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain chain)
 	        throws ServletException, IOException {
-		
+
 		HttpSession httpSession = httpRequest.getSession();
-		
+
 		// used by htmlInclude tag
 		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(System.currentTimeMillis()));
-		
+
 		log.debug("requestURI {}", httpRequest.getRequestURI());
 		log.debug("requestURL {}", httpRequest.getRequestURL());
 		log.debug("request path info {}", httpRequest.getPathInfo());
-		
+
 		// User context is created if it doesn't already exist and added to the session
-		// note: this usercontext storage logic is copied to webinf/view/uncaughtexception.jsp to 
+		// note: this usercontext storage logic is copied to webinf/view/uncaughtexception.jsp to
 		// 		 prevent stack traces being shown to non-authenticated users
 		UserContext userContext = (UserContext) httpSession.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
-		
+
 		// default the session username attribute to anonymous
 		httpSession.setAttribute("username", "-anonymous user-");
-		
+
 		// if there isn't a userContext on the session yet, create one
 		// and set it onto the session
 		if (userContext == null) {
 			userContext = new UserContext(Context.getAuthenticationScheme());
 			httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
-			
+
 			log.debug("Just set user context {} as attribute on session", userContext);
 		} else {
-			// set username as attribute on session so parent servlet container 
+			// set username as attribute on session so parent servlet container
 			// can identify sessions easier
 			User user = userContext.getAuthenticatedUser();
 			if (user != null) {
 				httpSession.setAttribute("username", user.getUsername());
 			}
 		}
-		
+
 		// set the locale on the session (for the servlet container as well)
 		httpSession.setAttribute("locale", userContext.getLocale());
-		
+
 		//TODO We do not cache the csrfguard javascript file because it contains the
 		//csrf token that is dynamically embedded in forms. For this to work,
 		//the OpenmrsFilter should be before the CSRFGuard filter in web.xml
@@ -102,23 +101,22 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 			httpResponse.setHeader("Pragma", "no-cache"); // HTTP 1.0.
 			httpResponse.setHeader("Expires", "0"); // Proxies.
 		}
-		
-		// Add the user context to the current thread 
+
+		// Add the user context to the current thread
 		Context.setUserContext(userContext);
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		
+
 		log.debug("before chain.Filter");
-		
+
 		// continue the filter chain (going on to spring, authorization, etc)
 		try {
 			chain.doFilter(httpRequest, httpResponse);
-		}
-		finally {
+		} finally {
 			Context.clearUserContext();
 		}
-		
+
 		log.debug("after chain.doFilter");
-		
+
 	}
-	
+
 }
