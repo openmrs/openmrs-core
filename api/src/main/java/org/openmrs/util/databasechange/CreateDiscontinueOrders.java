@@ -30,19 +30,18 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
 public class CreateDiscontinueOrders implements CustomTaskChange {
-	
+
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		try {
 			List<DiscontinuedOrder> discontinuedOrders = getDiscontinuedOrders(connection);
 			createDiscontinueOrders(connection, discontinuedOrders);
-		}
-		catch (SQLException | DatabaseException e) {
+		} catch (SQLException | DatabaseException e) {
 			throw new CustomChangeException(e);
 		}
 	}
-	
+
 	private void createDiscontinueOrders(JdbcConnection connection, List<DiscontinuedOrder> discontinuedOrders)
 	        throws CustomChangeException, SQLException, DatabaseException {
 		final int batchSize = 1000;
@@ -74,7 +73,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 				insertStatement.setDate(14, discontinuedOrder.dateActivated);
 				insertStatement.setDate(15, discontinuedOrder.dateActivated);
 				insertStatement.addBatch();
-				
+
 				if (index % batchSize == 0) {
 					insertStatement.executeBatch();
 				}
@@ -82,11 +81,9 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			}
 			insertStatement.executeBatch();
 			connection.commit();
-		}
-		catch (DatabaseException | SQLException e) {
+		} catch (DatabaseException | SQLException e) {
 			handleError(connection, e);
-		}
-		finally {
+		} finally {
 			if (autoCommit != null) {
 				connection.setAutoCommit(autoCommit);
 			}
@@ -95,7 +92,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			}
 		}
 	}
-	
+
 	private void setIntOrNull(PreparedStatement statement, int index, Integer value) throws SQLException {
 		if (value == null || value == 0) {
 			statement.setNull(index, Types.INTEGER);
@@ -103,14 +100,14 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			statement.setInt(index, value);
 		}
 	}
-	
+
 	private void handleError(JdbcConnection connection, Exception e) throws DatabaseException, CustomChangeException {
 		connection.rollback();
 		throw new CustomChangeException(e);
 	}
-	
-	private List<DiscontinuedOrder> getDiscontinuedOrders(JdbcConnection connection) throws CustomChangeException,
-	        SQLException {
+
+	private List<DiscontinuedOrder> getDiscontinuedOrders(JdbcConnection connection)
+	        throws CustomChangeException, SQLException {
 		List<DiscontinuedOrder> dcOrders = new ArrayList<>();
 		PreparedStatement statement = null;
 		try {
@@ -121,68 +118,66 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
 				dcOrders.add(new DiscontinuedOrder(rs.getInt("order_id"), rs.getInt("concept_id"), rs.getInt("patient_id"),
-				        rs.getInt("encounter_id"), rs.getInt("discontinued_by"), rs.getInt("discontinued_reason"), rs
-				                .getString("discontinued_reason_non_coded"), rs.getDate("date_stopped"), rs
-				                .getInt("order_type_id")));
+				        rs.getInt("encounter_id"), rs.getInt("discontinued_by"), rs.getInt("discontinued_reason"),
+				        rs.getString("discontinued_reason_non_coded"), rs.getDate("date_stopped"),
+				        rs.getInt("order_type_id")));
 			}
-		}
-		catch (SQLException | DatabaseException e) {
+		} catch (SQLException | DatabaseException e) {
 			throw new CustomChangeException(e);
-		}
-		finally {
+		} finally {
 			if (statement != null) {
 				statement.close();
 			}
 		}
 		return dcOrders;
 	}
-	
+
 	@Override
 	public String getConfirmationMessage() {
 		return "Finished creating discontinue orders for discontinued orders";
 	}
-	
+
 	@Override
 	public void setUp() throws SetupException {
 	}
-	
+
 	@Override
 	public void setFileOpener(ResourceAccessor resourceAccessor) {
 	}
-	
+
 	@Override
 	public ValidationErrors validate(Database database) {
 		return null;
 	}
-	
+
 	private static class DiscontinuedOrder {
-		
+
 		public int orderId;
-		
+
 		public int conceptId;
-		
+
 		public int patientId;
-		
+
 		public int encounterId;
-		
+
 		public int discontinuedReasonId;
-		
+
 		public String discontinuedReasonNonCoded;
-		
+
 		public Date dateActivated;
-		
+
 		public int discontinuedById;
-		
+
 		public Date dateCreated;
-		
+
 		public int previousOrderId;
-		
+
 		public String orderNumber;
-		
+
 		public int orderTypeId;
-		
+
 		public Date date;
-		
+
 		private DiscontinuedOrder(int orderId, int conceptId, int patientId, int encounterId, int discontinuedById,
 		    int discontinuedReasonId, String discontinuedReasonNonCoded, Date dateStopped, int orderTypeId) {
 			this.orderId = orderId;

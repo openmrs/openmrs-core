@@ -28,17 +28,17 @@ import org.springframework.util.Assert;
 /**
  * Handler for storing files for complex obs to the file system. Files are stored in the location
  * specified by the global property: "obs.complex_obs_dir"
- * 
+ *
  * @since 1.5
  */
 @Component
 public class BinaryDataHandler extends AbstractHandler implements ComplexObsHandler {
-	
+
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
-	
+
 	private static final Logger log = LoggerFactory.getLogger(BinaryDataHandler.class);
-	
+
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally
 	 * overwriting existing files.
@@ -46,26 +46,25 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	public BinaryDataHandler() {
 		super();
 	}
-	
+
 	/**
 	 * Currently supports the following views: org.openmrs.obs.ComplexObsHandler#RAW_VIEW
-	 * 
+	 *
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
 		String key = parseDataKey(obs);
-		
+
 		log.debug("value complex: {}", obs.getValueComplex());
 		log.debug("file path: {}", key);
 		ComplexData complexData = null;
-		
+
 		// Raw view (i.e. the file as is)
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
-			try (InputStream in = storageService.getData(key)){
+			try (InputStream in = storageService.getData(key)) {
 				complexData = new ComplexData(parseFilename(obs, "file"), IOUtils.toByteArray(in));
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				log.error("Trying to read file: {}", key, e);
 			}
 		} else {
@@ -73,15 +72,15 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			// NOTE: if adding support for another view, don't forget to update supportedViews list above
 			return null;
 		}
-		
+
 		Assert.notNull(complexData, "Complex data must not be null");
-		
+
 		injectMissingMetadata(key, complexData);
 		obs.setComplexData(complexData);
-		
+
 		return obs;
 	}
-	
+
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
 	 */
@@ -89,10 +88,10 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	public String[] getSupportedViews() {
 		return supportedViews;
 	}
-	
+
 	/**
 	 * TODO should this support a StringReader too?
-	 * 
+	 *
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
 	@Override
@@ -107,10 +106,10 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			Object data = obs.getComplexData().getData();
 			ObjectMetadata metadata = new ObjectMetadata();
 			if (data instanceof byte[]) {
-				metadata.setLength((long) ((byte[]) data).length);	
+				metadata.setLength((long) ((byte[]) data).length);
 			}
 			metadata.setFilename(obs.getComplexData().getTitle());
-			
+
 			String key = storageService.saveData(outputStream -> {
 				if (data instanceof byte[]) {
 					IOUtils.write((byte[]) data, outputStream);
@@ -128,8 +127,8 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
-		
+
 		return obs;
 	}
-	
+
 }

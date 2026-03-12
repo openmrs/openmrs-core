@@ -16,14 +16,14 @@ import org.openmrs.api.context.Context;
  * This can happen with "mandatory" modules that must start once they are installed for the first
  * time and for "openmrs core" required modules that are set as core by the OpenMRS code base and
  * every installation needs it.
- * 
+ *
  * @see Context#startup(java.util.Properties)
  * @see MandatoryModuleException
  */
 public abstract class ModuleMustStartException extends RuntimeException {
-	
+
 	private static final long serialVersionUID = -527601349350158268L;
-	
+
 	public ModuleMustStartException(String msg) {
 		super(msg);
 	}

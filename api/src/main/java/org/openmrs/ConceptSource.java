@@ -17,9 +17,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import org.hibernate.envers.Audited;
 
-import java.util.Date;
+import org.hibernate.envers.Audited;
 
 /**
  * A concept source is defined as any institution that keeps a concept dictionary. Examples are
@@ -27,80 +26,78 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "concept_reference_source")
-@AttributeOverrides({
-	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50)),
-	@AttributeOverride(name = "description", column = @Column(name= "description", nullable = false, length = 1024))
-})
+@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50)),
+        @AttributeOverride(name = "description", column = @Column(name = "description", nullable = false, length = 1024)) })
 @Audited
 public class ConceptSource extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final long serialVersionUID = 375L;
-	
+
 	// Fields
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "concept_source_id", nullable = false)
 	private Integer conceptSourceId;
-	
+
 	@Column(name = "hl7_code", length = 50)
 	private String hl7Code;
-	
+
 	@Column(name = "unique_id", length = 250, unique = true)
 	private String uniqueId;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public ConceptSource() {
 	}
-	
+
 	/** constructor with id */
 	public ConceptSource(Integer conceptSourceId) {
 		this.conceptSourceId = conceptSourceId;
 	}
-	
+
 	/**
 	 * @return Returns the conceptSourceId.
 	 */
 	public Integer getConceptSourceId() {
 		return conceptSourceId;
 	}
-	
+
 	/**
 	 * @param conceptSourceId The conceptSourceId to set.
 	 */
 	public void setConceptSourceId(Integer conceptSourceId) {
 		this.conceptSourceId = conceptSourceId;
 	}
-	
+
 	/**
 	 * @return Returns the hl7Code.
 	 */
 	public String getHl7Code() {
 		return hl7Code;
 	}
-	
+
 	/**
 	 * @param hl7Code The hl7Code to set.
 	 */
 	public void setHl7Code(String hl7Code) {
 		this.hl7Code = hl7Code;
 	}
-	
+
 	/**
 	 * @return the unique id
 	 */
 	public String getUniqueId() {
 		return uniqueId;
 	}
-	
+
 	/**
 	 * @param uniqueId the unique id to set
 	 */
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -109,7 +106,7 @@ public class ConceptSource extends BaseChangeableOpenmrsMetadata {
 	public Integer getId() {
 		return getConceptSourceId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)

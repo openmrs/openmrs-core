@@ -9,11 +9,6 @@
  */
 package org.openmrs.notification.mail;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mockStatic;
-
 import java.util.Properties;
 
 import jakarta.mail.NoSuchProviderException;
@@ -29,10 +24,15 @@ import org.mockito.MockedStatic;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Message;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
+
 /**
- * Tests for {@link MailMessageSender}. These tests verify that the Jakarta Mail API
- * resolves correctly via the Angus Mail SPI provider and that MIME messages are
- * constructed as expected without requiring a running SMTP server.
+ * Tests for {@link MailMessageSender}. These tests verify that the Jakarta Mail API resolves
+ * correctly via the Angus Mail SPI provider and that MIME messages are constructed as expected
+ * without requiring a running SMTP server.
  */
 class MailMessageSenderTest {
 
@@ -104,7 +104,7 @@ class MailMessageSenderTest {
 	@Test
 	void createMimeMessage_shouldCreateMultipartForAttachment() throws Exception {
 		Message message = new Message(1, "recipient@example.com", "sender@example.com", "Subject", "Body",
-		    "attachment content", "text/plain", "file.txt");
+		        "attachment content", "text/plain", "file.txt");
 
 		MimeMessage mimeMessage = sender.createMimeMessage(message);
 

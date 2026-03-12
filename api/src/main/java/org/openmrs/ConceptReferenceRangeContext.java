@@ -15,21 +15,21 @@ import java.util.Date;
  * Holds the context needed to resolve a concept reference range for a given person and concept. The
  * optional date field supports retrospective entry scenarios where date-relative criteria (e.g. age
  * at encounter time) should be evaluated at a point in time other than today.
- * 
+ *
  * @since 3.0.0, 2.9.0, 2.8.5, 2.7.9
  */
 public class ConceptReferenceRangeContext {
-	
+
 	private final Person person;
-	
+
 	private final Concept concept;
-	
+
 	private final Date date;
-	
+
 	private final Encounter encounter;
-	
+
 	private final Obs obs;
-	
+
 	/**
 	 * @param person the person to evaluate criteria against (required)
 	 * @param concept the concept whose reference ranges to resolve (required)
@@ -48,12 +48,12 @@ public class ConceptReferenceRangeContext {
 		this.encounter = null;
 		this.obs = null;
 	}
-	
+
 	/**
-	 * Convenience constructor that extracts person, concept, and obsDatetime from an existing Obs.
-	 * The Obs is retained so that criteria expressions referencing {@code $obs} (e.g.
+	 * Convenience constructor that extracts person, concept, and obsDatetime from an existing Obs. The
+	 * Obs is retained so that criteria expressions referencing {@code $obs} (e.g.
 	 * {@code $obs.obsDatetime}) continue to work.
-	 * 
+	 *
 	 * @param obs the observation to extract context from
 	 */
 	public ConceptReferenceRangeContext(Obs obs) {
@@ -72,11 +72,11 @@ public class ConceptReferenceRangeContext {
 		this.encounter = obs.getEncounter();
 		this.obs = obs;
 	}
-	
+
 	/**
 	 * Construct a context from an encounter and concept. The patient and encounter datetime are
 	 * extracted from the encounter.
-	 * 
+	 *
 	 * @param encounter the encounter to extract context from (required)
 	 * @param concept the concept whose reference ranges to resolve (required)
 	 * @since 3.0.0, 2.9.0, 2.8.5, 2.7.9
@@ -97,31 +97,31 @@ public class ConceptReferenceRangeContext {
 		this.encounter = encounter;
 		this.obs = null;
 	}
-	
+
 	public Person getPerson() {
 		return person;
 	}
-	
+
 	public Concept getConcept() {
 		return concept;
 	}
-	
+
 	/**
 	 * @return the date at which to evaluate criteria, or null meaning "today"
 	 */
 	public Date getDate() {
 		return date;
 	}
-	
+
 	/**
-	 * @return the encounter if this context was constructed from one or from an Obs with an
-	 *         encounter, or null
+	 * @return the encounter if this context was constructed from one or from an Obs with an encounter,
+	 *         or null
 	 * @since 3.0.0, 2.9.0, 2.8.5, 2.7.9
 	 */
 	public Encounter getEncounter() {
 		return encounter;
 	}
-	
+
 	/**
 	 * @return the original Obs if this context was constructed from one, or null
 	 */

@@ -17,56 +17,55 @@ import org.slf4j.LoggerFactory;
 /**
  */
 public class TaskFactory {
-	
+
 	/** Singleton instance of the schedulable factory */
 	private static final TaskFactory factory = new TaskFactory();
-	
+
 	/** Logger */
 	private static final Logger log = LoggerFactory.getLogger(TaskFactory.class);
-	
+
 	/** Private constructor */
 	private TaskFactory() {
 	}
-	
+
 	/**
 	 * Gets an instance of the schedulable factory
 	 */
 	public static TaskFactory getInstance() {
 		return factory;
 	}
-	
+
 	/**
-	 * Creates a new instance of Schedulable used to run tasks. By default the returned task will be
-	 * the given task wrapped with the {@link TaskThreadedInitializationWrapper} class so that the
+	 * Creates a new instance of Schedulable used to run tasks. By default the returned task will be the
+	 * given task wrapped with the {@link TaskThreadedInitializationWrapper} class so that the
 	 * {@link Task#initialize(TaskDefinition)} method runs in a new thread.
-	 * 
+	 *
 	 * @param taskDefinition
 	 * @return the created Task
 	 * @throws SchedulerException
 	 */
 	public Task createInstance(TaskDefinition taskDefinition) throws SchedulerException {
 		try {
-			
+
 			// Retrieve the appropriate class
 			Class<?> taskClass = OpenmrsClassLoader.getInstance().loadClass(taskDefinition.getTaskClass());
-			
-			// Create a new instance of the schedulable class 
+
+			// Create a new instance of the schedulable class
 			Task task = new TaskThreadedInitializationWrapper((Task) taskClass.newInstance());
-			
+
 			log.debug("initializing {}", taskClass.getName());
 			// Initialize the schedulable object
 			task.initialize(taskDefinition);
-			
+
 			return task;
-		}
-		catch (ClassNotFoundException cnfe) {
-			log.error("OpenmrsClassLoader could not load class: {}. Probably due to a module not being loaded", taskDefinition.getTaskClass());
+		} catch (ClassNotFoundException cnfe) {
+			log.error("OpenmrsClassLoader could not load class: {}. Probably due to a module not being loaded",
+			    taskDefinition.getTaskClass());
 			log.debug("Full error trace of ClassNotFoundException", cnfe);
 			throw new SchedulerException("could not load class", cnfe);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.debug("Error creating new task for class {}", taskDefinition.getTaskClass(), e);
-			
+
 			throw new SchedulerException("error creating new task for class " + taskDefinition.getTaskClass(), e);
 		}
 	}

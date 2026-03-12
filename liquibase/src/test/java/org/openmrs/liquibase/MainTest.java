@@ -10,6 +10,7 @@
 package org.openmrs.liquibase;
 
 import java.io.IOException;
+
 import org.dom4j.DocumentException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,20 +20,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
 public class MainTest {
-	
+
 	@Test
 	public void shouldCreateUpdatedSnapshotFiles() throws DocumentException, IOException, SAXException {
 		CoreDataTuner coreDataTuner = Mockito.mock(CoreDataTuner.class);
 		SchemaOnlyTuner schemaOnlyTuner = Mockito.mock(SchemaOnlyTuner.class);
-		
+
 		Main.setCoreDataTuner(coreDataTuner);
 		Main.setSchemaOnlyTuner(schemaOnlyTuner);
-		
+
 		Main.main(new String[0]);
-		
+
 		Mockito.verify(coreDataTuner, times(1)).addLicenseHeaderToFileIfNeeded(any());
 		Mockito.verify(coreDataTuner, times(1)).createUpdatedChangeLogFile(any(), any());
-		
+
 		Mockito.verify(schemaOnlyTuner, times(1)).addLicenseHeaderToFileIfNeeded(any());
 		Mockito.verify(schemaOnlyTuner, times(1)).createUpdatedChangeLogFile(any(), any());
 	}

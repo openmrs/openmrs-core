@@ -10,14 +10,14 @@
 package org.openmrs.api;
 
 public class ServiceNotFoundException extends APIException {
-	
+
 	private final Class serviceClass;
-	
+
 	public <T> ServiceNotFoundException(Class<T> serviceClass) {
 		super("Service not found: " + serviceClass);
 		this.serviceClass = serviceClass;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T> Class<T> getServiceClass() {
 		return serviceClass;

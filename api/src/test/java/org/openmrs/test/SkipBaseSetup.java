@@ -16,18 +16,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Skips over the {@link org.openmrs.test.jupiter.BaseContextSensitiveTest#baseSetupWithStandardDataAndAuthentication()}
+ * Skips over the
+ * {@link org.openmrs.test.jupiter.BaseContextSensitiveTest#baseSetupWithStandardDataAndAuthentication()}
  * method when applied to "@Test" methods. This allows classes that extend
  * {@link org.openmrs.test.jupiter.BaseContextSensitiveTest} to not be forced into running
  * baseSetupWithStandardDataAndAuthentication(). This magic happens because of the
  * {@link SkipBaseSetupAnnotationExecutionListener} that is registered on the
  * {@link org.openmrs.test.jupiter.BaseContextSensitiveTest}
- * 
+ *
  * @see org.openmrs.test.jupiter.BaseContextSensitiveTest
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE })
+@Target({ ElementType.METHOD, ElementType.TYPE })
 public @interface SkipBaseSetup {
 
 }

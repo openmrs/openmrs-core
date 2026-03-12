@@ -17,20 +17,20 @@ import org.openmrs.api.context.Context;
 
 /**
  * This handler doesn't ever assign an encounter to a visit.
- * 
+ *
  * @see EncounterVisitHandler
  */
 @Handler
 public class NoVisitAssignmentHandler extends BaseEncounterVisitHandler {
-	
+
 	@Override
 	public String getDisplayName(Locale locale) {
 		return Context.getMessageSourceService().getMessage("Visit.assignmentHandler.noAssignment", null, locale);
 	}
-	
+
 	@Override
 	public void beforeCreateEncounter(Encounter encounter) {
 		// not doing anything here. This is the simplest handler you can get
 	}
-	
+
 }

@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
  * Default OpenMRS authentication scheme to login with OpenMRS' usernames and passwords.
  *
  * @see AuthenticationScheme
- *
  * @since 2.3.0
  */
 public class UsernamePasswordAuthenticationScheme extends DaoAuthenticationScheme {
@@ -24,18 +23,17 @@ public class UsernamePasswordAuthenticationScheme extends DaoAuthenticationSchem
 	private static final Logger log = LoggerFactory.getLogger(UsernamePasswordAuthenticationScheme.class);
 
 	@Override
-	public Authenticated authenticate(Credentials credentials)
-		throws ContextAuthenticationException {
+	public Authenticated authenticate(Credentials credentials) throws ContextAuthenticationException {
 		log.debug("Authenticating client: {}", credentials.getClientName());
 
 		if (!(credentials instanceof UsernamePasswordCredentials)) {
 			throw new ContextAuthenticationException(
-				"The provided credentials could not be used to authenticated with the specified authentication scheme.");
+			        "The provided credentials could not be used to authenticated with the specified authentication scheme.");
 		}
 
 		UsernamePasswordCredentials userPassCreds = (UsernamePasswordCredentials) credentials;
 		return new BasicAuthenticated(getContextDAO().authenticate(userPassCreds.getUsername(), userPassCreds.getPassword()),
-			UsernamePasswordCredentials.SCHEME);
+		        UsernamePasswordCredentials.SCHEME);
 	}
 
 }

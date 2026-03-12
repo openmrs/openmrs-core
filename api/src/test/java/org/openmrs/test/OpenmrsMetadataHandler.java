@@ -22,18 +22,16 @@ public class OpenmrsMetadataHandler extends DefaultMetadataHandler {
 	@Override
 	public boolean tableExists(DatabaseMetaData databaseMetaData, String schemaName, String tableName) throws SQLException {
 		ResultSet tableRs = databaseMetaData.getTables(OpenmrsConstants.DATABASE_NAME, schemaName, tableName, null);
-        try 
-        {
-            return tableRs.next();
-        }
-        finally
-        {
-            SQLHelper.close(tableRs);
-        }
+		try {
+			return tableRs.next();
+		} finally {
+			SQLHelper.close(tableRs);
+		}
 	}
 
 	@Override
-	public ResultSet getTables(DatabaseMetaData databaseMetaData, String schemaName, String[] tableTypes) throws SQLException {
+	public ResultSet getTables(DatabaseMetaData databaseMetaData, String schemaName, String[] tableTypes)
+	        throws SQLException {
 		return databaseMetaData.getTables(OpenmrsConstants.DATABASE_NAME, schemaName, "%", tableTypes);
 	}
 }

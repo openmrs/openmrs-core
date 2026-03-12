@@ -22,41 +22,40 @@ import org.openmrs.api.LocationService;
  * Location-related database functions
  */
 public interface LocationDAO {
-	
-	
+
 	/**
 	 * Create or update a location.
-	 * 
+	 *
 	 * @param location <code>Location</code> to save
 	 * @return the saved <code>Location</code>
 	 */
 	public Location saveLocation(Location location);
-	
+
 	/**
 	 * Get a location by locationId
-	 * 
+	 *
 	 * @param locationId Internal <code>Integer</code> identifier of the <code>Location</code> to get
 	 * @return the requested <code>Location</code>
 	 */
 	public Location getLocation(Integer locationId);
-	
+
 	/**
 	 * Get a location by name
-	 * 
+	 *
 	 * @param name String name of the <code>Location</code> to get
 	 * @return the requested <code>Location</code>
 	 */
 	public Location getLocation(String name);
-	
+
 	/**
 	 * Get all locations
-	 * 
+	 *
 	 * @param includeRetired boolean - include retired locations as well?
-	 * @return <code>List&lt;Location&gt;</code> object of all <code>Location</code>s, possibly including
-	 *         retired locations
+	 * @return <code>List&lt;Location&gt;</code> object of all <code>Location</code>s, possibly
+	 *         including retired locations
 	 */
 	public List<Location> getAllLocations(boolean includeRetired);
-	
+
 	/**
 	 * Gets the locations matching the specified arguments
 	 *
@@ -71,127 +70,128 @@ public interface LocationDAO {
 	public List<Location> getLocations(String nameFragment, Location parent,
 	        Map<LocationAttributeType, String> serializedAttributeValues, boolean includeRetired, Integer start,
 	        Integer length) throws DAOException;
-	
+
 	/**
 	 * Completely remove the location from the database.
-	 * 
+	 *
 	 * @param location <code>Location</code> object to delete
 	 */
 	public void deleteLocation(Location location);
-	
+
 	/**
 	 * Create or update a location tag.
-	 * 
+	 *
 	 * @param tag
 	 * @return the saved <code>LocationTag</code>
 	 */
 	public LocationTag saveLocationTag(LocationTag tag);
-	
+
 	/**
 	 * Get a location tag by <code>locationTagId</code>
-	 * 
+	 *
 	 * @param locationTagId Internal <code>Integer</code> identifier of the tag to get
 	 * @return the requested <code>LocationTag</code>
 	 */
 	public LocationTag getLocationTag(Integer locationTagId);
-	
+
 	/**
 	 * Get a location tag by name
-	 * 
+	 *
 	 * @param tag String representation of the <code>LocationTag</code> to get
 	 * @return the requested <code>LocationTag</code>
 	 */
 	public LocationTag getLocationTagByName(String tag);
-	
+
 	/**
 	 * Get all location tags
-	 * 
+	 *
 	 * @param includeRetired boolean - include retired tags as well?
 	 * @return List&lt;LocationTag&gt; object with all <code>LocationTag</code>s, possibly included
 	 *         retired ones
 	 */
 	public List<LocationTag> getAllLocationTags(boolean includeRetired);
-	
+
 	/**
 	 * Find all location tags with matching names.
-	 * 
+	 *
 	 * @param search name to search
 	 * @return List&lt;LocationTag&gt; with all matching <code>LocationTags</code>
 	 */
 	public List<LocationTag> getLocationTags(String search);
-	
+
 	/**
 	 * Completely remove the location tag from the database.
-	 * 
+	 *
 	 * @param tag The <code>LocationTag</code> to delete
 	 */
 	public void deleteLocationTag(LocationTag tag);
-	
+
 	/**
 	 * @param uuid the uuid to look for
 	 * @return location matching uuid
 	 */
 	public Location getLocationByUuid(String uuid);
-	
+
 	/**
 	 * @param uuid
 	 * @return location tag or null
 	 */
 	public LocationTag getLocationTagByUuid(String uuid);
-	
+
 	/**
 	 * @see org.openmrs.api.LocationService#getCountOfLocations(String, Boolean)
 	 */
 	public Long getCountOfLocations(String nameFragment, Boolean includeRetired);
-	
+
 	/**
 	 * @see LocationService#getRootLocations(boolean)
 	 */
 	public List<Location> getRootLocations(boolean includeRetired);
-	
+
 	/**
 	 * @see LocationService#getAllLocationAttributeTypes()
 	 */
 	public List<LocationAttributeType> getAllLocationAttributeTypes();
-	
+
 	/**
 	 * @see LocationService#getLocationAttributeType(Integer)
 	 */
 	public LocationAttributeType getLocationAttributeType(Integer id);
-	
+
 	/**
 	 * @see LocationService#getLocationAttributeTypeByUuid(String)
 	 */
 	public LocationAttributeType getLocationAttributeTypeByUuid(String uuid);
-	
+
 	/**
 	 * @see LocationService#saveLocationAttributeType(LocationAttributeType)
 	 */
 	public LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType);
-	
+
 	/**
 	 * @see LocationService#purgeLocationAttributeType(LocationAttributeType)
 	 */
 	public void deleteLocationAttributeType(LocationAttributeType locationAttributeType);
-	
+
 	/**
 	 * @see LocationService#getLocationAttributeByUuid(String)
 	 */
 	public LocationAttribute getLocationAttributeByUuid(String uuid);
-	
+
 	/**
 	 * @see LocationService#getLocationAttributeTypeByName(String)
 	 */
 	public LocationAttributeType getLocationAttributeTypeByName(String name);
-	
+
 	/**
 	 * Get locations that have all the location tags specified.
+	 * <p>
+	 * <strong>Should</strong> get locations having all tags<br/>
+	 * <strong>Should</strong> return empty list when no location has the given tags<br/>
+	 * <strong>Should</strong> ignore null values in location tag list
 	 *
 	 * @param locationTagIdList
 	 * @return list of locations
-	 * <strong>Should</strong> get locations having all tags
-	 * <strong>Should</strong> return empty list when no location has the given tags
-	 * <strong>Should</strong> ignore null values in location tag list
 	 */
 	List<Location> getLocationsHavingAllTags(List<LocationTag> locationTagIdList);
 }
