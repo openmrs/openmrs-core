@@ -120,7 +120,7 @@
 
 		<!-- Testing -->
 		<junitVersion>6.0.3</junitVersion>
-		<mockitoVersion>5.22.0</mockitoVersion>
+		<mockitoVersion>5.23.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<h2Version>2.3.232</h2Version>
 		<dbunitVersion>3.0.0</dbunitVersion>
