@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -110,11 +112,16 @@ public abstract class StartupFilter implements Filter {
 	@Override
 	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 	        throws IOException, ServletException {
-		if (((HttpServletRequest)request).getServletPath().equals("/health/started")) {
+		if (((HttpServletRequest) request).getServletPath().equals("/health/started")) {
 			((HttpServletResponse) response).setStatus(Listener.isOpenmrsStarted() ? HttpServletResponse.SC_OK : HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-		}else if(((HttpServletRequest)request).getServletPath().equals("/health/alive")){
-			boolean isOpenmrsLive = Listener.isSetupNeeded() || Listener.isOpenmrsStarted() || InitializationFilter.isInstallationStarted();  
-			((HttpServletResponse) response).setStatus( isOpenmrsLive? HttpServletResponse.SC_OK : HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+		} else if (((HttpServletRequest) request).getServletPath().equals("/health/alive")) {
+			if (Listener.isSetupNeeded() && !InitializationFilter.isInstallationStarted()) {
+				triggerSetup((HttpServletRequest) request);
+			}
+			boolean isOpenmrsAlive = Listener.isOpenmrsStarted() || Listener.isSetupNeeded() 
+				|| InitializationFilter.isInstallationStarted();
+			((HttpServletResponse) response).setStatus(isOpenmrsAlive ? HttpServletResponse.SC_OK : HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+			
 		}
 		else if (skipFilter((HttpServletRequest) request)) {
 			chain.doFilter(request, response);
@@ -299,6 +306,28 @@ public abstract class StartupFilter implements Filter {
 		}
 		catch (Exception e) {
 			throw new APIException("Unable to process template: " + fullTemplatePath, e);
+		}
+	}
+	
+	/**
+	 * Makes a request to the root of the application to trigger setup.
+	 *
+	 * @param request the incoming request
+	 */
+	private void triggerSetup(HttpServletRequest request) {
+		try {
+			String url = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			        + request.getContextPath() + "/";
+			HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+			con.setRequestMethod("GET");
+			con.setConnectTimeout(2000); // 2 seconds
+			con.setReadTimeout(2000);
+			con.setInstanceFollowRedirects(true);
+			
+			con.getResponseCode();
+		}
+		catch (IOException e) {
+			log.error("Health check probe to root path failed", e);
 		}
 	}
 	

@@ -9,21 +9,24 @@
  */
 package org.openmrs.scheduler;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.time.Instant;
 
-import org.springframework.stereotype.Component;
-
-@Component
-public class TestComponentTask {
-
-	private final AtomicInteger executions = new AtomicInteger(0);
-
-	@ScheduledWithLock(name = "testComponentTask", fixedDelay = 100)
-	public void someScheduledTask() {
-		executions.incrementAndGet();
-	}
-
-	public int getExecutions() {
-		return executions.get();
-	}
+/**
+ * Recurring task details.
+ * <p>
+ * Recurring tasks are used to schedule actual task instances when the time to run comes.
+ * 
+ * @since 2.9.x
+ */
+public interface RecurringTaskDetails {
+	
+	String getUuid();
+	
+	String getName();
+	
+	Instant getCreatedAt();
+	
+	String getSignature();
+	
+	String getScheduleExpression();
 }

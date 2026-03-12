@@ -9,21 +9,19 @@
  */
 package org.openmrs.scheduler;
 
-import java.util.concurrent.atomic.AtomicInteger;
+/**
+ * Task state transitions:
+ * <p>
+ * SCHEDULED -> ENQUEUED -> PROCESSING -> SUCCEEDED / FAILED -> DELETED
+ * 
+ * @since 2.9.x
+ */
+public enum TaskState {
 
-import org.springframework.stereotype.Component;
-
-@Component
-public class TestComponentTask {
-
-	private final AtomicInteger executions = new AtomicInteger(0);
-
-	@ScheduledWithLock(name = "testComponentTask", fixedDelay = 100)
-	public void someScheduledTask() {
-		executions.incrementAndGet();
-	}
-
-	public int getExecutions() {
-		return executions.get();
-	}
+	SCHEDULED,
+	ENQUEUED,
+	PROCESSING,
+	FAILED,
+	SUCCEEDED,
+	DELETED;
 }
