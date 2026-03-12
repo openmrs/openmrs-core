@@ -85,7 +85,8 @@ public abstract class BaseStorageService extends BaseOpenmrsService implements S
 
 	protected String newKey(String moduleIdOrGroup, String keySuffix, String filename) {
 		if (keySuffix == null) {
-			keySuffix = LocalDateTime.now().format(keyDateTimeFormat) + RandomStringUtils.insecure().nextAlphanumeric(8);
+			// Insecure random is acceptable here; the suffix only needs uniqueness, not cryptographic strength
+			keySuffix = LocalDateTime.now().format(keyDateTimeFormat) + RandomStringUtils.insecure().nextAlphanumeric(8); //NOSONAR
 		}
 		if (filename != null) {
 			keySuffix += '-' + filename.replace(File.separator, "");
