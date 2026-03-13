@@ -220,7 +220,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.0", forRemoval = true)
 	@JsonIgnore
 	public Boolean isVoided() {
 		return getVoided();
@@ -347,7 +347,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @return localPreferred
 	 * @deprecated as of 2.0, use {@link #getLocalePreferred()}
 	 */
-	@Deprecated
+	@Deprecated(since = "2.0", forRemoval = true)
 	@JsonIgnore
 	public Boolean isLocalePreferred() {
 		return getLocalePreferred();

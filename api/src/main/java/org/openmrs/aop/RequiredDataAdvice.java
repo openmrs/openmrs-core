@@ -126,8 +126,8 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				// if a second argument exists, pass that to the save handler as well
 				// (with current code, it means we're either in an obs save or a user save)
 				String other = null;
-				if (args.length > 1 && args[1] instanceof String) {
-					other = (String) args[1];
+				if (args.length > 1 && args[1] instanceof String string) {
+					other = string;
 				}
 
 				recursivelyHandle(SaveHandler.class, (OpenmrsObject) mainArgument, other);
