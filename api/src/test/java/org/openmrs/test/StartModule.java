@@ -16,17 +16,17 @@ import java.lang.annotation.Target;
 
 /**
  * Putting this annotation on a method will start the listed modules.
- * 
+ *
  * @see org.openmrs.test.jupiter.BaseContextSensitiveTest
  * @see org.openmrs.test.jupiter.StartModuleExecutionListener
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.TYPE })
+@Target({ ElementType.TYPE })
 public @interface StartModule {
-	
+
 	/**
 	 * A list of full paths to omods.
-	 * 
+	 *
 	 * @return a list of omods to start up
 	 */
 	String[] value();

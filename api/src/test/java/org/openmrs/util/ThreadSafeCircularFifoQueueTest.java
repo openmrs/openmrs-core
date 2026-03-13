@@ -9,14 +9,6 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -36,6 +28,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Unit tests for the {@link ThreadSafeCircularFifoQueue} class
  */
@@ -53,7 +53,7 @@ class ThreadSafeCircularFifoQueueTest {
 	@Test
 	void shouldOfferMultipleElementsSequentially() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
-		String[] elements = {"a", "b", "c", "d", "e"};
+		String[] elements = { "a", "b", "c", "d", "e" };
 		int size = 0;
 		for (String element : elements) {
 			assertTrue(queue.offer(element));
@@ -156,7 +156,7 @@ class ThreadSafeCircularFifoQueueTest {
 	@Test
 	void shouldAddMultipleElementsIndividually() {
 		Queue<String> queue = new ThreadSafeCircularFifoQueue<>(100);
-		String[] elements = {"a", "b", "c", "d", "e"};
+		String[] elements = { "a", "b", "c", "d", "e" };
 		int size = 0;
 		for (String element : elements) {
 			assertTrue(queue.add(element));
@@ -380,9 +380,8 @@ class ThreadSafeCircularFifoQueueTest {
 		}
 
 		@SuppressWarnings("unchecked")
-		ThreadSafeCircularFifoQueue<String> deserialized =
-			(ThreadSafeCircularFifoQueue<String>) new ObjectInputStream(
-				new ByteArrayInputStream(baos.toByteArray())).readObject();
+		ThreadSafeCircularFifoQueue<String> deserialized = (ThreadSafeCircularFifoQueue<String>) new ObjectInputStream(
+		        new ByteArrayInputStream(baos.toByteArray())).readObject();
 
 		assertEquals(queue.size(), deserialized.size());
 		assertEquals("a", deserialized.poll());
@@ -480,9 +479,8 @@ class ThreadSafeCircularFifoQueueTest {
 		}
 
 		@SuppressWarnings("unchecked")
-		ThreadSafeCircularFifoQueue<String> deserialized =
-			(ThreadSafeCircularFifoQueue<String>) new ObjectInputStream(
-				new ByteArrayInputStream(baos.toByteArray())).readObject();
+		ThreadSafeCircularFifoQueue<String> deserialized = (ThreadSafeCircularFifoQueue<String>) new ObjectInputStream(
+		        new ByteArrayInputStream(baos.toByteArray())).readObject();
 
 		assertEquals(0, deserialized.size());
 		assertTrue(deserialized.isEmpty());

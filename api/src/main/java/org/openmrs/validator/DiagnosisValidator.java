@@ -16,15 +16,16 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
- * Validates {@link Validator} objects
- * This class ensures that the condition object is valid and properly structured
- * 
+ * Validates {@link Validator} objects This class ensures that the condition object is valid and
+ * properly structured
+ *
  * @since 2.2
  */
-@Handler(supports = {Diagnosis.class}, order = 50)
+@Handler(supports = { Diagnosis.class }, order = 50)
 public class DiagnosisValidator implements Validator {
 
 	/**
+	 * <p>
 	 * <strong>Should</strong> support Diagnosis class
 	 */
 	@Override
@@ -33,39 +34,41 @@ public class DiagnosisValidator implements Validator {
 	}
 
 	/**
+	 * <p>
+	 * <strong>Should</strong> fail validation if rank is null or a non-positive integer<br/>
+	 * <strong>Should</strong> fail validation if certainty is null<br/>
+	 * <strong>Should</strong> fail validation if diagnosis is null<br/>
+	 * <strong>Should</strong> fail validation if encounter is null
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if rank is null or a non-positive integer
-	 * <strong>Should</strong> fail validation if certainty is null
-	 * <strong>Should</strong> fail validation if diagnosis is null
-	 * <strong>Should</strong> fail validation if encounter is null
 	 */
 	@Override
 	public void validate(Object o, Errors errors) {
-		Diagnosis diagnosis = (Diagnosis)o;
-		
-		if(diagnosis == null){
+		Diagnosis diagnosis = (Diagnosis) o;
+
+		if (diagnosis == null) {
 			throw new APIException("Diagnosis can't be null");
 		} else if (diagnosis.getVoided()) {
 			return;
 		}
-		
-		if  (diagnosis.getEncounter() == null){
+
+		if (diagnosis.getEncounter() == null) {
 			errors.rejectValue("encounter", "error.null");
 		}
-		
-		if (diagnosis.getDiagnosis() == null){
+
+		if (diagnosis.getDiagnosis() == null) {
 			errors.rejectValue("diagnosis", "error.null");
 		}
-		
-		if (diagnosis.getCertainty() == null){
+
+		if (diagnosis.getCertainty() == null) {
 			errors.rejectValue("certainty", "error.null");
 		}
-		
+
 		Integer rank = diagnosis.getRank();
-		if (rank == null){
+		if (rank == null) {
 			errors.rejectValue("rank", "error.null");
-		}else if(rank < 0){
+		} else if (rank < 0) {
 			errors.rejectValue("rank", "error.rank.notPositiveInteger");
 		}
 	}

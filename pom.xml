@@ -167,23 +167,22 @@
 					<version>3.6.1</version>
 				</plugin>
 				<plugin>
-					<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-					<artifactId>maven-java-formatter-plugin</artifactId>
-					<version>0.4</version>
+					<groupId>com.diffplug.spotless</groupId>
+					<artifactId>spotless-maven-plugin</artifactId>
+					<version>3.3.0</version>
 					<configuration>
-						<compilerSource>${maven.compiler.release}</compilerSource>
-						<compilerCompliance>${maven.compiler.release}</compilerCompliance>
-						<compilerTargetPlatform>${maven.compiler.release}</compilerTargetPlatform>
-						<configFile>eclipse/OpenMRSFormatter.xml</configFile>
-						<overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
+						<java>
+							<eclipse>
+								<file>${maven.multiModuleProjectDirectory}/tools/src/main/resources/eclipse/OpenMRSFormatter.xml</file>
+							</eclipse>
+							<importOrder>
+								<order>java|javax,jakarta,org,com,,\#</order>
+							</importOrder>
+							<removeUnusedImports/>
+							<trimTrailingWhitespace/>
+							<endWithNewline/>
+						</java>
 					</configuration>
-					<dependencies>
-						<dependency>
-							<groupId>org.openmrs.tools</groupId>
-							<artifactId>openmrs-tools</artifactId>
-							<version>${project.version}</version>
-						</dependency>
-					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -196,7 +195,7 @@
 				<plugin>
 					<groupId>com.github.spotbugs</groupId>
 					<artifactId>spotbugs-maven-plugin</artifactId>
-					<version>4.9.3.0</version>
+					<version>4.9.8.2</version>
 					<configuration>
 						<excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
 						<effort>Max</effort>
@@ -208,7 +207,7 @@
 							<plugin>
 								<groupId>com.h3xstream.findsecbugs</groupId>
 								<artifactId>findsecbugs-plugin</artifactId>
-								<version>1.13.0</version>
+								<version>1.14.0</version>
 							</plugin>
 						</plugins>
 					</configuration>
@@ -268,16 +267,17 @@
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>
-											com.googlecode.maven-java-formatter-plugin
+											com.diffplug.spotless
 										</groupId>
 										<artifactId>
-											maven-java-formatter-plugin
+											spotless-maven-plugin
 										</artifactId>
 										<versionRange>
-											[0.3,)
+											[3.0,)
 										</versionRange>
 										<goals>
-											<goal>format</goal>
+											<goal>check</goal>
+											<goal>apply</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
@@ -401,9 +401,22 @@
 					</configuration>
 					<executions>
 						<execution>
+							<id>license-format</id>
+							<goals>
+								<goal>format</goal>
+							</goals>
+							<configuration>
+								<skip>${license.format.skip}</skip>
+							</configuration>
+						</execution>
+						<execution>
+							<id>license-check</id>
 							<goals>
 								<goal>check</goal>
 							</goals>
+							<configuration>
+								<skip>${license.check.skip}</skip>
+							</configuration>
 						</execution>
 					</executions>
 				</plugin>
@@ -540,12 +553,10 @@
 						</configuration>
 					</plugin>
 					<plugin>
-						<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-						<artifactId>maven-java-formatter-plugin</artifactId>
+						<groupId>com.diffplug.spotless</groupId>
+						<artifactId>spotless-maven-plugin</artifactId>
 						<configuration>
-							<excludes>
-								<exclude>**/**</exclude>
-							</excludes>
+							<skip>true</skip>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -695,6 +706,21 @@
 				<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 			</properties>
 		</profile>
+		<profile>
+			<id>ci-checks</id>
+			<activation>
+				<property>
+					<name>env.CI</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<properties>
+				<spotless.check.skip>false</spotless.check.skip>
+				<spotless.apply.skip>true</spotless.apply.skip>
+				<license.check.skip>false</license.check.skip>
+				<license.format.skip>true</license.format.skip>
+			</properties>
+		</profile>
 	</profiles>
 
 	<reporting>
@@ -771,5 +797,9 @@
 		<sonar.analysis.mode>publish</sonar.analysis.mode>
 
 		<argLine>-Duser.language=en -Duser.region=US -Xmx1g ${customArgLineForTesting} -Djava.locale.providers=COMPAT</argLine>
+
+		<spotless.check.skip>true</spotless.check.skip>
+		<license.format.skip>false</license.format.skip>
+		<license.check.skip>true</license.check.skip>
 	</properties>
 </project>

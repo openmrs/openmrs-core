@@ -26,18 +26,18 @@ import org.springframework.util.Assert;
 
 /**
  * Handler for storing generic binary data for complex obs to the file system.
- * 
+ *
  * @see OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
  * @since 1.8
  */
 @Component
 public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHandler {
-	
+
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
-	
+
 	private static final Logger log = LoggerFactory.getLogger(BinaryStreamHandler.class);
-	
+
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally
 	 * overwriting existing files.
@@ -45,20 +45,20 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	public BinaryStreamHandler() {
 		super();
 	}
-	
+
 	/**
-	 * Returns the same ComplexData for all views. The title is the original filename, and the data
-	 * is the raw byte[] of data (If the view is set to "download", all commas and whitespace are
-	 * stripped out of the filename to fix an issue where the browser wasn't handling a filename
-	 * with whitespace properly) Note that if the method cannot find the file associated with the
-	 * obs, it returns the obs with the ComplexData = null
-	 * 
+	 * Returns the same ComplexData for all views. The title is the original filename, and the data is
+	 * the raw byte[] of data (If the view is set to "download", all commas and whitespace are stripped
+	 * out of the filename to fix an issue where the browser wasn't handling a filename with whitespace
+	 * properly) Note that if the method cannot find the file associated with the obs, it returns the
+	 * obs with the ComplexData = null
+	 *
 	 * @see ComplexObsHandler#getObs(Obs, String)
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
 		String key = parseDataKey(obs);
-			
+
 		ComplexData complexData = null;
 		// Raw stream
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
@@ -66,15 +66,14 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 				String[] names = obs.getValueComplex().split("\\|");
 				String originalFilename = names[0];
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
-					
+
 				if (storageService.exists(key)) {
 					InputStream in = storageService.getData(key);
 					complexData = new ComplexData(parseFilename(obs, ""), in);
 				} else {
 					log.error("Unable to find file associated with complex obs {}", obs.getId());
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				throw new APIException("Obs.error.while.trying.get.binary.complex", null, e);
 			}
 		} else {
@@ -82,12 +81,12 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 			// NOTE: if adding support for another view, don't forget to update supportedViews list above
 			return null;
 		}
-		
+
 		Assert.notNull(complexData, "Complex data must not be null");
 
 		injectMissingMetadata(key, complexData);
 		obs.setComplexData(complexData);
-		
+
 		return obs;
 	}
 
@@ -98,7 +97,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	public String[] getSupportedViews() {
 		return supportedViews;
 	}
-	
+
 	/**
 	 * @see ComplexObsHandler#saveObs(Obs)
 	 */
@@ -113,12 +112,11 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 			// Store the filename in the Obs
 			obs.setValueComplex(StringUtils.defaultIfBlank(obs.getComplexData().getTitle(), key) + "|" + key);
 			obs.setComplexData(null);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new APIException("Obs.error.writing.binary.data.complex", null, e);
 		}
-		
+
 		return obs;
 	}
-	
+
 }

@@ -15,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
@@ -29,34 +30,38 @@ import org.hibernate.envers.Audited;
 @BatchSize(size = 25)
 @Audited
 public class EncounterRole extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final String UNKNOWN_ENCOUNTER_ROLE_UUID = "a0b03050-c99b-11e0-9572-0800200c9a66";
-	
+
 	// Fields
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "encounter_role_id", nullable = false)
 	private Integer encounterRoleId;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public EncounterRole() {
 	}
-	
+
 	/**
-	 * @param encounterRoleId
+	 * <p>
 	 * <strong>Should</strong> set encounter role id
+	 *
+	 * @param encounterRoleId
 	 */
 	public EncounterRole(Integer encounterRoleId) {
 		this.encounterRoleId = encounterRoleId;
 	}
-	
+
 	// Property accessors
-	
+
 	/**
-	 * @see Object#toString()
+	 * <p>
 	 * <strong>Should</strong> not fail with empty object
+	 *
+	 * @see Object#toString()
 	 */
 	@Override
 	public String toString() {
@@ -64,32 +69,32 @@ public class EncounterRole extends BaseChangeableOpenmrsMetadata {
 		ret += encounterRoleId == null ? "(no ID) " : encounterRoleId.toString() + " ";
 		return "EncounterRole: [" + ret + "]";
 	}
-	
+
 	/**
 	 * @see OpenmrsObject#getId()
 	 */
 	@Override
 	public Integer getId() {
-		
+
 		return getEncounterRoleId();
 	}
-	
+
 	/**
 	 * @see OpenmrsObject#setId(Integer)
 	 */
 	@Override
 	public void setId(Integer id) {
 		setEncounterRoleId(id);
-		
+
 	}
-	
+
 	/**
 	 * @param encounterRoleId The encounterId to set.
 	 */
 	private void setEncounterRoleId(Integer encounterRoleId) {
 		this.encounterRoleId = encounterRoleId;
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

@@ -27,13 +27,13 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 
 /**
- * A Jackson module that handles serialization of Hibernate proxy objects and
- * lazy-loaded collections. This replaces the jackson-datatype-hibernate6
- * {@code Hibernate6Module} which is not compatible with Hibernate 7.x.
+ * A Jackson module that handles serialization of Hibernate proxy objects and lazy-loaded
+ * collections. This replaces the jackson-datatype-hibernate6 {@code Hibernate6Module} which is not
+ * compatible with Hibernate 7.x.
  * <p>
- * When a Hibernate proxy is encountered during serialization, this module initializes
- * the proxy and serializes the underlying entity. Uninitialized lazy-loaded proxies
- * and collections are serialized as {@code null}.
+ * When a Hibernate proxy is encountered during serialization, this module initializes the proxy and
+ * serializes the underlying entity. Uninitialized lazy-loaded proxies and collections are
+ * serialized as {@code null}.
  * </p>
  *
  * @since 3.0.0
@@ -53,8 +53,10 @@ class HibernateProxyModule extends Module {
 	@Override
 	public void setupModule(SetupContext context) {
 		context.addBeanSerializerModifier(new BeanSerializerModifier() {
+
 			@Override
-			public JsonSerializer<?> modifySerializer(SerializationConfig config, BeanDescription beanDesc, JsonSerializer<?> serializer) {
+			public JsonSerializer<?> modifySerializer(SerializationConfig config, BeanDescription beanDesc,
+			        JsonSerializer<?> serializer) {
 				if (HibernateProxy.class.isAssignableFrom(beanDesc.getBeanClass())) {
 					return new HibernateProxySerializer(serializer);
 				}
@@ -62,7 +64,8 @@ class HibernateProxyModule extends Module {
 			}
 
 			@Override
-			public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
+			public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
+			        List<BeanPropertyWriter> beanProperties) {
 				for (int i = 0; i < beanProperties.size(); i++) {
 					beanProperties.set(i, new LazyCollectionAwarePropertyWriter(beanProperties.get(i)));
 				}
@@ -72,8 +75,8 @@ class HibernateProxyModule extends Module {
 	}
 
 	/**
-	 * A BeanPropertyWriter that skips uninitialized Hibernate lazy collections
-	 * and proxies, writing null instead.
+	 * A BeanPropertyWriter that skips uninitialized Hibernate lazy collections and proxies, writing
+	 * null instead.
 	 */
 	private static class LazyCollectionAwarePropertyWriter extends BeanPropertyWriter {
 
@@ -107,7 +110,7 @@ class HibernateProxyModule extends Module {
 				delegate.serializeAsField(bean, gen, prov);
 				return;
 			}
-			
+
 			// Skip uninitialized lazy collections - omit the field from serialized output
 			if (value instanceof PersistentCollection && !((PersistentCollection<?>) value).wasInitialized()) {
 				return;

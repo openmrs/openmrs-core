@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,8 +21,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import org.hibernate.envers.Audited;
+
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -32,20 +34,20 @@ import org.openmrs.util.OpenmrsUtil;
 @BatchSize(size = 25)
 @Audited
 public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptSet> {
-	
+
 	public static final long serialVersionUID = 3787L;
-	
+
 	// Fields
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "concept_set_id")
 	private Integer conceptSetId;
-	
+
 	// concept in the set
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "concept_id", nullable = false)
-	private Concept concept; 
-	
+	private Concept concept;
+
 	// parent concept that uses this set
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "concept_set", nullable = false)
@@ -61,68 +63,68 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public ConceptSet() {
 	}
-	
+
 	public ConceptSet(Concept concept, Double weight) {
 		setConcept(concept);
 		setSortWeight(weight);
 	}
-	
+
 	// Property accessors
-	
+
 	/**
 	 * Gets the concept set identifier.
-	 * 
+	 *
 	 * @return the concept set identifier
 	 */
 	public Integer getConceptSetId() {
 		return conceptSetId;
 	}
-	
+
 	/**
 	 * Sets the concept set identifier.
-	 * 
+	 *
 	 * @param conceptSetId The concept set identifier.
 	 */
 	public void setConceptSetId(Integer conceptSetId) {
 		this.conceptSetId = conceptSetId;
 	}
-	
+
 	public Concept getConcept() {
 		return concept;
 	}
-	
+
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-	
+
 	public Concept getConceptSet() {
 		return conceptSet;
 	}
-	
+
 	public void setConceptSet(Concept set) {
 		this.conceptSet = set;
 	}
-	
+
 	/**
 	 * @return Returns the sortWeight.
 	 */
 	public Double getSortWeight() {
 		return sortWeight;
 	}
-	
+
 	/**
 	 * @param sortWeight The sortWeight to set.
 	 */
 	public void setSortWeight(Double sortWeight) {
 		this.sortWeight = sortWeight;
 	}
-	
+
 	/**
 	 * @return Returns the creator.
 	 */
@@ -130,7 +132,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	public User getCreator() {
 		return creator;
 	}
-	
+
 	/**
 	 * @param creator The creator to set.
 	 */
@@ -138,7 +140,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-	
+
 	/**
 	 * @return Returns the dateCreated.
 	 */
@@ -146,7 +148,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-	
+
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
@@ -154,7 +156,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -163,7 +165,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	public Integer getId() {
 		return getConceptSetId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -172,48 +174,48 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	public void setId(Integer id) {
 		this.setConceptSetId(id);
 	}
-	
+
 	/**
 	 * Not currently used. Always returns null.
-	 * 
+	 *
 	 * @see org.openmrs.Auditable#getChangedBy()
 	 */
 	@Override
 	public User getChangedBy() {
 		return null;
 	}
-	
+
 	/**
 	 * Not currently used. Always returns null.
-	 * 
+	 *
 	 * @see org.openmrs.Auditable#getDateChanged()
 	 */
 	@Override
 	public Date getDateChanged() {
 		return null;
 	}
-	
+
 	/**
 	 * Not currently used.
-	 * 
+	 *
 	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
 	 */
 	@Override
 	public void setChangedBy(User changedBy) {
 	}
-	
+
 	/**
 	 * Not currently used.
-	 * 
+	 *
 	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
 	 */
 	@Override
 	public void setDateChanged(Date dateChanged) {
 	}
-	
+
 	/**
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 * Note: this comparator imposes orderings that are inconsistent with equals.
+	 * @see java.lang.Comparable#compareTo(java.lang.Object) Note: this comparator imposes orderings
+	 *      that are inconsistent with equals.
 	 */
 	@Override
 	@SuppressWarnings("squid:S1210")
@@ -224,5 +226,5 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 		}
 		return value;
 	}
-	
+
 }
