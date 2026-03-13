@@ -12,7 +12,6 @@ package org.openmrs;
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import java.util.Date;
@@ -150,7 +149,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @deprecated as of version 2.2
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = true)
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -160,7 +159,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @deprecated as of version 2.2
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = true)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -170,7 +169,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @deprecated as of version 2.2
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = true)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -180,7 +179,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @deprecated as of version 2.2
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = true)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -190,7 +189,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.0", forRemoval = true)
 	public Boolean isRetired() {
 		return getRetired();
 	}

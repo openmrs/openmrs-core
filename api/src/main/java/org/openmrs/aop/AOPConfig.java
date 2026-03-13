@@ -71,6 +71,7 @@ public class AOPConfig {
 	 * @deprecated since 3.0.0 use {@link Service} annotation instead
 	 */
 	@Bean 
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	public List<Advice> serviceInterceptors(AuthorizationAdvice authorizationAdvice,
 											LoggingAdvice loggingAdvice, RequiredDataAdvice requiredDataAdvice,
 											CacheInterceptor cacheInterceptor) {
@@ -89,6 +90,7 @@ public class AOPConfig {
 	 * @deprecated since 3.0.0 use {@link Service} annotation instead
 	 */
 	@Bean
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	public TransactionAttributeSource transactionAttributeSource() {
 		return new AnnotationTransactionAttributeSource();
 	}

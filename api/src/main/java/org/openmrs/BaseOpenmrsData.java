@@ -108,7 +108,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.OpenmrsData#getChangedBy()
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = true)
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -118,7 +118,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.OpenmrsData#setChangedBy(User)
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = true)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -128,7 +128,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.OpenmrsData#getDateChanged()
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = true)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -138,7 +138,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.OpenmrsData#setDateChanged(Date)
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.2", forRemoval = true)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -148,7 +148,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.Voidable#isVoided()
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.0", forRemoval = true)
 	public Boolean isVoided() {
 		return getVoided();
 	}
