@@ -655,7 +655,8 @@ public class Context {
 		} catch (NoSuchBeanDefinitionException e) {
 			log.debug("No MessageSender bean configured, using default MailMessageSender");
 		} catch (Exception e) {
-			log.debug("Service context not available while retrieving MessageSender, using default MailMessageSender");
+			log.debug(
+				"Service context not available while retrieving MessageSender, using default MailMessageSender");
 		}
 		return sender;
 	}
@@ -673,7 +674,8 @@ public class Context {
 		} catch (NoSuchBeanDefinitionException e) {
 			log.debug("No MessagePreparator bean configured, using default VelocityMessagePreparator");
 		} catch (Exception e) {
-			log.debug("Service context not available while retrieving MessagePreparator, using default VelocityMessagePreparator");
+			log.debug(
+				"Service context not available while retrieving MessagePreparator, using default VelocityMessagePreparator");
 		}
 		return preparator;
 	}
