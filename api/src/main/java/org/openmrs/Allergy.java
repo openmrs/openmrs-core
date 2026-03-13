@@ -194,7 +194,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 	 * @return Returns the comment
 	 * @deprecated as of 2.3.0, replaced by {@link #getComments()}
 	 */
-	@Deprecated(since = "2.3.0", forRemoval = true)
+	@Deprecated
 	public String getComment() {
 		return getComments();
 	}
@@ -203,7 +203,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 	 * @param comment the comment to set
 	 * @deprecated as of 2.3.0, replaced by {@link #setComments(String)}
 	 */
-	@Deprecated(since = "2.3.0", forRemoval = true)
+	@Deprecated
 	public void setComment(String comment) {
 		setComments(comment);
 	}
