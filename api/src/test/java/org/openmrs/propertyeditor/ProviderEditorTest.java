@@ -16,22 +16,22 @@ import org.openmrs.api.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ProviderEditorTest extends BasePropertyEditorTest<Provider, ProviderEditor> {
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	@Autowired
 	private ProviderService providerService;
-	
+
 	@Override
 	protected ProviderEditor getNewEditor() {
 		return new ProviderEditor();
 	}
-	
+
 	@Override
 	protected Provider getExistingObject() {
 		return providerService.getProvider(EXISTING_ID);
 	}
-	
+
 	@Override
 	@Test
 	@Disabled("see TRUNK-5153 that ProviderDAO throws different exception")

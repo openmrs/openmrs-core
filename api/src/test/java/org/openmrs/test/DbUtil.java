@@ -37,73 +37,74 @@ import org.slf4j.LoggerFactory;
  * 5432
  */
 public class DbUtil {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DbUtil.class);
-	
+
 	private static boolean databaseCreated = false;
-	
+
 	private static boolean isMySql = true;
-	
+
 	public static void ensureDatabaseCreated() {
 		if (databaseCreated) {
 			return;
 		}
-		
+
 		createDatabase();
-		
+
 		LiquibaseUtil.ensureSchemaCreated();
-		
+
 		databaseCreated = true;
 	}
-	
+
 	private static void createDatabase() {
-		
+
 		isMySql = !"postgres".equals(System.getProperty("database"));
-		
+
 		String databaseName = System.getProperty("databaseName");
 		if (StringUtils.isBlank(databaseName)) {
 			databaseName = "openmrs_test";
 		}
-		
+
 		String username = System.getProperty("databaseUsername");
 		if (StringUtils.isBlank(username)) {
 			username = "root";
 		}
-		
+
 		String password = System.getProperty("databasePassword");
 		if (StringUtils.isBlank(password)) {
 			password = "test";
 		}
-		
+
 		String url = System.getProperty("databaseUrl");
 		if (StringUtils.isBlank(url)) {
 			url = String.format(getConnectionUrl(), databaseName);
 		}
-		
+
 		System.setProperty("databaseUrl", url);
 		System.setProperty("databaseName", databaseName);
 		System.setProperty("databaseUsername", username);
 		System.setProperty("databasePassword", password);
 		System.setProperty("databaseDriver", isMySql ? "com.mysql.cj.jdbc.Driver" : "org.postgresql.Driver");
 		System.setProperty("databaseDialect", isMySql ? MySQLDialect.class.getName() : PostgreSQLDialect.class.getName());
-		
-		String sql = String.format(
-		    isMySql ? "create database if not exists %s default character set utf8 collate utf8_general_ci"
-		            : "create database %s encoding utf8", databaseName);
+
+		String sql = String
+		        .format(isMySql ? "create database if not exists %s default character set utf8 collate utf8_general_ci"
+		                : "create database %s encoding utf8",
+		            databaseName);
 		createDatabase(username, password, sql, url.replace(databaseName, ""));
-		
+
 		//needed for running liquibase changesets
 		Properties runtimeProperties = TestUtil.getRuntimeProperties("openmrs");
 		runtimeProperties.setProperty("connection.username", username);
 		runtimeProperties.setProperty("connection.password", password);
 		runtimeProperties.setProperty("connection.url", url);
 		Context.setRuntimeProperties(runtimeProperties);
-		
+
 		OpenmrsConstants.DATABASE_NAME = databaseName;
 	}
-	
+
 	private static int createDatabase(String user, String pw, String sql, String url) {
-		
+
 		Connection connection = null;
 		Statement statement = null;
 		try {
@@ -112,47 +113,42 @@ public class DbUtil {
 			connection = DriverManager.getConnection(url, user, pw);
 
 			statement = connection.createStatement();
-			
+
 			return statement.executeUpdate(sql);
-			
-		}
-		catch (SQLException sqlex) {
+
+		} catch (SQLException sqlex) {
 			log.error("error executing sql: " + sql, sqlex);
-		}
-		catch (InstantiationException | ClassNotFoundException | IllegalAccessException e) {
+		} catch (InstantiationException | ClassNotFoundException | IllegalAccessException e) {
 			log.error("Error generated", e);
-		}
-		finally {
+		} finally {
 			try {
 				if (statement != null) {
 					statement.close();
 				}
-			}
-			catch (SQLException e) {
+			} catch (SQLException e) {
 				log.error("Error while closing statement", e);
 			}
 			try {
-				
+
 				if (connection != null) {
 					connection.close();
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.error("Error while closing connection", e);
 			}
 		}
-		
+
 		return -1;
 	}
-	
+
 	private static String getConnectionUrl() {
-		
+
 		String url = "jdbc:mysql://localhost:3306/%s?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
-		
+
 		if (!isMySql) {
 			url = "jdbc:postgresql://localhost:5432/%s?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8";
 		}
-		
+
 		return url;
 	}
 }

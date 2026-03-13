@@ -10,19 +10,19 @@
 package org.openmrs.util;
 
 public class CycleException extends Exception {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private Object extraData;
-	
+
 	public CycleException() {
 	}
-	
+
 	public CycleException(String message, Object extraData) {
 		super(message);
 		this.extraData = extraData;
 	}
-	
+
 	public Object getExtraData() {
 		return extraData;
 	}

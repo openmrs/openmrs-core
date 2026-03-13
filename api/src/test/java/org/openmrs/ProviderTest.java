@@ -9,41 +9,41 @@
  */
 package org.openmrs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This tests methods on the provider object.
  */
 public class ProviderTest {
-	
+
 	/**
 	 * @see Provider#getName()
 	 */
 	@Test
 	public void getName_shouldReturnPersonFullNameIfPersonIsNotNullOrNullOtherwise() {
 		Provider provider = new Provider();
-		
+
 		Person person = new Person(1);
 		person.addName(new PersonName("givenName", "middleName", "familyName"));
 		provider.setPerson(person);
 		assertEquals(person.getPersonName().getFullName(), provider.getName());
 	}
-	
+
 	/**
 	 * @see Provider#toString()
 	 */
 	@Test
 	public void toString_shouldReturnPersonAllNamesWithSpecificFormat() {
-		
+
 		Provider provider = new Provider();
 		provider.setProviderId(1);
-		
+
 		Person person = new Person(1);
 		person.addName(new PersonName("givenName", "middleName", "familyName"));
 		provider.setPerson(person);
 		assertEquals(provider.toString(), "[Provider: providerId:1 providerName:[givenName middleName familyName] ]");
 	}
-	
+
 }

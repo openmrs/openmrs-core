@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.handler;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -21,11 +17,15 @@ import org.openmrs.ConceptNameTag;
 import org.openmrs.User;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 /**
  * Tests the {@link ConceptNameSaveHandler} class.
  */
 public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */
@@ -36,7 +36,7 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 		name.setTags(null);
 		assertDoesNotThrow(() -> handler.handle(name, null, null, null));
 	}
-	
+
 	/**
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */
@@ -55,7 +55,7 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 			}
 		}
 	}
-	
+
 	/**
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */
@@ -68,7 +68,7 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 		ConceptNameTag newTag = name.getTags().iterator().next();
 		assertNull(newTag.getConceptNameTagId());
 	}
-	
+
 	/**
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */

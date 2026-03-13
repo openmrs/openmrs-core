@@ -47,9 +47,7 @@
 		     compatible with the version of Hibernate and Hibernate must be compatible
 		     with our version of Spring. -->
 		<springVersion>7.0.5</springVersion>
-		<!-- spring-test 6.2.12 is used because Spring 7.0.3's spring-test requires JUnit 6.x which is -->
-		<!-- not yet supported by maven-surefire-plugin 3.5.4. Spring test 6.2.12 works with JUnit 5.x. -->
-		<springTestVersion>6.2.12</springTestVersion>
+		<springTestVersion>${springVersion}</springTestVersion>
 		<hibernateVersion>7.2.6.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.2.2.Final</hibernateSearchVersion>
@@ -75,7 +73,7 @@
 		<jakartaValidationVersion>3.1.1</jakartaValidationVersion>
 		<jakartaAnnotationVersion>3.0.0</jakartaAnnotationVersion>
 		<jakartaXmlBindVersion>4.0.5</jakartaXmlBindVersion>
-		<jakartaActivationVersion>2.0.1</jakartaActivationVersion>
+		<angusActivationVersion>2.0.3</angusActivationVersion>
 
 		<!-- Apache Commons -->
 		<commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
@@ -101,7 +99,8 @@
 		<jaxbRuntimeVersion>4.0.6</jaxbRuntimeVersion>
 
 		<!-- Mail -->
-		<javaxMailVersion>1.6.2</javaxMailVersion>
+		<jakartaMailVersion>2.1.5</jakartaMailVersion>
+		<angusMailVersion>2.0.5</angusMailVersion>
 
 		<!-- Database -->
 		<mysqlConnectorVersion>9.6.0</mysqlConnectorVersion>
@@ -115,13 +114,13 @@
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
 		<tomcatVersion>11.0.18</tomcatVersion>
-		<jodaTimeVersion>2.14.0</jodaTimeVersion>
+		<jodaTimeVersion>2.14.1</jodaTimeVersion>
 		<guavaVersion>33.5.0-jre</guavaVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 
 		<!-- Testing -->
-		<junitVersion>5.11.4</junitVersion>
-		<mockitoVersion>5.22.0</mockitoVersion>
+		<junitVersion>6.0.3</junitVersion>
+		<mockitoVersion>5.23.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<h2Version>2.3.232</h2Version>
 		<dbunitVersion>3.0.0</dbunitVersion>
@@ -218,9 +217,9 @@
 				<version>${jakartaXmlBindVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.activation</groupId>
-				<artifactId>jakarta.activation</artifactId>
-				<version>${jakartaActivationVersion}</version>
+				<groupId>org.eclipse.angus</groupId>
+				<artifactId>angus-activation</artifactId>
+				<version>${angusActivationVersion}</version>
 			</dependency>
 
 			<!-- Spring Framework -->
@@ -481,26 +480,14 @@
 
 			<!-- Mail -->
 			<dependency>
-				<groupId>javax.mail</groupId>
-				<artifactId>javax.mail-api</artifactId>
-				<version>${javaxMailVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>com.sun.activation</groupId>
-						<artifactId>jakarta.activation</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>jakarta.mail</groupId>
+				<artifactId>jakarta.mail-api</artifactId>
+				<version>${jakartaMailVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
-				<version>${javaxMailVersion}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>com.sun.activation</groupId>
-						<artifactId>jakarta.activation</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>org.eclipse.angus</groupId>
+				<artifactId>angus-mail</artifactId>
+				<version>${angusMailVersion}</version>
 			</dependency>
 
 			<!-- Database Drivers -->
@@ -618,24 +605,11 @@
 
 			<!-- Testing -->
 			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter</artifactId>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
 				<version>${junitVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-api</artifactId>
-				<version>${junitVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-engine</artifactId>
-				<version>${junitVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-params</artifactId>
-				<version>${junitVersion}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>

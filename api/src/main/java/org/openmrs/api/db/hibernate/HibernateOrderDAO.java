@@ -9,13 +9,30 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.EntityType;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
-import org.openmrs.Concept;
 import org.openmrs.CareSetting;
+import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
@@ -29,33 +46,16 @@ import org.openmrs.OrderGroupAttribute;
 import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.User;
+import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.parameter.OrderSearchCriteria;
-import org.openmrs.User;
-import org.openmrs.Visit;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.persistence.FlushModeType;
-import jakarta.persistence.Query;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.metamodel.Attribute;
-import jakarta.persistence.metamodel.EntityType;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -66,25 +66,25 @@ import org.springframework.stereotype.Repository;
  * context: /metadata/api/spring/applicationContext.xml.<br>
  * <br>
  * The OrderService should be used for all Order related database manipulation.
- * 
+ *
  * @see org.openmrs.api.OrderService
  * @see org.openmrs.api.db.OrderDAO
  */
 @Repository("orderDAO")
 public class HibernateOrderDAO implements OrderDAO {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(HibernateOrderDAO.class);
-	
+
 	/**
 	 * Hibernate session factory
 	 */
 	private final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateOrderDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#saveOrder(org.openmrs.Order)
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
@@ -93,7 +93,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public Order saveOrder(Order order) throws DAOException {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), order);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#deleteOrder(org.openmrs.Order)
 	 * @see org.openmrs.api.OrderService#purgeOrder(org.openmrs.Order)
@@ -102,23 +102,24 @@ public class HibernateOrderDAO implements OrderDAO {
 	public void deleteOrder(Order order) throws DAOException {
 		sessionFactory.getCurrentSession().remove(order);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
 	@Override
 	public Order getOrder(Integer orderId) throws DAOException {
 		log.debug("getting order #{}", orderId);
-		
+
 		return sessionFactory.getCurrentSession().get(Order.class, orderId);
 	}
-	
+
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrders(org.openmrs.OrderType, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List)
+	 * @see org.openmrs.api.db.OrderDAO#getOrders(org.openmrs.OrderType, java.util.List, java.util.List,
+	 *      java.util.List, java.util.List)
 	 */
 	@Override
-	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
+	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
+	        List<Encounter> encounters) {
 
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
@@ -140,7 +141,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		}
 
 		// we are not checking the other status's here because they are
-		// algorithm dependent  
+		// algorithm dependent
 
 		if (!orderers.isEmpty()) {
 			predicates.add(root.get("orderer").in(orderers));
@@ -150,7 +151,7 @@ public class HibernateOrderDAO implements OrderDAO {
 			predicates.add(root.get("encounter").in(encounters));
 		}
 
-		cq.where(predicates.toArray(new Predicate[]{}));
+		cq.where(predicates.toArray(new Predicate[] {}));
 		cq.orderBy(cb.desc(root.get("dateActivated")));
 
 		return session.createQuery(cq).getResultList();
@@ -184,7 +185,8 @@ public class HibernateOrderDAO implements OrderDAO {
 			predicates.add(cb.equal(cb.lower(root.get("orderNumber")), searchCriteria.getOrderNumber().toLowerCase()));
 		}
 		if (searchCriteria.getAccessionNumber() != null) {
-			predicates.add(cb.equal(cb.lower(root.get("accessionNumber")), searchCriteria.getAccessionNumber().toLowerCase()));
+			predicates
+			        .add(cb.equal(cb.lower(root.get("accessionNumber")), searchCriteria.getAccessionNumber().toLowerCase()));
 		}
 		if (searchCriteria.getVisit() != null && searchCriteria.getVisit().getVisitId() != null) {
 			predicates.add(cb.equal(root.get("encounter").get("visit"), searchCriteria.getVisit()));
@@ -215,18 +217,16 @@ public class HibernateOrderDAO implements OrderDAO {
 			predicates.add(cb.equal(root.get("action"), searchCriteria.getAction()));
 		}
 		if (searchCriteria.getExcludeDiscontinueOrders()) {
-			predicates.add(cb.or(
-				cb.notEqual(root.get("action"), Order.Action.DISCONTINUE),
-				cb.isNull(root.get("action"))));
+			predicates.add(cb.or(cb.notEqual(root.get("action"), Order.Action.DISCONTINUE), cb.isNull(root.get("action"))));
 		}
 
 		Predicate fulfillerStatusExpr = null;
 		if (searchCriteria.getFulfillerStatus() != null) {
 			fulfillerStatusExpr = cb.equal(root.get("fulfillerStatus"), searchCriteria.getFulfillerStatus());
 		}
-		
+
 		Predicate fulfillerStatusCriteria = null;
-		if (searchCriteria.getIncludeNullFulfillerStatus() != null ) {
+		if (searchCriteria.getIncludeNullFulfillerStatus() != null) {
 			if (searchCriteria.getIncludeNullFulfillerStatus()) {
 				fulfillerStatusCriteria = cb.isNull(root.get("fulfillerStatus"));
 			} else {
@@ -238,69 +238,70 @@ public class HibernateOrderDAO implements OrderDAO {
 			predicates.add(cb.or(fulfillerStatusExpr, fulfillerStatusCriteria));
 		} else if (fulfillerStatusExpr != null) {
 			predicates.add(fulfillerStatusExpr);
-		} else if ( fulfillerStatusCriteria != null ){
+		} else if (fulfillerStatusCriteria != null) {
 			predicates.add(fulfillerStatusCriteria);
 		}
-		
+
 		if (searchCriteria.getExcludeCanceledAndExpired()) {
 			Calendar cal = Calendar.getInstance();
 			// exclude expired orders (include only orders with autoExpireDate = null or autoExpireDate in the future)
-			predicates.add(cb.or(
-				cb.isNull(root.get("autoExpireDate")),
-				cb.greaterThan(root.get("autoExpireDate"), cal.getTime())));
+			predicates.add(
+			    cb.or(cb.isNull(root.get("autoExpireDate")), cb.greaterThan(root.get("autoExpireDate"), cal.getTime())));
 			// exclude Canceled Orders
-			predicates.add(cb.or(
-				cb.isNull(root.get("dateStopped")),
-				cb.greaterThan(root.get("dateStopped"), cal.getTime())));
+			predicates
+			        .add(cb.or(cb.isNull(root.get("dateStopped")), cb.greaterThan(root.get("dateStopped"), cal.getTime())));
 		}
 		if (searchCriteria.getCanceledOrExpiredOnOrBeforeDate() != null) {
 			// set the date's time to the last millisecond of the date
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(searchCriteria.getCanceledOrExpiredOnOrBeforeDate());
 			predicates.add(cb.or(
-				cb.and(cb.isNotNull(root.get("dateStopped")), cb.lessThanOrEqualTo(root.get("dateStopped"), OpenmrsUtil.getLastMomentOfDay(cal.getTime()))),
-				cb.and(cb.isNotNull(root.get("autoExpireDate")), cb.lessThanOrEqualTo(root.get("autoExpireDate"), OpenmrsUtil.getLastMomentOfDay(cal.getTime())))));
+			    cb.and(cb.isNotNull(root.get("dateStopped")),
+			        cb.lessThanOrEqualTo(root.get("dateStopped"), OpenmrsUtil.getLastMomentOfDay(cal.getTime()))),
+			    cb.and(cb.isNotNull(root.get("autoExpireDate")),
+			        cb.lessThanOrEqualTo(root.get("autoExpireDate"), OpenmrsUtil.getLastMomentOfDay(cal.getTime())))));
 		}
 		if (!searchCriteria.getIncludeVoided()) {
 			predicates.add(cb.isFalse(root.get("voided")));
 		}
 
-		cq.where(predicates.toArray(new Predicate[]{}));
+		cq.where(predicates.toArray(new Predicate[] {}));
 		cq.orderBy(cb.desc(root.get("dateActivated")));
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
-	 * @see OrderDAO#getOrders(org.openmrs.Patient, org.openmrs.CareSetting, java.util.List,
-	 *      boolean, boolean)
+	 * @see OrderDAO#getOrders(org.openmrs.Patient, org.openmrs.CareSetting, java.util.List, boolean,
+	 *      boolean)
 	 */
 	@Override
 	public List<Order> getOrders(Patient patient, CareSetting careSetting, List<OrderType> orderTypes, boolean includeVoided,
 	        boolean includeDiscontinuationOrders) {
-		
+
 		return this.getOrders(patient, null, careSetting, orderTypes, includeVoided, includeDiscontinuationOrders);
 	}
-	
+
 	/**
-	 * @see OrderDAO#getOrders(org.openmrs.Patient, org.openmrs.Visit, org.openmrs.CareSetting, java.util.List,
-	 *      boolean, boolean)
+	 * @see OrderDAO#getOrders(org.openmrs.Patient, org.openmrs.Visit, org.openmrs.CareSetting,
+	 *      java.util.List, boolean, boolean)
 	 */
 	@Override
-	public List<Order> getOrders(Patient patient, Visit visit, CareSetting careSetting, List<OrderType> orderTypes, boolean includeVoided,
-	        boolean includeDiscontinuationOrders) {
+	public List<Order> getOrders(Patient patient, Visit visit, CareSetting careSetting, List<OrderType> orderTypes,
+	        boolean includeVoided, boolean includeDiscontinuationOrders) {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Order> cq = cb.createQuery(Order.class);
 		Root<Order> root = cq.from(Order.class);
 
-		List<Predicate> predicates = createOrderCriteria(cb, root, patient, visit, careSetting, orderTypes, includeVoided, includeDiscontinuationOrders);
+		List<Predicate> predicates = createOrderCriteria(cb, root, patient, visit, careSetting, orderTypes, includeVoided,
+		    includeDiscontinuationOrders);
 
-		cq.where(predicates.toArray(new Predicate[]{}));
+		cq.where(predicates.toArray(new Predicate[] {}));
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderByUuid(java.lang.String)
 	 */
@@ -308,7 +309,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public Order getOrderByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, Order.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getRevisionOrder(org.openmrs.Order)
 	 */
@@ -319,15 +320,12 @@ public class HibernateOrderDAO implements OrderDAO {
 		CriteriaQuery<Order> cq = cb.createQuery(Order.class);
 		Root<Order> root = cq.from(Order.class);
 
-		cq.where(
-			cb.equal(root.get("previousOrder"), order),
-			cb.equal(root.get("action"), Order.Action.DISCONTINUE),
-			cb.isFalse(root.get("voided"))
-		);
+		cq.where(cb.equal(root.get("previousOrder"), order), cb.equal(root.get("action"), Order.Action.DISCONTINUE),
+		    cb.isFalse(root.get("voided")));
 
 		return session.createQuery(cq).uniqueResult();
 	}
-	
+
 	@Override
 	public Order getRevisionOrder(Order order) throws APIException {
 		Session session = sessionFactory.getCurrentSession();
@@ -335,32 +333,29 @@ public class HibernateOrderDAO implements OrderDAO {
 		CriteriaQuery<Order> cq = cb.createQuery(Order.class);
 		Root<Order> root = cq.from(Order.class);
 
-		cq.where(
-			cb.equal(root.get("previousOrder"), order),
-			cb.equal(root.get("action"), Order.Action.REVISE),
-			cb.isFalse(root.get("voided"))
-		);
+		cq.where(cb.equal(root.get("previousOrder"), order), cb.equal(root.get("action"), Order.Action.REVISE),
+		    cb.isFalse(root.get("voided")));
 
 		return session.createQuery(cq).uniqueResult();
 	}
-	
+
 	@Override
 	public List<Object[]> getOrderFromDatabase(Order order, boolean isOrderADrugOrder) throws APIException {
 		String sql = "SELECT patient_id, care_setting, concept_id FROM orders WHERE order_id = :orderId";
-		
+
 		if (isOrderADrugOrder) {
 			sql = " SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id "
 			        + " FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id = :orderId";
 		}
 		NativeQuery<Object[]> query = sessionFactory.getCurrentSession().createNativeQuery(sql, Object[].class);
 		query.setParameter("orderId", order.getOrderId());
-		
+
 		//prevent jpa from flushing before fetching the list
 		query.setFlushMode(FlushModeType.COMMIT);
-		
+
 		return query.getResultList();
 	}
-	
+
 	/**
 	 * @see OrderDAO#saveOrderGroup(OrderGroup)
 	 */
@@ -368,7 +363,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderGroup);
 	}
-	
+
 	/**
 	 * @see OrderDAO#getOrderGroupByUuid(String)
 	 * @see org.openmrs.api.OrderService#getOrderGroupByUuid(String)
@@ -377,7 +372,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, OrderGroup.class, uuid);
 	}
-	
+
 	/**
 	 * @see OrderDAO#getOrderGroupById(Integer)
 	 * @see org.openmrs.api.OrderService#getOrderGroup(Integer)
@@ -386,7 +381,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderGroup getOrderGroupById(Integer orderGroupId) throws DAOException {
 		return sessionFactory.getCurrentSession().get(OrderGroup.class, orderGroupId);
 	}
-	
+
 	/**
 	 * Delete Obs that references (deleted) Order
 	 */
@@ -397,7 +392,7 @@ public class HibernateOrderDAO implements OrderDAO {
 			        .executeUpdate();
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderByOrderNumber(java.lang.String)
 	 */
@@ -412,7 +407,7 @@ public class HibernateOrderDAO implements OrderDAO {
 
 		return session.createQuery(cq).uniqueResult();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getNextOrderNumberSeedSequenceValue()
 	 */
@@ -420,33 +415,32 @@ public class HibernateOrderDAO implements OrderDAO {
 	public Long getNextOrderNumberSeedSequenceValue() {
 		GlobalProperty globalProperty = sessionFactory.getCurrentSession().get(GlobalProperty.class,
 		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockOptions.UPGRADE);
-		
+
 		if (globalProperty == null) {
 			throw new APIException("GlobalProperty.missing", new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
 		}
-		
+
 		String gpTextValue = globalProperty.getPropertyValue();
 		if (StringUtils.isBlank(gpTextValue)) {
 			throw new APIException("GlobalProperty.invalid.value",
 			        new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
 		}
-		
+
 		Long gpNumericValue;
 		try {
 			gpNumericValue = Long.parseLong(gpTextValue);
-		}
-		catch (NumberFormatException ex) {
+		} catch (NumberFormatException ex) {
 			throw new APIException("GlobalProperty.invalid.value",
 			        new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
 		}
-		
+
 		globalProperty.setPropertyValue(String.valueOf(gpNumericValue + 1));
-		
+
 		sessionFactory.getCurrentSession().persist(globalProperty);
-		
+
 		return gpNumericValue;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, java.util.List,
 	 *      org.openmrs.CareSetting, java.util.Date)
@@ -455,13 +449,14 @@ public class HibernateOrderDAO implements OrderDAO {
 	public List<Order> getActiveOrders(Patient patient, List<OrderType> orderTypes, CareSetting careSetting, Date asOfDate) {
 		return this.getActiveOrders(patient, null, orderTypes, careSetting, asOfDate);
 	}
-	
+
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, org.openmrs.Visit, java.util.List,
-	 *      org.openmrs.CareSetting, java.util.Date)
+	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, org.openmrs.Visit,
+	 *      java.util.List, org.openmrs.CareSetting, java.util.Date)
 	 */
 	@Override
-	public List<Order> getActiveOrders(Patient patient, Visit visit, List<OrderType> orderTypes, CareSetting careSetting, Date asOfDate) {
+	public List<Order> getActiveOrders(Patient patient, Visit visit, List<OrderType> orderTypes, CareSetting careSetting,
+	        Date asOfDate) {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Order> cq = cb.createQuery(Order.class);
@@ -472,21 +467,20 @@ public class HibernateOrderDAO implements OrderDAO {
 		predicates.add(cb.lessThanOrEqualTo(root.get("dateActivated"), asOfDate));
 
 		Predicate dateStoppedAndAutoExpDateCondition = cb.or(
-			cb.and(cb.isNull(root.get("dateStopped")), cb.isNull(root.get("autoExpireDate"))),
-			cb.and(cb.isNull(root.get("dateStopped")), cb.greaterThanOrEqualTo(root.get("autoExpireDate"), asOfDate)),
-			cb.greaterThanOrEqualTo(root.get("dateStopped"), asOfDate)
-		);
+		    cb.and(cb.isNull(root.get("dateStopped")), cb.isNull(root.get("autoExpireDate"))),
+		    cb.and(cb.isNull(root.get("dateStopped")), cb.greaterThanOrEqualTo(root.get("autoExpireDate"), asOfDate)),
+		    cb.greaterThanOrEqualTo(root.get("dateStopped"), asOfDate));
 
 		predicates.add(dateStoppedAndAutoExpDateCondition);
 
-		cq.where(predicates.toArray(new Predicate[]{}));
+		cq.where(predicates.toArray(new Predicate[] {}));
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * Creates and returns a list of predicates filtering on the specified parameters
-	 * 
+	 *
 	 * @param cb
 	 * @param root
 	 * @param patient
@@ -522,7 +516,7 @@ public class HibernateOrderDAO implements OrderDAO {
 
 		return predicates;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getCareSetting(Integer)
 	 */
@@ -530,7 +524,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public CareSetting getCareSetting(Integer careSettingId) {
 		return sessionFactory.getCurrentSession().get(CareSetting.class, careSettingId);
 	}
-	
+
 	/**
 	 * @see OrderDAO#getCareSettingByUuid(String)
 	 */
@@ -538,7 +532,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public CareSetting getCareSettingByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, CareSetting.class, uuid);
 	}
-	
+
 	/**
 	 * @see OrderDAO#getCareSettingByName(String)
 	 */
@@ -553,7 +547,7 @@ public class HibernateOrderDAO implements OrderDAO {
 
 		return session.createQuery(cq).uniqueResult();
 	}
-	
+
 	/**
 	 * @see OrderDAO#getCareSettings(boolean)
 	 */
@@ -570,7 +564,7 @@ public class HibernateOrderDAO implements OrderDAO {
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see OrderDAO#getOrderTypeByName
 	 */
@@ -585,7 +579,7 @@ public class HibernateOrderDAO implements OrderDAO {
 
 		return session.createQuery(cq).uniqueResult();
 	}
-	
+
 	/**
 	 * @see OrderDAO#getOrderFrequency
 	 */
@@ -593,7 +587,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId) {
 		return sessionFactory.getCurrentSession().get(OrderFrequency.class, orderFrequencyId);
 	}
-	
+
 	/**
 	 * @see OrderDAO#getOrderFrequencyByUuid
 	 */
@@ -601,7 +595,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderFrequency getOrderFrequencyByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, OrderFrequency.class, uuid);
 	}
-	
+
 	/**
 	 * @see OrderDAO#getOrderFrequencies(boolean)
 	 */
@@ -618,7 +612,7 @@ public class HibernateOrderDAO implements OrderDAO {
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see OrderDAO#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
 	 */
@@ -634,8 +628,9 @@ public class HibernateOrderDAO implements OrderDAO {
 		Join<Concept, ConceptName> conceptNameJoin = conceptJoin.join("names");
 
 		List<Predicate> predicates = new ArrayList<>();
-		
-		Predicate searchPhrasePredicate = cb.like(cb.lower(conceptNameJoin.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(searchPhrase));
+
+		Predicate searchPhrasePredicate = cb.like(cb.lower(conceptNameJoin.get("name")),
+		    MatchMode.ANYWHERE.toLowerCasePattern(searchPhrase));
 		predicates.add(searchPhrasePredicate);
 
 		if (locale != null) {
@@ -650,11 +645,11 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (!includeRetired) {
 			predicates.add(cb.isFalse(root.get("retired")));
 		}
-		cq.where(predicates.toArray(new Predicate[]{})).distinct(true);
+		cq.where(predicates.toArray(new Predicate[] {})).distinct(true);
 
 		return session.createQuery(cq).list();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#saveOrderFrequency(org.openmrs.OrderFrequency)
 	 */
@@ -662,7 +657,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderFrequency);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#purgeOrderFrequency(org.openmrs.OrderFrequency)
 	 */
@@ -670,7 +665,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public void purgeOrderFrequency(OrderFrequency orderFrequency) {
 		sessionFactory.getCurrentSession().remove(orderFrequency);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#isOrderFrequencyInUse(org.openmrs.OrderFrequency)
 	 */
@@ -679,7 +674,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		Set<EntityType<?>> entities = sessionFactory.getMetamodel().getEntities();
-		
+
 		for (EntityType<?> entityTpe : entities) {
 			Class<?> entityClass = entityTpe.getJavaType();
 			if (Order.class.equals(entityClass)) {
@@ -692,7 +687,7 @@ public class HibernateOrderDAO implements OrderDAO {
 				continue;
 			}
 
-			for (Attribute<?,?> attribute : entityTpe.getDeclaredAttributes()) {
+			for (Attribute<?, ?> attribute : entityTpe.getDeclaredAttributes()) {
 				if (attribute.getJavaType().equals(OrderFrequency.class)) {
 					CriteriaQuery<?> cq = cb.createQuery(entityClass);
 					Root<?> root = cq.from(entityClass);
@@ -709,7 +704,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderFrequencyByConcept(org.openmrs.Concept)
 	 */
@@ -724,7 +719,7 @@ public class HibernateOrderDAO implements OrderDAO {
 
 		return session.createQuery(cq).uniqueResult();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderType(Integer)
 	 */
@@ -739,7 +734,7 @@ public class HibernateOrderDAO implements OrderDAO {
 
 		return session.createQuery(cq).uniqueResult();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderTypeByUuid(String)
 	 */
@@ -747,7 +742,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderType getOrderTypeByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, OrderType.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderTypes(boolean)
 	 */
@@ -764,15 +759,15 @@ public class HibernateOrderDAO implements OrderDAO {
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderTypeByConceptClass(org.openmrs.ConceptClass)
 	 */
 	@Override
 	public OrderType getOrderTypeByConceptClass(ConceptClass conceptClass) {
-		return (OrderType) sessionFactory.getCurrentSession().createQuery(
-		    "from OrderType where :conceptClass in elements(conceptClasses)").setParameter("conceptClass", conceptClass)
-		        .uniqueResult();
+		return (OrderType) sessionFactory.getCurrentSession()
+		        .createQuery("from OrderType where :conceptClass in elements(conceptClasses)")
+		        .setParameter("conceptClass", conceptClass).uniqueResult();
 	}
 
 	/**
@@ -783,7 +778,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (StringUtils.isBlank(javaClassName)) {
 			throw new APIException("javaClassName cannot be null");
 		}
-		
+
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<OrderType> cq = cb.createQuery(OrderType.class);
@@ -794,12 +789,12 @@ public class HibernateOrderDAO implements OrderDAO {
 			predicates.add(cb.isFalse(root.get("retired")));
 		}
 		predicates.add(cb.equal(root.get("javaClassName"), javaClassName));
-		
-		cq.where(predicates.toArray(new Predicate[]{}));
-		
+
+		cq.where(predicates.toArray(new Predicate[] {}));
+
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
 	 */
@@ -807,7 +802,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderType saveOrderType(OrderType orderType) {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.OrderService#purgeOrderType(org.openmrs.OrderType)
 	 */
@@ -815,7 +810,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public void purgeOrderType(OrderType orderType) {
 		sessionFactory.getCurrentSession().remove(orderType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.OrderService#getSubtypes(org.openmrs.OrderType, boolean)
 	 */
@@ -832,11 +827,11 @@ public class HibernateOrderDAO implements OrderDAO {
 		}
 		predicates.add(cb.equal(root.get("parent"), orderType));
 
-		cq.where(predicates.toArray(new Predicate[]{}));
-		
+		cq.where(predicates.toArray(new Predicate[] {}));
+
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	@Override
 	public boolean isOrderTypeInUse(OrderType orderType) {
 		Session session = sessionFactory.getCurrentSession();
@@ -848,7 +843,7 @@ public class HibernateOrderDAO implements OrderDAO {
 
 		return !session.createQuery(cq).getResultList().isEmpty();
 	}
-	
+
 	/**
 	 * @see OrderDAO#getOrderGroupsByPatient(Patient)
 	 */
@@ -862,7 +857,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<OrderGroup> cq = cb.createQuery(OrderGroup.class);
 		Root<OrderGroup> root = cq.from(OrderGroup.class);
-		
+
 		cq.where(cb.equal(root.get("patient"), patient));
 
 		return session.createQuery(cq).getResultList();
@@ -904,15 +899,15 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeType(java.lang.Integer)
 	 */
 	@Override
-	public OrderGroupAttributeType getOrderGroupAttributeType(Integer orderGroupAttributeTypeId) throws DAOException{
+	public OrderGroupAttributeType getOrderGroupAttributeType(Integer orderGroupAttributeTypeId) throws DAOException {
 		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class, orderGroupAttributeTypeId);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByUuid(java.lang.String)
 	 */
 	@Override
-	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) throws DAOException{
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) throws DAOException {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, OrderGroupAttributeType.class, uuid);
 	}
 
@@ -920,15 +915,16 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.db.OrderDAO#saveOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
 	 */
 	@Override
-	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws DAOException {
+	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)
+	        throws DAOException {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), orderGroupAttributeType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#deleteOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
 	 */
 	@Override
-	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws DAOException{
+	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws DAOException {
 		sessionFactory.getCurrentSession().remove(orderGroupAttributeType);
 	}
 
@@ -936,10 +932,10 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeByUuid(String)
 	 */
 	@Override
-	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid)  throws DAOException{
+	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) throws DAOException {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, OrderGroupAttribute.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByName(String)
 	 */
@@ -949,12 +945,11 @@ public class HibernateOrderDAO implements OrderDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<OrderGroupAttributeType> cq = cb.createQuery(OrderGroupAttributeType.class);
 		Root<OrderGroupAttributeType> root = cq.from(OrderGroupAttributeType.class);
-		
+
 		cq.where(cb.equal(root.get("name"), name));
-		
+
 		return session.createQuery(cq).uniqueResult();
 	}
-
 
 	/**
 	 * @param uuid The uuid associated with the order attribute to retrieve.
@@ -974,7 +969,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<OrderAttributeType> cq = cb.createQuery(OrderAttributeType.class);
 		cq.from(OrderAttributeType.class);
-		
+
 		return session.createQuery(cq).getResultList();
 	}
 
@@ -1024,9 +1019,9 @@ public class HibernateOrderDAO implements OrderDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<OrderAttributeType> cq = cb.createQuery(OrderAttributeType.class);
 		Root<OrderAttributeType> root = cq.from(OrderAttributeType.class);
-		
+
 		cq.where(cb.equal(root.get("name"), name));
-		
+
 		return session.createQuery(cq).uniqueResult();
 	}
 }

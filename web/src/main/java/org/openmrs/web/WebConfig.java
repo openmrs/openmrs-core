@@ -9,12 +9,15 @@
  */
 package org.openmrs.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.openmrs.util.OpenmrsJacksonLocaleModule;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.SmartInitializingSingleton;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -47,170 +50,157 @@ import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.servlet.view.xml.MarshallingView;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "org.openmrs.web.controller")
 public class WebConfig implements WebMvcConfigurer {
 
-    /**
-     * Registers OpenMRS custom property editors globally on the handler adapter.
-     * This restores the Platform 2.x behavior where openmrs-servlet.xml configured the
-     * RequestMappingHandlerAdapter with {@link OpenmrsBindingInitializer}.
-     */
-    @Bean
-    public SmartInitializingSingleton configureBindingInitializer(ObjectProvider<RequestMappingHandlerAdapter> adapterProvider) {
-        return () -> {
-            RequestMappingHandlerAdapter adapter = adapterProvider.getObject();
-            WebBindingInitializer existingInitializer = adapter.getWebBindingInitializer();
-            OpenmrsBindingInitializer openmrsInitializer = new OpenmrsBindingInitializer();
-            adapter.setWebBindingInitializer(binder -> {
-                if (existingInitializer != null) {
-                    existingInitializer.initBinder(binder);
-                }
-                openmrsInitializer.initBinder(binder);
-            });
-        };
-    }
+	/**
+	 * Registers OpenMRS custom property editors globally on the handler adapter. This restores the
+	 * Platform 2.x behavior where openmrs-servlet.xml configured the RequestMappingHandlerAdapter with
+	 * {@link OpenmrsBindingInitializer}.
+	 */
+	@Bean
+	public SmartInitializingSingleton configureBindingInitializer(
+	        ObjectProvider<RequestMappingHandlerAdapter> adapterProvider) {
+		return () -> {
+			RequestMappingHandlerAdapter adapter = adapterProvider.getObject();
+			WebBindingInitializer existingInitializer = adapter.getWebBindingInitializer();
+			OpenmrsBindingInitializer openmrsInitializer = new OpenmrsBindingInitializer();
+			adapter.setWebBindingInitializer(binder -> {
+				if (existingInitializer != null) {
+					existingInitializer.initBinder(binder);
+				}
+				openmrsInitializer.initBinder(binder);
+			});
+		};
+	}
 
-    @Bean
-    public StandardServletMultipartResolver multipartResolver() {
-        return new StandardServletMultipartResolver();
-    }
+	@Bean
+	public StandardServletMultipartResolver multipartResolver() {
+		return new StandardServletMultipartResolver();
+	}
 
-    @Bean
-    public ViewResolver jspViewResolver() {
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver() {
-            @Override
-            protected AbstractUrlBasedView buildView(String viewName) throws Exception {
-                // Strip leading slash to prevent double-slash paths (e.g. /WEB-INF/view//portlets/login.jsp)
-                // which Jetty 12 rejects. Module controllers like PortletController return view names
-                // starting with "/" (e.g. "/portlets/login").
-                if (viewName.startsWith("/")) {
-                    viewName = viewName.substring(1);
-                }
-                return super.buildView(viewName);
-            }
-        };
-        viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/view/");
-        viewResolver.setSuffix(".jsp");
-        return viewResolver;
-    }
+	@Bean
+	public ViewResolver jspViewResolver() {
+		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver() {
 
-    @Bean
-    public ContentNegotiatingViewResolver contentNegotiatingViewResolver() {
-        ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();
-        viewResolver.setDefaultViews(Arrays.asList(
-                mappingJackson2JsonView(),
-                marshallingView()
-        ));
-        return viewResolver;
-    }
+			@Override
+			protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+				// Strip leading slash to prevent double-slash paths (e.g. /WEB-INF/view//portlets/login.jsp)
+				// which Jetty 12 rejects. Module controllers like PortletController return view names
+				// starting with "/" (e.g. "/portlets/login").
+				if (viewName.startsWith("/")) {
+					viewName = viewName.substring(1);
+				}
+				return super.buildView(viewName);
+			}
+		};
+		viewResolver.setViewClass(JstlView.class);
+		viewResolver.setPrefix("/WEB-INF/view/");
+		viewResolver.setSuffix(".jsp");
+		return viewResolver;
+	}
 
-    @Bean
-    public MappingJackson2JsonView mappingJackson2JsonView() {
-        MappingJackson2JsonView view = new MappingJackson2JsonView();
-        view.setExtractValueFromSingleKeyModel(true);
-        return view;
-    }
+	@Bean
+	public ContentNegotiatingViewResolver contentNegotiatingViewResolver() {
+		ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();
+		viewResolver.setDefaultViews(Arrays.asList(mappingJackson2JsonView(), marshallingView()));
+		return viewResolver;
+	}
 
-    @Bean
-    public MarshallingView marshallingView() {
-        MarshallingView view = new MarshallingView();
-        view.setMarshaller(xStreamMarshaller());
-        return view;
-    }
+	@Bean
+	public MappingJackson2JsonView mappingJackson2JsonView() {
+		MappingJackson2JsonView view = new MappingJackson2JsonView();
+		view.setExtractValueFromSingleKeyModel(true);
+		return view;
+	}
 
+	@Bean
+	public MarshallingView marshallingView() {
+		MarshallingView view = new MarshallingView();
+		view.setMarshaller(xStreamMarshaller());
+		return view;
+	}
 
-    @Override
-    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-        Map<String, MediaType> mediaTypes = new HashMap<>();
-        mediaTypes.put("json", MediaType.APPLICATION_JSON);
-        mediaTypes.put("xml", MediaType.APPLICATION_XML);
+	@Override
+	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+		Map<String, MediaType> mediaTypes = new HashMap<>();
+		mediaTypes.put("json", MediaType.APPLICATION_JSON);
+		mediaTypes.put("xml", MediaType.APPLICATION_XML);
 
-        configurer
-                .defaultContentType(MediaType.APPLICATION_JSON)
-                .mediaTypes(mediaTypes);
-    }
+		configurer.defaultContentType(MediaType.APPLICATION_JSON).mediaTypes(mediaTypes);
+	}
 
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+		converters.add(new ByteArrayHttpMessageConverter());
+		converters.add(new StringHttpMessageConverter());
+		converters.add(new FormHttpMessageConverter());
+		converters.add(new SourceHttpMessageConverter<>());
+		converters.add(jacksonConverter());
+		converters.add(xmlMarshallingHttpMessageConverter());
+	}
 
-    @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(new ByteArrayHttpMessageConverter());
-        converters.add(new StringHttpMessageConverter());
-        converters.add(new FormHttpMessageConverter());
-        converters.add(new SourceHttpMessageConverter<>());
-        converters.add(jacksonConverter());
-        converters.add(xmlMarshallingHttpMessageConverter());
-    }
+	@Bean
+	public Jackson2ObjectMapperFactoryBean openmrsObjectMapperFactoryBean() {
+		Jackson2ObjectMapperFactoryBean factory = new Jackson2ObjectMapperFactoryBean();
+		factory.setModulesToInstall(OpenmrsJacksonLocaleModule.class);
+		return factory;
+	}
 
-    @Bean
-    public Jackson2ObjectMapperFactoryBean openmrsObjectMapperFactoryBean() {
-        Jackson2ObjectMapperFactoryBean factory = new Jackson2ObjectMapperFactoryBean();
-        factory.setModulesToInstall(OpenmrsJacksonLocaleModule.class);
-        return factory;
-    }
+	@Bean
+	public MappingJackson2HttpMessageConverter jacksonConverter() {
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		converter.setObjectMapper(openmrsObjectMapper());
+		return converter;
+	}
 
+	@Bean
+	public ObjectMapper openmrsObjectMapper() {
+		return Jackson2ObjectMapperBuilder.json().modulesToInstall(OpenmrsJacksonLocaleModule.class).build();
+	}
 
-    @Bean
-    public MappingJackson2HttpMessageConverter jacksonConverter() {
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setObjectMapper(openmrsObjectMapper());
-        return converter;
-    }
+	@Bean
+	public XStreamMarshaller xStreamMarshaller() {
+		return new XStreamMarshaller();
+	}
 
-    @Bean
-    public ObjectMapper openmrsObjectMapper() {
-        return Jackson2ObjectMapperBuilder
-                .json()
-                .modulesToInstall(OpenmrsJacksonLocaleModule.class)
-                .build();
-    }
+	@Bean
+	public HttpMessageConverter<Object> xmlMarshallingHttpMessageConverter() {
+		MarshallingHttpMessageConverter converter = new MarshallingHttpMessageConverter();
+		converter.setMarshaller(xStreamMarshaller());
+		converter.setUnmarshaller(xStreamMarshaller());
+		return converter;
+	}
 
-    @Bean
-    public XStreamMarshaller xStreamMarshaller() {
-        return new XStreamMarshaller();
-    }
+	@Bean
+	public SimpleMappingExceptionResolver simpleMappingExceptionResolver() {
+		SimpleMappingExceptionResolver exceptionResolver = new SimpleMappingExceptionResolver();
+		Properties mappings = new Properties();
+		mappings.put("java.lang.Exception", "uncaughtException");
+		exceptionResolver.setExceptionMappings(mappings);
+		exceptionResolver.setOrder(100);
+		return exceptionResolver;
+	}
 
-    @Bean
-    public HttpMessageConverter<Object> xmlMarshallingHttpMessageConverter() {
-        MarshallingHttpMessageConverter converter = new MarshallingHttpMessageConverter();
-        converter.setMarshaller(xStreamMarshaller());
-        converter.setUnmarshaller(xStreamMarshaller());
-        return converter;
-    }
+	@Bean(name = "conversion-service")
+	public FormattingConversionServiceFactoryBean conversionService() {
+		return new FormattingConversionServiceFactoryBean();
+	}
 
-    @Bean
-    public SimpleMappingExceptionResolver simpleMappingExceptionResolver() {
-        SimpleMappingExceptionResolver exceptionResolver = new SimpleMappingExceptionResolver();
-        Properties mappings = new Properties();
-        mappings.put("java.lang.Exception", "uncaughtException");
-        exceptionResolver.setExceptionMappings(mappings);
-        exceptionResolver.setOrder(100);
-        return exceptionResolver;
-    }
+	@Bean
+	public SimpleUrlHandlerMapping urlMapping() {
+		SimpleUrlHandlerMapping handlerMapping = new SimpleUrlHandlerMapping();
+		handlerMapping.setOrder(99);
+		return handlerMapping;
+	}
 
-    @Bean(name = "conversion-service")
-    public FormattingConversionServiceFactoryBean conversionService() {
-        return new FormattingConversionServiceFactoryBean();
-    }
-
-    @Bean
-    public SimpleUrlHandlerMapping urlMapping() {
-        SimpleUrlHandlerMapping handlerMapping = new SimpleUrlHandlerMapping();
-        handlerMapping.setOrder(99);
-        return handlerMapping;
-    }
-
-    @Bean
-    public SimpleControllerHandlerAdapter simpleControllerHandlerAdapter() {
-        return new SimpleControllerHandlerAdapter();
-    }
+	@Bean
+	public SimpleControllerHandlerAdapter simpleControllerHandlerAdapter() {
+		return new SimpleControllerHandlerAdapter();
+	}
 
 }

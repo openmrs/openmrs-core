@@ -9,25 +9,25 @@
  */
 package org.openmrs.module.dtd;
 
+import java.io.IOException;
+import java.io.InputStream;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
-
 public class DtdTestValidator {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DtdTestValidator.class);
-	
+
 	private DtdTestValidator() {
 	}
-	
+
 	public static boolean isValidConfigXml(InputStream xml) {
 		try {
 			DocumentBuilderFactory domFactory;
@@ -35,23 +35,23 @@ public class DtdTestValidator {
 			domFactory = DocumentBuilderFactory.newInstance();
 			domFactory.setValidating(true);
 			builder = domFactory.newDocumentBuilder();
-			
+
 			final boolean[] isValidConfig = { true };
-			
+
 			builder.setErrorHandler(new ErrorHandler() {
-				
+
 				@Override
 				public void warning(SAXParseException e) {
 					isValidConfig[0] = true;
-					
+
 				}
-				
+
 				@Override
 				public void error(SAXParseException e) {
 					e.printStackTrace();
 					isValidConfig[0] = false;
 				}
-				
+
 				@Override
 				public void fatalError(SAXParseException e) {
 					e.printStackTrace();
@@ -60,8 +60,7 @@ public class DtdTestValidator {
 			});
 			builder.parse(xml);
 			return isValidConfig[0];
-		}
-		catch (SAXException | IOException | ParserConfigurationException e) {
+		} catch (SAXException | IOException | ParserConfigurationException e) {
 			log.error("Failure reason: ", e);
 			return false;
 		}

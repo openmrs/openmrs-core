@@ -3,33 +3,30 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- * 
+ *
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
-
 import java.util.Arrays;
-import org.apache.commons.lang3.BooleanUtils;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.MedicationDispense;
 import org.openmrs.api.APIException;
 import org.openmrs.api.MedicationDispenseService;
 import org.openmrs.api.RefByUuid;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.MedicationDispenseDAO;
 import org.openmrs.parameter.MedicationDispenseCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-
 /**
- * This class implements the {@link MedicationDispenseService} interface
- * It defines the API for interacting with MedicationDispense objects.
+ * This class implements the {@link MedicationDispenseService} interface It defines the API for
+ * interacting with MedicationDispense objects.
+ *
  * @since 2.6.0
  */
 @Service("medicationDispenseService")
@@ -71,8 +68,7 @@ public class MedicationDispenseServiceImpl extends BaseOpenmrsService implements
 	}
 
 	@Override
-	public MedicationDispense voidMedicationDispense(
-		MedicationDispense medicationDispense, String reason) {
+	public MedicationDispense voidMedicationDispense(MedicationDispense medicationDispense, String reason) {
 		if (StringUtils.isBlank(reason)) {
 			throw new IllegalArgumentException("voidReason cannot be null or empty");
 		}
@@ -90,19 +86,19 @@ public class MedicationDispenseServiceImpl extends BaseOpenmrsService implements
 	public void purgeMedicationDispense(MedicationDispense medicationDispense) throws APIException {
 		medicationDispenseDAO.deleteMedicationDispense(medicationDispense);
 	}
-	
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getRefByUuid(Class<T> type, String uuid) {
-        if (MedicationDispense.class.equals(type)) {
-            return (T) getMedicationDispenseByUuid(uuid);
-        }
-        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
-    }
 
-    @Override
-    public List<Class<?>> getRefTypes() {
-        return Arrays.asList(MedicationDispense.class);
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T getRefByUuid(Class<T> type, String uuid) {
+		if (MedicationDispense.class.equals(type)) {
+			return (T) getMedicationDispenseByUuid(uuid);
+		}
+		throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+	}
+
+	@Override
+	public List<Class<?>> getRefTypes() {
+		return Arrays.asList(MedicationDispense.class);
+	}
 
 }

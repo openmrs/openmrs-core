@@ -16,11 +16,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+
 import org.hibernate.envers.Audited;
 
 /**
  * Represents a successfully processed hl7 message.
- * 
+ *
  * @see HL7InQueue
  * @see HL7Service
  */
@@ -39,16 +40,16 @@ public class HL7InArchive extends HL7QueueItem {
 
 	@Transient
 	private boolean loaded = false;
-	
+
 	/**
 	 * Default constructor
 	 */
 	public HL7InArchive() {
 	}
-	
+
 	/**
 	 * Convenience constructor to build archive from an existing queue entry
-	 * 
+	 *
 	 * @param hl7InQueue queue entry from which archive entry will be constructed
 	 */
 	public HL7InArchive(HL7InQueue hl7InQueue) {
@@ -57,21 +58,21 @@ public class HL7InArchive extends HL7QueueItem {
 		setHL7Data(hl7InQueue.getHL7Data());
 		setMessageState(HL7Constants.HL7_STATUS_PROCESSED);
 	}
-	
+
 	/**
 	 * @return Returns the hl7InArchiveId.
 	 */
 	public int getHL7InArchiveId() {
 		return hl7InArchiveId;
 	}
-	
+
 	/**
 	 * @param hl7InArchiveId The hl7InArchiveId to set.
 	 */
 	public void setHL7InArchiveId(int hl7InArchiveId) {
 		this.hl7InArchiveId = hl7InArchiveId;
 	}
-	
+
 	/**
 	 * @return Returns message state.
 	 * @since 1.5
@@ -79,7 +80,7 @@ public class HL7InArchive extends HL7QueueItem {
 	public Integer getMessageState() {
 		return messageState;
 	}
-	
+
 	/**
 	 * @param messageState The message source to set.
 	 * @since 1.5
@@ -87,7 +88,7 @@ public class HL7InArchive extends HL7QueueItem {
 	public void setMessageState(Integer messageState) {
 		this.messageState = messageState;
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 * @since 1.5
@@ -96,7 +97,7 @@ public class HL7InArchive extends HL7QueueItem {
 	public Integer getId() {
 		return getHL7InArchiveId();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 * @since 1.5
@@ -105,25 +106,25 @@ public class HL7InArchive extends HL7QueueItem {
 	public void setId(Integer id) {
 		setHL7InArchiveId(id);
 	}
-	
+
 	/**
 	 * describes whether hl7 data has been loaded from the filesystem
-	 * 
+	 *
 	 * @since 1.7
 	 * @return the loaded status (true or false)
 	 */
 	public boolean isLoaded() {
 		return loaded;
 	}
-	
+
 	/**
 	 * sets the flag for hl7 data having been loaded from the filesystem
-	 * 
+	 *
 	 * @since 1.7
 	 * @param loaded status to set
 	 */
 	public void setLoaded(boolean loaded) {
 		this.loaded = loaded;
 	}
-	
+
 }

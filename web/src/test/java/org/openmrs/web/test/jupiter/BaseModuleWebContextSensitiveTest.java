@@ -15,14 +15,14 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Modules that test controllers, etc, or which contain references to Beans in openmrs-servlet.xml
- * should use this class instead of the general {@link BaseWebContextSensitiveTest} one. 
- * Developers just need to make sure their modules are on the classpath. 
- * The TestingApplicationContext.xml file tells spring/hibernate to look for and load all
- * modules found on the classpath. The ContextConfiguration annotation adds in the module
- * application context files to the config locations and the test application context (so that the
- * module services are loaded from the system classloader)
+ * should use this class instead of the general {@link BaseWebContextSensitiveTest} one. Developers
+ * just need to make sure their modules are on the classpath. The TestingApplicationContext.xml file
+ * tells spring/hibernate to look for and load all modules found on the classpath. The
+ * ContextConfiguration annotation adds in the module application context files to the config
+ * locations and the test application context (so that the module services are loaded from the
+ * system classloader)
  */
 @WebAppConfiguration
-@ContextConfiguration(locations = { "classpath*:openmrs-servlet.xml", "classpath*:webModuleApplicationContext.xml" }, inheritLocations = true)
-public abstract class BaseModuleWebContextSensitiveTest extends BaseModuleContextSensitiveTest {
-}
+@ContextConfiguration(locations = { "classpath*:openmrs-servlet.xml",
+        "classpath*:webModuleApplicationContext.xml" }, inheritLocations = true)
+public abstract class BaseModuleWebContextSensitiveTest extends BaseModuleContextSensitiveTest {}

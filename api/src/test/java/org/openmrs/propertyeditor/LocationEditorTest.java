@@ -19,12 +19,12 @@ public class LocationEditorTest extends BasePropertyEditorTest<Location, Locatio
 
 	@Autowired
 	private LocationService locationService;
-	
+
 	@Override
 	protected LocationEditor getNewEditor() {
 		return new LocationEditor();
 	}
-	
+
 	@Override
 	protected Location getExistingObject() {
 		return locationService.getLocation(EXISTING_ID);

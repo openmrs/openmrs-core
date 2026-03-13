@@ -28,31 +28,33 @@ import liquibase.resource.ResourceAccessor;
  * allergy and allergy_recation tables
  */
 public class MigrateAllergiesChangeSet implements CustomTaskChange {
-	
+
 	private Integer mildConcept;
+
 	private Integer moderateConcept;
+
 	private Integer severeConcept;
-	
+
 	@Override
 	public String getConfirmationMessage() {
 		return "Successfully moved un voided allergies from old to new tables";
 	}
-	
+
 	@Override
 	public void setUp() throws SetupException {
-		
+
 	}
-	
+
 	@Override
 	public void setFileOpener(ResourceAccessor resourceAccessor) {
-		
+
 	}
-	
+
 	@Override
 	public ValidationErrors validate(Database database) {
 		return null;
 	}
-	
+
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		try {
@@ -61,8 +63,8 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 			JdbcConnection connection = (JdbcConnection) database.getConnection();
 
 			int allergyTypeId;
-			try (PreparedStatement typeStmt = connection.prepareStatement(
-					"select active_list_type_id from active_list_type where name = ?")) {
+			try (PreparedStatement typeStmt = connection
+			        .prepareStatement("select active_list_type_id from active_list_type where name = ?")) {
 				typeStmt.setString(1, "Allergy");
 				try (ResultSet rs = typeStmt.executeQuery()) {
 					if (!rs.next()) {
@@ -73,104 +75,99 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 			}
 
 			try (PreparedStatement allergyInsertStatement = connection.prepareStatement(
-					"insert into allergy (patient_id, coded_allergen, severity_concept_id, creator, date_created, uuid, comment, allergen_type) "
-						+ "values(?,?,?,?,?,?,?,?)");
-				PreparedStatement reactionInsertStatement = connection.prepareStatement(
-					"insert into allergy_reaction (allergy_id, reaction_concept_id, uuid) "
-						+ "values (?,?,?)");
-				PreparedStatement allergySelectStatement = connection.prepareStatement(
-					"select allergy_id from allergy where uuid = ?");
-				PreparedStatement activeListStmt = connection.prepareStatement(
-					"select person_id, concept_id, comments, creator, date_created, uuid, reaction_concept_id, severity, allergy_type "
-						+ "from active_list al inner join active_list_allergy ala on al.active_list_id=ala.active_list_id "
-						+ "where voided = 0 and active_list_type_id = ?")) {
+			    "insert into allergy (patient_id, coded_allergen, severity_concept_id, creator, date_created, uuid, comment, allergen_type) "
+			            + "values(?,?,?,?,?,?,?,?)");
+			        PreparedStatement reactionInsertStatement = connection.prepareStatement(
+			            "insert into allergy_reaction (allergy_id, reaction_concept_id, uuid) " + "values (?,?,?)");
+			        PreparedStatement allergySelectStatement = connection
+			                .prepareStatement("select allergy_id from allergy where uuid = ?");
+			        PreparedStatement activeListStmt = connection.prepareStatement(
+			            "select person_id, concept_id, comments, creator, date_created, uuid, reaction_concept_id, severity, allergy_type "
+			                    + "from active_list al inner join active_list_allergy ala on al.active_list_id=ala.active_list_id "
+			                    + "where voided = 0 and active_list_type_id = ?")) {
 
 				activeListStmt.setInt(1, allergyTypeId);
 				try (ResultSet rs = activeListStmt.executeQuery()) {
-				while (rs.next()) {
-					String uuid = rs.getString("uuid");
+					while (rs.next()) {
+						String uuid = rs.getString("uuid");
 
-					//insert allergy
-					allergyInsertStatement.setInt(1, rs.getInt("person_id"));
-					allergyInsertStatement.setInt(2, rs.getInt("concept_id"));
+						//insert allergy
+						allergyInsertStatement.setInt(1, rs.getInt("person_id"));
+						allergyInsertStatement.setInt(2, rs.getInt("concept_id"));
 
-					Integer severityConcept = null;
-					String severity = rs.getString("severity");
-					if (AllergySeverity.MILD.name().equals(severity)) {
-						severityConcept = mildConcept;
+						Integer severityConcept = null;
+						String severity = rs.getString("severity");
+						if (AllergySeverity.MILD.name().equals(severity)) {
+							severityConcept = mildConcept;
+						} else if (AllergySeverity.MODERATE.name().equals(severity)) {
+							severityConcept = moderateConcept;
+						} else if (AllergySeverity.SEVERE.name().equals(severity)) {
+							severityConcept = severeConcept;
+						}
+						//TODO what do we do with the other severities?
+
+						if (severityConcept != null) {
+							allergyInsertStatement.setInt(3, severityConcept);
+						} else {
+							allergyInsertStatement.setNull(3, java.sql.Types.INTEGER);
+						}
+
+						allergyInsertStatement.setInt(4, rs.getInt("creator"));
+						allergyInsertStatement.setDate(5, rs.getDate("date_created"));
+						allergyInsertStatement.setString(6, uuid);
+						allergyInsertStatement.setString(7, rs.getString("comments"));
+
+						String allergyType = rs.getString("allergy_type");
+						if (allergyType == null) {
+							allergyType = "DRUG";
+						} else if ("ENVIRONMENTAL".equals(allergyType)) {
+							allergyType = "ENVIRONMENT";
+						}
+
+						allergyInsertStatement.setString(8, allergyType);
+
+						allergyInsertStatement.execute();
+
+						//get inserted allergy_id
+						allergySelectStatement.setString(1, uuid);
+						try (ResultSet rs2 = allergySelectStatement.executeQuery()) {
+							rs2.next();
+
+							//insert reaction
+							reactionInsertStatement.setInt(1, rs2.getInt(1));
+						}
+						reactionInsertStatement.setInt(2, rs.getInt("reaction_concept_id"));
+						reactionInsertStatement.setString(3, UUID.randomUUID().toString());
+
+						//some active lists do not have reactions recorded
+						if (!rs.wasNull()) {
+							reactionInsertStatement.execute();
+						}
 					}
-					else if (AllergySeverity.MODERATE.name().equals(severity)) {
-						severityConcept = moderateConcept;
-					}
-					else if (AllergySeverity.SEVERE.name().equals(severity)) {
-						severityConcept = severeConcept;
-					}
-					//TODO what do we do with the other severities?
-
-					if (severityConcept != null) {
-						allergyInsertStatement.setInt(3, severityConcept);
-					} else {
-						allergyInsertStatement.setNull(3, java.sql.Types.INTEGER);
-					}
-
-					allergyInsertStatement.setInt(4, rs.getInt("creator"));
-					allergyInsertStatement.setDate(5, rs.getDate("date_created"));
-					allergyInsertStatement.setString(6, uuid);
-					allergyInsertStatement.setString(7, rs.getString("comments"));
-
-					String allergyType = rs.getString("allergy_type");
-					if (allergyType == null) {
-						allergyType = "DRUG";
-					}
-					else if ("ENVIRONMENTAL".equals(allergyType)) {
-						allergyType = "ENVIRONMENT";
-					}
-
-					allergyInsertStatement.setString(8, allergyType);
-
-					allergyInsertStatement.execute();
-
-					//get inserted allergy_id
-					allergySelectStatement.setString(1, uuid);
-					try (ResultSet rs2 = allergySelectStatement.executeQuery()) {
-						rs2.next();
-
-						//insert reaction
-						reactionInsertStatement.setInt(1, rs2.getInt(1));
-					}
-					reactionInsertStatement.setInt(2, rs.getInt("reaction_concept_id"));
-					reactionInsertStatement.setString(3, UUID.randomUUID().toString());
-
-					//some active lists do not have reactions recorded
-					if (!rs.wasNull()) {
-						reactionInsertStatement.execute();
-					}
-				}
 				}
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new CustomChangeException(ex);
 		}
 	}
-	
+
 	private void loadSeverityConcepts(Database database) throws Exception {
 		mildConcept = getConceptByGlobalProperty(database, "allergy.concept.severity.mild");
 		moderateConcept = getConceptByGlobalProperty(database, "allergy.concept.severity.moderate");
 		severeConcept = getConceptByGlobalProperty(database, "allergy.concept.severity.severe");
 	}
-	
+
 	private Integer getConceptByGlobalProperty(Database database, String globalPropertyName) throws Exception {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
-		try (PreparedStatement gpStmt = connection.prepareStatement(
-				"SELECT property_value FROM global_property WHERE property = ?")) {
+		try (PreparedStatement gpStmt = connection
+		        .prepareStatement("SELECT property_value FROM global_property WHERE property = ?")) {
 			gpStmt.setString(1, globalPropertyName);
 			try (ResultSet rs = gpStmt.executeQuery()) {
 				if (rs.next()) {
 					String uuid = rs.getString("property_value");
 
-					try (PreparedStatement conceptStmt = connection.prepareStatement(
-							"SELECT concept_id FROM concept WHERE uuid = ?")) {
+					try (PreparedStatement conceptStmt = connection
+					        .prepareStatement("SELECT concept_id FROM concept WHERE uuid = ?")) {
 						conceptStmt.setString(1, uuid);
 						try (ResultSet conceptRs = conceptStmt.executeQuery()) {
 							if (conceptRs.next()) {

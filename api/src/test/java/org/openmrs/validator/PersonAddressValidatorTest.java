@@ -9,9 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Calendar;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,20 +21,23 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Consists of tests for the PersonAddressValidator
  */
 public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
-	
+
 	protected static final String PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH = "org/openmrs/include/personAddressValidatorTestDataset.xml";
-	
+
 	PersonAddressValidator validator = null;
-	
+
 	PersonService ps = null;
-	
+
 	/**
 	 * Run this before each unit test in this class.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@BeforeEach
@@ -45,7 +45,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		validator = new PersonAddressValidator();
 		ps = Context.getPersonService();
 	}
-	
+
 	/**
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
@@ -60,7 +60,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(personAddress, errors);
 		assertTrue(errors.hasFieldErrors());
 	}
-	
+
 	/**
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
@@ -75,7 +75,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(personAddress, errors);
 		assertTrue(errors.hasFieldErrors());
 	}
-	
+
 	/**
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
@@ -89,7 +89,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(personAddress, errors);
 		assertFalse(errors.hasFieldErrors());
 	}
-	
+
 	/**
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
@@ -102,7 +102,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(personAddress, errors);
 		assertFalse(errors.hasFieldErrors());
 	}
-	
+
 	/**
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
@@ -116,7 +116,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(personAddress, errors);
 		assertFalse(errors.hasFieldErrors());
 	}
-	
+
 	/**
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
@@ -130,7 +130,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(personAddress, errors);
 		assertFalse(errors.hasFieldErrors());
 	}
-	
+
 	/**
 	 * @see PersonAddressValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -138,12 +138,12 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfRequiredFieldsAreEmpty() {
 		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
 		Address personAddress = new PersonAddress();
-		
+
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
 		assertTrue(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see PersonAddressValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -152,12 +152,12 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
 		Address personAddress = new PersonAddress();
 		personAddress.setAddress1("Address1");
-		
+
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
@@ -183,7 +183,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(personAddress, errors);
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */

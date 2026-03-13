@@ -39,70 +39,72 @@ import org.slf4j.LoggerFactory;
  */
 
 public class AuditableInterceptor implements Interceptor {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(AuditableInterceptor.class);
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * This method is only called when inserting new objects.
-	 * <strong>Should</strong> return true if dateCreated was null
-	 * <strong>Should</strong> return true if creator was null
-	 * <strong>Should</strong> return false if dateCreated and creator was not null
+	 * <p>
+	 * <strong>Should</strong> return true if dateCreated was null<br/>
+	 * <strong>Should</strong> return true if creator was null<br/>
+	 * <strong>Should</strong> return false if dateCreated and creator was not null<br/>
 	 * <strong>Should</strong> be called when saving OpenmrsObject
+	 *
 	 * @return true if the object got the dateCreated and creator fields set
 	 */
 	@Override
 	public boolean onSave(Object entity, Object id, Object[] entityCurrentState, String[] propertyNames, Type[] types) {
 		return setCreatorAndDateCreatedIfNull(entity, entityCurrentState, propertyNames);
 	}
-	
+
 	/**
 	 * This class method is only called when flushing an updated dirty object, not inserting objects
+	 * <p>
+	 * <strong>Should</strong> set the dateChanged field<br/>
+	 * <strong>Should</strong> set the changedBy field<br/>
+	 * <strong>Should</strong> be called when saving an Auditable<br/>
+	 * <strong>Should</strong> not enter into recursion on entity
 	 *
 	 * @return true if the object got the changedBy and dateChanged fields set
-	 * <strong>Should</strong> set the dateChanged field
-	 * <strong>Should</strong> set the changedBy field
-	 * <strong>Should</strong> be called when saving an Auditable
-	 * <strong>Should</strong> not enter into recursion on entity
 	 */
-	
+
 	@Override
 	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState,
 	        String[] propertyNames, Type[] types) throws CallbackException {
 		boolean objectWasChanged;
-		
+
 		objectWasChanged = setCreatorAndDateCreatedIfNull(entity, currentState, propertyNames);
-		
+
 		if (entity instanceof Auditable && propertyNames != null) {
 			log.debug("Setting changed by fields on {}", entity.getClass());
-			
+
 			Map<String, Object> propertyValues = getPropertyValuesToUpdate();
 			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, false);
 		}
 		return objectWasChanged;
 	}
-	
+
 	@Override
 	public void onCollectionRecreate(Object collection, Object key) throws CallbackException {
 		handleCollectionChange(collection);
 	}
-	
+
 	@Override
 	public void onCollectionUpdate(Object collection, Object key) throws CallbackException {
 		handleCollectionChange(collection);
 	}
-	
+
 	@Override
 	public void onCollectionRemove(Object collection, Object key) throws CallbackException {
 		handleCollectionChange(collection);
 	}
-	
+
 	/**
 	 * Sets the creator and dateCreated fields to the current user and the current time if they are
-	 * null.
-	 * if is a Person Object, sets the personCreator and personDateCreated fields to the current user and the current time
-	 * if they are null.
+	 * null. if is a Person Object, sets the personCreator and personDateCreated fields to the current
+	 * user and the current time if they are null.
 	 *
 	 * @param entity
 	 * @param currentState
@@ -110,21 +112,21 @@ public class AuditableInterceptor implements Interceptor {
 	 * @return true if creator and dateCreated were changed
 	 */
 	private boolean setCreatorAndDateCreatedIfNull(Object entity, Object[] currentState, String[] propertyNames) {
-		
+
 		boolean objectWasChanged = false;
-		
+
 		if (entity instanceof OpenmrsObject) {
 			log.debug("Setting creator and dateCreated on {}", entity);
-			
+
 			Map<String, Object> propertyValues = getPropertyValuesToSave();
 			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, true);
 		}
 		return objectWasChanged;
 	}
-	
+
 	private boolean changeProperties(Object[] currentState, String[] propertyNames, boolean objectWasChanged,
 	        Map<String, Object> propertyValues, Boolean setNullOnly) {
-		
+
 		for (Map.Entry<String, Object> e : propertyValues.entrySet()) {
 			if (changePropertyValue(currentState, propertyNames, e.getKey(), e.getValue(), setNullOnly)) {
 				objectWasChanged = true;
@@ -132,7 +134,7 @@ public class AuditableInterceptor implements Interceptor {
 		}
 		return objectWasChanged;
 	}
-	
+
 	private Map<String, Object> getPropertyValuesToSave() {
 		Map<String, Object> propertyValues = new HashMap<>();
 		propertyValues.put("creator", Context.getAuthenticatedUser());
@@ -141,7 +143,7 @@ public class AuditableInterceptor implements Interceptor {
 		propertyValues.put("personDateCreated", new Date());
 		return propertyValues;
 	}
-	
+
 	private Map<String, Object> getPropertyValuesToUpdate() {
 		Map<String, Object> propertyValues = new HashMap<>();
 		propertyValues.put("changedBy", Context.getAuthenticatedUser());
@@ -150,7 +152,7 @@ public class AuditableInterceptor implements Interceptor {
 		propertyValues.put("personDateChanged", new Date());
 		return propertyValues;
 	}
-	
+
 	/**
 	 * Sets the property to the given value.
 	 *
@@ -163,23 +165,23 @@ public class AuditableInterceptor implements Interceptor {
 	 */
 	private boolean changePropertyValue(Object[] currentState, String[] propertyNames, String propertyToSet, Object value,
 	        boolean setNullOnly) {
-		
+
 		int index = Arrays.asList(propertyNames).indexOf(propertyToSet);
-		
+
 		if (value == null) {
 			return false;
 		}
-		
+
 		if (index >= 0 && (currentState[index] == null || !setNullOnly) && !value.equals(currentState[index])) {
 			currentState[index] = value;
 			return true;
 		}
 		return false;
 	}
-	
+
 	private void handleCollectionChange(Object collection) {
 		if (collection instanceof PersistentSet) {
-			PersistentSet persistentCollection = (PersistentSet) collection; 
+			PersistentSet persistentCollection = (PersistentSet) collection;
 			if ("org.openmrs.User.roles".equals(persistentCollection.getRole())) {
 				Object owner = persistentCollection.getOwner();
 				if (owner instanceof User) {

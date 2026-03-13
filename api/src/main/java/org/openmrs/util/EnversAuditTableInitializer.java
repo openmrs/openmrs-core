@@ -31,36 +31,34 @@ import org.slf4j.LoggerFactory;
  * conditionally creating audit tables only when hibernate.integration.envers.enabled=true.
  */
 public class EnversAuditTableInitializer {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(EnversAuditTableInitializer.class);
 
 	private EnversAuditTableInitializer() {
-		
+
 	}
 
 	/**
 	 * Checks if Envers is enabled and creates/updates audit tables as needed. This will Create or
-	 * Update audit tables if they don't exist - Update existing audit tables if the schema has
-	 * changed
-	 * 
+	 * Update audit tables if they don't exist - Update existing audit tables if the schema has changed
+	 *
 	 * @param metadata Hibernate metadata containing entity mappings
 	 * @param hibernateProperties properties containing Envers configuration
 	 * @param serviceRegistry Hibernate service registry
 	 */
-	public static void initialize(Metadata metadata, Properties hibernateProperties,
-								  ServiceRegistry serviceRegistry) {
-		
+	public static void initialize(Metadata metadata, Properties hibernateProperties, ServiceRegistry serviceRegistry) {
+
 		if (!isEnversEnabled(hibernateProperties)) {
 			log.debug("Hibernate Envers is not enabled. Skipping audit table initialization.");
 			return;
 		}
-		
+
 		updateAuditTables(metadata, hibernateProperties, serviceRegistry);
 	}
-	
+
 	/**
 	 * Checks if Hibernate Envers is enabled in the configuration.
-	 * 
+	 *
 	 * @param properties Hibernate properties
 	 * @return true if Envers is enabled, false otherwise
 	 */
@@ -68,16 +66,15 @@ public class EnversAuditTableInitializer {
 		String enversEnabled = properties.getProperty("hibernate.integration.envers.enabled");
 		return "true".equalsIgnoreCase(enversEnabled);
 	}
-	
+
 	/**
-	 * Creates or updates audit tables using Hibernate's {@link SchemaMigrator}. This method filters
-	 * to only process audit tables.
-	 * 
-	 * @param metadata Hibernate metadata containing entity mappings (includes Envers audit
-	 *            entities)
+	 * Creates or updates audit tables using Hibernate's {@link SchemaMigrator}. This method filters to
+	 * only process audit tables.
+	 *
+	 * @param metadata Hibernate metadata containing entity mappings (includes Envers audit entities)
 	 * @param hibernateProperties Hibernate configuration properties
 	 * @param serviceRegistry Hibernate service registry
-     */
+	 */
 	private static void updateAuditTables(Metadata metadata, Properties hibernateProperties,
 	        ServiceRegistry serviceRegistry) {
 		String auditTablePrefix = hibernateProperties.getProperty("org.hibernate.envers.audit_table_prefix", "");
@@ -120,6 +117,7 @@ public class EnversAuditTableInitializer {
 
 	private static TargetDescriptor getTargetDescriptor() {
 		return new TargetDescriptor() {
+
 			@Override
 			public EnumSet<TargetType> getTargetTypes() {
 				return EnumSet.of(TargetType.DATABASE);
@@ -134,6 +132,7 @@ public class EnversAuditTableInitializer {
 
 	private static ExecutionOptions getExecutionOptions(Map<String, Object> settings, AtomicBoolean hasErrors) {
 		return new ExecutionOptions() {
+
 			@Override
 			public Map<String, Object> getConfigurationValues() {
 				return settings;

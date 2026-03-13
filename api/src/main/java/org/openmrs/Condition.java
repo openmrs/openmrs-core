@@ -9,10 +9,7 @@
  */
 package org.openmrs;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.envers.Audited;
-import org.hibernate.type.SqlTypes;
-import org.openmrs.util.OpenmrsUtil;
+import java.util.Date;
 
 import jakarta.persistence.AssociationOverride;
 import jakarta.persistence.AssociationOverrides;
@@ -30,7 +27,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import java.util.Date;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.envers.Audited;
+import org.hibernate.type.SqlTypes;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * The condition class records detailed information about a condition, problem, diagnosis, or other
@@ -45,57 +46,57 @@ import java.util.Date;
 @Table(name = "conditions")
 @Audited
 public class Condition extends BaseFormRecordableOpenmrsData {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "condition_id")
 	private Integer conditionId;
-	
+
 	@Embedded
 	@AttributeOverrides({ @AttributeOverride(name = "nonCoded", column = @Column(name = "condition_non_coded")) })
 	@AssociationOverrides({ @AssociationOverride(name = "coded", joinColumns = @JoinColumn(name = "condition_coded")),
 	        @AssociationOverride(name = "specificName", joinColumns = @JoinColumn(name = "condition_coded_name")) })
 	private CodedOrFreeText condition;
-	
+
 	@Enumerated(EnumType.STRING)
 	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "clinical_status")
 	private ConditionClinicalStatus clinicalStatus;
-	
+
 	@Enumerated(EnumType.STRING)
 	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "verification_status")
 	private ConditionVerificationStatus verificationStatus;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "previous_version")
 	private Condition previousVersion;
-	
+
 	@Column(name = "additional_detail")
 	private String additionalDetail;
-	
+
 	@Column(name = "onset_date")
 	private Date onsetDate;
-	
+
 	@Column(name = "end_date")
 	private Date endDate;
-	
+
 	@Transient
 	private String endReason;
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
-	
+
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
-	
+
 	public Condition() {
 	}
-	
+
 	/**
 	 * Convenience constructor to instantiate a condition class with all the necessary parameters
 	 *
@@ -123,7 +124,9 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 
 	/**
 	 * Creates a new Condition instance from the passed condition such that the newly created Condition
-	 * matches the passed Condition @see Condition#matches, but does not equal the passed Condition (uuid, id differ)
+	 * matches the passed Condition @see Condition#matches, but does not equal the passed Condition
+	 * (uuid, id differ)
+	 *
 	 * @param condition the Condition to copy
 	 * @return a new Condition that is a copy of the passed condition
 	 */
@@ -132,10 +135,11 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	}
 
 	/**
-	 * Copies property values from the fromCondition to the toCondition such that fromCondition
-	 * matches toCondition @see Condition#matches, but does not equal toCondition (uuid, id differ)
+	 * Copies property values from the fromCondition to the toCondition such that fromCondition matches
+	 * toCondition @see Condition#matches, but does not equal toCondition (uuid, id differ)
+	 *
 	 * @param fromCondition the Condition to copy from
-	 * @param toCondition the Condition to copy into                      
+	 * @param toCondition the Condition to copy into
 	 * @return a new Condition that is a copy of the passed condition
 	 */
 	public static Condition copy(Condition fromCondition, Condition toCondition) {
@@ -159,11 +163,12 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 
 	/**
 	 * Compares properties with those in the given Condition to determine if they have the same meaning
-	 * This method will return true immediately following the creation of a Condition from another Condition
-	 * @see Condition#newInstance(Condition)
-	 * This method will return false if any value is different, excepting identity data (id, uuid)
-	 * If the given instance is null, this will return false
-	 * @param c the Condition to compare against 	
+	 * This method will return true immediately following the creation of a Condition from another
+	 * Condition
+	 *
+	 * @see Condition#newInstance(Condition) This method will return false if any value is different,
+	 *      excepting identity data (id, uuid) If the given instance is null, this will return false
+	 * @param c the Condition to compare against
 	 * @return true if the given Condition has the same meaningful properties as the passed Condition
 	 * @since 2.6.1
 	 */
@@ -173,7 +178,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 		}
 		CodedOrFreeText coft1 = getCondition() == null ? new CodedOrFreeText() : getCondition();
 		CodedOrFreeText coft2 = c.getCondition() == null ? new CodedOrFreeText() : c.getCondition();
-		
+
 		boolean ret = (OpenmrsUtil.nullSafeEquals(getPreviousVersion(), c.getPreviousVersion()));
 		ret = ret && (OpenmrsUtil.nullSafeEquals(getPatient(), c.getPatient()));
 		ret = ret && (OpenmrsUtil.nullSafeEquals(getEncounter(), c.getEncounter()));
@@ -193,7 +198,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 		ret = ret && (OpenmrsUtil.nullSafeEquals(getDateVoided(), c.getDateVoided()));
 		return ret;
 	}
-	
+
 	/**
 	 * Gets the condition id
 	 *
@@ -202,7 +207,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public Integer getConditionId() {
 		return conditionId;
 	}
-	
+
 	/**
 	 * Sets the condition id
 	 *
@@ -211,7 +216,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setConditionId(Integer conditionId) {
 		this.conditionId = conditionId;
 	}
-	
+
 	/**
 	 * Gets the condition that has been set
 	 *
@@ -220,7 +225,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public CodedOrFreeText getCondition() {
 		return condition;
 	}
-	
+
 	/**
 	 * Sets the condition
 	 *
@@ -229,7 +234,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setCondition(CodedOrFreeText condition) {
 		this.condition = condition;
 	}
-	
+
 	/**
 	 * Gets the clinical status of the condition
 	 *
@@ -238,7 +243,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public ConditionClinicalStatus getClinicalStatus() {
 		return clinicalStatus;
 	}
-	
+
 	/**
 	 * Sets the clinical status of the condition
 	 *
@@ -247,7 +252,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setClinicalStatus(ConditionClinicalStatus clinicalStatus) {
 		this.clinicalStatus = clinicalStatus;
 	}
-	
+
 	/**
 	 * Gets the verification status of the condition
 	 *
@@ -257,7 +262,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public ConditionVerificationStatus getVerificationStatus() {
 		return verificationStatus;
 	}
-	
+
 	/**
 	 * Sets the verification status of the condition
 	 *
@@ -266,7 +271,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setVerificationStatus(ConditionVerificationStatus verificationStatus) {
 		this.verificationStatus = verificationStatus;
 	}
-	
+
 	/**
 	 * Gets the previous version of the condition
 	 *
@@ -275,7 +280,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public Condition getPreviousVersion() {
 		return previousVersion;
 	}
-	
+
 	/**
 	 * Sets the previous version of the condition
 	 *
@@ -284,7 +289,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setPreviousVersion(Condition previousVersion) {
 		this.previousVersion = previousVersion;
 	}
-	
+
 	/**
 	 * Gets the addition detail of the condition
 	 *
@@ -293,7 +298,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public String getAdditionalDetail() {
 		return additionalDetail;
 	}
-	
+
 	/**
 	 * Sets the additional detail of the condition
 	 *
@@ -302,7 +307,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setAdditionalDetail(String additionalDetail) {
 		this.additionalDetail = additionalDetail;
 	}
-	
+
 	/**
 	 * Gets the onset date of the condition
 	 *
@@ -312,7 +317,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public Date getOnsetDate() {
 		return onsetDate != null ? (Date) onsetDate.clone() : null;
 	}
-	
+
 	/**
 	 * Sets the onset date
 	 *
@@ -321,7 +326,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setOnsetDate(Date onsetDate) {
 		this.onsetDate = onsetDate != null ? new Date(onsetDate.getTime()) : null;
 	}
-	
+
 	/**
 	 * Gets the condition end date
 	 *
@@ -330,7 +335,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public Date getEndDate() {
 		return endDate != null ? (Date) endDate.clone() : null;
 	}
-	
+
 	/**
 	 * Sets the end date
 	 *
@@ -339,7 +344,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate != null ? new Date(endDate.getTime()) : null;
 	}
-	
+
 	/**
 	 * Gets the condition end reason
 	 *
@@ -348,7 +353,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public String getEndReason() {
 		return endReason;
 	}
-	
+
 	/**
 	 * Sets the end reason
 	 *
@@ -357,7 +362,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setEndReason(String endReason) {
 		this.endReason = endReason;
 	}
-	
+
 	/**
 	 * @return id - The unique Identifier for the object
 	 */
@@ -365,7 +370,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public Integer getId() {
 		return getConditionId();
 	}
-	
+
 	/**
 	 * @param id - The unique Identifier for the object
 	 */
@@ -373,7 +378,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setId(Integer id) {
 		setConditionId(id);
 	}
-	
+
 	/**
 	 * Gets the patient associated with the condition
 	 *
@@ -382,7 +387,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public Patient getPatient() {
 		return patient;
 	}
-	
+
 	/**
 	 * Sets the patient associated with the condition
 	 *
@@ -391,20 +396,20 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
-	
+
 	/**
 	 * Basic property getter for encounter
-	 * 
+	 *
 	 * @return encounter - the associated encounter
 	 * @since 2.4.0, 2.3.1
 	 */
 	public Encounter getEncounter() {
 		return encounter;
 	}
-	
+
 	/**
 	 * Basic property setter for encounter
-	 *  
+	 *
 	 * @param encounter - the encounter to set
 	 * @since 2.4.0, 2.3.1
 	 */

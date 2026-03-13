@@ -9,9 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CodedOrFreeText;
@@ -22,12 +19,16 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Contains tests methods for the {@link DiagnosisValidator}
  */
 public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 
 	private Diagnosis diagnosis;
+
 	private Errors errors;
 
 	@BeforeEach
@@ -35,26 +36,27 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 		diagnosis = new Diagnosis();
 		errors = new BindException(diagnosis, "diagnosis");
 	}
-	
+
 	/**
 	 * @see DiagnosisValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfEncounterIsNull(){
+	public void validate_shouldFailValidationIfEncounterIsNull() {
 		diagnosis.setEncounter(null);
 		new DiagnosisValidator().validate(diagnosis, errors);
 		assertTrue(errors.hasFieldErrors("encounter"));
 	}
+
 	@Test
-	public void validate_shouldFailValidationIfDiagnosisIsNull(){
+	public void validate_shouldFailValidationIfDiagnosisIsNull() {
 		diagnosis.setDiagnosis(null);
-		
+
 		new DiagnosisValidator().validate(diagnosis, errors);
 		assertTrue(errors.hasFieldErrors("diagnosis"));
 	}
 
 	@Test
-	public void validate_shouldFailValidationIfCertaintyIsNull(){
+	public void validate_shouldFailValidationIfCertaintyIsNull() {
 		diagnosis.setCertainty(null);
 
 		new DiagnosisValidator().validate(diagnosis, errors);
@@ -62,23 +64,23 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void validate_shouldFailValidationIfRankIsNull(){
+	public void validate_shouldFailValidationIfRankIsNull() {
 		diagnosis.setRank(null);
 
 		new DiagnosisValidator().validate(diagnosis, errors);
 		assertTrue(errors.hasFieldErrors("rank"));
 	}
-	
+
 	@Test
-	public void validate_shouldFailValidationIfRankIsNonPositive(){
+	public void validate_shouldFailValidationIfRankIsNonPositive() {
 		diagnosis.setRank(-1);
-		
+
 		new DiagnosisValidator().validate(diagnosis, errors);
 		assertTrue(errors.hasFieldErrors("rank"));
 	}
-	
+
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsAreSupplied(){
+	public void validate_shouldPassValidationIfAllRequiredFieldsAreSupplied() {
 		diagnosis.setEncounter(new Encounter());
 		diagnosis.setDiagnosis(new CodedOrFreeText());
 		diagnosis.setCertainty(ConditionVerificationStatus.CONFIRMED);
