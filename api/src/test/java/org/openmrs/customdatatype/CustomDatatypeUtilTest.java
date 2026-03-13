@@ -9,16 +9,16 @@
  */
 package org.openmrs.customdatatype;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class CustomDatatypeUtilTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see CustomDatatypeUtil#deserializeSimpleConfiguration(String)
 	 */
@@ -27,7 +27,7 @@ public class CustomDatatypeUtilTest extends BaseContextSensitiveTest {
 		Map<String, String> config = new HashMap<>();
 		config.put("one property", "one value");
 		config.put("another property", "another value < with > strange&nbsp;characters");
-		
+
 		String serialized = CustomDatatypeUtil.serializeSimpleConfiguration(config);
 		Map<String, String> deserialized = CustomDatatypeUtil.deserializeSimpleConfiguration(serialized);
 		assertEquals(2, deserialized.size());

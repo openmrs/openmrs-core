@@ -11,7 +11,7 @@ package org.openmrs.util;
 
 /**
  * Constants relating to forms
- * 
+ *
  * @see org.openmrs.Form
  * @see org.openmrs.FormField
  * @see org.openmrs.Field
@@ -19,20 +19,20 @@ package org.openmrs.util;
  * @see org.openmrs.FieldAnswer
  */
 public class FormConstants {
-	
+
 	private FormConstants() {
 	}
-	
+
 	public static final Integer FIELD_TYPE_CONCEPT = 1;
-	
+
 	public static final Integer FIELD_TYPE_DATABASE = 2;
-	
+
 	public static final Integer FIELD_TYPE_TERM_SET = 3;
-	
+
 	public static final Integer FIELD_TYPE_MISC_SET = 4;
-	
+
 	public static final Integer FIELD_TYPE_SECTION = 5;
-	
+
 	public static final int INDENT_SIZE = 2;
-	
+
 }

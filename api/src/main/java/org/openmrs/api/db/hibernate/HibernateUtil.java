@@ -47,14 +47,14 @@ public class HibernateUtil {
 
 	private HibernateUtil() {
 	}
-	
+
 	private static final Logger log = LoggerFactory.getLogger(HibernateUtil.class);
-	
+
 	/**
 	 * Persists a new entity or merges a detached entity, emulating the old Hibernate
-	 * {@code saveOrUpdate()} behavior. For entities that are already managed, this is a no-op.
-	 * For new entities (no identifier), {@code persist()} is used which modifies the entity in-place.
-	 * For existing entities (with identifier), the existing managed instance is merged.
+	 * {@code saveOrUpdate()} behavior. For entities that are already managed, this is a no-op. For new
+	 * entities (no identifier), {@code persist()} is used which modifies the entity in-place. For
+	 * existing entities (with identifier), the existing managed instance is merged.
 	 *
 	 * @param session the Hibernate session
 	 * @param entity the entity to save or update
@@ -82,30 +82,30 @@ public class HibernateUtil {
 			}
 		}
 	}
-	
+
 	private static Dialect dialect = null;
-	
+
 	private static Boolean isHSQLDialect = null;
-	
+
 	private static Boolean isPostgreSQLDialect = null;
-	
+
 	/**
-	 * Check and cache whether the currect dialect is HSQL or not. This is needed because some
-	 * queries are different if in the hsql world as opposed to the mysql/postgres world
+	 * Check and cache whether the currect dialect is HSQL or not. This is needed because some queries
+	 * are different if in the hsql world as opposed to the mysql/postgres world
 	 *
 	 * @param sessionFactory
 	 * @return true/false whether we're in hsql right now or not
 	 */
 	public static boolean isHSQLDialect(SessionFactory sessionFactory) {
-		
+
 		if (isHSQLDialect == null) {
 			// check and cache the dialect
 			isHSQLDialect = HSQLDialect.class.getName().equals(getDialect(sessionFactory).getClass().getName());
 		}
-		
+
 		return isHSQLDialect;
 	}
-	
+
 	/**
 	 * Check and cache whether the currect dialect is PostgreSQL or not. This is needed because some
 	 * behaviors of PostgreSQL and MySQL are different and need to be handled separately.
@@ -114,16 +114,15 @@ public class HibernateUtil {
 	 * @return true/false whether we're in postgresql right now or not
 	 */
 	public static boolean isPostgreSQLDialect(SessionFactory sessionFactory) {
-		
+
 		if (isPostgreSQLDialect == null) {
 			// check and cache the dialect
-			isPostgreSQLDialect = PostgreSQLDialect.class.getName()
-			        .equals(getDialect(sessionFactory).getClass().getName());
+			isPostgreSQLDialect = PostgreSQLDialect.class.getName().equals(getDialect(sessionFactory).getClass().getName());
 		}
-		
+
 		return isPostgreSQLDialect;
 	}
-	
+
 	/**
 	 * Fetch the current Dialect of the given SessionFactory
 	 *
@@ -131,31 +130,31 @@ public class HibernateUtil {
 	 * @return Dialect of sql that this connection/session is using
 	 */
 	public static Dialect getDialect(SessionFactory sessionFactory) {
-		
+
 		// return cached dialect
 		if (dialect != null) {
 			return dialect;
 		}
-		
+
 		SessionFactoryImplementor implementor = (SessionFactoryImplementor) sessionFactory;
 		dialect = implementor.getJdbcServices().getDialect();
-		
+
 		log.debug("Getting dialect for session: {}", dialect);
-		
+
 		return dialect;
 	}
-	
+
 	/**
 	 * @see HibernateUtil#escapeSqlWildcards(String, Connection)
 	 */
 	public static String escapeSqlWildcards(final String oldString, SessionFactory sessionFactory) {
 		return sessionFactory.getCurrentSession().doReturningWork(connection -> escapeSqlWildcards(oldString, connection));
-		
+
 	}
-	
+
 	/**
-	 * Escapes all sql wildcards in the given string, returns the same string if it doesn't contain
-	 * any sql wildcards
+	 * Escapes all sql wildcards in the given string, returns the same string if it doesn't contain any
+	 * sql wildcards
 	 *
 	 * @param oldString the string in which to escape the sql wildcards
 	 * @param connection The underlying database connection
@@ -163,21 +162,20 @@ public class HibernateUtil {
 	 *         returned
 	 */
 	public static String escapeSqlWildcards(String oldString, Connection connection) {
-		
+
 		//replace all sql wildcards if any
 		if (!StringUtils.isBlank(oldString)) {
 			String escapeCharacter = "";
-			
+
 			try {
 				//get the database specific escape character from the metadata
 				escapeCharacter = connection.getMetaData().getSearchStringEscape();
-			}
-			catch (SQLException e) {
+			} catch (SQLException e) {
 				log.warn("Error generated", e);
 			}
 			//insert an escape character before each sql wildcard in the search phrase
-			return StringUtils.replaceEach(oldString, new String[] { "%", "_", "*", "'" }, new String[] {
-			        escapeCharacter + "%", escapeCharacter + "_", escapeCharacter + "*", "''" });
+			return StringUtils.replaceEach(oldString, new String[] { "%", "_", "*", "'" },
+			    new String[] { escapeCharacter + "%", escapeCharacter + "_", escapeCharacter + "*", "''" });
 		} else {
 			return oldString;
 		}
@@ -195,27 +193,27 @@ public class HibernateUtil {
 	public static <AT extends AttributeType> List<Predicate> getAttributePredicate(CriteriaBuilder cb,
 	        Root<Location> locationRoot, Map<AT, String> serializedAttributeValues) {
 		List<Predicate> predicates = new ArrayList<>();
-		
+
 		for (Map.Entry<AT, String> entry : serializedAttributeValues.entrySet()) {
 			Subquery<Integer> subquery = cb.createQuery().subquery(Integer.class);
 			Root<Location> locationSubRoot = subquery.from(Location.class);
 			Join<Location, LocationAttribute> attributeJoin = locationSubRoot.join("attributes");
-			
+
 			Predicate[] attributePredicates = new Predicate[] { cb.equal(attributeJoin.get("attributeType"), entry.getKey()),
 			        cb.equal(attributeJoin.get("valueReference"), entry.getValue()),
 			        cb.isFalse(attributeJoin.get("voided")) };
-			
+
 			subquery.select(locationSubRoot.get("locationId")).where(attributePredicates);
 			predicates.add(cb.in(locationRoot.get("locationId")).value(subquery));
 		}
-		
+
 		return predicates;
 	}
-	
+
 	/**
-	 * Gets an object as an instance of its persistent type if it is a hibernate proxy otherwise
-	 * returns the same passed in object
-	 * 
+	 * Gets an object as an instance of its persistent type if it is a hibernate proxy otherwise returns
+	 * the same passed in object
+	 *
 	 * @param persistentObject the object to unproxy
 	 * @return the unproxied object
 	 * @since 1.10
@@ -224,12 +222,12 @@ public class HibernateUtil {
 		if (persistentObject == null) {
 			return null;
 		}
-		
+
 		if (persistentObject instanceof HibernateProxy) {
 			Hibernate.initialize(persistentObject);
 			persistentObject = (T) ((HibernateProxy) persistentObject).getHibernateLazyInitializer().getImplementation();
 		}
-		
+
 		return persistentObject;
 	}
 
@@ -242,7 +240,8 @@ public class HibernateUtil {
 	 * @return the entity if found, null otherwise.
 	 * @throws DAOException if there's an issue in data access.
 	 */
-	public static <T> T getUniqueEntityByUUID(SessionFactory sessionFactory, Class<T> entityClass, String uuid) throws DAOException {
+	public static <T> T getUniqueEntityByUUID(SessionFactory sessionFactory, Class<T> entityClass, String uuid)
+	        throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<T> query = cb.createQuery(entityClass);
@@ -267,8 +266,6 @@ public class HibernateUtil {
 		Root<T> root = criteriaQuery.from(type);
 		criteriaQuery.select(root);
 
-		return session.createQuery(criteriaQuery)
-			.setFetchSize(fetchSize)
-			.scroll(ScrollMode.FORWARD_ONLY);
+		return session.createQuery(criteriaQuery).setFetchSize(fetchSize).scroll(ScrollMode.FORWARD_ONLY);
 	}
 }

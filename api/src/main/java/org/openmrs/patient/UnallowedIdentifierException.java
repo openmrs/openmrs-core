@@ -18,23 +18,23 @@ import org.openmrs.api.APIException;
  * could be thrown.
  */
 public class UnallowedIdentifierException extends APIException {
-	
+
 	/**
 	 * Compiler generated serial version uid.
 	 */
 	private static final long serialVersionUID = -1460246384367910860L;
-	
+
 	public UnallowedIdentifierException() {
 	}
-	
+
 	public UnallowedIdentifierException(String message) {
 		super(message);
 	}
-	
+
 	public UnallowedIdentifierException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 	public UnallowedIdentifierException(Throwable cause) {
 		super(cause);
 	}

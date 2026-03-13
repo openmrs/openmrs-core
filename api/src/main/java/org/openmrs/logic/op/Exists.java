@@ -19,10 +19,10 @@ package org.openmrs.logic.op;
  * The above will give us a criteria to test whether ADULTRETURN encounter exists or not
  */
 public class Exists implements TransformOperator {
-	
+
 	@Override
 	public String toString() {
 		return "EXISTS";
 	}
-	
+
 }

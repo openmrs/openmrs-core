@@ -9,9 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.ProgramWorkflow;
@@ -20,11 +17,14 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link StateConversionValidator} class.
  */
 public class StateConversionValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see StateConversionValidator#validate(Object,Errors)
 	 */
@@ -34,13 +34,13 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 		ProgramWorkflow workflow = Context.getProgramWorkflowService().getProgram(1).getAllWorkflows().iterator().next();
 		csc.setProgramWorkflow(workflow);
 		csc.setProgramWorkflowState(workflow.getState(1));
-		
+
 		Errors errors = new BindException(csc, "csc");
 		new StateConversionValidator().validate(csc, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("concept"));
 	}
-	
+
 	/**
 	 * @see StateConversionValidator#validate(Object,Errors)
 	 */
@@ -48,35 +48,35 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfProgramWorkflowIsNullOrEmptyOrWhitespace() {
 		ConceptStateConversion csc = new ConceptStateConversion();
 		csc.setProgramWorkflow(null);
-		
+
 		ProgramWorkflow workflow = Context.getProgramWorkflowService().getProgram(1).getAllWorkflows().iterator().next();
 		csc.setConcept(Context.getConceptService().getConcept(3));
 		csc.setProgramWorkflowState(workflow.getState(1));
-		
+
 		Errors errors = new BindException(csc, "csc");
 		new StateConversionValidator().validate(csc, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("programWorkflow"));
 	}
-	
+
 	/**
 	 * @see StateConversionValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfProgramWorkflowStateIsNullOrEmptyOrWhitespace() {
 		ConceptStateConversion csc = new ConceptStateConversion();
-		
+
 		ProgramWorkflow workflow = Context.getProgramWorkflowService().getProgram(1).getAllWorkflows().iterator().next();
 		csc.setConcept(Context.getConceptService().getConcept(3));
 		csc.setProgramWorkflow(workflow);
 		csc.setProgramWorkflowState(null);
-		
+
 		Errors errors = new BindException(csc, "csc");
 		new StateConversionValidator().validate(csc, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("programWorkflowState"));
 	}
-	
+
 	/**
 	 * @see StateConversionValidator#validate(Object,Errors)
 	 */
@@ -87,10 +87,10 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 		csc.setConcept(Context.getConceptService().getConcept(3));
 		csc.setProgramWorkflow(workflow);
 		csc.setProgramWorkflowState(workflow.getState(1));
-		
+
 		Errors errors = new BindException(csc, "csc");
 		new StateConversionValidator().validate(csc, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
 }

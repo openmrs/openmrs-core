@@ -12,27 +12,25 @@ package org.openmrs.api;
 import java.util.List;
 
 /**
- * Interface for Openmrs services supporting
- * fetching domain objects by UUID.
- * 
+ * Interface for Openmrs services supporting fetching domain objects by UUID.
+ *
  * @since 3.0.0
  */
 public interface DomainService extends OpenmrsService {
 
-    /**
-     * Returns a domain object by UUID, or null if not found.
-     * 
-     * @param uuid the UUID string of the domain object
-     * @return an instance of the requested type
-     */
-    public <T> T fetchByUuid(Class<T> type, String uuid);
+	/**
+	 * Returns a domain object by UUID, or null if not found.
+	 *
+	 * @param uuid the UUID string of the domain object
+	 * @return an instance of the requested type
+	 */
+	public <T> T fetchByUuid(Class<T> type, String uuid);
 
-    /**
-     * Returns a list of all domain types that are currently registered and
-     * resolvable by this service.
-     *
-     * @return a list of registered domain classes
-     */
-    public List<Class<?>> getDomainTypes();
+	/**
+	 * Returns a list of all domain types that are currently registered and resolvable by this service.
+	 *
+	 * @return a list of registered domain classes
+	 */
+	public List<Class<?>> getDomainTypes();
 
 }

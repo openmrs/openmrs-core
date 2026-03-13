@@ -9,6 +9,10 @@
  */
 package org.openmrs.util;
 
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.LocalTime;
@@ -31,27 +35,25 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
-	
+
 	private Calendar calendar;
+
 	private Person person;
+
 	private ConceptReferenceRangeUtility conceptReferenceRangeUtility;
-	
+
 	@Mock
 	private ObsService obsService;
-	
+
 	@Mock
 	private ConceptService conceptService;
-	
+
 	@BeforeEach
 	public void setUp() {
 		person = new Person();
@@ -67,11 +69,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() > 1 && $patient.getAge() < 10",
-				obs)
-		);
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getAge() > 1 && $patient.getAge() < 10", obs));
 	}
 
 	@Test
@@ -83,11 +81,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() > 1 && $patient.getAge() < 10", 
-				obs)
-		);
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getAge() > 1 && $patient.getAge() < 10", obs));
 	}
 
 	@Test
@@ -98,12 +92,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() >= 1 && $patient.getAge() <= 10", 
-				obs)
-		);
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getAge() >= 1 && $patient.getAge() <= 10", obs));
 	}
 
 	@Test
@@ -115,12 +105,9 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAgeInMonths() > 1 && $patient.getAgeInMonths() < 12",
-				obs)
-		);
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$patient.getAgeInMonths() > 1 && $patient.getAgeInMonths() < 12", obs));
 	}
 
 	@Test
@@ -132,8 +119,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertThrows(APIException.class, () -> 
-			conceptReferenceRangeUtility.evaluateCriteria("invalidCriteria", obs));
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria("invalidCriteria", obs));
 	}
 
 	@Test
@@ -156,12 +142,9 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void testAgeInRange_shouldReturnFalseIfPersonAgeIsNotSet() {
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
+
 		assertFalse(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() >= 15 && $patient.getAge() <= 50",
-				obs)
-		);
+		    conceptReferenceRangeUtility.evaluateCriteria("$patient.getAge() >= 15 && $patient.getAge() <= 50", obs));
 	}
 
 	@Test
@@ -171,11 +154,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getGender().equals('M')",
-				obs)
-		);
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('M')", obs));
 	}
 
 	@Test
@@ -185,22 +164,15 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getGender().equals('M')",
-				obs)
-		);
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('M')", obs));
 	}
 
 	@Test
 	public void testGenderMatch_shouldReturnFalseIfGenderIsNull() {
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
-			"$patient.getGender().equals('M')",
-			obs)
-		);
+
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('M')", obs));
 	}
 
 	@Test
@@ -213,11 +185,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", 
-				obs)
-		);
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", obs));
 	}
 
 	@Test
@@ -230,11 +199,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"($patient.getAge() > 1 && $patient.getAge() < 3) || $patient.getGender().equals('M')",
-				obs)
-		);
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
+		    "($patient.getAge() > 1 && $patient.getAge() < 3) || $patient.getGender().equals('M')", obs));
 	}
 
 	@Test
@@ -247,11 +213,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", 
-				obs)
-		);
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", obs));
 	}
 
 	@Test
@@ -264,21 +227,16 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", 
-				obs)
-		);
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", obs));
 	}
 
 	@Test
 	public void testAgeAndGenderMatch_shouldThrowExceptionIfPersonIsNull() {
 
-		IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () ->
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')",
-				(Obs) null)
-		);
+		IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria(
+		        "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", (Obs) null));
 
 		assertEquals("Failed to evaluate criteria with reason: Obs is null", thrown.getMessage());
 	}
@@ -287,101 +245,70 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void testAgeAndGenderMatch_shouldReturnFalseIfAgeIsNull() {
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
-		assertFalse(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() > 1 && $patient.getAge() < 10",
-				obs)
-		);
+
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getAge() > 1 && $patient.getAge() < 10", obs));
 	}
 
 	@Test
 	public void testObsValueMatch_shouldReturnTrueIfValueCodedMatch() {
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
+
 		Concept valueCoded = new Concept(900);
 		obs.setValueCoded(valueCoded);
-		
+
 		Concept concept = new Concept(4900);
-		
+
 		Mockito.when(conceptService.getConceptByReference("CIEL:1234")).thenReturn(concept);
 		Mockito.when(conceptService.getConceptByReference("CIEL:1000")).thenReturn(valueCoded);
 
-		Mockito.when(obsService.getObservations(Collections.singletonList(person),
-				null,
-				Collections.singletonList(concept),
-				null,
-				null,
-				null,
-				Collections.singletonList("dateCreated"),
-				1,
-				null,
-				null,
-				null,
-				false))
-			.thenReturn(Collections.singletonList(obs));
-		
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria("$fn.isObsValueCodedAnswer('CIEL:1234', $patient, 'CIEL:1000')", obs)
-		);
+		Mockito.when(obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(concept),
+		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(obs));
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.isObsValueCodedAnswer('CIEL:1234', $patient, 'CIEL:1000')", obs));
 	}
-	
+
 	@Test
 	public void testObsValueMatch_shouldReturnTrueIfValueTextMatch() {
 		person.setGender("F");
-		
+
 		Obs obs = buildObs();
 		obs.setPerson(person);
 		obs.setValueText("PREGNANT");
-		
+
 		Concept concept = new Concept(4900);
-		
+
 		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
 
-		Mockito.when(obsService.getObservations(Collections.singletonList(person),
-				null,
-				Collections.singletonList(concept),
-				null,
-				null,
-				null,
-				Collections.singletonList("dateCreated"),
-				1,
-				null,
-				null,
-				null,
-				false))
-			.thenReturn(Collections.singletonList(obs));
-		
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getGender().equals('F') " +
-					"&& $fn.getLatestObs('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient).getValueText().equals('PREGNANT')", 
-				obs)
-		);
+		Mockito.when(obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(concept),
+		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(obs));
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('F') "
+		        + "&& $fn.getLatestObs('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient).getValueText().equals('PREGNANT')",
+		    obs));
 	}
-	
+
 	@Test
 	public void testObsValueMatch_shouldReturnTrueIfPersonAttributeMatch() {
 		PersonAttributeType personAttributeType = new PersonAttributeType();
 		personAttributeType.setName("Race");
 		personAttributeType.setSearchable(true);
-		
+
 		PersonAttribute personAttribute = new PersonAttribute();
 		personAttribute.setAttributeType(personAttributeType);
 		personAttribute.setValue("Maasai");
-		
+
 		person.setAttributes(Collections.singleton(personAttribute));
-		
+
 		Obs obs = buildObs();
 		obs.setPerson(person);
 		obs.setValueText("PREGNANT");
-		
+
 		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAttribute('Race').getValue() == 'Maasai'", 
-				obs)
-		);
+		    conceptReferenceRangeUtility.evaluateCriteria("$patient.getAttribute('Race').getValue() == 'Maasai'", obs));
 	}
 
 	@Test
@@ -390,12 +317,9 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
-		assertFalse(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getLatestObs('CIEL:1234', $patient).getValueBoolean() == true",
-				obs)
-		);
+
+		assertFalse(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getLatestObs('CIEL:1234', $patient).getValueBoolean() == true", obs));
 	}
 
 	@Test
@@ -405,12 +329,9 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
+
 		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getCurrentHour() == " + LocalTime.now().getHourOfDay(),
-				obs)
-		);
+		    conceptReferenceRangeUtility.evaluateCriteria("$fn.getCurrentHour() == " + LocalTime.now().getHourOfDay(), obs));
 
 		// Clean up: Reset time to system time
 		DateTimeUtils.setCurrentMillisSystem();
@@ -423,12 +344,9 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
-		assertFalse(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getCurrentHour() == " + LocalTime.now().plusHours(1).getHourOfDay(),
-				obs)
-		);
+
+		assertFalse(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getCurrentHour() == " + LocalTime.now().plusHours(1).getHourOfDay(), obs));
 
 		// Clean up: Reset time to system time
 		DateTimeUtils.setCurrentMillisSystem();
@@ -444,32 +362,19 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
 
-		Mockito.when(obsService.getObservations(Collections.singletonList(person),
-				null,
-				Collections.singletonList(concept),
-				null,
-				null,
-				null,
-				Collections.singletonList("dateCreated"),
-				1,
-				null,
-				null,
-				null,
-				false))
-			.thenReturn(Collections.singletonList(obs));
+		Mockito.when(obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(concept),
+		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(obs));
 
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getCurrentObs('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $obs).getValueNumeric() >= 20",
-				obs)
-		);
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$fn.getCurrentObs('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $obs).getValueNumeric() >= 20", obs));
 	}
 
 	@Test
 	public void testRelevantObs_shouldReturnTrueIfBMIIsInTheExpectedRange() {
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
+
 		Obs heightObservation = buildObs();
 		heightObservation.setValueNumeric(170.0);
 
@@ -482,51 +387,31 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Mockito.when(conceptService.getConceptByReference("a09ab2c5-878e-4905-b25d-5784167d0216")).thenReturn(heightConcept);
 		Mockito.when(conceptService.getConceptByReference("c607c80f-1ea9-4da3-bb88-6276ce8868dd")).thenReturn(weightConcept);
 
-		Mockito.when(obsService.getObservations(Collections.singletonList(person),
-				null,
-				Collections.singletonList(heightConcept),
-				null,
-				null,
-				null,
-				Collections.singletonList("dateCreated"),
-				1,
-				null,
-				null,
-				null,
-				false))
-			.thenReturn(Collections.singletonList(heightObservation));
+		Mockito.when(
+		    obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(heightConcept),
+		        null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(heightObservation));
 
-		Mockito.when(obsService.getObservations(Collections.singletonList(person),
-				null,
-				Collections.singletonList(weightConcept),
-				null,
-				null,
-				null,
-				Collections.singletonList("dateCreated"),
-				1,
-				null,
-				null,
-				null,
-				false))
-			.thenReturn(Collections.singletonList(weightObservation));
+		Mockito.when(
+		    obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(weightConcept),
+		        null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(weightObservation));
 
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"($fn.getCurrentObs('c607c80f-1ea9-4da3-bb88-6276ce8868dd', $obs).getValueNumeric() " +
-					"/ ( ($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100) * " +
-					"($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100))) >= 18.5 && " +
-					"($fn.getCurrentObs('c607c80f-1ea9-4da3-bb88-6276ce8868dd', $obs).getValueNumeric() / " +
-					"( ($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100) * " +
-					"($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100))) < 25",
-				obs)
-		);
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
+		    "($fn.getCurrentObs('c607c80f-1ea9-4da3-bb88-6276ce8868dd', $obs).getValueNumeric() "
+		            + "/ ( ($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100) * "
+		            + "($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100))) >= 18.5 && "
+		            + "($fn.getCurrentObs('c607c80f-1ea9-4da3-bb88-6276ce8868dd', $obs).getValueNumeric() / "
+		            + "( ($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100) * "
+		            + "($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100))) < 25",
+		    obs));
 	}
-	
+
 	@Test
 	public void getObsDays_shouldReturnNumberOfDaysFromObsDate() {
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
+
 		calendar = Calendar.getInstance();
 		calendar.add(Calendar.DAY_OF_YEAR, -90);
 		obs.setValueDate(calendar.getTime());
@@ -535,32 +420,19 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
 
-		Mockito.when(obsService.getObservations(Collections.singletonList(person),
-				null,
-				Collections.singletonList(concept),
-				null,
-				null,
-				null,
-				Collections.singletonList("dateCreated"),
-				1,
-				null,
-				null,
-				null,
-				false))
-			.thenReturn(Collections.singletonList(obs));
+		Mockito.when(obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(concept),
+		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(obs));
 
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getObsDays('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 90",
-				obs)
-		);
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getObsDays('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 90", obs));
 	}
-	
+
 	@Test
 	public void getObsWeeks_shouldReturnNumberOfWeeksFromObsDate() {
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
+
 		calendar = Calendar.getInstance();
 		calendar.add(Calendar.WEEK_OF_YEAR, -32);
 		obs.setValueDate(calendar.getTime());
@@ -569,32 +441,19 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
 
-		Mockito.when(obsService.getObservations(Collections.singletonList(person),
-				null,
-				Collections.singletonList(concept),
-				null,
-				null,
-				null,
-				Collections.singletonList("dateCreated"),
-				1,
-				null,
-				null,
-				null,
-				false))
-			.thenReturn(Collections.singletonList(obs));
+		Mockito.when(obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(concept),
+		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(obs));
 
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getObsWeeks('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 32",
-				obs)
-		);
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getObsWeeks('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 32", obs));
 	}
-	
+
 	@Test
 	public void getObsMonths_shouldReturnNumberOfMonthsFromObsDate() {
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
+
 		calendar = Calendar.getInstance();
 		calendar.add(Calendar.MONTH, -9);
 		obs.setValueDate(calendar.getTime());
@@ -603,32 +462,19 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
 
-		Mockito.when(obsService.getObservations(Collections.singletonList(person),
-				null,
-				Collections.singletonList(concept),
-				null,
-				null,
-				null,
-				Collections.singletonList("dateCreated"),
-				1,
-				null,
-				null,
-				null,
-				false))
-			.thenReturn(Collections.singletonList(obs));
+		Mockito.when(obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(concept),
+		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(obs));
 
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getObsMonths('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 9",
-				obs)
-		);
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getObsMonths('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 9", obs));
 	}
-	
+
 	@Test
 	public void getObsYears_shouldReturnNumberOfYearsFromObsDate() {
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		
+
 		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -18);
 		obs.setValueDate(calendar.getTime());
@@ -637,27 +483,14 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
 
-		Mockito.when(obsService.getObservations(Collections.singletonList(person),
-				null,
-				Collections.singletonList(concept),
-				null,
-				null,
-				null,
-				Collections.singletonList("dateCreated"),
-				1,
-				null,
-				null,
-				null,
-				false))
-			.thenReturn(Collections.singletonList(obs));
+		Mockito.when(obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(concept),
+		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(obs));
 
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getObsYears('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 18",
-				obs)
-		);
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getObsYears('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 18", obs));
 	}
-	
+
 	@Test
 	public void getObsWeeks_shouldReturnNegativeOneForNullValueDate() {
 		Obs obs = buildObs();
@@ -668,51 +501,41 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
 
-		Mockito.when(obsService.getObservations(Collections.singletonList(person),
-				null,
-				Collections.singletonList(concept),
-				null,
-				null,
-				null,
-				Collections.singletonList("dateCreated"),
-				1,
-				null,
-				null,
-				null,
-				false))
-			.thenReturn(Collections.singletonList(obs));
+		Mockito.when(obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(concept),
+		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(obs));
 
-		assertTrue(
-			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getObsWeeks('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == -1",
-				obs)
-		);
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getObsWeeks('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == -1", obs));
 	}
-	
+
 	// all the following tests use data from the standard test dataset instead of mocking
 	@Test
 	public void isEnrolledInProgram_shouldReturnTrueIfPatientIsEnrolledInProgram() {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
 		obs.setPerson(patient);
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, $obs.obsDatetime)", obs));  // uuid of HIV program which patient 2 is enrolled in
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, $obs.obsDatetime)", obs)); // uuid of HIV program which patient 2 is enrolled in
 	}
 
 	@Test
 	public void isEnrolledInProgram_shouldReturnFalseIfPatientIsNotEnrolledInProgramOnDate() {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
-		obs.setObsDatetime(new DateTime(2006, 1, 1, 1,1).toDate());
+		obs.setObsDatetime(new DateTime(2006, 1, 1, 1, 1).toDate());
 		obs.setPerson(patient);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, $obs.obsDatetime)", obs));  // uuid of HIV program which patient 2 is enrolled in, but not until 2008
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, $obs.obsDatetime)", obs)); // uuid of HIV program which patient 2 is enrolled in, but not until 2008
 	}
-	
+
 	@Test
 	public void isEnrolledInProgram_shouldReturnFalseIfPatientIsNotEnrolledInProgram() {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
 		obs.setPerson(patient);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('f386c3d2-dd75-441f-a582-2237824edfb0', $patient, $obs.obsDatetime)", obs));  // uuid of the Malaria program which patient 2 is not enrolled in
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$fn.isEnrolledInProgram('f386c3d2-dd75-441f-a582-2237824edfb0', $patient, $obs.obsDatetime)", obs)); // uuid of the Malaria program which patient 2 is not enrolled in
 	}
 
 	@Test
@@ -722,25 +545,27 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		assertFalse(person.getIsPatient());
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isEnrolledInProgram('f386c3d2-dd75-441f-a582-2237824edfb0', $patient, $obs.obsDatetime)", obs));  
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$fn.isEnrolledInProgram('f386c3d2-dd75-441f-a582-2237824edfb0', $patient, $obs.obsDatetime)", obs));
 	}
-
 
 	@Test
 	public void isInProgramState_shouldReturnTrueIfPatientInState() {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
 		obs.setPerson(patient);
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  // uuid from standard test dataset, patient is in this state
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs)); // uuid from standard test dataset, patient is in this state
 	}
 
 	@Test
 	public void isInProgramState_shouldReturnFalseIfPatientIsNotInStateOnDate() {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
-		obs.setObsDatetime(new DateTime(2006, 1, 1, 1,1).toDate());
+		obs.setObsDatetime(new DateTime(2006, 1, 1, 1, 1).toDate());
 		obs.setPerson(patient);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  // uuid from standard test dataset, patient is in this state, but not until 2008
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs)); // uuid from standard test dataset, patient is in this state, but not until 2008
 	}
 
 	@Test
@@ -748,7 +573,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(6); // from standard test dataset, different patient that is not in this state
 		Obs obs = buildObs();
 		obs.setPerson(patient);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));
 	}
 
 	@Test
@@ -758,8 +584,10 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		assertFalse(person.getIsPatient());
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));  
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs));
 	}
+
 	private Obs buildObs() {
 		Concept concept = new Concept(5089);
 		concept.setDatatype(new ConceptDatatype(3));
@@ -780,4 +608,3 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		return obs;
 	}
 }
-

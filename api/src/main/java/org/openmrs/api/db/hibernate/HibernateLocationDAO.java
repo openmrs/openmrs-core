@@ -9,6 +9,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -17,10 +22,6 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -39,15 +40,14 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("locationDAO")
 public class HibernateLocationDAO implements LocationDAO {
-	
+
 	private final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateLocationDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#saveLocation(org.openmrs.Location)
 	 */
@@ -63,10 +63,10 @@ public class HibernateLocationDAO implements LocationDAO {
 				}
 			}
 		}
-		
+
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), location);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocation(java.lang.Integer)
 	 */
@@ -74,7 +74,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public Location getLocation(Integer locationId) {
 		return sessionFactory.getCurrentSession().get(Location.class, locationId);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocation(java.lang.String)
 	 */
@@ -116,7 +116,7 @@ public class HibernateLocationDAO implements LocationDAO {
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#deleteLocation(org.openmrs.Location)
 	 */
@@ -124,7 +124,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public void deleteLocation(Location location) {
 		sessionFactory.getCurrentSession().remove(location);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#saveLocation(org.openmrs.Location)
 	 */
@@ -132,7 +132,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public LocationTag saveLocationTag(LocationTag tag) {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), tag);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocationTag(java.lang.Integer)
 	 */
@@ -194,7 +194,7 @@ public class HibernateLocationDAO implements LocationDAO {
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#deleteLocationTag(org.openmrs.LocationTag)
 	 */
@@ -202,7 +202,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public void deleteLocationTag(LocationTag tag) {
 		sessionFactory.getCurrentSession().remove(tag);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocationByUuid(java.lang.String)
 	 */
@@ -210,7 +210,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public Location getLocationByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, Location.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocationTagByUuid(java.lang.String)
 	 */
@@ -241,13 +241,14 @@ public class HibernateLocationDAO implements LocationDAO {
 			predicates.add(cb.like(cb.lower(root.get("name")), MatchMode.START.toLowerCasePattern(nameFragment)));
 		}
 
-		cq.where(cb.and(predicates.toArray(new Predicate[]{})));
+		cq.where(cb.and(predicates.toArray(new Predicate[] {})));
 
 		return session.createQuery(cq).getSingleResult();
 	}
 
 	/**
-	 * @see LocationDAO#getLocations(String, org.openmrs.Location, java.util.Map, boolean, Integer, Integer)
+	 * @see LocationDAO#getLocations(String, org.openmrs.Location, java.util.Map, boolean, Integer,
+	 *      Integer)
 	 */
 	@Override
 	public List<Location> getLocations(String nameFragment, Location parent,
@@ -277,7 +278,7 @@ public class HibernateLocationDAO implements LocationDAO {
 			predicates.add(cb.isFalse(locationRoot.get("retired")));
 		}
 
-		cq.where(cb.and(predicates.toArray(new Predicate[]{})));
+		cq.where(cb.and(predicates.toArray(new Predicate[] {})));
 		cq.orderBy(cb.asc(locationRoot.get("name")));
 
 		TypedQuery<Location> query = session.createQuery(cq);
@@ -310,7 +311,7 @@ public class HibernateLocationDAO implements LocationDAO {
 
 		predicates.add(cb.isNull(locationRoot.get("parentLocation")));
 
-		cq.where(predicates.toArray(new Predicate[]{}));
+		cq.where(predicates.toArray(new Predicate[] {}));
 		cq.orderBy(cb.asc(locationRoot.get("name")));
 
 		return session.createQuery(cq).getResultList();
@@ -325,10 +326,10 @@ public class HibernateLocationDAO implements LocationDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<LocationAttributeType> cq = cb.createQuery(LocationAttributeType.class);
 		cq.from(LocationAttributeType.class);
-		
+
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocationAttributeType(java.lang.Integer)
 	 */
@@ -336,7 +337,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public LocationAttributeType getLocationAttributeType(Integer id) {
 		return sessionFactory.getCurrentSession().get(LocationAttributeType.class, id);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocationAttributeTypeByUuid(java.lang.String)
 	 */
@@ -344,7 +345,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public LocationAttributeType getLocationAttributeTypeByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, LocationAttributeType.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#saveLocationAttributeType(org.openmrs.LocationAttributeType)
 	 */
@@ -352,7 +353,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType) {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), locationAttributeType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#deleteLocationAttributeType(org.openmrs.LocationAttributeType)
 	 */
@@ -360,7 +361,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public void deleteLocationAttributeType(LocationAttributeType locationAttributeType) {
 		sessionFactory.getCurrentSession().remove(locationAttributeType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocationAttributeByUuid(java.lang.String)
 	 */
@@ -404,28 +405,22 @@ public class HibernateLocationDAO implements LocationDAO {
 		Root<Location> subRoot = tagCountSubquery.from(Location.class);
 		Join<Location, LocationTag> tagsJoin = subRoot.join("tags");
 
-		tagCountSubquery.select(cb.count(subRoot))
-			.where(cb.and(
-				tagsJoin.get("locationTagId").in(tagIds),
-				cb.equal(subRoot.get("locationId"), locationRoot.get("locationId"))
-			));
+		tagCountSubquery.select(cb.count(subRoot)).where(cb.and(tagsJoin.get("locationTagId").in(tagIds),
+		    cb.equal(subRoot.get("locationId"), locationRoot.get("locationId"))));
 
-		mainQuery.select(locationRoot)
-			.where(cb.and(
-				cb.isFalse(locationRoot.get("retired")),
-				cb.equal(cb.literal((long) tags.size()), tagCountSubquery)
-			));
+		mainQuery.select(locationRoot).where(
+		    cb.and(cb.isFalse(locationRoot.get("retired")), cb.equal(cb.literal((long) tags.size()), tagCountSubquery)));
 
 		return session.createQuery(mainQuery).getResultList();
 	}
-	
+
 	/**
 	 * Extract locationTagIds from the list of LocationTag objects provided.
 	 *
-	 * @param tags A list of LocationTag objects from which to extract the location tag IDs.
-	 *             This list should not be null.
-	 * @return A List of Integer representing the IDs of the provided LocationTag objects.
-	 *         Returns an empty list if the input list is empty.
+	 * @param tags A list of LocationTag objects from which to extract the location tag IDs. This list
+	 *            should not be null.
+	 * @return A List of Integer representing the IDs of the provided LocationTag objects. Returns an
+	 *         empty list if the input list is empty.
 	 */
 	private List<Integer> getLocationTagIds(List<LocationTag> tags) {
 		List<Integer> locationTagIds = new ArrayList<>();

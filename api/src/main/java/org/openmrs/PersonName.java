@@ -9,17 +9,15 @@
  */
 package org.openmrs;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
-
-import jakarta.persistence.Cacheable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.Cacheable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
@@ -40,6 +38,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
 /**
  * A Person can have zero to n PersonName(s).
  */
@@ -48,7 +50,7 @@ import org.springframework.util.StringUtils;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class PersonName extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
-	
+
 	public static final long serialVersionUID = 4353L;
 
 	private static final Logger log = LoggerFactory.getLogger(PersonName.class);
@@ -58,57 +60,56 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	private Integer personNameId;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
-	@AssociationInverseSide(inversePath = @ObjectPath({
-		@PropertyValue(propertyName = "names")
-	}))
+	@AssociationInverseSide(inversePath = @ObjectPath({ @PropertyValue(propertyName = "names") }))
 	private Person person;
 
 	private Boolean preferred = false;
-	
+
 	@FullTextField(name = "givenNameExact", analyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "givenNameStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "givenNameAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
-	@FullTextField(name = "givenNameSoundex", analyzer = SearchAnalysis.SOUNDEX_ANALYZER) 
+	@FullTextField(name = "givenNameSoundex", analyzer = SearchAnalysis.SOUNDEX_ANALYZER)
 	private String givenName;
+
 	private String prefix;
-	
+
 	@FullTextField(name = "middleNameExact", analyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "middleNameStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "middleNameAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "middleNameSoundex", analyzer = SearchAnalysis.SOUNDEX_ANALYZER)
 	private String middleName;
-	
+
 	private String familyNamePrefix;
-	
+
 	@FullTextField(name = "familyNameExact", analyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "familyNameStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "familyNameAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "familyNameSoundex", analyzer = SearchAnalysis.SOUNDEX_ANALYZER)
 	private String familyName;
-	
+
 	@FullTextField(name = "familyName2Exact", analyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "familyName2Start", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "familyName2Anywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "familyName2Soundex", analyzer = SearchAnalysis.SOUNDEX_ANALYZER)
 	private String familyName2;
-	
+
 	private String familyNameSuffix;
-	
+
 	private String degree;
-	
+
 	private static String format = OpenmrsConstants.PERSON_NAME_FORMAT_SHORT;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public PersonName() {
 	}
-	
+
 	/** constructor with id */
 	public PersonName(Integer personNameId) {
 		this.personNameId = personNameId;
 	}
-	
+
 	/**
 	 * Convenience constructor with the basic requirements
 	 *
@@ -121,33 +122,35 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		this.middleName = middleName;
 		this.familyName = familyName;
 	}
-	
+
 	/**
 	 * Compares this PersonName object to the given otherName. This method differs from
-	 * {@link #equals(Object)} in that this method compares the inner fields of each name for
-	 * equality. Note: Null/empty fields on <code>otherName</code> /will not/ cause a false value to
-	 * be returned
+	 * {@link #equals(Object)} in that this method compares the inner fields of each name for equality.
+	 * Note: Null/empty fields on <code>otherName</code> /will not/ cause a false value to be returned
+	 * <p>
+	 * <strong>Should</strong> return true if given middle and family name are equal
 	 *
 	 * @param otherName PersonName with which to compare
 	 * @return boolean true/false whether or not they are the same names
-	 * <strong>Should</strong> return true if given middle and family name are equal
 	 */
 	public boolean equalsContent(PersonName otherName) {
-		return new EqualsBuilder().append(defaultString(otherName.getPrefix()), defaultString(prefix)).append(
-		    defaultString(otherName.getGivenName()), defaultString(givenName)).append(
-		    defaultString(otherName.getMiddleName()), defaultString(middleName)).append(
-		    defaultString(otherName.getFamilyNamePrefix()), defaultString(familyNamePrefix)).append(
-		    defaultString(otherName.getDegree()), defaultString(degree)).append(defaultString(otherName.getFamilyName()),
-		    defaultString(familyName)).append(defaultString(otherName.getFamilyName2()), defaultString(familyName2)).append(
-		    defaultString(otherName.getFamilyNameSuffix()), defaultString(familyNameSuffix)).isEquals();
+		return new EqualsBuilder().append(defaultString(otherName.getPrefix()), defaultString(prefix))
+		        .append(defaultString(otherName.getGivenName()), defaultString(givenName))
+		        .append(defaultString(otherName.getMiddleName()), defaultString(middleName))
+		        .append(defaultString(otherName.getFamilyNamePrefix()), defaultString(familyNamePrefix))
+		        .append(defaultString(otherName.getDegree()), defaultString(degree))
+		        .append(defaultString(otherName.getFamilyName()), defaultString(familyName))
+		        .append(defaultString(otherName.getFamilyName2()), defaultString(familyName2))
+		        .append(defaultString(otherName.getFamilyNameSuffix()), defaultString(familyNameSuffix)).isEquals();
 	}
-	
+
 	/**
 	 * Bitwise copy of the personName object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
 	 * PersonName.person object in this object AND the cloned object will point at the same person
+	 * <p>
+	 * <strong>Should</strong> copy every property of given personName
 	 *
 	 * @return New PersonName object
-	 * <strong>Should</strong> copy every property of given personName
 	 */
 	public static PersonName newInstance(PersonName pn) {
 		if (pn == null) {
@@ -181,7 +184,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		if (pn.getVoidReason() != null) {
 			newName.setVoidReason(String.valueOf(pn.getVoidReason()));
 		}
-		
+
 		if (pn.getDateChanged() != null) {
 			newName.setDateChanged((Date) pn.getDateChanged().clone());
 		}
@@ -191,39 +194,41 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		if (pn.getDateVoided() != null) {
 			newName.setDateVoided((Date) pn.getDateVoided().clone());
 		}
-		
+
 		if (pn.getPreferred() != null) {
 			newName.setPreferred(pn.getPreferred());
 		}
 		if (pn.getVoided() != null) {
 			newName.setVoided(pn.getVoided());
 		}
-		
+
 		newName.setPerson(pn.getPerson());
 		newName.setVoidedBy(pn.getVoidedBy());
 		newName.setChangedBy(pn.getChangedBy());
 		newName.setCreator(pn.getCreator());
-		
+
 		return newName;
 	}
-	
+
 	/**
 	 * @return Returns the degree.
 	 */
 	public String getDegree() {
 		return degree;
 	}
-	
+
 	/**
 	 * @param degree The degree to set.
 	 */
 	public void setDegree(String degree) {
 		this.degree = degree;
 	}
-	
+
 	/**
-	 * @return Returns the familyName.
+	 * <p>
 	 * <strong>Should</strong> return obscured name if obscure_patients is set to true
+	 *
+	 * @return Returns the familyName.
 	 */
 	public String getFamilyName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -231,17 +236,19 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		}
 		return familyName;
 	}
-	
+
 	/**
 	 * @param familyName The familyName to set.
 	 */
 	public void setFamilyName(String familyName) {
 		this.familyName = familyName;
 	}
-	
+
 	/**
-	 * @return Returns the familyName2.
+	 * <p>
 	 * <strong>Should</strong> return null if obscure_patients is set to true
+	 *
+	 * @return Returns the familyName2.
 	 */
 	public String getFamilyName2() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -249,17 +256,19 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		}
 		return familyName2;
 	}
-	
+
 	/**
 	 * @param familyName2 The familyName2 to set.
 	 */
 	public void setFamilyName2(String familyName2) {
 		this.familyName2 = familyName2;
 	}
-	
+
 	/**
-	 * @return Returns the familyNamePrefix.
+	 * <p>
 	 * <strong>Should</strong> return null if obscure_patients is set to true
+	 *
+	 * @return Returns the familyNamePrefix.
 	 */
 	public String getFamilyNamePrefix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -267,17 +276,19 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		}
 		return familyNamePrefix;
 	}
-	
+
 	/**
 	 * @param familyNamePrefix The familyNamePrefix to set.
 	 */
 	public void setFamilyNamePrefix(String familyNamePrefix) {
 		this.familyNamePrefix = familyNamePrefix;
 	}
-	
+
 	/**
-	 * @return Returns the familyNameSuffix.
+	 * <p>
 	 * <strong>Should</strong> return null if obscure_patients is set to true
+	 *
+	 * @return Returns the familyNameSuffix.
 	 */
 	public String getFamilyNameSuffix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -285,17 +296,19 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		}
 		return familyNameSuffix;
 	}
-	
+
 	/**
 	 * @param familyNameSuffix The familyNameSuffix to set.
 	 */
 	public void setFamilyNameSuffix(String familyNameSuffix) {
 		this.familyNameSuffix = familyNameSuffix;
 	}
-	
+
 	/**
-	 * @return Returns the givenName.
+	 * <p>
 	 * <strong>Should</strong> return obscured name if obscure_patients is set to true
+	 *
+	 * @return Returns the givenName.
 	 */
 	public String getGivenName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -303,17 +316,19 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		}
 		return givenName;
 	}
-	
+
 	/**
 	 * @param givenName The givenName to set.
 	 */
 	public void setGivenName(String givenName) {
 		this.givenName = givenName;
 	}
-	
+
 	/**
-	 * @return Returns the middleName.
+	 * <p>
 	 * <strong>Should</strong> return obscured name if obscure_patients is set to true
+	 *
+	 * @return Returns the middleName.
 	 */
 	public String getMiddleName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -321,45 +336,44 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		}
 		return middleName;
 	}
-	
+
 	/**
 	 * @param middleName The middleName to set.
 	 */
 	public void setMiddleName(String middleName) {
 		this.middleName = middleName;
 	}
-	
+
 	/**
 	 * @return Returns the person.
 	 */
 	public Person getPerson() {
 		return person;
 	}
-	
+
 	/**
 	 * @param person The person to set.
 	 */
 	public void setPerson(Person person) {
 		this.person = person;
 	}
-	
+
 	/**
 	 * @return Returns the personNameId.
 	 */
 	public Integer getPersonNameId() {
 		return personNameId;
 	}
-	
+
 	/**
 	 * @param personNameId The personNameId to set.
 	 */
 	public void setPersonNameId(Integer personNameId) {
 		this.personNameId = personNameId;
 	}
-	
+
 	/**
 	 * @return Returns the preferred.
-	 *
 	 * @deprecated as of 2.0, use {@link #getPreferred()}
 	 */
 	@Deprecated
@@ -367,24 +381,26 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	public Boolean isPreferred() {
 		return getPreferred();
 	}
-	
+
 	public Boolean getPreferred() {
 		if (preferred == null) {
 			return Boolean.FALSE;
 		}
 		return preferred;
 	}
-	
+
 	/**
 	 * @param preferred The preferred to set.
 	 */
 	public void setPreferred(Boolean preferred) {
 		this.preferred = preferred;
 	}
-	
+
 	/**
-	 * @return Returns the prefix.
+	 * <p>
 	 * <strong>Should</strong> return null if obscure_patients is set to true
+	 *
+	 * @return Returns the prefix.
 	 */
 	public String getPrefix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -392,31 +408,31 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		}
 		return prefix;
 	}
-	
+
 	/**
 	 * @param prefix The prefix to set.
 	 */
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-	
+
 	/**
-	 * Convenience method to get all the names of this PersonName and concatenating them together
-	 * with spaces in between. If any part of {@link #getPrefix()}, {@link #getGivenName()},
+	 * Convenience method to get all the names of this PersonName and concatenating them together with
+	 * spaces in between. If any part of {@link #getPrefix()}, {@link #getGivenName()},
 	 * {@link #getMiddleName()}, etc are null, they are not included in the returned name
+	 * <p>
+	 * <strong>Should</strong> not put spaces around an empty middle name
 	 *
 	 * @return all of the parts of this {@link PersonName} joined with spaces
-	 * <strong>Should</strong> not put spaces around an empty middle name
 	 */
 	public String getFullName() {
 		NameTemplate nameTemplate = null;
 		try {
 			nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
-		}
-		catch (APIException ex) {
+		} catch (APIException ex) {
 			log.warn("No name layout format set");
 		}
-		
+
 		if (nameTemplate != null) {
 			return nameTemplate.format(this);
 		}
@@ -432,7 +448,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			temp.add(getMiddleName());
 		}
 		if (OpenmrsConstants.PERSON_NAME_FORMAT_LONG.equals(PersonName.getFormat())) {
-			
+
 			if (StringUtils.hasText(getFamilyNamePrefix())) {
 				temp.add(getFamilyNamePrefix());
 			}
@@ -449,17 +465,17 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 				temp.add(getDegree());
 			}
 		} else {
-			
+
 			if (StringUtils.hasText(getFamilyName())) {
 				temp.add(getFamilyName());
 			}
 		}
-		
+
 		String nameString = StringUtils.collectionToDelimitedString(temp, " ");
-		
+
 		return nameString.trim();
 	}
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -468,7 +484,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		//This should not be changed due to extensive usage in UI.
 		return getFullName();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -477,26 +493,28 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	public Integer getId() {
 		return getPersonNameId();
 	}
-	
+
 	/**
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 * <strong>Should</strong> return negative if other name is voided
-	 * <strong>Should</strong> return negative if this name is preferred
-	 * <strong>Should</strong> return negative if other familyName is greater
-	 * <strong>Should</strong> return negative if other familyName2 is greater
-	 * <strong>Should</strong> return negative if other givenName is greater
-	 * <strong>Should</strong> return negative if other middleName is greater
-	 * <strong>Should</strong> return negative if other familynamePrefix is greater
-	 * <strong>Should</strong> return negative if other familyNameSuffix is greater
+	 * <p>
+	 * <strong>Should</strong> return negative if other name is voided<br/>
+	 * <strong>Should</strong> return negative if this name is preferred<br/>
+	 * <strong>Should</strong> return negative if other familyName is greater<br/>
+	 * <strong>Should</strong> return negative if other familyName2 is greater<br/>
+	 * <strong>Should</strong> return negative if other givenName is greater<br/>
+	 * <strong>Should</strong> return negative if other middleName is greater<br/>
+	 * <strong>Should</strong> return negative if other familynamePrefix is greater<br/>
+	 * <strong>Should</strong> return negative if other familyNameSuffix is greater<br/>
 	 * <strong>Should</strong> return negative if other dateCreated is greater
-	 * Note: this comparator imposes orderings that are inconsistent with equals.
+	 *
+	 * @see java.lang.Comparable#compareTo(java.lang.Object) Note: this comparator imposes orderings
+	 *      that are inconsistent with equals.
 	 */
 	@Override
 	public int compareTo(PersonName other) {
 		DefaultComparator pnDefaultComparator = new DefaultComparator();
 		return pnDefaultComparator.compare(this, other);
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -504,9 +522,9 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	@Override
 	public void setId(Integer id) {
 		setPersonNameId(id);
-		
+
 	}
-	
+
 	public static void setFormat(String format) {
 		if (StringUtils.isEmpty(format)) {
 			PersonName.format = OpenmrsConstants.PERSON_NAME_FORMAT_SHORT;
@@ -514,19 +532,20 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			PersonName.format = format;
 		}
 	}
-	
+
 	public static String getFormat() {
 		return PersonName.format;
 	}
-	
+
 	/**
-	 Provides a default comparator.
-	 @since 1.12
+	 * Provides a default comparator.
+	 *
+	 * @since 1.12
 	 **/
 	public static class DefaultComparator implements Comparator<PersonName>, Serializable {
 
 		private static final long serialVersionUID = 1L;
-		
+
 		@Override
 		public int compare(PersonName pn1, PersonName pn2) {
 			int ret = pn1.getVoided().compareTo(pn2.getVoided());
@@ -554,16 +573,16 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			if (ret == 0 && pn1.getDateCreated() != null) {
 				ret = OpenmrsUtil.compareWithNullAsLatest(pn1.getDateCreated(), pn2.getDateCreated());
 			}
-			
+
 			// if we've gotten this far, just check all name values. If they are
 			// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
 			// and return that (they are not equal).
 			if (ret == 0 && !pn1.equalsContent(pn2)) {
 				ret = 1;
 			}
-			
+
 			return ret;
 		}
 	}
-	
+
 }
