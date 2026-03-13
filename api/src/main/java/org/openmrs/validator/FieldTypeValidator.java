@@ -19,32 +19,34 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates attributes on the {@link FieldType} object.
- * 
+ *
  * @since 1.5
  */
 @Handler(supports = { FieldType.class }, order = 50)
 public class FieldTypeValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return c.equals(FieldType.class);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fail validation if name is null or empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if all required fields have proper values<br/>
+	 * <strong>Should</strong> fail validation if field type name already exist in none retired filed
+	 * types<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if name is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if all required fields have proper values
-	 * <strong>Should</strong> fail validation if field type name already exist in none retired filed types
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -55,12 +57,13 @@ public class FieldTypeValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			if (!errors.hasErrors()) {
 				FieldType exist = Context.getFormService().getFieldTypeByName(fieldType.getName());
-				if (exist != null && !exist.getRetired() && !OpenmrsUtil.nullSafeEquals(fieldType.getUuid(), exist.getUuid())) {
+				if (exist != null && !exist.getRetired()
+				        && !OpenmrsUtil.nullSafeEquals(fieldType.getUuid(), exist.getUuid())) {
 					errors.rejectValue("name", "fieldtype.duplicate.name");
 				}
 			}
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name");
 		}
 	}
-	
+
 }

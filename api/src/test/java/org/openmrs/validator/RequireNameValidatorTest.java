@@ -9,19 +9,19 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.EncounterRole;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link RequireNameValidator} class.
  */
 public class RequireNameValidatorTest {
-	
+
 	/**
 	 * @see RequireNameValidator#validate(Object,Errors)
 	 */
@@ -30,22 +30,22 @@ public class RequireNameValidatorTest {
 		EncounterRole role = new EncounterRole();
 		role.setName(null);
 		role.setDescription(":(");
-		
+
 		Errors errors = new BindException(role, "type");
 		new RequireNameValidator().validate(role, errors);
 		assertTrue(errors.hasFieldErrors("name"));
-		
+
 		role.setName("");
 		errors = new BindException(role, "type");
 		new RequireNameValidator().validate(role, errors);
 		assertTrue(errors.hasFieldErrors("name"));
-		
+
 		role.setName(" ");
 		errors = new BindException(role, "type");
 		new RequireNameValidator().validate(role, errors);
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see RequireNameValidator#validate(Object,Errors)
 	 */
@@ -53,10 +53,10 @@ public class RequireNameValidatorTest {
 	public void validate_shouldPassValidationIfNameHasProperValue() {
 		EncounterRole role = new EncounterRole();
 		role.setName("restraining");
-		
+
 		Errors errors = new BindException(role, "type");
 		new RequireNameValidator().validate(role, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
 }

@@ -38,19 +38,19 @@ import org.openmrs.api.db.hibernate.HibernateUtil;
 
 /**
  * A utility class that evaluates the concept ranges
- * 
+ *
  * @since 2.7.0
  */
 public class ConceptReferenceRangeUtility {
-	
+
 	private final long NULL_DATE_RETURN_VALUE = -1;
-	
+
 	public ConceptReferenceRangeUtility() {
 	}
-	
+
 	/**
 	 * This method evaluates the given criteria against the provided {@link Obs}.
-	 * 
+	 *
 	 * @param criteria the criteria string to evaluate e.g. "$patient.getAge() > 1"
 	 * @param obs The observation (Obs) object containing the values to be used in the criteria
 	 *            evaluation.
@@ -75,13 +75,12 @@ public class ConceptReferenceRangeUtility {
 	/**
 	 * Evaluates criteria against a {@link ConceptReferenceRangeContext}. When the context was
 	 * constructed from an Obs, {@code $obs} is available in the expression; otherwise only
-	 * {@code $patient}, {@code $fn}, {@code $context}, {@code $date}, and {@code $encounter}
-	 * are available.
+	 * {@code $patient}, {@code $fn}, {@code $context}, {@code $date}, and {@code $encounter} are
+	 * available.
 	 *
 	 * @param criteria the criteria string to evaluate
 	 * @param context the evaluation context
 	 * @return true if the criteria evaluates to true, false otherwise
-	 *
 	 * @since 3.0.0, 2.9.0, 2.8.5, 2.7.9
 	 */
 	public boolean evaluateCriteria(String criteria, ConceptReferenceRangeContext context) {
@@ -112,8 +111,7 @@ public class ConceptReferenceRangeUtility {
 			props.put("runtime.log.logsystem.log4j.category", "velocity");
 			props.put("runtime.log.logsystem.log4j.logger", "velocity");
 			velocityEngine.init(props);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new APIException("Failed to create the velocity engine: " + e.getMessage(), e);
 		}
 
@@ -123,11 +121,9 @@ public class ConceptReferenceRangeUtility {
 		try {
 			velocityEngine.evaluate(velocityContext, writer, ConceptReferenceRangeUtility.class.getName(), wrappedCriteria);
 			return Boolean.parseBoolean(writer.toString());
-		}
-		catch (ParseErrorException e) {
+		} catch (ParseErrorException e) {
 			throw new APIException("An error occurred while evaluating criteria. Invalid criteria: " + criteria, e);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new APIException("An error occurred while evaluating criteria: ", e);
 		}
 	}
@@ -147,59 +143,49 @@ public class ConceptReferenceRangeUtility {
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
 
 		if (concept != null) {
-			List<Obs> observations = Context.getObsService().getObservations(
-				Collections.singletonList(person), 
-				null, 
-				Collections.singletonList(concept), 
-				null, 
-				null, 
-				null,
-				Collections.singletonList("dateCreated"), 
-				1, 
-				null,
-				null, 
-				null, 
-				false
-			);
+			List<Obs> observations = Context.getObsService().getObservations(Collections.singletonList(person), null,
+			    Collections.singletonList(concept), null, null, null, Collections.singletonList("dateCreated"), 1, null,
+			    null, null, false);
 
 			return observations.isEmpty() ? null : observations.get(0);
 		}
 
 		return null;
 	}
-	
+
 	/**
 	 * Gets the time of the day in hours.
-	 * 
+	 *
 	 * @return the hour of the day in 24hr format (e.g. 14 to mean 2pm)
 	 */
 	public int getCurrentHour() {
 		return LocalTime.now().getHourOfDay();
 	}
-	
+
 	/**
 	 * Retrieves the most relevant Obs for the given current Obs and conceptRef. If the current Obs
-	 * contains a valid value (coded, numeric, date, text e.t.c) and the concept in Obs is the same
-	 * as the supplied concept, the method returns the current Obs. Otherwise, it fetches the latest
-	 * Obs for the supplied concept and patient.
-	 * 
+	 * contains a valid value (coded, numeric, date, text e.t.c) and the concept in Obs is the same as
+	 * the supplied concept, the method returns the current Obs. Otherwise, it fetches the latest Obs
+	 * for the supplied concept and patient.
+	 *
 	 * @param currentObs the current Obs being evaluated
-	 * @return the most relevant Obs based on the current Obs, or the latest Obs if the current one
-	 *         has no valid value
+	 * @return the most relevant Obs based on the current Obs, or the latest Obs if the current one has
+	 *         no valid value
 	 */
 	public Obs getCurrentObs(String conceptRef, Obs currentObs) {
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
-		
-		if (currentObs.getValueAsString(Locale.ENGLISH).isEmpty() && (concept != null && concept == currentObs.getConcept())) {
+
+		if (currentObs.getValueAsString(Locale.ENGLISH).isEmpty()
+		        && (concept != null && concept == currentObs.getConcept())) {
 			return currentObs;
 		} else {
 			return getLatestObs(conceptRef, currentObs.getPerson());
 		}
 	}
-	
+
 	/**
 	 * Gets the person's latest observation date for a given concept
-	 * 
+	 *
 	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
 	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person the person
@@ -211,21 +197,20 @@ public class ConceptReferenceRangeUtility {
 		if (obs == null) {
 			return null;
 		}
-		
+
 		Date date = obs.getValueDate();
 		if (date == null) {
 			date = obs.getValueDatetime();
 		}
-		
+
 		return date;
 	}
-	
+
 	/**
 	 * Checks if an observation's value coded answer is equal to a given concept
-	 * 
+	 *
 	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
-	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434" for the observation's
-	 *            question
+	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434" for the observation's question
 	 * @param person the person
 	 * @param answerConceptRef can be either concept uuid or conceptMap's code and sourceName e.g
 	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434" for the observation's coded
@@ -238,24 +223,24 @@ public class ConceptReferenceRangeUtility {
 		if (obs == null) {
 			return false;
 		}
-		
+
 		Concept valudeCoded = obs.getValueCoded();
 		if (valudeCoded == null) {
 			return false;
 		}
-		
+
 		Concept answerConcept = Context.getConceptService().getConceptByReference(answerConceptRef);
 		if (answerConcept == null) {
 			return false;
 		}
-		
+
 		return valudeCoded.equals(answerConcept);
 	}
-	
+
 	/**
-	 * Gets the number of days from the person's latest observation date value for a given concept
-	 * to the current date
-	 * 
+	 * Gets the number of days from the person's latest observation date value for a given concept to
+	 * the current date
+	 *
 	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
 	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person the person
@@ -269,11 +254,11 @@ public class ConceptReferenceRangeUtility {
 		}
 		return this.getDays(date);
 	}
-	
+
 	/**
-	 * Gets the number of weeks from the person's latest observation date value for a given concept
-	 * to the current date
-	 * 
+	 * Gets the number of weeks from the person's latest observation date value for a given concept to
+	 * the current date
+	 *
 	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
 	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person the person
@@ -287,11 +272,11 @@ public class ConceptReferenceRangeUtility {
 		}
 		return this.getWeeks(date);
 	}
-	
+
 	/**
-	 * Gets the number of months from the person's latest observation date value for a given concept
-	 * to the current date
-	 * 
+	 * Gets the number of months from the person's latest observation date value for a given concept to
+	 * the current date
+	 *
 	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
 	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person the person
@@ -305,11 +290,11 @@ public class ConceptReferenceRangeUtility {
 		}
 		return this.getMonths(date);
 	}
-	
+
 	/**
-	 * Gets the number of years from the person's latest observation date value for a given concept
-	 * to the current date
-	 * 
+	 * Gets the number of years from the person's latest observation date value for a given concept to
+	 * the current date
+	 *
 	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
 	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person the person
@@ -323,10 +308,10 @@ public class ConceptReferenceRangeUtility {
 		}
 		return this.getYears(date);
 	}
-	
+
 	/**
 	 * Gets the number of days between two given dates
-	 * 
+	 *
 	 * @param fromDate the date from which to start counting
 	 * @param toDate the date up to which to stop counting
 	 * @return the number of days between
@@ -338,10 +323,10 @@ public class ConceptReferenceRangeUtility {
 		}
 		return ChronoUnit.DAYS.between(toLocalDate(fromDate), toLocalDate(toDate));
 	}
-	
+
 	/**
 	 * Gets the number of weeks between two given dates
-	 * 
+	 *
 	 * @param fromDate the date from which to start counting
 	 * @param toDate the date up to which to stop counting
 	 * @return the number of weeks between
@@ -353,10 +338,10 @@ public class ConceptReferenceRangeUtility {
 		}
 		return ChronoUnit.WEEKS.between(toLocalDate(fromDate), toLocalDate(toDate));
 	}
-	
+
 	/**
 	 * Gets the number of months between two given dates
-	 * 
+	 *
 	 * @param fromDate the date from which to start counting
 	 * @param toDate the date up to which to stop counting
 	 * @return the number of months between
@@ -368,10 +353,10 @@ public class ConceptReferenceRangeUtility {
 		}
 		return ChronoUnit.MONTHS.between(toLocalDate(fromDate), toLocalDate(toDate));
 	}
-	
+
 	/**
 	 * Gets the number of years between two given dates
-	 * 
+	 *
 	 * @param fromDate the date from which to start counting
 	 * @param toDate the date up to which to stop counting
 	 * @return the number of years between
@@ -383,10 +368,10 @@ public class ConceptReferenceRangeUtility {
 		}
 		return ChronoUnit.YEARS.between(toLocalDate(fromDate), toLocalDate(toDate));
 	}
-	
+
 	/**
 	 * Gets the number of days from a given date up to the current date.
-	 * 
+	 *
 	 * @param fromDate the date from which to start counting
 	 * @return the number of days
 	 * @since 2.7.8
@@ -394,10 +379,10 @@ public class ConceptReferenceRangeUtility {
 	public long getDays(Date fromDate) {
 		return getDaysBetween(fromDate, new Date());
 	}
-	
+
 	/**
 	 * Gets the number of weeks from a given date up to the current date.
-	 * 
+	 *
 	 * @param fromDate the date from which to start counting
 	 * @return the number of weeks
 	 * @since 2.7.8
@@ -405,10 +390,10 @@ public class ConceptReferenceRangeUtility {
 	public long getWeeks(Date fromDate) {
 		return getWeeksBetween(fromDate, new Date());
 	}
-	
+
 	/**
 	 * Gets the number of months from a given date up to the current date.
-	 * 
+	 *
 	 * @param fromDate the date from which to start counting
 	 * @return the number of months
 	 * @since 2.7.8
@@ -416,10 +401,10 @@ public class ConceptReferenceRangeUtility {
 	public long getMonths(Date fromDate) {
 		return getMonthsBetween(fromDate, new Date());
 	}
-	
+
 	/**
 	 * Gets the number of years from a given date up to the current date.
-	 * 
+	 *
 	 * @param fromDate the date from which to start counting
 	 * @return the number of years
 	 * @since 2.7.8
@@ -427,16 +412,15 @@ public class ConceptReferenceRangeUtility {
 	public long getYears(Date fromDate) {
 		return getYearsBetween(fromDate, new Date());
 	}
-	
+
 	/**
 	 * Returns whether the patient is the specified program on the specified date
-	 * 
+	 *
 	 * @param uuid of program
 	 * @param person the patient to test
 	 * @param onDate the date to test whether the patient is in the program
 	 * @return true if the patient is in the program on the specified date, false otherwise
-	 * 
-	 *  @since 2.8.3
+	 * @since 2.8.3
 	 */
 	public boolean isEnrolledInProgram(String uuid, Person person, Date onDate) {
 		if (person == null) {
@@ -447,15 +431,14 @@ public class ConceptReferenceRangeUtility {
 		}
 		return getPatientPrograms((Patient) person, onDate).stream().anyMatch(pp -> pp.getProgram().getUuid().equals(uuid));
 	}
-	
+
 	/**
 	 * Returns whether the patient is the specified program state on the specified date
 	 *
 	 * @param uuid of program state
-	 * @param person  the patient to test
+	 * @param person the patient to test
 	 * @param onDate the date to test whether the patient is in the program state
 	 * @return true if the patient is in the program state on the specified date, false otherwise
-	 * 
 	 * @since 2.8.3
 	 */
 	public boolean isInProgramState(String uuid, Person person, Date onDate) {
@@ -465,10 +448,10 @@ public class ConceptReferenceRangeUtility {
 		if (!(person.getIsPatient())) {
 			return false;
 		}
-	
+
 		List<PatientProgram> patientPrograms = getPatientPrograms((Patient) person, onDate);
 		List<PatientState> patientStates = new ArrayList<>();
-		
+
 		for (PatientProgram pp : patientPrograms) {
 			for (PatientState state : pp.getStates()) {
 				if (state.getActive(onDate)) {
@@ -476,20 +459,20 @@ public class ConceptReferenceRangeUtility {
 				}
 			}
 		}
-		
+
 		return patientStates.stream().anyMatch(ps -> ps.getState().getUuid().equals(uuid));
 	}
-	
+
 	/**
 	 * Converts a java.util.Date to java.time.LocalDate
-	 * 
+	 *
 	 * @param date the java.util.Date
 	 * @return the java.time.LocalDate
 	 */
 	private LocalDate toLocalDate(Date date) {
 		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
-	
+
 	private List<PatientProgram> getPatientPrograms(Patient patient, Date onDate) {
 		if (onDate == null) {
 			onDate = new Date();

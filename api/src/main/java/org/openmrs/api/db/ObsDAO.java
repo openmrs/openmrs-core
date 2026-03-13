@@ -17,7 +17,6 @@ import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
-import org.openmrs.ObsReferenceRange;
 import org.openmrs.Person;
 import org.openmrs.Visit;
 import org.openmrs.api.ObsService;
@@ -25,37 +24,36 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 
 /**
  * Observation-related database functions
- * 
+ *
  * @see org.openmrs.api.ObsService
  */
 public interface ObsDAO {
-	
+
 	/**
 	 * @see org.openmrs.api.ObsService#saveObs(org.openmrs.Obs, String)
 	 */
 	public Obs saveObs(Obs obs) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
 	public Obs getObs(Integer obsId) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.ObsService#purgeObs(Obs)
 	 */
 	public void deleteObs(Obs obs) throws DAOException;
-		
+
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
-	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean,
-	 *      java.lang.String)
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
+	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean, java.lang.String)
 	 */
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
 	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
 	        String accessionNumber) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
@@ -66,7 +64,7 @@ public interface ObsDAO {
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs,
 	        String accessionNumber) throws DAOException;
-	
+
 	/**
 	 * @param uuid
 	 * @return obs or null
@@ -79,10 +77,12 @@ public interface ObsDAO {
 	 * @return Obs or null
 	 */
 	public Obs getRevisionObs(Obs initialObs);
-	
+
 	/**
-	 * Gets the value of status currently saved in the database for the given obs, bypassing any caches. This is used
-	 * when the user updates an existing obs so we can determine whether to change its status or not.
+	 * Gets the value of status currently saved in the database for the given obs, bypassing any caches.
+	 * This is used when the user updates an existing obs so we can determine whether to change its
+	 * status or not.
+	 *
 	 * @param obs
 	 * @return
 	 * @since 2.1.0
@@ -90,15 +90,15 @@ public interface ObsDAO {
 	public Obs.Status getSavedStatus(Obs obs);
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
 	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean,
 	 *      java.lang.String)
 	 */
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-			List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
-			List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
-			boolean includeVoidedObs, String accessionNumber) throws DAOException;
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber) throws DAOException;
 
 	/**
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
@@ -107,7 +107,7 @@ public interface ObsDAO {
 	 * @see ObsService#getObservationCount(List, boolean)
 	 */
 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-			List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
-			Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, List<Visit> visits,
-			boolean includeVoidedObs, String accessionNumber) throws DAOException;
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, List<Visit> visits,
+	        boolean includeVoidedObs, String accessionNumber) throws DAOException;
 }

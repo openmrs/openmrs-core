@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.db;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,57 +22,61 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateEncounterDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+
 /**
  * This class tests the {@link EncounterDAO} linked to from the Context. Currently that file is the
  * {@link HibernateEncounterDAO} This should only have to test methods that don't really have
  * equivalents at the {@link EncounterService} layer.
  */
 public class EncounterDAOTest extends BaseContextSensitiveTest {
-	
+
 	private EncounterDAO dao = null;
-	
+
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@BeforeEach
 	public void runBeforeEachTest() {
 		executeDataSet("org/openmrs/api/db/include/EncounterDAOTest-initialData.xml");
-		
+
 		if (dao == null)
 			// fetch the dao from the spring application context
 			// this bean name matches the name in /metadata/spring/applicationContext-service.xml
 			dao = (EncounterDAO) applicationContext.getBean("encounterDAO");
-		
+
 	}
-	
+
 	/**
 	 * @see EncounterDAO#getSavedEncounterDatetime(Encounter)
 	 */
 	@Test
 	public void getSavedEncounterDatetime_shouldGetSavedEncounterDatetimeFromDatabase() {
-		
+
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
-		
+
 		Date newDate = new Date();
-		
-		// sanity check: make sure the date on the encounter isn't "right now" 
+
+		// sanity check: make sure the date on the encounter isn't "right now"
 		assertNotSame(encounter.getEncounterDatetime(), newDate);
-		
+
 		// save the date from the db for later checks
 		Date origDate = encounter.getEncounterDatetime();
-		
+
 		// change the date on the java pojo (NOT in the database)
 		encounter.setEncounterDatetime(newDate);
-		
-		// the value from the database should match the original date from the 
+
+		// the value from the database should match the original date from the
 		// encounter right after /it/ was fetched from the database
 		Date encounterDateFromDatabase = dao.getSavedEncounterDatetime(encounter);
 		assertEquals(origDate, encounterDateFromDatabase);
 	}
-	
+
 	/**
 	 * @see EncounterDAO#getEncounters(query, patientId, start, length, includeVoided)
 	 */
@@ -86,21 +86,21 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 		List<Encounter> encounters = dao.getEncounters("John Doe", null, null, null, true);
 		assertThat(expectedEncountersForPatientOne, Matchers.containsInAnyOrder(encounters.toArray()));
 	}
-	
+
 	/**
 	 * @see EncounterDAO#getEncounters(query, patientId, start, length, includeVoided)
 	 */
 	@Test
 	public void getEncounters_shouldWork_WithIdentifierQuery() {
 		List<Encounter> expectedEncountersForPatientOne = initializeExpectedEncounters();
-		
+
 		List<Encounter> encountersByNumericIdentifier = dao.getEncounters("1234", null, null, null, true);
 		assertThat(expectedEncountersForPatientOne, Matchers.containsInAnyOrder(encountersByNumericIdentifier.toArray()));
-		
+
 		List<Encounter> encountersByStringIdentifier = dao.getEncounters("abcd", null, null, null, true);
 		assertThat(expectedEncountersForPatientOne, Matchers.containsInAnyOrder(encountersByStringIdentifier.toArray()));
 	}
-	
+
 	private List<Encounter> initializeExpectedEncounters() {
 		Encounter encounterOne = Context.getEncounterService().getEncounter(1);
 		Encounter encounterSix = Context.getEncounterService().getEncounter(6);
@@ -109,7 +109,7 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 		expectedEncountersForPatientOne.add(encounterSix);
 		return expectedEncountersForPatientOne;
 	}
-	
+
 	/**
 	 * @see EncounterDAO#getEncounters(query, patientId, start, length, includeVoided)
 	 */

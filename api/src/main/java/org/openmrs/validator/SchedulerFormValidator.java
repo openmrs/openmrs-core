@@ -19,79 +19,76 @@ import org.springframework.validation.Validator;
 
 @Handler(supports = { TaskDefinition.class }, order = 50)
 public class SchedulerFormValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return c.equals(TaskDefinition.class);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fail validation if name is null or empty or whitespace<br/>
+	 * <strong>Should</strong> fail validation if taskClass is empty or whitespace<br/>
+	 * <strong>Should</strong> fail validation if repeatInterval is null or empty or whitespace<br/>
+	 * <strong>Should</strong> fail validation if class is not instance of Task<br/>
+	 * <strong>Should</strong> fail validation if class is not accessible<br/>
+	 * <strong>Should</strong> fail validation if class cannot be instantiated<br/>
+	 * <strong>Should</strong> fail validation if class not found<br/>
+	 * <strong>Should</strong> pass validation if all required fields have proper values<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if name is null or empty or whitespace
-	 * <strong>Should</strong> fail validation if taskClass is empty or whitespace
-	 * <strong>Should</strong> fail validation if repeatInterval is null or empty or whitespace
-	 * <strong>Should</strong> fail validation if class is not instance of Task
-	 * <strong>Should</strong> fail validation if class is not accessible
-	 * <strong>Should</strong> fail validation if class cannot be instantiated
-	 * <strong>Should</strong> fail validation if class not found
-	 * <strong>Should</strong> pass validation if all required fields have proper values
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
 		TaskDefinition taskDefinition = (TaskDefinition) obj;
-		
+
 		if (taskDefinition == null) {
 			errors.rejectValue("task", "error.general");
 		} else {
 			//Won't work without name and description properties on Task Definition
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "Scheduler.taskForm.required", new Object[] {
-			        "Task name", taskDefinition.getName() });
-			
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "taskClass", "Scheduler.taskForm.required", new Object[] {
-			        "Task class", taskDefinition.getTaskClass() });
-			
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "repeatInterval", "Scheduler.taskForm.required", new Object[] {
-			        "Repeat interval", taskDefinition.getRepeatInterval() });
-			
-			ValidateUtil
-			        .validateFieldLengths(errors, obj.getClass(), "name", "description", "taskClass", "startTimePattern");
-			
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "Scheduler.taskForm.required",
+			    new Object[] { "Task name", taskDefinition.getName() });
+
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "taskClass", "Scheduler.taskForm.required",
+			    new Object[] { "Task class", taskDefinition.getTaskClass() });
+
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "repeatInterval", "Scheduler.taskForm.required",
+			    new Object[] { "Repeat interval", taskDefinition.getRepeatInterval() });
+
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "taskClass",
+			    "startTimePattern");
+
 			// Check if the class is valid
 			try {
 				Class<?> taskClass = OpenmrsClassLoader.getInstance().loadClass(taskDefinition.getTaskClass());
-				
+
 				Object o = taskClass.newInstance();
 				if (!(o instanceof Task)) {
-					errors
-					        .rejectValue("taskClass", "Scheduler.taskForm.classDoesNotImplementTask", new Object[] {
-					                taskDefinition.getTaskClass(), Task.class.getName() },
-					            "Class does not implement Task interface");
+					errors.rejectValue("taskClass", "Scheduler.taskForm.classDoesNotImplementTask",
+					    new Object[] { taskDefinition.getTaskClass(), Task.class.getName() },
+					    "Class does not implement Task interface");
 				}
-				
-			}
-			catch (IllegalAccessException iae) {
-				errors.rejectValue("taskClass", "Scheduler.taskForm.illegalAccessException", new Object[] { taskDefinition
-				        .getTaskClass() }, "Illegal access exception.");
-			}
-			catch (InstantiationException ie) {
-				errors.rejectValue("taskClass", "Scheduler.taskForm.instantiationException", new Object[] { taskDefinition
-				        .getTaskClass() }, "Error creating new instance of class.");
-			}
-			catch (ClassNotFoundException cnfe) {
-				errors.rejectValue("taskClass", "Scheduler.taskForm.classNotFoundException", new Object[] { taskDefinition
-				        .getTaskClass() }, "Class not found error.");
+
+			} catch (IllegalAccessException iae) {
+				errors.rejectValue("taskClass", "Scheduler.taskForm.illegalAccessException",
+				    new Object[] { taskDefinition.getTaskClass() }, "Illegal access exception.");
+			} catch (InstantiationException ie) {
+				errors.rejectValue("taskClass", "Scheduler.taskForm.instantiationException",
+				    new Object[] { taskDefinition.getTaskClass() }, "Error creating new instance of class.");
+			} catch (ClassNotFoundException cnfe) {
+				errors.rejectValue("taskClass", "Scheduler.taskForm.classNotFoundException",
+				    new Object[] { taskDefinition.getTaskClass() }, "Class not found error.");
 			}
 		}
 	}
-	
+
 }

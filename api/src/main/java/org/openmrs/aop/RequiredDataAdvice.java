@@ -12,7 +12,6 @@ package org.openmrs.aop;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -51,7 +50,8 @@ import org.springframework.util.StringUtils;
  * See /metadata/api/spring/applicationContext-service.xml for the mapping of this bean. <br>
  * <br>
  * For an Openmrs Service to use this AOP advice class and take advantage of its automatic variable
- * setting, it must have "&lt;ref local="requiredDataInterceptor"/&gt;" in its "preInterceptors".<br>
+ * setting, it must have "&lt;ref local="requiredDataInterceptor"/&gt;" in its
+ * "preInterceptors".<br>
  * <br>
  * By default, this should take care of any child collections on the object being acted on. Any
  * child collection of {@link OpenmrsObject}s will get "handled" (i.e., void data set up, save data
@@ -80,53 +80,55 @@ import org.springframework.util.StringUtils;
  */
 @Component("requiredDataInterceptor")
 public class RequiredDataAdvice implements MethodBeforeAdvice {
-	
+
 	private static final String UNABLE_GETTER_METHOD = "unable.getter.method";
-	
+
 	/**
+	 * <p>
+	 * <strong>Should</strong> not fail on update method with no arguments
+	 *
 	 * @see org.springframework.aop.MethodBeforeAdvice#before(java.lang.reflect.Method,
 	 *      java.lang.Object[], java.lang.Object)
-	 * <strong>Should</strong> not fail on update method with no arguments
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public void before(Method method, Object[] args, Object target) throws Throwable {
 		String methodName = method.getName();
-		
+
 		// skip out early if there are no arguments
 		if (args == null || args.length == 0) {
 			return;
 		}
-		
+
 		Object mainArgument = args[0];
-		
+
 		// fail early on a null parameter
 		if (mainArgument == null) {
 			return;
 		}
-		
+
 		// the "create" is there to cover old deprecated methods since AOP doesn't occur
 		// on method calls within a class, only on calls to methods from external classes to methods
 		// "update" is not an option here because there are multiple methods that start with "update" but is
 		// not updating the primary argument. eg: ConceptService.updateConceptWord(Concept)
 		if (methodName.startsWith("save") || methodName.startsWith("create")) {
-			
+
 			// if the first argument is an OpenmrsObject, handle it now
 			Reflect reflect = new Reflect(OpenmrsObject.class);
-			
+
 			if (reflect.isSuperClass(mainArgument)) {
 				// fail early if the method name is not like saveXyz(Xyz)
 				if (!methodNameEndsWithClassName(method, mainArgument.getClass())) {
 					return;
 				}
-				
+
 				// if a second argument exists, pass that to the save handler as well
-				// (with current code, it means we're either in an obs save or a user save)				
+				// (with current code, it means we're either in an obs save or a user save)
 				String other = null;
 				if (args.length > 1 && args[1] instanceof String) {
 					other = (String) args[1];
 				}
-				
+
 				recursivelyHandle(SaveHandler.class, (OpenmrsObject) mainArgument, other);
 				ValidateUtil.validate(mainArgument);
 			}
@@ -135,21 +137,21 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				// ideally we would fail early if the method name is not like savePluralOfXyz(Collection<Xyz>)
 				// but this only occurs once in the API (AdministrationService.saveGlobalProperties
 				// so it is not worth handling this case
-				
+
 				// if a second argument exists, pass that to the save handler as well
-				// (with current code, it means we're either in an obs save or a user save)				
+				// (with current code, it means we're either in an obs save or a user save)
 				String other = null;
 				if (args.length > 1) {
 					other = (String) args[1];
 				}
-				
+
 				Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) mainArgument;
-				
+
 				for (OpenmrsObject object : openmrsObjects) {
 					recursivelyHandle(SaveHandler.class, object, other);
 					ValidateUtil.validate(object);
 				}
-				
+
 			}
 		} else {
 			// fail early if the method name is not like retirePatient or retireConcept when dealing
@@ -157,49 +159,45 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			if (!methodNameEndsWithClassName(method, mainArgument.getClass())) {
 				return;
 			}
-			
+
 			if (methodName.startsWith("void")) {
 				Voidable voidable = (Voidable) args[0];
 				Date dateVoided = voidable.getDateVoided() == null ? new Date() : voidable.getDateVoided();
 				String voidReason = (String) args[1];
 				recursivelyHandle(VoidHandler.class, voidable, Context.getAuthenticatedUser(), dateVoided, voidReason,
-					(Set<OpenmrsObject>) null);
-				
+				    (Set<OpenmrsObject>) null);
+
 			} else if (methodName.startsWith("unvoid")) {
 				Voidable voidable = (Voidable) args[0];
 				Date originalDateVoided = voidable.getDateVoided();
 				User originalVoidingUser = voidable.getVoidedBy();
-				recursivelyHandle(UnvoidHandler.class, voidable, originalVoidingUser, originalDateVoided, 
-					null, (Set<OpenmrsObject>) null);
-				
+				recursivelyHandle(UnvoidHandler.class, voidable, originalVoidingUser, originalDateVoided, null,
+				    (Set<OpenmrsObject>) null);
+
 			} else if (methodName.startsWith("retire")) {
 				Retireable retireable = (Retireable) args[0];
 				Date dateRetired = retireable.getDateRetired() == null ? new Date() : retireable.getDateRetired();
 				String retireReason = (String) args[1];
-				recursivelyHandle(RetireHandler.class, retireable, Context.getAuthenticatedUser(), dateRetired,
-					retireReason, (Set<OpenmrsObject>) null);
-				
+				recursivelyHandle(RetireHandler.class, retireable, Context.getAuthenticatedUser(), dateRetired, retireReason,
+				    (Set<OpenmrsObject>) null);
+
 			} else if (methodName.startsWith("unretire")) {
 				Retireable retireable = (Retireable) args[0];
 				Date originalDateRetired = retireable.getDateRetired();
 				recursivelyHandle(UnretireHandler.class, retireable, Context.getAuthenticatedUser(), originalDateRetired,
-					null, (Set<OpenmrsObject>) null);
+				    null, (Set<OpenmrsObject>) null);
 			}
 		}
 	}
-	
+
 	/**
-	 * Convenience method to change the given method to make sure it ends with
-	 * the given class name. <br>
+	 * Convenience method to change the given method to make sure it ends with the given class name.
+	 * <br>
 	 * This will recurse to the super class to check that as well.
 	 *
-	 * @param method
-	 *            the method name (like savePatient, voidEncounter,
-	 *            retireConcept)
-	 * @param mainArgumentClass
-	 *            class to compare
-	 * @return true if method's name ends with the mainArgumentClasses simple
-	 *         name
+	 * @param method the method name (like savePatient, voidEncounter, retireConcept)
+	 * @param mainArgumentClass class to compare
+	 * @return true if method's name ends with the mainArgumentClasses simple name
 	 */
 	private boolean methodNameEndsWithClassName(Method method, Class<?> mainArgumentClass) {
 		String methodName = method.getName();
@@ -213,13 +211,14 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
-	 * Convenience method for {@link #recursivelyHandle(Class, OpenmrsObject, User, Date, String, List)}.
-	 * Calls that method with the current user and the current Date.
+	 * Convenience method for
+	 * {@link #recursivelyHandle(Class, OpenmrsObject, User, Date, String, List)}. Calls that method
+	 * with the current user and the current Date.
 	 *
 	 * @param <H> the type of Handler to get (should extend {@link RequiredDataHandler})
 	 * @param handlerType the type of Handler to get (should extend {@link RequiredDataHandler})
@@ -228,11 +227,12 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 *            void/retire reason)
 	 * @see #recursivelyHandle(Class, OpenmrsObject, User, Date, String, List)
 	 */
-	public static <H extends RequiredDataHandler<OpenmrsObject>> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
-		String reason) {
-		recursivelyHandle(handlerType, openmrsObject, Context.getAuthenticatedUser(), new Date(), reason, (Set<OpenmrsObject>) null);
+	public static <H extends RequiredDataHandler<OpenmrsObject>> void recursivelyHandle(Class<H> handlerType,
+	        OpenmrsObject openmrsObject, String reason) {
+		recursivelyHandle(handlerType, openmrsObject, Context.getAuthenticatedUser(), new Date(), reason,
+		    (Set<OpenmrsObject>) null);
 	}
-	
+
 	/**
 	 * This loops over all declared collections on the given object and all declared collections on
 	 * parent objects to use the given <code>handlerType</code>.
@@ -244,17 +244,18 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @param currentDate the date to set recursively on the object
 	 * @param other an optional second argument that was passed to the service method (usually a
 	 *            void/retire reason)
-	 * @param alreadyHandled an optional list of objects that have already been handled and should
-	 *            not be processed again. this is intended to prevent infinite recursion when
-	 *            handling collection properties.
+	 * @param alreadyHandled an optional list of objects that have already been handled and should not
+	 *            be processed again. this is intended to prevent infinite recursion when handling
+	 *            collection properties.
 	 * @see HandlerUtil#getHandlersForType(Class, Class)
 	 */
-	public static <H extends RequiredDataHandler<OpenmrsObject>> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
-		User currentUser, Date currentDate, String other, List<OpenmrsObject> alreadyHandled) {
+	public static <H extends RequiredDataHandler<OpenmrsObject>> void recursivelyHandle(Class<H> handlerType,
+	        OpenmrsObject openmrsObject, User currentUser, Date currentDate, String other,
+	        List<OpenmrsObject> alreadyHandled) {
 		recursivelyHandle(handlerType, openmrsObject, currentUser, currentDate, other,
-			alreadyHandled != null ? new HashSet<>(alreadyHandled) : null);
+		    alreadyHandled != null ? new HashSet<>(alreadyHandled) : null);
 	}
-	
+
 	/**
 	 * This loops over all declared collections on the given object and all declared collections on
 	 * parent objects to use the given <code>handlerType</code>.
@@ -266,147 +267,146 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @param currentDate the date to set recursively on the object
 	 * @param other an optional second argument that was passed to the service method (usually a
 	 *            void/retire reason)
-	 * @param alreadyHandled an optional list of objects that have already been handled and should
-	 *            not be processed again. this is intended to prevent infinite recursion when
-	 *            handling collection properties.
+	 * @param alreadyHandled an optional list of objects that have already been handled and should not
+	 *            be processed again. this is intended to prevent infinite recursion when handling
+	 *            collection properties.
 	 * @see HandlerUtil#getHandlersForType(Class, Class)
-	 * 
 	 * @since 2.7.0
 	 */
-	public static <H extends RequiredDataHandler<OpenmrsObject>> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
-		User currentUser, Date currentDate, String other, Set<OpenmrsObject> alreadyHandled) {
+	public static <H extends RequiredDataHandler<OpenmrsObject>> void recursivelyHandle(Class<H> handlerType,
+	        OpenmrsObject openmrsObject, User currentUser, Date currentDate, String other,
+	        Set<OpenmrsObject> alreadyHandled) {
 		if (openmrsObject == null) {
 			return;
 		}
-		
+
 		Class<? extends OpenmrsObject> openmrsObjectClass = openmrsObject.getClass();
-		
+
 		if (alreadyHandled == null) {
 			alreadyHandled = new HashSet<>();
 		}
-		
+
 		// fetch all handlers for the object being saved
 		List<H> handlers = HandlerUtil.getHandlersForType(handlerType, openmrsObjectClass);
-		
+
 		// loop over all handlers, calling onSave on each
 		for (H handler : handlers) {
 			handler.handle(openmrsObject, currentUser, currentDate, other);
 		}
-		
+
 		alreadyHandled.add(openmrsObject);
-		
+
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		List<Field> allInheritedFields = reflect.getInheritedFields(openmrsObjectClass);
-		
+
 		// loop over all child collections of OpenmrsObjects and recursively save on those
 		for (Field field : allInheritedFields) {
-			
+
 			// skip field if it's declared independent
 			if (Reflect.isAnnotationPresent(openmrsObjectClass, field.getName(), Independent.class)) {
 				continue;
 			}
-			
+
 			if (reflect.isCollectionField(field) && !isHandlerMarkedAsDisabled(handlerType, field)) {
-				
+
 				// the collection we'll be looping over
 				Collection<OpenmrsObject> childCollection = getChildCollection(openmrsObject, field);
-				
+
 				if (childCollection != null) {
 					for (OpenmrsObject collectionElement : childCollection) {
 						if (!alreadyHandled.contains(collectionElement)) {
-							recursivelyHandle(handlerType, collectionElement, currentUser, currentDate,
-								other, alreadyHandled);
+							recursivelyHandle(handlerType, collectionElement, currentUser, currentDate, other,
+							    alreadyHandled);
 						}
 					}
 				}
 			}
 		}
 	}
-	
+
 	/**
-	 * This method gets a child attribute off of an OpenmrsObject. It usually uses the getter for
-	 * the attribute, but can use the direct field (even if its private) if told to by the
+	 * This method gets a child attribute off of an OpenmrsObject. It usually uses the getter for the
+	 * attribute, but can use the direct field (even if its private) if told to by the
 	 * {@link AllowDirectAccess} annotation.
+	 * <p>
+	 * <strong>Should</strong> get value of given child collection on given field<br/>
+	 * <strong>Should</strong> should be able to get annotated private fields<br/>
+	 * <strong>Should</strong> throw APIException if getter method not found
 	 *
 	 * @param openmrsObject the object to get the collection off of
 	 * @param field the name of the field that is the collection
 	 * @return the actual collection of objects that is on the given <code>openmrsObject</code>
-	 * <strong>Should</strong> get value of given child collection on given field
-	 * <strong>Should</strong> should be able to get annotated private fields
-	 * <strong>Should</strong> throw APIException if getter method not found
 	 */
 	@SuppressWarnings("unchecked")
 	protected static Collection<OpenmrsObject> getChildCollection(OpenmrsObject openmrsObject, Field field) {
 		String fieldName = field.getName();
 		String getterName = "get" + StringUtils.capitalize(fieldName);
-		
+
 		try {
-			
+
 			// checks if direct access is allowed
 			if (field.isAnnotationPresent(AllowDirectAccess.class)) {
-				
+
 				boolean previousFieldAccessibility = field.isAccessible();
 				field.setAccessible(true);
 				Collection<OpenmrsObject> childCollection = (Collection<OpenmrsObject>) field.get(openmrsObject);
 				field.setAccessible(previousFieldAccessibility);
 				return childCollection;
-				
+
 			} else {
 				// access the field via its getter method
 				Class<? extends OpenmrsObject> openmrsObjectClass = openmrsObject.getClass();
-				
+
 				Method getterMethod = openmrsObjectClass.getMethod(getterName, (Class[]) null);
 				return (Collection<OpenmrsObject>) getterMethod.invoke(openmrsObject, new Object[] {});
-				
+
 			}
-		}
-		catch (IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			if (field.isAnnotationPresent(AllowDirectAccess.class)) {
 				throw new APIException("unable.get.field", new Object[] { fieldName, openmrsObject.getClass() });
 			} else {
-				throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "use", getterName, fieldName,
-					openmrsObject.getClass() });
+				throw new APIException(UNABLE_GETTER_METHOD,
+				        new Object[] { "use", getterName, fieldName, openmrsObject.getClass() });
 			}
-		}
-		catch (InvocationTargetException e) {
-			throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "run", getterName, fieldName,
-				openmrsObject.getClass() });
-		}
-		catch (NoSuchMethodException e) {
-			throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "find", getterName, fieldName,
-				openmrsObject.getClass() });
+		} catch (InvocationTargetException e) {
+			throw new APIException(UNABLE_GETTER_METHOD,
+			        new Object[] { "run", getterName, fieldName, openmrsObject.getClass() });
+		} catch (NoSuchMethodException e) {
+			throw new APIException(UNABLE_GETTER_METHOD,
+			        new Object[] { "find", getterName, fieldName, openmrsObject.getClass() });
 		}
 	}
-	
+
 	/**
-	 * Checks the given {@link Class} to see if it A) is a {@link Collection}/{@link Set}/
-	 * {@link List}, and B) contains {@link OpenmrsObject}s
+	 * Checks the given {@link Class} to see if it A) is a {@link Collection}/{@link Set}/ {@link List},
+	 * and B) contains {@link OpenmrsObject}s
+	 * <p>
+	 * <strong>Should</strong> return true if class is openmrsObject list<br/>
+	 * <strong>Should</strong> return true if class is openmrsObject set<br/>
+	 * <strong>Should</strong> return false if collection is empty regardless of type held
 	 *
 	 * @param arg the actual object being passed in
 	 * @return true if it is a Collection of some kind of OpenmrsObject
-	 * <strong>Should</strong> return true if class is openmrsObject list
-	 * <strong>Should</strong> return true if class is openmrsObject set
-	 * <strong>Should</strong> return false if collection is empty regardless of type held
 	 */
 	protected static boolean isOpenmrsObjectCollection(Object arg) {
-		
+
 		if (arg instanceof Collection) {
 			Collection<?> col = (Collection<?>) arg;
 			return !col.isEmpty() && col.iterator().next() instanceof OpenmrsObject;
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Checks if the given field is annotated with a @DisableHandler annotation to specify
-	 * that the given handlerType should be disabled
+	 * Checks if the given field is annotated with a @DisableHandler annotation to specify that the
+	 * given handlerType should be disabled
 	 *
 	 * @param handlerType
 	 * @param field
 	 * @return true if the handlerType has been marked as disabled, false otherwise
 	 */
 	protected static boolean isHandlerMarkedAsDisabled(Class<? extends RequiredDataHandler> handlerType, Field field) {
-		
+
 		// if the annotation isn't present, return false
 		if (!field.isAnnotationPresent(DisableHandlers.class)) {
 			return false;
@@ -418,7 +418,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				}
 			}
 		}
-		
+
 		return false;
 	}
 }

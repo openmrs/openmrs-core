@@ -9,6 +9,8 @@
  */
 package org.openmrs.notification.mail;
 
+import java.util.Properties;
+
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
@@ -24,23 +26,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.util.Properties;
-
 public class MailMessageSender implements MessageSender {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(MailMessageSender.class);
-	
+
 	/**
 	 * Jakarta Mail session
 	 */
 	private Session session;
-	
+
 	/**
 	 * Default public constructor.
 	 */
 	public MailMessageSender() {
 	}
-	
+
 	/**
 	 * Public constructor.
 	 *
@@ -49,7 +49,7 @@ public class MailMessageSender implements MessageSender {
 	public MailMessageSender(Session session) {
 		this.session = session;
 	}
-	
+
 	/**
 	 * Set Jakarta Mail session.
 	 *
@@ -58,7 +58,7 @@ public class MailMessageSender implements MessageSender {
 	public void setMailSession(Session session) {
 		this.session = session;
 	}
-	
+
 	/**
 	 * Send the message.
 	 *
@@ -69,15 +69,14 @@ public class MailMessageSender implements MessageSender {
 		try {
 			MimeMessage mimeMessage = createMimeMessage(message);
 			Transport.send(mimeMessage);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("failed to send message", e);
-			
+
 			// catch mail-specific exception and re-throw it as app-specific exception
 			throw new MessageException(e);
 		}
 	}
-	
+
 	/**
 	 * Converts the message object to a mime message in order to prepare it to be sent.
 	 *
@@ -85,21 +84,21 @@ public class MailMessageSender implements MessageSender {
 	 * @return MimeMessage
 	 */
 	public MimeMessage createMimeMessage(Message message) throws Exception {
-		
+
 		if (message.getRecipients() == null) {
 			throw new MessageException("Message must contain at least one recipient");
 		}
 
 		Properties mailProperties = Context.getMailProperties();
-		
+
 		// set the content-type to the default if it isn't defined in Message
 		if (!StringUtils.hasText(message.getContentType())) {
 			String contentType = mailProperties.getProperty("mail.default_content_type", "text/plain");
 			message.setContentType(contentType);
 		}
-		
+
 		MimeMessage mimeMessage = new MimeMessage(session);
-		
+
 		String sender = message.getSender();
 		if (!StringUtils.hasText(sender)) {
 			sender = mailProperties.getProperty("mail.from");
@@ -109,20 +108,20 @@ public class MailMessageSender implements MessageSender {
 			mimeMessage.setFrom(senderAddress);
 			mimeMessage.setSender(senderAddress);
 		}
-		
+
 		mimeMessage.setRecipients(jakarta.mail.Message.RecipientType.TO,
 		    InternetAddress.parse(message.getRecipients(), false));
 		mimeMessage.setSubject(message.getSubject());
-		
+
 		if (!message.hasAttachment()) {
 			mimeMessage.setContent(message.getContent(), message.getContentType());
 		} else {
 			mimeMessage.setContent(createMultipart(message));
 		}
-		
+
 		return mimeMessage;
 	}
-	
+
 	/**
 	 * Creates a MimeMultipart, so that we can have an attachment.
 	 *
@@ -131,18 +130,18 @@ public class MailMessageSender implements MessageSender {
 	 */
 	private MimeMultipart createMultipart(Message message) throws Exception {
 		MimeMultipart toReturn = new MimeMultipart();
-		
+
 		MimeBodyPart textContent = new MimeBodyPart();
 		textContent.setContent(message.getContent(), message.getContentType());
-		
+
 		MimeBodyPart attachment = new MimeBodyPart();
 		attachment.setContent(message.getAttachment(), message.getAttachmentContentType());
 		attachment.setFileName(message.getAttachmentFileName());
-		
+
 		toReturn.addBodyPart(textContent);
 		toReturn.addBodyPart(attachment);
-		
+
 		return toReturn;
 	}
-	
+
 }

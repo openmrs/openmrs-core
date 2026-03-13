@@ -24,14 +24,14 @@ import org.openmrs.OpenmrsMetadata;
 public class MetadataComparator implements Comparator<OpenmrsMetadata>, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * @param locale
 	 */
 	public MetadataComparator(Locale locale) {
 		// locale is currently not used
 	}
-	
+
 	/**
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
@@ -43,5 +43,5 @@ public class MetadataComparator implements Comparator<OpenmrsMetadata>, Serializ
 		}
 		return temp;
 	}
-	
+
 }

@@ -16,10 +16,9 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates attributes on the {@link org.openmrs.ConceptSource} object.
- *
  */
 public class ConceptSourceValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 *
@@ -29,30 +28,30 @@ public class ConceptSourceValidator implements Validator {
 	public boolean supports(Class<?> c) {
 		return c.equals(ConceptSource.class);
 	}
-	
+
 	/**
-	 * Checks the form object for any inconsistencies/errors
-	 * 
-	 * 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
-	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if name is null or empty or whitespace
-	 * <strong>Should</strong> fail validation if description is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if HL7 Code is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if all required fields have proper values
-	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * Checks the form object for any inconsistencies/errors * @see
+	 * org.springframework.validation.Validator#validate(java.lang.Object,
+	 * org.springframework.validation.Errors)
+	 * <p>
+	 * <strong>Should</strong> fail validation if name is null or empty or whitespace<br/>
+	 * <strong>Should</strong> fail validation if description is null or empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if HL7 Code is null or empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if all required fields have proper values<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
 	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws IllegalArgumentException {
 		if (obj == null || !(obj instanceof ConceptSource)) {
-			throw new IllegalArgumentException("The parameter obj should not be null and must be of type "
-			        + ConceptSource.class);
+			throw new IllegalArgumentException(
+			        "The parameter obj should not be null and must be of type " + ConceptSource.class);
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.null");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "hl7Code", "uniqueId", "description",
 			    "retireReason");
 		}
-		
+
 	}
 }

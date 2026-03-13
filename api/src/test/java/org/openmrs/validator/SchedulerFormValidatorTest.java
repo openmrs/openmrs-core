@@ -9,21 +9,21 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link SchedulerFormValidator} class.
  */
 public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
@@ -33,22 +33,22 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		def.setName(null);
 		def.setRepeatInterval(3600000L);
 		def.setTaskClass("org.openmrs.scheduler.tasks.HelloWorldTask");
-		
+
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		assertTrue(errors.hasFieldErrors("name"));
-		
+
 		def.setName("");
 		errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		assertTrue(errors.hasFieldErrors("name"));
-		
+
 		def.setName(" ");
 		errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
@@ -58,17 +58,17 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
 		def.setTaskClass("");
-		
+
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		assertTrue(errors.hasFieldErrors("taskClass"));
-		
+
 		def.setTaskClass(" ");
 		errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		assertTrue(errors.hasFieldErrors("taskClass"));
 	}
-	
+
 	/**
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
@@ -77,17 +77,17 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		TaskDefinition def = new TaskDefinition();
 		def.setName("Chores");
 		def.setTaskClass("org.openmrs.scheduler.tasks.HelloWorldTask");
-		
+
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		assertTrue(errors.hasFieldErrors("repeatInterval"));
-		
+
 		def.setTaskClass(" ");
 		errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		assertTrue(errors.hasFieldErrors("repeatInterval"));
 	}
-	
+
 	/**
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
@@ -97,14 +97,14 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
 		def.setTaskClass("org.openmrs.Obs");
-		
+
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("taskClass"));
 		assertEquals("Scheduler.taskForm.classDoesNotImplementTask", errors.getFieldError("taskClass").getCode());
 	}
-	
+
 	/**
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
@@ -114,14 +114,14 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
 		def.setTaskClass("???"); //TODO: Find a way to trigger an IllegalAccessException
-		
+
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("taskClass"));
 		assertEquals("Scheduler.taskForm.classNotFoundException", errors.getFieldError("taskClass").getCode());
 	}
-	
+
 	/**
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
@@ -131,14 +131,14 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
 		def.setTaskClass("org.openmrs.BaseOpenmrsData");
-		
+
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("taskClass"));
 		assertEquals("Scheduler.taskForm.instantiationException", errors.getFieldError("taskClass").getCode());
 	}
-	
+
 	/**
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
@@ -148,14 +148,14 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
 		def.setTaskClass("org.openmrs.ScaryRobot");
-		
+
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("taskClass"));
 		assertEquals("Scheduler.taskForm.classNotFoundException", errors.getFieldError("taskClass").getCode());
 	}
-	
+
 	/**
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
@@ -165,13 +165,13 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
 		def.setTaskClass("org.openmrs.scheduler.tasks.HelloWorldTask");
-		
+
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
@@ -183,32 +183,32 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		def.setTaskClass("org.openmrs.scheduler.tasks.HelloWorldTask");
 		def.setDescription("description");
 		def.setStartTimePattern("startTimePattern");
-		
+
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		TaskDefinition def = new TaskDefinition();
-		def
-		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		def.setName(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		def.setRepeatInterval(3600000L);
-		def
-		        .setTaskClass("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		def
-		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		def
-		        .setStartTimePattern("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+		def.setTaskClass(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		def.setDescription(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		def.setStartTimePattern(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 		assertTrue(errors.hasFieldErrors("taskClass"));
 		assertTrue(errors.hasFieldErrors("description"));

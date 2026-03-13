@@ -18,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -33,43 +34,40 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 @Audited
 @Entity
 @Table(name = "concept_reference_map")
-@AssociationOverride(
-	name = "conceptMapType",
-	joinColumns = @JoinColumn(name = "concept_map_type_id", nullable = false)
-)
+@AssociationOverride(name = "conceptMapType", joinColumns = @JoinColumn(name = "concept_map_type_id", nullable = false))
 public class ConceptMap extends BaseConceptMap {
-	
+
 	public static final long serialVersionUID = 754677L;
-	
+
 	// Fields
 	@DocumentId
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "concept_map_id")
 	private Integer conceptMapId;
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
-	
+
 	@IndexedEmbedded
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne(optional = false)
 	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
 	@JoinColumn(name = "concept_reference_term_id", nullable = false)
 	private ConceptReferenceTerm conceptReferenceTerm;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public ConceptMap() {
 	}
-	
+
 	/** constructor with concept map id */
 	public ConceptMap(Integer conceptMapId) {
 		this.conceptMapId = conceptMapId;
 	}
-	
+
 	/**
 	 * Convenience constructor that takes the term to be mapped to and the type of the map
 	 *
@@ -80,7 +78,7 @@ public class ConceptMap extends BaseConceptMap {
 		this.conceptReferenceTerm = conceptReferenceTerm;
 		setConceptMapType(conceptMapType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.BaseOpenmrsObject#toString()
 	 */
@@ -91,14 +89,14 @@ public class ConceptMap extends BaseConceptMap {
 		}
 		return conceptMapId.toString();
 	}
-	
+
 	/**
 	 * @return the concept
 	 */
 	public Concept getConcept() {
 		return concept;
 	}
-	
+
 	/**
 	 * @param concept the concept to set
 	 */
@@ -112,14 +110,14 @@ public class ConceptMap extends BaseConceptMap {
 	public Integer getConceptMapId() {
 		return conceptMapId;
 	}
-	
+
 	/**
 	 * @param conceptMapId The conceptMapId to set.
 	 */
 	public void setConceptMapId(Integer conceptMapId) {
 		this.conceptMapId = conceptMapId;
 	}
-	
+
 	/**
 	 * @return the conceptReferenceTerm
 	 * @since 1.9
@@ -130,7 +128,7 @@ public class ConceptMap extends BaseConceptMap {
 		}
 		return conceptReferenceTerm;
 	}
-	
+
 	/**
 	 * @param conceptReferenceTerm the conceptReferenceTerm to set
 	 * @since 1.9
@@ -138,7 +136,7 @@ public class ConceptMap extends BaseConceptMap {
 	public void setConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) {
 		this.conceptReferenceTerm = conceptReferenceTerm;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -147,7 +145,7 @@ public class ConceptMap extends BaseConceptMap {
 	public Integer getId() {
 		return getConceptMapId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -156,5 +154,5 @@ public class ConceptMap extends BaseConceptMap {
 	public void setId(Integer id) {
 		setConceptMapId(id);
 	}
-	
+
 }
