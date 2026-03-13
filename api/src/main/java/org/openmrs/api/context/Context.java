@@ -649,7 +649,15 @@ public class Context {
 	 * @return the ServiceContext
 	 */
 	private static MessageSender getMessageSender() {
-		return new MailMessageSender(getMailSession());
+		MessageSender sender = new MailMessageSender(getMailSession());
+		try {
+			sender = Context.getServiceContext().getApplicationContext().getBean(MessageSender.class);
+		} catch (NoSuchBeanDefinitionException e) {
+			log.debug("No MessageSender bean configured, using default MailMessageSender");
+		} catch (Exception e) {
+			log.debug("Service context not available while retrieving MessageSender, using default MailMessageSender");
+		}
+		return sender;
 	}
 
 	/**
@@ -659,7 +667,15 @@ public class Context {
 	 * @return
 	 */
 	private static MessagePreparator getMessagePreparator() throws MessageException {
-		return new VelocityMessagePreparator();
+		MessagePreparator preparator = new VelocityMessagePreparator();
+		try {
+			preparator = Context.getServiceContext().getApplicationContext().getBean(MessagePreparator.class);
+		} catch (NoSuchBeanDefinitionException e) {
+			log.debug("No MessagePreparator bean configured, using default VelocityMessagePreparator");
+		} catch (Exception e) {
+			log.debug("Service context not available while retrieving MessagePreparator, using default VelocityMessagePreparator");
+		}
+		return preparator;
 	}
 
 	/**
