@@ -19,44 +19,44 @@ import jakarta.persistence.MappedSuperclass;
 
 /**
  * Superclass for {@link ConceptMap}s and {@link ConceptReferenceTermMap}s
- * 
+ *
  * @since 1.9
  */
 @MappedSuperclass
 public abstract class BaseConceptMap extends BaseOpenmrsObject implements Auditable {
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "a_is_to_b_id", nullable = false)
 	private ConceptMapType conceptMapType;
-	
+
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
-	
+
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
-	
+
 	@Column(name = "date_changed")
 	private Date dateChanged;
-	
+
 	/**
 	 * @return the conceptMapType
 	 */
 	public ConceptMapType getConceptMapType() {
 		return conceptMapType;
 	}
-	
+
 	/**
 	 * @param conceptMapType the conceptMapType to set
 	 */
 	public void setConceptMapType(ConceptMapType conceptMapType) {
 		this.conceptMapType = conceptMapType;
 	}
-	
+
 	/**
 	 * @return the creator
 	 */
@@ -64,7 +64,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	public User getCreator() {
 		return creator;
 	}
-	
+
 	/**
 	 * @param creator the creator to set
 	 */
@@ -72,7 +72,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-	
+
 	/**
 	 * @return the changedBy
 	 */
@@ -80,7 +80,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	public User getChangedBy() {
 		return changedBy;
 	}
-	
+
 	/**
 	 * @param changedBy the changedBy to set
 	 */
@@ -88,51 +88,51 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-	
+
 	/**
 	 * @return the dateCreated
 	 */
 	@Override
 	public Date getDateCreated() {
-		if(dateCreated == null) {
+		if (dateCreated == null) {
 			return null;
 		}
 		return (Date) dateCreated.clone();
 	}
-	
+
 	/**
 	 * @param dateCreated the dateCreated to set
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
-		if(dateCreated == null) {
+		if (dateCreated == null) {
 			this.dateCreated = null;
 			return;
 		}
 		this.dateCreated = new Date(dateCreated.getTime());
 	}
-	
+
 	/**
 	 * @return the dateChanged
 	 */
 	@Override
 	public Date getDateChanged() {
-		if(dateChanged == null) {
+		if (dateChanged == null) {
 			return null;
 		}
 		return (Date) dateChanged.clone();
 	}
-	
+
 	/**
 	 * @param dateChanged the dateChanged to set
 	 */
 	@Override
 	public void setDateChanged(Date dateChanged) {
-		if(dateChanged == null) {
+		if (dateChanged == null) {
 			this.dateChanged = null;
 			return;
 		}
 		this.dateChanged = new Date(dateChanged.getTime());
 	}
-	
+
 }

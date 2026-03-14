@@ -129,5 +129,18 @@
 			<column name="description" type="varchar(255)"/>
 		</addColumn>
 	</changeSet>
+
+	<changeSet id="TRUNK-5852-2026-02-23" author="Deborah Nakamatte">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<columnExists tableName="provider" columnName="description"/>
+			</not>
+		</preConditions>
+		<comment>Add description column to provider table for TRUNK-5852</comment>
+		<addColumn tableName="provider">
+			<column name="description" type="varchar(255)"/>
+		</addColumn>
+	</changeSet>
 	
 </databaseChangeLog>
+

@@ -33,17 +33,17 @@ import org.openmrs.util.OpenmrsConstants;
  * @since 2.8.0
  */
 public class PersonQuery {
-	
+
 	public SearchPredicate getPatientNameQuery(SearchPredicateFactory predicateFactory, String query,
 	        boolean includeVoided) {
 		return getPersonNameQuery(predicateFactory, query, false, includeVoided, true, null);
 	}
-	
+
 	public SearchPredicate getPersonNameQueryWithOrParser(SearchPredicateFactory predicateFactory, String query,
 	        boolean includeVoided, Boolean dead) {
 		return getPersonNameQuery(predicateFactory, query, true, includeVoided, false, dead);
 	}
-	
+
 	/**
 	 * This method creates a Lucene search query for a Person based on a soundex search on the first
 	 * name
@@ -84,7 +84,7 @@ public class PersonQuery {
 			applyPersonFilters(predicateFactory, b, includeVoided, null, null, birthyear, gender);
 		}).toPredicate();
 	}
-	
+
 	/**
 	 * This method creates a Lucene search query for a Person based on a soundex search
 	 *
@@ -98,7 +98,7 @@ public class PersonQuery {
 	 */
 	public SearchPredicate getSoundexPersonNameSearchOnTwoNames(SearchPredicateFactory predicateFactory, String name1,
 	        String name2, Integer birthyear, boolean includeVoided, String gender) {
-		
+
 		return predicateFactory.bool().with(b -> {
 			b.minimumShouldMatchNumber(1);
 			b.should(predicateFactory.bool().with(bb -> {
@@ -120,7 +120,7 @@ public class PersonQuery {
 			applyPersonFilters(predicateFactory, b, includeVoided, null, null, birthyear, gender);
 		}).toPredicate();
 	}
-	
+
 	/**
 	 * This method creates a Lucene search query for a Person based on a soundex search on n>3 names
 	 *
@@ -142,11 +142,11 @@ public class PersonQuery {
 		String query = "(" + String.join(" | ", queryPart) + " )";
 		return newPersonNameSearchQuery(predicateFactory, fields, query, true, includeVoided, null, null, birthyear, gender);
 	}
-	
+
 	/**
 	 * The method creates a Lucene search query for a Person based on a soundex search on the givenName,
 	 * familyNames and middleName
-	 * 
+	 *
 	 * @param query the query that should be executed on the names
 	 * @param birthyear the birthyear the searched person should have
 	 * @param includeVoided is true if voided person should be matched
@@ -160,23 +160,23 @@ public class PersonQuery {
 		    Arrays.asList("familyNameSoundex", "familyName2Soundex", "middleNameSoundex", "givenNameSoundex"), query, true,
 		    includeVoided, null, null, birthyear, gender);
 	}
-	
+
 	private SearchPredicate getPersonNameQuery(SearchPredicateFactory predicateFactory, String query, boolean orQueryParser,
 	        boolean includeVoided, boolean patientsOnly, Boolean dead) {
 		List<String> fields = new ArrayList<>(Arrays.asList("givenNameExact", "middleNameExact", "familyNameExact",
 		    "familyName2Exact", "givenNameStart", "middleNameStart", "familyNameStart", "familyName2Start"));
-		
+
 		String matchMode = Context.getAdministrationService()
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 		if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE.equals(matchMode)) {
 			fields.addAll(
 			    Arrays.asList("givenNameAnywhere", "middleNameAnywhere", "familyNameAnywhere", "familyName2Anywhere"));
 		}
-		
+
 		return newPersonNameSearchQuery(predicateFactory, fields, query, orQueryParser, includeVoided, patientsOnly, dead,
 		    null, null);
 	}
-	
+
 	private SearchPredicate newPersonNameSearchQuery(SearchPredicateFactory predicateFactory, List<String> fields,
 	        String query, boolean orQueryParser, boolean includeVoided, Boolean patientsOnly, Boolean dead,
 	        Integer birthyear, String gender) {
@@ -186,26 +186,26 @@ public class PersonQuery {
 			applyPersonFilters(predicateFactory, b, includeVoided, patientsOnly, dead, birthyear, gender);
 		}).toPredicate();
 	}
-	
+
 	private void applyPersonFilters(SearchPredicateFactory predicateFactory, BooleanPredicateOptionsCollector<?, ?> b,
 	        boolean includeVoided, Boolean patientsOnly, Boolean dead, Integer birthyear, String gender) {
 		if (!includeVoided) {
 			b.filter(predicateFactory.match().field("voided").matching(false));
 			b.filter(predicateFactory.match().field("person.voided").matching(false));
 		}
-		
+
 		if (patientsOnly != null && patientsOnly) {
 			b.filter(predicateFactory.match().field("person.isPatient").matching(true));
 		}
-		
+
 		if (dead != null) {
 			b.filter(predicateFactory.match().field("person.dead").matching(dead));
 		}
-		
+
 		if (gender != null) {
 			b.filter(predicateFactory.match().field("person.gender").matching(gender));
 		}
-		
+
 		if (birthyear != null && birthyear != 0) {
 			ZonedDateTime birthdate = LocalDate.ofYearDay(birthyear, 1).atStartOfDay(ZoneId.systemDefault());
 			b.must(predicateFactory.or(
@@ -215,17 +215,17 @@ public class PersonQuery {
 			    predicateFactory.not(predicateFactory.exists().field("person.birthdate"))));
 		}
 	}
-	
+
 	public SearchPredicate getPatientAttributeQuery(SearchPredicateFactory predicateFactory, String query,
 	        boolean includeVoided) {
 		return getPersonAttributeQuery(predicateFactory, query, false, includeVoided, true);
 	}
-	
+
 	public SearchPredicate getPersonAttributeQueryWithOrParser(SearchPredicateFactory predicateFactory, String query,
 	        boolean includeVoided) {
 		return getPersonAttributeQuery(predicateFactory, query, true, includeVoided, false);
 	}
-	
+
 	private SearchPredicate getPersonAttributeQuery(SearchPredicateFactory predicateFactory, String query,
 	        boolean orQueryParser, boolean includeVoided, boolean patientsOnly) {
 		List<String> fields = new ArrayList<>();
@@ -237,18 +237,18 @@ public class PersonQuery {
 			fields.add("valueStart"); //will position "starts with" match higher
 			fields.add("valueAnywhere");
 		}
-		
+
 		return predicateFactory.bool().with(b -> {
 			b.must(predicateFactory.simpleQueryString().fields(fields.toArray(new String[0])).matching(query)
 			        .defaultOperator(orQueryParser ? BooleanOperator.OR : BooleanOperator.AND));
-			
+
 			if (!includeVoided) {
 				b.filter(predicateFactory.match().field("voided").matching(false));
 				b.filter(predicateFactory.match().field("person.voided").matching(false));
 			}
-			
+
 			b.filter(predicateFactory.match().field("attributeType.searchable").matching(true));
-			
+
 			if (patientsOnly) {
 				b.filter(predicateFactory.match().field("person.isPatient").matching(true));
 			}

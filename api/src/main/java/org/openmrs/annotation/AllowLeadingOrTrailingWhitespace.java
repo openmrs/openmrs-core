@@ -19,24 +19,20 @@ import java.lang.annotation.Target;
 import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
 
 /**
- * Annotation used to indicate that a method allows strings with leading or
- * trailing whitespace.
- * 
+ * Annotation used to indicate that a method allows strings with leading or trailing whitespace.
  * <pre>
  * &#064;AllowLeadingOrTrailingWhitespace
  * public void setName(String name);
- * </pre>
- * 
- * Note: This annotation should be put onto the setter methods<br>
+ * </pre> Note: This annotation should be put onto the setter methods<br>
  * <br>
- * If this annotation is not present the {@link OpenmrsObjectSaveHandler} will
- * trim off whitespace before this object is persisted in the db.
- * 
+ * If this annotation is not present the {@link OpenmrsObjectSaveHandler} will trim off whitespace
+ * before this object is persisted in the db.
+ *
  * @since 1.9
  * @see AllowEmptyStrings
  * @see OpenmrsObjectSaveHandler
  */
-@Target( { ElementType.METHOD })
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented

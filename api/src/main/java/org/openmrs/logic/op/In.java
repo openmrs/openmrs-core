@@ -19,10 +19,10 @@ package org.openmrs.logic.op;
  * </code> The above criteria will test whether a patient have EncounterType in the list
  */
 public class In implements ComparisonOperator {
-	
+
 	@Override
 	public String toString() {
 		return "IN";
 	}
-	
+
 }

@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
+
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -56,20 +57,20 @@ import software.amazon.awssdk.services.s3.model.S3Response;
 /**
  * Amazon S3-based implementation of {@link StorageService}.
  * <p>
- * It uses S3AsyncClient under the hood for all operations to handle large files in the most performant way with
- * multipart enabled by default.
- * 
- * <p>It can be configured with the following properties: <i>storage.s3.bucketName, storage.s3.accessKeyId, 
- * storage.s3.secretAccessKey, storage.s3.region, storage.s3.multipartEnabled</i>
+ * It uses S3AsyncClient under the hood for all operations to handle large files in the most
+ * performant way with multipart enabled by default.
+ * <p>
+ * It can be configured with the following properties: <i>storage.s3.bucketName,
+ * storage.s3.accessKeyId, storage.s3.secretAccessKey, storage.s3.region,
+ * storage.s3.multipartEnabled</i>
  * <p>
  * If not configured, the default bucket name is <i>'openmrs'</i>.
- * 
  * <p>
- * Credentials and region can also be provided by standard S3AsyncClient means. See 
- * <a href="https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/regions/providers/DefaultAwsRegionProviderChain.html">DefaultAwsRegionProviderChain</a>
- * and 
- * <a href="https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/DefaultCredentialsProvider.html">DefaultCredentialsProvider</a>
- * 
+ * Credentials and region can also be provided by standard S3AsyncClient means. See <a href=
+ * "https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/regions/providers/DefaultAwsRegionProviderChain.html">DefaultAwsRegionProviderChain</a>
+ * and <a href=
+ * "https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/DefaultCredentialsProvider.html">DefaultCredentialsProvider</a>
+ *
  * @since 2.8.0
  */
 @Service
@@ -77,40 +78,35 @@ import software.amazon.awssdk.services.s3.model.S3Response;
 @Conditional(StorageServiceCondition.class)
 public class S3StorageService extends BaseStorageService implements StorageService {
 
-    private static final Logger log = LoggerFactory.getLogger(S3StorageService.class);
+	private static final Logger log = LoggerFactory.getLogger(S3StorageService.class);
 
-    protected S3AsyncClient s3AsyncClient;
-	
-    private final String bucketName;
+	protected S3AsyncClient s3AsyncClient;
 
-    @Autowired
-    public S3StorageService(
-     StreamDataService streamDataService,
-        @Value("${storage.s3.accessKeyId:}") String accessKeyId,
-        @Value("${storage.s3.secretAccessKey:}") String secretAccessKey,
-        @Value("${storage.s3.region:}") String region,
-	 	@Value("${storage.s3.endpoint:}") String endpoint,
-	 	@Value("${storage.s3.bucketName:openmrs}") String bucketName,
-	 	@Value("${storage.s3.forcePathStyle:false}") boolean forcePathStyle,
-	    @Value("${storage.s3.multipartEnabled:true}") boolean multipartEnabled
-    ) {
-        super(streamDataService);
+	private final String bucketName;
+
+	@Autowired
+	public S3StorageService(StreamDataService streamDataService, @Value("${storage.s3.accessKeyId:}") String accessKeyId,
+	    @Value("${storage.s3.secretAccessKey:}") String secretAccessKey, @Value("${storage.s3.region:}") String region,
+	    @Value("${storage.s3.endpoint:}") String endpoint, @Value("${storage.s3.bucketName:openmrs}") String bucketName,
+	    @Value("${storage.s3.forcePathStyle:false}") boolean forcePathStyle,
+	    @Value("${storage.s3.multipartEnabled:true}") boolean multipartEnabled) {
+		super(streamDataService);
 		this.bucketName = bucketName;
 
 		S3AsyncClientBuilder s3AsyncClientBuilder = S3AsyncClient.builder().multipartEnabled(multipartEnabled)
-			.forcePathStyle(forcePathStyle);
+		        .forcePathStyle(forcePathStyle);
 
 		if (StringUtils.isNotBlank(accessKeyId) || StringUtils.isNotBlank(secretAccessKey)) {
 			log.info("Using storage.s3.accessKeyId and storage.s3.secretAccessKey for S3 client");
 			if (StringUtils.isBlank(accessKeyId) || StringUtils.isBlank(secretAccessKey)) {
-				throw new IllegalArgumentException("Both storage.s3.accessKeyId and storage.s3.secretAccessKey " +
-						"must be provided");
+				throw new IllegalArgumentException(
+				        "Both storage.s3.accessKeyId and storage.s3.secretAccessKey " + "must be provided");
 			}
-			StaticCredentialsProvider awsCredentials = StaticCredentialsProvider.create(
-				AwsBasicCredentials.create(accessKeyId, secretAccessKey));
+			StaticCredentialsProvider awsCredentials = StaticCredentialsProvider
+			        .create(AwsBasicCredentials.create(accessKeyId, secretAccessKey));
 			s3AsyncClientBuilder = s3AsyncClientBuilder.credentialsProvider(awsCredentials);
-        }
-		
+		}
+
 		if (StringUtils.isNotBlank(endpoint)) {
 			s3AsyncClientBuilder = s3AsyncClientBuilder.endpointOverride(URI.create(endpoint));
 		}
@@ -119,22 +115,22 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 			log.info("Using storage.s3.region '{}' for S3 client", region);
 			s3AsyncClientBuilder = s3AsyncClientBuilder.region(Region.of(region));
 		}
-		
-		this.s3AsyncClient = s3AsyncClientBuilder.build();
-    }
-	
-    public S3StorageService(StreamDataService streamService, S3AsyncClient s3AsyncClient, 
-							String bucketName) {
-        super(streamService);
-        this.s3AsyncClient = s3AsyncClient;
-        this.bucketName = bucketName;
-    }
 
-    public InputStream getData(String key) throws IOException {
+		this.s3AsyncClient = s3AsyncClientBuilder.build();
+	}
+
+	public S3StorageService(StreamDataService streamService, S3AsyncClient s3AsyncClient, String bucketName) {
+		super(streamService);
+		this.s3AsyncClient = s3AsyncClient;
+		this.bucketName = bucketName;
+	}
+
+	public InputStream getData(String key) throws IOException {
 		CompletableFuture<ResponseInputStream<GetObjectResponse>> object = s3AsyncClient.getObject(
-			GetObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build(), AsyncResponseTransformer.toBlockingInputStream());
+		    GetObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build(),
+		    AsyncResponseTransformer.toBlockingInputStream());
 		return waitForResponse(object);
-    }
+	}
 
 	private <T> T waitForResponse(CompletableFuture<T> object) throws IOException {
 		T result;
@@ -156,16 +152,15 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		metadata.setMimeType(awsMetadata.contentType());
 		metadata.setLength(awsMetadata.contentLength());
 		return metadata;
-    }
+	}
 
-    public Stream<String> getKeys(String moduleIdOrGroup, String keyPrefix) throws IOException {
+	public Stream<String> getKeys(String moduleIdOrGroup, String keyPrefix) throws IOException {
 		String key = newKey(moduleIdOrGroup, keyPrefix, null);
-		
-        ListObjectsV2Request req = ListObjectsV2Request.builder().bucket(bucketName)
-			.prefix(encodeKey(key)).build();
-        CompletableFuture<ListObjectsV2Response> listObjectsRequest = s3AsyncClient.listObjectsV2(req);
+
+		ListObjectsV2Request req = ListObjectsV2Request.builder().bucket(bucketName).prefix(encodeKey(key)).build();
+		CompletableFuture<ListObjectsV2Response> listObjectsRequest = s3AsyncClient.listObjectsV2(req);
 		ListObjectsV2Response listObjects = waitForResponse(listObjectsRequest);
-		
+
 		return listObjects.contents().stream().map(S3Object::key).map(foundKey -> {
 			foundKey = decodeKey(foundKey);
 			String dirContent = foundKey.substring(key.length());
@@ -180,7 +175,7 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		}).distinct(); // Remove duplicate subdirectories
 	}
 
-    public boolean purgeData(String key) throws IOException {
+	public boolean purgeData(String key) throws IOException {
 		if (exists(key)) {
 			DeleteObjectRequest request = DeleteObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build();
 			CompletableFuture<DeleteObjectResponse> deleteRequest = s3AsyncClient.deleteObject(request);
@@ -188,8 +183,8 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		} else {
 			return false;
 		}
-    }
-	
+	}
+
 	private boolean waitForBooleanResponse(CompletableFuture<? extends S3Response> request) throws IOException {
 		try {
 			request.get();
@@ -207,8 +202,8 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		}
 	}
 
-    public boolean exists(String key) throws UncheckedIOException {
-        HeadObjectRequest request = HeadObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build();
+	public boolean exists(String key) throws UncheckedIOException {
+		HeadObjectRequest request = HeadObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build();
 		CompletableFuture<HeadObjectResponse> headRequest = s3AsyncClient.headObject(request);
 		try {
 			return waitForBooleanResponse(headRequest);
@@ -216,19 +211,19 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 			throw new UncheckedIOException(e);
 		}
 	}
-	
-    public String saveData(InputStream inputStream, ObjectMetadata metadata,
-                           String moduleIdOrGroup, String keySuffix) throws IOException {
+
+	public String saveData(InputStream inputStream, ObjectMetadata metadata, String moduleIdOrGroup, String keySuffix)
+	        throws IOException {
 		metadata = (metadata == null) ? new ObjectMetadata() : metadata;
 
 		String key = newKey(moduleIdOrGroup, keySuffix, metadata.getFilename());
-		
+
 		if (exists(key)) {
 			throw new FileAlreadyExistsException("Key " + key + " already exists");
 		}
-		
+
 		PutObjectRequest request = PutObjectRequest.builder().bucket(bucketName).key(encodeKey(key))
-			.contentType(metadata.getMimeType()).contentLength(metadata.getLength()).build();
+		        .contentType(metadata.getMimeType()).contentLength(metadata.getLength()).build();
 
 		try {
 			BlockingInputStreamAsyncRequestBody requestBody = AsyncRequestBody.forBlockingInputStream(metadata.getLength());
@@ -239,7 +234,7 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
-			
-        return key;
-    }
+
+		return key;
+	}
 }

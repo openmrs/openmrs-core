@@ -18,12 +18,10 @@ import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.generator.EventType;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
-import org.hibernate.id.IdentifierGeneratorHelper;
 import org.hibernate.id.IdentityGenerator;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.Type;
-import org.openmrs.Concept;
 
 /**
  * <b>native-if-not-assigned</b><br>
@@ -34,13 +32,13 @@ import org.openmrs.Concept;
  * <br>
  * This IdentityGenerator allows a programmer to override the "generated" id, with an "assigned" id
  * at runtime by simply setting the primary key property.
- * 
+ *
  * @author paul.shemansky@gmail.com
  */
 public class NativeIfNotAssignedIdentityGenerator extends IdentityGenerator implements IdentifierGenerator, Configurable {
-	
+
 	private String entityName;
-	
+
 	@Override
 	public Object generate(SharedSessionContractImplementor session, Object entity) throws HibernateException {
 		EntityPersister persister = session.getEntityPersister(entityName, entity);

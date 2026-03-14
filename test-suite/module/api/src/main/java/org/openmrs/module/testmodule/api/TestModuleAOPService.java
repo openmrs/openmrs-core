@@ -10,6 +10,6 @@
 package org.openmrs.module.testmodule.api;
 
 public interface TestModuleAOPService {
-	
+
 	String aopHello();
 }

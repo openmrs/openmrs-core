@@ -15,40 +15,40 @@ import java.util.Set;
 import org.openmrs.util.OpenmrsMemento;
 
 public class TimerSchedulerMemento extends OpenmrsMemento {
-	
+
 	private Set<Integer> startedTaskIds;
-	
+
 	private static Set<Integer> errorTaskIds = new HashSet<>();
-	
+
 	public TimerSchedulerMemento(Set<Integer> taskIds) {
 		this.startedTaskIds = taskIds;
 	}
-	
+
 	@Override
 	public Object getState() {
 		return startedTaskIds;
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void setState(Object state) {
 		this.startedTaskIds = (Set<Integer>) state;
 	}
-	
+
 	public Boolean addErrorTask(Integer taskId) {
 		return errorTaskIds.add(taskId);
 	}
-	
+
 	public Boolean removeErrorTask(Integer taskId) {
 		return errorTaskIds.remove(taskId);
 	}
-	
+
 	public static Set<Integer> getErrorTasks() {
 		return errorTaskIds;
 	}
-	
+
 	public void saveErrorTasks() {
 		this.startedTaskIds.addAll(errorTaskIds);
 	}
-	
+
 }

@@ -30,7 +30,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * {@link Voidable} that are themselves a {@link Voidable} and voidedBy/dateVoided are set, but
  * <b>ONLY IF</b> the voided bit was set on them as well. Using the associated void* method in the
  * service on the parent instance is preferred so that all child objects are indeed voided.
- * 
+ *
  * @see RequiredDataAdvice
  * @see SaveHandler
  * @see RequiredDataAdvice
@@ -38,34 +38,35 @@ import org.openmrs.aop.RequiredDataAdvice;
  */
 @Handler(supports = Voidable.class)
 public class VoidSaveHandler implements SaveHandler<Voidable> {
-	
+
 	/**
-	 * This method does not set "voided" to true, but rather only sets the voidedBy/dateVoided if
-	 * they are null and voided==true. <br>
+	 * This method does not set "voided" to true, but rather only sets the voidedBy/dateVoided if they
+	 * are null and voided==true. <br>
 	 * <br>
 	 * If voided is set to false, the voided attributes are cleared nullified.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> not set the voided bit<br/>
+	 * <strong>Should</strong> not set the voidReason<br/>
+	 * <strong>Should</strong> set voided by<br/>
+	 * <strong>Should</strong> not set voided by if non null<br/>
+	 * <strong>Should</strong> set dateVoided<br/>
+	 * <strong>Should</strong> not set dateVoided if non null<br/>
+	 * <strong>Should</strong> not set the dateVoided if voided is false<br/>
+	 * <strong>Should</strong> set voidReason to null if voided is true<br/>
+	 * <strong>Should</strong> set dateVoided to null if voided is true<br/>
+	 * <strong>Should</strong> set voidedBy to null if voided is true
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * <strong>Should</strong> not set the voided bit
-	 * <strong>Should</strong> not set the voidReason
-	 * <strong>Should</strong> set voided by
-	 * <strong>Should</strong> not set voided by if non null
-	 * <strong>Should</strong> set dateVoided
-	 * <strong>Should</strong> not set dateVoided if non null
-	 * <strong>Should</strong> not set the dateVoided if voided is false
-	 * <strong>Should</strong> set voidReason to null if voided is true
-	 * <strong>Should</strong> set dateVoided to null if voided is true
-	 * <strong>Should</strong> set voidedBy to null if voided is true
 	 */
 	@Override
 	public void handle(Voidable voidableObject, User currentUser, Date currentDate, String notUsed) {
-		
+
 		// void reason is not set here, it should be set prior to this method
-		
+
 		// only set the values if the user saved this object and set the voided bit
 		if (voidableObject.getVoided()) {
-			
+
 			if (voidableObject.getVoidedBy() == null) {
 				voidableObject.setVoidedBy(currentUser);
 			}
@@ -78,7 +79,7 @@ public class VoidSaveHandler implements SaveHandler<Voidable> {
 			voidableObject.setDateVoided(null);
 			voidableObject.setVoidReason(null);
 		}
-		
+
 	}
-	
+
 }

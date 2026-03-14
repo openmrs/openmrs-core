@@ -19,20 +19,20 @@ import java.util.Set;
  * A mapped collection of PresentationMessages, all of which are enforced to be in the same locale.
  */
 public class PresentationMessageMap implements Map<String, PresentationMessage> {
-	
+
 	private Locale locale;
-	
+
 	private Map<String, PresentationMessage> internalMap = new HashMap<>();
-	
+
 	/**
 	 * Create a new PresentationMessageMap for the given locale.
-	 * 
+	 *
 	 * @param locale
 	 */
 	public PresentationMessageMap(Locale locale) {
 		this.locale = locale;
 	}
-	
+
 	/**
 	 * @see java.util.Map#clear()
 	 */
@@ -40,7 +40,7 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	public void clear() {
 		internalMap.clear();
 	}
-	
+
 	/**
 	 * @see java.util.Map#containsKey(java.lang.Object)
 	 */
@@ -48,7 +48,7 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	public boolean containsKey(Object key) {
 		return internalMap.containsKey(key);
 	}
-	
+
 	/**
 	 * @see java.util.Map#containsValue(java.lang.Object)
 	 */
@@ -56,7 +56,7 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	public boolean containsValue(Object value) {
 		return internalMap.containsValue(value);
 	}
-	
+
 	/**
 	 * @see java.util.Map#entrySet()
 	 */
@@ -64,7 +64,7 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	public Set<Entry<String, PresentationMessage>> entrySet() {
 		return internalMap.entrySet();
 	}
-	
+
 	/**
 	 * @see java.util.Map#get(java.lang.Object)
 	 */
@@ -72,7 +72,7 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	public PresentationMessage get(Object key) {
 		return internalMap.get(key);
 	}
-	
+
 	/**
 	 * @see java.util.Map#isEmpty()
 	 */
@@ -80,7 +80,7 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	public boolean isEmpty() {
 		return internalMap.isEmpty();
 	}
-	
+
 	/**
 	 * @see java.util.Map#keySet()
 	 */
@@ -88,10 +88,12 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	public Set<String> keySet() {
 		return internalMap.keySet();
 	}
-	
+
 	/**
-	 * @see java.util.Map#put(java.lang.Object, java.lang.Object)
+	 * <p>
 	 * <strong>Should</strong> should ignore non matching locale messages
+	 *
+	 * @see java.util.Map#put(java.lang.Object, java.lang.Object)
 	 */
 	@Override
 	public PresentationMessage put(String key, PresentationMessage value) {
@@ -101,12 +103,13 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 		}
 		return putValue;
 	}
-	
+
 	/**
 	 * Adds all entries from an input Map which have PresentationMessages from the same locale.
-	 * 
-	 * @see java.util.Map#putAll(java.util.Map)
+	 * <p>
 	 * <strong>Should</strong> filter out non matching locale messages from batch add
+	 *
+	 * @see java.util.Map#putAll(java.util.Map)
 	 */
 	@Override
 	public void putAll(Map<? extends String, ? extends PresentationMessage> t) {
@@ -114,7 +117,7 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 			put(entry.getKey(), entry.getValue());
 		}
 	}
-	
+
 	/**
 	 * @see java.util.Map#remove(java.lang.Object)
 	 */
@@ -122,7 +125,7 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	public PresentationMessage remove(Object key) {
 		return internalMap.remove(key);
 	}
-	
+
 	/**
 	 * @see java.util.Map#size()
 	 */
@@ -130,7 +133,7 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	public int size() {
 		return internalMap.size();
 	}
-	
+
 	/**
 	 * @see java.util.Map#values()
 	 */
@@ -138,5 +141,5 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	public Collection<PresentationMessage> values() {
 		return internalMap.values();
 	}
-	
+
 }

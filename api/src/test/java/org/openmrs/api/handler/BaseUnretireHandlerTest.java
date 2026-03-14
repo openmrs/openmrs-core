@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.handler;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -20,11 +16,15 @@ import org.openmrs.Location;
 import org.openmrs.Retireable;
 import org.openmrs.User;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests the {@link BaseUnretireHandler} class.
  */
 public class BaseUnretireHandlerTest {
-	
+
 	/**
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
@@ -36,7 +36,7 @@ public class BaseUnretireHandlerTest {
 		handler.handle(retireable, null, null, null);
 		assertFalse(retireable.getRetired());
 	}
-	
+
 	/**
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
@@ -49,7 +49,7 @@ public class BaseUnretireHandlerTest {
 		handler.handle(retireable, null, null, null);
 		assertNull(retireable.getRetiredBy());
 	}
-	
+
 	/**
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
@@ -62,7 +62,7 @@ public class BaseUnretireHandlerTest {
 		handler.handle(retireable, null, null, null);
 		assertNull(retireable.getDateRetired());
 	}
-	
+
 	/**
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
@@ -75,7 +75,7 @@ public class BaseUnretireHandlerTest {
 		handler.handle(retireable, null, null, null);
 		assertNull(retireable.getRetireReason());
 	}
-	
+
 	/**
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
@@ -87,21 +87,21 @@ public class BaseUnretireHandlerTest {
 		handler.handle(retireable, null, null, "SOME REASON");
 		assertNull(retireable.getRetireReason());
 	}
-	
+
 	/**
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldNotActOnRetiredObjectsWithADifferentDateRetired() {
 		Date d = new Date(new Date().getTime() - 1000); // a time that isn't right now
-		
+
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();
 		Retireable retireable = new Location();
 		retireable.setRetired(true);
 		retireable.setDateRetired(d);
-		
+
 		handler.handle(retireable, null, new Date(), "SOME REASON");
 		assertTrue(retireable.getRetired());
 	}
-	
+
 }

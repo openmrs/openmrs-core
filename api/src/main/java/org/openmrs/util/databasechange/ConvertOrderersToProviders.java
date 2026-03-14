@@ -31,27 +31,26 @@ import liquibase.resource.ResourceAccessor;
  * converts the orderer from being users to providers
  */
 public class ConvertOrderersToProviders implements CustomTaskChange {
-	
+
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		try {
 			List<List<Object>> usersAndProviders = getUsersAndProviders(connection);
 			convertOrdererToProvider(connection, usersAndProviders);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomChangeException(e);
 		}
 	}
-	
+
 	private List<List<Object>> getUsersAndProviders(JdbcConnection connection) throws CustomChangeException, SQLException {
 		//Should only match on current users that are orderers
 		final String query = "SELECT u.user_id AS userId, p.provider_id AS providerId FROM users u, provider p"
 		        + " WHERE u.person_id = p.person_id AND u.user_id IN (select orderer from orders)";
-		
+
 		return DatabaseUtil.executeSQL(connection.getUnderlyingConnection(), query, true);
 	}
-	
+
 	private void convertOrdererToProvider(JdbcConnection connection, List<List<Object>> usersAndProviders)
 	        throws CustomChangeException, SQLException, DatabaseException {
 		final int batchSize = 1000;
@@ -62,7 +61,7 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 		try {
 			autoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
-			
+
 			updateStatement = connection.prepareStatement("UPDATE orders SET orderer = ? WHERE orderer = ?");
 			boolean supportsBatchUpdate = connection.getMetaData().supportsBatchUpdates();
 			for (List<Object> row : usersAndProviders) {
@@ -78,22 +77,20 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 					updateStatement.executeUpdate();
 				}
 			}
-			
+
 			if (supportsBatchUpdate) {
 				updateStatement.executeBatch();
 			}
-			
+
 			//Set the orderer for orders with null orderer to Unknown Provider
 			statement.execute("UPDATE orders SET orderer = " + "(SELECT provider_id FROM provider WHERE uuid ="
 			        + "(SELECT property_value FROM global_property WHERE property = '" + ""
 			        + OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID + "')) " + "WHERE orderer IS NULL");
-			
+
 			connection.commit();
-		}
-		catch (DatabaseException | SQLException e) {
+		} catch (DatabaseException | SQLException e) {
 			handleError(connection, e);
-		}
-		finally {
+		} finally {
 			if (autoCommit != null) {
 				connection.setAutoCommit(autoCommit);
 			}
@@ -105,25 +102,25 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 			}
 		}
 	}
-	
+
 	@Override
 	public String getConfirmationMessage() {
 		return "Finished converting orders.orderer from user_id to provider_id";
 	}
-	
+
 	@Override
 	public void setUp() throws SetupException {
 	}
-	
+
 	@Override
 	public void setFileOpener(ResourceAccessor resourceAccessor) {
 	}
-	
+
 	@Override
 	public ValidationErrors validate(Database database) {
 		return null;
 	}
-	
+
 	private void handleError(JdbcConnection connection, Exception e) throws DatabaseException, CustomChangeException {
 		connection.rollback();
 		throw new CustomChangeException(e);

@@ -32,9 +32,9 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { PersonAddress.class }, order = 50)
 public class PersonAddressValidator implements Validator {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(PersonAddressValidator.class);
-	
+
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -42,32 +42,34 @@ public class PersonAddressValidator implements Validator {
 	public boolean supports(Class<?> c) {
 		return PersonAddress.class.isAssignableFrom(c);
 	}
-	
+
 	/**
+	 * <p>
+	 * <strong>Should</strong> pass if all the dates are valid<br/>
+	 * <strong>Should</strong> fail if the startDate is in the future<br/>
+	 * <strong>Should</strong> fail if the endDate is before the startDate<br/>
+	 * <strong>Should</strong> pass if startDate and endDate are both null<br/>
+	 * <strong>Should</strong> pass if startDate is null<br/>
+	 * <strong>Should</strong> pass if endDate is null<br/>
+	 * <strong>Should</strong> fail if required fields are empty<br/>
+	 * <strong>Should</strong> pass if required fields are not empty<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> pass if all the dates are valid
-	 * <strong>Should</strong> fail if the startDate is in the future
-	 * <strong>Should</strong> fail if the endDate is before the startDate
-	 * <strong>Should</strong> pass if startDate and endDate are both null
-	 * <strong>Should</strong> pass if startDate is null
-	 * <strong>Should</strong> pass if endDate is null
-	 * <strong>Should</strong> fail if required fields are empty
-	 * <strong>Should</strong> pass if required fields are not empty
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object object, Errors errors) {
 		//TODO Validate other aspects of the personAddress object
 		log.debug("{}.validate...", this.getClass().getName());
-		
+
 		if (object == null) {
 			throw new IllegalArgumentException("The personAddress object should not be null");
 		}
-		
+
 		PersonAddress personAddress = (PersonAddress) object;
-		
+
 		//resolve a shorter name to display along with the error message
 		String addressString;
 		if (StringUtils.isNotBlank(personAddress.getAddress1())) {
@@ -79,55 +81,54 @@ public class PersonAddressValidator implements Validator {
 		} else {
 			addressString = personAddress.toString();
 		}
-		
+
 		if (OpenmrsUtil.compareWithNullAsEarliest(personAddress.getStartDate(), new Date()) > 0) {
-			errors.rejectValue("startDate", "PersonAddress.error.startDateInFuture", new Object[] { "'" + addressString
-			        + "'" }, "The Start Date for address '" + addressString + "' shouldn't be in the future");
+			errors.rejectValue("startDate", "PersonAddress.error.startDateInFuture",
+			    new Object[] { "'" + addressString + "'" },
+			    "The Start Date for address '" + addressString + "' shouldn't be in the future");
 		}
-		
+
 		if (personAddress.getStartDate() != null
 		        && OpenmrsUtil.compareWithNullAsLatest(personAddress.getStartDate(), personAddress.getEndDate()) > 0) {
-			errors.rejectValue("endDate", "PersonAddress.error.endDateBeforeStartDate", new Object[] { "'" + addressString
-			        + "'" }, "The End Date for address '" + addressString + "' shouldn't be earlier than the Start Date");
+			errors.rejectValue("endDate", "PersonAddress.error.endDateBeforeStartDate",
+			    new Object[] { "'" + addressString + "'" },
+			    "The End Date for address '" + addressString + "' shouldn't be earlier than the Start Date");
 		}
-		
+
 		String xml = Context.getLocationService().getAddressTemplate();
 		List<String> requiredElements;
-		
+
 		try {
-			AddressTemplate addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(StringEscapeUtils.unescapeXml(xml),
-			    AddressTemplate.class);
+			AddressTemplate addressTemplate = Context.getSerializationService().getDefaultSerializer()
+			        .deserialize(StringEscapeUtils.unescapeXml(xml), AddressTemplate.class);
 			requiredElements = addressTemplate.getRequiredElements();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			errors.reject(Context.getMessageSourceService().getMessage("AddressTemplate.error"));
 			return;
 		}
-		
+
 		if (requiredElements != null) {
 			for (String fieldName : requiredElements) {
 				try {
 					Object value = PropertyUtils.getProperty(personAddress, fieldName);
 					if (StringUtils.isBlank((String) value)) {
 						//required field not found
-						errors.reject(Context.getMessageSourceService().getMessage(
-						    "AddressTemplate.error.requiredAddressFieldIsBlank", new Object[] { fieldName },
-						    Context.getLocale()));
+						errors.reject(
+						    Context.getMessageSourceService().getMessage("AddressTemplate.error.requiredAddressFieldIsBlank",
+						        new Object[] { fieldName }, Context.getLocale()));
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					//wrong field declared in template
-					errors
-					        .reject(Context.getMessageSourceService().getMessage(
-					            "AddressTemplate.error.fieldNotDeclaredInTemplate", new Object[] { fieldName },
-					            Context.getLocale()));
+					errors.reject(
+					    Context.getMessageSourceService().getMessage("AddressTemplate.error.fieldNotDeclaredInTemplate",
+					        new Object[] { fieldName }, Context.getLocale()));
 				}
 			}
 		}
-		
+
 		ValidateUtil.validateFieldLengths(errors, object.getClass(), "address1", "address2", "cityVillage", "stateProvince",
 		    "postalCode", "country", "latitude", "longitude", "voidReason", "countyDistrict", "address3", "address4",
-		    "address5", "address6", "address7", "address8", "address9", "address10", "address11", "address12", "address13", 
+		    "address5", "address6", "address7", "address8", "address9", "address10", "address11", "address12", "address13",
 		    "address14", "address15");
 	}
 }

@@ -80,41 +80,10 @@
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-collections4</artifactId>
-				<version>4.4</version>
-				<scope>test</scope>
-				<type>test-jar</type>
-			</dependency>
-			<dependency>
 				<groupId>org.reflections</groupId>
 				<artifactId>reflections</artifactId>
 				<version>0.10.2</version>
 				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>javax.mail</groupId>
-				<artifactId>javax.mail-api</artifactId>
-				<version>1.6.2</version>
-				<scope>provided</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>com.sun.activation</groupId>
-						<artifactId>jakarta.activation</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
-				<version>1.6.2</version>
-				<scope>runtime</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>com.sun.activation</groupId>
-						<artifactId>jakarta.activation</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -130,7 +99,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.4.0</version>
+					<version>3.5.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -142,8 +111,6 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.15.0</version>
 					<configuration>
-						<target>${javaCompilerVersion}</target>
-						<source>${javaCompilerVersion}</source>
 						<encoding>UTF-8</encoding>
 					</configuration>
 				</plugin>
@@ -200,23 +167,22 @@
 					<version>3.6.1</version>
 				</plugin>
 				<plugin>
-					<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-					<artifactId>maven-java-formatter-plugin</artifactId>
-					<version>0.4</version>
+					<groupId>com.diffplug.spotless</groupId>
+					<artifactId>spotless-maven-plugin</artifactId>
+					<version>3.3.0</version>
 					<configuration>
-						<compilerSource>${javaCompilerVersion}</compilerSource>
-						<compilerCompliance>${javaCompilerVersion}</compilerCompliance>
-						<compilerTargetPlatform>${javaCompilerVersion}</compilerTargetPlatform>
-						<configFile>eclipse/OpenMRSFormatter.xml</configFile>
-						<overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
+						<java>
+							<eclipse>
+								<file>${maven.multiModuleProjectDirectory}/tools/src/main/resources/eclipse/OpenMRSFormatter.xml</file>
+							</eclipse>
+							<importOrder>
+								<order>java|javax,jakarta,org,com,,\#</order>
+							</importOrder>
+							<removeUnusedImports/>
+							<trimTrailingWhitespace/>
+							<endWithNewline/>
+						</java>
 					</configuration>
-					<dependencies>
-						<dependency>
-							<groupId>org.openmrs.tools</groupId>
-							<artifactId>openmrs-tools</artifactId>
-							<version>${project.version}</version>
-						</dependency>
-					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -227,11 +193,23 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>findbugs-maven-plugin</artifactId>
-					<version>3.0.5</version>
+					<groupId>com.github.spotbugs</groupId>
+					<artifactId>spotbugs-maven-plugin</artifactId>
+					<version>4.9.8.2</version>
 					<configuration>
-						<includeFilterFile>findbugs-include.xml</includeFilterFile>
+						<excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
+						<effort>Max</effort>
+						<threshold>Medium</threshold>
+						<!-- TODO Set to true once existing findings are resolved -->
+						<failOnError>false</failOnError>
+						<xmlOutput>true</xmlOutput>
+						<plugins>
+							<plugin>
+								<groupId>com.h3xstream.findsecbugs</groupId>
+								<artifactId>findsecbugs-plugin</artifactId>
+								<version>1.14.0</version>
+							</plugin>
+						</plugins>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -289,16 +267,17 @@
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>
-											com.googlecode.maven-java-formatter-plugin
+											com.diffplug.spotless
 										</groupId>
 										<artifactId>
-											maven-java-formatter-plugin
+											spotless-maven-plugin
 										</artifactId>
 										<versionRange>
-											[0.3,)
+											[3.0,)
 										</versionRange>
 										<goals>
-											<goal>format</goal>
+											<goal>check</goal>
+											<goal>apply</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
@@ -422,9 +401,22 @@
 					</configuration>
 					<executions>
 						<execution>
+							<id>license-format</id>
+							<goals>
+								<goal>format</goal>
+							</goals>
+							<configuration>
+								<skip>${license.format.skip}</skip>
+							</configuration>
+						</execution>
+						<execution>
+							<id>license-check</id>
 							<goals>
 								<goal>check</goal>
 							</goals>
+							<configuration>
+								<skip>${license.check.skip}</skip>
+							</configuration>
 						</execution>
 					</executions>
 				</plugin>
@@ -528,6 +520,19 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>spotbugs-check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -536,6 +541,7 @@
 			<id>skip-all-checks</id>
 			<properties>
 				<maven.test.skip>true</maven.test.skip>
+				<spotbugs.skip>true</spotbugs.skip>
 			</properties>
 			<build>
 				<plugins>
@@ -547,12 +553,10 @@
 						</configuration>
 					</plugin>
 					<plugin>
-						<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-						<artifactId>maven-java-formatter-plugin</artifactId>
+						<groupId>com.diffplug.spotless</groupId>
+						<artifactId>spotless-maven-plugin</artifactId>
 						<configuration>
-							<excludes>
-								<exclude>**/**</exclude>
-							</excludes>
+							<skip>true</skip>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -702,88 +706,20 @@
 				<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 			</properties>
 		</profile>
-		
-		<!-- When using mockito-core:3.12.4 with Java 17, we get the following error.
-		 java.lang.NullPointerException: Cannot read the array length because "this.buf" is null
-		 mockito-core:5.6.0 does not support Java 8.
-		 So this profile is required
-		 -->
 		<profile>
-			<id>java17</id>
+			<id>ci-checks</id>
 			<activation>
-				<jdk>17</jdk>
+				<property>
+					<name>env.CI</name>
+					<value>true</value>
+				</property>
 			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-						<version>5.21.0</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-		</profile>
-
-		<profile>
-			<id>java21</id>
-			<activation>
-				<jdk>21</jdk>
-			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-						<version>5.21.0</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-		</profile>
-		
-		<profile>
-			<id>java24</id>
-			<activation>
-				<jdk>24</jdk>
-			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-						<version>5.21.0</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-					<dependency>
-						<groupId>net.bytebuddy</groupId>
-						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.18.5</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
+			<properties>
+				<spotless.check.skip>false</spotless.check.skip>
+				<spotless.apply.skip>true</spotless.apply.skip>
+				<license.check.skip>false</license.check.skip>
+				<license.format.skip>true</license.format.skip>
+			</properties>
 		</profile>
 	</profiles>
 
@@ -843,7 +779,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<javaCompilerVersion>21</javaCompilerVersion>
+		<maven.compiler.release>21</maven.compiler.release>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
 
@@ -861,5 +797,9 @@
 		<sonar.analysis.mode>publish</sonar.analysis.mode>
 
 		<argLine>-Duser.language=en -Duser.region=US -Xmx1g ${customArgLineForTesting} -Djava.locale.providers=COMPAT</argLine>
+
+		<spotless.check.skip>true</spotless.check.skip>
+		<license.format.skip>false</license.format.skip>
+		<license.check.skip>true</license.check.skip>
 	</properties>
 </project>

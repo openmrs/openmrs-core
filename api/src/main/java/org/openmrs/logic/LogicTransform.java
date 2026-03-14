@@ -25,22 +25,22 @@ import org.openmrs.logic.result.Result;
  * operator and return the first two {@link Result} out of the entire Result
  */
 public class LogicTransform {
-	
+
 	private Operator transformOperator;
-	
+
 	private Integer numResults = null;
-	
+
 	private String sortColumn = null;
-	
+
 	public LogicTransform(Operator transformOperator, Integer numResults) {
 		this.transformOperator = transformOperator;
 		this.numResults = numResults;
 	}
-	
+
 	public LogicTransform(Operator transformOperator) {
 		this.transformOperator = transformOperator;
 	}
-	
+
 	/**
 	 * Get the {@link TransformOperator} in this LogicTransform object
 	 *
@@ -49,25 +49,25 @@ public class LogicTransform {
 	public Operator getTransformOperator() {
 		return transformOperator;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		
+
 		if (transformOperator != null) {
 			result.append(transformOperator);
 		}
-		
+
 		if (numResults != null) {
 			result.append(" ").append(numResults);
 		}
-		
+
 		if (sortColumn != null) {
 			result.append(" ordered by ").append(sortColumn);
 		}
 		return result.toString();
 	}
-	
+
 	/**
 	 * Get number of {@link Result} object should be returned by the current criteria. <br>
 	 * Only for {@link First} and {@link Last}
@@ -75,11 +75,11 @@ public class LogicTransform {
 	public Integer getNumResults() {
 		return numResults;
 	}
-	
+
 	public String getSortColumn() {
 		return sortColumn;
 	}
-	
+
 	/**
 	 * Set number of {@link Result} object should be returned by the current criteria. <br>
 	 * Only for {@link First} and {@link Last}
@@ -89,11 +89,11 @@ public class LogicTransform {
 	public void setNumResults(Integer numResults) {
 		this.numResults = numResults;
 	}
-	
+
 	public void setSortColumn(String sortColumn) {
 		this.sortColumn = sortColumn;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof LogicTransform)) {
@@ -102,11 +102,12 @@ public class LogicTransform {
 
 		LogicTransform compTransform = (LogicTransform) obj;
 
-		return safeEquals(this.transformOperator, compTransform.getTransformOperator()) && safeEquals(numResults,
-				compTransform.getNumResults()) && safeEquals(sortColumn, compTransform.getSortColumn());
+		return safeEquals(this.transformOperator, compTransform.getTransformOperator())
+		        && safeEquals(numResults, compTransform.getNumResults())
+		        && safeEquals(sortColumn, compTransform.getSortColumn());
 
 	}
-	
+
 	private boolean safeEquals(Object a, Object b) {
 		if (a == null && b == null) {
 			return true;
@@ -116,7 +117,7 @@ public class LogicTransform {
 		}
 		return a.equals(b);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
