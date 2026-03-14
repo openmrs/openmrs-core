@@ -50,7 +50,7 @@ public class DatabaseUtil {
 		MYSQL_DRIVER, MYSQL_LEGACY_DRIVER, MARIADB_DRIVER, POSTGRESQL_DRIVER, H2_DRIVER, HSQLDB_DRIVER, ORACLE_DRIVER, SQLSERVER_DRIVER, JTDS_DRIVER
 	);
 	
-	private static final Map<String, String> DRIVER_MAP = Map.of(
+	private static final Map<String, String> URL_PREFIX_TO_DRIVER = Map.of(
 		"jdbc:mysql", MYSQL_DRIVER,
 		"jdbc:mariadb", MARIADB_DRIVER,
 		"jdbc:hsqldb", HSQLDB_DRIVER,
@@ -94,9 +94,9 @@ public class DatabaseUtil {
 	}
 	
 	private static String detectDriverFromUrl(String connectionUrl) throws ClassNotFoundException {
-		int separatorIndex = connectionUrl.indexOf("://");
-		String prefix = (separatorIndex != -1) ? connectionUrl.substring(0, separatorIndex) : connectionUrl;
-		String driver = DRIVER_MAP.get(prefix);
+		int secondColon = connectionUrl.indexOf(":", 5); // skip past "jdbc:"
+		String prefix = (secondColon != -1) ? connectionUrl.substring(0, secondColon) : connectionUrl;
+		String driver = URL_PREFIX_TO_DRIVER.get(prefix);
 		if (driver != null) {
 			Class.forName(driver);
 			return driver;
