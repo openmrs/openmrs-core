@@ -25,13 +25,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ModuleResourcesServlet extends HttpServlet {
-	
+
 	private static final String MODULE_PATH = "/WEB-INF/view/module/";
-	
+
 	private static final long serialVersionUID = 1239820102030344L;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ModuleResourcesServlet.class);
-	
+
 	/**
 	 * Used for caching purposes
 	 *
@@ -40,40 +40,37 @@ public class ModuleResourcesServlet extends HttpServlet {
 	@Override
 	protected long getLastModified(HttpServletRequest req) {
 		File f = getFile(req);
-		
+
 		if (f == null) {
 			return super.getLastModified(req);
 		}
-		
+
 		return f.lastModified();
 	}
-	
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		log.debug("In service method for module servlet: {}",
 		    request.getPathInfo() == null ? null : request.getPathInfo().replaceAll("[\n\r]", "_"));
-		
 		File f = getFile(request);
 		if (f == null) {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
-		
+
 		response.setDateHeader("Last-Modified", f.lastModified());
 		response.setContentLength(Long.valueOf(f.length()).intValue());
 		String mimeType = getServletContext().getMimeType(f.getName());
 		response.setContentType(mimeType);
-		
+
 		FileInputStream is = new FileInputStream(f);
 		try {
 			OpenmrsUtil.copyFile(is, response.getOutputStream());
-		}
-		finally {
+		} finally {
 			OpenmrsUtil.closeStream(is);
 		}
 	}
-	
+
 	/**
 	 * Turns the given request/path into a File object
 	 *
@@ -81,27 +78,27 @@ public class ModuleResourcesServlet extends HttpServlet {
 	 * @return the file being requested or null if not found
 	 */
 	protected File getFile(HttpServletRequest request) {
-		
+
 		String path = request.getPathInfo();
-		
+
 		Module module = ModuleUtil.getModuleForPath(path);
 		if (module == null) {
 			log.warn("No module handles the path: {}", path == null ? null : path.replaceAll("[\n\r]", "_"));
 			return null;
 		}
-		
+
 		String relativePath = ModuleUtil.getPathForResource(module, path);
 		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources"
 		        + relativePath;
-		
+
 		//if in dev mode, load resources from the development directory
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		if (devDir != null) {
 			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources" + relativePath;
 		}
-		
+
 		realPath = realPath.replace("/", File.separator);
-		
+
 		File f = new File(realPath);
 		if (!f.exists()) {
 			String sanitizedRealPath = realPath == null ? null : realPath.replaceAll("[\n\r]", "_");
@@ -109,8 +106,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 			log.warn("No file with path '{}' exists for module '{}'", sanitizedRealPath, sanitizedModuleId);
 			return null;
 		}
-		
+
 		return f;
 	}
-	
+
 }

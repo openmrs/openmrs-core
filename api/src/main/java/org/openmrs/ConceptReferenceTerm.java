@@ -25,6 +25,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -39,43 +40,41 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
 @Audited
 @Entity
 @Table(name = "concept_reference_term")
-@AttributeOverrides({
-	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
-})
+@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true)) })
 public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@DocumentId
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "concept_reference_term_id")
 	private Integer conceptReferenceTermId;
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "concept_source_id", nullable = false)
 	private ConceptSource conceptSource;
-	
+
 	//The unique code used to identify the reference term in it's reference terminology
 	@GenericField
 	@Column(name = "code", nullable = false, length = 255)
 	private String code;
-	
+
 	@Column(name = "version", length = 50)
 	private String version;
-	
+
 	@OneToMany(mappedBy = "termA", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private Set<ConceptReferenceTermMap> conceptReferenceTermMaps = new LinkedHashSet<>();
-	
+
 	/** default constructor */
 	public ConceptReferenceTerm() {
 	}
-	
+
 	/** constructor with conceptReferenceTermId */
 	public ConceptReferenceTerm(Integer conceptReferenceTermId) {
 		this.conceptReferenceTermId = conceptReferenceTermId;
 	}
-	
+
 	/**
 	 * Convenience constructor with the required fields filled in
 	 *
@@ -89,63 +88,63 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 		this.code = code;
 		setName(name);
 	}
-	
+
 	/**
 	 * @return the conceptReferenceTermId
 	 */
 	public Integer getConceptReferenceTermId() {
 		return conceptReferenceTermId;
 	}
-	
+
 	/**
 	 * @param conceptReferenceTermId the conceptReferenceTermId to set
 	 */
 	public void setConceptReferenceTermId(Integer conceptReferenceTermId) {
 		this.conceptReferenceTermId = conceptReferenceTermId;
 	}
-	
+
 	/**
 	 * @return the conceptSource
 	 */
 	public ConceptSource getConceptSource() {
 		return conceptSource;
 	}
-	
+
 	/**
 	 * @param conceptSource the conceptSource to set
 	 */
 	public void setConceptSource(ConceptSource conceptSource) {
 		this.conceptSource = conceptSource;
 	}
-	
+
 	/**
 	 * @return the code
 	 */
 	public String getCode() {
 		return code;
 	}
-	
+
 	/**
 	 * @param code the code to set
 	 */
 	public void setCode(String code) {
 		this.code = code;
 	}
-	
+
 	/**
 	 * @return the version
 	 */
 	public String getVersion() {
 		return version;
 	}
-	
+
 	/**
 	 * @param version the version to set
 	 */
 	public void setVersion(String version) {
 		this.version = version;
 	}
-	
+
 	/**
 	 * @return the conceptReferenceTermMaps
 	 */
@@ -155,14 +154,14 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 		}
 		return conceptReferenceTermMaps;
 	}
-	
+
 	/**
 	 * @param conceptReferenceTermMaps the conceptReferenceTermMaps to set
 	 */
 	public void setConceptReferenceTermMaps(Set<ConceptReferenceTermMap> conceptReferenceTermMaps) {
 		this.conceptReferenceTermMaps = conceptReferenceTermMaps;
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -170,7 +169,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	public Integer getId() {
 		return getConceptReferenceTermId();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
@@ -178,16 +177,17 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	public void setId(Integer id) {
 		setConceptReferenceTermId(id);
 	}
-	
+
 	/**
 	 * Add the given {@link ConceptReferenceTermMap} object to this concept reference term's list of
-	 * concept reference term maps. If there is already a corresponding ConceptReferenceTermMap
-	 * object for this concept reference term already, this one will not be added.
+	 * concept reference term maps. If there is already a corresponding ConceptReferenceTermMap object
+	 * for this concept reference term already, this one will not be added.
+	 * <p>
+	 * <strong>Should</strong> not add a map where termB is itself<br/>
+	 * <strong>Should</strong> set termA as the term to which a mapping is being added<br/>
+	 * <strong>Should</strong> not add duplicate concept reference term maps
 	 *
 	 * @param conceptReferenceTermMap
-	 * <strong>Should</strong> not add a map where termB is itself
-	 * <strong>Should</strong> set termA as the term to which a mapping is being added
-	 * <strong>Should</strong> not add duplicate concept reference term maps
 	 */
 	public void addConceptReferenceTermMap(ConceptReferenceTermMap conceptReferenceTermMap) {
 		if (conceptReferenceTermMap != null && conceptReferenceTermMap.getTermB() != null
@@ -202,7 +202,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 			}
 		}
 	}
-	
+
 	/**
 	 * Remove the given ConceptReferenceTermMap from the list of conceptReferenceTermMaps for this
 	 * {@link ConceptReferenceTerm}
@@ -214,10 +214,10 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 		if (conceptReferenceTermMaps != null) {
 			return conceptReferenceTermMaps.remove(conceptReferenceTermMap);
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -230,7 +230,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 		} else if (getName() == null) {
 			return getCode();
 		}
-		
+
 		return "";
 	}
 }

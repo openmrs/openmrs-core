@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,86 +19,78 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
 
-import java.util.Date;
+import org.hibernate.envers.Audited;
 
 /**
- * The MedicationDispense class records detailed information about the provision of a supply of a medication 
- * with the intention that it is subsequently consumed by a patient (usually in response to a prescription).
- * 
+ * The MedicationDispense class records detailed information about the provision of a supply of a
+ * medication with the intention that it is subsequently consumed by a patient (usually in response
+ * to a prescription).
+ *
  * @see <a href="https://www.hl7.org/fhir/medicationdispense.html">
- *     		https://www.hl7.org/fhir/medicationdispense.html
- *     	</a>
+ *      https://www.hl7.org/fhir/medicationdispense.html </a>
  * @since 2.6
  */
 @Entity
 @Table(name = "medication_dispense")
 @Audited
 public class MedicationDispense extends BaseFormRecordableOpenmrsData {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "medication_dispense_id")
 	private Integer medicationDispenseId;
 
 	/**
-	 * FHIR:subject
-	 * Patient for whom the medication is intended
+	 * FHIR:subject Patient for whom the medication is intended
 	 */
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
-	
+
 	/**
-	 * FHIR:context
-	 * Encounter when the dispensing event occurred
+	 * FHIR:context Encounter when the dispensing event occurred
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
 
 	/**
-	 * FHIR:medication.medicationCodeableConcept
-	 * Corresponds to drugOrder.concept
+	 * FHIR:medication.medicationCodeableConcept Corresponds to drugOrder.concept
 	 */
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "concept")
 	private Concept concept;
-	
+
 	/**
-	 * FHIR:medication.reference(Medication)
-	 * Corresponds to drugOrder.drug
+	 * FHIR:medication.reference(Medication) Corresponds to drugOrder.drug
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "drug_id")
 	private Drug drug;
 
 	/**
-	 * FHIR:location
-	 * Where the dispensed event occurred
+	 * FHIR:location Where the dispensed event occurred
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "location_id")
 	private Location location;
 
 	/**
-	 * FHIR:performer.actor with null for performer.function.
-	 * Per <a href="https://www.hl7.org/fhir/medicationdispense-definitions.html#MedicationDispense.performer">
-	 *     	https://www.hl7.org/fhir/medicationdispense-definitions.html#MedicationDispense.performer
-	 *     </a>specification, It should be assumed that the actor is the dispenser of the medication
+	 * FHIR:performer.actor with null for performer.function. Per <a href=
+	 * "https://www.hl7.org/fhir/medicationdispense-definitions.html#MedicationDispense.performer">
+	 * https://www.hl7.org/fhir/medicationdispense-definitions.html#MedicationDispense.performer
+	 * </a>specification, It should be assumed that the actor is the dispenser of the medication
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "dispenser")
 	private Provider dispenser;
 
 	/**
-	 * FHIR:authorizingPrescription
-	 * The drug order that led to this dispensing event; 
-	 * note that authorizing prescription maps to a "MedicationRequest" FHIR resource
+	 * FHIR:authorizingPrescription The drug order that led to this dispensing event; note that
+	 * authorizing prescription maps to a "MedicationRequest" FHIR resource
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "drug_order_id")
@@ -104,10 +98,10 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 
 	/**
 	 * FHIR:status
+	 *
 	 * @see <a href="https://www.hl7.org/fhir/valueset-medicationdispense-status.html">
-	 *     		https://www.hl7.org/fhir/valueset-medicationdispense-status.html
-	 *     	</a>
-	 * i.e. preparation, in-progress, cancelled, on-hold, completed, entered-in-error, stopped, declined, unknown
+	 *      https://www.hl7.org/fhir/valueset-medicationdispense-status.html </a> i.e. preparation,
+	 *      in-progress, cancelled, on-hold, completed, entered-in-error, stopped, declined, unknown
 	 */
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "status")
@@ -115,10 +109,9 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 
 	/**
 	 * FHIR:statusReason.statusReasonCodeableConcept
+	 *
 	 * @see <a href="https://www.hl7.org/fhir/valueset-medicationdispense-status-reason.html">
-	 *     		https://www.hl7.org/fhir/valueset-medicationdispense-status-reason.html
-	 *     	</a>
-	 * i.e "Stock Out"
+	 *      https://www.hl7.org/fhir/valueset-medicationdispense-status-reason.html </a> i.e "Stock Out"
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "status_reason")
@@ -126,48 +119,43 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 
 	/**
 	 * FHIR:type.codeableConcept
+	 *
 	 * @see <a href="https://www.hl7.org/fhir/v3/ActPharmacySupplyType/vs.html">
-	 *     		https://www.hl7.org/fhir/v3/ActPharmacySupplyType/vs.html
-	 *     	</a> for potential example concepts
-	 * i.e. "Refill" and "Partial Fill"
+	 *      https://www.hl7.org/fhir/v3/ActPharmacySupplyType/vs.html </a> for potential example
+	 *      concepts i.e. "Refill" and "Partial Fill"
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "type")
 	private Concept type;
 
 	/**
-	 * FHIR:quantity.value
-	 * Relates to drugOrder.quantity
+	 * FHIR:quantity.value Relates to drugOrder.quantity
 	 */
 	@Column(name = "quantity")
 	private Double quantity;
 
 	/**
-	 * FHIR:quantity.unit and/or quanity.code
-	 * Relates to drugOrder.quantityUnits
+	 * FHIR:quantity.unit and/or quanity.code Relates to drugOrder.quantityUnits
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "quantity_units")
 	private Concept quantityUnits;
 
 	/**
-	 * FHIR:dosageInstructions.doseAndRate.dose.doseQuantity
-	 * Relates to drugOrder.dose
+	 * FHIR:dosageInstructions.doseAndRate.dose.doseQuantity Relates to drugOrder.dose
 	 */
 	@Column(name = "dose")
 	private Double dose;
 
 	/**
-	 * FHIR:dosageInstructions.doseAndRate.dose.quantity.unit and/or code
-	 * Relates to drugOrder.doseUnits
+	 * FHIR:dosageInstructions.doseAndRate.dose.quantity.unit and/or code Relates to drugOrder.doseUnits
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "dose_units")
 	private Concept doseUnits;
 
 	/**
-	 * FHIR:dosageInstructions.route
-	 * Relates to drugOrder.route
+	 * FHIR:dosageInstructions.route Relates to drugOrder.route
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "route")
@@ -175,55 +163,53 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 
 	/**
 	 * FHIR:DosageInstructions.timing.repeat.frequency+period+periodUnit
-	 * @see <a href="https://build.fhir.org/datatypes.html#Timing">https://build.fhir.org/datatypes.html#Timing</a>
-	 * Note that we will continue to map this as a single "frequency" concept, although it doesn't map well to FHIR, 
-	 * to make consistent with DrugOrder in OpenMRS
-	 * Relates to drugOrder.frequency
+	 *
+	 * @see <a href=
+	 *      "https://build.fhir.org/datatypes.html#Timing">https://build.fhir.org/datatypes.html#Timing</a>
+	 *      Note that we will continue to map this as a single "frequency" concept, although it doesn't
+	 *      map well to FHIR, to make consistent with DrugOrder in OpenMRS Relates to
+	 *      drugOrder.frequency
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 
 	/**
-	 * FHIR:DosageInstructions.AsNeeded.asNeededBoolean
-	 * Relates to drugOrder.asNeeded
+	 * FHIR:DosageInstructions.AsNeeded.asNeededBoolean Relates to drugOrder.asNeeded
 	 */
 	@Column(name = "as_needed")
 	private Boolean asNeeded;
 
 	/**
-	 * FHIR:DosageInstructions.patientInstructions
-	 * Relates to drugOrder.dosingInstructions
+	 * FHIR:DosageInstructions.patientInstructions Relates to drugOrder.dosingInstructions
 	 */
-	@Column(name = "dosing_instructions", length=65535)
+	@Column(name = "dosing_instructions", length = 65535)
 	private String dosingInstructions;
 
 	/**
-	 * FHIR:whenPrepared
-	 * From FHIR: "When product was packaged and reviewed"
+	 * FHIR:whenPrepared From FHIR: "When product was packaged and reviewed"
 	 */
 	@Column(name = "date_prepared")
 	private Date datePrepared;
 
 	/**
-	 * FHIR:whenHandedOver
-	 * From FHIR: "When product was given out"
+	 * FHIR:whenHandedOver From FHIR: "When product was given out"
 	 */
 	@Column(name = "date_handed_over")
 	private Date dateHandedOver;
 
 	/**
-	 * FHIR:substitution.wasSubstituted
-	 * True/false whether a substitution was made during this dispense event
+	 * FHIR:substitution.wasSubstituted True/false whether a substitution was made during this dispense
+	 * event
 	 */
 	@Column(name = "was_substituted")
 	private Boolean wasSubstituted;
 
 	/**
 	 * FHIR:substitution.type
+	 *
 	 * @see <a href="https://www.hl7.org/fhir/v3/ActSubstanceAdminSubstitutionCode/vs.html">
-	 *     		https://www.hl7.org/fhir/v3/ActSubstanceAdminSubstitutionCode/vs.html
-	 *      </a>
+	 *      https://www.hl7.org/fhir/v3/ActSubstanceAdminSubstitutionCode/vs.html </a>
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "substitution_type")
@@ -231,20 +217,19 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 
 	/**
 	 * FHIR:substitution.reason
+	 *
 	 * @see <a href="https://www.hl7.org/fhir/v3/SubstanceAdminSubstitutionReason/vs.html">
-	 *     		https://www.hl7.org/fhir/v3/SubstanceAdminSubstitutionReason/vs.html
-	 *      </a>
+	 *      https://www.hl7.org/fhir/v3/SubstanceAdminSubstitutionReason/vs.html </a>
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "substitution_reason")
 	private Concept substitutionReason;
 
-	
 	public MedicationDispense() {
 	}
 
 	/**
-	 * @see BaseOpenmrsObject#getId() 
+	 * @see BaseOpenmrsObject#getId()
 	 */
 	@Override
 	public Integer getId() {

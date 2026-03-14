@@ -19,56 +19,56 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 
 /**
  * An EncounterType defines how a certain kind of {@link Encounter}.
- * 
+ *
  * @see Encounter
  */
 @Entity
 @Table(name = "encounter_type")
 @AttributeOverrides({
-	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, unique = true, length = 50)),
-	@AttributeOverride(name = "description", column = @Column(name = "description", length = 1024))
-})
+        @AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, unique = true, length = 50)),
+        @AttributeOverride(name = "description", column = @Column(name = "description", length = 1024)) })
 @Audited
 public class EncounterType extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final long serialVersionUID = 789L;
-	
+
 	@Id
 	@Column(name = "encounter_type_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer encounterTypeId;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "view_privilege", nullable = true)
 	private Privilege viewPrivilege;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "edit_privilege", nullable = true)
 	private Privilege editPrivilege;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public EncounterType() {
 	}
-	
+
 	/**
 	 * Constructor with id
-	 * 
+	 * <p>
 	 * <strong>Should</strong> set encounter type id with given parameter
 	 */
 	public EncounterType(Integer encounterTypeId) {
 		this.encounterTypeId = encounterTypeId;
 	}
-	
+
 	/**
-	 * Required values constructor. This is the minimum number of values that must be non-null in
-	 * order to have a successful save to the database
-	 * 
+	 * Required values constructor. This is the minimum number of values that must be non-null in order
+	 * to have a successful save to the database
+	 *
 	 * @param name the name of this encounter type
 	 * @param description a short description of why this encounter type exists
 	 */
@@ -76,23 +76,23 @@ public class EncounterType extends BaseChangeableOpenmrsMetadata {
 		setName(name);
 		setDescription(description);
 	}
-	
+
 	// Property accessors
-	
+
 	/**
 	 * @return Returns the encounterTypeId.
 	 */
 	public Integer getEncounterTypeId() {
 		return encounterTypeId;
 	}
-	
+
 	/**
 	 * @param encounterTypeId The encounterTypeId to set.
 	 */
 	public void setEncounterTypeId(Integer encounterTypeId) {
 		this.encounterTypeId = encounterTypeId;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -101,7 +101,7 @@ public class EncounterType extends BaseChangeableOpenmrsMetadata {
 	public Integer getId() {
 		return getEncounterTypeId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -109,39 +109,43 @@ public class EncounterType extends BaseChangeableOpenmrsMetadata {
 	@Override
 	public void setId(Integer id) {
 		setEncounterTypeId(id);
-		
+
 	}
-	
+
 	/**
 	 * Gets privilege which can view this type of encounters
+	 *
 	 * @return the viewPrivilege the privilege instance
 	 */
 	public Privilege getViewPrivilege() {
 		return viewPrivilege;
 	}
-	
+
 	/**
 	 * Sets privilege which can view this type of encounters
+	 *
 	 * @param viewPrivilege the viewPrivilege to set
 	 */
 	public void setViewPrivilege(Privilege viewPrivilege) {
 		this.viewPrivilege = viewPrivilege;
 	}
-	
+
 	/**
 	 * Gets privilege which can edit this type of encounters
+	 *
 	 * @return the editPrivilege the privilege instance
 	 */
 	public Privilege getEditPrivilege() {
 		return editPrivilege;
 	}
-	
+
 	/**
 	 * Sets privilege which can edit this type of encounters
+	 *
 	 * @param editPrivilege the editPrivilege to set
 	 */
 	public void setEditPrivilege(Privilege editPrivilege) {
 		this.editPrivilege = editPrivilege;
 	}
-	
+
 }

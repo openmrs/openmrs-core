@@ -11,8 +11,18 @@ package org.openmrs;
 
 import java.util.Date;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
@@ -21,26 +31,14 @@ import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.NotYetPersistedException;
 import org.openmrs.customdatatype.SingleCustomValue;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * A FormResource is meant as a way for modules to add arbitrary information to
- * a Form. FormResources are essentially just key-value pairs. The value is
- * stored as a custom datatype. A Form can have 0-n FormResources but only one
- * FormResource per name per Form.
- *
- * The <i>name</i> of a resource specifies one of many resources that can be
- * stored for a particular owner. Only one resource for each name will
- * ever be saved.
+ * A FormResource is meant as a way for modules to add arbitrary information to a Form.
+ * FormResources are essentially just key-value pairs. The value is stored as a custom datatype. A
+ * Form can have 0-n FormResources but only one FormResource per name per Form. The <i>name</i> of a
+ * resource specifies one of many resources that can be stored for a particular owner. Only one
+ * resource for each name will ever be saved.
  *
  * @since 1.9
  */
@@ -82,22 +80,22 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	@Lob
 	@Column(name = "handler_config", length = 65535)
 	private String handlerConfig;
-	
+
 	private transient boolean dirty = false;
-	
+
 	private transient Object typedValue;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
-	
+
 	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
-	
+
 	public FormResource() {
 		// generic constructor
 	}
-	
+
 	/**
 	 * Create a copy of a provided FormResource, ignoring the uuid and id of the original
 	 *
@@ -112,7 +110,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 		this.preferredHandlerClassname = old.getPreferredHandlerClassname();
 		this.handlerConfig = old.getHandlerConfig();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -120,7 +118,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public Integer getId() {
 		return getFormResourceId();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
@@ -128,7 +126,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public void setId(Integer id) {
 		setFormResourceId(id);
 	}
-	
+
 	/**
 	 * gets the form
 	 *
@@ -137,7 +135,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public Form getForm() {
 		return form;
 	}
-	
+
 	/**
 	 * sets the form
 	 *
@@ -146,7 +144,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public void setForm(Form form) {
 		this.form = form;
 	}
-	
+
 	/**
 	 * gets the form resource id
 	 *
@@ -155,7 +153,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public Integer getFormResourceId() {
 		return formResourceId;
 	}
-	
+
 	/**
 	 * sets the form resource id
 	 *
@@ -164,7 +162,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public void setFormResourceId(Integer formResourceId) {
 		this.formResourceId = formResourceId;
 	}
-	
+
 	/**
 	 * gets the name of the resource
 	 *
@@ -173,7 +171,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * sets the name of the resource
 	 *
@@ -182,7 +180,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getDatatypeClassname()
 	 */
@@ -190,14 +188,14 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public String getDatatypeClassname() {
 		return datatypeClassname;
 	}
-	
+
 	/**
 	 * @param datatypeClassname the datatypeClassname to set
 	 */
 	public void setDatatypeClassname(String datatypeClassname) {
 		this.datatypeClassname = datatypeClassname;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getDatatypeConfig()
 	 */
@@ -205,14 +203,14 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public String getDatatypeConfig() {
 		return datatypeConfig;
 	}
-	
+
 	/**
 	 * @param datatypeConfig the datatypeConfig to set
 	 */
 	public void setDatatypeConfig(String datatypeConfig) {
 		this.datatypeConfig = datatypeConfig;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getPreferredHandlerClassname()
 	 */
@@ -220,14 +218,14 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public String getPreferredHandlerClassname() {
 		return preferredHandlerClassname;
 	}
-	
+
 	/**
 	 * @param preferredHandlerClassname the preferredHandlerClassname to set
 	 */
 	public void setPreferredHandlerClassname(String preferredHandlerClassname) {
 		this.preferredHandlerClassname = preferredHandlerClassname;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getHandlerConfig()
 	 */
@@ -235,14 +233,14 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public String getHandlerConfig() {
 		return handlerConfig;
 	}
-	
+
 	/**
 	 * @param handlerConfig the handlerConfig to set
 	 */
 	public void setHandlerConfig(String handlerConfig) {
 		this.handlerConfig = handlerConfig;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getDescriptor()
 	 */
@@ -250,7 +248,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public FormResource getDescriptor() {
 		return this;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getValueReference()
 	 */
@@ -262,38 +260,37 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 			return valueReference;
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getValue()
 	 */
 	@Override
-	public Object getValue(){
+	public Object getValue() {
 		if (typedValue == null) {
 			typedValue = CustomDatatypeUtil.getDatatype(this).fromReferenceString(getValueReference());
 		}
 		return typedValue;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#setValue(java.lang.Object)
 	 */
 	@Override
-	public <T> void setValue(T typedValue)  {
+	public <T> void setValue(T typedValue) {
 		this.typedValue = typedValue;
 		dirty = true;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReferenceInternal(java.lang.String)
 	 */
 	@Override
-	public void setValueReferenceInternal(String valueToPersist)  {
+	public void setValueReferenceInternal(String valueToPersist) {
 		this.valueReference = valueToPersist;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#isDirty()
-	 *
 	 * @deprecated as of 2.0, use {@link #getDirty()}
 	 */
 	@Deprecated
@@ -302,32 +299,32 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	public boolean isDirty() {
 		return getDirty();
 	}
-	
+
 	public boolean getDirty() {
 		return dirty;
 	}
-	
+
 	/**
 	 * @return Returns the changedBy.
 	 */
 	public User getChangedBy() {
 		return changedBy;
 	}
-	
+
 	/**
 	 * @param changedBy The user that changed this object
 	 */
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-	
+
 	/**
 	 * @return Returns the date this object was changed
 	 */
 	public Date getDateChanged() {
 		return dateChanged;
 	}
-	
+
 	/**
 	 * @param dateChanged The date this object was changed
 	 */

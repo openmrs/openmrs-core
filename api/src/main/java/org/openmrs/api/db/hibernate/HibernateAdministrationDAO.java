@@ -9,16 +9,17 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.sql.Statement;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.hibernate.FlushMode;
 import org.hibernate.MappingException;
@@ -33,10 +34,8 @@ import org.hibernate.mapping.PersistentClass;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.Type;
-import org.hibernate.type.internal.NamedBasicTypeImpl;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
@@ -45,11 +44,11 @@ import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Repository;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -62,34 +61,35 @@ import org.springframework.validation.Validator;
  */
 @Repository("adminDAO")
 public class HibernateAdministrationDAO implements AdministrationDAO, ApplicationContextAware {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(HibernateAdministrationDAO.class);
+
 	private static final String PROPERTY = "property";
-	
+
 	/**
 	 * Hibernate session factory
 	 */
 	private final SessionFactory sessionFactory;
 
 	private Metadata metadata;
-	
+
 	@Autowired
 	public HibernateAdministrationDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalProperty(java.lang.String)
 	 */
 	@Override
 	public String getGlobalProperty(String propertyName) throws DAOException {
 		GlobalProperty gp = getGlobalPropertyObject(propertyName);
-		
+
 		// if no gp exists, return a null value
 		if (gp == null) {
 			return null;
 		}
-		
+
 		return gp.getPropertyValue();
 	}
 
@@ -105,9 +105,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			CriteriaQuery<GlobalProperty> query = cb.createQuery(GlobalProperty.class);
 			Root<GlobalProperty> root = query.from(GlobalProperty.class);
 
-			Predicate condition = (propertyName != null)
-				? cb.equal(cb.lower(root.get(PROPERTY)), propertyName.toLowerCase())
-				: cb.isNull(root.get(PROPERTY));
+			Predicate condition = (propertyName != null) ? cb.equal(cb.lower(root.get(PROPERTY)), propertyName.toLowerCase())
+			        : cb.isNull(root.get(PROPERTY));
 
 			query.where(condition);
 
@@ -119,7 +118,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 				return gp;
 			}
 		}
-		
+
 		return session.get(GlobalProperty.class, propertyName);
 	}
 
@@ -142,7 +141,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 
 		return session.createQuery(query).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertiesByPrefix(java.lang.String)
 	 */
@@ -162,7 +161,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 
 		return session.createQuery(query).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertiesBySuffix(java.lang.String)
 	 */
@@ -182,7 +181,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 
 		return session.createQuery(query).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#deleteGlobalProperty(GlobalProperty)
 	 */
@@ -190,7 +189,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	public void deleteGlobalProperty(GlobalProperty property) throws DAOException {
 		sessionFactory.getCurrentSession().remove(property);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
@@ -207,13 +206,13 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			return gp;
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#executeSQL(java.lang.String, boolean)
 	 */
 	@Override
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException {
-		
+
 		// (solution for junit tests that usually use hsql
 		// hsql does not like the backtick.  Replace the backtick with the hsql
 		// escape character: the double quote (or nothing).
@@ -222,7 +221,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		}
 		return DatabaseUtil.executeSQL(sessionFactory.getCurrentSession(), sql, selectOnly);
 	}
-	
+
 	@Override
 	public long getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
 		PersistentClass persistentClass = metadata.getEntityBinding(aClass.getName().split("_")[0]);
@@ -233,7 +232,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			try {
 				List<Column> columns = persistentClass.getProperty(fieldName).getColumns();
 				if (columns.isEmpty()) {
-					throw new Exception(String.format("No columns found for fieldName %s to determine maximum length", fieldName));
+					throw new Exception(
+					        String.format("No columns found for fieldName %s to determine maximum length", fieldName));
 				}
 				Column column = columns.get(0);
 				String columnDefinition = column.getSqlType();
@@ -242,54 +242,51 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 				} else {
 					fieldLength = column.getLength();
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.debug("Could not determine maximum length", e);
 				return -1;
 			}
 			return fieldLength;
 		}
 	}
-	
+
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		HibernateSessionFactoryBean sessionFactoryBean = (HibernateSessionFactoryBean) applicationContext
 		        .getBean("&sessionFactory");
 		metadata = sessionFactoryBean.getMetadata();
 	}
-	
+
 	/**
-	 * @see org.openmrs.api.db.AdministrationDAO#validate(java.lang.Object, Errors)
-	 * <strong>Should</strong> Pass validation if field lengths are correct
-	 * <strong>Should</strong> Fail validation if field lengths are not correct
-	 * <strong>Should</strong> Fail validation for location class if field lengths are not correct
+	 * <p>
+	 * <strong>Should</strong> Pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> Fail validation if field lengths are not correct<br/>
+	 * <strong>Should</strong> Fail validation for location class if field lengths are not correct<br/>
 	 * <strong>Should</strong> Pass validation for location class if field lengths are correct
+	 *
+	 * @see org.openmrs.api.db.AdministrationDAO#validate(java.lang.Object, Errors)
 	 */
-	
+
 	//@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
 	@Override
 	public void validate(Object object, Errors errors) throws DAOException {
 		Class entityClass = object.getClass();
 		EntityPersister metadata = null;
 		try {
-			SessionFactoryImplementor sfi =
-				sessionFactory.unwrap(SessionFactoryImplementor.class);
-			
-			metadata =
-					sfi.getRuntimeMetamodels()
-						.getMappingMetamodel()
-						.getEntityDescriptor(entityClass);
-			
-		}
-		catch (MappingException ex) {
+			SessionFactoryImplementor sfi = sessionFactory.unwrap(SessionFactoryImplementor.class);
+
+			metadata = sfi.getRuntimeMetamodels().getMappingMetamodel().getEntityDescriptor(entityClass);
+
+		} catch (MappingException ex) {
 			log.debug(entityClass + " is not a hibernate mapped entity", ex);
 		}
 		if (metadata != null) {
 			String[] propNames = metadata.getPropertyNames();
 			Type identifierType = metadata.getIdentifierType();
 			String identifierName = metadata.getIdentifierPropertyName();
-			
-			if (identifierType instanceof BasicType<?> && String.class.equals(((BasicType<?>) identifierType).getJavaTypeDescriptor().getJavaType())) {
+
+			if (identifierType instanceof BasicType<?>
+			        && String.class.equals(((BasicType<?>) identifierType).getJavaTypeDescriptor().getJavaType())) {
 				long maxLength = getMaximumPropertyLength(entityClass, identifierName);
 				String identifierValue = (String) metadata.getIdentifier(object,
 				    (SessionImplementor) sessionFactory.getCurrentSession());
@@ -303,14 +300,14 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			}
 			for (String propName : propNames) {
 				Type propType = metadata.getPropertyType(propName);
-				if (propType instanceof BasicType<?> && String.class.equals(((BasicType<?>) propType).getJavaTypeDescriptor().getJavaType())) {
+				if (propType instanceof BasicType<?>
+				        && String.class.equals(((BasicType<?>) propType).getJavaTypeDescriptor().getJavaType())) {
 					String propertyValue = (String) metadata.getPropertyValue(object, propName);
 					if (propertyValue != null) {
 						long maxLength = getMaximumPropertyLength(entityClass, propName);
 						int propertyValueLength = propertyValue.length();
 						if (maxLength >= 0 && propertyValueLength > maxLength) {
-							errors.rejectValue(propName, "error.exceededMaxLengthOfField", new Object[] { maxLength },
-									null);
+							errors.rejectValue(propName, "error.exceededMaxLengthOfField", new Object[] { maxLength }, null);
 						}
 					}
 				}
@@ -322,15 +319,15 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			for (Validator validator : getValidators(object)) {
 				validator.validate(object, errors);
 			}
-			
+
 		}
-		
+
 		finally {
 			sessionFactory.getCurrentSession().setHibernateFlushMode(previousFlushMode);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Fetches all validators that are registered
 	 *
@@ -341,16 +338,16 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		List<Validator> matchingValidators = new ArrayList<>();
 
 		List<Validator> validators = HandlerUtil.getHandlersForType(Validator.class, obj.getClass());
-		
+
 		for (Validator validator : validators) {
 			if (validator.supports(obj.getClass())) {
 				matchingValidators.add(validator);
 			}
 		}
-		
+
 		return matchingValidators;
 	}
-	
+
 	@Override
 	public boolean isDatabaseStringComparisonCaseSensitive() {
 		GlobalProperty gp = sessionFactory.getCurrentSession().get(GlobalProperty.class,
@@ -361,17 +358,17 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			return true;
 		}
 	}
-	
+
 	/**
 	 * Updates PostgreSQL Sequences after core data insertion
-	 * 
+	 *
 	 * @see org.openmrs.api.db.AdministrationDAO#updatePostgresSequence()
 	 */
 	@Override
 	public void updatePostgresSequence() throws DAOException {
-		
+
 		if (HibernateUtil.isPostgreSQLDialect(sessionFactory)) {
-			
+
 			// All the required PostgreSQL sequences that need to be updated
 			String postgresSequences = "SELECT setval('person_person_id_seq', (SELECT MAX(person_id) FROM person)+1);"
 			        + "SELECT setval('person_name_person_name_id_seq', (SELECT MAX(person_name_id) FROM person_name)+1);"
@@ -438,9 +435,9 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			        + "SELECT setval('scheduler_task_config_property_task_config_property_id_seq', (SELECT MAX(task_config_property_id) FROM scheduler_task_config_property)+1)"
 			        + "";
 			Session session = sessionFactory.getCurrentSession();
-			
+
 			session.doWork(new Work() {
-				
+
 				@Override
 				public void execute(Connection con) throws SQLException {
 					Statement stmt = con.createStatement();

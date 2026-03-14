@@ -30,46 +30,47 @@ import org.openmrs.aop.RequiredDataAdvice;
  * retired is set to true, it is assumed that this object is in a list of things that is getting
  * retired but that it itself was previously retired. The workaround to this is that if the retired
  * bit is true OR the retiredBy is null, the retiredBy, dateRetired, and retireReason will be set.
- * 
+ *
  * @see RequiredDataAdvice
  * @since 1.5
  */
 @Handler(supports = Retireable.class)
 public class BaseRetireHandler implements RetireHandler<Retireable> {
-	
+
 	/**
-	 * This method sets "retired" to true, the retired reason, and the retiredBy/dateRetired (if
-	 * those are null).<br>
-	 * 
+	 * This method sets "retired" to true, the retired reason, and the retiredBy/dateRetired (if those
+	 * are null).<br>
+	 * <p>
+	 * <strong>Should</strong> set the retired bit<br/>
+	 * <strong>Should</strong> set the retireReason<br/>
+	 * <strong>Should</strong> set retired by<br/>
+	 * <strong>Should</strong> not set retired by if non null<br/>
+	 * <strong>Should</strong> set dateRetired<br/>
+	 * <strong>Should</strong> not set dateRetired if non null<br/>
+	 * <strong>Should</strong> not set the retireReason if already voided<br/>
+	 * <strong>Should</strong> set retiredBy even if retired bit is set but retiredBy is null
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * <strong>Should</strong> set the retired bit
-	 * <strong>Should</strong> set the retireReason
-	 * <strong>Should</strong> set retired by
-	 * <strong>Should</strong> not set retired by if non null
-	 * <strong>Should</strong> set dateRetired
-	 * <strong>Should</strong> not set dateRetired if non null
-	 * <strong>Should</strong> not set the retireReason if already voided
-	 * <strong>Should</strong> set retiredBy even if retired bit is set but retiredBy is null
 	 */
 	@Override
 	public void handle(Retireable retireableObject, User retiringUser, Date retireDate, String retireReason) {
-		
+
 		// skip over doing retire stuff if already retired
 		if (!retireableObject.getRetired() || retireableObject.getRetiredBy() == null) {
-			
+
 			retireableObject.setRetired(true);
 			retireableObject.setRetireReason(retireReason);
-			
+
 			if (retireableObject.getRetiredBy() == null) {
 				retireableObject.setRetiredBy(retiringUser);
 			}
 			if (retireableObject.getDateRetired() == null) {
 				retireableObject.setDateRetired(retireDate);
 			}
-			
+
 		}
-		
+
 	}
-	
+
 }

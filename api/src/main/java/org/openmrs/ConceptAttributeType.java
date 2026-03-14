@@ -15,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
@@ -28,20 +29,20 @@ public class ConceptAttributeType extends BaseAttributeType<Concept> implements 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "concept_attribute_type_id")
 	private Integer conceptAttributeTypeId;
-	
+
 	public Integer getConceptAttributeTypeId() {
 		return conceptAttributeTypeId;
 	}
-	
+
 	public void setConceptAttributeTypeId(Integer conceptAttributeTypeId) {
 		this.conceptAttributeTypeId = conceptAttributeTypeId;
 	}
-	
+
 	@Override
 	public Integer getId() {
 		return getConceptAttributeTypeId();
 	}
-	
+
 	@Override
 	public void setId(Integer id) {
 		setConceptAttributeTypeId(id);

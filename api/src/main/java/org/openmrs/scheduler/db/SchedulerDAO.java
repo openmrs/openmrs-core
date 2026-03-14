@@ -16,70 +16,68 @@ import org.openmrs.scheduler.TaskDefinition;
 
 /**
  * Scheduler-related database methods.
- * 
+ *
  * @version 1.0
  */
 public interface SchedulerDAO {
-	
+
 	/**
 	 * Creates a new task.
-	 * 
+	 *
 	 * @param taskDefinition task to be created
 	 * @throws DAOException
 	 */
 	public void createTask(TaskDefinition taskDefinition) throws DAOException;
-	
+
 	/**
 	 * Get task by internal identifier
-	 * 
+	 *
 	 * @param taskId internal task identifier
 	 * @return task with given internal identifier
 	 * @throws DAOException
 	 */
 	public TaskDefinition getTask(Integer taskId) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.scheduler.SchedulerService#getTaskByUuid(java.lang.String)
-	 * 
 	 */
 	public TaskDefinition getTaskByUuid(String uuid) throws DAOException;
 
 	/**
 	 * Update task
-	 * 
+	 *
 	 * @param task to be updated
 	 * @throws DAOException
 	 */
 	public void updateTask(TaskDefinition task) throws DAOException;
-	
+
 	/**
 	 * Find all tasks in the database
-	 * 
+	 *
 	 * @return <code>List&lt;TaskDefinition&gt;</code> of all tasks
 	 * @throws DAOException
 	 */
 	public List<TaskDefinition> getTasks() throws DAOException;
-	
+
 	/**
 	 * Delete task from database.
-	 * 
+	 *
 	 * @param task task to be deleted
 	 * @throws DAOException
 	 */
 	public void deleteTask(TaskDefinition task) throws DAOException;
-	
+
 	/**
 	 * Delete task from database.
-	 * 
+	 *
 	 * @param taskId identifier of task to be deleted
 	 * @throws DAOException
 	 */
 	public void deleteTask(Integer taskId) throws DAOException;
-	
-	
+
 	/**
 	 * Get task by public name.
-	 * 
+	 *
 	 * @param name public task name
 	 * @return task with given public name
 	 * @throws DAOException

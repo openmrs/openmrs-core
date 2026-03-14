@@ -24,7 +24,7 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { ConceptMapType.class }, order = 50)
 public class ConceptMapTypeValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 *
@@ -34,29 +34,30 @@ public class ConceptMapTypeValidator implements Validator {
 	public boolean supports(Class<?> c) {
 		return ConceptMapType.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * Checks that a given concept map type object is valid.
+	 * <p>
+	 * <strong>Should</strong> fail if the concept map type object is null<br/>
+	 * <strong>Should</strong> fail if the name is null<br/>
+	 * <strong>Should</strong> fail if the name is an empty string<br/>
+	 * <strong>Should</strong> fail if the name is a white space character<br/>
+	 * <strong>Should</strong> fail if the concept map type name is a duplicate<br/>
+	 * <strong>Should</strong> pass if the name is unique amongst all concept map type names<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail if the concept map type object is null
-	 * <strong>Should</strong> fail if the name is null
-	 * <strong>Should</strong> fail if the name is an empty string
-	 * <strong>Should</strong> fail if the name is a white space character
-	 * <strong>Should</strong> fail if the concept map type name is a duplicate
-	 * <strong>Should</strong> pass if the name is unique amongst all concept map type names
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
-		
+
 		if (obj == null || !(obj instanceof ConceptMapType)) {
-			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"
-			        + ConceptMapType.class);
+			throw new IllegalArgumentException(
+			        "The parameter obj should not be null and must be of type" + ConceptMapType.class);
 		}
-		
+
 		ConceptMapType conceptMapType = (ConceptMapType) obj;
 		String name = conceptMapType.getName();
 		if (!StringUtils.hasText(name)) {
@@ -64,7 +65,7 @@ public class ConceptMapTypeValidator implements Validator {
 			    "The name property is required for a concept map type");
 			return;
 		}
-		
+
 		name = name.trim();
 		ConceptMapType duplicate = Context.getConceptService().getConceptMapTypeByName(name);
 		if (duplicate != null && !OpenmrsUtil.nullSafeEquals(duplicate.getUuid(), conceptMapType.getUuid())) {

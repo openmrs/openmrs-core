@@ -9,8 +9,6 @@
  */
 package org.openmrs.customdatatype.datatype;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,15 +16,17 @@ import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class DateDatatypeTest {
-	
+
 	DateDatatype datatype;
-	
+
 	@BeforeEach
 	public void before() {
 		datatype = new DateDatatype();
 	}
-	
+
 	/**
 	 * @throws ParseException
 	 * @see Date#deserialize(String)
@@ -36,7 +36,7 @@ public class DateDatatypeTest {
 		Date date = new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-25");
 		assertEquals(date, datatype.deserialize(datatype.serialize(date)));
 	}
-	
+
 	/**
 	 * @throws ParseException
 	 * @see Date#serialize(java.util.Date)

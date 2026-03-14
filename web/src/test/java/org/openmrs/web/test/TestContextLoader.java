@@ -23,10 +23,10 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * only once. This class is used for @ContextConfiguration in WebModuleActivatorTest
  */
 public class TestContextLoader extends AbstractContextLoader {
-	
+
 	public TestContextLoader() {
 	}
-	
+
 	@Override
 	public final ConfigurableApplicationContext loadContext(String... locations) throws Exception {
 		XmlWebApplicationContext context = new XmlWebApplicationContext();
@@ -37,12 +37,12 @@ public class TestContextLoader extends AbstractContextLoader {
 		context.refresh();
 		return context;
 	}
-	
+
 	@Override
 	protected String getResourceSuffix() {
 		return "-context.xml";
 	}
-	
+
 	/**
 	 * @see org.springframework.test.context.SmartContextLoader#loadContext(org.springframework.test.context.MergedContextConfiguration)
 	 */

@@ -9,13 +9,6 @@
  */
 package org.openmrs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Collection;
 import java.util.Date;
 
@@ -28,24 +21,31 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Contains end to end tests for order entry operations i.g placing, discontinuing revising an order
  */
 public class ObsBehaviorTest extends BaseContextSensitiveTest {
-	
+
 	protected static final String OBS_DATASET_XML = "org/openmrs/api/include/ObsBehaviorTest.xml";
-	
+
 	@Autowired
 	private ObsService obsService;
-	
+
 	@Autowired
 	private EncounterService encounterService;
-	
+
 	@Test
 	public void shouldHaveAnObsLoadedFromTheDatabaseAsNotDirty() {
 		assertFalse(obsService.getObs(7).isDirty());
 	}
-	
+
 	@Test
 	public void shouldHaveAllObsLoadedWithAnEncounterFromTheDatabaseNotMarkedAsDirty() {
 		Encounter e = encounterService.getEncounter(3);
@@ -53,7 +53,7 @@ public class ObsBehaviorTest extends BaseContextSensitiveTest {
 		assertFalse(allObs.isEmpty());
 		allObs.forEach(o -> Assertions.assertFalse(o.isDirty()));
 	}
-	
+
 	@Test
 	@Disabled
 	public void shouldVoidAndReplaceOnlyEditedUnvoidedObsWhenTheyAreFlushedToTheDatabase() {
@@ -67,7 +67,7 @@ public class ObsBehaviorTest extends BaseContextSensitiveTest {
 		Obs toBeVoidedObs = obsService.getObs(103);
 		Obs unVoidedObsToUpdate = obsService.getObs(102);
 		Obs unVoidedObs = obsService.getObs(104);
-		
+
 		//sanity checks
 		assertTrue(encounter.getAllObs(true).contains(alreadyVoidedObs));
 		assertTrue(encounter.getAllObs(true).contains(toBeVoidedObs));
@@ -77,59 +77,59 @@ public class ObsBehaviorTest extends BaseContextSensitiveTest {
 		assertNotEquals(newValueText, toBeVoidedObs.getValueText());
 		assertNotEquals(newValueText, unVoidedObsToUpdate.getValueText());
 		assertNotEquals(newValueText, unVoidedObs.getValueText());
-		
+
 		assertTrue(alreadyVoidedObs.getVoided());
 		assertNotNull(alreadyVoidedObs.getVoidedBy());
 		assertNotNull(alreadyVoidedObs.getDateVoided());
 		assertNotNull(alreadyVoidedObs.getVoidReason());
-		
+
 		assertFalse(toBeVoidedObs.getVoided());
 		assertNull(toBeVoidedObs.getVoidedBy());
 		assertNull(toBeVoidedObs.getDateVoided());
 		assertNull(toBeVoidedObs.getVoidReason());
-		
+
 		assertFalse(unVoidedObsToUpdate.getVoided());
 		assertNull(unVoidedObsToUpdate.getVoidedBy());
 		assertNull(unVoidedObsToUpdate.getDateVoided());
 		assertNull(unVoidedObsToUpdate.getVoidReason());
-		
+
 		assertFalse(unVoidedObs.getVoided());
 		assertNull(unVoidedObs.getVoidedBy());
 		assertNull(unVoidedObs.getDateVoided());
 		assertNull(unVoidedObs.getVoidReason());
-		
+
 		alreadyVoidedObs.setValueText(newValueText);
 		toBeVoidedObs.setValueText(newValueText);
 		unVoidedObsToUpdate.setValueText(newValueText);
 		toBeVoidedObs.setVoided(true);
 		encounter.setEncounterDatetime(new Date());
 		encounterService.saveEncounter(encounter);
-		
+
 		//Evict and reload the encounter so that the Obs collection is updated
 		Context.evictFromSession(encounter);
 		encounter = encounterService.getEncounter(encounterId);
 		//1 new order should have been created to replaced the edited one
 		assertEquals(initialAllObsCount + 1, encounter.getAllObs(true).size());
 		//assertEquals(c, obsService.getObservationsByPerson(encounter.getPatient()).size());
-		
+
 		//the already voided obs should have stayed been updated
 		assertEquals(newValueText, alreadyVoidedObs.getValueText());
 		assertEquals(newValueText, toBeVoidedObs.getValueText());
-		
+
 		//the obs that we edited should have stayed unchanged
 		assertNotEquals(newValueText, unVoidedObsToUpdate.getValueText());
-		
+
 		//the obs that was edited should have been voided
 		assertTrue(unVoidedObsToUpdate.getVoided());
 		assertNotNull(unVoidedObsToUpdate.getVoidedBy());
 		assertNotNull(unVoidedObsToUpdate.getDateVoided());
 		assertNotNull(unVoidedObsToUpdate.getVoidReason());
-		
+
 		//the unvoided obs that wasn't edited should have stayed the same
 		assertFalse(unVoidedObs.getVoided());
 		assertNull(unVoidedObs.getVoidedBy());
 		assertNull(unVoidedObs.getDateVoided());
 		assertNull(unVoidedObs.getVoidReason());
-		
+
 	}
 }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SpecifiedTextOptionsDatatype extends SerializingCustomDatatype<String> {
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
 	 */
@@ -22,7 +22,7 @@ public class SpecifiedTextOptionsDatatype extends SerializingCustomDatatype<Stri
 	public String serialize(String typedValue) {
 		return typedValue;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
 	 */
@@ -30,5 +30,5 @@ public class SpecifiedTextOptionsDatatype extends SerializingCustomDatatype<Stri
 	public String deserialize(String serializedValue) {
 		return serializedValue;
 	}
-	
+
 }
