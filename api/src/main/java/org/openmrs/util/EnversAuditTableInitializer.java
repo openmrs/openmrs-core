@@ -9,12 +9,25 @@
  */
 package org.openmrs.util;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 import org.hibernate.boot.Metadata;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RevisionEntity;
+import org.hibernate.mapping.PersistentClass;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.tool.schema.TargetType;
 import org.hibernate.tool.schema.spi.ExceptionHandler;
@@ -34,13 +47,17 @@ public class EnversAuditTableInitializer {
 
 	private static final Logger log = LoggerFactory.getLogger(EnversAuditTableInitializer.class);
 
+	private static final Pattern SAFE_SQL_IDENTIFIER = Pattern.compile("[a-zA-Z_]\\w*");
+
 	private EnversAuditTableInitializer() {
 
 	}
 
 	/**
 	 * Checks if Envers is enabled and creates/updates audit tables as needed. This will Create or
-	 * Update audit tables if they don't exist - Update existing audit tables if the schema has changed
+	 * Update audit tables if they don't exist - Update existing audit tables if the schema has changed.
+	 * After schema updates, backfills pre-existing data so Envers can resolve references to entities
+	 * that existed before auditing was enabled.
 	 *
 	 * @param metadata Hibernate metadata containing entity mappings
 	 * @param hibernateProperties properties containing Envers configuration
@@ -54,6 +71,7 @@ public class EnversAuditTableInitializer {
 		}
 
 		updateAuditTables(metadata, hibernateProperties, serviceRegistry);
+		backfillAuditTables(metadata, hibernateProperties, serviceRegistry);
 	}
 
 	/**
@@ -113,6 +131,214 @@ public class EnversAuditTableInitializer {
 		} else {
 			log.info("Successfully created/updated Envers audit tables using Hibernate SchemaManagementTool.");
 		}
+	}
+
+	/**
+	 * Backfills pre-existing data into newly created audit tables. When auditing is enabled after data
+	 * already exists, audit tables are empty and Envers cannot resolve references to those pre-existing
+	 * entities, causing "Unable to read" in the audit UI. This method inserts all existing rows from
+	 * each source table into the corresponding audit table with REVTYPE=0 (ADD), but only when the
+	 * audit table is empty (i.e. it was just created).
+	 *
+	 * @param metadata Hibernate metadata containing entity mappings
+	 * @param hibernateProperties Hibernate configuration properties
+	 * @param serviceRegistry Hibernate service registry
+	 */
+	private static void backfillAuditTables(Metadata metadata, Properties hibernateProperties,
+	        ServiceRegistry serviceRegistry) {
+		String auditTablePrefix = hibernateProperties.getProperty("org.hibernate.envers.audit_table_prefix", "");
+		String auditTableSuffix = hibernateProperties.getProperty("org.hibernate.envers.audit_table_suffix", "_audit");
+
+		ConnectionProvider connectionProvider = serviceRegistry.getService(ConnectionProvider.class);
+		Connection connection = null;
+
+		try {
+			connection = connectionProvider.getConnection();
+			boolean originalAutoCommit = connection.getAutoCommit();
+			connection.setAutoCommit(false);
+
+			String revisionTableName = getRevisionEntityTableName(metadata);
+			Integer revId = null;
+
+			for (PersistentClass persistentClass : metadata.getEntityBindings()) {
+				Class<?> mappedClass = persistentClass.getMappedClass();
+				if (mappedClass == null || !isAuditedClass(mappedClass)) {
+					continue;
+				}
+				String sourceTable = persistentClass.getTable().getName();
+				String auditTable = auditTablePrefix + sourceTable + auditTableSuffix;
+				revId = tryBackfillEntity(connection, sourceTable, auditTable, revisionTableName, revId);
+			}
+
+			if (revId != null) {
+				connection.commit();
+				log.info("Audit table backfill completed successfully with initial revision ID {}", revId);
+			} else {
+				log.debug("No audit tables needed backfilling.");
+			}
+
+			connection.setAutoCommit(originalAutoCommit);
+		} catch (SQLException e) {
+			log.error("Failed to backfill audit tables", e);
+			if (connection != null) {
+				try {
+					connection.rollback();
+				} catch (SQLException ex) {
+					log.error("Failed to rollback backfill transaction", ex);
+				}
+			}
+		} finally {
+			if (connection != null) {
+				try {
+					connectionProvider.closeConnection(connection);
+				} catch (SQLException e) {
+					log.error("Failed to close JDBC connection after audit backfill", e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Attempts to backfill a single entity's audit table. Skips if the audit table already has data or
+	 * the source table is empty. Returns the (possibly newly created) revision ID.
+	 */
+	private static Integer tryBackfillEntity(Connection connection, String sourceTable, String auditTable,
+	        String revisionTableName, Integer revId) {
+		try {
+			if (!isAuditTableEmpty(connection, auditTable) || isTableEmpty(connection, sourceTable)) {
+				return revId;
+			}
+			if (revId == null) {
+				revId = createBackfillRevision(connection, revisionTableName);
+			}
+			List<String> columns = getSourceTableColumns(connection, sourceTable);
+			if (!columns.isEmpty()) {
+				backfillTable(connection, sourceTable, auditTable, columns, revId);
+			}
+		} catch (SQLException e) {
+			log.warn("Failed to backfill audit table {}: {}", auditTable, e.getMessage());
+		}
+		return revId;
+	}
+
+	/**
+	 * Creates a backfill revision entry in the revision entity table. Uses the REVTSTMP column which is
+	 * explicitly defined in Hibernate's RevisionMapping with @Column(name = "REVTSTMP").
+	 *
+	 * @param connection JDBC connection
+	 * @param revisionTableName name of the revision entity table
+	 * @return the generated revision ID
+	 * @throws SQLException if the revision entry cannot be created
+	 */
+	static int createBackfillRevision(Connection connection, String revisionTableName) throws SQLException {
+		String sql = "INSERT INTO " + requireSafeIdentifier(revisionTableName) + " (REVTSTMP) VALUES (?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			pstmt.setLong(1, System.currentTimeMillis());
+			pstmt.executeUpdate();
+			try (ResultSet rs = pstmt.getGeneratedKeys()) {
+				if (rs.next()) {
+					return rs.getInt(1);
+				}
+			}
+		}
+		throw new SQLException("Failed to create backfill revision entry in " + revisionTableName);
+	}
+
+	/**
+	 * Validates that a SQL identifier (table or column name) contains only safe characters, preventing
+	 * SQL injection when identifiers must be concatenated into queries.
+	 *
+	 * @param identifier the SQL identifier to validate
+	 * @return the identifier unchanged if safe
+	 * @throws IllegalArgumentException if the identifier contains unsafe characters
+	 */
+	private static String requireSafeIdentifier(String identifier) {
+		if (identifier == null || !SAFE_SQL_IDENTIFIER.matcher(identifier).matches()) {
+			throw new IllegalArgumentException("Unsafe SQL identifier rejected: " + identifier);
+		}
+		return identifier;
+	}
+
+	/**
+	 * Returns true if the given audit table exists but contains no rows.
+	 */
+	static boolean isAuditTableEmpty(Connection connection, String tableName) {
+		try (Statement stmt = connection.createStatement();
+		        ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + requireSafeIdentifier(tableName))) {
+			return rs.next() && rs.getLong(1) == 0;
+		} catch (SQLException e) {
+			log.debug("Audit table {} not accessible, skipping backfill: {}", tableName, e.getMessage());
+			return false;
+		}
+	}
+
+	/**
+	 * Returns true if the given source table has no rows.
+	 */
+	static boolean isTableEmpty(Connection connection, String tableName) throws SQLException {
+		try (Statement stmt = connection.createStatement();
+		        ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + requireSafeIdentifier(tableName))) {
+			return rs.next() && rs.getLong(1) == 0;
+		}
+	}
+
+	/**
+	 * Returns all column names from the given source table using JDBC metadata.
+	 */
+	static List<String> getSourceTableColumns(Connection connection, String tableName) throws SQLException {
+		List<String> columns = new ArrayList<>();
+		DatabaseMetaData metaData = connection.getMetaData();
+		try (ResultSet rs = metaData.getColumns(null, null, tableName, null)) {
+			while (rs.next()) {
+				columns.add(rs.getString("COLUMN_NAME"));
+			}
+		}
+		return columns;
+	}
+
+	/**
+	 * Inserts all rows from the source table into the audit table with REVTYPE=0 (ADD).
+	 */
+	static void backfillTable(Connection connection, String sourceTable, String auditTable, List<String> columns, int revId)
+	        throws SQLException {
+		requireSafeIdentifier(sourceTable);
+		requireSafeIdentifier(auditTable);
+		columns.forEach(EnversAuditTableInitializer::requireSafeIdentifier);
+		String columnList = String.join(", ", columns);
+		String sql = "INSERT INTO " + auditTable + " (REV, REVTYPE, " + columnList + ") " + "SELECT " + revId + ", 0, "
+		        + columnList + " FROM " + sourceTable;
+		try (Statement stmt = connection.createStatement()) {
+			int rows = stmt.executeUpdate(sql);
+			log.info("Backfilled {} rows from {} into {}", rows, sourceTable, auditTable);
+		}
+	}
+
+	/**
+	 * Resolves the revision entity table name dynamically from Hibernate metadata by finding the entity
+	 * annotated with {@link RevisionEntity}. Falls back to "revision_entity" if not found.
+	 */
+	private static String getRevisionEntityTableName(Metadata metadata) {
+		for (PersistentClass persistentClass : metadata.getEntityBindings()) {
+			Class<?> mappedClass = persistentClass.getMappedClass();
+			if (mappedClass != null && mappedClass.isAnnotationPresent(RevisionEntity.class)) {
+				return persistentClass.getTable().getName();
+			}
+		}
+		return "revision_entity";
+	}
+
+	/**
+	 * Returns true if the given class or any of its superclasses is annotated with {@link Audited}.
+	 */
+	private static boolean isAuditedClass(Class<?> clazz) {
+		Class<?> current = clazz;
+		while (current != null && current != Object.class) {
+			if (current.isAnnotationPresent(Audited.class)) {
+				return true;
+			}
+			current = current.getSuperclass();
+		}
+		return false;
 	}
 
 	private static TargetDescriptor getTargetDescriptor() {
