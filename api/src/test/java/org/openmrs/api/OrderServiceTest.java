@@ -236,7 +236,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	        throws InterruptedException {
 
 		int N = 50;
-		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(50));
+		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<>(50));
 		List<Thread> threads = new ArrayList<>();
 		for (int i = 0; i < N; i++) {
 			threads.add(new Thread(() -> {
