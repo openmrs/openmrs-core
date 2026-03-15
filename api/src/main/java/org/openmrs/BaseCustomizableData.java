@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -35,14 +36,15 @@ import org.openmrs.customdatatype.Customizable;
  * @since 1.9
  */
 @MappedSuperclass
-public abstract class BaseCustomizableData<A extends Attribute> extends BaseChangeableOpenmrsData implements Customizable<A> {
-
+public abstract class BaseCustomizableData<A extends Attribute & Serializable>
+	extends BaseChangeableOpenmrsData implements Customizable<A> {
+	
 	@Access(AccessType.PROPERTY)
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("voided asc")
 	@BatchSize(size = 100)
 	private Set<A> attributes = new LinkedHashSet<>();
-
+	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
 	 */
@@ -50,14 +52,14 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 	public Set<A> getAttributes() {
 		return attributes;
 	}
-
+	
 	/**
 	 * @param attributes the attributes to set
 	 */
 	public void setAttributes(Set<A> attributes) {
 		this.attributes = attributes;
 	}
-
+	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes()
 	 */
@@ -73,7 +75,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 		}
 		return ret;
 	}
-
+	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes(org.openmrs.customdatatype.CustomValueDescriptor)
 	 */
@@ -89,7 +91,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 		}
 		return ret;
 	}
-
+	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#addAttribute(Attribute)
 	 */
@@ -101,7 +103,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
 	}
-
+	
 	/**
 	 * Convenience method that voids all existing attributes of the given type, and sets this new one.
 	 * <p>
@@ -116,7 +118,6 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 			addAttribute(attribute);
 			return;
 		}
-
 		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
 			A existing = getActiveAttributes(attribute.getAttributeType()).get(0);
 			if (!existing.getValue().equals(attribute.getValue())) {
@@ -130,7 +131,6 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 			}
 			return;
 		}
-
 		for (A existing : getActiveAttributes(attribute.getAttributeType())) {
 			if (existing.getAttributeType().equals(attribute.getAttributeType())) {
 				if (existing.getId() != null) {
@@ -143,5 +143,4 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
 	}
-
 }
