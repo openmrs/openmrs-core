@@ -64,7 +64,6 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.ModuleMustStartException;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.notification.AlertService;
-import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
@@ -565,13 +564,31 @@ public class Context {
 	public static MessageService getMessageService() {
 		MessageService ms = getServiceContext().getMessageService();
 		try {
-			// Message service dependencies
+			// Dynamically pull from Spring, falling back to defaults if missing
 			if (ms.getMessagePreparator() == null) {
-				ms.setMessagePreparator(getMessagePreparator());
+				List<MessagePreparator> preparators = getRegisteredComponents(MessagePreparator.class);
+				if (preparators != null && !preparators.isEmpty()) {
+					if (preparators.size() > 1) {
+						log.warn("Multiple MessagePreparators found. Using the first one: {}",
+						    preparators.get(0).getClass().getName());
+					}
+					ms.setMessagePreparator(preparators.get(0));
+				} else {
+					ms.setMessagePreparator(new VelocityMessagePreparator());
+				}
 			}
 
 			if (ms.getMessageSender() == null) {
-				ms.setMessageSender(getMessageSender());
+				List<MessageSender> senders = getRegisteredComponents(MessageSender.class);
+				if (senders != null && !senders.isEmpty()) {
+					if (senders.size() > 1) {
+						log.warn("Multiple MessageSenders found. Using the first one: {}",
+						    senders.get(0).getClass().getName());
+					}
+					ms.setMessageSender(senders.get(0));
+				} else {
+					ms.setMessageSender(new MailMessageSender(getMailSession()));
+				}
 			}
 
 		} catch (Exception e) {
@@ -640,26 +657,6 @@ public class Context {
 			}
 		}
 		return mailSession;
-	}
-
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO Ideally, we would be
-	 * using Spring's method injection to set the dependencies for the message service.
-	 *
-	 * @return the ServiceContext
-	 */
-	private static MessageSender getMessageSender() {
-		return new MailMessageSender(getMailSession());
-	}
-
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO See todo for message
-	 * sender.
-	 *
-	 * @return
-	 */
-	private static MessagePreparator getMessagePreparator() throws MessageException {
-		return new VelocityMessagePreparator();
 	}
 
 	/**
