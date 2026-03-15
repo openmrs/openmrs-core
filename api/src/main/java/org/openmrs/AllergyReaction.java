@@ -79,7 +79,7 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 	 */
 	@Override
 	public Integer getId() {
-		return allergyReactionId;
+		return getAllergyReactionId();
 	}
 
 	/**
