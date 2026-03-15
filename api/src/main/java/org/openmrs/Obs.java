@@ -997,8 +997,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					return "";
 				} else {
 					Concept deproxiedConcept = HibernateUtil.getRealObjectFromProxy(getConcept());
-					if (deproxiedConcept instanceof ConceptNumeric) {
-						ConceptNumeric cn = (ConceptNumeric) deproxiedConcept;
+					if (deproxiedConcept instanceof ConceptNumeric cn) {
 						if (!cn.getAllowDecimal()) {
 							double d = getValueNumeric();
 							int i = (int) d;
@@ -1092,7 +1091,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					setValueText(s);
 				}
 				else {
-					throw new RuntimeException("Cannot set value to a empty string for concept: " + getConcept().getDisplayString());
+					throw new IllegalArgumentException("Cannot set value to a empty string for concept: " + getConcept().getDisplayString());
 				}
 			} else if (!StringUtils.isBlank(s)) {
 				s = s.trim();
@@ -1112,16 +1111,16 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
 					setValueDatetime(datetimeFormat.parse(s));
 				}  else {
-					throw new RuntimeException("Don't know how to handle " + abbrev + " for concept: " + getConcept().getDisplayString());
+					throw new IllegalArgumentException("Don't know how to handle " + abbrev + " for concept: " + getConcept().getDisplayString());
 				}
 			} else {
-				throw new RuntimeException("Cannot set value to a blank string for concept: " + getConcept().getDisplayString());
+				throw new IllegalArgumentException("Cannot set value to a blank string for concept: " + getConcept().getDisplayString());
 			}
 		} else {
 			if (s == null) {
-				throw new RuntimeException("cannot set value to null via setValueAsString()");
+				throw new IllegalArgumentException("cannot set value to null via setValueAsString()");
 			} else {
-				throw new RuntimeException("concept is null for " + this);
+				throw new IllegalArgumentException("concept is null for " + this);
 			}
 		}
 	}

@@ -1508,7 +1508,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			if (log.isDebugEnabled()) {
 				log.debug("The Concept with id: " + conceptId + " has no names");
 			}
-			return null;
+			return Collections.emptySet();
 		}
 		
 		Set<Locale> locales = new HashSet<>();
@@ -1587,7 +1587,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		} else {
 			return getSetMembers().stream()
 				.filter(a -> !a.getRetired())
-				.collect(Collectors.toList());
+				.toList();
 		}
 	}
 	
@@ -1672,8 +1672,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@Override
 	public Collection<ConceptAttribute> getActiveAttributes() {
 		return getAttributes().stream()
-				.filter(attr -> !attr.getVoided())
-				.collect(Collectors.toList());
+			.filter(attr -> !attr.getVoided())
+			.toList();
 	}
 
 	/**
@@ -1682,8 +1682,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@Override
 	public List<ConceptAttribute> getActiveAttributes(CustomValueDescriptor ofType) {
 		return getAttributes().stream()
-				.filter(attr -> attr.getAttributeType().equals(ofType) && !attr.getVoided())
-				.collect(Collectors.toList());
+			.filter(attr -> attr.getAttributeType().equals(ofType) && !attr.getVoided())
+			.toList();
 	}
 
 	/**

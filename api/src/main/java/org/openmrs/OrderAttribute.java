@@ -84,4 +84,30 @@ public class OrderAttribute extends BaseAttribute<OrderAttributeType, Order>
 	public void setOrderAttributeId(Integer orderAttributeId) {
 		this.orderAttributeId = orderAttributeId;
 	}
+	
+	/**
+	 * Override equals() to compare OrderAttribute objects
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		OrderAttribute other = (OrderAttribute) obj;
+		if (orderAttributeId == null) {
+			return false;
+		}
+		return orderAttributeId.equals(other.orderAttributeId);
+	}
+	
+	/**
+	 * Overrides hashCode() because equals() has been overridden.
+	 */
+	@Override
+	public int hashCode() {
+		return orderAttributeId != null ? orderAttributeId.hashCode() : 0;
+	}
 }
