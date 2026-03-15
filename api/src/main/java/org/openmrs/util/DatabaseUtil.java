@@ -25,6 +25,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.Statements;
+import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.statement.select.WithItem;
+
 /**
  * Utility class that provides database related methods
  *
@@ -141,25 +149,59 @@ public class DatabaseUtil {
 	}
 
 	private static boolean checkQueryForManipulationCommands(String sql, boolean selectOnly) {
-		boolean dataManipulation = false;
+		try {
+			Statements statements = CCJSqlParserUtil.parseStatements(sql);
+			if (statements.getStatements().size() > 1) {
+				throw new IllegalArgumentException("Security violation: Multiple SQL statements detected.");
+			}
+			Statement stmt = statements.getStatements().get(0);
+			boolean isSelect = stmt instanceof Select;
+			if (selectOnly) {
+				if (!isSelect) {
+					throw new IllegalArgumentException("Security violation: Only SELECT statements are allowed.");
+				}
+				Select selectStmt = (Select) stmt;
+				if (selectStmt.getWithItemsList() != null) {
+					for (WithItem withItem : selectStmt.getWithItemsList()) {
+						if (!(withItem.getSelect() instanceof Select)) {
+							throw new IllegalArgumentException("Security violation: Data manipulation detected.");
+						}
+					}
+				}
+				if (selectStmt instanceof PlainSelect) {
+					PlainSelect plainSelect = (PlainSelect) selectStmt;
+					if (plainSelect.getIntoTables() != null && !plainSelect.getIntoTables().isEmpty()) {
+						throw new IllegalArgumentException("Security violation: SELECT ... INTO clauses are forbidden.");
+					}
+					if (plainSelect.getForClause() != null) {
+						throw new IllegalArgumentException(
+						        "SELECT ... FOR UPDATE is semantically incorrect for single-statement transactions.");
+					}
+				}
+				return false;
+			}
 
-		String sqlLower = sql.toLowerCase();
-		if (sqlLower.startsWith("insert") || sqlLower.startsWith("update") || sqlLower.startsWith("delete")
-		        || sqlLower.startsWith("alter") || sqlLower.startsWith("drop") || sqlLower.startsWith("create")
-		        || sqlLower.startsWith("rename")) {
-			dataManipulation = true;
+			return !isSelect;
+		} catch (JSQLParserException e) {
+			if (selectOnly) {
+				throw new IllegalArgumentException("Invalid SQL syntax or illegal query structure detected.", e);
+			}
+			log.warn("Could not parse SQL for security validation, treating as DML: {}", e.getMessage());
+			return true;
 		}
-
-		if (selectOnly && dataManipulation) {
-			throw new IllegalArgumentException("Illegal command(s) found in query string");
-		}
-		return dataManipulation;
 	}
 
 	private static void populateResultsFromSQLQuery(Connection conn, String sql, boolean dataManipulation,
 	        List<List<Object>> results) {
 		PreparedStatement ps = null;
+		boolean originalReadOnly = false;
 		try {
+			if (conn != null) {
+				originalReadOnly = conn.isReadOnly();
+				if (!dataManipulation) {
+					conn.setReadOnly(true);
+				}
+			}
 			ps = conn.prepareStatement(sql);
 			if (dataManipulation) {
 				Integer i = ps.executeUpdate();
@@ -184,6 +226,14 @@ public class DatabaseUtil {
 			log.debug("Error while running sql: " + sql, e);
 			throw new DAOException("Error while running sql: " + sql + " . Message: " + e.getMessage(), e);
 		} finally {
+			if (conn != null) {
+				try {
+					conn.setReadOnly(originalReadOnly);
+				} catch (SQLException e) {
+					log.error("Failed to restore connection to original read-only state", e);
+				}
+			}
+
 			if (ps != null) {
 				try {
 					ps.close();

@@ -294,6 +294,12 @@
 			<artifactId>js-scriptengine</artifactId>
 			<type>pom</type>
 		</dependency>
+
+		<dependency>
+			<groupId>com.github.jsqlparser</groupId>
+			<artifactId>jsqlparser</artifactId>
+			<version>5.3</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<resources>
