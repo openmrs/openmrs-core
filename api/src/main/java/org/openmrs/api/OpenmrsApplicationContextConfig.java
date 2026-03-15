@@ -9,9 +9,12 @@
  */
 package org.openmrs.api;
 
-import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.app.MessageTypeRouter;
-import ca.uhn.hl7v2.parser.GenericParser;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.hibernate.SessionFactory;
 import org.openmrs.hl7.handler.ADTA28Handler;
 import org.openmrs.hl7.handler.ORUR01Handler;
@@ -38,30 +41,26 @@ import org.springframework.orm.jpa.hibernate.HibernateTransactionManager;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.TransactionManager;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import ca.uhn.hl7v2.app.Application;
+import ca.uhn.hl7v2.app.MessageTypeRouter;
+import ca.uhn.hl7v2.parser.GenericParser;
 
 /**
- * Provides OpenMRS Application Context Spring Configuration.
- * 
- * It's a replacement for applicationContext-service.xml from which we gradually migrate away.
- * 
+ * Provides OpenMRS Application Context Spring Configuration. It's a replacement for
+ * applicationContext-service.xml from which we gradually migrate away.
+ *
  * @see org.openmrs.aop.AOPConfig
  * @see org.openmrs.api.cache.CacheConfig
- * 
  * @since 3.0.0
  */
 @Configuration
 public class OpenmrsApplicationContextConfig {
-	
+
 	@Bean
 	public TransactionManager transactionManager(SessionFactory sessionFactory) {
 		return new HibernateTransactionManager(sessionFactory);
 	}
-	
+
 	@Bean
 	public TaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -70,35 +69,34 @@ public class OpenmrsApplicationContextConfig {
 		executor.setQueueCapacity(1000);
 		return executor;
 	}
-	
+
 	@Bean
-	public Map<String, ComplexObsHandler> handlers(ImageHandler imageHandler, TextHandler textHandler, 
-												   BinaryDataHandler binaryDataHandler,
-												   BinaryStreamHandler binaryStreamHandler) {
+	public Map<String, ComplexObsHandler> handlers(ImageHandler imageHandler, TextHandler textHandler,
+	        BinaryDataHandler binaryDataHandler, BinaryStreamHandler binaryStreamHandler) {
 		Map<String, ComplexObsHandler> map = new LinkedHashMap<>();
 		map.put("ImageHandler", imageHandler);
 		map.put("TextHandler", textHandler);
 		map.put("BinaryDataHandler", binaryDataHandler);
 		map.put("BinaryStreamHandler", binaryStreamHandler);
-		return map;	
+		return map;
 	}
-	
+
 	@Bean
 	public Map<Class<?>, IdentifierValidator> identifierValidators(LuhnIdentifierValidator luhnIdentifierValidator,
-																   VerhoeffIdentifierValidator verhoeffIdentifierValidator) {
+	        VerhoeffIdentifierValidator verhoeffIdentifierValidator) {
 		Map<Class<?>, IdentifierValidator> map = new LinkedHashMap<>();
 		map.put(LuhnIdentifierValidator.class, luhnIdentifierValidator);
 		map.put(VerhoeffIdentifierValidator.class, verhoeffIdentifierValidator);
 		return map;
 	}
-	
+
 	@Bean
 	public List<OpenmrsSerializer> serializerList(SimpleXStreamSerializer simpleXStreamSerializer) {
 		List<OpenmrsSerializer> serializers = new ArrayList<>();
 		serializers.add(simpleXStreamSerializer);
 		return serializers;
 	}
-	
+
 	@Bean
 	public MutableResourceBundleMessageSource mutableResourceBundleMessageSource() {
 		MutableResourceBundleMessageSource messageSource = new MutableResourceBundleMessageSource();
@@ -110,20 +108,21 @@ public class OpenmrsApplicationContextConfig {
 	}
 
 	/**
-	 * Provides a PropertySourcesPlaceholderConfigurer that uses OpenmrsUtil.getApplicationDataDirectory()
-	 * to resolve the runtime properties file location, ensuring the property is always set.
-	 *  
+	 * Provides a PropertySourcesPlaceholderConfigurer that uses
+	 * OpenmrsUtil.getApplicationDataDirectory() to resolve the runtime properties file location,
+	 * ensuring the property is always set.
+	 *
 	 * @return configurer
 	 */
-    @Bean
-    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+	@Bean
+	public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
 		Properties props = new Properties();
 		props.setProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY, appDataDir);
 		configurer.setProperties(props);
 		configurer.setLocations(new ClassPathResource("hibernate.default.properties"),
-			new FileSystemResource(appDataDir + "/openmrs-runtime.properties"));
+		    new FileSystemResource(appDataDir + "/openmrs-runtime.properties"));
 		configurer.setIgnoreResourceNotFound(true);
 		configurer.setLocalOverride(true);
 		return configurer;

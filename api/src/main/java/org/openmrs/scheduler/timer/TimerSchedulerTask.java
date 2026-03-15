@@ -23,37 +23,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TimerSchedulerTask extends TimerTask {
-	
+
 	/** The task that will be executed by the JDK timer. */
 	private Task task;
-	
+
 	/** Logger */
 	private static final Logger log = LoggerFactory.getLogger(TimerSchedulerTask.class);
-	
+
 	/** * Public constructor */
 	public TimerSchedulerTask(Task task) {
 		this.task = task;
 	}
-	
+
 	/**
 	 * * Executes the action to be performed by this timer task.
-	 * 
+	 *
 	 * @see java.util.TimerTask#run()
 	 */
 	@Override
 	public void run() {
 		try {
 			Daemon.executeScheduledTask(task);
-		}
-		catch (Exception t) {
+		} catch (Exception t) {
 			// Fix #862: IllegalStateException: Timer already cancelled.
 			// Suppress error in order to keep the scheduler's Timer from completely failing.
-			log.error(
-			    "FATAL ERROR: Task [" + task.getClass() + "] failed due to exception [" + t.getClass().getName() + "]", t);
+			log.error("FATAL ERROR: Task [" + task.getClass() + "] failed due to exception [" + t.getClass().getName() + "]",
+			    t);
 			SchedulerUtil.sendSchedulerError(t);
 		}
 	}
-	
+
 	/**
 	 * Save the last execution time in the TaskDefinition
 	 */
@@ -71,15 +70,14 @@ public class TimerSchedulerTask extends TimerTask {
 				taskDefinition.setLastExecutionTime(new Date());
 				schedulerService.saveTaskDefinition(taskDefinition);
 			} else {
-				log.warn("Unable to save the last execution time for task. Task.taskDefinition is null in "
-				        + task.getClass());
+				log.warn(
+				    "Unable to save the last execution time for task. Task.taskDefinition is null in " + task.getClass());
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.warn("Unable to save the last execution time for task ", e);
 		}
 	}
-	
+
 	/**
 	 * Shutdown the timer task and invoke the task's shutdown() callback method.
 	 */
@@ -87,7 +85,7 @@ public class TimerSchedulerTask extends TimerTask {
 		super.cancel();
 		task.shutdown();
 	}
-	
+
 	/**
 	 * Executes the given task.
 	 */
@@ -96,7 +94,7 @@ public class TimerSchedulerTask extends TimerTask {
 			task.execute();
 		} catch (InterruptedException | ExecutionException e) {
 			// ignored
-		} 
+		}
 		saveLastExecutionTime(task);
 	}
 }

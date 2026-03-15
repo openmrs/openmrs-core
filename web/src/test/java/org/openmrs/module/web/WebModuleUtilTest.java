@@ -9,17 +9,6 @@
  */
 package org.openmrs.module.web;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
@@ -29,17 +18,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
-
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServlet;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServlet;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleClassLoader;
@@ -50,20 +38,30 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  *
  */
 public class WebModuleUtilTest {
-	
+
 	private static final String REAL_PATH = "/usr/local/apache-tomcat-7.0.27/webapps/openmrs";
-	
+
 	@AfterEach
 	public void tearDown() {
 		ModuleFactory.getLoadedModules().clear();
 		ModuleFactory.getStartedModulesMap().clear();
 		ModuleFactory.getModuleClassLoaderMap().clear();
 	}
-	
+
 	/**
 	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
 	 * @throws Exception
@@ -75,7 +73,7 @@ public class WebModuleUtilTest {
 		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
 		assertFalse(result);
 	}
-	
+
 	/**
 	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
 	 * @throws Exception
@@ -87,7 +85,7 @@ public class WebModuleUtilTest {
 		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
 		assertFalse(result);
 	}
-	
+
 	/**
 	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
 	 * @throws Exception
@@ -99,7 +97,7 @@ public class WebModuleUtilTest {
 		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
 		assertTrue(result);
 	}
-	
+
 	/**
 	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
 	 * @throws Exception
@@ -111,7 +109,7 @@ public class WebModuleUtilTest {
 		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
 		assertFalse(result);
 	}
-	
+
 	/**
 	 * @throws ParserConfigurationException
 	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
@@ -121,23 +119,23 @@ public class WebModuleUtilTest {
 		// create dummy module and start it
 		Module mod = buildModuleForMessageTest(buildModuleConfig());
 		ModuleFactory.getStartedModulesMap().put(mod.getModuleId(), mod);
-		
+
 		ServletContext servletContext = mock(ServletContext.class);
 		String realPath = servletContext.getRealPath("");
 		if (realPath == null)
 			realPath = System.getProperty("user.dir");
-		
-		// manually delete dwr-modules.xml 
+
+		// manually delete dwr-modules.xml
 		File f = new File(realPath + "/WEB-INF/dwr-modules.xml");
 		f.delete();
-		
+
 		// start the dummy module
 		WebModuleUtil.startModule(mod, servletContext, true);
-		
+
 		// test if dwr-modules.xml is created
 		assertTrue(f.exists());
 	}
-	
+
 	/**
 	 * @throws ParserConfigurationException
 	 * @throws FileNotFoundException
@@ -149,14 +147,14 @@ public class WebModuleUtilTest {
 		// create dummy module and start it
 		Module mod = buildModuleForMessageTest(buildModuleConfig());
 		ModuleFactory.getStartedModulesMap().put(mod.getModuleId(), mod);
-		
+
 		ServletContext servletContext = mock(ServletContext.class);
 		String realPath = servletContext.getRealPath("");
 		if (realPath == null)
 			realPath = System.getProperty("user.dir");
-		
+
 		WebModuleUtil.startModule(mod, servletContext, true);
-		
+
 		// test if dwr-modules.xml contains id of started dummy module
 		File f = new File(realPath + "/WEB-INF/dwr-modules.xml");
 		Scanner scanner = new Scanner(f);
@@ -170,13 +168,12 @@ public class WebModuleUtilTest {
 		}
 		if (scanner != null)
 			scanner.close();
-		
+
 		assertTrue(found);
 	}
 
 	@Test
-	public void loadServlets_AddsServletsWithoutInitParams()
-		throws ParserConfigurationException, ClassNotFoundException {
+	public void loadServlets_AddsServletsWithoutInitParams() throws ParserConfigurationException, ClassNotFoundException {
 		String servletClassName1 = "servletClass1";
 		String servletClassName2 = "servletClass2";
 
@@ -192,8 +189,10 @@ public class WebModuleUtilTest {
 		ServletContext servletContext = mock(ServletContext.class);
 		ModuleClassLoader moduleClassLoader = mock(ModuleClassLoader.class);
 
-		when(moduleClassLoader.loadClass(eq(servletClassName1))).thenAnswer((Answer<Class<?>>) invocation -> ServletClass1.class);
-		when(moduleClassLoader.loadClass(eq(servletClassName2))).thenAnswer((Answer<Class<?>>) invocation -> ServletClass2.class);
+		when(moduleClassLoader.loadClass(eq(servletClassName1)))
+		        .thenAnswer((Answer<Class<?>>) invocation -> ServletClass1.class);
+		when(moduleClassLoader.loadClass(eq(servletClassName2)))
+		        .thenAnswer((Answer<Class<?>>) invocation -> ServletClass2.class);
 
 		ModuleFactory.getModuleClassLoaderMap().put(mod, moduleClassLoader);
 
@@ -215,11 +214,10 @@ public class WebModuleUtilTest {
 	}
 
 	@Test
-	public void loadServlets_AddsCorrectInitParamsToConfig()
-		throws ParserConfigurationException, ClassNotFoundException {
+	public void loadServlets_AddsCorrectInitParamsToConfig() throws ParserConfigurationException, ClassNotFoundException {
 		String servletClassName1 = "servletClass1";
 		String servletClassName2 = "servletClass2";
-		
+
 		Map<String, String> initParams1 = new HashMap<>();
 		initParams1.put("param1", "value1");
 		initParams1.put("param2", "value2");
@@ -236,8 +234,10 @@ public class WebModuleUtilTest {
 		ServletContext servletContext = mock(ServletContext.class);
 		ModuleClassLoader moduleClassLoader = mock(ModuleClassLoader.class);
 
-		when(moduleClassLoader.loadClass(eq(servletClassName1))).thenAnswer((Answer<Class<?>>) invocation -> ServletClass1.class);
-		when(moduleClassLoader.loadClass(eq(servletClassName2))).thenAnswer((Answer<Class<?>>) invocation -> ServletClass2.class);
+		when(moduleClassLoader.loadClass(eq(servletClassName1)))
+		        .thenAnswer((Answer<Class<?>>) invocation -> ServletClass1.class);
+		when(moduleClassLoader.loadClass(eq(servletClassName2)))
+		        .thenAnswer((Answer<Class<?>>) invocation -> ServletClass2.class);
 
 		ModuleFactory.getModuleClassLoaderMap().put(mod, moduleClassLoader);
 
@@ -259,43 +259,43 @@ public class WebModuleUtilTest {
 
 		WebModuleUtil.unloadServlets(mod);
 	}
-	
+
 	private Module buildModuleForMessageTest(Document moduleConfig) throws ParserConfigurationException {
 		Properties englishMessages = new Properties();
 		englishMessages.put("withoutPrefix", "Without prefix");
-		
+
 		Module mod = new Module("My Module");
 		mod.setModuleId("mymodule");
 		mod.setMessages(new HashMap<>());
 		mod.getMessages().put("en", englishMessages);
 		mod.setFile(new File("sampleFile.jar"));
 		mod.setConfig(moduleConfig);
-		
+
 		return mod;
 	}
-	
+
 	private Document buildModuleConfig() throws ParserConfigurationException {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document doc = docBuilder.newDocument();
 		Element rootElement = doc.createElement("module");
 		doc.appendChild(rootElement);
-		
+
 		Element dwr = doc.createElement("dwr");
 		dwr.appendChild(doc.createTextNode(""));
 		rootElement.appendChild(dwr);
-		
+
 		Element allow = doc.createElement("allow");
 		allow.appendChild(doc.createTextNode(""));
 		dwr.appendChild(allow);
-		
+
 		Attr attr = doc.createAttribute("moduleId");
 		attr.setValue("mymodule");
 		allow.setAttributeNode(attr);
-		
+
 		Element create = doc.createElement("create");
 		allow.appendChild(create);
-		
+
 		return doc;
 	}
 
@@ -331,17 +331,17 @@ public class WebModuleUtilTest {
 		}
 		return doc;
 	}
-	
+
 	/**
 	 * @see WebModuleUtil#getModuleWebFolder(String)
 	 */
 	@Test
 	public void getModuleWebFolder_shouldReturnNullIfTheDispatcherServletIsNotYetSet() {
-		//We need to do this in case it is run after getModuleWebFolder_shouldReturnTheCorrectModuleFolder 
+		//We need to do this in case it is run after getModuleWebFolder_shouldReturnTheCorrectModuleFolder
 		WebModuleUtil.setDispatcherServlet(null);
 		assertThrows(ModuleException.class, () -> WebModuleUtil.getModuleWebFolder(""));
 	}
-	
+
 	/**
 	 * @see WebModuleUtil#getModuleWebFolder(String)
 	 */
@@ -350,12 +350,12 @@ public class WebModuleUtilTest {
 		setupMocks(false);
 		String moduleId = "basicmodule";
 		String expectedPath = Paths.get(REAL_PATH, "WEB-INF", "view", "module", moduleId).toString();
-		
+
 		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
-		
+
 		assertEquals(expectedPath, actualPath);
 	}
-	
+
 	/**
 	 * @see WebModuleUtil#getModuleWebFolder(String)
 	 */
@@ -365,27 +365,30 @@ public class WebModuleUtilTest {
 		String moduleId = "basicmodule";
 		String expectedPath = Paths.get(REAL_PATH, "WEB-INF", "view", "module", moduleId).toString();
 		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
-		
+
 		assertEquals(expectedPath, actualPath);
 	}
-	
+
 	private static void setupMocks(boolean includeTrailingSlash) {
 		ServletConfig servletConfig = mock(ServletConfig.class);
-		
+
 		ServletContext servletContext = mock(ServletContext.class);
 		String realPath = (includeTrailingSlash) ? REAL_PATH + "/" : REAL_PATH;
 		when(servletContext.getRealPath("")).thenReturn(realPath);
-		
+
 		DispatcherServlet dispatcherServlet = mock(DispatcherServlet.class);
 		when(dispatcherServlet.getServletConfig()).thenReturn(servletConfig);
 		when(dispatcherServlet.getServletContext()).thenReturn(servletContext);
-		
+
 		WebModuleUtil.setDispatcherServlet(dispatcherServlet);
 	}
 
 	public class ServletInfo {
+
 		private String servletName;
+
 		private String servletClass;
+
 		private Map<String, String> initParams;
 
 		public ServletInfo(String servletName, String servletClass, Map<String, String> initParams) {
@@ -420,5 +423,6 @@ public class WebModuleUtilTest {
 	}
 
 	static class ServletClass1 extends HttpServlet {}
+
 	static class ServletClass2 extends HttpServlet {}
 }

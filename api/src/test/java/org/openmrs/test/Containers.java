@@ -22,115 +22,101 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public class Containers {
 
 	private static MySQLContainer<?> mysql;
-	private static PostgreSQLContainer<?> postgres;
-	
-	private static final String USERNAME =  "test";
-	private static final String  PASSWORD = "test";
-	private static final String  DATABASE = "openmrs";
 
-	
+	private static PostgreSQLContainer<?> postgres;
+
+	private static final String USERNAME = "test";
+
+	private static final String PASSWORD = "test";
+
+	private static final String DATABASE = "openmrs";
+
 	public static void ensureDatabaseRunning() {
-		
+
 		if (mysql != null || postgres != null) {
 			return;
 		}
-		
+
 		if ("postgres".equals(System.getProperty("database"))) {
 			ensurePostgreSQLRunning();
-		}
-		else {
+		} else {
 			ensureMySQLRunning();
 		}
 	}
-	
-	
-    private static void ensureMySQLRunning() {
-    	
-        if (mysql == null) {
-        	mysql = newMySQLContainer();
-        }
-        
-        if (!mysql.isRunning()) {
-        	
-        	mysql.start();
-        	
-        	System.setProperty("databaseUrl", mysql.getJdbcUrl());
-    		System.setProperty("databaseName", DATABASE);
-    		System.setProperty("databaseUsername", USERNAME);
-    		System.setProperty("databasePassword", PASSWORD);
-    		System.setProperty("databaseDriver", mysql.getDriverClassName());
-    		System.setProperty("databaseDialect", MySQLDialect.class.getName());
+
+	private static void ensureMySQLRunning() {
+
+		if (mysql == null) {
+			mysql = newMySQLContainer();
+		}
+
+		if (!mysql.isRunning()) {
+
+			mysql.start();
+
+			System.setProperty("databaseUrl", mysql.getJdbcUrl());
+			System.setProperty("databaseName", DATABASE);
+			System.setProperty("databaseUsername", USERNAME);
+			System.setProperty("databasePassword", PASSWORD);
+			System.setProperty("databaseDriver", mysql.getDriverClassName());
+			System.setProperty("databaseDialect", MySQLDialect.class.getName());
 			System.setProperty("database", "mysql");
-    		
-    		createSchema();
-        }
-    }
+
+			createSchema();
+		}
+	}
 
 	public static MariaDBContainer<?> newMariaDBContainer() {
-		return new MariaDBContainer<>("mariadb:10.11.7")
-			.withUsername(USERNAME)
-			.withPassword(PASSWORD)
-			.withDatabaseName(DATABASE)
-			.withUrlParam("autoReconnect", "true")
-			.withUrlParam("sessionVariables", "default_storage_engine=InnoDB")
-			.withUrlParam("useUnicode", "true")
-			.withUrlParam("characterEncoding", "UTF-8")
-			.withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_general_ci")
-			.withTmpFs(Collections.singletonMap("/var/lib/mysql", "rw"))
-			.withReuse(true);
+		return new MariaDBContainer<>("mariadb:10.11.7").withUsername(USERNAME).withPassword(PASSWORD)
+		        .withDatabaseName(DATABASE).withUrlParam("autoReconnect", "true")
+		        .withUrlParam("sessionVariables", "default_storage_engine=InnoDB").withUrlParam("useUnicode", "true")
+		        .withUrlParam("characterEncoding", "UTF-8")
+		        .withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_general_ci")
+		        .withTmpFs(Collections.singletonMap("/var/lib/mysql", "rw")).withReuse(true);
 	}
 
 	public static MySQLContainer<?> newMySQLContainer() {
-		return new MySQLContainer<>("mysql:5.7.39")
-			.withUsername(USERNAME)
-			.withPassword(PASSWORD)
-			.withDatabaseName(DATABASE)
-			.withUrlParam("autoReconnect", "true")
-			.withUrlParam("sessionVariables", "default_storage_engine=InnoDB")
-			.withUrlParam("useUnicode", "true")
-			.withUrlParam("characterEncoding", "UTF-8")
-			.withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_general_ci")
-			.withTmpFs(Collections.singletonMap("/var/lib/mysql", "rw"))
-			.withReuse(true);
+		return new MySQLContainer<>("mysql:5.7.39").withUsername(USERNAME).withPassword(PASSWORD).withDatabaseName(DATABASE)
+		        .withUrlParam("autoReconnect", "true").withUrlParam("sessionVariables", "default_storage_engine=InnoDB")
+		        .withUrlParam("useUnicode", "true").withUrlParam("characterEncoding", "UTF-8")
+		        .withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_general_ci")
+		        .withTmpFs(Collections.singletonMap("/var/lib/mysql", "rw")).withReuse(true);
 	}
-	
+
 	private static void ensurePostgreSQLRunning() {
-        if (postgres == null) {
+		if (postgres == null) {
 			postgres = newPostgreSQLContainer();
 		}
-        
-        if (!postgres.isRunning()) {
-        	
-            postgres.start();
-            
-            System.setProperty("databaseUrl", postgres.getJdbcUrl());
-    		System.setProperty("databaseName", DATABASE);
-    		System.setProperty("databaseUsername", USERNAME);
-    		System.setProperty("databasePassword", PASSWORD);
-    		System.setProperty("databaseDriver", postgres.getDriverClassName());
-    		System.setProperty("databaseDialect", PostgreSQLDialect.class.getName());
-			
-    		createSchema();
-        }
-    }
+
+		if (!postgres.isRunning()) {
+
+			postgres.start();
+
+			System.setProperty("databaseUrl", postgres.getJdbcUrl());
+			System.setProperty("databaseName", DATABASE);
+			System.setProperty("databaseUsername", USERNAME);
+			System.setProperty("databasePassword", PASSWORD);
+			System.setProperty("databaseDriver", postgres.getDriverClassName());
+			System.setProperty("databaseDialect", PostgreSQLDialect.class.getName());
+
+			createSchema();
+		}
+	}
 
 	public static PostgreSQLContainer<?> newPostgreSQLContainer() {
-		return new PostgreSQLContainer<>("postgres:14.5")
-			.withUsername(USERNAME)
-			.withPassword(PASSWORD)
-			.withDatabaseName(DATABASE)
-			.withReuse(true);
+		return new PostgreSQLContainer<>("postgres:14.5").withUsername(USERNAME).withPassword(PASSWORD)
+		        .withDatabaseName(DATABASE).withReuse(true);
 	}
 
 	private static void createSchema() {
-    	
-    	//needed for running liquibase changesets
+
+		//needed for running liquibase changesets
 		Properties runtimeProperties = TestUtil.getRuntimeProperties("openmrs");
 		runtimeProperties.setProperty("connection.username", USERNAME);
 		runtimeProperties.setProperty("connection.password", PASSWORD);
 		runtimeProperties.setProperty("connection.url", System.getProperty("databaseUrl"));
 		Context.setRuntimeProperties(runtimeProperties);
-    			
-    	LiquibaseUtil.ensureSchemaCreated();
-    }
+
+		LiquibaseUtil.ensureSchemaCreated();
+	}
 }

@@ -25,15 +25,15 @@ import org.springframework.validation.ValidationUtils;
  */
 @Handler(supports = { Patient.class }, order = 25)
 public class PatientValidator extends PersonValidator {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(PersonNameValidator.class);
-	
+
 	@Autowired
 	private PatientIdentifierValidator patientIdentifierValidator;
-	
+
 	/**
 	 * Returns whether or not this validator supports validating a given class.
-	 * 
+	 *
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -42,46 +42,48 @@ public class PatientValidator extends PersonValidator {
 		log.debug("{}.supports: {}", this.getClass().getName(), c.getName());
 		return Patient.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * Validates the given Patient. Currently just checks for errors in identifiers. TODO: Check for
 	 * errors in all Patient fields.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fail validation if gender is blank<br/>
+	 * <strong>Should</strong> fail validation if birthdate makes patient older than 140 years old<br/>
+	 * <strong>Should</strong> fail validation if birthdate is a future date<br/>
+	 * <strong>Should</strong> fail validation if a preferred patient identifier is not chosen<br/>
+	 * <strong>Should</strong> fail validation if voidReason is blank when patient is voided<br/>
+	 * <strong>Should</strong> fail validation if causeOfDeath is blank when patient is dead<br/>
+	 * <strong>Should</strong> fail validation if a preferred patient identifier is not chosen for
+	 * voided patients<br/>
+	 * <strong>Should</strong> not fail when patient has only one identifier and its not preferred<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @param obj The patient to validate.
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if gender is blank
-	 * <strong>Should</strong> fail validation if birthdate makes patient older than 140 years old
-	 * <strong>Should</strong> fail validation if birthdate is a future date
-	 * <strong>Should</strong> fail validation if a preferred patient identifier is not chosen
-	 * <strong>Should</strong> fail validation if voidReason is blank when patient is voided
-	 * <strong>Should</strong> fail validation if causeOfDeath is blank when patient is dead
-	 * <strong>Should</strong> fail validation if a preferred patient identifier is not chosen for voided patients
-	 * <strong>Should</strong> not fail when patient has only one identifier and its not preferred
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
 		log.debug("{}.validate...", this.getClass().getName());
-		
+
 		if (obj == null) {
 			return;
 		}
-		
+
 		super.validate(obj, errors);
-		
+
 		Patient patient = (Patient) obj;
-		
+
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "Person.gender.required");
-		
+
 		// Make sure they chose a preferred ID
 		Boolean preferredIdentifierChosen = false;
-		//Voided patients have only voided identifiers since they were voided with the patient, 
+		//Voided patients have only voided identifiers since they were voided with the patient,
 		//so get all otherwise get the active ones
-		Collection<PatientIdentifier> identifiers = patient.getVoided() ? patient.getIdentifiers() : patient
-		        .getActiveIdentifiers();
+		Collection<PatientIdentifier> identifiers = patient.getVoided() ? patient.getIdentifiers()
+		        : patient.getActiveIdentifiers();
 		for (PatientIdentifier pi : identifiers) {
 			if (pi.getPreferred()) {
 				preferredIdentifierChosen = true;

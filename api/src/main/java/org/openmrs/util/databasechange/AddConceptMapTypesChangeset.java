@@ -35,27 +35,27 @@ import liquibase.resource.ResourceAccessor;
  * Inserts core concept map types into the concept map type table
  */
 public class AddConceptMapTypesChangeset implements CustomTaskChange {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(AddConceptMapTypesChangeset.class);
-	
+
 	/**
 	 * The "visibleConceptMapTypes" parameter defined in the liquibase xml changeSet element that is
-	 * calling this class, it value is expected to be a comma separated list of concept map type
-	 * names to add as the visible ones
+	 * calling this class, it value is expected to be a comma separated list of concept map type names
+	 * to add as the visible ones
 	 */
 	private String visibleConceptMapTypes;
-	
+
 	/**
 	 * The "hiddenConceptMapTypes" parameter defined in the liquibase xml changeSet element that is
-	 * calling this class, it value is expected to be a comma separated list of concept map type
-	 * names to add as the hidden ones
+	 * calling this class, it value is expected to be a comma separated list of concept map type names
+	 * to add as the hidden ones
 	 */
 	private String hiddenConceptMapTypes;
-	
+
 	private String[] visibleConceptMapTypeArray;
-	
+
 	private String[] hiddenConceptMapTypeArray;
-	
+
 	/**
 	 * Does the work of adding UUIDs to all rows.
 	 *
@@ -65,7 +65,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	public void execute(Database database) throws CustomChangeException {
 		runBatchInsert((JdbcConnection) database.getConnection());
 	}
-	
+
 	/**
 	 * Executes all the changes to the concept names as a batch update.
 	 *
@@ -75,7 +75,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 		PreparedStatement pStmt = null;
 		try {
 			connection.setAutoCommit(false);
-			
+
 			Integer userId = DatabaseUpdater.getAuthenticatedUserId();
 			//if we have no authenticated user(for API users), set as Daemon
 			if (userId == null || userId < 1) {
@@ -85,19 +85,19 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 					userId = null;
 				}
 			}
-			
+
 			//userId is not a param, because it's easier this way if it's null
 			pStmt = connection.prepareStatement("INSERT INTO concept_map_type "
-			        + "(concept_map_type_id, name, is_hidden, retired, creator, date_created, uuid) VALUES(?,?,?,?,"
-			        + userId + ",?,?)");
-			
+			        + "(concept_map_type_id, name, is_hidden, retired, creator, date_created, uuid) VALUES(?,?,?,?," + userId
+			        + ",?,?)");
+
 			int mapTypeId = 1;
-			
+
 			for (String map : visibleConceptMapTypeArray) {
 				String[] mapTypeAndUuid = map.trim().split("\\|");
 				String mapType = mapTypeAndUuid[0];
 				String mapUuid = mapTypeAndUuid[1];
-				
+
 				pStmt.setInt(1, mapTypeId);
 				pStmt.setString(2, mapType);
 				pStmt.setBoolean(3, false);
@@ -105,15 +105,15 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				pStmt.setDate(5, new Date(Calendar.getInstance().getTimeInMillis()));
 				pStmt.setString(6, mapUuid);
 				pStmt.addBatch();
-				
+
 				mapTypeId++;
 			}
-			
+
 			for (String map : hiddenConceptMapTypeArray) {
 				String[] mapTypeAndUuid = map.trim().split("\\|");
 				String mapType = mapTypeAndUuid[0];
 				String mapUuid = mapTypeAndUuid[1];
-				
+
 				pStmt.setInt(1, mapTypeId);
 				pStmt.setString(2, mapType);
 				pStmt.setBoolean(3, true);
@@ -121,10 +121,10 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				pStmt.setDate(5, new Date(Calendar.getInstance().getTimeInMillis()));
 				pStmt.setString(6, mapUuid);
 				pStmt.addBatch();
-				
+
 				mapTypeId++;
 			}
-			
+
 			try {
 				int[] updateCounts = pStmt.executeBatch();
 				for (int updateCount : updateCounts) {
@@ -136,11 +136,10 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 						log.warn("Failed to execute insert");
 					}
 				}
-				
+
 				log.debug("Committing inserts...");
 				connection.commit();
-			}
-			catch (BatchUpdateException be) {
+			} catch (BatchUpdateException be) {
 				log.warn("Error generated while processsing batch insert", be);
 				int[] updateCounts = be.getUpdateCounts();
 
@@ -153,42 +152,37 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 						log.warn("Failed to execute insert with exception");
 					}
 				}
-				
+
 				try {
 					log.debug("Rolling back batch", be);
 					connection.rollback();
-				}
-				catch (Exception rbe) {
+				} catch (Exception rbe) {
 					log.warn("Error generated while rolling back batch insert", be);
 				}
-				
+
 				//marks the changeset as a failed one
 				throw new CustomChangeException("Failed to insert one or more concept map types", be);
 			}
-		}
-		catch (DatabaseException | SQLException e) {
+		} catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Failed to insert one or more concept map types:", e);
-		}
-		finally {
+		} finally {
 			//reset to auto commit mode
 			try {
 				connection.setAutoCommit(true);
-			}
-			catch (DatabaseException e) {
+			} catch (DatabaseException e) {
 				log.warn("Failed to reset auto commit back to true", e);
 			}
-			
+
 			if (pStmt != null) {
 				try {
 					pStmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the prepared statement object");
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * returns an integer resulting from the execution of an sql statement
 	 *
@@ -202,39 +196,35 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 		try {
 			stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
-			
+
 			if (rs.next()) {
 				result = rs.getInt(1);
 			} else {
 				log.warn("No row returned by getInt() method");
 			}
-			
+
 			if (rs.next()) {
 				log.warn("Multiple rows returned by getInt() method");
 			}
-			
+
 			return result;
-		}
-		catch (DatabaseException | SQLException e) {
+		} catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
-		}
-		finally {
+		} finally {
 			if (stmt != null) {
 				try {
 					stmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the statement object");
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * Get the comma separated value of the concept map types names passed in as values for
-	 * parameters
+	 * Get the comma separated value of the concept map types names passed in as values for parameters
 	 *
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
@@ -247,21 +237,21 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 			hiddenConceptMapTypeArray = StringUtils.split(hiddenConceptMapTypes, ",");
 		}
 	}
-	
+
 	/**
 	 * @param visibleConceptMapTypes the visibleConceptMapTypes to set
 	 */
 	public void setVisibleConceptMapTypes(String visibleConceptMapTypes) {
 		this.visibleConceptMapTypes = visibleConceptMapTypes;
 	}
-	
+
 	/**
 	 * @param hiddenConceptMapTypes the hiddenConceptMapTypes to set
 	 */
 	public void setHiddenConceptMapTypes(String hiddenConceptMapTypes) {
 		this.hiddenConceptMapTypes = hiddenConceptMapTypes;
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
@@ -269,11 +259,11 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	public String getConfirmationMessage() {
 		return "Finished inserting core concept map types";
 	}
-	
+
 	@Override
 	public void setFileOpener(ResourceAccessor resourceAccessor) {
 	}
-	
+
 	@Override
 	public ValidationErrors validate(Database database) {
 		return null;

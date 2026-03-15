@@ -15,5 +15,5 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class LocationDatatypeHandler extends BaseDatatypeHandler<LocationDatatype, Location> {
-	
+
 }

@@ -11,6 +11,7 @@ package org.openmrs.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -19,7 +20,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.ArrayList;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -41,7 +41,7 @@ public class FormUtil {
 
 	private FormUtil() {
 	}
-	
+
 	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
 	/**
@@ -53,19 +53,19 @@ public class FormUtil {
 	public static String getXmlToken(String s) {
 		// Converts a string into a valid XML token (tag name)
 		// No spaces, start with a letter or underscore, not 'xml*'
-		
+
 		// if len(s) < 1, return '_blank'
 		if (s == null || s.length() < 1) {
 			return "_blank";
 		}
-		
+
 		// xml tokens must start with a letter
 		String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
-		
+
 		// after the leading letter, xml tokens may have
 		// digits, period, or hyphen
 		String nameChars = letters + "0123456789.-";
-		
+
 		// special characters that should be replaced with valid text
 		// all other invalid characters will be removed
 		Map<String, String> swapChars = new HashMap<>();
@@ -80,10 +80,10 @@ public class FormUtil {
 		swapChars.put("=", "eq");
 		swapChars.put("/", "slash");
 		swapChars.put("\\\\", "backslash");
-		
+
 		// start by cleaning whitespace and converting to lowercase
 		s = s.replaceAll("^\\s+", "").replaceAll("\\s+$", "").replaceAll("\\s+", "_").toLowerCase();
-		
+
 		// swap characters
 		Set<Entry<String, String>> swaps = swapChars.entrySet();
 		for (Entry<String, String> entry : swaps) {
@@ -93,7 +93,7 @@ public class FormUtil {
 				s = s.replaceAll(String.valueOf(entry.getKey()), "");
 			}
 		}
-		
+
 		// ensure that invalid characters and consecutive underscores are
 		// removed
 		StringBuilder token = new StringBuilder("");
@@ -104,29 +104,29 @@ public class FormUtil {
 				underscoreFlag = (s.charAt(i) == '_');
 			}
 		}
-		
+
 		// remove extraneous underscores before returning token
 		String tokenStr = token.toString();
 		tokenStr = tokenStr.replaceAll("_+", "_");
 		tokenStr = tokenStr.replaceAll("_+$", "");
-		
+
 		// make sure token starts with valid letter
 		if (letters.indexOf(tokenStr.charAt(0)) == -1 || tokenStr.startsWith("xml")) {
 			tokenStr = "_" + tokenStr;
 		}
-		
+
 		// return token
 		return tokenStr;
 	}
-	
+
 	/**
 	 * Generates a new, unique tag name for any given string
 	 *
 	 * @param s string to convert into a unique XML tag
-	 * @param tagList java.util.Vector containing all previously created tags. If the tagList is
-	 *            null, it will be initialized automatically
-	 * @return unique XML tag name from given string (guaranteed not to duplicate any tag names
-	 *         already within <code>tagList</code>)
+	 * @param tagList java.util.Vector containing all previously created tags. If the tagList is null,
+	 *            it will be initialized automatically
+	 * @return unique XML tag name from given string (guaranteed not to duplicate any tag names already
+	 *         within <code>tagList</code>)
 	 */
 	public static String getNewTag(String s, ArrayList<String> tagList) {
 		String token = getXmlToken(s);
@@ -143,25 +143,24 @@ public class FormUtil {
 			return token;
 		}
 	}
-	
+
 	/**
-	 * Returns a sorted and structured map of <code>FormField</code>s for the given OpenMRS form.
-	 * The root sections of the schema are stored under a key of zero (i.e.,
+	 * Returns a sorted and structured map of <code>FormField</code>s for the given OpenMRS form. The
+	 * root sections of the schema are stored under a key of zero (i.e.,
 	 * <code>java.lang.Integer.<em>valueOf(0)</em></code>). All other entries represent sequences of
-	 * children stored under the identifier (<code>formField.<em>getFormFieldId()</em></code>) of
-	 * their parent FormField. The form structure is sorted by the natural sorting order of the
-	 * <code>FormField</code>s (as defined by the <em>.equals()</em> and <em>.compareTo()</em>
-	 * methods).
+	 * children stored under the identifier (<code>formField.<em>getFormFieldId()</em></code>) of their
+	 * parent FormField. The form structure is sorted by the natural sorting order of the
+	 * <code>FormField</code>s (as defined by the <em>.equals()</em> and <em>.compareTo()</em> methods).
 	 *
 	 * @param form form for which structure is requested
-	 * @return sorted map of <code>FormField</code>s, where the top-level fields are under the key
-	 *         zero and all other leaves are stored under their parent <code>FormField</code>'s id.
+	 * @return sorted map of <code>FormField</code>s, where the top-level fields are under the key zero
+	 *         and all other leaves are stored under their parent <code>FormField</code>'s id.
 	 */
 	public static Map<Integer, TreeSet<FormField>> getFormStructure(Form form) {
 		Map<Integer, TreeSet<FormField>> formStructure = new TreeMap<>();
 		Integer base = 0;
 		formStructure.put(base, new TreeSet<>());
-		
+
 		for (FormField formField : form.getFormFields()) {
 			FormField parent = formField.getParent();
 			if (parent == null) {
@@ -175,16 +174,14 @@ public class FormUtil {
 				formStructure.get(parent.getFormFieldId()).add(formField);
 			}
 		}
-		
+
 		return formStructure;
 	}
-	
+
 	public static String dateToString() {
 		return dateToString(new Date());
 	}
-	
-	
-	
+
 	public static String dateToString(Date date) {
 		DateFormat dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT);
 		String dateString = dateFormatter.format(new Date());
@@ -192,7 +189,7 @@ public class FormUtil {
 		// include the colon, so we need to insert it
 		return dateString.substring(0, 22) + ":" + dateString.substring(22);
 	}
-	
+
 	/**
 	 * Get a string somewhat unique to this form. Combines the form's id and version and build
 	 *
@@ -202,7 +199,7 @@ public class FormUtil {
 	public static String getFormUriWithoutExtension(Form form) {
 		return form.getFormId() + "-" + form.getVersion() + "-" + form.getBuild();
 	}
-	
+
 	/**
 	 * Turn the given concept into a string acceptable to for hl7 and forms
 	 *
@@ -214,7 +211,7 @@ public class FormUtil {
 		ConceptName localizedName = concept.getName(locale, false);
 		return conceptToString(concept, localizedName);
 	}
-	
+
 	/**
 	 * Turn the given concept/concept-name pair into a string acceptable for hl7 and forms
 	 *
@@ -225,7 +222,7 @@ public class FormUtil {
 	public static String conceptToString(Concept concept, ConceptName localizedName) {
 		return concept.getConceptId() + "^" + localizedName.getName() + "^" + HL7Constants.HL7_LOCAL_CONCEPT; // + "^"
 	}
-	
+
 	/**
 	 * Turn the given drug into a string acceptable for hl7 and forms
 	 *
