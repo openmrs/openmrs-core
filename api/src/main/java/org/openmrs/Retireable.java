@@ -30,7 +30,7 @@ public interface Retireable extends OpenmrsObject {
 	 * @return Boolean - whether of not this object is retired
 	 * @deprecated as of 2.0, use {@link #getRetired()}
 	 */
-	@Deprecated
+	@Deprecated(since = "2.0", forRemoval = true)
 	public Boolean isRetired();
 
 	public Boolean getRetired();

@@ -23,33 +23,43 @@ import liquibase.logging.core.AbstractLogger;
  * @since 2.5.1, 2.6.0
  */
 public class Slf4JLogger extends AbstractLogger {
-
+	
 	private final Logger logger;
-
+	
 	public Slf4JLogger(Class<?> clazz, LogMessageFilter filter) {
 		super(filter);
-		logger = LoggerFactory.getLogger(clazz);
+		this.logger = LoggerFactory.getLogger(clazz);
 	}
-
+	
 	@Override
 	public void log(Level level, String message, Throwable e) {
-		// NB java.util.logging supports a couple of levels not replicable through SLF4J
-		// These messages are attempted to be routed to their closest level
-
-		if (level == Level.SEVERE) {
-			logger.error(message, e);
-		} else if (level == Level.WARNING) {
-			logger.warn(message, e);
-		} else if (level == Level.INFO) {
-			logger.info(message, e);
-		} else if (level == Level.CONFIG) {
-			logger.debug(message, e);
-		} else if (level == Level.FINE) {
-			logger.debug(message, e);
-		} else if (level == Level.FINER) {
+		
+		if (level == null) {
 			logger.trace(message, e);
-		} else {
-			logger.trace(message, e);
+			return;
+		}
+		
+		switch (level.getName()) {
+			case "SEVERE":
+				logger.error(message, e);
+				break;
+			
+			case "WARNING":
+				logger.warn(message, e);
+				break;
+			
+			case "INFO":
+				logger.info(message, e);
+				break;
+			
+			case "CONFIG":
+			case "FINE":
+				logger.debug(message, e);
+				break;
+			
+			default:
+				logger.trace(message, e);
+				break;
 		}
 	}
 }

@@ -281,49 +281,93 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 	 * @return true if the values match, else false
 	 */
 	public boolean hasSameValues(Allergy allergy) {
+		if (allergy == null) {
+			return false;
+		}
+		
+		// Compare allergy IDs
 		if (!OpenmrsUtil.nullSafeEquals(getAllergyId(), allergy.getAllergyId())) {
 			return false;
 		}
-		if (!OpenmrsUtil.nullSafeEquals(getPatient(), allergy.getPatient())) {
-			//if object instances are different but with the same patient id, then not changed
-			if (getPatient() != null && allergy.getPatient() != null) {
-				if (!OpenmrsUtil.nullSafeEquals(getPatient().getPatientId(), allergy.getPatient().getPatientId())) {
-					return false;
-				}
-			} else {
-				return false;
-			}
-		}
-		if (!OpenmrsUtil.nullSafeEquals(getAllergen().getCodedAllergen(), allergy.getAllergen().getCodedAllergen())) {
-			//if object instances are different but with the same concept id, then not changed
-			if (getAllergen().getCodedAllergen() != null && allergy.getAllergen().getCodedAllergen() != null) {
-				if (!OpenmrsUtil.nullSafeEquals(getAllergen().getCodedAllergen().getConceptId(),
-				    allergy.getAllergen().getCodedAllergen().getConceptId())) {
-					return false;
-				}
-			} else {
-				return false;
-			}
-		}
-		if (!OpenmrsUtil.nullSafeEquals(getAllergen().getNonCodedAllergen(), allergy.getAllergen().getNonCodedAllergen())) {
+		
+		// Compare patients
+		if (!hasSamePatient(allergy)) {
 			return false;
 		}
-		if (!OpenmrsUtil.nullSafeEquals(getSeverity(), allergy.getSeverity())) {
-			//if object instances are different but with the same concept id, then not changed
-			if (getSeverity() != null && allergy.getSeverity() != null) {
-				if (!OpenmrsUtil.nullSafeEquals(getSeverity().getConceptId(), allergy.getSeverity().getConceptId())) {
-					return false;
-				}
-			} else {
-				return false;
-			}
+		
+		// Compare coded allergen
+		if (!hasSameCodedAllergen(allergy)) {
+			return false;
 		}
+		
+		// Compare non-coded allergen
+		if (!OpenmrsUtil.nullSafeEquals(
+			getAllergen().getNonCodedAllergen(),
+			allergy.getAllergen().getNonCodedAllergen())) {
+			return false;
+		}
+		
+		// Compare severity
+		if (!hasSameSeverity(allergy)) {
+			return false;
+		}
+		
+		// Compare comments
 		if (!OpenmrsUtil.nullSafeEquals(getComment(), allergy.getComment())) {
 			return false;
 		}
+		
+		// Compare reactions
 		return hasSameReactions(allergy);
 	}
-
+	
+	private boolean hasSamePatient(Allergy allergy) {
+		
+		if (OpenmrsUtil.nullSafeEquals(getPatient(), allergy.getPatient())) {
+			return true;
+		}
+		
+		if (getPatient() == null || allergy.getPatient() == null) {
+			return false;
+		}
+		
+		return OpenmrsUtil.nullSafeEquals(
+			getPatient().getPatientId(),
+			allergy.getPatient().getPatientId());
+	}
+	
+	private boolean hasSameCodedAllergen(Allergy allergy) {
+		
+		if (OpenmrsUtil.nullSafeEquals(
+			getAllergen().getCodedAllergen(),
+			allergy.getAllergen().getCodedAllergen())) {
+			return true;
+		}
+		
+		if (getAllergen().getCodedAllergen() == null ||
+			allergy.getAllergen().getCodedAllergen() == null) {
+			return false;
+		}
+		
+		return OpenmrsUtil.nullSafeEquals(
+			getAllergen().getCodedAllergen().getConceptId(),
+			allergy.getAllergen().getCodedAllergen().getConceptId());
+	}
+	
+	private boolean hasSameSeverity(Allergy allergy) {
+		
+		if (OpenmrsUtil.nullSafeEquals(getSeverity(), allergy.getSeverity())) {
+			return true;
+		}
+		
+		if (getSeverity() == null || allergy.getSeverity() == null) {
+			return false;
+		}
+		
+		return OpenmrsUtil.nullSafeEquals(
+			getSeverity().getConceptId(),
+			allergy.getSeverity().getConceptId());
+	}
 	/**
 	 * Checks if this allergy has the same reaction values as those in the given one
 	 *

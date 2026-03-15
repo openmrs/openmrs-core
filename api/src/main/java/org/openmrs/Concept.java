@@ -466,52 +466,68 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @see Concept#getPreferredName(Locale) for the preferred name (if any)
 	 */
 	public ConceptName getName() {
+		
 		if (getNames().isEmpty()) {
 			log.debug("there are no names defined for: {}", conceptId);
 			return null;
 		}
-
-		for (Locale currentLocale : LocaleUtility.getLocalesInOrder()) {
-			ConceptName preferredName = getPreferredName(currentLocale);
-			if (preferredName != null) {
-				return preferredName;
+		
+		for (Locale locale : LocaleUtility.getLocalesInOrder()) {
+			
+			ConceptName name = findPreferredOrFullySpecified(locale);
+			if (name != null) {
+				return name;
 			}
-
-			ConceptName fullySpecifiedName = getFullySpecifiedName(currentLocale);
-			if (fullySpecifiedName != null) {
-				return fullySpecifiedName;
-			}
-
-			//if the locale has an variants e.g en_GB, try names in the locale excluding the country code i.e en
-			if (!StringUtils.isBlank(currentLocale.getCountry()) || !StringUtils.isBlank(currentLocale.getVariant())) {
-				Locale broaderLocale = new Locale(currentLocale.getLanguage());
-				ConceptName prefNameInBroaderLoc = getPreferredName(broaderLocale);
-				if (prefNameInBroaderLoc != null) {
-					return prefNameInBroaderLoc;
-				}
-
-				ConceptName fullySpecNameInBroaderLoc = getFullySpecifiedName(broaderLocale);
-				if (fullySpecNameInBroaderLoc != null) {
-					return fullySpecNameInBroaderLoc;
+			
+			if (hasLocaleVariants(locale)) {
+				Locale broaderLocale = new Locale(locale.getLanguage());
+				name = findPreferredOrFullySpecified(broaderLocale);
+				
+				if (name != null) {
+					return name;
 				}
 			}
 		}
-
+		
+		ConceptName fullySpecified = getAnyFullySpecifiedName();
+		if (fullySpecified != null) {
+			return fullySpecified;
+		}
+		
+		if (!getSynonyms().isEmpty()) {
+			return getSynonyms().iterator().next();
+		}
+		
+		return null;
+	}
+	
+	//Helper methods of getName() 
+	private ConceptName findPreferredOrFullySpecified(Locale locale) {
+		
+		ConceptName preferred = getPreferredName(locale);
+		if (preferred != null) {
+			return preferred;
+		}
+		
+		return getFullySpecifiedName(locale);
+	}
+	
+	private boolean hasLocaleVariants(Locale locale) {
+		return !StringUtils.isBlank(locale.getCountry()) ||
+			!StringUtils.isBlank(locale.getVariant());
+	}
+	
+	private ConceptName getAnyFullySpecifiedName() {
+		
 		for (ConceptName cn : getNames()) {
 			if (cn.isFullySpecifiedName()) {
 				return cn;
 			}
 		}
-
-		if (!getSynonyms().isEmpty()) {
-			return getSynonyms().iterator().next();
-		}
-
-		// we don't expect to get here since every concept name must have at least
-		// one fully specified name, but just in case (probably inconsistent data)
-
 		return null;
 	}
+	
+	
 
 	/**
 	 * Checks whether this concept has the given string in any of the names in the given locale already.
@@ -564,34 +580,44 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @since 1.9
 	 **/
 	public ConceptName getName(Locale locale, ConceptNameType ofType, ConceptNameTag havingTag) {
+		
 		Collection<ConceptName> namesInLocale = getNames(locale);
+		
 		if (!namesInLocale.isEmpty()) {
-			//Pass the possible candidates through a stream and save the ones that match requirements to the list
-			List<ConceptName> matches = namesInLocale.stream().filter(
-			    c -> (ofType == null || ofType.equals(c.getConceptNameType())) && (havingTag == null || c.hasTag(havingTag)))
-			        .collect(Collectors.toList());
-
-			// if we have any matches, we'll return one of them
+			
+			List<ConceptName> matches = namesInLocale.stream()
+				.filter(c -> (ofType == null || ofType.equals(c.getConceptNameType()))
+					&& (havingTag == null || c.hasTag(havingTag)))
+				.collect(Collectors.toList());
+			
 			if (matches.size() == 1) {
 				return matches.get(0);
-			} else if (matches.size() > 1) {
-				for (ConceptName match : matches) {
-					if (match.getLocalePreferred()) {
-						return match;
-					}
-				}
-				// none was explicitly marked as preferred
-				return matches.get(0);
+			}
+			
+			if (matches.size() > 1) {
+				ConceptName preferred = findPreferred(matches);
+				return preferred != null ? preferred : matches.get(0);
 			}
 		}
-
-		// if we reach here, there were no matching names, so try to look in the parent locale
+		
 		Locale parent = new Locale(locale.getLanguage());
+		
 		if (!parent.equals(locale)) {
 			return getName(parent, ofType, havingTag);
-		} else {
-			return null;
 		}
+		
+		return null;
+	}
+	
+	// helper method of getName(Locale locale, ConceptNameType ofType, ConceptNameTag havingTag) ->
+	
+	private ConceptName findPreferred(List<ConceptName> matches) {
+		for (ConceptName match : matches) {
+			if (match.getLocalePreferred()) {
+				return match;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -668,46 +694,71 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return preferred name for the locale, or null if no preferred name is specified
 	 */
 	public ConceptName getPreferredName(Locale forLocale, Boolean exact) {
-
 		if (log.isDebugEnabled()) {
 			log.debug("Getting preferred conceptName for locale: " + forLocale);
 		}
-
+		
 		if (forLocale == null) {
 			log.warn("Locale cannot be null");
 			return null;
 		}
-
+		
 		for (ConceptName nameInLocale : getNames(forLocale)) {
+			
 			if (ObjectUtils.nullSafeEquals(nameInLocale.getLocalePreferred(), true)) {
 				return nameInLocale;
 			}
 		}
-
+		
 		if (exact) {
 			return null;
-		} else {
+		}
+		else {
 			// look for partially locale match - any language matches takes precedence over country matches.
 			ConceptName bestMatch = null;
-
+			
 			for (ConceptName nameInLocale : getPartiallyCompatibleNames(forLocale)) {
+				
 				if (ObjectUtils.nullSafeEquals(nameInLocale.getLocalePreferred(), true)) {
 					Locale nameLocale = nameInLocale.getLocale();
+					
 					if (forLocale.getLanguage().equals(nameLocale.getLanguage())) {
 						return nameInLocale;
-					} else {
+					}
+					else {
 						bestMatch = nameInLocale;
 					}
-
 				}
 			}
-
+			
 			if (bestMatch != null) {
 				return bestMatch;
 			}
-
 			return getFullySpecifiedName(forLocale);
 		}
+	}
+	
+	//helper method of getPreferredName(Locale forLocale, Boolean exact)
+	private ConceptName findPartialPreferredName(Locale forLocale) {
+		
+		ConceptName bestMatch = null;
+		
+		for (ConceptName nameInLocale : getPartiallyCompatibleNames(forLocale)) {
+			
+			if (!ObjectUtils.nullSafeEquals(nameInLocale.getLocalePreferred(), true)) {
+				continue;
+			}
+			
+			Locale nameLocale = nameInLocale.getLocale();
+			
+			if (forLocale.getLanguage().equals(nameLocale.getLanguage())) {
+				return nameInLocale;
+			}
+			
+			bestMatch = nameInLocale;
+		}
+		
+		return bestMatch;
 	}
 
 	/**
@@ -719,30 +770,46 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return the name explicitly marked as fully specified for the locale
 	 */
 	public ConceptName getFullySpecifiedName(Locale locale) {
-		if (locale != null && !getNames(locale).isEmpty()) {
-			//get the first fully specified name, since every concept must have a fully specified name,
-			//then, this loop will have to return a name
-			for (ConceptName conceptName : getNames(locale)) {
-				if (ObjectUtils.nullSafeEquals(conceptName.isFullySpecifiedName(), true)) {
-					return conceptName;
-				}
-			}
-
-			// look for partially locale match - any language matches takes precedence over country matches.
-			ConceptName bestMatch = null;
-			for (ConceptName conceptName : getPartiallyCompatibleNames(locale)) {
-				if (ObjectUtils.nullSafeEquals(conceptName.isFullySpecifiedName(), true)) {
-					Locale nameLocale = conceptName.getLocale();
-					if (locale.getLanguage().equals(nameLocale.getLanguage())) {
-						return conceptName;
-					}
-					bestMatch = conceptName;
-				}
-			}
-			return bestMatch;
-
+		
+		if (locale == null) {
+			return null;
 		}
-		return null;
+		
+		Collection<ConceptName> namesInLocale = getNames(locale);
+		if (namesInLocale.isEmpty()) {
+			return null;
+		}
+		
+		for (ConceptName conceptName : namesInLocale) {
+			if (ObjectUtils.nullSafeEquals(conceptName.isFullySpecifiedName(), true)) {
+				return conceptName;
+			}
+		}
+		
+		return findPartiallyMatchingFullySpecifiedName(locale);
+	}
+	
+	//helper method of getFullySpecifiedName(Locale locale)
+	private ConceptName findPartiallyMatchingFullySpecifiedName(Locale locale) {
+		
+		ConceptName bestMatch = null;
+		
+		for (ConceptName conceptName : getPartiallyCompatibleNames(locale)) {
+			
+			if (!ObjectUtils.nullSafeEquals(conceptName.isFullySpecifiedName(), true)) {
+				continue;
+			}
+			
+			Locale nameLocale = conceptName.getLocale();
+			
+			if (locale.getLanguage().equals(nameLocale.getLanguage())) {
+				return conceptName;
+			}
+			
+			bestMatch = conceptName;
+		}
+		
+		return bestMatch;
 	}
 
 	/**
@@ -927,42 +994,65 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return the appropriate short name, or null if not found
 	 */
 	public ConceptName getShortestName(Locale locale, Boolean exact) {
+		
 		if (log.isDebugEnabled()) {
 			log.debug("Getting shortest conceptName for locale: " + locale);
 		}
-
+		
 		ConceptName shortNameInLocale = getShortNameInLocale(locale);
 		if (shortNameInLocale != null) {
 			return shortNameInLocale;
 		}
-
-		ConceptName shortestNameForLocale = null;
-		ConceptName shortestNameForConcept = null;
-
-		if (locale != null) {
-			for (ConceptName possibleName : getNames()) {
-				if (possibleName.getLocale().equals(locale) && ((shortestNameForLocale == null)
-				        || (possibleName.getName().length() < shortestNameForLocale.getName().length()))) {
-					shortestNameForLocale = possibleName;
-				}
-				if ((shortestNameForConcept == null)
-				        || (possibleName.getName().length() < shortestNameForConcept.getName().length())) {
-					shortestNameForConcept = possibleName;
-				}
-			}
-		}
-
-		if (exact) {
+		
+		ConceptName shortestNameForLocale = findShortestNameForLocale(locale);
+		ConceptName shortestNameForConcept = findShortestNameForConcept();
+		
+		if (Boolean.TRUE.equals(exact)) {
 			if (shortestNameForLocale == null) {
-				log.warn(
-				    "No short concept name found for concept id " + conceptId + " for locale " + locale.getDisplayName());
+				log.warn("No short concept name found for concept id " + conceptId +
+					" for locale " + locale.getDisplayName());
 			}
 			return shortestNameForLocale;
 		}
-
+		
 		return shortestNameForConcept;
 	}
-
+	
+	// helper methods of getShortestName(Locale locale, Boolean exact)
+	private ConceptName findShortestNameForLocale(Locale locale) {
+		
+		if (locale == null) {
+			return null;
+		}
+		
+		ConceptName shortest = null;
+		
+		for (ConceptName name : getNames()) {
+			if (!locale.equals(name.getLocale())) {
+				continue;
+			}
+			
+			if (shortest == null || name.getName().length() < shortest.getName().length()) {
+				shortest = name;
+			}
+		}
+		
+		return shortest;
+	}
+	
+	private ConceptName findShortestNameForConcept() {
+		
+		ConceptName shortest = null;
+		
+		for (ConceptName name : getNames()) {
+			if (shortest == null || name.getName().length() < shortest.getName().length()) {
+				shortest = name;
+			}
+		}
+		
+		return shortest;
+	}
+	
 	/**
 	 * @param name A name
 	 * @return whether this concept has the given name in any locale
@@ -1029,41 +1119,79 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param conceptName
 	 */
 	public void addName(ConceptName conceptName) {
-		if (conceptName != null) {
-			conceptName.setConcept(this);
-			if (names == null) {
-				names = new HashSet<>();
-			}
-			if (!names.contains(conceptName)) {
-				if (getNames().isEmpty() && !ConceptNameType.FULLY_SPECIFIED.equals(conceptName.getConceptNameType())) {
-					conceptName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
-				} else {
-					if (conceptName.isPreferred() && !conceptName.isIndexTerm() && conceptName.getLocale() != null) {
-						ConceptName prefName = getPreferredName(conceptName.getLocale(), true);
-						if (prefName != null) {
-							prefName.setLocalePreferred(false);
-						}
-					}
-					if (conceptName.isFullySpecifiedName() && conceptName.getLocale() != null) {
-						ConceptName fullySpecName = getFullySpecifiedName(conceptName.getLocale());
-						if (fullySpecName != null) {
-							fullySpecName.setConceptNameType(null);
-						}
-					} else if (conceptName.isShort() && conceptName.getLocale() != null) {
-						ConceptName shortName = getShortNameInLocale(conceptName.getLocale());
-						if (shortName != null) {
-							shortName.setConceptNameType(null);
-						}
-					}
-				}
-				names.add(conceptName);
-				if (compatibleCache != null) {
-					// clear the locale cache, forcing it to be rebuilt
-					compatibleCache.clear();
-				}
-			}
+		
+		if (conceptName == null) {
+			return;
+		}
+		
+		conceptName.setConcept(this);
+		
+		if (names == null) {
+			names = new HashSet<>();
+		}
+		
+		if (names.contains(conceptName)) {
+			return;
+		}
+		
+		if (getNames().isEmpty() && !ConceptNameType.FULLY_SPECIFIED.equals(conceptName.getConceptNameType())) {
+			conceptName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
+		} else {
+			handlePreferredName(conceptName);
+			handleFullySpecifiedName(conceptName);
+			handleShortName(conceptName);
+		}
+		
+		names.add(conceptName);
+		clearLocaleCache();
+	}
+	
+	//helper methods of addName(ConceptName conceptName)
+	private void handlePreferredName(ConceptName conceptName) {
+		
+		if (!conceptName.isPreferred() || conceptName.isIndexTerm() || conceptName.getLocale() == null) {
+			return;
+		}
+		
+		ConceptName prefName = getPreferredName(conceptName.getLocale(), true);
+		
+		if (prefName != null) {
+			prefName.setLocalePreferred(false);
 		}
 	}
+	
+	private void handleFullySpecifiedName(ConceptName conceptName) {
+		
+		if (!conceptName.isFullySpecifiedName() || conceptName.getLocale() == null) {
+			return;
+		}
+		
+		ConceptName fullySpecName = getFullySpecifiedName(conceptName.getLocale());
+		
+		if (fullySpecName != null) {
+			fullySpecName.setConceptNameType(null);
+		}
+	}
+	
+	private void handleShortName(ConceptName conceptName) {
+		
+		if (!conceptName.isShort() || conceptName.getLocale() == null) {
+			return;
+		}
+		
+		ConceptName shortName = getShortNameInLocale(conceptName.getLocale());
+		
+		if (shortName != null) {
+			shortName.setConceptNameType(null);
+		}
+	}
+	
+	private void clearLocaleCache() {
+		if (compatibleCache != null) {
+			compatibleCache.clear();
+		}
+	}
+	
 
 	/**
 	 * Remove the given name from the list of names for this Concept
@@ -1112,49 +1240,74 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return the appropriate description, or null if not found
 	 */
 	public ConceptDescription getDescription(Locale locale, boolean exact) {
+		
 		log.debug("Getting ConceptDescription for locale: " + locale);
-
-		ConceptDescription foundDescription = null;
-
-		if (locale == null) {
-			locale = LocaleUtility.getDefaultLocale();
+		
+		Locale desiredLocale = (locale == null)
+			? LocaleUtility.getDefaultLocale()
+			: locale;
+		
+		ConceptDescription exactMatch = findExactMatch(desiredLocale);
+		if (exactMatch != null) {
+			return exactMatch;
 		}
-
-		Locale desiredLocale = locale;
-
-		ConceptDescription defaultDescription = null;
-		for (ConceptDescription availableDescription : getDescriptions()) {
-			Locale availableLocale = availableDescription.getLocale();
-			if (availableLocale.equals(desiredLocale)) {
-				foundDescription = availableDescription;
-				// skip out now because we found an exact locale match
-				break;
-			}
-			if (!exact && LocaleUtility.areCompatible(availableLocale, desiredLocale)) {
-				foundDescription = availableDescription;
-			}
-			if (availableLocale.equals(LocaleUtility.getDefaultLocale())) {
-				defaultDescription = availableDescription;
-			}
+		
+		if (exact) {
+			logNoExactMatch(desiredLocale);
+			return null;
 		}
-
-		if (foundDescription == null) {
-			// no description with the given locale was found.
-			// return null if exact match desired
-			if (exact) {
-				log.debug(
-				    "No concept description found for concept id " + conceptId + " for locale " + desiredLocale.toString());
-			} else {
-				// returning default description locale ("en") if exact match
-				// not desired
-				if (defaultDescription == null) {
-					log.debug("No concept description found for default locale for concept id " + conceptId);
-				} else {
-					foundDescription = defaultDescription;
-				}
+		
+		ConceptDescription compatibleMatch = findCompatibleMatch(desiredLocale);
+		if (compatibleMatch != null) {
+			return compatibleMatch;
+		}
+		
+		ConceptDescription defaultMatch = findDefaultMatch();
+		if (defaultMatch == null) {
+			logNoDefaultMatch();
+		}
+		
+		return defaultMatch;
+	}
+	//helper methods of getDescription(Locale locale, boolean exact)
+	
+	private ConceptDescription findExactMatch(Locale desiredLocale) {
+		for (ConceptDescription desc : getDescriptions()) {
+			if (desc.getLocale().equals(desiredLocale)) {
+				return desc;
 			}
 		}
-		return foundDescription;
+		return null;
+	}
+	
+	private ConceptDescription findCompatibleMatch(Locale desiredLocale) {
+		for (ConceptDescription desc : getDescriptions()) {
+			if (LocaleUtility.areCompatible(desc.getLocale(), desiredLocale)) {
+				return desc;
+			}
+		}
+		return null;
+	}
+	
+	private void logNoExactMatch(Locale desiredLocale) {
+		log.debug("No concept description found for concept id "
+			+ conceptId + " for locale " + desiredLocale);
+	}
+	
+	private void logNoDefaultMatch() {
+		log.debug("No concept description found for default locale for concept id "
+			+ conceptId);
+	}
+	
+	private ConceptDescription findDefaultMatch() {
+		Locale defaultLocale = LocaleUtility.getDefaultLocale();
+		
+		for (ConceptDescription desc : getDescriptions()) {
+			if (desc.getLocale().equals(defaultLocale)) {
+				return desc;
+			}
+		}
+		return null;
 	}
 
 	/**

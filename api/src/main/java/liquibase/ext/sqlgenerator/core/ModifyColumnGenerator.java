@@ -36,154 +36,195 @@ import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 
-/**
- * Generates the SQL code to implement a modifyColumn change.
- *
- * @since 2.4
- */
 @SuppressWarnings("unused")
 public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStatement> {
-
+	
 	private static final Logger log = LoggerFactory.getLogger(ModifyColumnGenerator.class);
-
+	
 	@Override
 	public Warnings warn(ModifyColumnStatement modifyColumnStatement, Database database,
-	        SqlGeneratorChain sqlGeneratorChain) {
+		SqlGeneratorChain sqlGeneratorChain) {
 		return new Warnings();
 	}
-
+	
 	public ValidationErrors validate(ModifyColumnStatement statement, Database database,
-	        SqlGeneratorChain sqlGeneratorChain) {
+		SqlGeneratorChain sqlGeneratorChain) {
+		
 		ValidationErrors validationErrors = new ValidationErrors();
 		validationErrors.checkRequiredField("tableName", statement.getTableName());
 		validationErrors.checkRequiredField("columns", statement.getColumns());
-
+		
 		for (ColumnConfig column : statement.getColumns()) {
-			if (column.getConstraints() != null && column.getConstraints().isPrimaryKey() != null
-			        && column.getConstraints().isPrimaryKey()
-			        && (database instanceof H2Database || database instanceof DB2Database
-			                || database instanceof DerbyDatabase || database instanceof SQLiteDatabase)) {
-				validationErrors.addError("Adding primary key columns is not supported on " + database.getShortName());
+			if (column.getConstraints() != null
+				&& Boolean.TRUE.equals(column.getConstraints().isPrimaryKey())
+				&& (database instanceof H2Database
+				|| database instanceof DB2Database
+				|| database instanceof DerbyDatabase
+				|| database instanceof SQLiteDatabase)) {
+				
+				validationErrors.addError(
+					"Adding primary key columns is not supported on " + database.getShortName());
 			}
 		}
-
+		
 		return validationErrors;
 	}
-
-	public Sql[] generateSql(ModifyColumnStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
+	
+	@Override
+	public Sql[] generateSql(ModifyColumnStatement statement, Database database,
+		SqlGeneratorChain sqlGeneratorChain) {
+		
 		List<Sql> sql = new ArrayList<>();
+		
 		for (ColumnConfig column : statement.getColumns()) {
-			String alterTable = "ALTER TABLE "
-			        + database.escapeTableName(null, statement.getSchemaName(), statement.getTableName());
-
-			// add "MODIFY"
-			alterTable += " " + getModifyString(database) + " ";
-
-			// add column name
-			alterTable += database.escapeColumnName(null, statement.getSchemaName(), statement.getTableName(),
-			    column.getName());
-
-			alterTable += getPreDataTypeString(database); // adds a space if nothing else
-
-			// add column type
-			alterTable += DataTypeFactory.getInstance().fromDescription(column.getType(), database)
-			        .toDatabaseDataType(database);
-
+			
+			StringBuilder alterTable = new StringBuilder();
+			
+			alterTable.append("ALTER TABLE ")
+				.append(database.escapeTableName(null,
+					statement.getSchemaName(),
+					statement.getTableName()));
+			
+			alterTable.append(" ")
+				.append(getModifyString(database))
+				.append(" ");
+			
+			alterTable.append(database.escapeColumnName(null,
+				statement.getSchemaName(),
+				statement.getTableName(),
+				column.getName()));
+			
+			alterTable.append(getPreDataTypeString(database));
+			
+			alterTable.append(DataTypeFactory.getInstance()
+				.fromDescription(column.getType(), database)
+				.toDatabaseDataType(database));
+			
 			if (supportsExtraMetaData(database)) {
-				if (column.getConstraints() != null && !column.getConstraints().isNullable()) {
-					alterTable += " NOT NULL";
-				} else {
-					if (database instanceof SybaseDatabase || database instanceof SybaseASADatabase) {
-						alterTable += " NULL";
-					}
-				}
-
-				alterTable += getDefaultClause(column, database);
-
-				if (column.isAutoIncrement() != null && column.isAutoIncrement()) {
-					alterTable += " " + database.getAutoIncrementClause(BigInteger.ONE, BigInteger.ONE, null, null);
-				}
-
-				if (column.getConstraints() != null && column.getConstraints().isPrimaryKey() != null
-				        && column.getConstraints().isPrimaryKey()) {
-					alterTable += " PRIMARY KEY";
-				}
+				appendExtraMetadata(alterTable, column, database);
 			}
-
-			alterTable += getPostDataTypeString(database);
-
-			sql.add(new UnparsedSql(alterTable));
+			
+			alterTable.append(getPostDataTypeString(database));
+			
+			sql.add(new UnparsedSql(alterTable.toString()));
 		}
-
+		
 		log.debug("generated sql is '{}'", sql);
-
+		
 		return sql.toArray(new Sql[0]);
 	}
-
-	/**
-	 * Whether the ALTER command can take things like "DEFAULT VALUE" or "PRIMARY KEY" as well as type
-	 * changes
-	 *
-	 * @param database
-	 * @return true/false whether extra information can be included
-	 */
+	
+	private void appendExtraMetadata(StringBuilder alterTable, ColumnConfig column, Database database) {
+		
+		appendNullableClause(alterTable, column, database);
+		
+		alterTable.append(getDefaultClause(column, database));
+		
+		appendAutoIncrementClause(alterTable, column, database);
+		
+		appendPrimaryKeyClause(alterTable, column);
+	}
+	
+	private void appendNullableClause(StringBuilder alterTable, ColumnConfig column, Database database) {
+		
+		if (column.getConstraints() != null && !column.getConstraints().isNullable()) {
+			alterTable.append(" NOT NULL");
+			return;
+		}
+		
+		if (database instanceof SybaseDatabase || database instanceof SybaseASADatabase) {
+			alterTable.append(" NULL");
+		}
+	}
+	
+	private void appendAutoIncrementClause(StringBuilder alterTable, ColumnConfig column, Database database) {
+		
+		if (Boolean.TRUE.equals(column.isAutoIncrement())) {
+			alterTable.append(" ")
+				.append(database.getAutoIncrementClause(BigInteger.ONE, BigInteger.ONE, null, null));
+		}
+	}
+	
+	private void appendPrimaryKeyClause(StringBuilder alterTable, ColumnConfig column) {
+		
+		if (column.getConstraints() != null
+			&& Boolean.TRUE.equals(column.getConstraints().isPrimaryKey())) {
+			
+			alterTable.append(" PRIMARY KEY");
+		}
+	}
+	
 	boolean supportsExtraMetaData(Database database) {
 		return database instanceof MSSQLDatabase || database instanceof MySQLDatabase;
 	}
-
-	/**
-	 * @return either "MODIFY" or "ALTER COLUMN" depending on the current db
-	 */
+	
 	String getModifyString(Database database) {
-		if (database instanceof HsqlDatabase || database instanceof H2Database || database instanceof DerbyDatabase
-		        || database instanceof DB2Database || database instanceof MSSQLDatabase) {
+		
+		if (database instanceof HsqlDatabase
+			|| database instanceof H2Database
+			|| database instanceof DerbyDatabase
+			|| database instanceof DB2Database
+			|| database instanceof MSSQLDatabase) {
+			
 			return "ALTER COLUMN";
-		} else if (database instanceof SybaseASADatabase || database instanceof SybaseDatabase
-		        || database instanceof MySQLDatabase) {
+			
+		} else if (database instanceof SybaseASADatabase
+			|| database instanceof SybaseDatabase
+			|| database instanceof MySQLDatabase) {
+			
 			return "MODIFY";
+			
 		} else if (database instanceof OracleDatabase) {
+			
 			return "MODIFY (";
+			
 		} else {
+			
 			return "ALTER COLUMN";
 		}
 	}
-
-	/**
-	 * @return the string that comes before the column type definition (like 'set data type' for derby
-	 *         or an open parentheses for Oracle)
-	 */
+	
 	String getPreDataTypeString(Database database) {
+		
 		if (database instanceof DerbyDatabase || database instanceof DB2Database) {
 			return " SET DATA TYPE ";
-		} else if (database instanceof SybaseASADatabase || database instanceof SybaseDatabase
-		        || database instanceof MSSQLDatabase || database instanceof MySQLDatabase || database instanceof HsqlDatabase
-		        || database instanceof H2Database || database instanceof OracleDatabase) {
+			
+		} else if (database instanceof SybaseASADatabase
+			|| database instanceof SybaseDatabase
+			|| database instanceof MSSQLDatabase
+			|| database instanceof MySQLDatabase
+			|| database instanceof HsqlDatabase
+			|| database instanceof H2Database
+			|| database instanceof OracleDatabase) {
+			
 			return " ";
+			
 		} else {
 			return " TYPE ";
 		}
 	}
-
-	/**
-	 * @return the string that comes after the column type definition (like a close parentheses for
-	 *         Oracle)
-	 */
+	
 	String getPostDataTypeString(Database database) {
+		
 		if (database instanceof OracleDatabase) {
 			return " )";
-		} else {
-			return "";
 		}
+		return "";
 	}
-
+	
 	String getDefaultClause(ColumnConfig column, Database database) {
+		
 		String clause = "";
 		String defaultValue = column.getDefaultValue();
+		
 		if (defaultValue != null && database instanceof MySQLDatabase) {
+			
 			clause += " DEFAULT "
-			        + DataTypeFactory.getInstance().fromObject(defaultValue, database).objectToSql(defaultValue, database);
+				+ DataTypeFactory.getInstance()
+				.fromObject(defaultValue, database)
+				.objectToSql(defaultValue, database);
 		}
+		
 		return clause;
 	}
-
 }
