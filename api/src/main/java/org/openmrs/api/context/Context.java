@@ -64,7 +64,6 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.ModuleMustStartException;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.notification.AlertService;
-import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
@@ -570,19 +569,21 @@ public class Context {
 				List<MessagePreparator> preparators = getRegisteredComponents(MessagePreparator.class);
 				if (preparators != null && !preparators.isEmpty()) {
 					if (preparators.size() > 1) {
-						log.warn("Multiple MessagePreparators found. Using the first one: {}", preparators.get(0).getClass().getName());
+						log.warn("Multiple MessagePreparators found. Using the first one: {}",
+						    preparators.get(0).getClass().getName());
 					}
 					ms.setMessagePreparator(preparators.get(0));
 				} else {
 					ms.setMessagePreparator(new VelocityMessagePreparator());
 				}
 			}
-			
+
 			if (ms.getMessageSender() == null) {
 				List<MessageSender> senders = getRegisteredComponents(MessageSender.class);
 				if (senders != null && !senders.isEmpty()) {
 					if (senders.size() > 1) {
-						log.warn("Multiple MessageSenders found. Using the first one: {}", senders.get(0).getClass().getName());
+						log.warn("Multiple MessageSenders found. Using the first one: {}",
+						    senders.get(0).getClass().getName());
 					}
 					ms.setMessageSender(senders.get(0));
 				} else {
@@ -657,7 +658,7 @@ public class Context {
 		}
 		return mailSession;
 	}
-	
+
 	/**
 	 * @return "active" user who has been authenticated, otherwise <code>null</code>
 	 */

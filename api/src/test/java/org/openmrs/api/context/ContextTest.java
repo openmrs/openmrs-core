@@ -451,18 +451,20 @@ public class ContextTest extends BaseContextSensitiveTest {
 			authenticate();
 		}
 	}
-	
+
 	/**
 	 * Dummy implementations used strictly for testing dynamic Spring bean loading.
 	 */
 	class DummyTestMessageSender implements MessageSender {
+
 		@Override
 		public void send(Message message) throws MessageException {
 			// No operation required for the test
 		}
 	}
-	
+
 	class DummyTestMessagePreparator implements MessagePreparator {
+
 		@Override
 		public Message prepare(Template template) throws MessageException {
 			// No operation required for the test, returning null is perfectly fine
@@ -470,34 +472,44 @@ public class ContextTest extends BaseContextSensitiveTest {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * @see Context#getMessageService()
 	 */
 	@Test
 	public void getMessageService_shouldDynamicallyLoadMessageSenderAndPreparatorFromSpringContext() {
-		
+
 		MessageService service = Context.getMessageService();
 		service.setMessageSender(null);
 		service.setMessagePreparator(null);
-		
-		ConfigurableApplicationContext appContext =
-			(ConfigurableApplicationContext) Context.getServiceContext().getApplicationContext();
-		
-		DefaultListableBeanFactory beanFactory =
-			(DefaultListableBeanFactory) appContext.getBeanFactory();
-		
+
+		ConfigurableApplicationContext appContext = (ConfigurableApplicationContext) Context.getServiceContext()
+		        .getApplicationContext();
+
+		DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) appContext.getBeanFactory();
+
 		DummyTestMessageSender dummySender = new DummyTestMessageSender();
 		DummyTestMessagePreparator dummyPreparator = new DummyTestMessagePreparator();
-		
-		beanFactory.registerSingleton("dummyTestMessageSender", dummySender);
-		beanFactory.registerSingleton("dummyTestMessagePreparator", dummyPreparator);
-		
-		MessageService reinitializedService = Context.getMessageService();
-		MessagePreparator activePreparator = reinitializedService.getMessagePreparator();
-		
-		MessageSender activeSender = reinitializedService.getMessageSender();
-		assertEquals(dummySender, activeSender, "The MessageService should use the dynamically registered DummyTestMessageSender");
-		assertEquals(dummyPreparator, activePreparator, "The MessageService should use the dynamically registered DummyTestMessagePreparator");
+
+		try {
+			beanFactory.registerSingleton("dummyTestMessageSender", dummySender);
+			beanFactory.registerSingleton("dummyTestMessagePreparator", dummyPreparator);
+
+			MessageService reinitializedService = Context.getMessageService();
+			MessagePreparator activePreparator = reinitializedService.getMessagePreparator();
+
+			MessageSender activeSender = reinitializedService.getMessageSender();
+			assertEquals(dummySender, activeSender,
+			    "The MessageService should use the dynamically registered DummyTestMessageSender");
+			assertEquals(dummyPreparator, activePreparator,
+			    "The MessageService should use the dynamically registered DummyTestMessagePreparator");
+
+		} finally {
+			beanFactory.destroySingleton("dummyTestMessageSender");
+			beanFactory.destroySingleton("dummyTestMessagePreparator");
+
+			Context.getMessageService().setMessageSender(null);
+			Context.getMessageService().setMessagePreparator(null);
+		}
 	}
 }
