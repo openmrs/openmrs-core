@@ -28,7 +28,7 @@ import org.openmrs.util.PrivilegeConstants;
  * class. <br>
  * The handler voids all the encounters(including their associated observations) and orders
  * associated with the specified patient object
- * 
+ *
  * @see RequiredDataHandler
  * @see VoidHandler
  * @see Patient
@@ -36,11 +36,13 @@ import org.openmrs.util.PrivilegeConstants;
  */
 @Handler(supports = Patient.class)
 public class PatientDataVoidHandler implements VoidHandler<Patient> {
-	
+
 	/**
+	 * <p>
+	 * <strong>Should</strong> void the orders encounters and observations associated with the patient
+	 *
 	 * @see org.openmrs.api.handler.VoidHandler#handle(org.openmrs.Voidable, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
-	 * <strong>Should</strong> void the orders encounters and observations associated with the patient
 	 */
 	@Override
 	public void handle(Patient patient, User voidingUser, Date voidedDate, String voidReason) {
@@ -50,9 +52,9 @@ public class PatientDataVoidHandler implements VoidHandler<Patient> {
 		if (CollectionUtils.isNotEmpty(encounters)) {
 			for (Encounter encounter : encounters) {
 				if (!encounter.getVoided()) {
-					// EncounterServiceImpl.voidEncounter and the requiredDataAdvice will set dateVoided to current date 
-					//if it is null, we need to set it now to match the patient's date voided so that the unvoid 
-					//handler's logic doesn't fail when comparing dates while unvoiding encounters that were voided 
+					// EncounterServiceImpl.voidEncounter and the requiredDataAdvice will set dateVoided to current date
+					//if it is null, we need to set it now to match the patient's date voided so that the unvoid
+					//handler's logic doesn't fail when comparing dates while unvoiding encounters that were voided
 					//with the patient
 					encounter.setDateVoided(patient.getDateVoided());
 					es.voidEncounter(encounter, voidReason);
@@ -63,8 +65,7 @@ public class PatientDataVoidHandler implements VoidHandler<Patient> {
 		Context.addProxyPrivilege(PrivilegeConstants.EDIT_COHORTS);
 		try {
 			Context.getCohortService().notifyPatientVoided(patient);
-		}
-		finally {
+		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_COHORTS);
 		}
 	}

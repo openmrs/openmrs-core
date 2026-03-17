@@ -9,16 +9,16 @@
  */
 package org.openmrs;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Test;
 
 /**
  * Contains test methods for concept reference terms
  */
 public class ConceptReferenceTermTest {
-	
+
 	/**
 	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
@@ -28,7 +28,7 @@ public class ConceptReferenceTermTest {
 		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), new ConceptMapType(1)));
 		assertTrue(term.equals(term.getConceptReferenceTermMaps().iterator().next().getTermA()));
 	}
-	
+
 	/**
 	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
@@ -41,7 +41,7 @@ public class ConceptReferenceTermTest {
 		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(term, new ConceptMapType(1)));
 		assertEquals(1, term.getConceptReferenceTermMaps().size());
 	}
-	
+
 	/**
 	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
@@ -55,11 +55,11 @@ public class ConceptReferenceTermTest {
 		//add a mapping with the same id as the one before
 		ConceptReferenceTermMap map3 = new ConceptReferenceTermMap(2);
 		map3.setTermB(new ConceptReferenceTerm(3));
-		
+
 		term.addConceptReferenceTermMap(map1);
 		term.addConceptReferenceTermMap(map2);
 		term.addConceptReferenceTermMap(map3);
-		
+
 		assertEquals(2, term.getConceptReferenceTermMaps().size());
 	}
 }

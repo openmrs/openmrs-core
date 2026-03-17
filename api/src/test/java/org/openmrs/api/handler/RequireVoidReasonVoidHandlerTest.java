@@ -9,9 +9,6 @@
  */
 package org.openmrs.api.handler;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -24,11 +21,14 @@ import org.openmrs.Voidable;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * Tests for the {@link RequireVoidReasonVoidHandler} class.
  */
 public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
@@ -37,7 +37,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 		Patient p = Context.getPatientService().getPatient(2);
 		assertThrows(IllegalArgumentException.class, () -> Context.getPatientService().voidPatient(p, null));
 	}
-	
+
 	/**
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
@@ -46,7 +46,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		assertThrows(IllegalArgumentException.class, () -> Context.getEncounterService().voidEncounter(e, ""));
 	}
-	
+
 	/**
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
@@ -55,7 +55,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 		Obs o = Context.getObsService().getObs(7);
 		assertThrows(IllegalArgumentException.class, () -> Context.getObsService().voidObs(o, "  "));
 	}
-	
+
 	/**
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */

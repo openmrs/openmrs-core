@@ -14,16 +14,16 @@ import org.openmrs.api.context.Context;
 
 /**
  * Property editor for {@link LocationAttributeType}s
- * 
+ *
  * @since 1.9
  */
 public class LocationAttributeTypeEditor extends OpenmrsPropertyEditor<LocationAttributeType> {
-	
+
 	@Override
 	protected LocationAttributeType getObjectById(Integer id) {
 		return Context.getLocationService().getLocationAttributeType(id);
 	}
-	
+
 	@Override
 	protected LocationAttributeType getObjectByUuid(String uuid) {
 		return Context.getLocationService().getLocationAttributeTypeByUuid(uuid);

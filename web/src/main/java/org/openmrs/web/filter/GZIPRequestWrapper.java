@@ -17,20 +17,19 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 
 /**
  * Wraps Request for GZipFilter
- *
  */
 public class GZIPRequestWrapper extends HttpServletRequestWrapper {
-	
+
 	protected ServletInputStream stream;
-	
+
 	public GZIPRequestWrapper(HttpServletRequest request) throws IOException {
 		super(request);
 		stream = new GZIPRequestStream(request);
 	}
-	
+
 	@Override
 	public ServletInputStream getInputStream() throws IOException {
 		return stream;
 	}
-	
+
 }

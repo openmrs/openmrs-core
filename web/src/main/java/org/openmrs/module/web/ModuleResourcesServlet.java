@@ -26,13 +26,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ModuleResourcesServlet extends HttpServlet {
-	
+
 	private static final String MODULE_PATH = "/WEB-INF/view/module/";
-	
+
 	private static final long serialVersionUID = 1239820102030344L;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ModuleResourcesServlet.class);
-	
+
 	/**
 	 * Used for caching purposes
 	 *
@@ -41,39 +41,38 @@ public class ModuleResourcesServlet extends HttpServlet {
 	@Override
 	protected long getLastModified(HttpServletRequest req) {
 		File f = getFile(req);
-		
+
 		if (f == null) {
 			return super.getLastModified(req);
 		}
-		
+
 		return f.lastModified();
 	}
-	
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
 		log.debug("In service method for module servlet: " + request.getPathInfo());
-		
+
 		File f = getFile(request);
 		if (f == null) {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
-		
+
 		response.setDateHeader("Last-Modified", f.lastModified());
 		response.setContentLength(Long.valueOf(f.length()).intValue());
 		String mimeType = getServletContext().getMimeType(f.getName());
 		response.setContentType(mimeType);
-		
+
 		FileInputStream is = new FileInputStream(f);
 		try {
 			OpenmrsUtil.copyFile(is, response.getOutputStream());
-		}
-		finally {
+		} finally {
 			OpenmrsUtil.closeStream(is);
 		}
 	}
-	
+
 	/**
 	 * Turns the given request/path into a File object
 	 *
@@ -81,56 +80,44 @@ public class ModuleResourcesServlet extends HttpServlet {
 	 * @return the file being requested or null if not found
 	 */
 	protected File getFile(HttpServletRequest request) {
-		
+
 		String path = request.getPathInfo();
 
-		if (path == null || path.contains("\0")) {
-			log.warn("Null or null-byte path rejected");
-			return null;
-		}
-		
 		Module module = ModuleUtil.getModuleForPath(path);
 		if (module == null) {
 			log.warn("No module handles the path: {}", path);
 			return null;
 		}
-		
+
 		String relativePath = ModuleUtil.getPathForResource(module, path);
-		String realPath;
-		
+		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources"
+		        + relativePath;
+
+		String basePath;
+
 		//if in dev mode, load resources from the development directory
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		if (devDir != null) {
-			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources";
-		} else{
-			realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources";
+			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources" + relativePath;
+			basePath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources";
+		} else {
+			basePath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources";
 		}
-		
-		realPath = realPath.replace("/", File.separator);
 
-		try {
-			File baseDir = new File(realPath).getCanonicalFile();
-			File requestedFile = new File(baseDir, relativePath).getCanonicalFile();
-			
-			Path basePath = baseDir.toPath().normalize();
-			Path requestedPath = requestedFile.toPath().normalize();
-
-			if (!requestedPath.startsWith(basePath)) {
-				log.warn("Path traversal attempt blocked. Requested: '{}' is outside base: '{}'", requestedPath, basePath);
-				return null;
-			}
-
-			if (!requestedFile.exists() || !requestedFile.isFile()) {
-				log.warn("No file with path '{}' exists for module '{}'", requestedFile, module.getModuleId());
-				return null;
-			}
-
-			return requestedFile;
-
-		} catch (IOException e) {
-			log.error("Error resolving canonical path for module resource", e);
+		Path normalizedPath = Path.of(realPath).normalize();
+		Path normalizedBase = Path.of(basePath).normalize();
+		if (!normalizedPath.startsWith(normalizedBase)) {
+			log.warn("Detected attempted directory traversal with path: " + path);
 			return null;
 		}
+
+		File f = normalizedPath.toFile();
+		if (!f.exists()) {
+			log.warn("No file with path '" + normalizedPath + "' exists for module '" + module.getModuleId() + "'");
+			return null;
+		}
+
+		return f;
 	}
-	
+
 }

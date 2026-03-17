@@ -9,14 +9,14 @@
  */
 package org.openmrs.web;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.module.ModuleException;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 public class WebDaemonTest {
-	
+
 	@Test
 	public void startOpenmrs_shouldThrowExceptionGivenNull() {
 		LoggerFactory.getLogger(WebDaemonTest.class); //see TRUNK-6307

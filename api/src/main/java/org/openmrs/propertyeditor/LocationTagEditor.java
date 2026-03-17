@@ -15,19 +15,19 @@ import org.openmrs.api.context.Context;
 /**
  * Property editor for {@link LocationTag}s In version 1.9, added ability for this to also retrieve
  * objects by uuid
- * 
+ *
  * @since 1.7
  */
 public class LocationTagEditor extends OpenmrsPropertyEditor<LocationTag> {
-	
+
 	public LocationTagEditor() {
 	}
-	
+
 	@Override
 	protected LocationTag getObjectById(Integer id) {
 		return Context.getLocationService().getLocationTag(id);
 	}
-	
+
 	@Override
 	protected LocationTag getObjectByUuid(String uuid) {
 		return Context.getLocationService().getLocationTagByUuid(uuid);
