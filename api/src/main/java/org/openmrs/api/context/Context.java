@@ -9,6 +9,21 @@
  */
 package org.openmrs.api.context;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.Future;
+
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Allergen;
@@ -54,7 +69,6 @@ import org.openmrs.notification.MessageService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.scheduler.SchedulerService;
-import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
@@ -71,21 +85,6 @@ import org.springframework.aop.Advisor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
-
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import java.sql.Connection;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.Future;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
@@ -1064,10 +1063,9 @@ public class Context {
 		openSession(); // so that the startup method can use proxyPrivileges
 
 		startup(properties);
-
-		// start the scheduled tasks
-		SchedulerUtil.startup(properties);
-
+		
+		Context.getSchedulerService().onStartup();
+		
 		closeSession();
 	}
 
@@ -1076,15 +1074,6 @@ public class Context {
 	 * closing
 	 */
 	public static void shutdown() {
-		log.debug("Shutting down the scheduler");
-		try {
-			// Needs to be shutdown before Hibernate
-			SchedulerUtil.shutdown();
-		}
-		catch (Exception e) {
-			log.warn("Error while shutting down scheduler service", e);
-		}
-
 		log.debug("Shutting down the modules");
 		try {
 			ModuleUtil.shutdown();

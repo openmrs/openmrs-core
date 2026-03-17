@@ -429,7 +429,6 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	public static void onShutdown() {
-		
 		//Since we are shutting down, stop all threads that reference the openmrs class loader.
 		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 		Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
@@ -446,15 +445,18 @@ public class OpenmrsClassLoader extends URLClassLoader {
 				try {
 					//Set to WebappClassLoader just in case stopping fails.
 					thread.setContextClassLoader(classLoader.getParent());
-					
+
 					//Stopping the current thread will halt all current cleanup.
 					//So do not ever ever even attempt stopping it. :)
 					if (thread == Thread.currentThread()) {
 						continue;
 					}
-					
+
 					log.info("onShutdown Stopping thread: {}", thread.getName());
 					thread.stop();
+				}
+				catch (UnsupportedOperationException e) {
+					log.debug("Error while stopping thread on newer JDK versions", e);
 				}
 				catch (Exception ex) {
 					log.error(ex.getMessage(), ex);
@@ -595,40 +597,6 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			}
 		}
 		return result;
-	}
-	
-	/**
-	 * This method should be called before destroying the instance
-	 *
-	 * @see #destroyInstance()
-	 */
-	public static void saveState() {
-		try {
-			String key = SchedulerService.class.getName();
-			if (!Context.isRefreshingContext()) {
-				mementos.put(key, Context.getSchedulerService().saveToMemento());
-			}
-		}
-		catch (Exception t) {
-			// pass
-		}
-	}
-	
-	/**
-	 * This method should be called after restoring the instance
-	 *
-	 * @see #destroyInstance()
-	 * @see #saveState()
-	 */
-	public static void restoreState() {
-		try {
-			String key = SchedulerService.class.getName();
-			Context.getSchedulerService().restoreFromMemento(mementos.get(key));
-		}
-		catch (APIException e) {
-			// pass
-		}
-		mementos.clear();
 	}
 	
 	/**
