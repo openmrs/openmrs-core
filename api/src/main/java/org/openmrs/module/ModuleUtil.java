@@ -884,9 +884,7 @@ public class ModuleUtil {
 				log.warn("Unable to call willRefreshContext() method in the module's activator", e);
 			}
 		}
-
-		OpenmrsClassLoader.saveState();
-		SchedulerUtil.shutdown();
+		
 		ServiceContext.destroyInstance();
 
 		try {
@@ -915,11 +913,7 @@ public class ModuleUtil {
 
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-
-		OpenmrsClassLoader.restoreState();
-		log.debug("Startup scheduler");
-		SchedulerUtil.startup(Context.getRuntimeProperties());
-
+		
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
 
 		// reload the advice points that were lost when refreshing Spring

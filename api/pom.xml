@@ -294,6 +294,10 @@
 			<artifactId>js-scriptengine</artifactId>
 			<type>pom</type>
 		</dependency>
+		<dependency>
+			<groupId>org.jobrunr</groupId>
+			<artifactId>jobrunr</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<resources>

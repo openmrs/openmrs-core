@@ -353,10 +353,10 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			log.debug("Performing start of modules");
 			// web load modules
 			Listener.performWebStartOfModules(servletContext);
-
-			// start the scheduled tasks
-			SchedulerUtil.startup(getRuntimeProperties());
-		} catch (Exception t) {
+			
+			Context.getSchedulerService().onStartup();
+		}
+		catch (Exception t) {
 			try {
 				Context.shutdown();
 				WebModuleUtil.shutdownModules(servletContext);
@@ -642,9 +642,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
 			log.error("Listener.contextDestroyed: Failed to cleanup drivers in webapp", e);
 		}
-
-		MemoryLeakUtil.shutdownMysqlCancellationTimer();
-
+		
 		OpenmrsClassLoader.onShutdown();
 
 		LogManager.shutdown();

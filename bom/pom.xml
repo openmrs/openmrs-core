@@ -117,6 +117,7 @@
 		<jodaTimeVersion>2.14.1</jodaTimeVersion>
 		<guavaVersion>33.5.0-jre</guavaVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
+		<jobrunrVersion>8.5.1</jobrunrVersion>
 
 		<!-- Testing -->
 		<junitVersion>6.0.3</junitVersion>
@@ -601,6 +602,11 @@
 				<artifactId>js-scriptengine</artifactId>
 				<version>${graalJsVersion}</version>
 				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.jobrunr</groupId>
+				<artifactId>jobrunr</artifactId>
+				<version>${jobrunrVersion}</version>
 			</dependency>
 
 			<!-- Testing -->

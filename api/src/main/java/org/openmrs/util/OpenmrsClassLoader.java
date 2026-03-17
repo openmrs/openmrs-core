@@ -405,7 +405,11 @@ public class OpenmrsClassLoader extends URLClassLoader {
 
 					log.info("onShutdown Stopping thread: {}", thread.getName());
 					thread.stop();
-				} catch (Exception ex) {
+				}
+				catch (UnsupportedOperationException e) {
+					log.debug("Error while stopping thread on newer JDK versions", e);
+				}
+				catch (Exception ex) {
 					log.error(ex.getMessage(), ex);
 				}
 			}
@@ -542,39 +546,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		return result;
 	}
-
-	/**
-	 * This method should be called before destroying the instance
-	 *
-	 * @see #destroyInstance()
-	 */
-	public static void saveState() {
-		try {
-			String key = SchedulerService.class.getName();
-			if (!Context.isRefreshingContext()) {
-				mementos.put(key, Context.getSchedulerService().saveToMemento());
-			}
-		} catch (Exception t) {
-			// pass
-		}
-	}
-
-	/**
-	 * This method should be called after restoring the instance
-	 *
-	 * @see #destroyInstance()
-	 * @see #saveState()
-	 */
-	public static void restoreState() {
-		try {
-			String key = SchedulerService.class.getName();
-			Context.getSchedulerService().restoreFromMemento(mementos.get(key));
-		} catch (APIException e) {
-			// pass
-		}
-		mementos.clear();
-	}
-
+	
 	/**
 	 * All objects depending on the old classloader should be restarted here Should be called after
 	 * destoryInstance() and after the service is restarted
