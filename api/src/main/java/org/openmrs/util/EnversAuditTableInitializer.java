@@ -222,8 +222,8 @@ public class EnversAuditTableInitializer {
 	}
 
 	/**
-	 * Creates a backfill revision entry in the revision entity table. Uses the REVTSTMP column which is
-	 * explicitly defined in Hibernate's RevisionMapping with @Column(name = "REVTSTMP").
+	 * Creates a backfill revision entry in the revision entity table. Dynamically discovers the
+	 * timestamp column name from JDBC metadata to avoid hardcoding Hibernate-version-specific names.
 	 *
 	 * @param connection JDBC connection
 	 * @param revisionTableName name of the revision entity table
@@ -231,7 +231,9 @@ public class EnversAuditTableInitializer {
 	 * @throws SQLException if the revision entry cannot be created
 	 */
 	static int createBackfillRevision(Connection connection, String revisionTableName) throws SQLException {
-		String sql = "INSERT INTO " + requireSafeIdentifier(revisionTableName) + " (REVTSTMP) VALUES (?)";
+		String timestampColumn = getRevisionTimestampColumn(connection, revisionTableName);
+		String sql = "INSERT INTO " + requireSafeIdentifier(revisionTableName) + " ("
+		        + requireSafeIdentifier(timestampColumn) + ") VALUES (?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setLong(1, System.currentTimeMillis());
 			pstmt.executeUpdate();
@@ -242,6 +244,36 @@ public class EnversAuditTableInitializer {
 			}
 		}
 		throw new SQLException("Failed to create backfill revision entry in " + revisionTableName);
+	}
+
+	/**
+	 * Discovers the timestamp column name in the revision entity table by finding the first BIGINT
+	 * column that is not the primary key. This avoids hardcoding Hibernate-version-specific names like
+	 * "REVTSTMP" which may differ across Hibernate versions.
+	 *
+	 * @param connection JDBC connection
+	 * @param revisionTableName name of the revision entity table
+	 * @return the timestamp column name, falling back to "REVTSTMP" if not found
+	 * @throws SQLException if metadata cannot be read
+	 */
+	static String getRevisionTimestampColumn(Connection connection, String revisionTableName) throws SQLException {
+		DatabaseMetaData metaData = connection.getMetaData();
+		String pkColumn = null;
+		try (ResultSet pkRs = metaData.getPrimaryKeys(null, null, revisionTableName)) {
+			if (pkRs.next()) {
+				pkColumn = pkRs.getString("COLUMN_NAME");
+			}
+		}
+		try (ResultSet colRs = metaData.getColumns(null, null, revisionTableName, null)) {
+			while (colRs.next()) {
+				String colName = colRs.getString("COLUMN_NAME");
+				int dataType = colRs.getInt("DATA_TYPE");
+				if (dataType == java.sql.Types.BIGINT && !colName.equalsIgnoreCase(pkColumn)) {
+					return colName;
+				}
+			}
+		}
+		return "REVTSTMP";
 	}
 
 	/**
