@@ -9,15 +9,15 @@
  */
 package org.openmrs.module.web;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Path;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleUtil;
@@ -105,8 +105,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 			basePath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources";
 		}
 
-		Path normalizedPath = Path.of(realPath).normalize();
-		Path normalizedBase = Path.of(basePath).normalize();
+		Path normalizedPath = Paths.get(realPath).normalize();
+		Path normalizedBase = Paths.get(basePath).normalize();
 		if (!normalizedPath.startsWith(normalizedBase)) {
 			log.warn("Detected attempted directory traversal with path: " + path);
 			return null;
