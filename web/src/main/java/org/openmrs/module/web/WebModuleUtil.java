@@ -16,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -153,11 +152,6 @@ public class WebModuleUtil {
 				while (entries.hasMoreElements()) {
 					JarEntry entry = entries.nextElement();
 					String name = entry.getName();
-					if (Paths.get(name).startsWith("..")) {
-						throw new UnsupportedOperationException("Attempted to write file '" + name
-						        + "' rejected as it attempts to write outside the chosen directory. This may be the result of a zip-slip style attack.");
-					}
-
 					log.debug("Entry name: {}", name);
 					if (name.startsWith("web/module/")) {
 						// trim out the starting path of "web/module/"
@@ -182,6 +176,10 @@ public class WebModuleUtil {
 
 						// get the output file
 						File outFile = new File(absPath.toString().replace("/", File.separator));
+						if (!outFile.toPath().normalize().startsWith(webInf.toPath().normalize())) {
+							throw new UnsupportedOperationException("Attempted to write file '" + name
+							        + "' rejected as it attempts to write outside the WEB-INF directory. This may be the result of a zip-slip style attack.");
+						}
 						if (entry.isDirectory()) {
 							if (!outFile.exists()) {
 								outFile.mkdirs();
