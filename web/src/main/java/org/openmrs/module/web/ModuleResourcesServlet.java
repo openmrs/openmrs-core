@@ -12,6 +12,7 @@ package org.openmrs.module.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -92,17 +93,27 @@ public class ModuleResourcesServlet extends HttpServlet {
 		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources"
 		        + relativePath;
 
+		String basePath;
+
 		//if in dev mode, load resources from the development directory
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		if (devDir != null) {
 			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources" + relativePath;
+			basePath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources";
+		} else {
+			basePath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources";
 		}
 
-		realPath = realPath.replace("/", File.separator);
+		Path normalizedPath = Path.of(realPath).normalize();
+		Path normalizedBase = Path.of(basePath).normalize();
+		if (!normalizedPath.startsWith(normalizedBase)) {
+			log.warn("Detected attempted directory traversal with path: " + path);
+			return null;
+		}
 
-		File f = new File(realPath);
+		File f = normalizedPath.toFile();
 		if (!f.exists()) {
-			log.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
+			log.warn("No file with path '" + normalizedPath + "' exists for module '" + module.getModuleId() + "'");
 			return null;
 		}
 
