@@ -9,13 +9,6 @@
  */
 package org.openmrs.logging;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
@@ -26,21 +19,27 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+
 class MemoryAppenderTest {
-	
+
 	private MemoryAppender memoryAppender;
+
 	private Logger logger;
-	
+
 	@BeforeEach
 	public void setup() {
-		memoryAppender = MemoryAppender.newBuilder()
-			.setLayout(PatternLayout.newBuilder().withPattern("%m").build())
-			.build();
+		memoryAppender = MemoryAppender.newBuilder().setLayout(PatternLayout.newBuilder().withPattern("%m").build()).build();
 		memoryAppender.start();
-		
+
 		setupLogger();
 	}
-	
+
 	@AfterEach
 	public void tearDown() {
 		logger.removeAppender(memoryAppender);
@@ -50,7 +49,7 @@ class MemoryAppenderTest {
 		memoryAppender = null;
 		logger = null;
 	}
-	
+
 	@Test
 	void memoryAppender_shouldAppendAMessage() {
 		logger.warn("Logging message");
@@ -75,29 +74,27 @@ class MemoryAppenderTest {
 			assertThat(logLines.get(i), equalTo("Logging message"));
 		}
 	}
-	
+
 	@Test
 	void memoryAppender_shouldOnlyKeepBufferSizeItems() {
 		// clear setup() results
 		logger.removeAppender(memoryAppender);
-		
-		memoryAppender = MemoryAppender.newBuilder()
-			.setLayout(PatternLayout.newBuilder().withPattern("%m").build())
-			.setBufferSize(4)
-			.build();
+
+		memoryAppender = MemoryAppender.newBuilder().setLayout(PatternLayout.newBuilder().withPattern("%m").build())
+		        .setBufferSize(4).build();
 		memoryAppender.start();
-		
+
 		setupLogger();
-		
+
 		for (int i = 0; i < 12; i++) {
 			logger.warn("Logging message");
 		}
-		
+
 		List<String> logLines = memoryAppender.getLogLines();
 		assertThat(logLines, notNullValue());
 		assertThat(logLines.size(), equalTo(4));
 	}
-	
+
 	private void setupLogger() {
 		logger = (Logger) LogManager.getLogger("MemoryAppenderTest");
 		// NB This needs to come before the setLevel() call

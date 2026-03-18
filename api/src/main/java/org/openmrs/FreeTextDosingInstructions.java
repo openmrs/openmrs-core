@@ -9,19 +9,19 @@
  */
 package org.openmrs;
 
+import java.util.Locale;
+
 import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-
-import java.util.Locale;
 
 /**
  * @since 1.10
  */
 public class FreeTextDosingInstructions extends BaseDosingInstructions {
-	
+
 	private String instructions;
-	
+
 	/**
 	 * @see DosingInstructions#getDosingInstructions(DrugOrder)
 	 */
@@ -29,7 +29,7 @@ public class FreeTextDosingInstructions extends BaseDosingInstructions {
 	public String getDosingInstructionsAsString(Locale locale) {
 		return this.instructions;
 	}
-	
+
 	/**
 	 * @see DosingInstructions#setDosingInstructions(DrugOrder)
 	 */
@@ -38,33 +38,33 @@ public class FreeTextDosingInstructions extends BaseDosingInstructions {
 		order.setDosingType(this.getClass());
 		order.setDosingInstructions(this.getInstructions());
 	}
-	
+
 	/**
 	 * @see DosingInstructions#getDosingInstructions(DrugOrder)
 	 */
 	@Override
 	public DosingInstructions getDosingInstructions(DrugOrder order) {
 		if (!order.getDosingType().equals(this.getClass())) {
-			throw new APIException("DrugOrder.error.dosingTypeIsMismatched", new Object[] { this.getClass(),
-			        order.getDosingType() });
+			throw new APIException("DrugOrder.error.dosingTypeIsMismatched",
+			        new Object[] { this.getClass(), order.getDosingType() });
 		}
 		FreeTextDosingInstructions freeTextDosingInstructions = new FreeTextDosingInstructions();
 		freeTextDosingInstructions.setInstructions(order.getDosingInstructions());
 		return freeTextDosingInstructions;
 	}
-	
+
 	@Override
 	public void validate(DrugOrder order, Errors errors) {
 		ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
 		    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeFreeText");
 	}
-	
+
 	public String getInstructions() {
 		return instructions;
 	}
-	
+
 	public void setInstructions(String instructions) {
 		this.instructions = instructions;
 	}
-	
+
 }

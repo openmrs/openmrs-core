@@ -38,44 +38,51 @@ import org.springframework.validation.Validator;
  * <li>checks for no recursion in the obs grouping.
  * <li>Makes sure the obs has at least one value (if not an obs grouping)</li>
  * </ul>
- * 
+ *
  * @see org.openmrs.Obs
  */
 @Handler(supports = { Obs.class }, order = 50)
 public class ObsValidator implements Validator {
-	
+
 	public static final int VALUE_TEXT_MAX_LENGTH = 65535;
-	
+
 	/**
-	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
+	 * <p>
 	 * <strong>Should</strong> support Obs class
+	 *
+	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return Obs.class.isAssignableFrom(c);
 	}
-	
+
 	/**
+	 * <p>
+	 * <strong>Should</strong> fail validation if personId is null<br/>
+	 * <strong>Should</strong> fail validation if obsDatetime is null<br/>
+	 * <strong>Should</strong> fail validation if concept is null<br/>
+	 * <strong>Should</strong> fail validation if concept datatype is boolean and valueBoolean is
+	 * null<br/>
+	 * <strong>Should</strong> fail validation if concept datatype is coded and valueCoded is null<br/>
+	 * <strong>Should</strong> fail validation if concept datatype is date and valueDatetime is
+	 * null<br/>
+	 * <strong>Should</strong> fail validation if concept datatype is numeric and valueNumeric is
+	 * null<br/>
+	 * <strong>Should</strong> fail validation if concept datatype is text and valueText is null<br/>
+	 * <strong>Should</strong> fail validation if obs ancestors contains obs<br/>
+	 * <strong>Should</strong> pass validation if all values present<br/>
+	 * <strong>Should</strong> fail validation if the parent obs has values<br/>
+	 * <strong>Should</strong> reject an invalid concept and drug combination<br/>
+	 * <strong>Should</strong> pass if answer concept and concept of value drug match<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct<br/>
+	 * <strong>Should</strong> not validate if obs is voided<br/>
+	 * <strong>Should</strong> not validate a voided child obs<br/>
+	 * <strong>Should</strong> fail for a null object
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if personId is null
-	 * <strong>Should</strong> fail validation if obsDatetime is null
-	 * <strong>Should</strong> fail validation if concept is null
-	 * <strong>Should</strong> fail validation if concept datatype is boolean and valueBoolean is null
-	 * <strong>Should</strong> fail validation if concept datatype is coded and valueCoded is null
-	 * <strong>Should</strong> fail validation if concept datatype is date and valueDatetime is null
-	 * <strong>Should</strong> fail validation if concept datatype is numeric and valueNumeric is null
-	 * <strong>Should</strong> fail validation if concept datatype is text and valueText is null
-	 * <strong>Should</strong> fail validation if obs ancestors contains obs
-	 * <strong>Should</strong> pass validation if all values present
-	 * <strong>Should</strong> fail validation if the parent obs has values
-	 * <strong>Should</strong> reject an invalid concept and drug combination
-	 * <strong>Should</strong> pass if answer concept and concept of value drug match
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
-	 * <strong>Should</strong> not validate if obs is voided
-	 * <strong>Should</strong> not validate a voided child obs
-	 * <strong>Should</strong> fail for a null object
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -90,7 +97,7 @@ public class ObsValidator implements Validator {
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
 		    "comment", "voidReason");
 	}
-	
+
 	/**
 	 * Checks whether obs has all required values, and also checks to make sure that no obs group
 	 * contains any of its ancestors
@@ -98,6 +105,8 @@ public class ObsValidator implements Validator {
 	 * @param obs
 	 * @param errors
 	 * @param ancestors
+	 * @param atRootNode whether or not this is the obs that validate() was originally called on. If not
+	 *            then we shouldn't reject fields by name.
 	 */
 	private void validateHelper(Obs obs, Errors errors, List<Obs> ancestors) {
 		boolean inGroupMember = !ancestors.isEmpty();
@@ -107,42 +116,42 @@ public class ObsValidator implements Validator {
 		if (obs.getObsDatetime() == null) {
 			rejectValue(errors, obs, inGroupMember, "obsDatetime", "error.null");
 		}
-		
+
 		boolean isObsGroup = obs.hasGroupMembers(true);
 		// if this is an obs group (i.e., parent) make sure that it has no values (other than valueGroupId) set
 		if (isObsGroup) {
 			if (obs.getValueCoded() != null) {
 				rejectValue(errors, obs, inGroupMember, "valueCoded", "error.not.null");
 			}
-			
+
 			if (obs.getValueDrug() != null) {
 				rejectValue(errors, obs, inGroupMember, "valueDrug", "error.not.null");
 			}
-			
+
 			if (obs.getValueDatetime() != null) {
 				rejectValue(errors, obs, inGroupMember, "valueDatetime", "error.not.null");
 			}
-			
+
 			if (obs.getValueNumeric() != null) {
 				rejectValue(errors, obs, inGroupMember, "valueNumeric", "error.not.null");
 			}
-			
+
 			if (obs.getValueModifier() != null) {
 				rejectValue(errors, obs, inGroupMember, "valueModifier", "error.not.null");
 			}
-			
+
 			if (obs.getValueText() != null) {
 				rejectValue(errors, obs, inGroupMember, "valueText", "error.not.null");
 			}
-			
+
 			if (obs.getValueBoolean() != null) {
 				rejectValue(errors, obs, inGroupMember, "valueBoolean", "error.not.null");
 			}
-			
+
 			if (obs.getValueComplex() != null) {
 				rejectValue(errors, obs, inGroupMember, "valueComplex", "error.not.null");
 			}
-			
+
 		}
 		// if this is NOT an obs group, make sure that it has at least one value set (not counting obsGroupId)
 		else if (obs.getValueBoolean() == null && obs.getValueCoded() == null && obs.getValueCodedName() == null
@@ -151,7 +160,7 @@ public class ObsValidator implements Validator {
 		        && obs.getComplexData() == null) {
 			reject(errors, obs, inGroupMember, "error.noValue");
 		}
-		
+
 		// make sure there is a concept associated with the obs
 		Concept c = obs.getConcept();
 		if (c == null) {
@@ -171,16 +180,18 @@ public class ObsValidator implements Validator {
 					rejectValue(errors, obs, inGroupMember, "valueNumeric", "error.null");
 				} else if (dt.isNumeric()) {
 					ConceptNumeric cn = Context.getConceptService().getConceptNumeric(c.getConceptId());
-					// If the concept numeric is not precise, the value cannot be a float, so raise an error 
+					// If the concept numeric is not precise, the value cannot be a float, so raise an error
 					if (!cn.getAllowDecimal() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
 						rejectValue(errors, obs, inGroupMember, "valueNumeric", "Obs.error.precision");
 					}
 					
 					validateConceptReferenceRange(obs, errors, inGroupMember);
+
+					validateConceptReferenceRange(obs, errors, atRootNode);
 				} else if (dt.isText() && obs.getValueText() == null) {
 					rejectValue(errors, obs, inGroupMember, "valueText", "error.null");
 				}
-				
+
 				//If valueText is longer than the maxlength, raise an error as well.
 				if (dt.isText() && obs.getValueText() != null && obs.getValueText().length() > VALUE_TEXT_MAX_LENGTH) {
 					rejectValue(errors, obs, inGroupMember, "valueText", "error.exceededMaxLengthOfField");
@@ -189,16 +200,16 @@ public class ObsValidator implements Validator {
 				rejectValue(errors, obs, inGroupMember, "concept", "must have a datatype");
 			}
 		}
-		
+
 		// If an obs fails validation, don't bother checking its children
 		if (errors.hasErrors()) {
 			return;
 		}
-		
+
 		if (ancestors.contains(obs)) {
 			rejectValue(errors, obs, inGroupMember, "groupMembers", "Obs.error.groupContainsItself");
 		}
-		
+
 		Set<Obs> groupMembers = obs.getGroupMembers();
 		if (groupMembers != null && !groupMembers.isEmpty()) {
 			List<Obs> orderedGroupMembers = new ArrayList<>(groupMembers);
@@ -221,7 +232,7 @@ public class ObsValidator implements Validator {
 			}
 			ancestors.remove(ancestors.size() - 1);
 		}
-		
+
 		if (obs.getValueCoded() != null && obs.getValueDrug() != null && obs.getValueDrug().getConcept() != null) {
 			Concept trueConcept = Context.getConceptService().getTrueConcept();
 			Concept falseConcept = Context.getConceptService().getFalseConcept();
@@ -236,9 +247,11 @@ public class ObsValidator implements Validator {
 	/**
 	 * This method validates Obs' numeric values:
 	 * <ol>
-	 *     <li>Validates Obs in relation to criteria e.g. checks patient's age is within the valid range</li>
-	 *     <li>Validates if Obs' numeric value is within the valid range; i.e. >= low absolute && <= high absolute.</li>
-	 *     <li>Sets field errors if numeric value is outside the valid range</li>
+	 * <li>Validates Obs in relation to criteria e.g. checks patient's age is within the valid
+	 * range</li>
+	 * <li>Validates if Obs' numeric value is within the valid range; i.e. >= low absolute && <= high
+	 * absolute.</li>
+	 * <li>Sets field errors if numeric value is outside the valid range</li>
 	 * <ol/>
 	 *
 	 * @param obs Observation to validate
@@ -250,6 +263,8 @@ public class ObsValidator implements Validator {
 		if (conceptReferenceRange != null) {
 			validateAbsoluteRanges(obs, conceptReferenceRange, errors, inGroupMember);
 			
+			validateAbsoluteRanges(obs, conceptReferenceRange, errors, atRootNode);
+
 			if (obs.getId() == null) {
 				setObsReferenceRange(obs, conceptReferenceRange);
 			}
@@ -260,21 +275,19 @@ public class ObsValidator implements Validator {
 	}
 
 	/**
-	 * Evaluates the criteria and return the most strict {@link ConceptReferenceRange} for a given concept
-	 * and patient contained in an observation.
-	 * It considers all valid ranges that match the criteria for the person.
+	 * Evaluates the criteria and return the most strict {@link ConceptReferenceRange} for a given
+	 * concept and patient contained in an observation. It considers all valid ranges that match the
+	 * criteria for the person.
 	 *
 	 * @param obs containing The concept and patient for whom the range is being evaluated
 	 * @return The strictest {@link ConceptReferenceRange}, or null if no valid range is found
-	 * 
 	 * @since 2.7.0
 	 */
 	public ConceptReferenceRange getReferenceRange(Obs obs) {
 		if (obs == null || obs.getPerson() == null || obs.getConcept() == null) {
 			return null;
 		}
-		return Context.getConceptService().getConceptReferenceRange(
-			new ConceptReferenceRangeContext(obs));
+		return Context.getConceptService().getConceptReferenceRange(new ConceptReferenceRangeContext(obs));
 	}
 
 	/**
@@ -348,6 +361,25 @@ public class ObsValidator implements Validator {
 			String message = Context.getMessageSourceService().getMessage(errors.getGlobalErrors().get(globalErrorCount),
 			    Context.getLocale());
 			errors.reject("Obs.error.inGroupMember", new Object[] { getGroupMemberIdentifier(obs), message }, null);
+	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors,
+	        boolean atRootNode) {
+		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
+			if (atRootNode) {
+				errors.rejectValue("valueNumeric", "error.value.outOfRange.high",
+				    new Object[] { conceptReferenceRange.getHiAbsolute() }, null);
+			} else {
+				errors.rejectValue("groupMembers", "Obs.error.inGroupMember", new Object[] {}, null);
+			}
+		}
+
+		if (conceptReferenceRange.getLowAbsolute() != null
+		        && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
+			if (atRootNode) {
+				errors.rejectValue("valueNumeric", "error.value.outOfRange.low",
+				    new Object[] { conceptReferenceRange.getLowAbsolute() }, null);
+			} else {
+				errors.rejectValue("groupMembers", "Obs.error.inGroupMember", new Object[] {}, null);
+			}
 		}
 	}
 
@@ -380,7 +412,7 @@ public class ObsValidator implements Validator {
 		if (obs.getConcept() == null) {
 			return;
 		}
-		
+
 		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(obs.getConcept().getId());
 
 		if (conceptNumeric != null) {
@@ -393,7 +425,7 @@ public class ObsValidator implements Validator {
 			obsRefRange.setLowCritical(conceptNumeric.getLowCritical());
 			obsRefRange.setLowNormal(conceptNumeric.getLowNormal());
 			obsRefRange.setObs(obs);
-			
+
 			obs.setReferenceRange(obsRefRange);
 		}
 	}
@@ -408,13 +440,13 @@ public class ObsValidator implements Validator {
 		if (referenceRange == null || obs.getValueNumeric() == null) {
 			return;
 		}
-		
+
 		Double obsValue = obs.getValueNumeric();
-		Double hiCritical = referenceRange.getHiCritical(); 
+		Double hiCritical = referenceRange.getHiCritical();
 		Double lowCritical = referenceRange.getLowCritical();
 		Double lowNormal = referenceRange.getLowNormal();
 		Double hiNormal = referenceRange.getHiNormal();
-		
+
 		if (hiCritical != null && obsValue >= hiCritical) {
 			obs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
 		} else if (hiNormal != null && obsValue > hiNormal) {
@@ -427,5 +459,5 @@ public class ObsValidator implements Validator {
 			obs.setInterpretation(Obs.Interpretation.NORMAL);
 		}
 	}
-	
+
 }

@@ -24,55 +24,56 @@ import com.fasterxml.jackson.databind.ser.Serializers;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 /**
- * This is a Jackson-Databind module that simply changes how we serialize locales by pre-adopting the Jackson 3.0 convention
- * of using toLanguageTag() instead of toString(). When Jackson 3.0 is available, we should be able to drop this class.
+ * This is a Jackson-Databind module that simply changes how we serialize locales by pre-adopting
+ * the Jackson 3.0 convention of using toLanguageTag() instead of toString(). When Jackson 3.0 is
+ * available, we should be able to drop this class.
  * <p/>
- * This module is available to be used by any use-case that creates an ObjectMapper. However, it is only registered by default
- * for the Spring MappingJackson2HttpMessageConverter class.
+ * This module is available to be used by any use-case that creates an ObjectMapper. However, it is
+ * only registered by default for the Spring MappingJackson2HttpMessageConverter class.
  */
 public class OpenmrsJacksonLocaleModule extends Module {
-	
+
 	private static final String MODULE_NAME = "openmrs-locale";
-	
+
 	private static final Version VERSION = new Version(1, 0, 0, null, "org.openmrs.web", "openmrs-locale");
-	
+
 	@Override
 	public String getModuleName() {
 		return MODULE_NAME;
 	}
-	
+
 	@Override
 	public Version version() {
 		return VERSION;
 	}
-	
+
 	@Override
 	public void setupModule(SetupContext setupContext) {
 		setupContext.addSerializers(new Serializers.Base() {
-			
+
 			@Override
 			@SuppressWarnings("unchecked")
 			public JsonSerializer<?> findSerializer(SerializationConfig config, JavaType type, BeanDescription beanDesc) {
-				
+
 				final Class<?> raw = type.getRawClass();
 				if (Locale.class.isAssignableFrom(raw)) {
 					return new OpenmrsLocaleSerializer((Class<Locale>) raw);
 				}
-				
+
 				return super.findSerializer(config, type, beanDesc);
 			}
 		});
 	}
-	
+
 	private static class OpenmrsLocaleSerializer extends StdSerializer<Locale> {
-		
+
 		protected OpenmrsLocaleSerializer(Class<Locale> t) {
 			super(t, false);
 		}
-		
+
 		@Override
 		public void serialize(Locale locale, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-			throws IOException {
+		        throws IOException {
 			if (locale == Locale.ROOT) {
 				jsonGenerator.writeString("");
 			} else {

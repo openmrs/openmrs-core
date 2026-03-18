@@ -9,10 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Date;
 import java.util.Set;
 
@@ -30,18 +26,22 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link PatientValidator} class.
  */
 public class PatientValidatorTest extends PersonValidatorTest {
-	
+
 	@Autowired
 	@Qualifier("patientValidator")
 	@Override
 	public void setValidator(Validator validator) {
 		super.setValidator(validator);
 	}
-	
+
 	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
@@ -52,29 +52,29 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		//set all identifiers to be non-preferred
 		for (PatientIdentifier id : pa.getIdentifiers())
 			id.setPreferred(false);
-		
+
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		assertTrue(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosenForVoidedPatients() {
 		Patient pa = Context.getPatientService().getPatient(432);
-		
+
 		assertTrue(pa.getVoided());//sanity check
 		assertNotNull(pa.getPatientIdentifier());
 		for (PatientIdentifier id : pa.getIdentifiers())
 			id.setPreferred(false);
-		
+
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		assertTrue(errors.hasErrors());
 	}
-	
+
 	@Test
 	public void validate_shouldNotFailWhenPatientHasOnlyOneIdentifierAndItsNotPreferred() {
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
@@ -100,13 +100,13 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		patientIdentifier1.setDateCreated(new Date());
 		patientIdentifier1.setIdentifierType(patientIdentifierType);
 		patient.addIdentifier(patientIdentifier1);
-		
+
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see org.openmrs.validator.PatientValidator#validate(Object,Errors)
 	 */
@@ -115,10 +115,10 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Patient pa = new Patient(1);
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("gender"));
 	}
-	
+
 	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
@@ -148,15 +148,15 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		patientIdentifier1.setDateCreated(new Date());
 		patientIdentifier1.setIdentifierType(patientIdentifierType);
 		patient.addIdentifier(patientIdentifier1);
-		
+
 		patient.setVoidReason("voidReason");
-		
+
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
@@ -186,13 +186,13 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		patientIdentifier1.setDateCreated(new Date());
 		patientIdentifier1.setIdentifierType(patientIdentifierType);
 		patient.addIdentifier(patientIdentifier1);
-		
-		patient
-		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+
+		patient.setVoidReason(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }

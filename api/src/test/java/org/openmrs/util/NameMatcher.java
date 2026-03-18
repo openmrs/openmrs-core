@@ -16,13 +16,13 @@ import org.hamcrest.TypeSafeMatcher;
 import org.openmrs.PersonName;
 
 public class NameMatcher extends TypeSafeMatcher<Set<PersonName>> {
-	
+
 	private String fullName;
-	
+
 	public NameMatcher(String fullName) {
 		this.fullName = fullName;
 	}
-	
+
 	@Override
 	public boolean matchesSafely(Set<PersonName> personNames) {
 		for (PersonName personName : personNames) {
@@ -32,12 +32,12 @@ public class NameMatcher extends TypeSafeMatcher<Set<PersonName>> {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void describeTo(Description description) {
 		description.appendText(fullName);
 	}
-	
+
 	public static NameMatcher containsFullName(String fullName) {
 		return new NameMatcher(fullName);
 	}

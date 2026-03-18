@@ -17,23 +17,23 @@ import org.openmrs.api.OpenmrsService;
  * It is recommended that all services extend this class instead of simply implementing the
  * OpenmrsService class. This will allow for some buffer room so that inheriting classes don't have
  * to immediately implement all methods in OpenmrsService
- * 
+ *
  * @see OpenmrsService
  */
 public abstract class BaseOpenmrsService implements OpenmrsService {
-	
+
 	/**
 	 * @see org.openmrs.api.OpenmrsService#onShutdown()
 	 */
 	@Override
 	public void onShutdown() {
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.OpenmrsService#onStartup()
 	 */
 	@Override
 	public void onStartup() {
 	}
-	
+
 }

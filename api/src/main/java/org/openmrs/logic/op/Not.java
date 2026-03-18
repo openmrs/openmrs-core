@@ -13,10 +13,10 @@ package org.openmrs.logic.op;
  * The Not operator will negate the a logic expression
  */
 public class Not implements LogicalOperator {
-	
+
 	@Override
 	public String toString() {
 		return "NOT";
 	}
-	
+
 }

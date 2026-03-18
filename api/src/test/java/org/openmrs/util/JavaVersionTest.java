@@ -9,9 +9,9 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class JavaVersionTest {
 

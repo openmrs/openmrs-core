@@ -18,4 +18,12 @@
 	   <packageUrl regex="true">^pkg:maven/org\.openmrs\.liquibase/openmrs-liquibase@.*$</packageUrl>
 	   <cve>CVE-2022-0839</cve>
 	</suppress>
+	<suppress>
+	   <notes><![CDATA[
+	   jQuery bundled inside Maven Fluido site skin (build-time reporting only, not a runtime dependency).
+	   Triggered by SpotBugs maven plugin rendering reports with maven-fluido-skin.
+	   ]]></notes>
+	   <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
+	   <vulnerabilityName regex="true">^jquery issue:.*$</vulnerabilityName>
+	</suppress>
 </suppressions>

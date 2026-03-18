@@ -17,19 +17,19 @@ import org.openmrs.api.context.Context;
  * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
- * 
+ *
  * @see ProgramWorkflow
  */
 public class ProgramWorkflowEditor extends OpenmrsPropertyEditor<ProgramWorkflow> {
-	
+
 	public ProgramWorkflowEditor() {
 	}
-	
+
 	@Override
 	protected ProgramWorkflow getObjectById(Integer id) {
 		return Context.getProgramWorkflowService().getWorkflow(id);
 	}
-	
+
 	@Override
 	protected ProgramWorkflow getObjectByUuid(String uuid) {
 		return Context.getProgramWorkflowService().getWorkflowByUuid(uuid);

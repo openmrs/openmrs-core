@@ -9,9 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
@@ -19,11 +16,14 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link FieldValidator} class.
  */
 public class FieldValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
@@ -38,13 +38,13 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		ff.setRetired(retired);
 		Boolean multiple = Boolean.FALSE;
 		ff.setSelectMultiple(multiple);
-		
+
 		Errors errors = new BindException(ff, "name");
 		new FieldValidator().validate(ff, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
@@ -59,13 +59,13 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		ff.setRetired(retired);
 		Boolean multiple = Boolean.FALSE;
 		ff.setSelectMultiple(multiple);
-		
+
 		Errors errors = new BindException(ff, "name");
 		new FieldValidator().validate(ff, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
@@ -80,13 +80,13 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		ff.setRetired(retired);
 		Boolean multiple = Boolean.FALSE;
 		ff.setSelectMultiple(multiple);
-		
+
 		Errors errors = new BindException(ff, "name");
 		new FieldValidator().validate(ff, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
@@ -102,13 +102,13 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		ff.setRetired(retired);
 		Boolean multiple = null;
 		ff.setSelectMultiple(multiple);
-		
+
 		Errors errors = new BindException(ff, "selectMultiple");
 		new FieldValidator().validate(ff, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("selectMultiple"));
 	}
-	
+
 	/**
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
@@ -124,13 +124,13 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		ff.setRetired(retired);
 		Boolean multiple = Boolean.TRUE;
 		ff.setSelectMultiple(multiple);
-		
+
 		Errors errors = new BindException(ff, "retired");
 		new FieldValidator().validate(ff, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("retired"));
 	}
-	
+
 	/**
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
@@ -145,13 +145,13 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		ff.setRetired(retired);
 		Boolean multiple = Boolean.FALSE;
 		ff.setSelectMultiple(multiple);
-		
+
 		Errors errors = new BindException(ff, "name");
 		new FieldValidator().validate(ff, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
@@ -169,13 +169,13 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		ff.setTableName("tableName");
 		ff.setAttributeName("attributeName");
 		ff.setRetireReason("retireReason");
-		
+
 		Errors errors = new BindException(ff, "field");
 		new FieldValidator().validate(ff, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
@@ -186,21 +186,21 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Boolean retired = Boolean.FALSE;
 		ft.setId(0xdeadcafe);
 		ff.setFieldType(ft);
-		ff
-		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		ff.setName(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		ff.setRetired(retired);
 		Boolean multiple = Boolean.FALSE;
 		ff.setSelectMultiple(multiple);
-		ff
-		        .setTableName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		ff
-		        .setAttributeName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		ff
-		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+		ff.setTableName(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		ff.setAttributeName(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		ff.setRetireReason(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+
 		Errors errors = new BindException(ff, "field");
 		new FieldValidator().validate(ff, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 		assertTrue(errors.hasFieldErrors("tableName"));
 		assertTrue(errors.hasFieldErrors("attributeName"));

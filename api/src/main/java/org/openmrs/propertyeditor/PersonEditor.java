@@ -27,7 +27,8 @@ import org.springframework.util.StringUtils;
 public class PersonEditor extends PropertyEditorSupport {
 
 	/**
-	 * <strong>Should</strong> set using id
+	 * <p>
+	 * <strong>Should</strong> set using id<br/>
 	 * <strong>Should</strong> set using uuid
 	 *
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
@@ -39,8 +40,7 @@ public class PersonEditor extends PropertyEditorSupport {
 			try {
 				Integer personId = Integer.valueOf(text);
 				setValue(ps.getPerson(personId));
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				Person person = ps.getPersonByUuid(text);
 				setValue(person);
 				if (person == null) {
@@ -51,7 +51,7 @@ public class PersonEditor extends PropertyEditorSupport {
 			setValue(null);
 		}
 	}
-	
+
 	/**
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
@@ -64,5 +64,5 @@ public class PersonEditor extends PropertyEditorSupport {
 			return (t.getPersonId() == null) ? "" : t.getPersonId().toString();
 		}
 	}
-	
+
 }

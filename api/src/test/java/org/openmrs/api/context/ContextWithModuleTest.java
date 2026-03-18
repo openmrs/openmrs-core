@@ -9,8 +9,6 @@
  */
 package org.openmrs.api.context;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Properties;
 
 import org.junit.jupiter.api.AfterEach;
@@ -22,44 +20,46 @@ import org.openmrs.module.ModuleInteroperabilityTest;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * This test class is meant just for testing the {@link Context#loadClass(String)} method. This
  * method needs to have a module loaded for it to test correctly, so it is put into a separate class
  * The module is stolen/copied from the {@link ModuleInteroperabilityTest}
- * 
+ *
  * @see ContextTest
  */
 public class ContextWithModuleTest extends BaseContextSensitiveTest {
-	
+
 	@BeforeEach
 	public void startupBeforeEachTest() {
 		ModuleUtil.startup(getRuntimeProperties());
 	}
-	
+
 	@AfterEach
 	public void cleanupAfterEachTest() {
 		ModuleUtil.shutdown();
 	}
-	
+
 	/**
 	 * This class file uses the atd and dss modules to test the compatibility
-	 * 
+	 *
 	 * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#getRuntimeProperties()
 	 */
 	@Override
 	public Properties getRuntimeProperties() {
 		Properties props = super.getRuntimeProperties();
-		
+
 		// NOTE! This module is modified heavily from the original atd modules.
 		// the "/lib" folder has been emptied to compact the size.
 		// the "/metadata/sqldiff.xml" file has been deleted in order to load the modules into hsql.
 		//    (the sql tables are built from hibernate mapping files automatically in unit tests)
 		props.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD,
 		    "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod org/openmrs/module/include/test2-1.0-SNAPSHOT.omod");
-		
+
 		return props;
 	}
-	
+
 	/**
 	 * @throws ClassNotFoundException
 	 * @see Context#loadClass(String)
@@ -69,5 +69,5 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 		Class<?> c = Context.loadClass("org.openmrs.module.test1.api.Test1Service");
 		assertTrue(c.getClassLoader() instanceof ModuleClassLoader, "Should be loaded by OpenmrsClassLoader");
 	}
-	
+
 }
