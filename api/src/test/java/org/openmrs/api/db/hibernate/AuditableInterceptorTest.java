@@ -152,7 +152,7 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 
 		assertNotSame(beforeDate, afterDate);
 	}
-	
+
 	/**
 	 * @see AuditableInterceptor#onSave(Object,Serializable,Object[],String[],Type[])
 	 */

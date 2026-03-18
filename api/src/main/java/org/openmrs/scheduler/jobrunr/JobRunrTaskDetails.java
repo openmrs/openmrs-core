@@ -22,19 +22,19 @@ import org.openmrs.scheduler.TaskState;
 /**
  * @since 2.9.x
  */
-public class JobRunrTaskDetails implements TaskDetails  {
-	
+public class JobRunrTaskDetails implements TaskDetails {
+
 	private final Job job;
-	
+
 	public JobRunrTaskDetails(Job job) {
 		this.job = job;
 	}
-	
+
 	@Override
 	public String getUuid() {
 		return job.getId().toString();
 	}
-	
+
 	@Override
 	public Optional<String> getRecurringTaskUuid() {
 		return job.getRecurringJobId();
@@ -49,7 +49,7 @@ public class JobRunrTaskDetails implements TaskDetails  {
 	public TaskState getState() {
 		return TaskState.valueOf(job.getJobState().getName().name());
 	}
-	
+
 	@Override
 	public Optional<Instant> getScheduledAt() {
 		if (job.getState() == StateName.SCHEDULED) {

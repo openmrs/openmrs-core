@@ -78,7 +78,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		def.setName("Chores");
 		def.setTaskClass("org.openmrs.scheduler.tasks.HelloWorldTask");
 		def.setRepeatInterval(null);
-		
+
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		assertTrue(errors.hasFieldErrors("repeatInterval"));

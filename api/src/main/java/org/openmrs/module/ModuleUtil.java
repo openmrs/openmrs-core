@@ -45,7 +45,6 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
-import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -884,7 +883,7 @@ public class ModuleUtil {
 				log.warn("Unable to call willRefreshContext() method in the module's activator", e);
 			}
 		}
-		
+
 		ServiceContext.destroyInstance();
 
 		try {
@@ -913,7 +912,7 @@ public class ModuleUtil {
 
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		
+
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
 
 		// reload the advice points that were lost when refreshing Spring

@@ -25,7 +25,7 @@ public class SchedulerUtil {
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(SchedulerUtil.class);
-	
+
 	/**
 	 * Gets the next execution time based on the initial start time (possibly years ago, depending on
 	 * when the task was configured in OpenMRS) and the repeat interval of execution. We need to
@@ -41,9 +41,8 @@ public class SchedulerUtil {
 	 *
 	 * @see java.util.Timer
 	 * @param taskDefinition the task definition to be executed
-	 * @return the next "future" execution time for the given task
-	 * <strong>Should</strong> get the correct repeat interval
-	 * 
+	 * @return the next "future" execution time for the given task <strong>Should</strong> get the
+	 *         correct repeat interval
 	 * @deprecated since 2.9.x used only for legacy tasks
 	 */
 	@Deprecated

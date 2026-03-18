@@ -113,17 +113,18 @@ public abstract class StartupFilter implements Filter {
 	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 	        throws IOException, ServletException {
 		if (((HttpServletRequest) request).getServletPath().equals("/health/started")) {
-			((HttpServletResponse) response).setStatus(Listener.isOpenmrsStarted() ? HttpServletResponse.SC_OK : HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+			((HttpServletResponse) response).setStatus(
+			    Listener.isOpenmrsStarted() ? HttpServletResponse.SC_OK : HttpServletResponse.SC_SERVICE_UNAVAILABLE);
 		} else if (((HttpServletRequest) request).getServletPath().equals("/health/alive")) {
 			if (Listener.isSetupNeeded() && !InitializationFilter.isInstallationStarted()) {
 				triggerSetup((HttpServletRequest) request);
 			}
-			boolean isOpenmrsAlive = Listener.isOpenmrsStarted() || Listener.isSetupNeeded() 
-				|| InitializationFilter.isInstallationStarted();
-			((HttpServletResponse) response).setStatus(isOpenmrsAlive ? HttpServletResponse.SC_OK : HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-			
-		}
-		else if (skipFilter((HttpServletRequest) request)) {
+			boolean isOpenmrsAlive = Listener.isOpenmrsStarted() || Listener.isSetupNeeded()
+			        || InitializationFilter.isInstallationStarted();
+			((HttpServletResponse) response)
+			        .setStatus(isOpenmrsAlive ? HttpServletResponse.SC_OK : HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+
+		} else if (skipFilter((HttpServletRequest) request)) {
 			chain.doFilter(request, response);
 		} else {
 
@@ -297,7 +298,7 @@ public abstract class StartupFilter implements Filter {
 			throw new APIException("Unable to process template: " + fullTemplatePath, e);
 		}
 	}
-	
+
 	/**
 	 * Makes a request to the root of the application to trigger setup.
 	 *
@@ -312,14 +313,13 @@ public abstract class StartupFilter implements Filter {
 			con.setConnectTimeout(2000); // 2 seconds
 			con.setReadTimeout(2000);
 			con.setInstanceFollowRedirects(true);
-			
+
 			con.getResponseCode();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error("Health check probe to root path failed", e);
 		}
 	}
-	
+
 	/**
 	 * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
 	 */

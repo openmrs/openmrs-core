@@ -1061,9 +1061,9 @@ public class Context {
 		openSession(); // so that the startup method can use proxyPrivileges
 
 		startup(properties);
-		
+
 		Context.getSchedulerService().onStartup();
-		
+
 		closeSession();
 	}
 

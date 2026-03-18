@@ -18,7 +18,7 @@ import org.openmrs.scheduler.TaskProgress;
 public class JobRunrTaskProgress implements TaskProgress {
 
 	private final JobDashboardProgressBar progressBar;
-	
+
 	public JobRunrTaskProgress(JobDashboardProgressBar progressBar) {
 		this.progressBar = progressBar;
 	}

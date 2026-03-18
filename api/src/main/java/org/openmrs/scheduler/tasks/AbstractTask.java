@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Base class for all other task classes.
- * 
+ *
  * @deprecated since 2.9.x use {@link TaskHandler} instead.
  */
 @Deprecated
@@ -34,9 +34,9 @@ public abstract class AbstractTask implements Task {
 
 	// The task definition of the running task
 	protected TaskDefinition taskDefinition;
-	
+
 	protected TaskContext taskContext;
-	
+
 	/**
 	 * Default constructor
 	 */

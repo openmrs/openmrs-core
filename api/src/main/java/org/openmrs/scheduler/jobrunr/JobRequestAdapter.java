@@ -14,18 +14,18 @@ import org.openmrs.scheduler.TaskData;
 
 /**
  * Adapts a {@link TaskData} to a JobRunr {@link org.jobrunr.jobs.lambdas.JobRequest}.
- * 
+ *
  * @since 2.9.x
  */
 public class JobRequestAdapter implements org.jobrunr.jobs.lambdas.JobRequest {
 
 	private TaskData taskRequest;
-	
+
 	private String userSystemId;
 
 	// No-arg constructor required for serialization
 	public JobRequestAdapter() {
-	} 
+	}
 
 	public JobRequestAdapter(TaskData taskRequest, String userSystemId) {
 		this.taskRequest = taskRequest;
@@ -40,7 +40,7 @@ public class JobRequestAdapter implements org.jobrunr.jobs.lambdas.JobRequest {
 	public TaskData getJobRequest() {
 		return taskRequest;
 	}
-	
+
 	public String getUserSystemId() {
 		return userSystemId;
 	}

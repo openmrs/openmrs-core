@@ -122,6 +122,7 @@ public class OpenmrsApplicationContextConfig {
 		props.setProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY, appDataDir);
 		configurer.setProperties(props);
 		configurer.setLocations(new ClassPathResource("hibernate.default.properties"),
+		    new ClassPathResource("application.properties"),
 		    new FileSystemResource(appDataDir + "/openmrs-runtime.properties"));
 		configurer.setIgnoreResourceNotFound(true);
 		configurer.setLocalOverride(true);

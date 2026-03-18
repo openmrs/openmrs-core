@@ -14,6 +14,7 @@ import org.openmrs.scheduler.tasks.AbstractTask;
 
 /**
  * Stateful task
+ *
  * @deprecated since 2.9.x use {@link TaskHandler}
  */
 @Deprecated

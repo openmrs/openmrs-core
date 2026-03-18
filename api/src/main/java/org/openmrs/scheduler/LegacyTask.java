@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Used internally to run legacy tasks.
- * 
+ *
  * @since 2.9.x
  */
 @Component
@@ -35,8 +35,7 @@ public class LegacyTask implements TaskHandler<TaskDefinition> {
 			task.initialize(taskData);
 			task.execute();
 		} else {
-			throw new TaskException("Task class " + taskData.getTaskClass()
-					+ " must implement Task", false);
+			throw new TaskException("Task class " + taskData.getTaskClass() + " must implement Task", false);
 		}
 	}
 }

@@ -17,14 +17,14 @@ import org.openmrs.scheduler.RecurringTaskDetails;
 /**
  * @since 2.9.x
  */
-public class JobRunrRecurringTaskDetails implements RecurringTaskDetails  {
-	
+public class JobRunrRecurringTaskDetails implements RecurringTaskDetails {
+
 	private final RecurringJob recurringJob;
-	
+
 	public JobRunrRecurringTaskDetails(RecurringJob recurringJob) {
 		this.recurringJob = recurringJob;
 	}
-	
+
 	@Override
 	public String getUuid() {
 		return recurringJob.getId();
@@ -44,7 +44,7 @@ public class JobRunrRecurringTaskDetails implements RecurringTaskDetails  {
 	public String getSignature() {
 		return recurringJob.getJobSignature();
 	}
-	
+
 	@Override
 	public String getScheduleExpression() {
 		return recurringJob.getScheduleExpression();

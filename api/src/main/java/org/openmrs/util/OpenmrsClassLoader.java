@@ -405,11 +405,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 
 					log.info("onShutdown Stopping thread: {}", thread.getName());
 					thread.stop();
-				}
-				catch (UnsupportedOperationException e) {
+				} catch (UnsupportedOperationException e) {
 					log.debug("Error while stopping thread on newer JDK versions", e);
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					log.error(ex.getMessage(), ex);
 				}
 			}
@@ -546,7 +544,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * All objects depending on the old classloader should be restarted here Should be called after
 	 * destoryInstance() and after the service is restarted

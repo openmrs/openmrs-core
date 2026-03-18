@@ -13,16 +13,16 @@ package org.openmrs.scheduler;
  * Context for a running task.
  * <p>
  * This interface hides the underlying JobRunr JobContext dependency.
- * 
+ *
  * @since 2.9.x
  */
 public interface TaskContext extends TaskDetails {
-	
+
 	String getUserSystemId();
-	
+
 	void saveMetadata(String key, Object value);
-	
+
 	void saveMetadataIfAbsent(String key, Object value);
-	
+
 	TaskProgress setProgressBar(int totalProgress);
 }

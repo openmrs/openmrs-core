@@ -12,11 +12,7 @@ package org.openmrs.scheduler;
 import java.util.Properties;
 import javax.sql.DataSource;
 
-import net.javacrumbs.shedlock.core.LockProvider;
-import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
-import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.context.Context;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,16 +21,21 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import net.javacrumbs.shedlock.core.LockProvider;
+import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+
 /**
- * Enables support for {@link Scheduled} and {@link SchedulerLock} annotations. 
+ * Enables support for {@link Scheduled} and {@link SchedulerLock} annotations.
  * <p>
- * Please use {@link ScheduledWithLock} instead of {@link Scheduled} and {@link SchedulerLock}
- * in case we ever need to change the implementation.
+ * Please use {@link ScheduledWithLock} instead of {@link Scheduled} and {@link SchedulerLock} in
+ * case we ever need to change the implementation.
  * <p>
  * Please use {@link SchedulerService} for persistent background tasks instead.
  * <p>
  * See {@link ScheduledWithLock} for more details.
- * 
+ *
  * @since 2.9.x
  */
 @Configuration
@@ -45,9 +46,7 @@ public class SchedulerConfig {
 	@Bean
 	public LockProvider lockProvider(DataSource dataSource) {
 		return new JdbcTemplateLockProvider(
-				JdbcTemplateLockProvider.Configuration.builder()
-						.withJdbcTemplate(new JdbcTemplate(dataSource))
-						.build());
+		        JdbcTemplateLockProvider.Configuration.builder().withJdbcTemplate(new JdbcTemplate(dataSource)).build());
 	}
 
 	@Bean
@@ -63,12 +62,11 @@ public class SchedulerConfig {
 			}
 		}
 		dataSource.setDriverClassName(driverClass);
-		dataSource.setUrl(properties.getProperty("connection.url",
-				properties.getProperty("hibernate.connection.url")));
-		dataSource.setUsername(properties.getProperty("connection.username",
-				properties.getProperty("hibernate.connection.username")));
-		dataSource.setPassword(properties.getProperty("connection.password",
-				properties.getProperty("hibernate.connection.password")));
+		dataSource.setUrl(properties.getProperty("connection.url", properties.getProperty("hibernate.connection.url")));
+		dataSource.setUsername(
+		    properties.getProperty("connection.username", properties.getProperty("hibernate.connection.username")));
+		dataSource.setPassword(
+		    properties.getProperty("connection.password", properties.getProperty("hibernate.connection.password")));
 		return dataSource;
 	}
 }

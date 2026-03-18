@@ -13,7 +13,7 @@ package org.openmrs.scheduler;
  * Task state transitions:
  * <p>
  * SCHEDULED -> ENQUEUED -> PROCESSING -> SUCCEEDED / FAILED -> DELETED
- * 
+ *
  * @since 2.9.x
  */
 public enum TaskState {

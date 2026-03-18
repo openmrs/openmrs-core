@@ -18,13 +18,13 @@ import java.util.Optional;
  * <p>
  * Hides the underlying JobRunr Job dependency.
  * <p>
- * It is a one-off task details. One-off tasks are also created from {@link RecurringTaskDetails} when
- * the time comes.
- *     
+ * It is a one-off task details. One-off tasks are also created from {@link RecurringTaskDetails}
+ * when the time comes.
+ *
  * @since 2.9.x
  */
 public interface TaskDetails {
-	
+
 	String getUuid();
 
 	Optional<String> getRecurringTaskUuid();
@@ -43,4 +43,3 @@ public interface TaskDetails {
 
 	Map<String, Object> getMetadata();
 }
-

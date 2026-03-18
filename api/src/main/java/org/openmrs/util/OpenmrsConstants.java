@@ -9,8 +9,6 @@
  */
 package org.openmrs.util;
 
-import static java.util.Arrays.asList;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -744,7 +742,7 @@ public final class OpenmrsConstants {
 		        "XML description of address formats"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, PERSON_NAME_FORMAT_SHORT,
 		        "Format in which to display the person names.  Valid values are short, long"));
-		
+
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_CONCEPTS_LOCKED, "false", "if true, do not allow editing concepts",
 		        BooleanDatatype.class, null));
 

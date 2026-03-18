@@ -11,16 +11,16 @@ package org.openmrs.scheduler;
 
 /**
  * Allows to set task progress.
- * 
+ *
  * @since 2.9.x
  */
 public interface TaskProgress {
-	
+
 	void increaseByOne();
-	
+
 	int getProgress();
-	
+
 	int getTotalProgress();
-	
+
 	void setValue(int currentProgress);
 }

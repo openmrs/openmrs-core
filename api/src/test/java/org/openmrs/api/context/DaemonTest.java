@@ -25,7 +25,6 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
-import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
@@ -52,14 +51,13 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		try {
 			Daemon.executeScheduledTaskAsUser("", () -> {});
 			fail("Should not be here, an exception should have been thrown in the line above");
-		}
-		catch (APIException e) {
-			assertThat(e.getMessage(), startsWith("executeScheduledTaskAsUser can only be called from " +
-					"JobRequestHandlerAdapter"));
+		} catch (APIException e) {
+			assertThat(e.getMessage(),
+			    startsWith("executeScheduledTaskAsUser can only be called from " + "JobRequestHandlerAdapter"));
 		}
 	}
-	
-	@Test 
+
+	@Test
 	public void createUser_shouldThrowWhenCalledOutsideContextDAO() throws Throwable {
 		// setup
 
@@ -138,7 +136,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 		}
 	}
-	
+
 	/**
 	 * Small task that just marks itself when it gets run
 	 */

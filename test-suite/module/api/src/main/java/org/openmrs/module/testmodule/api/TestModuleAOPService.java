@@ -7,23 +7,9 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.scheduler;
+package org.openmrs.module.testmodule.api;
 
-import java.util.concurrent.atomic.AtomicInteger;
+public interface TestModuleAOPService {
 
-import org.springframework.stereotype.Component;
-
-@Component
-public class TestComponentTask {
-
-	private final AtomicInteger executions = new AtomicInteger(0);
-
-	@ScheduledWithLock(name = "testComponentTask", fixedDelay = 100)
-	public void someScheduledTask() {
-		executions.incrementAndGet();
-	}
-
-	public int getExecutions() {
-		return executions.get();
-	}
+	String aopHello();
 }

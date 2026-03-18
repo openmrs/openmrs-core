@@ -13,9 +13,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -27,6 +24,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.openmrs.BaseChangeableOpenmrsMetadata;
@@ -34,9 +32,13 @@ import org.openmrs.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 /**
  * Represents the metadata for a task that can be scheduled.
- * 
+ *
  * @deprecated since 2.9.x use {@link TaskData} instead.
  */
 @Entity
@@ -44,7 +46,7 @@ import org.slf4j.LoggerFactory;
 @Deprecated
 @Audited
 public class TaskDefinition extends BaseChangeableOpenmrsMetadata implements TaskData {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(TaskDefinition.class);
 
 	// Task metadata
@@ -69,10 +71,10 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata implements Tas
 
 	@Column(name = "repeat_interval")
 	private Long repeatInterval = 0L; // NOW in seconds to give us ability to
-	
+
 	// support longer intervals (years, decades,
 	// milleniums)
-	
+
 	@Column(name = "start_on_startup", nullable = false)
 	private Boolean startOnStartup;
 
@@ -343,10 +345,10 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata implements Tas
 	public User getCreator() {
 		return super.getCreator();
 	}
-	
+
 	@JsonGetter
 	public String getCreatorSystemId() {
-		return super.getCreator().getSystemId();
+		return super.getCreator() != null ? super.getCreator().getSystemId() : null;
 	}
 
 	@JsonSetter

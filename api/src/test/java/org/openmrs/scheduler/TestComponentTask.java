@@ -9,19 +9,21 @@
  */
 package org.openmrs.scheduler;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.springframework.stereotype.Component;
 
 @Component
 public class TestComponentTask {
 
-	private int executions = 0;
+	private final AtomicInteger executions = new AtomicInteger(0);;
 
 	@ScheduledWithLock(name = "testComponentTask", fixedDelay = 100)
 	public void someScheduledTask() {
-		executions++;
+		executions.incrementAndGet();
 	}
 
 	public int getExecutions() {
-		return executions;
+		return executions.get();
 	}
 }

@@ -15,18 +15,18 @@ import java.time.Instant;
  * Recurring task details.
  * <p>
  * Recurring tasks are used to schedule actual task instances when the time to run comes.
- * 
+ *
  * @since 2.9.x
  */
 public interface RecurringTaskDetails {
-	
+
 	String getUuid();
-	
+
 	String getName();
-	
+
 	Instant getCreatedAt();
-	
+
 	String getSignature();
-	
+
 	String getScheduleExpression();
 }

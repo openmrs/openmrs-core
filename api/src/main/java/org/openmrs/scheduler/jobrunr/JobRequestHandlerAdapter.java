@@ -24,12 +24,12 @@ import org.springframework.stereotype.Component;
 
 /**
  * A generic handler that delegates execution to the appropriate {@link TaskHandler}.
- * 
+ *
  * @since 2.9.x
  */
 @Component
 public class JobRequestHandlerAdapter implements org.jobrunr.jobs.lambdas.JobRequestHandler<JobRequestAdapter>, ApplicationContextAware {
-	
+
 	private ApplicationContext applicationContext;
 
 	@Override

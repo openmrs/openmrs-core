@@ -34,7 +34,7 @@ public class ScheduledWithLockTest extends BaseContextSensitiveTest {
 		}
 		Assert.assertTrue(testTask.getExecutions() > 0);
 	}
-	
+
 	@Test
 	public void shouldExecuteScheduledTaskInComponent() throws InterruptedException {
 		long start = System.currentTimeMillis();

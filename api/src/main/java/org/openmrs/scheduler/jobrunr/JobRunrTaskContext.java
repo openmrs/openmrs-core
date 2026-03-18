@@ -25,8 +25,9 @@ import org.openmrs.scheduler.TaskState;
 public class JobRunrTaskContext implements TaskContext {
 
 	private final JobContext jobContext;
+
 	private final String userSystemId;
-	
+
 	public JobRunrTaskContext(JobContext jobContext, User scheduledBy) {
 		this.jobContext = jobContext;
 		this.userSystemId = scheduledBy.getUuid();
@@ -88,7 +89,7 @@ public class JobRunrTaskContext implements TaskContext {
 	}
 
 	@Override
-	public void saveMetadataIfAbsent(String key, Object value){
+	public void saveMetadataIfAbsent(String key, Object value) {
 		jobContext.saveMetadataIfAbsent(key, value);
 	}
 
@@ -102,5 +103,4 @@ public class JobRunrTaskContext implements TaskContext {
 		return new JobRunrTaskProgress(jobContext.progressBar(totalProgress));
 	}
 
-	
 }

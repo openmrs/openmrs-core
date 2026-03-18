@@ -14,30 +14,32 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.scheduling.annotation.Scheduled;
+
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 
 /**
  * A composed annotation that combines {@link Scheduled} and {@link SchedulerLock}.
  * <p>
- * Please use {@link ScheduledWithLock} instead of {@link Scheduled} and {@link SchedulerLock}
- * in case we ever need to change the implementation.
+ * Please use {@link ScheduledWithLock} instead of {@link Scheduled} and {@link SchedulerLock} in
+ * case we ever need to change the implementation.
  * <p>
- * Remember to always use a unique name as you must not have 2 tasks with the same name in the system. 
- * Use `yourmoduleid.` prefix for tasks defined in modules.
+ * Remember to always use a unique name as you must not have 2 tasks with the same name in the
+ * system. Use `yourmoduleid.` prefix for tasks defined in modules.
  * <p>
- * <b>Do not use {@link Scheduled} alone since it doesn't prevent the task from being
- * run concurrently by multiple replicas in a clustered environment.</b>
+ * <b>Do not use {@link Scheduled} alone since it doesn't prevent the task from being run
+ * concurrently by multiple replicas in a clustered environment.</b>
  * <p>
- * Please note that the runs and results of running methods annotated with {@link ScheduledWithLock} are not persisted 
- * in any way. It means that the number of runs, failures or successes can only be determined by looking at server logs. 
- * Use it for internal operations defined in code that do not need to be checked by users and when the runs and results 
- * are monitored by system administrators.
+ * Please note that the runs and results of running methods annotated with {@link ScheduledWithLock}
+ * are not persisted in any way. It means that the number of runs, failures or successes can only be
+ * determined by looking at server logs. Use it for internal operations defined in code that do not
+ * need to be checked by users and when the runs and results are monitored by system administrators.
  * <p>
  * Please use {@link SchedulerService} for persistent background tasks instead.
  * <p>
- * Please see {@link SchedulerConfig} for how it is configured and ScheduledWithLockTest.TestTask for usage.
+ * Please see {@link SchedulerConfig} for how it is configured and ScheduledWithLockTest.TestTask
+ * for usage.
  *
  * @since 2.9.x
  */

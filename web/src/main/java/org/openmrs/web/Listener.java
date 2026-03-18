@@ -46,11 +46,9 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleMustStartException;
 import org.openmrs.module.web.OpenmrsJspServlet;
 import org.openmrs.module.web.WebModuleUtil;
-import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
-import org.openmrs.util.MemoryLeakUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -353,10 +351,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			log.debug("Performing start of modules");
 			// web load modules
 			Listener.performWebStartOfModules(servletContext);
-			
+
 			Context.getSchedulerService().onStartup();
-		}
-		catch (Exception t) {
+		} catch (Exception t) {
 			try {
 				Context.shutdown();
 				WebModuleUtil.shutdownModules(servletContext);
@@ -642,7 +639,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
 			log.error("Listener.contextDestroyed: Failed to cleanup drivers in webapp", e);
 		}
-		
+
 		OpenmrsClassLoader.onShutdown();
 
 		LogManager.shutdown();

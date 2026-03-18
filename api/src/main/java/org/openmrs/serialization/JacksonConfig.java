@@ -9,26 +9,27 @@
  */
 package org.openmrs.serialization;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openmrs.util.OpenmrsJacksonLocaleModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate7.Hibernate7Module;
 
 /**
  * Default Jackson object mapper configuration.
  * <p>
  * Used for example by {@link org.openmrs.scheduler.jobrunr.JobRunrConfig}.
- * 
+ *
  * @since 2.9.x
  */
 @Configuration
 public class JacksonConfig {
-	
+
 	@Bean
-	@Primary
-	public ObjectMapper objectMapper() {
+	public ObjectMapper schedulerObjectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new Hibernate7Module());
 		mapper.registerModule(new OpenmrsJacksonLocaleModule());
 		return mapper;
 	}

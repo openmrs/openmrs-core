@@ -16,15 +16,17 @@ import java.io.Serializable;
  * <p>
  * Application code should implement this interface to define job data.
  * <p>
- * {@link TaskData} is serialized to json with Jackson upon scheduling a job and deserialized
- * when the job is executed by the corresponding {@link TaskHandler}.
+ * {@link TaskData} is serialized to json with Jackson upon scheduling a job and deserialized when
+ * the job is executed by the corresponding {@link TaskHandler}.
  * <p>
- * Please make sure that task data is as small as possible e.g. do not store domain objects
- * rather store their ids or uuids or do not store file content, rather use {@link org.openmrs.api.StorageService}
- * and store paths.
+ * {@link org.openmrs.serialization.JacksonConfig#schedulerObjectMapper()} is used.
+ * <p>
+ * Please make sure that task data is as small as possible e.g. do not store domain objects rather
+ * store their ids or uuids or do not store file content, rather use
+ * {@link org.openmrs.api.StorageService} and store paths.
  * <p>
  * This interface hides the underlying JobRunr JobRequest dependency.
- * 
+ *
  * @since 2.9.x
  */
 public interface TaskData extends Serializable {}

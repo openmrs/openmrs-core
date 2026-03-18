@@ -166,8 +166,8 @@ public final class Daemon {
 		}
 
 		return null;
-	}	
-	
+	}
+
 	/**
 	 * Call this method if you are inside a Daemon thread (for example in a Module activator or a
 	 * scheduled task) and you want to start up a new parallel Daemon thread. You may only call this
@@ -471,48 +471,41 @@ public final class Daemon {
 	 * <p>
 	 * <strong>Should</strong> not be called from other methods other than JobRequestHandlerAdapter
 	 * <strong>Should</strong> not throw error if called from a JobRequestHandlerAdapter class
-	 * 	 
+	 *
 	 * @param userSystemId the user to run as
 	 * @param runnable the task to run
-	 *
 	 * @since 2.9.x
 	 */
 	public static void executeScheduledTaskAsUser(String userSystemId, DaemonTask runnable) throws Exception {
+		var possibleFrame = STACK_WALKER
+		        .walk(s -> s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst());
+
 		// quick check to make sure we're only being called by ourselves
-		StackTraceElement[] stack = new Exception().getStackTrace();
-		if (stack.length < 2) {
+		if (possibleFrame.isEmpty()) {
 			throw new APIException("Could not determine where executeScheduledTaskAsUser was called from");
-		}
-		StackTraceElement caller = stack[1];
-		String callerClass = caller.getClassName();
-
-		Class<?> callerClazz;
-		try {
-			callerClazz = Class.forName(callerClass);
-		} catch (ClassNotFoundException e) {
-			throw new APIException("Could not determine where executeScheduledTaskAsUser was called from", e);
+		} else {
+			var callerClass = possibleFrame.get();
+			if (!JobRequestHandlerAdapter.class.isAssignableFrom(callerClass)) {
+				throw new APIException("executeScheduledTaskAsUser can only be called from JobRequestHandlerAdapter",
+				        new Object[] { callerClass });
+			}
 		}
 
-		if (!JobRequestHandlerAdapter.class.isAssignableFrom(callerClazz)) {
-			throw new APIException("executeScheduledTaskAsUser can only be called from JobRequestHandlerAdapter", new Object[] { callerClass });
-		}
-		
 		isDaemonThread.set(true);
 		try {
 			Context.openSession();
 			Context.getUserContext().becomeUser(userSystemId);
 			isDaemonThread.remove();
 			runnable.run();
-		}
-		finally {
+		} finally {
 			isDaemonThread.remove();
 			Context.closeSession();
 		}
 	}
 
 	/**
-	 * Thread class used by the {@link Daemon#startModule(Module)} method so that the returned object and the
-	 * exception thrown can be returned to calling class
+	 * Thread class used by the {@link Daemon#startModule(Module)} method so that the returned object
+	 * and the exception thrown can be returned to calling class
 	 */
 	protected static class DaemonThread extends Thread {
 
@@ -541,7 +534,7 @@ public final class Daemon {
 
 		void run() throws Exception;
 	}
-	
+
 	/**
 	 * Checks whether user is Daemon. However, this is not the preferred method for checking to see if
 	 * the current thread is a daemon thread, rather use {@link #isDaemonThread()}. isDaemonThread is

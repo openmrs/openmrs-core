@@ -11,18 +11,18 @@ package org.openmrs.scheduler;
 
 /**
  * Indicates an issue with the task. You may use it to prevent retries.
- * 
+ *
  * @since 2.9.x
  */
 public class TaskException extends Exception {
-	
+
 	private final boolean doNotRetry;
-	
+
 	public TaskException(String message) {
 		super(message);
 		doNotRetry = false;
 	}
-	
+
 	/**
 	 * @param message
 	 * @param doNotRetry if true, the task will not be retried <b>(false by default)</b>
@@ -31,22 +31,22 @@ public class TaskException extends Exception {
 		super(message);
 		this.doNotRetry = doNotRetry;
 	}
-	
+
 	public TaskException(String message, Throwable cause) {
 		super(message, cause);
 		doNotRetry = false;
 	}
-	
+
 	/**
 	 * @param message
 	 * @param doNotRetry if true, the task will not be retried <b>(false by default)</b>
-	 * @param cause   
+	 * @param cause
 	 */
 	public TaskException(String message, boolean doNotRetry, Throwable cause) {
 		super(message, cause);
 		this.doNotRetry = doNotRetry;
 	}
-	
+
 	public boolean isDoNotRetry() {
 		return doNotRetry;
 	}
