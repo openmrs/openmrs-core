@@ -211,7 +211,7 @@ public class EnversAuditTableInitializer {
 			if (revId == null) {
 				revId = createBackfillRevision(connection, revisionTableName);
 			}
-			List<String> columns = getSourceTableColumns(connection, sourceTable);
+			List<String> columns = getAuditTableDataColumns(connection, auditTable);
 			if (!columns.isEmpty()) {
 				backfillTable(connection, sourceTable, auditTable, columns, revId);
 			}
@@ -231,19 +231,42 @@ public class EnversAuditTableInitializer {
 	 * @throws SQLException if the revision entry cannot be created
 	 */
 	static int createBackfillRevision(Connection connection, String revisionTableName) throws SQLException {
+		String pkColumn = getRevisionPrimaryKeyColumn(connection, revisionTableName);
 		String timestampColumn = getRevisionTimestampColumn(connection, revisionTableName);
-		String sql = "INSERT INTO " + requireSafeIdentifier(revisionTableName) + " ("
-		        + requireSafeIdentifier(timestampColumn) + ") VALUES (?)";
-		try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-			pstmt.setLong(1, System.currentTimeMillis());
+		int nextId;
+		try (Statement stmt = connection.createStatement();
+		        ResultSet rs = stmt.executeQuery("SELECT COALESCE(MAX(" + requireSafeIdentifier(pkColumn) + "), 0) + 1 FROM "
+		                + requireSafeIdentifier(revisionTableName))) {
+			nextId = rs.next() ? rs.getInt(1) : 1;
+		}
+		String sql = "INSERT INTO " + requireSafeIdentifier(revisionTableName) + " (" + requireSafeIdentifier(pkColumn)
+		        + ", " + requireSafeIdentifier(timestampColumn) + ") VALUES (?, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+			pstmt.setInt(1, nextId);
+			pstmt.setLong(2, System.currentTimeMillis());
 			pstmt.executeUpdate();
-			try (ResultSet rs = pstmt.getGeneratedKeys()) {
+			return nextId;
+		}
+	}
+
+	/**
+	 * Discovers the primary key column name of the revision entity table.
+	 *
+	 * @param connection JDBC connection
+	 * @param revisionTableName name of the revision entity table
+	 * @return the primary key column name, falling back to "id" if not found
+	 * @throws SQLException if metadata cannot be read
+	 */
+	static String getRevisionPrimaryKeyColumn(Connection connection, String revisionTableName) throws SQLException {
+		DatabaseMetaData metaData = connection.getMetaData();
+		for (String name : new String[] { revisionTableName, revisionTableName.toUpperCase() }) {
+			try (ResultSet rs = metaData.getPrimaryKeys(null, null, name)) {
 				if (rs.next()) {
-					return rs.getInt(1);
+					return rs.getString("COLUMN_NAME");
 				}
 			}
 		}
-		throw new SQLException("Failed to create backfill revision entry in " + revisionTableName);
+		return "id";
 	}
 
 	/**
@@ -259,17 +282,22 @@ public class EnversAuditTableInitializer {
 	static String getRevisionTimestampColumn(Connection connection, String revisionTableName) throws SQLException {
 		DatabaseMetaData metaData = connection.getMetaData();
 		String pkColumn = null;
-		try (ResultSet pkRs = metaData.getPrimaryKeys(null, null, revisionTableName)) {
-			if (pkRs.next()) {
-				pkColumn = pkRs.getString("COLUMN_NAME");
+		for (String name : new String[] { revisionTableName, revisionTableName.toUpperCase() }) {
+			try (ResultSet pkRs = metaData.getPrimaryKeys(null, null, name)) {
+				if (pkRs.next()) {
+					pkColumn = pkRs.getString("COLUMN_NAME");
+					break;
+				}
 			}
 		}
-		try (ResultSet colRs = metaData.getColumns(null, null, revisionTableName, null)) {
-			while (colRs.next()) {
-				String colName = colRs.getString("COLUMN_NAME");
-				int dataType = colRs.getInt("DATA_TYPE");
-				if (dataType == java.sql.Types.BIGINT && !colName.equalsIgnoreCase(pkColumn)) {
-					return colName;
+		for (String name : new String[] { revisionTableName, revisionTableName.toUpperCase() }) {
+			try (ResultSet colRs = metaData.getColumns(null, null, name, null)) {
+				while (colRs.next()) {
+					String colName = colRs.getString("COLUMN_NAME");
+					int dataType = colRs.getInt("DATA_TYPE");
+					if (dataType == java.sql.Types.BIGINT && !colName.equalsIgnoreCase(pkColumn)) {
+						return colName;
+					}
 				}
 			}
 		}
@@ -323,6 +351,25 @@ public class EnversAuditTableInitializer {
 		try (ResultSet rs = metaData.getColumns(null, null, tableName, null)) {
 			while (rs.next()) {
 				columns.add(rs.getString("COLUMN_NAME"));
+			}
+		}
+		return columns;
+	}
+
+	/**
+	 * Returns the data column names from the given audit table, excluding the Envers metadata columns
+	 * REV and REVTYPE. These are the columns that correspond to the audited entity fields and must
+	 * exist in the source table.
+	 */
+	static List<String> getAuditTableDataColumns(Connection connection, String auditTable) throws SQLException {
+		List<String> columns = new ArrayList<>();
+		DatabaseMetaData metaData = connection.getMetaData();
+		try (ResultSet rs = metaData.getColumns(null, null, auditTable, null)) {
+			while (rs.next()) {
+				String colName = rs.getString("COLUMN_NAME");
+				if (!colName.equalsIgnoreCase("REV") && !colName.equalsIgnoreCase("REVTYPE")) {
+					columns.add(colName);
+				}
 			}
 		}
 		return columns;
