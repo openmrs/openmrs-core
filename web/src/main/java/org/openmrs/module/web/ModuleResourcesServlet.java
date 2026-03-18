@@ -109,7 +109,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 		if (devDir != null) {
 			baseDir = Paths.get(devDir.getAbsolutePath(), "omod", "target", "classes", "web", "module", "resources").normalize();
 		} else {
-			baseDir = Paths.get(getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources").normalize();
+			baseDir = Paths.get(getServletContext().getRealPath(""), "WEB-INF", "view", "module", module.getModuleIdAsPath(), "resources").normalize();
 		}
 		if (!Paths.get(realPath).normalize().startsWith(baseDir)) {
 			log.warn("Possible path traversal attack: resolved path '" + Paths.get(realPath).normalize() + "' is outside the expected base directory '" + baseDir + "'");
