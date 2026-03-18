@@ -649,16 +649,16 @@ public class Context {
 	 * @return the ServiceContext
 	 */
 	private static MessageSender getMessageSender() {
-		MessageSender sender = new MailMessageSender(getMailSession());
-		try {
-			sender = Context.getServiceContext().getApplicationContext().getBean(MessageSender.class);
-		} catch (NoSuchBeanDefinitionException e) {
-			log.debug("No MessageSender bean configured, using default MailMessageSender");
-		} catch (Exception e) {
-			log.debug(
-				"Service context not available while retrieving MessageSender, using default MailMessageSender");
+
+		List<MessageSender> senders = Context.getRegisteredComponents(MessageSender.class);
+
+		if (senders != null && !senders.isEmpty()) {
+			if (senders.size() > 1) {
+				log.warn("Multiple MessageSender beans found, using first: {}", senders.get(0).getClass().getName());
+			}
+			return senders.get(0);
 		}
-		return sender;
+		return new MailMessageSender(getMailSession());
 	}
 
 	/**
@@ -668,16 +668,16 @@ public class Context {
 	 * @return
 	 */
 	private static MessagePreparator getMessagePreparator() throws MessageException {
-		MessagePreparator preparator = new VelocityMessagePreparator();
-		try {
-			preparator = Context.getServiceContext().getApplicationContext().getBean(MessagePreparator.class);
-		} catch (NoSuchBeanDefinitionException e) {
-			log.debug("No MessagePreparator bean configured, using default VelocityMessagePreparator");
-		} catch (Exception e) {
-			log.debug(
-				"Service context not available while retrieving MessagePreparator, using default VelocityMessagePreparator");
+
+		List<MessagePreparator> preparators = Context.getRegisteredComponents(MessagePreparator.class);
+
+		if (preparators != null && !preparators.isEmpty()) {
+			if (preparators.size() > 1) {
+				log.warn("Multiple MessagePreparator beans found, using first: {}", preparators.get(0).getClass().getName());
+			}
+			return preparators.get(0);
 		}
-		return preparator;
+		return new VelocityMessagePreparator();
 	}
 
 	/**
