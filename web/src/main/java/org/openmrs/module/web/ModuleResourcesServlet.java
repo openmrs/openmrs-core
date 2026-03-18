@@ -83,6 +83,11 @@ public class ModuleResourcesServlet extends HttpServlet {
 
 		String path = request.getPathInfo();
 
+		if (path == null || path.contains("\0")) {
+			log.warn("Null or null-byte path rejected");
+			return null;
+		}
+		
 		Module module = ModuleUtil.getModuleForPath(path);
 		if (module == null) {
 			log.warn("No module handles the path: {}", path);
@@ -90,34 +95,40 @@ public class ModuleResourcesServlet extends HttpServlet {
 		}
 
 		String relativePath = ModuleUtil.getPathForResource(module, path);
-		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources"
-		        + relativePath;
 
 		String basePath;
 
 		//if in dev mode, load resources from the development directory
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		if (devDir != null) {
-			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources" + relativePath;
 			basePath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources";
 		} else {
 			basePath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources";
 		}
 
-		Path normalizedPath = Path.of(realPath).normalize();
-		Path normalizedBase = Path.of(basePath).normalize();
-		if (!normalizedPath.startsWith(normalizedBase)) {
-			log.warn("Detected attempted directory traversal with path: " + path);
+		try {
+			File baseDir = new File(basePath).getCanonicalFile();
+			File requestedFile = new File(baseDir, relativePath).getCanonicalFile();
+
+			Path base = baseDir.toPath().normalize();
+			Path requested = requestedFile.toPath().normalize();
+
+			if (!requested.startsWith(base)) {
+				log.warn("Path traversal attempt blocked. Requested: '{}' is outside base: '{}'", requested, base);
+				return null;
+			}
+
+			if (!requestedFile.exists() || !requestedFile.isFile()) {
+				log.warn("No file with path '{}' exists for module '{}'", requestedFile, module.getModuleId());
+				return null;
+			}
+
+			return requestedFile;
+
+		} catch (IOException e) {
+			log.error("Error resolving canonical path for module resource", e);
 			return null;
 		}
-
-		File f = normalizedPath.toFile();
-		if (!f.exists()) {
-			log.warn("No file with path '" + normalizedPath + "' exists for module '" + module.getModuleId() + "'");
-			return null;
-		}
-
-		return f;
 	}
 
 }
