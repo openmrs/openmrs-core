@@ -32,6 +32,8 @@ import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.Template;
+import org.openmrs.notification.mail.MailMessageSender;
+import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -508,6 +510,35 @@ public class ContextTest extends BaseContextSensitiveTest {
 			beanFactory.destroySingleton("dummyTestMessageSender");
 			beanFactory.destroySingleton("dummyTestMessagePreparator");
 
+			Context.getMessageService().setMessageSender(null);
+			Context.getMessageService().setMessagePreparator(null);
+		}
+	}
+
+	/**
+	 * @see Context#getMessageService()
+	 */
+	@Test
+	public void getMessageService_shouldFallbackToDefaultSenderAndPreparatorWhenNoBeansRegistered() {
+		MessageService service = Context.getMessageService();
+
+		// Clear the current instances to force the Context to run its initialization logic
+		service.setMessageSender(null);
+		service.setMessagePreparator(null);
+
+		try {
+			// Call getMessageService() again to trigger the lookup.
+			// Since we haven't registered any dummy beans in this test, it should use the defaults.
+			MessageService reinitializedService = Context.getMessageService();
+
+			assertTrue(reinitializedService.getMessageSender() instanceof MailMessageSender,
+			    "The MessageService should fallback to MailMessageSender when no custom beans are registered.");
+
+			assertTrue(reinitializedService.getMessagePreparator() instanceof VelocityMessagePreparator,
+			    "The MessageService should fallback to VelocityMessagePreparator when no custom beans are registered.");
+
+		} finally {
+			// CLEANUP: Reset the MessageService so the next tests start with a clean slate
 			Context.getMessageService().setMessageSender(null);
 			Context.getMessageService().setMessagePreparator(null);
 		}

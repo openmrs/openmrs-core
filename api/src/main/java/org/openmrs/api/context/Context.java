@@ -566,35 +566,35 @@ public class Context {
 		try {
 			// Dynamically pull from Spring, falling back to defaults if missing
 			if (ms.getMessagePreparator() == null) {
-				List<MessagePreparator> preparators = getRegisteredComponents(MessagePreparator.class);
-				if (preparators != null && !preparators.isEmpty()) {
-					if (preparators.size() > 1) {
-						log.warn("Multiple MessagePreparators found. Using the first one: {}",
-						    preparators.get(0).getClass().getName());
-					}
-					ms.setMessagePreparator(preparators.get(0));
-				} else {
-					ms.setMessagePreparator(new VelocityMessagePreparator());
-				}
+				MessagePreparator preparator = getSingleRegisteredComponent(MessagePreparator.class);
+				ms.setMessagePreparator(preparator != null ? preparator : new VelocityMessagePreparator());
 			}
 
 			if (ms.getMessageSender() == null) {
-				List<MessageSender> senders = getRegisteredComponents(MessageSender.class);
-				if (senders != null && !senders.isEmpty()) {
-					if (senders.size() > 1) {
-						log.warn("Multiple MessageSenders found. Using the first one: {}",
-						    senders.get(0).getClass().getName());
-					}
-					ms.setMessageSender(senders.get(0));
-				} else {
-					ms.setMessageSender(new MailMessageSender(getMailSession()));
-				}
+				MessageSender sender = getSingleRegisteredComponent(MessageSender.class);
+				ms.setMessageSender(sender != null ? sender : new MailMessageSender(getMailSession()));
 			}
 
 		} catch (Exception e) {
 			log.error("Unable to create message service due", e);
 		}
 		return ms;
+	}
+
+	/**
+	 * Helper method to fetch a single registered component of a given type from the Spring context.
+	 * Logs a warning if multiple components are found and returns the first one.
+	 */
+	private static <T> T getSingleRegisteredComponent(Class<T> type) {
+		List<T> components = getRegisteredComponents(type);
+		if (components != null && !components.isEmpty()) {
+			if (components.size() > 1) {
+				log.warn("Multiple {}s found. Using the first one: {}", type.getSimpleName(),
+				    components.get(0).getClass().getName());
+			}
+			return components.get(0);
+		}
+		return null;
 	}
 
 	/**
