@@ -215,7 +215,7 @@ public class Security {
 	@Deprecated
 	public static String encrypt(String text) {
 		byte[] secretKey = Security.getSavedSecretKey();
-		byte[] initVector = generateRandomInitVector();
+		byte[] initVector = generateNewInitVector();
 		try {
 			byte[] encrypted = encryptBytes(text.getBytes(StandardCharsets.UTF_8), initVector, secretKey);
 			byte[] combined = new byte[1 + initVector.length + encrypted.length];
@@ -398,11 +398,6 @@ public class Security {
 		cipher.init(Cipher.DECRYPT_MODE, secret, initVectorSpec);
 		return cipher.doFinal(cipherText);
 	}
-	
-	private static byte[] generateRandomInitVector() {
-		byte[] initVector = new byte[GCM_IV_LENGTH_BYTES];
-		RANDOM.nextBytes(initVector);
-		return initVector;
-	}
+
 
 }
