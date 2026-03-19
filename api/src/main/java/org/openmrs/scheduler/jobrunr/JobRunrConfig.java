@@ -11,6 +11,7 @@ package org.openmrs.scheduler.jobrunr;
 
 import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.jobrunr.configuration.JobRunr;
 import org.jobrunr.configuration.JobRunrConfiguration;
@@ -20,6 +21,8 @@ import org.jobrunr.scheduling.JobRequestScheduler;
 import org.jobrunr.scheduling.JobScheduler;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
+import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +40,7 @@ public class JobRunrConfig {
 	}
 
 	@Bean
-	public JobRunrConfiguration.JobRunrConfigurationResult jobRunrConfiguration(StorageProvider storageProvider, ApplicationContext applicationContext,
+	public JobRunrConfiguration.JobRunrConfigurationResult jobRunrConfiguration(@Qualifier("schedulerObjectMapper") ObjectMapper objectMapper, StorageProvider storageProvider, ApplicationContext applicationContext,
 																				@Value("${jobrunr.dashboard.username:admin}") String user,
 																				@Value("${jobrunr.dashboard.password:}") String password,
 																				@Value("${jobrunr.dashboard.port:9000}") int port,
@@ -47,6 +50,7 @@ public class JobRunrConfig {
 		}
 		
 		JobRunrConfiguration config = JobRunr.configure()
+			.useJsonMapper(new JacksonJsonMapper(objectMapper))
 			.useStorageProvider(storageProvider)
 			.useJobActivator(applicationContext::getBean)
 			.withJobFilter(new RetryFilter(3))

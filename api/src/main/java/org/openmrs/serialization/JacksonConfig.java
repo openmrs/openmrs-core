@@ -14,7 +14,6 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import org.openmrs.util.OpenmrsJacksonLocaleModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 /**
  * Default Jackson object mapper configuration.
@@ -27,8 +26,7 @@ import org.springframework.context.annotation.Primary;
 public class JacksonConfig {
 	
 	@Bean
-	@Primary
-	public ObjectMapper objectMapper() {
+	public ObjectMapper schedulerObjectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new Hibernate5Module());
 		mapper.registerModule(new OpenmrsJacksonLocaleModule());
