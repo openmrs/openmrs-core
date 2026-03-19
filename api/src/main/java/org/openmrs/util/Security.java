@@ -560,10 +560,7 @@ public class Security {
 		if (b0 == 203 && b1 == 0 && b2 == 113) {
 			return true; // 203.0.113.0/24
 		}
-		if (b0 >= 240) {
-			return true; // 240.0.0.0/4
-		}
-		return false;
+		return b0 >= 240; // 240.0.0.0/4
 	}
 
 	private static boolean isIpv4MappedOrCompatible(byte[] bytes) {
