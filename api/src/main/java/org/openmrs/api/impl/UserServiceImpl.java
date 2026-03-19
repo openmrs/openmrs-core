@@ -9,7 +9,7 @@
  */
 package org.openmrs.api.impl;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
@@ -732,7 +732,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Override
 	public User setUserActivationKey(User user) throws MessageException {
-		String token = RandomStringUtils.randomAlphanumeric(20);
+		String token = RandomStringUtils.secure().nextAlphanumeric(20);
 		long time = System.currentTimeMillis() + getValidTime();
 		String hashedKey = Security.encodeString(token);
 		String activationKey = hashedKey + ":" + time;
