@@ -633,6 +633,7 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 				"UPDATE global_property SET property_value = property_value + 1 WHERE property = ?")) {
 				statement.setString(1, EXECUTED_COUNT);
 				statement.executeUpdate();
+				statement.getConnection().commit();
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}
@@ -662,6 +663,7 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 				"UPDATE global_property SET property_value = property_value + 1 WHERE property = ?")) {
 				statement.setString(1, EXECUTED_COUNT);
 				statement.executeUpdate();
+				statement.getConnection().commit();
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}

@@ -318,7 +318,7 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata implements Tas
 	
 	@JsonGetter
 	public String getCreatorSystemId() {
-		return super.getCreator().getSystemId();
+		return super.getCreator() != null ? super.getCreator().getSystemId() : null;
 	}
 
 	@JsonSetter

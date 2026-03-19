@@ -86,8 +86,9 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	public void onStartup() {
 		for (TaskDefinition taskDefinition: schedulerDAO.getTasks()) {
 			if (Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
+				String scheduledBy = taskDefinition.getCreator() != null ? taskDefinition.getCreator().getSystemId() : "daemon";
 				JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(taskDefinition.getUuid()),
-					new JobRequestAdapter(taskDefinition, taskDefinition.getCreator().getSystemId()));
+					new JobRequestAdapter(taskDefinition, scheduledBy));
 				String name = taskDefinition.getName();
 				if (name == null) {
 					name = taskDefinition.getTaskClass();
@@ -138,12 +139,13 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 				if (name == null) {
 					name = task.getTaskClass();
 				}
+				String scheduledBy = task.getCreator() != null ? task.getCreator().getSystemId() : "daemon";
 				
 				if (task.getRepeatInterval() != null && task.getRepeatInterval() > 0) {
 					if (task.getStartTime() == null) {
 						String recurringJobId = jobRequestScheduler.scheduleRecurrently(task.getUuid(),
 							Duration.ofSeconds(task.getRepeatInterval()),
-							new JobRequestAdapter(task, task.getCreator().getSystemId()));
+							new JobRequestAdapter(task, scheduledBy));
 						updateRecurringJobWithName(recurringJobId, name);
 					} else {
 						Date nextExecution = SchedulerUtil.getNextExecution(task);
@@ -153,17 +155,17 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 						// Create a placeholder recurring task that will be updated by the above task to the correct interval
 						String recurringJobId = jobRequestScheduler.scheduleRecurrently(task.getUuid(),
 							Duration.between(Instant.now(), nextExecution.toInstant()).plus(1, ChronoUnit.DAYS),
-							new JobRequestAdapter(task, task.getCreator().getSystemId()));
+							new JobRequestAdapter(task, scheduledBy));
 						updateRecurringJobWithName(recurringJobId, name);
 					}
 				} else if (task.getStartTime() != null){
 					Instant runAt = task.getStartTime().toInstant();
 					JobId jobId = jobRequestScheduler.schedule(UUID.fromString(task.getUuid()), runAt, 
-						new JobRequestAdapter(task, task.getCreator().getSystemId()));
+						new JobRequestAdapter(task, scheduledBy));
 					updateJobWithName(jobId, name);
 				} else {
 					JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(task.getUuid()),
-						new JobRequestAdapter(task, task.getCreator().getSystemId()));
+						new JobRequestAdapter(task, scheduledBy));
 					updateJobWithName(jobId, name);
 				}
 				task.setStarted(true);
@@ -187,8 +189,9 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	public void scheduleRecurrently(String uuid) {
 		TaskDefinition task = getTaskByUuid(uuid);
 		if (task != null) {
+			String scheduledBy = task.getCreator() != null ? task.getCreator().getSystemId() : "daemon";
 			String jobId = jobRequestScheduler.scheduleRecurrently(task.getUuid(), Duration.ofSeconds(task.getRepeatInterval()),
-				new JobRequestAdapter(task, task.getCreator().getSystemId()));
+				new JobRequestAdapter(task, scheduledBy));
 			updateRecurringJobWithName(jobId, task.getName());
 		}
 	}
