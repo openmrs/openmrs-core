@@ -112,7 +112,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 			baseDir = Paths.get(getServletContext().getRealPath(""), "WEB-INF", "view", "module", module.getModuleIdAsPath(), "resources").normalize();
 		}
 		if (!Paths.get(realPath).normalize().startsWith(baseDir)) {
-			log.warn("Possible path traversal attack: resolved path '" + Paths.get(realPath).normalize() + "' is outside the expected base directory '" + baseDir + "'");
+			log.warn("Possible path traversal attack: resolved path '{}' is outside the expected base directory '{}'", Paths.get(realPath).normalize(), baseDir);
 			return null;
 		}
 		
