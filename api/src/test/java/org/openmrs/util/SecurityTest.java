@@ -206,7 +206,7 @@ public class SecurityTest {
 
 	private static String encryptWithGcm(String text, byte[] initVector, byte[] secretKey) {
 		try {
-			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
+			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION_GCM);
 			SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
 			GCMParameterSpec spec = new GCMParameterSpec(128, initVector);
 			cipher.init(Cipher.ENCRYPT_MODE, secret, spec);

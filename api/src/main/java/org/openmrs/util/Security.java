@@ -385,7 +385,7 @@ public class Security {
 	        throws GeneralSecurityException {
 		GCMParameterSpec initVectorSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, initVector);
 		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
-		Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
+		Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION_GCM);
 		cipher.init(Cipher.ENCRYPT_MODE, secret, initVectorSpec);
 		return cipher.doFinal(plainText);
 	}
@@ -394,7 +394,7 @@ public class Security {
 	        throws GeneralSecurityException {
 		GCMParameterSpec initVectorSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, initVector);
 		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
-		Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
+		Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION_GCM);
 		cipher.init(Cipher.DECRYPT_MODE, secret, initVectorSpec);
 		return cipher.doFinal(cipherText);
 	}
