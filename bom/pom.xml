@@ -125,7 +125,7 @@
 		<h2Version>2.3.232</h2Version>
 		<dbunitVersion>3.0.0</dbunitVersion>
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
-		<testcontainersVersion>2.0.3</testcontainersVersion>
+		<testcontainersVersion>2.0.4</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
 		<s3mockVersion>4.11.0</s3mockVersion>
 	</properties>
