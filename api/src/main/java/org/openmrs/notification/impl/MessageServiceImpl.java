@@ -39,10 +39,10 @@ public class MessageServiceImpl implements MessageService {
 
 	@Autowired
 	private TemplateDAO templateDAO;
-	
+
 	@Autowired(required = false)
 	private MessageSender messageSender; // Delivers message
-	
+
 	@Autowired(required = false)
 	private MessagePreparator messagePreparator; // Prepares message for delivery
 
