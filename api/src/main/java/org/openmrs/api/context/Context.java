@@ -563,21 +563,7 @@ public class Context {
 	 * @return message service
 	 */
 	public static MessageService getMessageService() {
-		MessageService ms = getServiceContext().getMessageService();
-		try {
-			// Message service dependencies
-			if (ms.getMessagePreparator() == null) {
-				ms.setMessagePreparator(getMessagePreparator());
-			}
-
-			if (ms.getMessageSender() == null) {
-				ms.setMessageSender(getMessageSender());
-			}
-
-		} catch (Exception e) {
-			log.error("Unable to create message service due", e);
-		}
-		return ms;
+		return getServiceContext().getMessageService();
 	}
 
 	/**
@@ -640,44 +626,6 @@ public class Context {
 			}
 		}
 		return mailSession;
-	}
-
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO Ideally, we would be
-	 * using Spring's method injection to set the dependencies for the message service.
-	 *
-	 * @return the ServiceContext
-	 */
-	private static MessageSender getMessageSender() {
-
-		List<MessageSender> senders = Context.getRegisteredComponents(MessageSender.class);
-
-		if (senders != null && !senders.isEmpty()) {
-			if (senders.size() > 1) {
-				log.warn("Multiple MessageSender beans found, using first: {}", senders.get(0).getClass().getName());
-			}
-			return senders.get(0);
-		}
-		return new MailMessageSender(getMailSession());
-	}
-
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO See todo for message
-	 * sender.
-	 *
-	 * @return
-	 */
-	private static MessagePreparator getMessagePreparator() throws MessageException {
-
-		List<MessagePreparator> preparators = Context.getRegisteredComponents(MessagePreparator.class);
-
-		if (preparators != null && !preparators.isEmpty()) {
-			if (preparators.size() > 1) {
-				log.warn("Multiple MessagePreparator beans found, using first: {}", preparators.get(0).getClass().getName());
-			}
-			return preparators.get(0);
-		}
-		return new VelocityMessagePreparator();
 	}
 
 	/**
