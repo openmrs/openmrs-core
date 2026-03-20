@@ -54,7 +54,7 @@
 		<hibernateValidatorVersion>9.1.0.Final</hibernateValidatorVersion>
 		<luceneVersion>10.4.0</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
-		<infinispanVersion>15.2.2.Final</infinispanVersion>
+		<infinispanVersion>15.2.6.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
 		<jacksonVersion>2.19.2</jacksonVersion>
 		<slf4jVersion>1.7.36</slf4jVersion>
