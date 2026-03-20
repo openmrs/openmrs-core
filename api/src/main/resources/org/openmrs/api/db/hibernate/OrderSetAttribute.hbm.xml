@@ -19,7 +19,7 @@
     <class name="OrderSetAttribute" table="order_set_attribute">
 
 		<id name="orderSetAttributeId" type="int" column="order_set_attribute_id">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">order_set_attribute_order_set_attribute_id_seq</param>
 			</generator>
 		</id>

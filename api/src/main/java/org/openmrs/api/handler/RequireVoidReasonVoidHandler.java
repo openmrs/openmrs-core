@@ -24,29 +24,30 @@ import org.openmrs.aop.RequiredDataAdvice;
 
 /**
  * This class ensures that the voidReason is non-null for supported object types
- * 
+ *
  * @see RequiredDataAdvice
  * @see UnvoidHandler
  * @since 1.5
  */
-@Handler(supports = { Patient.class, Encounter.class, Obs.class, Cohort.class, Order.class }, order = 1 /* low order so this is run first */)
+@Handler(supports = { Patient.class, Encounter.class, Obs.class, Cohort.class,
+        Order.class }, order = 1 /* low order so this is run first */)
 public class RequireVoidReasonVoidHandler implements VoidHandler<Voidable> {
-	
+
 	/**
 	 * Validates that the voidReason is non-null and non-empty for supported objects
-	 * 
-	 * <strong>Should</strong> throw IllegalArgumentException if Patient voidReason is null
-	 * <strong>Should</strong> throw IllegalArgumentException if Encounter voidReason is empty
-	 * <strong>Should</strong> throw IllegalArgumentException if Obs voidReason is blank
-	 * <strong>Should</strong> not throw Exception if voidReason is not blank
+	 * <p>
+	 * <strong>Should</strong> throw IllegalArgumentException if Patient voidReason is null<br/>
+	 * <strong>Should</strong> throw IllegalArgumentException if Encounter voidReason is empty<br/>
+	 * <strong>Should</strong> throw IllegalArgumentException if Obs voidReason is blank<br/>
+	 * <strong>Should</strong> not throw Exception if voidReason is not blank<br/>
 	 * <strong>Should</strong> not throw Exception if voidReason is null for unsupported types
 	 */
 	@Override
 	public void handle(Voidable voidableObject, User voidingUser, Date voidedDate, String voidReason) {
-		
+
 		if (StringUtils.isBlank(voidReason)) {
 			throw new IllegalArgumentException("The 'reason' argument is required");
 		}
 	}
-	
+
 }

@@ -9,17 +9,17 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 public class ExceptionUtilTest {
-	
+
 	/**
 	 * @see ExceptionUtil#rethrowIfCause(Throwable,Class)
 	 */
@@ -29,55 +29,51 @@ public class ExceptionUtilTest {
 			List<Class<? extends RuntimeException>> chain = Arrays.asList(NullPointerException.class,
 			    IllegalArgumentException.class, IllegalStateException.class);
 			throwExceptionChain(chain);
-			
-		}
-		catch (Exception ex) {
+
+		} catch (Exception ex) {
 			int numFound = 0;
-			
+
 			// Should be able to find the innermost NPE
 			Exception innermost = null;
 			try {
 				ExceptionUtil.rethrowIfCause(ex, NullPointerException.class);
-			}
-			catch (Exception cause) {
+			} catch (Exception cause) {
 				assertNull(cause.getCause());
 				innermost = cause;
 				++numFound;
 			}
-			
+
 			// Should be able to find the middle IllegalArgumentException
 			try {
 				ExceptionUtil.rethrowIfCause(ex, IllegalArgumentException.class);
-			}
-			catch (Exception middle) {
+			} catch (Exception middle) {
 				assertEquals(innermost, middle.getCause());
 				++numFound;
 			}
-			
+
 			// Should be able to find the outermost IllegalStateException
 			try {
 				ExceptionUtil.rethrowIfCause(ex, IllegalStateException.class);
-			}
-			catch (Exception outer) {
+			} catch (Exception outer) {
 				assertEquals(ex, outer);
 				++numFound;
 			}
-			
+
 			assertEquals(3, numFound);
 		}
 	}
-	
+
 	/**
-	 * Recursively builds up an exception chain with the requested exception classes in it. 
-	 * 
-	 * @param classesInChain the start of the list is the root cause, and the end of the list is the outermost wrapped exception
+	 * Recursively builds up an exception chain with the requested exception classes in it.
+	 *
+	 * @param classesInChain the start of the list is the root cause, and the end of the list is the
+	 *            outermost wrapped exception
 	 */
 	private void throwExceptionChain(List<Class<? extends RuntimeException>> classesInChain) throws Exception {
 		if (classesInChain.size() > 1) {
 			try {
 				throwExceptionChain(classesInChain.subList(0, classesInChain.size() - 1));
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				Class<? extends Exception> outer = classesInChain.get(classesInChain.size() - 1);
 				Constructor<? extends Exception> constructor = outer.getConstructor(Throwable.class);
 				throw constructor.newInstance(ex);

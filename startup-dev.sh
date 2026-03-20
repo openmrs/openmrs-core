@@ -15,7 +15,7 @@
 if [ "${OMRS_BUILD}" == "true" ]; then
 	echo "Building the project..."
 	${OMRS_BUILD_CMD} ${OMRS_BUILD_GOALS} ${OMRS_BUILD_ARGS}
-	[[ -e /openmrs_core/webapp/target/openmrs.war ]] && cp /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/
+	[[ -e /openmrs_core/webapp/target/openmrs.war ]] && cp -p /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/
 fi	
 
 source /openmrs/startup.sh

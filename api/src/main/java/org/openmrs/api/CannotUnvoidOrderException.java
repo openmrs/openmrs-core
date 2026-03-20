@@ -11,13 +11,13 @@ package org.openmrs.api;
 
 /**
  * Thrown when an attempt to unvoid an order fails.
- * 
+ *
  * @since 2.1
  */
 public class CannotUnvoidOrderException extends OrderEntryException {
-	
+
 	public static final long serialVersionUID = 22121315L;
-	
+
 	public CannotUnvoidOrderException(String action) {
 		super("Order.action.cannot.unvoid", new Object[] { action });
 	}

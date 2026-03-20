@@ -9,20 +9,33 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
 /**
  * A user-defined extension to the {@link OrderGroup} class.
+ *
  * @see AttributeType
  * @since 2.4.0
  */
+@Entity
+@Table(name = "order_group_attribute_type")
 @Audited
 public class OrderGroupAttributeType extends BaseAttributeType<OrderGroup> implements AttributeType<OrderGroup> {
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "order_group_attribute_type_id")
 	private Integer orderGroupAttributeTypeId;
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

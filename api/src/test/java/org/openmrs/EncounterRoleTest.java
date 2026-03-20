@@ -11,16 +11,17 @@ package org.openmrs;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 public class EncounterRoleTest {
-	
+
 	/**
 	 * @see Encounter#toString()
 	 */
 	@Test
 	public void toString_shouldNotFailWithEmptyObject() {
 		EncounterRole encounterRole = new EncounterRole();
-		@SuppressWarnings("unused")
-		String toStringOutput = encounterRole.toString();
+		assertDoesNotThrow(() -> encounterRole.toString());
 	}
-	
+
 }

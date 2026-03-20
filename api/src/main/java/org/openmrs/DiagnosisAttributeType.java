@@ -9,18 +9,31 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
 /**
  * The DiagnosisAttributeType extension to the {@link Diagnosis} class.
+ *
  * @see AttributeType
  * @since 2.5.0
  */
+@Entity
+@Table(name = "diagnosis_attribute_type")
 @Audited
 public class DiagnosisAttributeType extends BaseAttributeType<Diagnosis> implements AttributeType<Diagnosis> {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "diagnosis_attribute_type_id")
 	private Integer diagnosisAttributeTypeId;
 
 	/**
@@ -53,4 +66,3 @@ public class DiagnosisAttributeType extends BaseAttributeType<Diagnosis> impleme
 		this.diagnosisAttributeTypeId = diagnosisAttributeTypeId;
 	}
 }
-

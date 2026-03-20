@@ -9,15 +9,16 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Session;
@@ -44,18 +45,18 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository("visitDAO")
 public class HibernateVisitDAO implements VisitDAO {
-	
+
 	private final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateVisitDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getAllVisitTypes()
 	 */
@@ -66,10 +67,10 @@ public class HibernateVisitDAO implements VisitDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<VisitType> cq = cb.createQuery(VisitType.class);
 		cq.from(VisitType.class);
-		
+
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getAllVisitTypes(boolean)
 	 */
@@ -86,7 +87,7 @@ public class HibernateVisitDAO implements VisitDAO {
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitType(java.lang.Integer)
 	 */
@@ -95,7 +96,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	public VisitType getVisitType(Integer visitTypeId) {
 		return sessionFactory.getCurrentSession().get(VisitType.class, visitTypeId);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitTypeByUuid(java.lang.String)
 	 */
@@ -104,7 +105,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	public VisitType getVisitTypeByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, VisitType.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitTypes(java.lang.String)
 	 */
@@ -115,32 +116,31 @@ public class HibernateVisitDAO implements VisitDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<VisitType> cq = cb.createQuery(VisitType.class);
 		Root<VisitType> root = cq.from(VisitType.class);
-		
+
 		cq.where(cb.like(cb.lower(root.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(fuzzySearchPhrase)));
 		cq.orderBy(cb.asc(root.get("name")));
-		
+
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#saveVisitType(org.openmrs.VisitType)
 	 */
 	@Override
 	@Transactional
 	public VisitType saveVisitType(VisitType visitType) {
-		sessionFactory.getCurrentSession().saveOrUpdate(visitType);
-		return visitType;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), visitType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#purgeVisitType(org.openmrs.VisitType)
 	 */
 	@Override
 	@Transactional
 	public void purgeVisitType(VisitType visitType) {
-		sessionFactory.getCurrentSession().delete(visitType);
+		sessionFactory.getCurrentSession().remove(visitType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisit(java.lang.Integer)
 	 */
@@ -149,7 +149,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	public Visit getVisit(Integer visitId) throws DAOException {
 		return getCurrentSession().get(Visit.class, visitId);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitByUuid(java.lang.String)
 	 */
@@ -158,30 +158,29 @@ public class HibernateVisitDAO implements VisitDAO {
 	public Visit getVisitByUuid(String uuid) throws DAOException {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, Visit.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#saveVisit(org.openmrs.Visit)
 	 */
 	@Override
 	@Transactional
 	public Visit saveVisit(Visit visit) throws DAOException {
-		getCurrentSession().saveOrUpdate(visit);
-		return visit;
+		return HibernateUtil.saveOrUpdate(getCurrentSession(), visit);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#deleteVisit(org.openmrs.Visit)
 	 */
 	@Override
 	@Transactional
 	public void deleteVisit(Visit visit) throws DAOException {
-		getCurrentSession().delete(visit);
+		getCurrentSession().remove(visit);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisits(java.util.Collection, java.util.Collection,
-	 *      java.util.Collection, java.util.Collection, java.util.Date, java.util.Date,
-	 *      java.util.Date, java.util.Date, java.util.Map, boolean, boolean)
+	 *      java.util.Collection, java.util.Collection, java.util.Date, java.util.Date, java.util.Date,
+	 *      java.util.Date, java.util.Map, boolean, boolean)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -221,8 +220,8 @@ public class HibernateVisitDAO implements VisitDAO {
 			predicates.add(cb.or(cb.isNull(root.get("stopDatetime")), cb.greaterThan(root.get("stopDatetime"), new Date())));
 		} else {
 			if (minEndDatetime != null) {
-				predicates.add(cb.or(cb.isNull(root.get("stopDatetime")), cb.greaterThanOrEqualTo(root.get("stopDatetime"),
-					minEndDatetime)));
+				predicates.add(cb.or(cb.isNull(root.get("stopDatetime")),
+				    cb.greaterThanOrEqualTo(root.get("stopDatetime"), minEndDatetime)));
 			}
 			if (maxEndDatetime != null) {
 				predicates.add(cb.lessThanOrEqualTo(root.get("stopDatetime"), maxEndDatetime));
@@ -233,14 +232,14 @@ public class HibernateVisitDAO implements VisitDAO {
 			predicates.add(cb.isFalse(root.get("voided")));
 		}
 
-		cq.where(predicates.toArray(new Predicate[]{}))
-			.orderBy(cb.desc(root.get("startDatetime")), cb.desc(root.get("visitId")));
+		cq.where(predicates.toArray(new Predicate[] {})).orderBy(cb.desc(root.get("startDatetime")),
+		    cb.desc(root.get("visitId")));
 
 		List<Visit> visits = session.createQuery(cq).getResultList();
 
 		if (serializedAttributeValues != null) {
-			CollectionUtils.filter(visits, new AttributeMatcherPredicate<Visit, VisitAttributeType>(
-				serializedAttributeValues));
+			CollectionUtils.filter(visits,
+			    new AttributeMatcherPredicate<Visit, VisitAttributeType>(serializedAttributeValues));
 		}
 
 		return visits;
@@ -255,9 +254,9 @@ public class HibernateVisitDAO implements VisitDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);
 		Root<Visit> root = cq.from(Visit.class);
-		
+
 		List<Predicate> predicates = new ArrayList<>();
-		
+
 		if (criteria.getVisitTypes() != null && !criteria.getVisitTypes().isEmpty()) {
 			predicates.add(root.get("visitType").in(criteria.getVisitTypes()));
 		}
@@ -276,36 +275,36 @@ public class HibernateVisitDAO implements VisitDAO {
 		if (criteria.getMaxStartDatetime() != null) {
 			predicates.add(cb.lessThanOrEqualTo(root.get("startDatetime"), criteria.getMaxStartDatetime()));
 		}
-		
+
 		if (!criteria.isIncludeInactive()) {
 			predicates.add(cb.or(cb.isNull(root.get("stopDatetime")), cb.greaterThan(root.get("stopDatetime"), new Date())));
 		} else {
 			if (criteria.getMinEndDatetime() != null) {
-				predicates.add(cb.or(cb.isNull(root.get("stopDatetime")), cb.greaterThanOrEqualTo(root.get("stopDatetime"),
-					criteria.getMinEndDatetime())));
+				predicates.add(cb.or(cb.isNull(root.get("stopDatetime")),
+				    cb.greaterThanOrEqualTo(root.get("stopDatetime"), criteria.getMinEndDatetime())));
 			}
 			if (criteria.getMaxEndDatetime() != null) {
 				predicates.add(cb.lessThanOrEqualTo(root.get("stopDatetime"), criteria.getMaxEndDatetime()));
 			}
 		}
-		
+
 		if (!criteria.isIncludeVoided()) {
 			predicates.add(cb.isFalse(root.get("voided")));
 		}
-		
-		cq.where(predicates.toArray(new Predicate[]{}))
-			.orderBy(cb.desc(root.get("startDatetime")), cb.desc(root.get("visitId")));
-		
+
+		cq.where(predicates.toArray(new Predicate[] {})).orderBy(cb.desc(root.get("startDatetime")),
+		    cb.desc(root.get("visitId")));
+
 		List<Visit> visits = session.createQuery(cq).getResultList();
-		
+
 		if (criteria.getSerializedAttributeValues() != null) {
-			CollectionUtils.filter(visits, new AttributeMatcherPredicate<Visit, VisitAttributeType>(
-				criteria.getSerializedAttributeValues()));
+			CollectionUtils.filter(visits,
+			    new AttributeMatcherPredicate<Visit, VisitAttributeType>(criteria.getSerializedAttributeValues()));
 		}
-		
+
 		return visits;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getAllVisitAttributeTypes()
 	 */
@@ -316,10 +315,10 @@ public class HibernateVisitDAO implements VisitDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<VisitAttributeType> cq = cb.createQuery(VisitAttributeType.class);
 		cq.from(VisitAttributeType.class);
-		
+
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitAttributeType(java.lang.Integer)
 	 */
@@ -328,7 +327,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	public VisitAttributeType getVisitAttributeType(Integer id) {
 		return getCurrentSession().get(VisitAttributeType.class, id);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitAttributeTypeByUuid(java.lang.String)
 	 */
@@ -337,26 +336,25 @@ public class HibernateVisitDAO implements VisitDAO {
 	public VisitAttributeType getVisitAttributeTypeByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, VisitAttributeType.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#saveVisitAttributeType(org.openmrs.VisitAttributeType)
 	 */
 	@Override
 	@Transactional
 	public VisitAttributeType saveVisitAttributeType(VisitAttributeType visitAttributeType) {
-		getCurrentSession().saveOrUpdate(visitAttributeType);
-		return visitAttributeType;
+		return HibernateUtil.saveOrUpdate(getCurrentSession(), visitAttributeType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#deleteVisitAttributeType(org.openmrs.VisitAttributeType)
 	 */
 	@Override
 	@Transactional
 	public void deleteVisitAttributeType(VisitAttributeType visitAttributeType) {
-		getCurrentSession().delete(visitAttributeType);
+		getCurrentSession().remove(visitAttributeType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitAttributeByUuid(java.lang.String)
 	 */
@@ -365,7 +363,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	public VisitAttribute getVisitAttributeByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, VisitAttribute.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getNextVisit(Visit, Collection, Date)
 	 */
@@ -390,8 +388,7 @@ public class HibernateVisitDAO implements VisitDAO {
 			predicates.add(root.get("visitType").in(visitTypes));
 		}
 
-		cq.where(predicates.toArray(new Predicate[]{}))
-			.orderBy(cb.asc(root.get("visitId")));
+		cq.where(predicates.toArray(new Predicate[] {})).orderBy(cb.asc(root.get("visitId")));
 
 		return session.createQuery(cq).setMaxResults(1).uniqueResult();
 	}
