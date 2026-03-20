@@ -50,7 +50,7 @@
 		<springTestVersion>${springVersion}</springTestVersion>
 		<hibernateVersion>7.2.6.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
-		<hibernateSearchVersion>8.2.2.Final</hibernateSearchVersion>
+		<hibernateSearchVersion>8.3.0.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.0.Final</hibernateValidatorVersion>
 		<luceneVersion>10.4.0</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
