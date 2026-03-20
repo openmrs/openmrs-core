@@ -123,10 +123,19 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 * @return true if d is in this range, false otherwise
 	 */
 	public boolean contains(double d) {
-		if (d < low) {
+		if (low == null && high == null) {
 			return false;
 		}
-		return d < high;
+
+		if (low != null && d < low) {
+			return false;
+		}
+
+		if (high != null && d >= high) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
