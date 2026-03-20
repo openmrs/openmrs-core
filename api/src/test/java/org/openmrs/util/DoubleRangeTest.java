@@ -86,8 +86,14 @@ public class DoubleRangeTest {
     }
 
     @Test
-	public void shouldHandleNullBoundsSafely() {
-		DoubleRange range = new DoubleRange(null, null);
-		assertTrue(range.contains(5.0));
-	}
+    public void shouldHandleNullBoundsSafely() {
+        DoubleRange range = new DoubleRange(null, null);
+        assertTrue(range.contains(5.0));
+    }
+
+    @Test
+    public void shouldReturnFalseForDefaultConstructor() {
+        DoubleRange range = new DoubleRange();
+        assertFalse(range.contains(5.0));
+    }
 }
