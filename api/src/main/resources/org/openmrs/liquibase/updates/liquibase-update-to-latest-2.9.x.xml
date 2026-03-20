@@ -48,5 +48,10 @@
 			</column>
 		</createTable>
 	</changeSet>
-	
+
+	<changeSet id="AUDIT-28-2026-03-19" author="Binayak490-cyber">
+		<comment>Backfill pre-existing rows into Envers audit tables</comment>
+		<customChange class="org.openmrs.util.databasechange.BackfillEnversAuditTablesChangeset"/>
+	</changeSet>
+
 </databaseChangeLog>
