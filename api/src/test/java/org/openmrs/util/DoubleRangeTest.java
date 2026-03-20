@@ -20,25 +20,25 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class DoubleRangeTest {
 
     @Test
-    public void shouldContainValueWithinRange() {
+    void shouldContainValueWithinRange() {
         DoubleRange range = new DoubleRange(1.0, 10.0);
         assertTrue(range.contains(5.0));
     }
 
     @Test
-    public void shouldNotContainValueEqualToHigh() {
+    void shouldNotContainValueEqualToHigh() {
         DoubleRange range = new DoubleRange(1.0, 10.0);
         assertFalse(range.contains(10.0));
     }
 
     @Test
-    public void shouldContainValueEqualToLow() {
+    void shouldContainValueEqualToLow() {
         DoubleRange range = new DoubleRange(1.0, 10.0);
         assertTrue(range.contains(1.0));
     }
 
     @Test
-    public void shouldGetAndSetLowAndHighValues() {
+    void shouldGetAndSetLowAndHighValues() {
         DoubleRange range = new DoubleRange(1.0, 10.0);
         assertEquals(1.0, range.getLow());
         assertEquals(10.0, range.getHigh());
@@ -51,7 +51,7 @@ public class DoubleRangeTest {
     }
 
     @Test
-    public void equalsShouldConsiderLowAndHigh() {
+    void equalsShouldConsiderLowAndHigh() {
         DoubleRange r1 = new DoubleRange(1.0, 10.0);
         DoubleRange r2 = new DoubleRange(1.0, 10.0);
         DoubleRange r3 = new DoubleRange(2.0, 10.0);
@@ -61,7 +61,7 @@ public class DoubleRangeTest {
     }
 
     @Test
-    public void hashCodeShouldBeConsistentWithEquals() {
+    void hashCodeShouldBeConsistentWithEquals() {
         DoubleRange r1 = new DoubleRange(1.0, 10.0);
         DoubleRange r2 = new DoubleRange(1.0, 10.0);
 
@@ -70,7 +70,7 @@ public class DoubleRangeTest {
     }
 
     @Test
-    public void compareToShouldOrderByLowThenHigh() {
+    void compareToShouldOrderByLowThenHigh() {
         DoubleRange r1 = new DoubleRange(1.0, 5.0);
         DoubleRange r2 = new DoubleRange(2.0, 6.0);
 
@@ -79,7 +79,7 @@ public class DoubleRangeTest {
     }
 
     @Test
-    public void toStringShouldReturnRangeRepresentation() {
+    void toStringShouldReturnRangeRepresentation() {
         DoubleRange range = new DoubleRange(1.0, 10.0);
         String text = range.toString();
 
@@ -89,13 +89,13 @@ public class DoubleRangeTest {
     }
 
     @Test
-    public void shouldHandleNullBoundsSafely() {
+    void shouldHandleNullBoundsSafely() {
         DoubleRange range = new DoubleRange(null, null);
         assertTrue(range.contains(5.0));
     }
 
     @Test
-    public void shouldReturnFalseForDefaultConstructor() {
+    void shouldReturnFalseForDefaultConstructor() {
         DoubleRange range = new DoubleRange();
         assertFalse(range.contains(5.0));
     }
