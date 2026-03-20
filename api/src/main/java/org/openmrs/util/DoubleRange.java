@@ -123,6 +123,9 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 * @return true if d is in this range, false otherwise
 	 */
 	public boolean contains(double d) {
+		if (Double.isNaN(d)) {
+			return false;
+		}
 		if (low == null && high == null) {
 			return false;
 		}
