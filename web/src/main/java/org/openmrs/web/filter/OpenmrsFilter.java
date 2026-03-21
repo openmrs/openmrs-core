@@ -22,6 +22,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.WebUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -61,18 +62,10 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 
 		// used by htmlInclude tag
 		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(System.currentTimeMillis()));
-		String requestUri = httpRequest.getRequestURI();
-		if (requestUri != null) {
-			requestUri = requestUri.replaceAll("[\n\r]", "_");
-		}
-		String requestUrl = httpRequest.getRequestURL() == null ? null : httpRequest.getRequestURL().toString();
-		if (requestUrl != null) {
-			requestUrl = requestUrl.replaceAll("[\n\r]", "_");
-		}
-		String requestPathInfo = httpRequest.getPathInfo();
-		if (requestPathInfo != null) {
-			requestPathInfo = requestPathInfo.replaceAll("[\n\r]", "_");
-		}
+		String requestUri = WebUtil.sanitizeForLogging(httpRequest.getRequestURI());
+		String requestUrl = WebUtil.sanitizeForLogging(httpRequest.getRequestURL() == null ? null : httpRequest.getRequestURL()
+		        .toString());
+		String requestPathInfo = WebUtil.sanitizeForLogging(httpRequest.getPathInfo());
 		log.debug("requestURI {}", requestUri);
 		log.debug("requestURL {}", requestUrl);
 		log.debug("request path info {}", requestPathInfo);

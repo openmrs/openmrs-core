@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.web.WebUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +36,8 @@ public class ModuleServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String pathInfo = request.getPathInfo();
-		String sanitizedPathInfo = pathInfo == null ? null : pathInfo.replaceAll("[\n\r]", "_");
-		log.debug("In service method for module servlet: {}",
-		    sanitizedPathInfo);
+		String sanitizedPathInfo = WebUtil.sanitizeForLogging(pathInfo);
+		log.debug("In service method for module servlet: {}", sanitizedPathInfo);
 		String servletName = pathInfo;
 		int end = servletName.indexOf("/", 1);
 
@@ -45,7 +45,7 @@ public class ModuleServlet extends HttpServlet {
 		if (end > 0) {
 			moduleId = servletName.substring(1, end);
 		}
-		String sanitizedModuleId = moduleId == null ? null : moduleId.replaceAll("[\n\r]", "_");
+		String sanitizedModuleId = WebUtil.sanitizeForLogging(moduleId);
 		log.debug("ModuleId: {}", sanitizedModuleId);
 		Module mod = ModuleFactory.getModuleById(moduleId);
 
@@ -63,7 +63,7 @@ public class ModuleServlet extends HttpServlet {
 			end = servletName.length();
 		}
 		servletName = servletName.substring(start, end);
-		String sanitizedServletName = servletName == null ? null : servletName.replaceAll("[\n\r]", "_");
+		String sanitizedServletName = WebUtil.sanitizeForLogging(servletName);
 		log.debug("Servlet name: {}", sanitizedServletName);
 		HttpServlet servlet = WebModuleUtil.getServlet(servletName);
 

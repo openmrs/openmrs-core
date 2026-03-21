@@ -12,6 +12,7 @@ package org.openmrs.module.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -21,6 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.WebUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,8 +52,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.debug("In service method for module servlet: {}",
-		    request.getPathInfo() == null ? null : request.getPathInfo().replaceAll("[\n\r]", "_"));
+		String sanitizedPathInfo = WebUtil.sanitizeForLogging(request.getPathInfo());
+		log.debug("In service method for module servlet: {}", sanitizedPathInfo);
 		File f = getFile(request);
 		if (f == null) {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -80,10 +82,11 @@ public class ModuleResourcesServlet extends HttpServlet {
 	protected File getFile(HttpServletRequest request) {
 
 		String path = request.getPathInfo();
+		String sanitizedPath = WebUtil.sanitizeForLogging(path);
 
 		Module module = ModuleUtil.getModuleForPath(path);
 		if (module == null) {
-			log.warn("No module handles the path: {}", path == null ? null : path.replaceAll("[\n\r]", "_"));
+			log.warn("No module handles the path: {}", sanitizedPath);
 			return null;
 		}
 
@@ -91,19 +94,29 @@ public class ModuleResourcesServlet extends HttpServlet {
 		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources"
 		        + relativePath;
 
+		String basePath;
+
 		//if in dev mode, load resources from the development directory
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		if (devDir != null) {
 			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources" + relativePath;
+			basePath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources";
+		} else {
+			basePath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources";
 		}
 
-		realPath = realPath.replace("/", File.separator);
+		Path normalizedPath = Path.of(realPath).normalize();
+		Path normalizedBase = Path.of(basePath).normalize();
+		if (!normalizedPath.startsWith(normalizedBase)) {
+			log.warn("Detected attempted directory traversal with path: {}", sanitizedPath);
+			return null;
+		}
 
-		File f = new File(realPath);
+		File f = normalizedPath.toFile();
 		if (!f.exists()) {
-			String sanitizedRealPath = realPath == null ? null : realPath.replaceAll("[\n\r]", "_");
-			String sanitizedModuleId = module.getModuleId() == null ? null : module.getModuleId().replaceAll("[\n\r]", "_");
-			log.warn("No file with path '{}' exists for module '{}'", sanitizedRealPath, sanitizedModuleId);
+			String sanitizedNormalizedPath = WebUtil.sanitizeForLogging(normalizedPath.toString());
+			String sanitizedModuleId = WebUtil.sanitizeForLogging(module.getModuleId());
+			log.warn("No file with path '{}' exists for module '{}'", sanitizedNormalizedPath, sanitizedModuleId);
 			return null;
 		}
 
