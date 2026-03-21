@@ -30,6 +30,7 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
 import org.openmrs.User;
@@ -375,8 +376,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 
 		List<Encounter> encs = new ArrayList<>();
-		for (Patient p : Context.getPatientService().getPatients(identifier, null, null, false)) {
-			encs.addAll(Context.getEncounterService().getEncountersByPatientId(p.getPatientId()));
+		for (PatientIdentifier pi : Context.getPatientService().getPatientIdentifiers(identifier, null, null, null, null)) {
+			if (!pi.getVoided()) {
+				encs.addAll(Context.getEncounterService().getEncountersByPatientId(pi.getPatient().getPatientId()));
+			}
 		}
 		return Context.getEncounterService().filterEncountersByViewPermissions(encs, null);
 	}
