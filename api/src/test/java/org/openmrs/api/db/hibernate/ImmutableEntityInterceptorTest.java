@@ -10,6 +10,7 @@
 package org.openmrs.api.db.hibernate;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.api.context.Context;
@@ -17,6 +18,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -115,5 +117,18 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setVoided(true);
 		interceptor.onFlushDirty(order, null, currentState, previousState, propertyNames, null);
+	}
+
+	/**
+	 * @see ImmutableEntityInterceptor#onFlushDirty(Object, java.io.Serializable, Object[], Object[],
+	 *      String[], org.hibernate.type.Type[])
+	 */
+	@Test
+	public void onFlushDirty_shouldPassIfANewObsHasAChangedProperty() {
+		String[] propertyNames = new String[] { "comment" };
+		String[] previousState = new String[] { "old" };
+		String[] currentState = new String[] { "new" };
+		assertDoesNotThrow(() -> new ImmutableObsInterceptor().onFlushDirty(new Obs(), null, currentState, previousState,
+		    propertyNames, null));
 	}
 }

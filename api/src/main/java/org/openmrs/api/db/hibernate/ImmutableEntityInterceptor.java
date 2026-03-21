@@ -65,6 +65,16 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 	}
 
 	/**
+	 * Subclasses can override this to allow changes to transient entities before Hibernate assigns a
+	 * persistent identifier.
+	 *
+	 * @return true if a changed entity without an identifier should bypass immutability checks
+	 */
+	protected boolean allowChangesForEntityWithoutId() {
+		return false;
+	}
+
+	/**
 	 * <p>
 	 * <strong>Should</strong> fail if an entity has a changed property<br/>
 	 * <strong>Should</strong> pass if an entity has changes for an allowed mutable property<br/>
@@ -104,8 +114,7 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 				}
 			}
 			if (CollectionUtils.isNotEmpty(changedProperties)) {
-				// allow changes for new Obs (no obsId yet)
-				if (id == null) {
+				if (id == null && allowChangesForEntityWithoutId()) {
 					return false;
 				}
 				log.debug("The following fields cannot be changed for {} : {}", getSupportedType(), changedProperties);
