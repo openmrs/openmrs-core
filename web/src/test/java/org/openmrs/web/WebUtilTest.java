@@ -148,7 +148,7 @@ public class WebUtilTest {
 	 * @see WebUtil#sanitizeForLogging(String)
 	 */
 	@Test
-	public void sanitizeForLogging_shouldReturnNullIfInputIsNull() {
+	void sanitizeForLogging_shouldReturnNullIfInputIsNull() {
 		assertNull(WebUtil.sanitizeForLogging(null));
 	}
 
@@ -156,7 +156,7 @@ public class WebUtilTest {
 	 * @see WebUtil#sanitizeForLogging(String)
 	 */
 	@Test
-	public void sanitizeForLogging_shouldReplaceCarriageReturnAndLineFeedCharacters() {
+	void sanitizeForLogging_shouldReplaceCarriageReturnAndLineFeedCharacters() {
 		assertEquals("abc__def_ghi_jkl", WebUtil.sanitizeForLogging("abc\r\ndef\nghi\rjkl"));
 	}
 
