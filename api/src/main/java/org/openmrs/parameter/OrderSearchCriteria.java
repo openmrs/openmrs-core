@@ -124,15 +124,26 @@ public class OrderSearchCriteria {
 	 */
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
 	    Collection<OrderType> orderTypes, String accessionNumber, String orderNumber, Date activatedOnOrBeforeDate,
-	    Date activatedOnOrAfterDate, Date scheduledOnOrBeforeDate, Date scheduledOnOrAfterDate, boolean isStopped, 
+	    Date activatedOnOrAfterDate, boolean isStopped, Date autoExpireOnOrBeforeDate, 
+		Date canceledOrExpiredOnOrBeforeDate, Order.Action action, Order.FulfillerStatus fulfillerStatus, 
+		Boolean includeNullFulfillerStatus, boolean excludeCanceledAndExpired, boolean excludeDiscontinueOrders, 
+		boolean includeVoided) {
+		this(patient, careSetting, concepts, orderTypes, null, null, activatedOnOrBeforeDate, activatedOnOrAfterDate,
+				null, null, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate, action, 
+				fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, 
+				includeVoided, null);
+	}
+
+	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
+	    Collection<OrderType> orderTypes, String accessionNumber, String orderNumber, Date activatedOnOrBeforeDate,
+	    Date activatedOnOrAfterDate, boolean isStopped, 
 		Date autoExpireOnOrBeforeDate, Date canceledOrExpiredOnOrBeforeDate, Order.Action action, 
 		Order.FulfillerStatus fulfillerStatus, Boolean includeNullFulfillerStatus, boolean excludeCanceledAndExpired, 
-		boolean excludeDiscontinueOrders, boolean includeVoided) {
-
+		boolean excludeDiscontinueOrders, boolean includeVoided, Visit visit) {
 		this(patient, careSetting, concepts, orderTypes, null, null, activatedOnOrBeforeDate, activatedOnOrAfterDate,
-				scheduledOnOrBeforeDate, scheduledOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, 
+				null, null, isStopped, autoExpireOnOrBeforeDate, 
 				canceledOrExpiredOnOrBeforeDate, action, fulfillerStatus, includeNullFulfillerStatus, 
-				excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided, null);
+				excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided, visit);
 	}
 
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
@@ -184,7 +195,7 @@ public class OrderSearchCriteria {
 
 		this(patient, careSetting, concepts, orderTypes, null, null, activatedOnOrBeforeDate, activatedOnOrAfterDate,
 		        null, null, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate, action, fulfillerStatus,
-		        includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided);
+		        includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided, null);
 
 	}
 
