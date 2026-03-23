@@ -56,7 +56,7 @@
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.6.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
-		<jacksonVersion>2.21.1</jacksonVersion>
+		<jacksonVersion>2.21.2</jacksonVersion>
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.25.3</log4jVersion>
 		<jbossLoggingVersion>3.6.2.Final</jbossLoggingVersion>
