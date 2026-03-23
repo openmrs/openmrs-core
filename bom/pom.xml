@@ -118,7 +118,7 @@
 		<guavaVersion>33.5.0-jre</guavaVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 		<jobrunrVersion>8.5.1</jobrunrVersion>
-		<shedlockVersion>7.6.0</shedlockVersion>
+		<shedlockVersion>7.7.0</shedlockVersion>
 
 		<!-- Testing -->
 		<junitVersion>6.0.3</junitVersion>
