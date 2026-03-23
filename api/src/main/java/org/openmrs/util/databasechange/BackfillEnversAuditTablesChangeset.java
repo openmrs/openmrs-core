@@ -16,7 +16,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.openmrs.api.context.Context;
@@ -57,8 +59,12 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 			        .getProperty("org.hibernate.envers.audit_table_suffix", "_audit");
 
 			String revisionTableName = findRevisionEntityTable(connection);
-			Integer revId = null;
 
+			// Collect all (sourceTable, auditTable) pairs first so we can iterate them
+			// multiple times. A second pass is needed for joined-subclass audit tables
+			// (e.g. patient_aud, drug_order_aud) whose FK to the parent audit table
+			// would otherwise fail when the parent table has not been backfilled yet.
+			List<String[]> auditPairs = new ArrayList<>();
 			DatabaseMetaData metaData = connection.getMetaData();
 			try (ResultSet tables = metaData.getTables(null, null, "%", new String[] { "TABLE" })) {
 				while (tables.next()) {
@@ -68,8 +74,17 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 					}
 					String sourceTable = tableName.substring(0, tableName.length() - auditSuffix.length());
 					if (doesTableExist(connection, sourceTable)) {
-						revId = tryBackfillEntity(connection, sourceTable, tableName, revisionTableName, revId);
+						auditPairs.add(new String[] { sourceTable, tableName });
 					}
+				}
+			}
+
+			Integer revId = null;
+			// Two passes: pass 1 populates parent audit tables; pass 2 handles child
+			// audit tables whose FK dependency on the parent is now satisfied.
+			for (int pass = 0; pass < 2; pass++) {
+				for (String[] pair : auditPairs) {
+					revId = tryBackfillEntity(connection, pair[0], pair[1], revisionTableName, revId);
 				}
 			}
 
@@ -92,7 +107,7 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 			if (revId == null) {
 				revId = createBackfillRevision(connection, revisionTableName);
 			}
-			List<String> columns = getAuditTableDataColumns(connection, auditTable);
+			List<String> columns = getAuditTableDataColumns(connection, auditTable, sourceTable);
 			if (!columns.isEmpty()) {
 				backfillTable(connection, sourceTable, auditTable, columns, revId);
 			}
@@ -225,17 +240,28 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 	}
 
 	/**
-	 * Returns the data column names from the given audit table, excluding the Envers metadata columns
-	 * REV and REVTYPE. These are the columns that correspond to the audited entity fields and must
-	 * exist in the source table.
+	 * Returns the column names that exist in both the audit table and the source table, excluding the
+	 * Envers metadata columns REV and REVTYPE. Using the intersection avoids INSERT failures caused by
+	 * extra columns in the audit table that have no counterpart in the source table (e.g. columns
+	 * added by Envers for joined-subclass inheritance tracking).
 	 */
-	static List<String> getAuditTableDataColumns(Connection connection, String auditTable) throws SQLException {
-		List<String> columns = new ArrayList<>();
+	static List<String> getAuditTableDataColumns(Connection connection, String auditTable, String sourceTable)
+	        throws SQLException {
 		DatabaseMetaData metaData = connection.getMetaData();
+
+		Set<String> sourceColumns = new HashSet<>();
+		try (ResultSet rs = metaData.getColumns(null, null, sourceTable, null)) {
+			while (rs.next()) {
+				sourceColumns.add(rs.getString("COLUMN_NAME").toLowerCase());
+			}
+		}
+
+		List<String> columns = new ArrayList<>();
 		try (ResultSet rs = metaData.getColumns(null, null, auditTable, null)) {
 			while (rs.next()) {
 				String colName = rs.getString("COLUMN_NAME");
-				if (!colName.equalsIgnoreCase("REV") && !colName.equalsIgnoreCase("REVTYPE")) {
+				if (!colName.equalsIgnoreCase("REV") && !colName.equalsIgnoreCase("REVTYPE")
+				        && sourceColumns.contains(colName.toLowerCase())) {
 					columns.add(colName);
 				}
 			}

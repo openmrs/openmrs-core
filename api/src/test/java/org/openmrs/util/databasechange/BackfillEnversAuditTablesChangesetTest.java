@@ -122,11 +122,13 @@ class BackfillEnversAuditTablesChangesetTest {
 	@Test
 	void getAuditTableDataColumns_shouldReturnColumnsExcludingRevAndRevtype() throws Exception {
 		try (Statement stmt = connection.createStatement()) {
+			stmt.execute("CREATE TABLE patient (patient_id INT PRIMARY KEY, name VARCHAR(100))");
 			stmt.execute("CREATE TABLE patient_audit (REV INT, REVTYPE TINYINT, patient_id INT, name VARCHAR(100))");
 		}
 		connection.commit();
 
-		List<String> columns = BackfillEnversAuditTablesChangeset.getAuditTableDataColumns(connection, "PATIENT_AUDIT");
+		List<String> columns = BackfillEnversAuditTablesChangeset.getAuditTableDataColumns(connection, "PATIENT_AUDIT",
+		    "PATIENT");
 
 		assertEquals(2, columns.size(), "Should return only non-Envers columns");
 		assertFalse(columns.stream().anyMatch(c -> c.equalsIgnoreCase("REV")), "REV should be excluded");
