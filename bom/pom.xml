@@ -96,7 +96,7 @@
 		<jaxenVersion>2.0.0</jaxenVersion>
 		<xercesVersion>2.12.2</xercesVersion>
 		<xstreamVersion>1.4.21</xstreamVersion>
-		<jaxbRuntimeVersion>4.0.6</jaxbRuntimeVersion>
+		<jaxbRuntimeVersion>4.0.7</jaxbRuntimeVersion>
 
 		<!-- Mail -->
 		<jakartaMailVersion>2.1.5</jakartaMailVersion>
