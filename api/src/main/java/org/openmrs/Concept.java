@@ -24,18 +24,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.engine.backend.types.ObjectStructure;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.AssociationInverseSide;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
@@ -893,12 +890,12 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		List<ConceptName> shortNames = new ArrayList<>();
 		if (getNames().isEmpty()) {
 			if (log.isDebugEnabled()) {
-				log.debug("The Concept with id: " + conceptId + " has no names");
+				log.debug("The Concept with id: {} has no names", conceptId);
 			}
 		} else {
 			shortNames = getNames().stream()
 							.filter(ConceptName::isShort)
-							.collect(Collectors.toList());
+							.toList();
 		}
 		return shortNames;
 	}
@@ -917,7 +914,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public ConceptName getShortestName(Locale locale, Boolean exact) {
 		if (log.isDebugEnabled()) {
-			log.debug("Getting shortest conceptName for locale: " + locale);
+			log.debug("Getting shortest conceptName for locale: {}", locale);
 		}
 		
 		ConceptName shortNameInLocale = getShortNameInLocale(locale);
@@ -944,8 +941,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		if (exact) {
 			if (shortestNameForLocale == null) {
-				log.warn("No short concept name found for concept id " + conceptId + " for locale "
-				        + locale.getDisplayName());
+				log.warn("No short concept name found for concept id {} for locale {}", conceptId, locale.getDisplayName());
 			}
 			return shortestNameForLocale;
 		}
@@ -983,7 +979,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Collection<ConceptName> getIndexTermsForLocale(Locale locale) {
 		return getIndexTerms().stream()
 				.filter(n -> n.getLocale().equals(locale))
-		        .collect(Collectors.toList());
+		        .toList();
 	}
 	
 	/**
@@ -1034,18 +1030,23 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				        && !ConceptNameType.FULLY_SPECIFIED.equals(conceptName.getConceptNameType())) {
 					conceptName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 				} else {
-					if (conceptName.isPreferred() && !conceptName.isIndexTerm() && conceptName.getLocale() != null) {
+					boolean isPreferred = conceptName.isPreferred();
+					boolean isIndex = conceptName.isIndexTerm();
+					if (isPreferred && !isIndex) {
 						ConceptName prefName = getPreferredName(conceptName.getLocale(), true);
 						if (prefName != null) {
 							prefName.setLocalePreferred(false);
 						}
 					}
-					if (conceptName.isFullySpecifiedName() && conceptName.getLocale() != null) {
+					boolean isFSN = conceptName.isFullySpecifiedName();
+					if (isFSN && conceptName.getLocale() != null) {
 						ConceptName fullySpecName = getFullySpecifiedName(conceptName.getLocale());
 						if (fullySpecName != null) {
 							fullySpecName.setConceptNameType(null);
 						}
-					} else if (conceptName.isShort() && conceptName.getLocale() != null) {
+					} 
+					boolean isShort = conceptName.isShort();
+					if (isShort && conceptName.getLocale() != null) {
 						ConceptName shortName = getShortNameInLocale(conceptName.getLocale());
 						if (shortName != null) {
 							shortName.setConceptNameType(null);
@@ -1107,7 +1108,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * <strong>Should</strong> not return language only match for exact matches
 	 */
 	public ConceptDescription getDescription(Locale locale, boolean exact) {
-		log.debug("Getting ConceptDescription for locale: " + locale);
+		log.debug("Getting ConceptDescription for locale: {}", locale);
 		
 		ConceptDescription foundDescription = null;
 		
@@ -1137,13 +1138,12 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			// no description with the given locale was found.
 			// return null if exact match desired
 			if (exact) {
-				log.debug("No concept description found for concept id " + conceptId + " for locale "
-				        + desiredLocale.toString());
+				log.debug("No concept description found for concept id {} for locale {}", conceptId, desiredLocale.toString());
 			} else {
 				// returning default description locale ("en") if exact match
 				// not desired
 				if (defaultDescription == null) {
-					log.debug("No concept description found for default locale for concept id " + conceptId);
+					log.debug("No concept description found for default locale for concept id {}", conceptId);
 				} else {
 					foundDescription = defaultDescription;
 				}
@@ -1287,7 +1287,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		ConceptName preferredConceptName = null;
 		for (ConceptName possibleSynonymInLoc : getSynonyms()) {
 			if (locale.equals(possibleSynonymInLoc.getLocale())) {
-				if (possibleSynonymInLoc.isPreferred()) {
+				boolean isPreferred = possibleSynonymInLoc.isPreferred();
+				if (isPreferred) {
 					preferredConceptName = possibleSynonymInLoc;
 				} else {
 					syns.add(possibleSynonymInLoc);
@@ -1299,7 +1300,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (preferredConceptName != null) {
 			syns.add(0, preferredConceptName);
 		}
-		log.debug("returning: " + syns);
+		log.debug("returning: {}", syns);
 		return syns;
 	}
 	

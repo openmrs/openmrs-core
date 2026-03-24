@@ -717,8 +717,10 @@ public class HibernatePersonDAO implements PersonDAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<PersonMergeLog> getWinningPersonMergeLogs(Person person) throws DAOException {
-		return (List<PersonMergeLog>) sessionFactory.getCurrentSession().createQuery(
-		    "from PersonMergeLog p where p.winner.id = :winnerId").setParameter("winnerId", person.getId()).list();
+		return sessionFactory.getCurrentSession()
+			.createQuery("from PersonMergeLog p where p.winner.id = :winnerId", PersonMergeLog.class)
+			.setParameter("winnerId", person.getId())
+			.list();
 	}
 	
 	/**
@@ -736,7 +738,9 @@ public class HibernatePersonDAO implements PersonDAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<PersonMergeLog> getAllPersonMergeLogs() throws DAOException {
-		return (List<PersonMergeLog>) sessionFactory.getCurrentSession().createQuery("from PersonMergeLog p").list();
+		return sessionFactory.getCurrentSession()
+			.createQuery("from PersonMergeLog p", PersonMergeLog.class)
+			.list();
 	}
 	
 	@Override

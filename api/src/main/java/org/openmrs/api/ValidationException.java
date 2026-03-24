@@ -25,13 +25,13 @@ public class ValidationException extends APIException {
 	 * 
 	 * @since 1.11
 	 */
-	
-	private Errors errors;
+	private final Errors errors; //made final
 	
 	/**
 	 * Default empty constructor. If at all possible, don't use this one, but use the
 	 */
 	public ValidationException() {
+		this.errors = null; //  initialize final field
 	}
 	
 	/**
@@ -42,6 +42,7 @@ public class ValidationException extends APIException {
 	 */
 	public ValidationException(String message) {
 		super(message);
+		this.errors = null; // initialize final field
 	}
 	
 	/**
@@ -53,6 +54,7 @@ public class ValidationException extends APIException {
 	 */
 	public ValidationException(String message, Throwable cause) {
 		super(message, cause);
+		this.errors = null;
 	}
 	
 	/**
@@ -62,6 +64,7 @@ public class ValidationException extends APIException {
 	 */
 	public ValidationException(Throwable cause) {
 		super(cause);
+		this.errors = null;
 	}
 	
 	/**
@@ -91,12 +94,5 @@ public class ValidationException extends APIException {
 	 */
 	public Errors getErrors() {
 		return errors;
-	}
-	
-	/**
-	 * @since 1.11
-	 */
-	public void setErrors(Errors errors) {
-		this.errors = errors;
 	}
 }

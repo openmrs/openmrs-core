@@ -296,11 +296,12 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 			}
 		}
 		catch (ClassCastException e) {
-			log.error("Error converting roles for user: " + this);
-			log.error("baseRoles.class: " + baseRoles.getClass().getName());
-			log.error("baseRoles: " + baseRoles.toString());
+			log.error("Error converting roles for user: {}", this);
+			log.error("baseRoles.class: {}", baseRoles.getClass().getName());
+			log.error("baseRoles: {}", baseRoles);
+			
 			for (Role baseRole : baseRoles) {
-				log.error("baseRole: '" + baseRole + "'");
+				log.error("baseRole: '{}'", baseRole);
 			}
 		}
 		return totalRoles;

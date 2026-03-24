@@ -19,7 +19,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.openmrs.api.APIException;
 import org.openmrs.api.DatatypeService;
 import org.openmrs.api.RefByUuid;
@@ -140,8 +139,9 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 		if (t instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) t;
 			Type first = pt.getActualTypeArguments()[0];
-			if (first instanceof Class && CustomDatatype.class.isAssignableFrom((Class) first)) {
-				return (Class) first;
+			
+			if (first instanceof Class<?> clazz && CustomDatatype.class.isAssignableFrom(clazz)) {
+				return clazz;
 			} else {
 				return datatypeClassHandled(pt.getRawType());
 			}
@@ -247,7 +247,8 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
         if (ClobDatatypeStorage.class.equals(type)) {
             return (T) getClobDatatypeStorageByUuid(uuid);
         }
-        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+	    // Ensure correct evaluation of ternary expression in message
+	    throw new APIException("Unsupported type for getRefByUuid: " + (type != null ? type.getName() : "null"));
     }
 
     @Override

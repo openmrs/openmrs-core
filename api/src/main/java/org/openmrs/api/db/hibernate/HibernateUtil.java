@@ -100,7 +100,8 @@ public class HibernateUtil {
 		
 		if (isHSQLDialect == null) {
 			// check and cache the dialect
-			isHSQLDialect = HSQLDialect.class.getName().equals(getDialect(sessionFactory).getClass().getName());
+			isHSQLDialect = HSQLDialect.class
+				.isAssignableFrom(getDialect(sessionFactory).getClass());
 		}
 		
 		return isHSQLDialect;
@@ -117,8 +118,8 @@ public class HibernateUtil {
 		
 		if (isPostgreSQLDialect == null) {
 			// check and cache the dialect
-			isPostgreSQLDialect = PostgreSQLDialect.class.getName()
-			        .equals(getDialect(sessionFactory).getClass().getName());
+			isPostgreSQLDialect = PostgreSQLDialect.class
+				.isAssignableFrom(getDialect(sessionFactory).getClass());
 		}
 		
 		return isPostgreSQLDialect;
