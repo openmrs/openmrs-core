@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +38,14 @@ import liquibase.resource.ResourceAccessor;
  * When Envers auditing is enabled after data already exists, audit tables are empty and Envers
  * cannot resolve references to those pre-existing entities, causing "Unable to read" errors in the
  * audit UI. This changeset inserts all existing rows from each source table into the corresponding
- * {@code *_audit} table with {@code REVTYPE=0} (ADD) under a single backfill revision entry.
+ * audit table with {@code REVTYPE=0} (ADD) under a single backfill revision entry.
  * <p>
- * Because this is a Liquibase changeset it is tracked in {@code databasechangelog} and runs exactly
- * once per database, never on subsequent startups.
+ * Audit tables are detected by the presence of {@code REV} and {@code REVTYPE} columns — the
+ * Envers metadata columns always present regardless of the configured audit table suffix or prefix.
+ * This avoids any dependency on runtime properties that may not be loaded when Liquibase runs.
+ * <p>
+ * Because this is a Liquibase changeset it is tracked in {@code liquibasechangelog} and runs
+ * exactly once per database, never on subsequent startups.
  */
 public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 
@@ -55,29 +58,15 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 		try {
 			Connection connection = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
 
-			String auditSuffix = Context.getRuntimeProperties()
-			        .getProperty("org.hibernate.envers.audit_table_suffix", "_audit");
-
 			String revisionTableName = findRevisionEntityTable(connection);
 
-			// Collect all (sourceTable, auditTable) pairs first so we can iterate them
-			// multiple times. A second pass is needed for joined-subclass audit tables
-			// (e.g. patient_aud, drug_order_aud) whose FK to the parent audit table
-			// would otherwise fail when the parent table has not been backfilled yet.
-			List<String[]> auditPairs = new ArrayList<>();
-			DatabaseMetaData metaData = connection.getMetaData();
-			try (ResultSet tables = metaData.getTables(null, null, "%", new String[] { "TABLE" })) {
-				while (tables.next()) {
-					String tableName = tables.getString("TABLE_NAME");
-					if (!tableName.endsWith(auditSuffix)) {
-						continue;
-					}
-					String sourceTable = tableName.substring(0, tableName.length() - auditSuffix.length());
-					if (doesTableExist(connection, sourceTable)) {
-						auditPairs.add(new String[] { sourceTable, tableName });
-					}
-				}
-			}
+			// Discover (sourceTable, auditTable) pairs by detecting Envers audit tables via
+			// REV + REVTYPE columns — independent of the configured audit suffix.
+			// Collect all pairs first so we can iterate them multiple times: a second pass
+			// is needed for joined-subclass audit tables (e.g. patient_aud, drug_order_aud)
+			// whose FK to the parent audit table would otherwise fail when the parent has
+			// not been backfilled yet.
+			List<String[]> auditPairs = discoverAuditPairs(connection);
 
 			Integer revId = null;
 			// Two passes: pass 1 populates parent audit tables; pass 2 handles child
@@ -93,8 +82,90 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 			} else {
 				log.debug("No audit tables needed backfilling.");
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new CustomChangeException("Failed to backfill Envers audit tables", e);
+		}
+	}
+
+	/**
+	 * Discovers (sourceTable, auditTable) pairs without relying on the configured audit suffix.
+	 * Identifies Envers audit tables by the presence of {@code REV} and {@code REVTYPE} columns,
+	 * then matches each audit table to its source table using longest-prefix matching.
+	 *
+	 * @param connection JDBC connection
+	 * @return list of [sourceTable, auditTable] pairs
+	 * @throws SQLException if metadata cannot be read
+	 */
+	List<String[]> discoverAuditPairs(Connection connection) throws SQLException {
+		DatabaseMetaData metaData = connection.getMetaData();
+
+		List<String> allTables = new ArrayList<>();
+		try (ResultSet tables = metaData.getTables(null, null, "%", new String[] { "TABLE" })) {
+			while (tables.next()) {
+				allTables.add(tables.getString("TABLE_NAME"));
+			}
+		}
+
+		// Partition into audit tables (have REV + REVTYPE) and potential source tables
+		Set<String> auditTableSet = new HashSet<>();
+		for (String tableName : allTables) {
+			if (isEnversAuditTable(connection, tableName)) {
+				auditTableSet.add(tableName);
+			}
+		}
+
+		// Build lowercase set of non-audit table names for prefix matching
+		Set<String> sourceTableNames = new HashSet<>();
+		for (String tableName : allTables) {
+			if (!auditTableSet.contains(tableName)) {
+				sourceTableNames.add(tableName.toLowerCase());
+			}
+		}
+
+		// For each audit table, find the longest-prefix matching source table
+		List<String[]> pairs = new ArrayList<>();
+		for (String auditTable : auditTableSet) {
+			String lowerAudit = auditTable.toLowerCase();
+			String bestMatch = null;
+			for (String sourceTable : sourceTableNames) {
+				if (lowerAudit.startsWith(sourceTable) && lowerAudit.length() > sourceTable.length()) {
+					if (bestMatch == null || sourceTable.length() > bestMatch.length()) {
+						bestMatch = sourceTable;
+					}
+				}
+			}
+			if (bestMatch != null) {
+				// Recover original-case source table name
+				for (String tableName : allTables) {
+					if (tableName.equalsIgnoreCase(bestMatch)) {
+						pairs.add(new String[] { tableName, auditTable });
+						break;
+					}
+				}
+			}
+		}
+		return pairs;
+	}
+
+	/**
+	 * Returns true if the table is an Envers audit table, detected by the presence of both
+	 * {@code REV} and {@code REVTYPE} columns.
+	 */
+	boolean isEnversAuditTable(Connection connection, String tableName) {
+		String safeTableName;
+		try {
+			safeTableName = requireSafeIdentifier(tableName);
+		}
+		catch (IllegalArgumentException e) {
+			return false;
+		}
+		try (Statement stmt = connection.createStatement()) {
+			stmt.execute("SELECT REV, REVTYPE FROM " + safeTableName + " WHERE 1=0");
+			return true;
+		}
+		catch (Exception e) {
+			return false;
 		}
 	}
 
@@ -111,7 +182,8 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 			if (!columns.isEmpty()) {
 				backfillTable(connection, sourceTable, auditTable, columns, revId);
 			}
-		} catch (SQLException e) {
+		}
+		catch (SQLException e) {
 			log.warn("Failed to backfill audit table {}: {}", auditTable, e.getMessage());
 		}
 		return revId;
@@ -223,7 +295,8 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 		try (Statement stmt = connection.createStatement();
 		        ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + requireSafeIdentifier(tableName))) {
 			return rs.next() && rs.getLong(1) == 0;
-		} catch (SQLException e) {
+		}
+		catch (SQLException e) {
 			log.debug("Audit table {} not accessible, skipping backfill: {}", tableName, e.getMessage());
 			return false;
 		}

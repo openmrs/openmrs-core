@@ -208,6 +208,120 @@ class BackfillEnversAuditTablesChangesetTest {
 		    "Empty source table should not trigger backfill");
 	}
 
+	@Test
+	void isEnversAuditTable_shouldReturnTrueForTableWithRevAndRevtype() throws Exception {
+		try (Statement stmt = connection.createStatement()) {
+			stmt.execute("CREATE TABLE patient_aud (REV INT, REVTYPE TINYINT, patient_id INT)");
+		}
+		connection.commit();
+
+		BackfillEnversAuditTablesChangeset changeset = new BackfillEnversAuditTablesChangeset();
+		assertTrue(changeset.isEnversAuditTable(connection, "patient_aud"),
+		    "Table with REV and REVTYPE should be identified as an Envers audit table");
+	}
+
+	@Test
+	void isEnversAuditTable_shouldReturnFalseForRegularTable() throws Exception {
+		try (Statement stmt = connection.createStatement()) {
+			stmt.execute("CREATE TABLE patient (patient_id INT PRIMARY KEY, name VARCHAR(100))");
+		}
+		connection.commit();
+
+		BackfillEnversAuditTablesChangeset changeset = new BackfillEnversAuditTablesChangeset();
+		assertFalse(changeset.isEnversAuditTable(connection, "patient"),
+		    "Regular table without REV/REVTYPE should not be identified as audit table");
+	}
+
+	@Test
+	void discoverAuditPairs_shouldMatchAuditTableToSourceTable() throws Exception {
+		try (Statement stmt = connection.createStatement()) {
+			stmt.execute("CREATE TABLE patient (patient_id INT PRIMARY KEY, name VARCHAR(100))");
+			stmt.execute("CREATE TABLE patient_aud (REV INT, REVTYPE TINYINT, patient_id INT)");
+		}
+		connection.commit();
+
+		BackfillEnversAuditTablesChangeset changeset = new BackfillEnversAuditTablesChangeset();
+		List<String[]> pairs = changeset.discoverAuditPairs(connection);
+
+		assertEquals(1, pairs.size(), "Should discover exactly one audit pair");
+		assertEquals("patient", pairs.get(0)[0].toLowerCase(), "Source table should be patient");
+		assertEquals("patient_aud", pairs.get(0)[1].toLowerCase(), "Audit table should be patient_aud");
+	}
+
+	@Test
+	void discoverAuditPairs_shouldUseLongestPrefixMatch() throws Exception {
+		try (Statement stmt = connection.createStatement()) {
+			stmt.execute("CREATE TABLE patient (patient_id INT PRIMARY KEY)");
+			stmt.execute("CREATE TABLE patient_identifier (id INT PRIMARY KEY)");
+			stmt.execute("CREATE TABLE patient_identifier_aud (REV INT, REVTYPE TINYINT, id INT)");
+		}
+		connection.commit();
+
+		BackfillEnversAuditTablesChangeset changeset = new BackfillEnversAuditTablesChangeset();
+		List<String[]> pairs = changeset.discoverAuditPairs(connection);
+
+		assertEquals(1, pairs.size(), "Should discover exactly one audit pair");
+		assertEquals("patient_identifier", pairs.get(0)[0].toLowerCase(),
+		    "Longest prefix match should pick patient_identifier over patient");
+	}
+
+	@Test
+	void endToEnd_shouldBackfillAuditTablesWithCustomSuffix() throws Exception {
+		// Simulate maintainer's setup: tables use _aud suffix, not _audit
+		try (Statement stmt = connection.createStatement()) {
+			stmt.execute("CREATE TABLE " + REVISION_TABLE + " (id INT NOT NULL PRIMARY KEY, timestamp BIGINT NOT NULL)");
+
+			stmt.execute("CREATE TABLE patient (patient_id INT PRIMARY KEY, name VARCHAR(100))");
+			stmt.execute("INSERT INTO patient VALUES (1, 'Alice'), (2, 'Bob')");
+
+			stmt.execute("CREATE TABLE encounter (encounter_id INT PRIMARY KEY, type VARCHAR(50))");
+			stmt.execute("INSERT INTO encounter VALUES (10, 'VISIT')");
+
+			// Audit tables with _aud suffix (empty) — no suffix config needed
+			stmt.execute("CREATE TABLE patient_aud (REV INT, REVTYPE TINYINT, patient_id INT, name VARCHAR(100))");
+			stmt.execute("CREATE TABLE encounter_aud (REV INT, REVTYPE TINYINT, encounter_id INT, type VARCHAR(50))");
+		}
+		connection.commit();
+
+		// Run full backfill flow using the same logic as execute()
+		BackfillEnversAuditTablesChangeset changeset = new BackfillEnversAuditTablesChangeset();
+		List<String[]> pairs = changeset.discoverAuditPairs(connection);
+		assertEquals(2, pairs.size(), "Should discover patient_aud and encounter_aud");
+
+		Integer revId = null;
+		for (int pass = 0; pass < 2; pass++) {
+			for (String[] pair : pairs) {
+				String sourceTable = pair[0];
+				String auditTable = pair[1];
+				if (!BackfillEnversAuditTablesChangeset.isAuditTableEmpty(connection, auditTable)
+				        || BackfillEnversAuditTablesChangeset.isTableEmpty(connection, sourceTable)) {
+					continue;
+				}
+				if (revId == null) {
+					revId = BackfillEnversAuditTablesChangeset.createBackfillRevision(connection, REVISION_TABLE);
+				}
+				List<String> columns = BackfillEnversAuditTablesChangeset.getAuditTableDataColumns(connection, auditTable,
+				    sourceTable);
+				if (!columns.isEmpty()) {
+					BackfillEnversAuditTablesChangeset.backfillTable(connection, sourceTable, auditTable, columns, revId);
+				}
+			}
+		}
+		connection.commit();
+
+		// Verify audit tables are populated
+		try (Statement stmt = connection.createStatement()) {
+			try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM patient_aud")) {
+				rs.next();
+				assertEquals(2, rs.getInt(1), "patient_aud should have 2 backfilled rows");
+			}
+			try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM encounter_aud")) {
+				rs.next();
+				assertEquals(1, rs.getInt(1), "encounter_aud should have 1 backfilled row");
+			}
+		}
+	}
+
 	private void createRevisionTable() throws Exception {
 		try (Statement stmt = connection.createStatement()) {
 			stmt.execute("CREATE TABLE " + REVISION_TABLE + " (id INT NOT NULL PRIMARY KEY, timestamp BIGINT NOT NULL)");
