@@ -23,7 +23,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 
 	private Double high;
 
-	private boolean closedLow = true; //TODO: add setters and getters for these
+	private boolean closedLow = true;
 
 	private boolean closedHigh = false;
 
@@ -113,9 +113,9 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 * true in this case. checks whether a double is in this range
 	 * <p>
 	 * <strong>Should</strong> return true if parameter is in range<br/>
+	 * <strong>Should</strong> return true if parameter is equal to low<br/>
 	 * <strong>Should</strong> return false if parameter is not in range<br/>
 	 * <strong>Should</strong> return false if parameter is equal to high<br/>
-	 * <strong>Should</strong> return true if parameter is equal to low<br/>
 	 * <strong>Should</strong> return false if parameter is lower than low<br/>
 	 * <strong>Should</strong> return false if both low and high are null
 	 *

@@ -1112,51 +1112,75 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 * @param s the string to coerce to a boolean
 	 */
 	public void setValueAsString(String s) throws ParseException {
-		log.debug("getConcept() == {}", getConcept());
-
-		if (getConcept() != null && s != null) {
-			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
-			if ("ST".equals(abbrev)) {
-				if (!StringUtils.isEmpty(s)) {
-					setValueText(s);
-				} else {
-					throw new RuntimeException(
-					        "Cannot set value to a empty string for concept: " + getConcept().getDisplayString());
-				}
-			} else if (!StringUtils.isBlank(s)) {
-				s = s.trim();
-				if ("BIT".equals(abbrev)) {
-					setValueBoolean(Boolean.valueOf(s));
-				} else if ("CWE".equals(abbrev)) {
-					throw new RuntimeException("Not Yet Implemented");
-				} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
-					setValueNumeric(Double.valueOf(s));
-				} else if ("DT".equals(abbrev)) {
-					DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
-					setValueDatetime(dateFormat.parse(s));
-				} else if ("TM".equals(abbrev)) {
-					DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
-					setValueDatetime(timeFormat.parse(s));
-				} else if ("TS".equals(abbrev)) {
-					DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
-					setValueDatetime(datetimeFormat.parse(s));
-				} else {
-					throw new RuntimeException(
-					        "Don't know how to handle " + abbrev + " for concept: " + getConcept().getDisplayString());
-				}
-			} else {
+		validateInputs(s);
+		
+		String abbrev = getConcept().getDatatype().getHl7Abbreviation();
+		
+		if ("ST".equals(abbrev)) {
+			handleStringType(s);
+			return;
+		}
+		
+		if (StringUtils.isBlank(s)) {
+			throw new RuntimeException(
+				"Cannot set value to a blank string for concept: " + getConcept().getDisplayString());
+		}
+		
+		s = s.trim();
+		
+		switch (abbrev) {
+			case "BIT":
+				setValueBoolean(Boolean.valueOf(s));
+				break;
+			
+			case "CWE":
+				throw new RuntimeException("Not Yet Implemented");
+			
+			case "NM":
+			case "SN":
+				setValueNumeric(Double.valueOf(s));
+				break;
+			
+			case "DT":
+				setValueDatetime(parseDate(s, DATE_PATTERN));
+				break;
+			
+			case "TM":
+				setValueDatetime(parseDate(s, TIME_PATTERN));
+				break;
+			
+			case "TS":
+				setValueDatetime(parseDate(s, DATE_TIME_PATTERN));
+				break;
+			
+			default:
 				throw new RuntimeException(
-				        "Cannot set value to a blank string for concept: " + getConcept().getDisplayString());
-			}
-		} else {
-			if (s == null) {
-				throw new RuntimeException("cannot set value to null via setValueAsString()");
-			} else {
-				throw new RuntimeException("concept is null for " + this);
-			}
+					"Don't know how to handle " + abbrev + " for concept: " + getConcept().getDisplayString());
 		}
 	}
-
+	
+	private void validateInputs(String s) {
+		if (getConcept() == null) {
+			throw new RuntimeException("concept is null for " + this);
+		}
+		if (s == null) {
+			throw new RuntimeException("cannot set value to null via setValueAsString()");
+		}
+	}
+	
+	private void handleStringType(String s) {
+		if (StringUtils.isEmpty(s)) {
+			throw new RuntimeException(
+				"Cannot set value to a empty string for concept: " + getConcept().getDisplayString());
+		}
+		setValueText(s);
+	}
+	
+	private Date parseDate(String value, String pattern) throws ParseException {
+		DateFormat format = new SimpleDateFormat(pattern);
+		return format.parse(value);
+	}
+	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
