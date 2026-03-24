@@ -204,8 +204,8 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 	 */
 	static boolean isAuditTableEmpty(Connection connection, String tableName) {
 		try (Statement stmt = connection.createStatement();
-		        ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + requireSafeIdentifier(tableName))) {
-			return rs.next() && rs.getLong(1) == 0;
+		        ResultSet rs = stmt.executeQuery("SELECT 1 FROM " + requireSafeIdentifier(tableName) + " LIMIT 1")) {
+			return !rs.next();
 		} catch (SQLException e) {
 			log.debug("Audit table {} not accessible, skipping backfill: {}", tableName, e.getMessage());
 			return false;
@@ -217,8 +217,8 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 	 */
 	static boolean isTableEmpty(Connection connection, String tableName) throws SQLException {
 		try (Statement stmt = connection.createStatement();
-		        ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + requireSafeIdentifier(tableName))) {
-			return rs.next() && rs.getLong(1) == 0;
+		        ResultSet rs = stmt.executeQuery("SELECT 1 FROM " + requireSafeIdentifier(tableName) + " LIMIT 1")) {
+			return !rs.next();
 		}
 	}
 
