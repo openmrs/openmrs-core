@@ -42,7 +42,7 @@ public class ValidationException extends APIException {
 	 */
 	public ValidationException(String message) {
 		super(message);
-		this.errors = null; // initialize final field
+		this.errors = null; 
 	}
 	
 	/**
