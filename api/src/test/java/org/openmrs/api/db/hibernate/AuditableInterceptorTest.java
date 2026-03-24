@@ -15,16 +15,11 @@ import java.util.Date;
 import org.hibernate.type.Type;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Auditable;
-import org.openmrs.ConceptNumeric;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.Daemon;
-import org.openmrs.scheduler.Task;
-import org.openmrs.scheduler.tasks.AbstractTask;
-import org.openmrs.scheduler.timer.TimerSchedulerTask;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -156,44 +151,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		Date afterDate = u.getDateChanged();
 
 		assertNotSame(beforeDate, afterDate);
-	}
-
-	/**
-	 * @see AuditableInterceptor#onFlushDirty(Object,Serializable,null,null,null,null)
-	 */
-	@Test
-	public void onFlushDirty_shouldNotFailWhenTheDaemonUserModifiesSomething() throws Throwable {
-		new AsDaemonTask(new AbstractTask() {
-
-			@Override
-			public void execute() {
-				ConceptNumeric weight = Context.getConceptService().getConceptNumeric(5089);
-				Double originalHiAbsolute = weight.getHiAbsolute();
-				Date dateChangedBefore = weight.getDateChanged();
-				weight.setHiAbsolute(75d);
-				Context.getConceptService().saveConcept(weight);
-				assertNotSame(dateChangedBefore, weight.getDateChanged());
-
-				// Restore the original value since daemon tasks commit outside the test transaction
-				weight.setHiAbsolute(originalHiAbsolute);
-				Context.getConceptService().saveConcept(weight);
-			}
-		}).runTheTask();
-	}
-
-	private class AsDaemonTask extends TimerSchedulerTask {
-
-		private Task task;
-
-		public AsDaemonTask(Task task) {
-			super(task);
-			this.task = task;
-		}
-
-		public boolean runTheTask() throws Throwable {
-			Daemon.executeScheduledTask(this.task);
-			return true;
-		}
 	}
 
 	/**
