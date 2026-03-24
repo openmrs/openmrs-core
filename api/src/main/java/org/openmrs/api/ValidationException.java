@@ -25,13 +25,13 @@ public class ValidationException extends APIException {
 	 * 
 	 * @since 1.11
 	 */
-	private final Errors errors; //made final
+	private final Errors errors; 
 	
 	/**
 	 * Default empty constructor. If at all possible, don't use this one, but use the
 	 */
 	public ValidationException() {
-		this.errors = null; //  initialize final field
+		this.errors = null; 
 	}
 	
 	/**
