@@ -376,8 +376,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 
 		List<Encounter> encs = new ArrayList<>();
+		// Using getPatientIdentifiers() instead of getPatients() to avoid the expensive
+		// Lucene-based full-text search, improving performance for identifier-based lookups.
 		for (PatientIdentifier pi : Context.getPatientService().getPatientIdentifiers(identifier, null, null, null, null)) {
-			if (!pi.getVoided()) {
+			if (!Boolean.TRUE.equals(pi.getVoided())) {
 				encs.addAll(Context.getEncounterService().getEncountersByPatientId(pi.getPatient().getPatientId()));
 			}
 		}
