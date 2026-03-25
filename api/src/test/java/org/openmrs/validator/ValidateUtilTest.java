@@ -9,13 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
@@ -27,32 +20,38 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 /**
  * Tests methods on the {@link ValidateUtil} class.
  */
 public class ValidateUtilTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see ValidateUtil#validate(Object)
 	 */
 	@Test
 	public void validate_shouldThrowValidationExceptionIfErrorsOccurDuringValidation() {
 		Location loc = new Location();
-		assertThrows(ValidationException.class , () -> ValidateUtil.validate(loc));
+		assertThrows(ValidationException.class, () -> ValidateUtil.validate(loc));
 	}
-	
+
 	@Test
 	public void validate_shouldThrowAPIExceptionIfErrorsOccurDuringValidation() {
 		Location loc = new Location();
-		
+
 		try {
 			ValidateUtil.validate(loc);
-		}
-		catch (ValidationException validationException) {
+		} catch (ValidationException validationException) {
 			assertNotNull(validationException.getErrors());
 			assertTrue(validationException.getErrors().hasErrors());
 		}
-		
+
 	}
 
 	/**
@@ -79,44 +78,40 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldReturnImmediatelyIfValidationIsDisabledForThread() {
-		
+
 		// Validation fails initially
 		ValidationException caughtException = null;
 		try {
 			assertFalse(ValidateUtil.isValidationDisabledForThread());
 			ValidateUtil.validate(new Patient());
-		}
-		catch (ValidationException e) {
+		} catch (ValidationException e) {
 			caughtException = e;
 		}
 		assertNotNull(caughtException);
-		
+
 		// Validation does not fail if disabled for thread
 		caughtException = null;
 		try {
 			ValidateUtil.disableValidationForThread();
 			assertTrue(ValidateUtil.isValidationDisabledForThread());
 			ValidateUtil.validate(new Patient());
-		}
-		catch (ValidationException e) {
+		} catch (ValidationException e) {
 			caughtException = e;
-		}
-		finally {
+		} finally {
 			ValidateUtil.resumeValidationForThread();
 		}
 		assertNull(caughtException);
-		
+
 		// Validation fails again if re-enabled for thread
 		try {
 			assertFalse(ValidateUtil.isValidationDisabledForThread());
 			ValidateUtil.validate(new Patient());
-		}
-		catch (ValidationException e) {
+		} catch (ValidationException e) {
 			caughtException = e;
 		}
 		assertNotNull(caughtException);
 	}
-	
+
 	/**
 	 * @see ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)
 	 */
@@ -124,12 +119,12 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	public void validateFieldLength_shouldRejectValueWhenNameIsToLong() {
 		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
 		patientIdentifierType.setName("asdfghjkl asdfghjkl asdfghjkl asdfghjkl asdfghjkl xx");
-		
+
 		BindException errors = new BindException(patientIdentifierType, "patientIdentifierType");
 		ValidateUtil.validateFieldLengths(errors, PatientIdentifierType.class, "name");
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)
 	 */
@@ -137,7 +132,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	public void validateFieldLength_shouldNotRejectValueWhenNameIsEqualMax() {
 		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
 		patientIdentifierType.setName("asdfghjkl asdfghjkl asdfghjkl asdfghjkl asdfghjkl ");
-		
+
 		BindException errors = new BindException(patientIdentifierType, "patientIdentifierType");
 		ValidateUtil.validateFieldLengths(errors, PatientIdentifierType.class, "name");
 		assertFalse(errors.hasFieldErrors("name"));
@@ -160,7 +155,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 
 		ValidateUtil.setDisableValidation(prevVal);
 	}
-	
+
 	/**
 	 * @see ValidateUtil#validate(Object,Errors)
 	 */
@@ -169,7 +164,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		Location loc = new Location();
 		Errors errors = new BindException(loc, "");
 		ValidateUtil.validate(loc, errors);
-		
+
 		assertTrue(errors.hasErrors());
 	}
 
@@ -202,10 +197,12 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	public void validate_shouldReturnThrowExceptionAlongWithAppropriateMessageIfTheObjectIsInvalid() {
 		Drug drug = new Drug();
 		Concept concept = new Concept();
-		drug.setName("Sucedáneo de leche humana de término de kcal 509-528/100g, lípidos 25.80-28.90/100g, proteínas 9.50-12.0/100g, hidrato de carbono 55.20-57.90/100g, polvo, envase de lata con 400 a 454 g y medida de 4.30 a 4.50 g. - envase con 400 a 454 g - - envase con 400 a 454 g");
+		drug.setName(
+		    "Sucedáneo de leche humana de término de kcal 509-528/100g, lípidos 25.80-28.90/100g, proteínas 9.50-12.0/100g, hidrato de carbono 55.20-57.90/100g, polvo, envase de lata con 400 a 454 g y medida de 4.30 a 4.50 g. - envase con 400 a 454 g - - envase con 400 a 454 g");
 		drug.setConcept(concept);
-		
+
 		ValidationException exception = assertThrows(ValidationException.class, () -> ValidateUtil.validate(drug));
-		assertTrue(exception.getMessage().contains("failed to validate with reason: name: This value exceeds the maximum length of 255 permitted for this field."));
+		assertTrue(exception.getMessage().contains(
+		    "failed to validate with reason: name: This value exceeds the maximum length of 255 permitted for this field."));
 	}
 }

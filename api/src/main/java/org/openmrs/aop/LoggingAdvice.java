@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
  */
 @Component("loggingInterceptor")
 public class LoggingAdvice implements MethodInterceptor {
-	
+
 	/**
 	 * List of all method name prefixes that result in DEBUG-level log messages
 	 */
@@ -44,29 +44,29 @@ public class LoggingAdvice implements MethodInterceptor {
 	 * log4j2.xml configuration
 	 */
 	private final Logger log = LoggerFactory.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
-	
+
 	/**
 	 * This method prints out trace statements for getters and debug statements for everything else
-	 * ("setters"). If debugging is turned on, execution time for each method is printed as well.
-	 * This method is called for every method in the Class/Service that it is wrapped around. This
-	 * method should be fairly quick and light.
+	 * ("setters"). If debugging is turned on, execution time for each method is printed as well. This
+	 * method is called for every method in the Class/Service that it is wrapped around. This method
+	 * should be fairly quick and light.
 	 *
 	 * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
 	 */
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-		
+
 		Method method = invocation.getMethod();
 		String name = method.getName();
-		
+
 		// decide what type of logging we're doing with the current method and the loglevel
 		boolean isSetterTypeOfMethod = OpenmrsUtil.stringStartsWith(name, SETTER_METHOD_PREFIXES);
 		boolean logGetter = !isSetterTypeOfMethod && log.isTraceEnabled();
 		boolean logSetter = isSetterTypeOfMethod && log.isDebugEnabled();
-		
+
 		// used for the execution time calculations
 		long startTime = System.currentTimeMillis();
-		
+
 		// check if this method has the logging annotation on it
 		Logging loggingAnnotation = null;
 		if (logGetter || logSetter) {
@@ -76,18 +76,18 @@ public class LoggingAdvice implements MethodInterceptor {
 				logSetter = false;
 			}
 		}
-		
+
 		if (logGetter || logSetter) {
 			StringBuilder output = new StringBuilder();
 			output.append("In method ").append(method.getDeclaringClass().getSimpleName()).append(".").append(name);
-			
+
 			// print the argument values unless we're ignoring all
 			if (loggingAnnotation == null || !loggingAnnotation.ignoreAllArgumentValues()) {
-				
+
 				int x;
 				Class<?>[] types = method.getParameterTypes();
 				Object[] values = invocation.getArguments();
-				
+
 				// change the annotation array of indexes to a list of indexes to ignore
 				List<Integer> argsToIgnore = new ArrayList<>();
 				if (loggingAnnotation != null && loggingAnnotation.ignoredArgumentIndexes().length > 0) {
@@ -95,24 +95,24 @@ public class LoggingAdvice implements MethodInterceptor {
 						argsToIgnore.add(argIndexToIgnore);
 					}
 				}
-				
+
 				// loop over and print out each argument value
 				output.append(". Arguments: ");
 				for (x = 0; x < types.length; x++) {
 					output.append(types[x].getSimpleName()).append("=");
-					
+
 					// if there is an annotation to skip this, print out a bogus string.
 					if (argsToIgnore.contains(x)) {
 						output.append("<Arg value ignored>");
 					} else {
 						output.append(values[x]);
 					}
-					
+
 					output.append(", ");
 				}
-				
+
 			}
-			
+
 			// print the string as either trace or debug
 			if (logGetter) {
 				log.trace(output.toString());
@@ -120,12 +120,11 @@ public class LoggingAdvice implements MethodInterceptor {
 				log.debug(output.toString());
 			}
 		}
-		
+
 		try {
 			// do the actual method we're wrapped around
 			return invocation.proceed();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			if (logGetter || logSetter) {
 				String username;
 				User user = Context.getAuthenticatedUser();
@@ -137,22 +136,22 @@ public class LoggingAdvice implements MethodInterceptor {
 						username = user.getSystemId();
 					}
 				}
-				log.debug(String.format(
-				    "An error occurred while executing this method.%nCurrent user: %s%nError message: %s", username, e
-				            .getMessage()), e);
+				log.debug(
+				    String.format("An error occurred while executing this method.%nCurrent user: %s%nError message: %s",
+				        username, e.getMessage()),
+				    e);
 			}
 			throw e;
-		}
-		finally {
+		} finally {
 			if (logGetter || logSetter) {
 				StringBuilder output = new StringBuilder();
 				output.append("Exiting method ").append(name);
-				
+
 				// only append execution time info if we're in debug mode
 				if (log.isDebugEnabled()) {
 					output.append(". execution time: ").append(System.currentTimeMillis() - startTime).append(" ms");
 				}
-				
+
 				// print the string as either trace or debug
 				if (logGetter) {
 					log.trace(output.toString());
@@ -161,6 +160,6 @@ public class LoggingAdvice implements MethodInterceptor {
 				}
 			}
 		}
-		
+
 	}
 }

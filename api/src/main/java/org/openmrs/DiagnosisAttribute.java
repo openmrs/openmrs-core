@@ -9,32 +9,32 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
 
 /**
- * The DiagnosisAttribute, value for the {@link DiagnosisAttributeType} that is stored in a {@link Diagnosis}.
+ * The DiagnosisAttribute, value for the {@link DiagnosisAttributeType} that is stored in a
+ * {@link Diagnosis}.
+ *
  * @see Attribute
  * @since 2.5.0
  */
 @Audited
 @Entity
 @Table(name = "diagnosis_attribute")
-@AssociationOverride(
-	name="owner",
-	joinColumns = @JoinColumn(name="diagnosis_id", nullable = false)
-)
+@AssociationOverride(name = "owner", joinColumns = @JoinColumn(name = "diagnosis_id", nullable = false))
 public class DiagnosisAttribute extends BaseAttribute<DiagnosisAttributeType, Diagnosis> implements Attribute<DiagnosisAttributeType, Diagnosis> {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "diagnosis_attribute_id")
@@ -46,28 +46,28 @@ public class DiagnosisAttribute extends BaseAttribute<DiagnosisAttributeType, Di
 	public Integer getDiagnosisAttributeId() {
 		return diagnosisAttributeId;
 	}
-	
+
 	/**
 	 * @param diagnosisAttributeId the DiagnosisAttributeId to set
 	 */
 	public void setDiagnosisAttributeId(Integer diagnosisAttributeId) {
 		this.diagnosisAttributeId = diagnosisAttributeId;
 	}
-	
+
 	/**
 	 * @return the diagnosis
 	 */
 	public Diagnosis getDiagnosis() {
 		return getOwner();
 	}
-	
+
 	/**
 	 * @param diagnosis the diagnosis to set
 	 */
 	public void setDiagnosis(Diagnosis diagnosis) {
 		setOwner(diagnosis);
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -75,7 +75,7 @@ public class DiagnosisAttribute extends BaseAttribute<DiagnosisAttributeType, Di
 	public Integer getId() {
 		return getDiagnosisAttributeId();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(Integer)
 	 */

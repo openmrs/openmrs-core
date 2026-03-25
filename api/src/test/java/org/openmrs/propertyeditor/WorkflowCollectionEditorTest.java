@@ -9,18 +9,18 @@
  */
 package org.openmrs.propertyeditor;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Tests {@link WorkflowCollectionEditor}
  */
 public class WorkflowCollectionEditorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see WorkflowCollectionEditor#setAsText(String)
 	 */
@@ -28,14 +28,14 @@ public class WorkflowCollectionEditorTest extends BaseContextSensitiveTest {
 	public void setAsText_shouldUpdateWorkflowsInProgram() {
 		Program program = Context.getProgramWorkflowService().getProgram(1);
 		WorkflowCollectionEditor editor = new WorkflowCollectionEditor();
-		
+
 		assertEquals(2, program.getWorkflows().size());
-		
+
 		editor.setAsText("1:3");
-		
+
 		assertEquals(1, program.getWorkflows().size());
 		assertEquals(3, program.getWorkflows().iterator().next().getConcept().getConceptId().intValue());
 		assertEquals(3, program.getAllWorkflows().size());
 	}
-	
+
 }

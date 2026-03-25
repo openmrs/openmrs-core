@@ -20,23 +20,23 @@ import jakarta.persistence.ManyToOne;
  * locale. <br>
  * The purpose of this class therefore is to record information of a single encounter by taking the
  * concept and concept name or a string for a concept that may not be in the database.
- * 
+ *
  * @since 2.2
  */
 @Embeddable
 public class CodedOrFreeText {
-	
+
 	@ManyToOne
 	Concept coded;
-	
+
 	@ManyToOne
 	ConceptName specificName;
-	
+
 	String nonCoded;
-	
+
 	public CodedOrFreeText() {
 	}
-	
+
 	/**
 	 * Convenience constructor with concept, concept name and manually written concept name to save
 	 *
@@ -49,7 +49,7 @@ public class CodedOrFreeText {
 		this.specificName = specificName;
 		this.nonCoded = nonCoded;
 	}
-	
+
 	/**
 	 * Gets the coded concept
 	 *
@@ -58,7 +58,7 @@ public class CodedOrFreeText {
 	public Concept getCoded() {
 		return coded;
 	}
-	
+
 	/**
 	 * Sets the coded concept
 	 *
@@ -67,7 +67,7 @@ public class CodedOrFreeText {
 	public void setCoded(Concept coded) {
 		this.coded = coded;
 	}
-	
+
 	/**
 	 * Gets the specific name of the coded concept
 	 *
@@ -76,7 +76,7 @@ public class CodedOrFreeText {
 	public ConceptName getSpecificName() {
 		return specificName;
 	}
-	
+
 	/**
 	 * Sets the specific name
 	 *
@@ -85,7 +85,7 @@ public class CodedOrFreeText {
 	public void setSpecificName(ConceptName specificName) {
 		this.specificName = specificName;
 	}
-	
+
 	/**
 	 * Gets the manually written string name of the concept
 	 *
@@ -94,7 +94,7 @@ public class CodedOrFreeText {
 	public String getNonCoded() {
 		return nonCoded;
 	}
-	
+
 	/**
 	 * Sets the manually written string concept name
 	 *

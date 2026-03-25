@@ -30,37 +30,38 @@ import org.openmrs.aop.RequiredDataAdvice;
  * voided is set to true it is assumed that this object is in a list of things that is getting
  * voided but that it itself was previously voided. The workaround to this is that if the voided bit
  * is true OR the voidedBy is null, the voidedBy, dateVoided, and voidReason will be set.
- * 
+ *
  * @see RequiredDataAdvice
  * @see UnvoidHandler
  * @since 1.5
  */
 @Handler(supports = Voidable.class)
 public class BaseVoidHandler implements VoidHandler<Voidable> {
-	
+
 	/**
 	 * Sets all void attributes to the given parameters.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> set the voided bit<br/>
+	 * <strong>Should</strong> set the voidReason<br/>
+	 * <strong>Should</strong> set voidedBy<br/>
+	 * <strong>Should</strong> not set voidedBy if non null<br/>
+	 * <strong>Should</strong> set dateVoided<br/>
+	 * <strong>Should</strong> not set dateVoided if non null<br/>
+	 * <strong>Should</strong> not set the voidReason if already voided<br/>
+	 * <strong>Should</strong> set voidedBy even if voided bit is set but voidedBy is null
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * <strong>Should</strong> set the voided bit
-	 * <strong>Should</strong> set the voidReason
-	 * <strong>Should</strong> set voidedBy
-	 * <strong>Should</strong> not set voidedBy if non null
-	 * <strong>Should</strong> set dateVoided
-	 * <strong>Should</strong> not set dateVoided if non null
-	 * <strong>Should</strong> not set the voidReason if already voided
-	 * <strong>Should</strong> set voidedBy even if voided bit is set but voidedBy is null
 	 */
 	@Override
 	public void handle(Voidable voidableObject, User voidingUser, Date voidedDate, String voidReason) {
-		
+
 		// skip over all work if the object is already voided
 		if (!voidableObject.getVoided() || voidableObject.getVoidedBy() == null) {
-			
+
 			voidableObject.setVoided(true);
 			voidableObject.setVoidReason(voidReason);
-			
+
 			if (voidableObject.getVoidedBy() == null) {
 				voidableObject.setVoidedBy(voidingUser);
 			}
@@ -69,5 +70,5 @@ public class BaseVoidHandler implements VoidHandler<Voidable> {
 			}
 		}
 	}
-	
+
 }

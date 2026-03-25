@@ -9,23 +9,23 @@
  */
 package org.openmrs.util;
 
+import java.io.StringReader;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.openmrs.api.APIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.StringReader;
-
 public final class XmlUtils {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(XmlUtils.class);
-	
+
 	private XmlUtils() {
 	}
-	
+
 	public static DocumentBuilder createDocumentBuilder() {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		try {
@@ -38,10 +38,10 @@ public final class XmlUtils {
 			dbf.setExpandEntityReferences(false);
 
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			
-			// Disable resolution of external entities. See TRUNK-3942 
+
+			// Disable resolution of external entities. See TRUNK-3942
 			db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
-			
+
 			return db;
 		} catch (ParserConfigurationException e) {
 			log.error("ParserConfigurationException thrown while configuring DocumentBuilder", e);

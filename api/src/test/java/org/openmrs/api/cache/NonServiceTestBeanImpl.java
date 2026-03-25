@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class NonServiceTestBeanImpl implements NonServiceTestBean {
-	
+
 	@Cacheable("testCache")
 	@Override
 	public String getCachedUUID() {

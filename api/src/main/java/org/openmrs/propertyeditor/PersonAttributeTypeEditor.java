@@ -17,16 +17,16 @@ import org.openmrs.api.context.Context;
  * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
- * 
+ *
  * @see PersonAttributeType
  */
 public class PersonAttributeTypeEditor extends OpenmrsPropertyEditor<PersonAttributeType> {
-	
+
 	@Override
 	protected PersonAttributeType getObjectById(Integer id) {
 		return Context.getPersonService().getPersonAttributeType(id);
 	}
-	
+
 	@Override
 	protected PersonAttributeType getObjectByUuid(String uuid) {
 		return Context.getPersonService().getPersonAttributeTypeByUuid(uuid);

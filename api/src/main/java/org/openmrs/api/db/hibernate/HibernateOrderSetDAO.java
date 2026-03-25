@@ -9,10 +9,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.List;
+
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,16 +23,14 @@ import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderSetDAO;
-
-import org.openmrs.api.db.OrderSetDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
- * This class should not be used directly. This is just a common implementation of the OrderSetDAO that
- * is used by the OrderSetService. This class is injected by spring into the desired OrderSetService
- * class. This injection is determined by the xml mappings and elements in the spring application
- * context: /metadata/api/spring/applicationContext.xml.<br/>
+ * This class should not be used directly. This is just a common implementation of the OrderSetDAO
+ * that is used by the OrderSetService. This class is injected by spring into the desired
+ * OrderSetService class. This injection is determined by the xml mappings and elements in the
+ * spring application context: /metadata/api/spring/applicationContext.xml.<br/>
  * <br/>
  * The OrderSetService should be used for all Order related database manipulation.
  *
@@ -41,14 +40,14 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("orderSetDAO")
 public class HibernateOrderSetDAO implements OrderSetDAO {
-	
+
 	private final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateOrderSetDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderSetDAO#save(OrderSet)
 	 */
@@ -57,7 +56,7 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 		Session session = sessionFactory.getCurrentSession();
 		return HibernateUtil.saveOrUpdate(session, orderSet);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSets(boolean)
 	 */
@@ -75,7 +74,6 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 		return session.createQuery(cq).getResultList();
 	}
 
-
 	/**
 	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSetById(Integer)
 	 */
@@ -83,7 +81,7 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	public OrderSet getOrderSetById(Integer orderSetId) throws DAOException {
 		return sessionFactory.getCurrentSession().get(OrderSet.class, orderSetId);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSetByUniqueUuid(String)
 	 */
@@ -91,7 +89,7 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	public OrderSet getOrderSetByUniqueUuid(String orderSetUuid) throws DAOException {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, OrderSet.class, orderSetUuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSetMemberByUuid(String)
 	 */
@@ -99,7 +97,7 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	public OrderSetMember getOrderSetMemberByUuid(String uuid) throws DAOException {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, OrderSetMember.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OrderSetDAO#getAllOrderSetAttributeTypes()
 	 */
@@ -109,7 +107,7 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<OrderSetAttributeType> cq = cb.createQuery(OrderSetAttributeType.class);
 		cq.from(OrderSetAttributeType.class);
-		
+
 		return session.createQuery(cq).getResultList();
 
 	}

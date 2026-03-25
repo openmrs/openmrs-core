@@ -9,22 +9,22 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.Privilege;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link PrivilegeValidator} class.
  */
 public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see PrivilegeValidator#validate(Object,Errors)
 	 */
@@ -33,22 +33,22 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 		Privilege priv = new Privilege();
 		priv.setPrivilege(null);
 		priv.setDescription("some text");
-		
+
 		Errors errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
 		assertTrue(errors.hasFieldErrors("privilege"));
-		
+
 		priv.setPrivilege("");
 		errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
 		assertTrue(errors.hasFieldErrors("privilege"));
-		
+
 		priv.setPrivilege(" ");
 		errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
 		assertTrue(errors.hasFieldErrors("privilege"));
 	}
-	
+
 	/**
 	 * @see PrivilegeValidator#validate(Object,Errors)
 	 */
@@ -57,22 +57,22 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 		Privilege priv = new Privilege();
 		priv.setPrivilege("Wallhacking");
 		priv.setDescription(null);
-		
+
 		Errors errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
 		assertFalse(errors.hasFieldErrors("description"));
-		
+
 		priv.setDescription("");
 		errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
 		assertFalse(errors.hasFieldErrors("description"));
-		
+
 		priv.setDescription(" ");
 		errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
 		assertFalse(errors.hasFieldErrors("description"));
 	}
-	
+
 	/**
 	 * @see PrivilegeValidator#validate(Object,Errors)
 	 */
@@ -81,15 +81,15 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 		Privilege priv = new Privilege();
 		priv.setPrivilege("Wallhacking");
 		priv.setDescription("idspispopd");
-		
+
 		Errors errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		
+
 		assertFalse(errors.hasErrors());
 		assertNotNull(priv.getName());
 		assertEquals(priv.getPrivilege(), "Wallhacking");
 	}
-	
+
 	/**
 	 * @see PrivilegeValidator#validate(Object,Errors)
 	 */
@@ -98,27 +98,27 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 		Privilege priv = new Privilege();
 		priv.setPrivilege("Wallhacking");
 		priv.setDescription("description");
-		
+
 		Errors errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see PrivilegeValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Privilege priv = new Privilege();
-		priv
-		        .setPrivilege("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		priv
-		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+		priv.setPrivilege(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		priv.setDescription(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+
 		Errors errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("privilege"));
 		assertTrue(errors.hasFieldErrors("description"));
 	}
