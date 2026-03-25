@@ -71,7 +71,6 @@ import org.openmrs.notification.MessageService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.scheduler.SchedulerService;
-import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
@@ -1063,8 +1062,7 @@ public class Context {
 
 		startup(properties);
 
-		// start the scheduled tasks
-		SchedulerUtil.startup(properties);
+		Context.getSchedulerService().onStartup();
 
 		closeSession();
 	}
@@ -1073,14 +1071,6 @@ public class Context {
 	 * Stops the OpenMRS System Should be called after all activity has ended and application is closing
 	 */
 	public static void shutdown() {
-		log.debug("Shutting down the scheduler");
-		try {
-			// Needs to be shutdown before Hibernate
-			SchedulerUtil.shutdown();
-		} catch (Exception e) {
-			log.warn("Error while shutting down scheduler service", e);
-		}
-
 		log.debug("Shutting down the modules");
 		try {
 			ModuleUtil.shutdown();
