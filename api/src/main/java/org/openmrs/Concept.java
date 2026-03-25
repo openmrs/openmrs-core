@@ -895,7 +895,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		} else {
 			shortNames = getNames().stream()
 							.filter(ConceptName::isShort)
-							.toList();
+							.collect(Collectors.toList());
 		}
 		return shortNames;
 	}

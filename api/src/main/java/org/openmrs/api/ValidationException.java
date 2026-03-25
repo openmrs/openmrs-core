@@ -25,7 +25,7 @@ public class ValidationException extends APIException {
 	 * 
 	 * @since 1.11
 	 */
-	private final Errors errors; 
+	private Errors errors; 
 	
 	/**
 	 * Default empty constructor. If at all possible, don't use this one, but use the
@@ -94,5 +94,9 @@ public class ValidationException extends APIException {
 	 */
 	public Errors getErrors() {
 		return errors;
+	}
+	
+	public void setErrors(Errors errors) {
+		this.errors = errors;
 	}
 }
