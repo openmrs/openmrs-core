@@ -47,7 +47,11 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 
 	private static final Pattern SAFE_SQL_IDENTIFIER = Pattern.compile("[a-zA-Z_]\\w*");
 
-	private static final String AUDIT_SUFFIX = "_audit";
+	private String auditSuffix = "_audit";
+
+	public void setAuditSuffix(String auditSuffix) {
+		this.auditSuffix = auditSuffix;
+	}
 
 	@Override
 	public void execute(Database database) throws CustomChangeException {
@@ -61,10 +65,10 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 			try (ResultSet tables = metaData.getTables(null, null, "%", new String[] { "TABLE" })) {
 				while (tables.next()) {
 					String tableName = tables.getString("TABLE_NAME");
-					if (!tableName.endsWith(AUDIT_SUFFIX)) {
+					if (!tableName.endsWith(auditSuffix)) {
 						continue;
 					}
-					String sourceTable = tableName.substring(0, tableName.length() - AUDIT_SUFFIX.length());
+					String sourceTable = tableName.substring(0, tableName.length() - auditSuffix.length());
 					if (doesTableExist(connection, sourceTable)) {
 						revId = tryBackfillEntity(connection, sourceTable, tableName, revisionTableName, revId);
 					}
