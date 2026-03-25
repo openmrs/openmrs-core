@@ -21,12 +21,12 @@ import static java.util.UUID.randomUUID;
 
 @DatabaseChange(name = "insertWithUuid", description = "Inserts data into an existing table and generates and inserts an uuid", priority = ChangeMetaData.PRIORITY_DEFAULT, appliesTo = "table")
 public class InsertWithUuidDataChange extends InsertDataChange {
-	
+
 	private static final String UUID = "uuid";
 
 	@Override
 	public SqlStatement[] generateStatements(final Database database) {
-		
+
 		// Check if the insert change set specifies a value for the uuid column. If that is the case nothing else needs to be done.
 		//
 		for (final ColumnConfig column : getColumns()) {
@@ -34,7 +34,7 @@ public class InsertWithUuidDataChange extends InsertDataChange {
 				return super.generateStatements(database);
 			}
 		}
-		
+
 		// Add the uuid column to the insert statement.
 		//
 		ColumnConfig uuid = new ColumnConfig(new Column(UUID));

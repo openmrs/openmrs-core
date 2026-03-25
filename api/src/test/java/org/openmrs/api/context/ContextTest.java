@@ -9,22 +9,9 @@
  */
 package org.openmrs.api.context;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -46,29 +33,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.validation.Validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * TODO add methods for all context tests
- * 
+ *
  * @see Context
  */
 public class ContextTest extends BaseContextSensitiveTest {
-	
+
 	private static final Class PERSON_NAME_CLASS = PersonName.class;
+
 	private static final Integer PERSON_NAME_ID_2 = 2;
+
 	private static final Integer PERSON_NAME_ID_8 = 8;
 
 	@Autowired
 	private SessionFactory sf;
-	
+
 	/**
-	 * Methods in this class might authenticate with a different user, so log that user out after
-	 * this whole junit class is done.
+	 * Methods in this class might authenticate with a different user, so log that user out after this
+	 * whole junit class is done.
 	 */
 	@AfterAll
 	public static void logOutAfterThisTestClass() {
 		Context.logout();
 	}
-	
+
 	/**
 	 * @see Context#authenticate(String,String)
 	 */
@@ -76,7 +75,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void authenticate_shouldNotAuthenticateWithNullPassword() {
 		assertThrows(ContextAuthenticationException.class, () -> Context.authenticate("some username", null));
 	}
-	
+
 	/**
 	 * @see Context#authenticate(String,String)
 	 */
@@ -84,7 +83,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void authenticate_shouldNotAuthenticateWithNullPasswordAndProperSystemId() {
 		assertThrows(ContextAuthenticationException.class, () -> Context.authenticate("1-8", null));
 	}
-	
+
 	/**
 	 * @see Context#authenticate(String,String)
 	 */
@@ -92,7 +91,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void authenticate_shouldNotAuthenticateWithNullPasswordAndProperUsername() {
 		assertThrows(ContextAuthenticationException.class, () -> Context.authenticate("admin", null));
 	}
-	
+
 	/**
 	 * @see Context#authenticate(String,String)
 	 */
@@ -100,7 +99,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void authenticate_shouldNotAuthenticateWithNullUsername() {
 		assertThrows(ContextAuthenticationException.class, () -> Context.authenticate(null, "some password"));
 	}
-	
+
 	/**
 	 * @see Context#authenticate(String,String)
 	 */
@@ -108,7 +107,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void authenticate_shouldNotAuthenticateWithNullUsernameAndPassword() {
 		assertThrows(ContextAuthenticationException.class, () -> Context.authenticate((String) null, (String) null));
 	}
-	
+
 	/**
 	 * @see Context#authenticate(String,String)
 	 */
@@ -117,11 +116,11 @@ public class ContextTest extends BaseContextSensitiveTest {
 		// replay
 		Context.logout();
 		Context.authenticate("admin", "test");
-		
+
 		// verif
 		assertEquals("admin", Context.getAuthenticatedUser().getUsername());
 	}
-	
+
 	/**
 	 * @see Context#getLocale()
 	 */
@@ -130,7 +129,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.closeSession();
 		assertEquals(LocaleUtility.getDefaultLocale(), Context.getLocale());
 	}
-	
+
 	/**
 	 * @see Context#getUserContext()
 	 */
@@ -139,7 +138,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.closeSession();
 		assertThrows(APIException.class, () -> Context.getUserContext()); // trigger the api exception
 	}
-	
+
 	/**
 	 * @see Context#logout()
 	 */
@@ -148,7 +147,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.closeSession();
 		assertDoesNotThrow(() -> Context.logout());
 	}
-	
+
 	/**
 	 * @see Context#isSessionOpen()
 	 */
@@ -158,7 +157,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.closeSession();
 		assertFalse(Context.isSessionOpen());
 	}
-	
+
 	/**
 	 * @see Context#refreshAuthenticatedUser()
 	 */
@@ -166,20 +165,20 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void refreshAuthenticatedUser_shouldGetFreshValuesFromTheDatabase() {
 		User evictedUser = Context.getAuthenticatedUser();
 		Context.evictFromSession(evictedUser);
-		
+
 		User fetchedUser = Context.getUserService().getUser(evictedUser.getUserId());
 		fetchedUser.getPersonName().setGivenName("new username");
-		
+
 		Context.getUserService().saveUser(fetchedUser);
-		
+
 		// sanity check to make sure the cached object wasn't updated already
 		assertNotSame(Context.getAuthenticatedUser().getGivenName(), fetchedUser.getGivenName());
-		
+
 		Context.refreshAuthenticatedUser();
-		
+
 		assertEquals("new username", Context.getAuthenticatedUser().getGivenName());
 	}
-	
+
 	/**
 	 * @see Context#refreshAuthenticatedUser()
 	 */
@@ -189,12 +188,12 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.getUserContext().setLocation(userLocation);
 		User evictedUser = Context.getAuthenticatedUser();
 		Context.evictFromSession(evictedUser);
-		
+
 		Context.refreshAuthenticatedUser();
-		
+
 		assertEquals(userLocation, Context.getUserContext().getLocation());
 	}
-	
+
 	/**
 	 * @see Context#refreshAuthenticatedUser()
 	 */
@@ -207,13 +206,13 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.getUserService().saveUser(evictedUser);
 		Context.flushSession();
 		Context.evictFromSession(evictedUser);
-		
+
 		Context.logout();
 		authenticate();
-		
+
 		assertEquals(Context.getLocationService().getLocation(2), Context.getUserContext().getLocation());
 	}
-	
+
 	/**
 	 * @see Context#getRegisteredComponents(Class)
 	 */
@@ -223,7 +222,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		assertTrue(validators.size() > 0);
 		assertTrue(Validator.class.isAssignableFrom(validators.iterator().next().getClass()));
 	}
-	
+
 	/**
 	 * @see Context#getRegisteredComponents(Class)
 	 */
@@ -233,33 +232,33 @@ public class ContextTest extends BaseContextSensitiveTest {
 		assertNotNull(l);
 		assertEquals(0, l.size());
 	}
-	
+
 	/**
 	 * @see Context#getRegisteredComponent(String,Class)
 	 */
 	@Test
 	public void getRegisteredComponent_shouldReturnBeanHaveBeenRegisteredOfThePassedTypeAndName() {
-		
+
 		EncounterVisitHandler registeredComponent = Context.getRegisteredComponent("existingOrNewVisitAssignmentHandler",
 		    EncounterVisitHandler.class);
-		
+
 		assertTrue(registeredComponent instanceof ExistingOrNewVisitAssignmentHandler);
 	}
-	
+
 	/**
 	 * @see Context#getRegisteredComponent(String, Class)
 	 */
 	@Test
-	public void getRegisteredComponent_shouldFailIfBeanHaveBeenREgisteredOfThePassedTypeAndNameDoesntExist()
-	{
-		assertThrows(APIException.class, () -> Context.getRegisteredComponent("invalidBeanName", EncounterVisitHandler.class));
-		
+	public void getRegisteredComponent_shouldFailIfBeanHaveBeenREgisteredOfThePassedTypeAndNameDoesntExist() {
+		assertThrows(APIException.class,
+		    () -> Context.getRegisteredComponent("invalidBeanName", EncounterVisitHandler.class));
+
 	}
-	
+
 	/**
-	 * Prevents regression after patch from #2174:
-	 * "Prevent duplicate proxies and AOP in context services"
-	 * 
+	 * Prevents regression after patch from #2174: "Prevent duplicate proxies and AOP in context
+	 * services"
+	 *
 	 * @see Context#getService(Class)
 	 */
 	@Test
@@ -268,29 +267,28 @@ public class ContextTest extends BaseContextSensitiveTest {
 		PatientService ps2 = Context.getService(PatientService.class);
 		assertEquals(ps2, ps1);
 	}
-	
+
 	/**
 	 * @see Context#becomeUser(String)
 	 */
 	@Test
 	public void becomeUser_shouldChangeLocaleWhenBecomeAnotherUser() {
 		UserService userService = Context.getUserService();
-		
+
 		User user = new User(new Person());
 		user.addName(new PersonName("givenName", "middleName", "familyName"));
 		user.getPerson().setGender("M");
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, "pt_BR");
 		userService.createUser(user, "TestPass123");
-		
+
 		Context.becomeUser(user.getSystemId());
-		
+
 		Locale locale = Context.getLocale();
 		assertEquals("pt", locale.getLanguage());
 		assertEquals("BR", locale.getCountry());
-		
+
 		Context.logout();
 	}
-
 
 	/**
 	 * @see Context#evictEntity(OpenmrsObject)
@@ -298,7 +296,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	@Test
 	public void evictEntity_shouldClearTheEntityFromCaches() {
 		TestTransaction.end();
-		
+
 		// Load the person name so that it is stored in the cache
 		PersonName name = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 
@@ -329,7 +327,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		// Clear session so that the first-level cache is empty
 		Context.flushSession();
 		Context.clearSession();
-		
+
 		// evictAllEntities
 		Context.evictAllEntities(PERSON_NAME_CLASS);
 
@@ -347,7 +345,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	@Test
 	public void clearEntireCache_shouldClearEntireCache() {
 		TestTransaction.end();
-		
+
 		// Load person names and patient so that they are stored in the cache
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);

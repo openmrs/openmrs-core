@@ -27,11 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ModuleServlet extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1239820102030303L;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ModuleServlet.class);
-	
+
 	@Override
 protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -90,13 +90,13 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
 	}
 }
 	/**
-	 * Internal implementation of the ServletConfig interface, to be passed to module servlets when
-	 * they are first loaded
+	 * Internal implementation of the ServletConfig interface, to be passed to module servlets when they
+	 * are first loaded
 	 */
 	public static class SimpleServletConfig implements ServletConfig {
-		
+
 		private String name;
-		
+
 		private ServletContext servletContext;
 
 		private final Map<String, String> initParameters;
@@ -106,17 +106,17 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
 			this.servletContext = servletContext;
 			this.initParameters = initParameters;
 		}
-		
+
 		@Override
 		public String getServletName() {
 			return name;
 		}
-		
+
 		@Override
 		public ServletContext getServletContext() {
 			return servletContext;
 		}
-		
+
 		// not implemented in a module's config.xml yet
 		@Override
 		public String getInitParameter(String paramName) {

@@ -12,16 +12,16 @@ package org.openmrs.api;
 import java.util.List;
 
 /**
- * Contract for services that can resolve domain objects by their UUID
- * in a generic way.
- *
- * <p>This interface is intended to standardize the mechanism of
- * retrieving references to domain objects without requiring clients
- * to know which specific service method to call. By implementing this,
- * each service can expose the subset of domain types it is able to
- * resolve, along with a generic lookup method.</p>
- *
- * <p>Usage examples:</p>
+ * Contract for services that can resolve domain objects by their UUID in a generic way.
+ * <p>
+ * This interface is intended to standardize the mechanism of retrieving references to domain
+ * objects without requiring clients to know which specific service method to call. By implementing
+ * this, each service can expose the subset of domain types it is able to resolve, along with a
+ * generic lookup method.
+ * </p>
+ * <p>
+ * Usage examples:
+ * </p>
  * <pre>
  *     RefByUuid service = ...;
  *
@@ -31,26 +31,26 @@ import java.util.List;
  *     // Get all types this service can resolve
  *     List<?> types = service.getRefTypes();
  * </pre>
- * 
+ *
  * @since 3.0.0
  */
 public interface RefByUuid {
 
-    /**
-     * Resolve a domain object managed by this service by its UUID.
-     *
-     * @param type the class type of the domain object to fetch (e.g. {@code Patient.class})
-     * @param uuid the UUID of the object to fetch
-     * @param <T>  the domain object type
-     * @return the resolved domain object instance, or {@code null} if no matching object is found
-     * @throws APIException if the type is not supported
-     */
-    <T> T getRefByUuid(Class<T> type, String uuid) throws APIException;
+	/**
+	 * Resolve a domain object managed by this service by its UUID.
+	 *
+	 * @param type the class type of the domain object to fetch (e.g. {@code Patient.class})
+	 * @param uuid the UUID of the object to fetch
+	 * @param <T> the domain object type
+	 * @return the resolved domain object instance, or {@code null} if no matching object is found
+	 * @throws APIException if the type is not supported
+	 */
+	<T> T getRefByUuid(Class<T> type, String uuid) throws APIException;
 
-    /**
-     * Get the list of domain types that this service can resolve.
-     *
-     * @return a list of {@link Class} objects representing supported domain types
-     */
-    List<Class<?>> getRefTypes();
+	/**
+	 * Get the list of domain types that this service can resolve.
+	 *
+	 * @return a list of {@link Class} objects representing supported domain types
+	 */
+	List<Class<?>> getRefTypes();
 }

@@ -15,22 +15,22 @@ import org.openmrs.api.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LocationAttributeTypeEditorTest extends BasePropertyEditorTest<LocationAttributeType, LocationAttributeTypeEditor> {
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	@Autowired
 	private LocationService locationService;
-	
+
 	@BeforeEach
 	public void initializeData() {
 		executeDataSet("org/openmrs/api/include/LocationServiceTest-attributes.xml");
 	}
-	
+
 	@Override
 	protected LocationAttributeTypeEditor getNewEditor() {
 		return new LocationAttributeTypeEditor();
 	}
-	
+
 	@Override
 	protected LocationAttributeType getExistingObject() {
 		return locationService.getLocationAttributeType(EXISTING_ID);

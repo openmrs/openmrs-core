@@ -7,18 +7,22 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.annotation;
+package org.openmrs.scheduler;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.StartModule;
+/**
+ * Context for a running task.
+ * <p>
+ * This interface hides the underlying JobRunr JobContext dependency.
+ *
+ * @since 2.9.x
+ */
+public interface TaskContext extends TaskDetails {
 
-@StartModule("org/openmrs/module/include/test1-1.0-SNAPSHOT.omod")
-public class StartModuleAnnotationReuseJUnit4Test extends BaseContextSensitiveTest {
-	
-	@Test
-	public void shouldPass() {
-		Assert.assertTrue(true);
-	}
+	String getUserSystemId();
+
+	void saveMetadata(String key, Object value);
+
+	void saveMetadataIfAbsent(String key, Object value);
+
+	TaskProgress setProgressBar(int totalProgress);
 }

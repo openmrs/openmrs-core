@@ -9,31 +9,31 @@
  */
 package org.openmrs.patient.impl;
 
+import java.util.stream.IntStream;
+
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.stream.IntStream;
-
-import org.junit.jupiter.api.Test;
-
 /**
  *
  */
 public class VerhoeffIdentifierValidatorTest {
-	
+
 	private VerhoeffIdentifierValidator validator = new VerhoeffIdentifierValidator();
-	
+
 	private String[] allowedIdentifiers = { "12345678", "87654321", "11111111", "64537218", "00000000" };
-	
+
 	private char[] allowedIdentifiersCheckDigits = { 'G', 'E', 'B', 'A', 'B' };
-	
+
 	private int[] allowedIdentifiersCheckDigitsInt = { 6, 4, 1, 0, 2 };
-	
+
 	private char unusedCheckDigit = 'C';
-	
+
 	private String[] invalidIdentifiers = { "", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def ",
 	        "ab32kcdak3", "chaseisreallycoolyay", "1", "moose", "MOOSE", "MooSE", "adD3Eddf429daD999" };
 
@@ -48,20 +48,20 @@ public class VerhoeffIdentifierValidatorTest {
 		//Make sure valid identifiers come back with the right check digit
 
 		for (int i = 0; i < allowedIdentifiers.length; i++) {
-			assertEquals(validator.getValidIdentifier(allowedIdentifiers[i]), allowedIdentifiers[i] + "-"
-					+ allowedIdentifiersCheckDigits[i]);
+			assertEquals(validator.getValidIdentifier(allowedIdentifiers[i]),
+			    allowedIdentifiers[i] + "-" + allowedIdentifiersCheckDigits[i]);
 		}
 	}
 
 	@Test
 	public void getValidIdentifier_shouldFailWithInvalidIdentifiers() {
 		//Make sure invalid identifiers throw an exception
-		for (String invalidIdentifier: invalidIdentifiers) {
+		for (String invalidIdentifier : invalidIdentifiers) {
 			try {
 				validator.getValidIdentifier(invalidIdentifier);
 				fail("Identifier " + invalidIdentifier + " should have failed.");
 			} catch (Exception e) {
-				if (invalidIdentifier.length() == 0){
+				if (invalidIdentifier.length() == 0) {
 					assertTrue(e.getMessage().matches("Identifier must contain at least one character\\."));
 				} else if (invalidIdentifier.indexOf(' ') > -1) {
 					assertTrue(e.getMessage().matches("Identifier may not contain white space\\."));
@@ -70,7 +70,8 @@ public class VerhoeffIdentifierValidatorTest {
 				} else if (invalidIdentifier.length() != EXPECTED_RAW_IDENTIFIER_LENGTH) {
 					assertTrue(e.getMessage().matches("Undecorated identifier must be 8 digits long\\."));
 				} else {
-					fail("Unexpected message '" + e.getMessage() + "' seen for invalid identifier '" + invalidIdentifier + "'");
+					fail("Unexpected message '" + e.getMessage() + "' seen for invalid identifier '" + invalidIdentifier
+					        + "'");
 				}
 			}
 		}
@@ -79,7 +80,7 @@ public class VerhoeffIdentifierValidatorTest {
 	@Test
 	public void isValid_shouldFailWithInvalidIdentifiers() {
 		//Make sure invalid identifiers throw an exception
-		for (String invalidIdentifier: invalidIdentifiers) {
+		for (String invalidIdentifier : invalidIdentifiers) {
 			assertThrows(Exception.class, () -> validator.isValid(invalidIdentifier));
 		}
 	}
@@ -110,9 +111,8 @@ public class VerhoeffIdentifierValidatorTest {
 
 	@Test
 	public void isValid_shouldFailWithNumericSuffixes() {
-		IntStream.range(0, allowedIdentifiers.length).forEach (i ->
-			assertThrows(Exception.class,
-				() -> validator.isValid(allowedIdentifiers[i] + "-" + allowedIdentifiersCheckDigitsInt[i])));
+		IntStream.range(0, allowedIdentifiers.length).forEach(i -> assertThrows(Exception.class,
+		    () -> validator.isValid(allowedIdentifiers[i] + "-" + allowedIdentifiersCheckDigitsInt[i])));
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class VerhoeffIdentifierValidatorTest {
 		char c;
 		char d;
 		final String lineSeparator = System.getProperty("line.separator");
-		for (String allowedIdentifier: allowedIdentifiers) {
+		for (String allowedIdentifier : allowedIdentifiers) {
 			for (int i = 0; i < allowedIdentifier.length(); i++) {
 				checkDigit = validator.getCheckDigit(allowedIdentifier);
 				for (int j = 1; j < allowedIdentifier.length(); j++) {
