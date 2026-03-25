@@ -1135,8 +1135,9 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 			
 			case "CWE":
 				throw new RuntimeException("Not Yet Implemented");
-				
-			case "SN","NM":
+			
+			case "NM":
+			case "SN":
 				setValueNumeric(Double.valueOf(s));
 				break;
 			
@@ -1159,15 +1160,12 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	}
 	
 	private void validateInputs(String s) {
-		log.debug("getConcept() == {}", getConcept());
-		if (s == null) {
-			throw new RuntimeException("cannot set value to null via setValueAsString()");
-		}
-		
 		if (getConcept() == null) {
 			throw new RuntimeException("concept is null for " + this);
 		}
-	
+		if (s == null) {
+			throw new RuntimeException("cannot set value to null via setValueAsString()");
+		}
 	}
 	
 	private void handleStringType(String s) {
