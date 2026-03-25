@@ -29,7 +29,6 @@ import org.openmrs.hl7.HL7Constants;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
-import org.openmrs.scheduler.SchedulerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -743,12 +742,6 @@ public final class OpenmrsConstants {
 		        "XML description of address formats"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, PERSON_NAME_FORMAT_SHORT,
 		        "Format in which to display the person names.  Valid values are short, long"));
-
-		// TODO should be changed to text defaults and constants should be removed
-		props.add(new GlobalProperty("scheduler.username", SchedulerConstants.SCHEDULER_DEFAULT_USERNAME,
-		        "Username for the OpenMRS user that will perform the scheduler activities"));
-		props.add(new GlobalProperty("scheduler.password", SchedulerConstants.SCHEDULER_DEFAULT_PASSWORD,
-		        "Password for the OpenMRS user that will perform the scheduler activities"));
 
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_CONCEPTS_LOCKED, "false", "if true, do not allow editing concepts",
 		        BooleanDatatype.class, null));
