@@ -461,7 +461,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
     @Override
     public User removeUserProperty(User user, String key) {
         if (user != null) {
-
             // if the current user isn't allowed to edit users and
             // the user being edited is not the current user, throw an
             // exception
