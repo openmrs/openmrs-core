@@ -50,8 +50,8 @@ import ca.uhn.hl7v2.app.MessageTypeRouter;
 import ca.uhn.hl7v2.parser.GenericParser;
 
 /**
- * Provides OpenMRS Application Context Spring Configuration. It's a replacement
- * for applicationContext-service.xml from which we gradually migrate away.
+ * Provides OpenMRS Application Context Spring Configuration. It's a replacement for
+ * applicationContext-service.xml from which we gradually migrate away.
  *
  * @see org.openmrs.aop.AOPConfig
  * @see org.openmrs.api.cache.CacheConfig
@@ -60,114 +60,114 @@ import ca.uhn.hl7v2.parser.GenericParser;
 @Configuration
 public class OpenmrsApplicationContextConfig {
 
-    @Bean
-    public TransactionManager transactionManager(SessionFactory sessionFactory) {
-        return new HibernateTransactionManager(sessionFactory);
-    }
+	@Bean
+	public TransactionManager transactionManager(SessionFactory sessionFactory) {
+		return new HibernateTransactionManager(sessionFactory);
+	}
 
-    @Bean
-    public TaskExecutor taskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(1);
-        executor.setMaxPoolSize(20);
-        executor.setQueueCapacity(1000);
-        return executor;
-    }
+	@Bean
+	public TaskExecutor taskExecutor() {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(1);
+		executor.setMaxPoolSize(20);
+		executor.setQueueCapacity(1000);
+		return executor;
+	}
 
-    @Bean
-    public Map<String, ComplexObsHandler> handlers(ImageHandler imageHandler, TextHandler textHandler,
-            BinaryDataHandler binaryDataHandler, BinaryStreamHandler binaryStreamHandler) {
-        Map<String, ComplexObsHandler> map = new LinkedHashMap<>();
-        map.put("ImageHandler", imageHandler);
-        map.put("TextHandler", textHandler);
-        map.put("BinaryDataHandler", binaryDataHandler);
-        map.put("BinaryStreamHandler", binaryStreamHandler);
-        return map;
-    }
+	@Bean
+	public Map<String, ComplexObsHandler> handlers(ImageHandler imageHandler, TextHandler textHandler,
+	        BinaryDataHandler binaryDataHandler, BinaryStreamHandler binaryStreamHandler) {
+		Map<String, ComplexObsHandler> map = new LinkedHashMap<>();
+		map.put("ImageHandler", imageHandler);
+		map.put("TextHandler", textHandler);
+		map.put("BinaryDataHandler", binaryDataHandler);
+		map.put("BinaryStreamHandler", binaryStreamHandler);
+		return map;
+	}
 
-    @Bean
-    public Map<Class<?>, IdentifierValidator> identifierValidators(LuhnIdentifierValidator luhnIdentifierValidator,
-            VerhoeffIdentifierValidator verhoeffIdentifierValidator) {
-        Map<Class<?>, IdentifierValidator> map = new LinkedHashMap<>();
-        map.put(LuhnIdentifierValidator.class, luhnIdentifierValidator);
-        map.put(VerhoeffIdentifierValidator.class, verhoeffIdentifierValidator);
-        return map;
-    }
+	@Bean
+	public Map<Class<?>, IdentifierValidator> identifierValidators(LuhnIdentifierValidator luhnIdentifierValidator,
+	        VerhoeffIdentifierValidator verhoeffIdentifierValidator) {
+		Map<Class<?>, IdentifierValidator> map = new LinkedHashMap<>();
+		map.put(LuhnIdentifierValidator.class, luhnIdentifierValidator);
+		map.put(VerhoeffIdentifierValidator.class, verhoeffIdentifierValidator);
+		return map;
+	}
 
-    @Bean
-    public List<OpenmrsSerializer> serializerList(SimpleXStreamSerializer simpleXStreamSerializer) {
-        List<OpenmrsSerializer> serializers = new ArrayList<>();
-        serializers.add(simpleXStreamSerializer);
-        return serializers;
-    }
+	@Bean
+	public List<OpenmrsSerializer> serializerList(SimpleXStreamSerializer simpleXStreamSerializer) {
+		List<OpenmrsSerializer> serializers = new ArrayList<>();
+		serializers.add(simpleXStreamSerializer);
+		return serializers;
+	}
 
-    @Bean
-    public MutableResourceBundleMessageSource mutableResourceBundleMessageSource() {
-        MutableResourceBundleMessageSource messageSource = new MutableResourceBundleMessageSource();
-        messageSource.setBasenames("classpath:custom_messages", "classpath:messages");
-        messageSource.setUseCodeAsDefaultMessage(true);
-        messageSource.setCacheSeconds(5);
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
-    }
+	@Bean
+	public MutableResourceBundleMessageSource mutableResourceBundleMessageSource() {
+		MutableResourceBundleMessageSource messageSource = new MutableResourceBundleMessageSource();
+		messageSource.setBasenames("classpath:custom_messages", "classpath:messages");
+		messageSource.setUseCodeAsDefaultMessage(true);
+		messageSource.setCacheSeconds(5);
+		messageSource.setDefaultEncoding("UTF-8");
+		return messageSource;
+	}
 
-    /**
-     * Provides a PropertySourcesPlaceholderConfigurer that uses
-     * OpenmrsUtil.getApplicationDataDirectory() to resolve the runtime
-     * properties file location, ensuring the property is always set.
-     *
-     * @return configurer
-     */
-    @Bean
-    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-        String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
-        Properties props = new Properties();
-        props.setProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY, appDataDir);
-        configurer.setProperties(props);
-        configurer.setLocations(new ClassPathResource("hibernate.default.properties"),
-                new ClassPathResource("application.properties"),
-                new FileSystemResource(appDataDir + "/openmrs-runtime.properties"));
-        configurer.setIgnoreResourceNotFound(true);
-        configurer.setLocalOverride(true);
-        return configurer;
-    }
+	/**
+	 * Provides a PropertySourcesPlaceholderConfigurer that uses
+	 * OpenmrsUtil.getApplicationDataDirectory() to resolve the runtime properties file location,
+	 * ensuring the property is always set.
+	 *
+	 * @return configurer
+	 */
+	@Bean
+	public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+		PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
+		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
+		Properties props = new Properties();
+		props.setProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY, appDataDir);
+		configurer.setProperties(props);
+		configurer.setLocations(new ClassPathResource("hibernate.default.properties"),
+		    new ClassPathResource("application.properties"),
+		    new FileSystemResource(appDataDir + "/openmrs-runtime.properties"));
+		configurer.setIgnoreResourceNotFound(true);
+		configurer.setLocalOverride(true);
+		return configurer;
+	}
 
-    @Bean
-    public GenericParser hL7Parser() {
-        return new GenericParser();
-    }
+	@Bean
+	public GenericParser hL7Parser() {
+		return new GenericParser();
+	}
 
-    @Bean
-    public MessageTypeRouter hL7Router() {
-        return new MessageTypeRouter();
-    }
+	@Bean
+	public MessageTypeRouter hL7Router() {
+		return new MessageTypeRouter();
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        Map<String, PasswordEncoder> encoders = new LinkedHashMap<>();
-        encoders.put("bcrypt", new BCryptPasswordEncoder());
-        encoders.put("sha512", new PasswordEncoder() {
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		Map<String, PasswordEncoder> encoders = new LinkedHashMap<>();
+		encoders.put("bcrypt", new BCryptPasswordEncoder());
+		encoders.put("sha512", new PasswordEncoder() {
 
-            @Override
-            public String encode(CharSequence rawPassword) {
-                return Security.encodeString(rawPassword.toString());
-            }
+			@Override
+			public String encode(CharSequence rawPassword) {
+				return Security.encodeString(rawPassword.toString());
+			}
 
-            @Override
-            public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                return encode(rawPassword).equals(encodedPassword);
-            }
-        });
+			@Override
+			public boolean matches(CharSequence rawPassword, String encodedPassword) {
+				return encode(rawPassword).equals(encodedPassword);
+			}
+		});
 
-        return new DelegatingPasswordEncoder("bcrypt", encoders);
-    }
+		return new DelegatingPasswordEncoder("bcrypt", encoders);
+	}
 
-    @Bean
-    public Map<String, Application> hL7Handlers(ORUR01Handler orur01Handler, ADTA28Handler adta28Handler) {
-        Map<String, Application> map = new LinkedHashMap<>();
-        map.put("ORU_R01", orur01Handler);
-        map.put("ADT_A28", adta28Handler);
-        return map;
-    }
+	@Bean
+	public Map<String, Application> hL7Handlers(ORUR01Handler orur01Handler, ADTA28Handler adta28Handler) {
+		Map<String, Application> map = new LinkedHashMap<>();
+		map.put("ORU_R01", orur01Handler);
+		map.put("ADT_A28", adta28Handler);
+		return map;
+	}
 }

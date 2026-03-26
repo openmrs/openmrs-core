@@ -9,23 +9,24 @@
  */
 package org.openmrs.api;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.openmrs.util.Security;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class OpenmrsApplicationContextConfigTest {
 
-    @Test
-    void passwordEncoder_shouldEncodeWithBcryptAndMatchSha512LegacyFormat() {
-        PasswordEncoder passwordEncoder = new OpenmrsApplicationContextConfig().passwordEncoder();
-        String rawPassword = "rawPasswordWithSalt";
+	@Test
+	void passwordEncoder_shouldEncodeWithBcryptAndMatchSha512LegacyFormat() {
+		PasswordEncoder passwordEncoder = new OpenmrsApplicationContextConfig().passwordEncoder();
+		String rawPassword = "rawPasswordWithSalt";
 
-        String bcryptEncoded = passwordEncoder.encode(rawPassword);
-        assertTrue(bcryptEncoded.startsWith("{bcrypt}"));
-        assertTrue(passwordEncoder.matches(rawPassword, bcryptEncoded));
+		String bcryptEncoded = passwordEncoder.encode(rawPassword);
+		assertTrue(bcryptEncoded.startsWith("{bcrypt}"));
+		assertTrue(passwordEncoder.matches(rawPassword, bcryptEncoded));
 
-        String sha512Legacy = "{sha512}" + Security.encodeString(rawPassword);
-        assertTrue(passwordEncoder.matches(rawPassword, sha512Legacy));
-    }
+		String sha512Legacy = "{sha512}" + Security.encodeString(rawPassword);
+		assertTrue(passwordEncoder.matches(rawPassword, sha512Legacy));
+	}
 }
