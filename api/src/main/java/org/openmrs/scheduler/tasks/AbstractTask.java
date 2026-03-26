@@ -12,13 +12,18 @@ package org.openmrs.scheduler.tasks;
 import java.util.concurrent.ExecutionException;
 
 import org.openmrs.scheduler.Task;
+import org.openmrs.scheduler.TaskContext;
 import org.openmrs.scheduler.TaskDefinition;
+import org.openmrs.scheduler.TaskHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Base class for all other task classes.
+ *
+ * @deprecated since 2.9.x use {@link TaskHandler} instead.
  */
+@Deprecated
 public abstract class AbstractTask implements Task {
 
 	// Logger
@@ -29,6 +34,8 @@ public abstract class AbstractTask implements Task {
 
 	// The task definition of the running task
 	protected TaskDefinition taskDefinition;
+
+	protected TaskContext taskContext;
 
 	/**
 	 * Default constructor
