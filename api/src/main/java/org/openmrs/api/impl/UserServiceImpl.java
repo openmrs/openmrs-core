@@ -75,8 +75,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
     @Autowired
     protected UserDAO dao;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     private static final int MAX_VALID_TIME = 12 * 60 * 60 * 1000; //Period of 12 hours
 
@@ -84,7 +83,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
     private static final int DEFAULT_VALID_TIME = 10 * 60 * 1000; //Default time of 10 minute
 
-    public UserServiceImpl() {
+    @Autowired
+    public UserServiceImpl(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void setUserDAO(UserDAO dao) {

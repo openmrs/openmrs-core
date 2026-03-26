@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.util.Security;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class OpenmrsApplicationContextConfigTest {
+class OpenmrsApplicationContextConfigTest {
 
     @Test
-    public void passwordEncoder_shouldEncodeWithBcryptAndMatchSha512LegacyFormat() {
+    void passwordEncoder_shouldEncodeWithBcryptAndMatchSha512LegacyFormat() {
         PasswordEncoder passwordEncoder = new OpenmrsApplicationContextConfig().passwordEncoder();
         String rawPassword = "rawPasswordWithSalt";
 
