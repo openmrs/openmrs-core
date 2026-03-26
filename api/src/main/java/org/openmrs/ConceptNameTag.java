@@ -172,7 +172,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
 	@Override
-	@Deprecated(since = "2.0", forRemoval = true)
+	@Deprecated
 	@JsonIgnore
 	public Boolean isVoided() {
 		return getVoided();

@@ -150,7 +150,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @deprecated as of version 2.2
 	 */
 	@Override
-	@Deprecated(since = "2.2", forRemoval = true)
+	@Deprecated
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -160,7 +160,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @deprecated as of version 2.2
 	 */
 	@Override
-	@Deprecated(since = "2.2", forRemoval = true)
+	@Deprecated
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -170,7 +170,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @deprecated as of version 2.2
 	 */
 	@Override
-	@Deprecated(since = "2.2", forRemoval = true)
+	@Deprecated
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -180,7 +180,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @deprecated as of version 2.2
 	 */
 	@Override
-	@Deprecated(since = "2.2", forRemoval = true)
+	@Deprecated
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -190,7 +190,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
 	@Override
-	@Deprecated(since = "2.0", forRemoval = true)
+	@Deprecated
 	public Boolean isRetired() {
 		return getRetired();
 	}
