@@ -76,6 +76,8 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		assertTrue(errors.hasErrors());
+		assertTrue(errors.hasGlobalErrors());
+		assertEquals("error.preferredIdentifier", errors.getGlobalError().getCode());
 	}
 	
 	@Test
