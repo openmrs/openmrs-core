@@ -217,10 +217,10 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Returns whether the ConceptName has been voided.
 	 *
 	 * @return true if the ConceptName has been voided, false otherwise.
-	 * @deprecated as of 2.0, use {@link #getVoided()}
+	 * @deprecated as of 2.0.0, use {@link #getVoided()}
 	 */
 	@Override
-	@Deprecated(since = "2.0", forRemoval = true)
+	@Deprecated(since = "2.0.0", forRemoval = true)
 	@JsonIgnore
 	public Boolean isVoided() {
 		return getVoided();
@@ -345,9 +345,9 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Getter for localePreferred
 	 *
 	 * @return localPreferred
-	 * @deprecated as of 2.0, use {@link #getLocalePreferred()}
+	 * @deprecated as of 2.0.0, use {@link #getLocalePreferred()}
 	 */
-	@Deprecated(since = "2.0", forRemoval = true)
+	@Deprecated(since = "2.0.0", forRemoval = true)
 	@JsonIgnore
 	public Boolean isLocalePreferred() {
 		return getLocalePreferred();
