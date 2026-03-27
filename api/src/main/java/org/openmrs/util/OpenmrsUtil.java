@@ -218,17 +218,15 @@ public class OpenmrsUtil {
 	 */
 	public static String getFileAsString(File file) throws IOException {
 		StringBuilder fileData = new StringBuilder(1000);
-
-		try (BufferedReader reader = new BufferedReader(
-				new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
-
-			char[] buf = new char[1024];
-			int numRead;
-			while ((numRead = reader.read(buf)) != -1) {
-				fileData.append(buf, 0, numRead);
-			}
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+		char[] buf = new char[1024];
+		int numRead;
+		while ((numRead = reader.read(buf)) != -1) {
+			String readData = String.valueOf(buf, 0, numRead);
+			fileData.append(readData);
+			buf = new char[1024];
 		}
-
+		reader.close();
 		return fileData.toString();
 	}
 
