@@ -2038,6 +2038,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// return null now
 		assertNull(patientService.getPatient(2));
 	}
+	@Test
+public void purgePatient_shouldDoNothingWhenPatientIsNull() {
+    // voidPatient and unvoidPatient both return null silently when given null input.
+    // purgePatient should be consistent — a null argument must not reach the DAO layer.
+    assertDoesNotThrow(() -> patientService.purgePatient(null));
+}
+	
 
 	@Test
 	public void getPatients_shouldNotReturnVoidedPatients() throws Exception {
