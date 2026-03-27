@@ -1118,14 +1118,19 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientHasIdenticalIdentifiers() throws Exception {
 		
-		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getPatientIdentifierType(2);
+		patientIdentifierType.setUniquenessBehavior(UniquenessBehavior.UNIQUE);
+		Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
+		
+		Location location1 = Context.getLocationService().getLocation(1);
+		Location location2 = Context.getLocationService().getLocation(2);
 		
 		Patient patient = new Patient();
-		// Identifier #1
 		
+		// Identifier #1
 		PatientIdentifier patientIdentifier1 = new PatientIdentifier();
 		patientIdentifier1.setIdentifier("123456789");
-		patientIdentifier1.setLocation( new Location(2) );
+		patientIdentifier1.setLocation(location1);
 		patientIdentifier1.setIdentifierType(patientIdentifierType);
 		patient.addIdentifier(patientIdentifier1);
 		
@@ -1133,7 +1138,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifier patientIdentifier2 = new PatientIdentifier();
 		patientIdentifier2.setIdentifier("123456789");
 		patientIdentifier2.setIdentifierType(patientIdentifierType);
-		patientIdentifier2.setLocation( new Location(2) );
+		patientIdentifier2.setLocation(location2);
 		patient.addIdentifier(patientIdentifier2);
 		assertThrows(DuplicateIdentifierException.class, () -> patientService.checkPatientIdentifiers(patient));
 		
@@ -3107,6 +3112,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		assertDoesNotThrow(() -> patientService.savePatient(patient));
 	}
+	
+	
+	// TOOD
+	// * should not save patient with duplicate identifier for identifier with uniqueness = UNIQUE
+	// * should not save patient with duplicate identifier for identifier with uniquness = LOCATION
+	// * should save patient with duplicate the same identifier but different location with uniqueness = LOCATION
+	
 	
 	/**
 	 * @see PatientService#getPatients(String,Integer,Integer)
