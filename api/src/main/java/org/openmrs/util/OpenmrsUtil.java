@@ -218,15 +218,17 @@ public class OpenmrsUtil {
 	 */
 	public static String getFileAsString(File file) throws IOException {
 		StringBuilder fileData = new StringBuilder(1000);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
-		char[] buf = new char[1024];
-		int numRead;
-		while ((numRead = reader.read(buf)) != -1) {
-			String readData = String.valueOf(buf, 0, numRead);
-			fileData.append(readData);
-			buf = new char[1024];
+
+		try (BufferedReader reader = new BufferedReader(
+				new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+
+			char[] buf = new char[1024];
+			int numRead;
+			while ((numRead = reader.read(buf)) != -1) {
+				fileData.append(buf, 0, numRead);
+			}
 		}
-		reader.close();
+
 		return fileData.toString();
 	}
 
@@ -238,24 +240,13 @@ public class OpenmrsUtil {
 	 * @throws IOException
 	 */
 	public static byte[] getFileAsBytes(File file) throws IOException {
-		FileInputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(file);
+		try (FileInputStream fileInputStream = new FileInputStream(file)) {
 			byte[] b = new byte[fileInputStream.available()];
 			fileInputStream.read(b);
 			return b;
 		} catch (Exception e) {
 			log.error("Unable to get file as byte array", e);
-		} finally {
-			if (fileInputStream != null) {
-				try {
-					fileInputStream.close();
-				} catch (IOException io) {
-					log.warn("Couldn't close fileInputStream: " + io);
-				}
-			}
 		}
-
 		return null;
 	}
 
