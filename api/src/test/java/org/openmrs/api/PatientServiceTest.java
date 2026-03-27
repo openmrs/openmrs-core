@@ -3113,13 +3113,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertDoesNotThrow(() -> patientService.savePatient(patient));
 	}
 	
-	
-	// TOOD
-	// * should not save patient with duplicate identifier for identifier with uniqueness = UNIQUE
-	// * should not save patient with duplicate identifier for identifier with uniquness = LOCATION
-	// * should save patient with duplicate the same identifier but different location with uniqueness = LOCATION
-	
-	
 	/**
 	 * @see PatientService#getPatients(String,Integer,Integer)
 	 */
