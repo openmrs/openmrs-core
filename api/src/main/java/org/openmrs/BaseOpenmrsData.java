@@ -104,51 +104,51 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	}
 
 	/**
-	 * @deprecated as of version 2.2
+	 * @deprecated as of version 2.2.0
 	 * @see org.openmrs.OpenmrsData#getChangedBy()
 	 */
 	@Override
-	@Deprecated(since = "2.2", forRemoval = true)
+	@Deprecated(since = "2.2.0", forRemoval = true)
 	public User getChangedBy() {
 		return changedBy;
 	}
 
 	/**
-	 * @deprecated as of version 2.2
+	 * @deprecated as of version 2.2.0
 	 * @see org.openmrs.OpenmrsData#setChangedBy(User)
 	 */
 	@Override
-	@Deprecated(since = "2.2", forRemoval = true)
+	@Deprecated(since = "2.2.0", forRemoval = true)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
 
 	/**
-	 * @deprecated as of version 2.2
+	 * @deprecated as of version 2.2.0
 	 * @see org.openmrs.OpenmrsData#getDateChanged()
 	 */
 	@Override
-	@Deprecated(since = "2.2", forRemoval = true)
+	@Deprecated(since = "2.2.0", forRemoval = true)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
 
 	/**
-	 * @deprecated as of version 2.2
+	 * @deprecated as of version 2.2.0
 	 * @see org.openmrs.OpenmrsData#setDateChanged(Date)
 	 */
 	@Override
-	@Deprecated(since = "2.2", forRemoval = true)
+	@Deprecated(since = "2.2.0", forRemoval = true)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
 
 	/**
-	 * @deprecated as of 2.0, use {@link #getVoided()}
+	 * @deprecated as of 2.0.0, use {@link #getVoided()}
 	 * @see org.openmrs.Voidable#isVoided()
 	 */
 	@Override
-	@Deprecated(since = "2.0", forRemoval = true)
+	@Deprecated(since = "2.0.0", forRemoval = true)
 	public Boolean isVoided() {
 		return getVoided();
 	}
