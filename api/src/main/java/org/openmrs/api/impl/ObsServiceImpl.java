@@ -336,6 +336,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 */
 	@Override
 	public void purgeObs(Obs obs) throws APIException {
+		if (obs == null) {
+			return;
+		}
 		Context.getObsService().purgeObs(obs, false);
 	}
 
