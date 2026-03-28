@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 
@@ -49,6 +50,7 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 		        .getForms(null, false, Collections.emptyList(), null, formFields, formFields, Arrays.asList(new Field(3)))
 		        .size());
 
+		
 	}
 
 	@Test
@@ -63,5 +65,28 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 		for (FormField formField : formFields) {
 			assertEquals(form.getFormId(), formField.getForm().getFormId());
 		}
+	}
+
+	@Test
+	public void getForms_shouldReturnFormsContainingAnyFormField() {
+		// Create a list with a single FormField
+		List<FormField> anyFormFields = Arrays.asList(new FormField(2));
+
+		// Get forms containing ANY of these form fields
+		List<Form> forms = dao.getForms(
+			null,                           // partialName
+			false,                          // published
+			Collections.emptyList(),        // encounterTypes
+			null,                           // retired
+			anyFormFields,                  // containingAnyFormField
+			Collections.emptyList(),        // containingAllFormFields
+			Collections.emptyList()         // fields
+		);
+
+		// Assert that forms were found
+		assertNotNull(forms);
+
+		// Assert at least one form contains this form field
+		assertTrue(forms.size() > 0);
 	}
 }
