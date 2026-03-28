@@ -835,6 +835,15 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 
 		assertThrows(APIException.class, () -> visitService.purgeVisit(visit));
 	}
+	/**
+	 * @see VisitService#purgeVisit(Visit)
+	 */
+	@Test
+	public void purgeVisit_shouldDoNothingWhenVisitIsNull() {
+		// purgeVisit calls visit.getVisitId() before any null check on visit itself,
+		// which would throw a NullPointerException if null is passed.
+		assertDoesNotThrow(() -> visitService.purgeVisit(null));
+	}
 
 	/**
 	 * @see VisitService#saveVisit(Visit)
