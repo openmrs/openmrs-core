@@ -28,16 +28,24 @@ import jakarta.persistence.Transient;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.openmrs.BaseChangeableOpenmrsMetadata;
+import org.openmrs.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 /**
  * Represents the metadata for a task that can be scheduled.
+ *
+ * @deprecated since 2.9.x use {@link TaskData} instead.
  */
 @Entity
 @Table(name = "scheduler_task_config")
+@Deprecated
 @Audited
-public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
+public class TaskDefinition extends BaseChangeableOpenmrsMetadata implements TaskData {
 
 	private static final Logger log = LoggerFactory.getLogger(TaskDefinition.class);
 
@@ -62,10 +70,11 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	private Date lastExecutionTime;
 
 	@Column(name = "repeat_interval")
-	private Long repeatInterval; // NOW in seconds to give us ability to
+	private Long repeatInterval = 0L; // NOW in seconds to give us ability to
 
 	// support longer intervals (years, decades,
 	// milleniums)
+
 	@Column(name = "start_on_startup", nullable = false)
 	private Boolean startOnStartup;
 
@@ -316,6 +325,7 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	 *
 	 * @return related task, or null if none instantiated (definition hasn't been scheduled)
 	 */
+	@JsonIgnore
 	public Task getTaskInstance() {
 		return taskInstance;
 	}
@@ -328,5 +338,40 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	 */
 	public void setTaskInstance(Task taskInstance) {
 		this.taskInstance = taskInstance;
+	}
+
+	@Override
+	@JsonIgnore
+	public User getCreator() {
+		return super.getCreator();
+	}
+
+	@JsonGetter
+	public String getCreatorSystemId() {
+		return super.getCreator() != null ? super.getCreator().getSystemId() : null;
+	}
+
+	@JsonSetter
+	public void setCreatorSystemId(String systemId) {
+		if (systemId != null) {
+			User creator = getCreator();
+			if (creator == null) {
+				creator = new User();
+				setCreator(creator);
+			}
+			creator.setSystemId(systemId);
+		}
+	}
+
+	@Override
+	@JsonIgnore
+	public User getChangedBy() {
+		return super.getChangedBy();
+	}
+
+	@Override
+	@JsonIgnore
+	public User getRetiredBy() {
+		return super.getRetiredBy();
 	}
 }
