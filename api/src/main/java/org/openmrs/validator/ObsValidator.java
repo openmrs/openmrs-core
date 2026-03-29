@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
@@ -184,7 +183,7 @@ public class ObsValidator implements Validator {
 					if (!cn.getAllowDecimal() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
 						rejectValue(errors, obs, inGroupMember, "valueNumeric", "Obs.error.precision");
 					}
-					
+
 					validateConceptReferenceRange(obs, errors, inGroupMember);
 
 					// duplicate call removed
@@ -262,7 +261,7 @@ public class ObsValidator implements Validator {
 
 		if (conceptReferenceRange != null) {
 			validateAbsoluteRanges(obs, conceptReferenceRange, errors, inGroupMember);
-			
+
 			// duplicate call removed
 
 			if (obs.getId() == null) {
@@ -297,27 +296,17 @@ public class ObsValidator implements Validator {
 	 * @param conceptReferenceRange ConceptReferenceRange containing the range values
 	 * @param errors Errors to record validation issues
 	 */
-	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors, boolean inGroupMember) {
+	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors,
+	        boolean inGroupMember) {
 		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
-			rejectValue(
-				errors,
-				obs,
-				inGroupMember,
-				"valueNumeric",
-				"error.value.outOfRange.high",
-				new Object[] { conceptReferenceRange.getHiAbsolute(), obs.getValueNumeric() }
-			);
+			rejectValue(errors, obs, inGroupMember, "valueNumeric", "error.value.outOfRange.high",
+			    new Object[] { conceptReferenceRange.getHiAbsolute(), obs.getValueNumeric() });
 		}
-		
-		if (conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
-			rejectValue(
-				errors,
-				obs,
-				inGroupMember,
-				"valueNumeric",
-				"error.value.outOfRange.low",
-				new Object[] { conceptReferenceRange.getLowAbsolute(), obs.getValueNumeric() }
-			);
+
+		if (conceptReferenceRange.getLowAbsolute() != null
+		        && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
+			rejectValue(errors, obs, inGroupMember, "valueNumeric", "error.value.outOfRange.low",
+			    new Object[] { conceptReferenceRange.getLowAbsolute(), obs.getValueNumeric() });
 		}
 	}
 
@@ -327,7 +316,7 @@ public class ObsValidator implements Validator {
 		if (concept != null && concept.getName() != null) {
 			identifier = concept.getName().getName();
 		}
-		
+
 		String obsId = obs.getObsId() != null ? obs.getObsId().toString() : obs.getUuid();
 		if (StringUtils.isNotBlank(identifier)) {
 			return identifier + " (" + obsId + ")";
@@ -363,6 +352,7 @@ public class ObsValidator implements Validator {
 			errors.reject("Obs.error.inGroupMember", new Object[] { getGroupMemberIdentifier(obs), message }, null);
 		}
 	}
+
 	/**
 	 * Builds and sets the ObsReferenceRange for the given Obs.
 	 *

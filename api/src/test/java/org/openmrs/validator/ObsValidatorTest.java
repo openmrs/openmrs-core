@@ -305,12 +305,11 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(parent, errors);
 
 		assertTrue(errors.hasErrors());
-		assertTrue(errors.getFieldErrors().stream()
-		        .anyMatch(error -> error.getField().startsWith("groupMembers[")
-		                && error.getField().endsWith(".valueNumeric")));
+		assertTrue(errors.getFieldErrors().stream().anyMatch(
+		    error -> error.getField().startsWith("groupMembers[") && error.getField().endsWith(".valueNumeric")));
 		assertFalse(errors.hasFieldErrors("groupMembers"));
 	}
-	
+
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
