@@ -9,6 +9,11 @@
  */
 package org.openmrs.api.impl;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CodedOrFreeText;
@@ -24,11 +29,6 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -47,16 +47,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * would span implementations should go on the {@link ConditionService}.
  */
 public class ConditionServiceImplTest extends BaseContextSensitiveTest {
-	
+
 	private static final String EXISTING_CONDITION_UUID = "2cc6880e-2c46-11e4-9138-a6c5e4d20fb7";
-	
+
 	protected static final String CONDITION_XML = "org/openmrs/api/include/ConditionServiceImplTest-SetupCondition.xml";
 
 	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
-	
+
 	@Autowired
 	private ConditionService conditionService;
-	
+
 	@Autowired
 	private PatientService patientService;
 
@@ -65,14 +65,14 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private ConceptService conceptService;
-	
+
 	@BeforeEach
-	public void setup (){
+	public void setup() {
 		executeDataSet(CONDITION_XML);
 	}
 
 	/**
-	 * @see ConditionService#saveCondition(Condition) 
+	 * @see ConditionService#saveCondition(Condition)
 	 */
 	@Test
 	public void saveCondition_shouldSaveNewCondition() {
@@ -85,10 +85,10 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
 		condition.setUuid(uuid);
 		condition.setPatient(new Patient(patientId));
-		
+
 		// perform
 		conditionService.saveCondition(condition);
-		
+
 		// verify
 		Condition savedCondition = conditionService.getConditionByUuid(uuid);
 		assertThat(savedCondition.getPatient().getPatientId(), equalTo(patientId));
@@ -97,22 +97,22 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertThat(savedCondition.getClinicalStatus(), is(ConditionClinicalStatus.ACTIVE));
 		assertThat(savedCondition.getConditionId(), notNullValue());
 	}
-	
+
 	@Test
 	public void saveCondition_shouldReplaceExistingCondition() {
 
 		// setup
 		Condition condition = conditionService.getConditionByUuid(EXISTING_CONDITION_UUID);
 		Integer oldConditionId = condition.getConditionId();
-		
+
 		// perform
 		condition.setClinicalStatus(ConditionClinicalStatus.INACTIVE);
 		condition = conditionService.saveCondition(condition);
 		Integer newConditionId = condition.getConditionId();
-		
+
 		// verify
 		assertNotEquals(oldConditionId, newConditionId);
-		
+
 		// existing condition should be unchanged, but voided
 		Condition oldCondition = conditionService.getCondition(oldConditionId);
 		assertEquals(EXISTING_CONDITION_UUID, oldCondition.getUuid());
@@ -120,7 +120,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertTrue(oldCondition.getVoided());
 		assertNotNull(oldCondition.getOnsetDate());
 		assertNull(oldCondition.getEndDate());
-		
+
 		// new condition should reflect changed existing condition and have it as a previous version
 		Condition newCondition = conditionService.getCondition(newConditionId);
 		assertNotEquals(EXISTING_CONDITION_UUID, newCondition.getUuid());
@@ -150,12 +150,12 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		c.setFormNamespaceAndPath("form1/namespace2/path3");
 		c = conditionService.saveCondition(c);
 		Integer conditionId1 = c.getConditionId();
-		
+
 		// edit
 		c.setAdditionalDetail("Edited info");
 		c = conditionService.saveCondition(c);
 		Integer conditionId2 = c.getConditionId();
-		
+
 		// verify
 		assertNotEquals(conditionId1, conditionId2);
 		Condition c1 = conditionService.getCondition(conditionId1);
@@ -204,30 +204,30 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(EXISTING_CONDITION_UUID, condition.getUuid());
 		assertEquals(conditionId, condition.getConditionId());
 	}
-	
+
 	@Test
 	public void saveCondition_shouldVoidExistingConditionAndNotCreateNewCondition() {
 		// setup
 		Condition condition = conditionService.getConditionByUuid(EXISTING_CONDITION_UUID);
 		Patient patient = condition.getPatient();
 		int startingNum = conditionService.getAllConditions(patient).size();
-		
+
 		// perform
 		condition.setVoided(true);
 		condition.setVoidReason("Voided by a test");
 		Condition voidedCondition = conditionService.saveCondition(condition);
-		
+
 		// verify
 		assertTrue(voidedCondition.getVoided());
 		assertEquals("Voided by a test", voidedCondition.getVoidReason());
-		
+
 		Condition oldCondition = conditionService.getConditionByUuid(EXISTING_CONDITION_UUID);
 		assertEquals(voidedCondition.getId(), oldCondition.getId());
 		assertTrue(oldCondition.getVoided());
 		assertEquals(voidedCondition.getVoidReason(), oldCondition.getVoidReason());
 
 		int endingNum = conditionService.getAllConditions(patient).size();
-		assertEquals(startingNum, endingNum+1);
+		assertEquals(startingNum, endingNum + 1);
 	}
 
 	@Test
@@ -256,7 +256,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertTrue(oldCondition.getVoided());
 		assertEquals("Voided by a test", oldCondition.getVoidReason());
 		int endingNum = conditionService.getAllConditions(patient).size();
-		assertEquals(startingNum, endingNum-1);
+		assertEquals(startingNum, endingNum - 1);
 	}
 
 	/**
@@ -270,15 +270,15 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		condition.setUuid(uuid);
 		condition.setPatient(new Patient(2));
 		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
-		
+
 		// replay
 		condition.setEncounter(encounterService.getEncounter(2039));
 		conditionService.saveCondition(condition);
-		
+
 		// verify
 		Condition savedCondition = conditionService.getConditionByUuid(uuid);
 		assertEquals(Integer.valueOf(2039), savedCondition.getEncounter().getId());
-		
+
 		// edit and verify edit
 		savedCondition.setOnsetDate(new Date());
 		Condition editedCondition = conditionService.saveCondition(condition);
@@ -290,7 +290,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	 * @see ConditionService#saveCondition(Condition)
 	 */
 	@Test
-	public void saveCondition_shouldSaveConditionWithFormField(){
+	public void saveCondition_shouldSaveConditionWithFormField() {
 		// Create Condition to test
 		String ns = "my ns";
 		String path = "my path";
@@ -317,13 +317,13 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertNotNull(editedCondition.getFormNamespaceAndPath());
 		assertEquals(savedCondition.getFormNamespaceAndPath(), editedCondition.getFormNamespaceAndPath());
 	}
-	
+
 	/**
 	 * @see ConditionService#getConditionByUuid(String)
 	 */
 	@Test
 	public void getConditionByUuid_shouldFindConditionGivenValidUuid() {
-		String uuid="2cc6880e-2c46-15e4-9038-a6c5e4d22fb7";
+		String uuid = "2cc6880e-2c46-15e4-9038-a6c5e4d22fb7";
 		Condition condition = conditionService.getConditionByUuid(uuid);
 		assertEquals(uuid, condition.getUuid());
 	}
@@ -337,7 +337,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ConditionService#getCondition(Integer) 
+	 * @see ConditionService#getCondition(Integer)
 	 */
 	@Test
 	public void getCondition_shouldFindConditionGivenValidId() {
@@ -357,7 +357,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals("2cc6880e-2c46-11e4-9138-a6c5e4d20fb7", activeConditions.get(0).getUuid());
 	}
 
-    /**
+	/**
 	 * @see ConditionService#getAllConditions(Patient)
 	 */
 	@Test
@@ -369,7 +369,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertThat(conditions.get(0).getUuid(), equalTo("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7"));
 		assertThat(conditions.get(1).getUuid(), equalTo("2cc6880e-2c46-11e4-9138-a6c5e4d20fb7"));
 	}
-	
+
 	/**
 	 * ConditionService#getConditionsByEncounter(Encounter)
 	 */
@@ -384,10 +384,10 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ConditionService#voidCondition(Condition, String) 
+	 * @see ConditionService#voidCondition(Condition, String)
 	 */
 	@Test
-	public void voidCondition_shouldVoidConditionSuccessfully(){
+	public void voidCondition_shouldVoidConditionSuccessfully() {
 		Integer conditionId = 2;
 		String voidReason = "Test Reason";
 		Condition nonVoidedCondition = conditionService.getCondition(conditionId);
@@ -395,9 +395,9 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertNull(nonVoidedCondition.getVoidReason());
 		assertNull(nonVoidedCondition.getDateVoided());
 		assertNull(nonVoidedCondition.getVoidedBy());
-		
+
 		conditionService.voidCondition(nonVoidedCondition, voidReason);
-		
+
 		Condition voidedCondition = conditionService.getCondition(conditionId);
 		assertEquals(ConditionVerificationStatus.CONFIRMED, voidedCondition.getVerificationStatus());
 		assertEquals(ConditionClinicalStatus.ACTIVE, voidedCondition.getClinicalStatus());
@@ -409,18 +409,18 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ConditionService#unvoidCondition(Condition) 
+	 * @see ConditionService#unvoidCondition(Condition)
 	 */
 	@Test
-	public void unvoidCondition_shouldUnvoidConditionSuccessfully(){
+	public void unvoidCondition_shouldUnvoidConditionSuccessfully() {
 		Condition voidedCondition = conditionService.voidCondition(conditionService.getCondition(4), "Test Reason");
 		assertTrue(voidedCondition.getVoided());
 		assertNotNull(voidedCondition.getVoidReason());
 		assertNotNull(voidedCondition.getDateVoided());
 		assertEquals(1, voidedCondition.getVoidedBy().getUserId());
-		
+
 		Condition unVoidedCondition = conditionService.unvoidCondition(voidedCondition);
-		
+
 		assertEquals(ConditionVerificationStatus.CONFIRMED, unVoidedCondition.getVerificationStatus());
 		assertEquals(ConditionClinicalStatus.ACTIVE, unVoidedCondition.getClinicalStatus());
 		assertEquals("2cb6880e-2cd6-11e4-9138-a6c5e4d20fb7", unVoidedCondition.getUuid());
@@ -431,16 +431,16 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ConditionService#purgeCondition(Condition) 
+	 * @see ConditionService#purgeCondition(Condition)
 	 */
 	@Test
 	public void purgeCondition_shouldPurgeCondition() {
 		Integer conditionId = 1;
 		Condition existingCondition = conditionService.getCondition(conditionId);
 		assertNotNull(existingCondition);
-		
+
 		conditionService.purgeCondition(conditionService.getCondition(conditionId));
-		
+
 		Condition purgedCondition = conditionService.getCondition(conditionId);
 		assertNull(purgedCondition);
 	}

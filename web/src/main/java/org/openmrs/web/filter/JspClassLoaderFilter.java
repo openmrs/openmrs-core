@@ -25,28 +25,28 @@ import org.openmrs.util.OpenmrsClassLoader;
  * thread so that JSPs can use EL functions defined in modules
  */
 public class JspClassLoaderFilter implements Filter {
-	
+
 	/**
 	 * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
 	 */
 	@Override
 	public void init(FilterConfig config) throws ServletException {
 	}
-	
+
 	/**
 	 * @see jakarta.servlet.Filter#doFilter(jakarta.servlet.ServletRequest,
 	 *      jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
 	 */
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-	        ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+	        throws IOException, ServletException {
 		// Set thread's class loader
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		
+
 		// Carry on up the chain
 		chain.doFilter(request, response);
 	}
-	
+
 	/**
 	 * @see jakarta.servlet.Filter#destroy()
 	 */

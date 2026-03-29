@@ -19,17 +19,17 @@ import org.openmrs.web.filter.update.UpdateFilter;
  * the {@link StartupFilter}.
  */
 public class StartupErrorFilterModel {
-	
+
 	public Throwable errorAtStartup;
-	
+
 	public String stacktrace;
-	
+
 	// automatically given to the .vm files and used there
 	public static final String HEADER_TEMPLATE = "org/openmrs/web/filter/startuperror/header.vm";
-	
+
 	// automatically given to the .vm files and used there
 	public static final String FOOTER_TEMPLATE = "org/openmrs/web/filter/footer.vm";
-	
+
 	/**
 	 * Default constructor that sets up some of the properties
 	 */
@@ -37,5 +37,5 @@ public class StartupErrorFilterModel {
 		errorAtStartup = t;
 		stacktrace = ExceptionUtils.getStackTrace(t);
 	}
-	
+
 }

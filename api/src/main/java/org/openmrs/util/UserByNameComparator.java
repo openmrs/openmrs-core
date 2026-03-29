@@ -23,21 +23,23 @@ import org.openmrs.User;
 public class UserByNameComparator implements Comparator<User>, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
-	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 * <p>
 	 * <strong>Should</strong> sort users by personNames
+	 *
+	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
 	@Override
 	public int compare(User user1, User user2) {
-		
+
 		// test for null cases (sorting them to be last in a list)
 		if (user1 == null) {
 			return 1;
 		} else if (user2 == null) {
 			return -1;
 		}
-		
+
 		// delegate to the personByNameComparator to sort by person names
 		return PersonByNameComparator.comparePersonsByName(user1.getPerson(), user2.getPerson());
 	}

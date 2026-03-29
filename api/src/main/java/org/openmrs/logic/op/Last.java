@@ -15,14 +15,14 @@ package org.openmrs.logic.op;
  * Example: <br>
  * - <code>logicService.parse("'CD4 COUNT'").last(2);</code><br>
  * The above will give us a criteria to get the last two "CD4 COUNT" observations
- * 
+ *
  * @see First
  */
 public class Last implements TransformOperator {
-	
+
 	@Override
 	public String toString() {
 		return "LAST";
 	}
-	
+
 }

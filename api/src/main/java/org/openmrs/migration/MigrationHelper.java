@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -60,8 +59,9 @@ import org.xml.sax.SAXException;
 import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 /**
- * The MigrationHelper will be removed from openmrs-core. If you need the code migrate it to your code base.
- * 
+ * The MigrationHelper will be removed from openmrs-core. If you need the code migrate it to your
+ * code base.
+ *
  * @deprecated since 2.2.0
  */
 @Deprecated
@@ -69,11 +69,11 @@ public class MigrationHelper {
 
 	private MigrationHelper() {
 	}
-	
+
 	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
 	private static final Logger log = LoggerFactory.getLogger(MigrationHelper.class);
-	
+
 	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 	/**
@@ -100,12 +100,11 @@ public class MigrationHelper {
 		DocumentBuilder builder = createDocumentBuilder();
 		try {
 			return builder.parse(new InputSource(new StringReader(xml)));
-		}
-		catch (IOException | SAXException ex) {
+		} catch (IOException | SAXException ex) {
 			return null;
 		}
 	}
-	
+
 	private static void findNodesNamed(Node node, String lookForName, Collection<Node> ret) {
 		if (node.getNodeName().equals(lookForName)) {
 			ret.add(node);
@@ -116,12 +115,12 @@ public class MigrationHelper {
 			}
 		}
 	}
-	
+
 	/**
 	 * Takes XML like: &lt;something&gt; &lt;user date_changed="2001-03-06 08:46:53.0"
 	 * date_created="2001-03-06 08:46:53.0" username="hamish@mit.edu" first_name="Hamish"
 	 * last_name="Fraser" user_id="2001"/&gt; &lt;/something&gt; Returns the number of users added
-	 * 
+	 *
 	 * @deprecated since 2.2.0 migrate the method to your code base if needed
 	 */
 	@Deprecated
@@ -129,7 +128,7 @@ public class MigrationHelper {
 		int ret = 0;
 		Random rand = new Random();
 		UserService us = Context.getUserService();
-		
+
 		List<Node> toAdd = new ArrayList<>();
 		findNodesNamed(document, "user", toAdd);
 		for (Node node : toAdd) {
@@ -148,7 +147,7 @@ public class MigrationHelper {
 			user.setUsername(username);
 			user.setDateCreated(parseDate(e.getAttribute("date_created")));
 			user.setDateChanged(parseDate(e.getAttribute("date_changed")));
-			
+
 			// Generate a temporary password: 8-12 random characters
 			String pass;
 			{
@@ -165,11 +164,11 @@ public class MigrationHelper {
 		}
 		return ret;
 	}
-	
+
 	/**
-	 * Takes XML like: &lt;something&gt; &lt;location name="Cerca-la-Source"/&gt; &lt;/something&gt; returns the
-	 * number of locations added
-	 * 
+	 * Takes XML like: &lt;something&gt; &lt;location name="Cerca-la-Source"/&gt; &lt;/something&gt;
+	 * returns the number of locations added
+	 *
 	 * @deprecated since 2.2.0 migrate the method to your code base if needed
 	 */
 	@Deprecated
@@ -189,23 +188,23 @@ public class MigrationHelper {
 			}
 			Location location = new Location();
 			location.setName(name);
-			
+
 			ls.saveLocation(location);
 			++ret;
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Takes a list of Strings of the format RELATIONSHIP:&lt;user last name&gt;,&lt;user first
-	 * name&gt;,&lt;relationship type name&gt;,&lt;patient identifier type name&gt;,&lt;identifier&gt; so if user hfraser
-	 * if the cardiologist of the patient with patient_id 8039 in PIH's old emr, then:
-	 * RELATIONSHIP:hfraser,Cardiologist,HIV-EMRV1,8039 (the "RELATIONSHIP:" is not actually
-	 * necessary. Anything before and including the first : will be dropped If autoCreateUsers is
-	 * true, and no user exists with the given username, one will be created. If autoAddRole is
-	 * true, then whenever a user is auto-created, if a role exists with the same name as
-	 * relationshipType.name, then the user will be added to that role
-	 * 
+	 * name&gt;,&lt;relationship type name&gt;,&lt;patient identifier type name&gt;,&lt;identifier&gt;
+	 * so if user hfraser if the cardiologist of the patient with patient_id 8039 in PIH's old emr,
+	 * then: RELATIONSHIP:hfraser,Cardiologist,HIV-EMRV1,8039 (the "RELATIONSHIP:" is not actually
+	 * necessary. Anything before and including the first : will be dropped If autoCreateUsers is true,
+	 * and no user exists with the given username, one will be created. If autoAddRole is true, then
+	 * whenever a user is auto-created, if a role exists with the same name as relationshipType.name,
+	 * then the user will be added to that role
+	 *
 	 * @deprecated since 2.2.0 migrate the method to your code base if needed
 	 */
 	@Deprecated
@@ -235,8 +234,8 @@ public class MigrationHelper {
 				if (users.size() == 1) {
 					user = users.get(0);
 				} else if (users.size() > 1) {
-					throw new IllegalArgumentException("Found " + users.size() + " users named '" + userLastName + ", "
-					        + userFirstName + "'");
+					throw new IllegalArgumentException(
+					        "Found " + users.size() + " users named '" + userLastName + ", " + userFirstName + "'");
 				}
 			}
 			if (user == null) {
@@ -245,8 +244,8 @@ public class MigrationHelper {
 				if (users.size() == 1) {
 					user = users.get(0);
 				} else if (users.size() > 1) {
-					throw new IllegalArgumentException("Found " + users.size() + " voided users named '" + userLastName
-					        + ", " + userFirstName + "'");
+					throw new IllegalArgumentException(
+					        "Found " + users.size() + " voided users named '" + userLastName + ", " + userFirstName + "'");
 				}
 			}
 			if (user == null && autoCreateUsers) {
@@ -278,7 +277,7 @@ public class MigrationHelper {
 				throw new IllegalArgumentException("Can't find user '" + userLastName + ", " + userFirstName + "'");
 			}
 			Person person = personService.getPerson(user.getUserId());
-			
+
 			RelationshipType relationship = personService.getRelationshipTypeByName(relationshipType);
 			PatientIdentifierType pit = ps.getPatientIdentifierTypeByName(identifierType);
 			List<PatientIdentifier> found = ps.getPatientIdentifiers(identifier, Collections.singletonList(pit), null, null,
@@ -326,8 +325,8 @@ public class MigrationHelper {
 				List<PatientIdentifier> pis = ps.getPatientIdentifiers(identifier, Collections.singletonList(pit), null,
 				    null, null);
 				if (pis.size() != 1) {
-					throw new IllegalArgumentException("Found " + pis.size() + " instances of identifier " + identifier
-					        + " of type " + pit);
+					throw new IllegalArgumentException(
+					        "Found " + pis.size() + " instances of identifier " + identifier + " of type " + pit);
 				}
 				Patient p = pis.get(0).getPatient();
 				Program program = programsByName.get(temp[2]);
@@ -358,8 +357,8 @@ public class MigrationHelper {
 				}
 				ProgramWorkflowState st = wf.getStateByName(temp[4]);
 				if (st == null) {
-					throw new RuntimeException("Couldn't find state \"" + temp[4] + "\" for workflow " + wf + " (in "
-					        + wf.getStates() + ")");
+					throw new RuntimeException(
+					        "Couldn't find state \"" + temp[4] + "\" for workflow " + wf + " (in " + wf.getStates() + ")");
 				}
 				Date startDate = temp.length < 6 ? null : parseDate(temp[5]);
 				Date endDate = temp.length < 7 ? null : parseDate(temp[6]);
@@ -373,12 +372,12 @@ public class MigrationHelper {
 			}
 		}
 		int numAdded = 0;
-		
+
 		for (PatientProgram pp : knownPatientPrograms.values()) {
 			pws.savePatientProgram(pp);
 			++numAdded;
 		}
 		return numAdded;
 	}
-	
+
 }

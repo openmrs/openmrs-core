@@ -17,14 +17,14 @@ package org.openmrs.logic.op;
  * -
  * <code>logicService.parse("'CD4 COUNT'").after(Context.getDateformat().parse("2009/12/04");</code><br>
  * The above will give us a criteria to check if there's "CD4 COUNT" observations after 12/04/2009
- * 
+ *
  * @see Before
  */
 public class After implements ComparisonOperator {
-	
+
 	@Override
 	public String toString() {
 		return "AFTER";
 	}
-	
+
 }
