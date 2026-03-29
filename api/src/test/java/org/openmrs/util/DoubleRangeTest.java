@@ -216,6 +216,16 @@ public class DoubleRangeTest {
 	}
 	
 	/**
+	 * @see DoubleRange#contains(double)
+	 */
+	@Test
+	public void contains_shouldReturnTrueWhenLowIsNullAndValueIsWithinRange() {
+	    DoubleRange r = new DoubleRange(null, 10.0);
+	    Double d = 5.0;
+	    assertTrue(r.contains(d));
+	}
+	
+	/**
 	 * @see DoubleRange#toString()
 	 */
 	@Test
