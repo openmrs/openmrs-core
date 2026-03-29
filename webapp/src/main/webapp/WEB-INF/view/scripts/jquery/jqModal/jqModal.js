@@ -16,6 +16,7 @@ overlay: 50,
 overlayClass: 'jqmOverlay',
 closeClass: 'jqmClose',
 trigger: '.jqModal',
+// NOTE: ajax and ajaxText insert HTML into the DOM; callers must provide trusted input only.
 ajax: F,
 ajaxText: '',
 target: F,
@@ -46,7 +47,7 @@ open:function(s,t){var h=H[s],c=h.c,cc='.'+c.closeClass,z=(parseInt(h.w.css('z-i
  if(ie6){$('html,body').css({height:'100%',width:'100%'});if(o){o=o.css({position:'absolute'})[0];for(var y in {Top:1,Left:1})o.style.setExpression(y.toLowerCase(),"(_=(document.documentElement.scroll"+y+" || document.body.scroll"+y+"))+'px'");}}
 
  if(c.ajax) {var r=c.target||h.w,u=c.ajax,r=jqmFind(r,h.w),u=(u.substr(0,1) == '@')?(t&&t.nodeType?t.getAttribute(u.substring(1)):undefined):u;
-  r.text(c.ajaxText).load(u,function(){if(c.onLoad)c.onLoad.call(this,h);if(cc)h.w.jqmAddClose($(cc,h.w));e(h);});}
+  r.html(c.ajaxText).load(u,function(){if(c.onLoad)c.onLoad.call(this,h);if(cc)h.w.jqmAddClose($(cc,h.w));e(h);});}
  else if(cc)h.w.jqmAddClose($(cc,h.w));
 
  if(c.toTop&&h.o)h.w.before('<span id="jqmP'+h.w[0]._jqm+'"></span>').insertAfter(h.o);	
