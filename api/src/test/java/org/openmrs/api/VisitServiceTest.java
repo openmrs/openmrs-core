@@ -839,12 +839,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 * @see VisitService#purgeVisit(Visit)
 	 */
 	@Test
-	public void purgeVisit_shouldDoNothingWhenVisitIsNull() {
+	public void purgeVisit_shouldThrowIllegalArgumentExceptionWhenVisitIsNull() {
 		// purgeVisit calls visit.getVisitId() before any null check on visit itself,
 		// which would throw a NullPointerException if null is passed.
-		assertDoesNotThrow(() -> visitService.purgeVisit(null));
-	}
-
+        assertThrows(IllegalArgumentException.class, () -> visitService.purgeVisit(null));	}
 	/**
 	 * @see VisitService#saveVisit(Visit)
 	 */
