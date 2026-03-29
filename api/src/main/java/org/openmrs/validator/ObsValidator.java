@@ -361,6 +361,8 @@ public class ObsValidator implements Validator {
 			String message = Context.getMessageSourceService().getMessage(errors.getGlobalErrors().get(globalErrorCount),
 			    Context.getLocale());
 			errors.reject("Obs.error.inGroupMember", new Object[] { getGroupMemberIdentifier(obs), message }, null);
+		}
+	}
 	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors,
 	        boolean atRootNode) {
 		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
