@@ -187,7 +187,7 @@ public class ObsValidator implements Validator {
 					
 					validateConceptReferenceRange(obs, errors, inGroupMember);
 
-					validateConceptReferenceRange(obs, errors, atRootNode);
+					// duplicate call removed
 				} else if (dt.isText() && obs.getValueText() == null) {
 					rejectValue(errors, obs, inGroupMember, "valueText", "error.null");
 				}
@@ -263,7 +263,7 @@ public class ObsValidator implements Validator {
 		if (conceptReferenceRange != null) {
 			validateAbsoluteRanges(obs, conceptReferenceRange, errors, inGroupMember);
 			
-			validateAbsoluteRanges(obs, conceptReferenceRange, errors, atRootNode);
+			// duplicate call removed
 
 			if (obs.getId() == null) {
 				setObsReferenceRange(obs, conceptReferenceRange);
@@ -363,28 +363,6 @@ public class ObsValidator implements Validator {
 			errors.reject("Obs.error.inGroupMember", new Object[] { getGroupMemberIdentifier(obs), message }, null);
 		}
 	}
-	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors,
-	        boolean atRootNode) {
-		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
-			if (atRootNode) {
-				errors.rejectValue("valueNumeric", "error.value.outOfRange.high",
-				    new Object[] { conceptReferenceRange.getHiAbsolute() }, null);
-			} else {
-				errors.rejectValue("groupMembers", "Obs.error.inGroupMember", new Object[] {}, null);
-			}
-		}
-
-		if (conceptReferenceRange.getLowAbsolute() != null
-		        && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
-			if (atRootNode) {
-				errors.rejectValue("valueNumeric", "error.value.outOfRange.low",
-				    new Object[] { conceptReferenceRange.getLowAbsolute() }, null);
-			} else {
-				errors.rejectValue("groupMembers", "Obs.error.inGroupMember", new Object[] {}, null);
-			}
-		}
-	}
-
 	/**
 	 * Builds and sets the ObsReferenceRange for the given Obs.
 	 *
