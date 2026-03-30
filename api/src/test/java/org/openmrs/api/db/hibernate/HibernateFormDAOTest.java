@@ -58,14 +58,14 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 		Form form = new Form(2);
 		List<FormField> formFields = dao.getFormFields(form);
 
-		assertNotNull(formFields);
+		
+}
 
-		final int EXPECTED_SIZE = 2;
-		assertEquals(EXPECTED_SIZE, formFields.size());
-		for (FormField formField : formFields) {
-			assertEquals(form.getFormId(), formField.getForm().getFormId());
-		}
-	}
+@Test
+@@ -64,4 +66,43 @@
+assertEquals(form.getFormId(), formField.getForm().getFormId());
+}
+}
 
 	@Test
 	public void getForms_shouldReturnFormsContainingAnyFormField() {
@@ -106,3 +106,13 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 	}
 
 }
+//A would-be fix for that
+List<FormField> multipleInvalidFields = Arrays.asList(
+	new FormField(998), 
+	new FormField(999));
+List<Form> formsMultipleInvalid = dao.getForms(null, false,
+	Collections.emptyList(), null,
+	multipleInvalidFields, Collections.emptyList(),
+	Collections.emptyList());
+assertNotNull(formsMultipleInvalid);
+assertTrue(formsMultipleInvalid.isEmpty());
