@@ -9,21 +9,22 @@
  */
 package org.openmrs;
 
-import org.hibernate.envers.Audited;
+import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-import java.io.Serializable;
+
+import org.hibernate.envers.Audited;
 
 /**
  * This is the base class for reference ranges.
- * 
+ *
  * @since 2.7.0
  */
 @MappedSuperclass
 @Audited
 public abstract class BaseReferenceRange extends BaseOpenmrsObject implements Serializable {
-	
+
 	@Column(name = "hi_absolute")
 	private Double hiAbsolute;
 

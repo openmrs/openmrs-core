@@ -17,10 +17,10 @@ package org.openmrs.logic.op;
  * The above will give us a criteria to get the number of encounter type we have in the system
  */
 public class Count implements TransformOperator {
-	
+
 	@Override
 	public String toString() {
 		return "Count";
 	}
-	
+
 }
