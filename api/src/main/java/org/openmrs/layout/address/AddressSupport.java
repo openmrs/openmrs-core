@@ -171,7 +171,8 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 			}
 
 			try {
-				return Context.getSerializationService().getDefaultSerializer().deserialize(unescaped, AddressTemplate.class);
+				return Context.getSerializationService().getDefaultSerializer().deserialize(unescaped,
+				    AddressTemplate.class);
 			} catch (SerializationException secondException) {
 				secondException.addSuppressed(firstException);
 				throw secondException;

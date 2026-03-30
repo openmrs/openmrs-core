@@ -38,8 +38,6 @@ import org.openmrs.api.context.UserContext;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.test.jupiter.BaseContextMockTest;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -148,20 +146,19 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 
 	@Test
 	public void checkPatientIdentifiers_shouldThrowDuplicateIdentifierGivenDuplicateIdentifiers() throws Exception {
-		
+
 		String equalIdentifier = "equal identifier";
 		Location location = new Location();
 		Location anotherLocation = new Location();
 		PatientIdentifierType identifierType = new PatientIdentifierType();
 		identifierType.setUniquenessBehavior(PatientIdentifierType.UniquenessBehavior.UNIQUE);
-		
+
 		Patient patientWithIdentifiers = new Patient();
-		PatientIdentifier patientIdentifier = new PatientIdentifier("some identifier", identifierType,
-			location);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("some identifier", identifierType, location);
 		patientIdentifier.setIdentifier(equalIdentifier);
 		patientWithIdentifiers.addIdentifier(patientIdentifier);
 		PatientIdentifier identicalPatientIdentifier = new PatientIdentifier("some identifier", identifierType,
-			anotherLocation);
+		        anotherLocation);
 		identicalPatientIdentifier.setIdentifier(equalIdentifier);
 		patientWithIdentifiers.addIdentifier(identicalPatientIdentifier);
 

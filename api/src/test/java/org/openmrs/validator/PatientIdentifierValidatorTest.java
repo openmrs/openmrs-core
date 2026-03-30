@@ -91,19 +91,18 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
 	@Test
-	public void validateIdentifier_shouldFailValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeAndLocation()
-	{
+	public void validateIdentifier_shouldFailValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeAndLocation() {
 		Patient patient = Context.getPatientService().getPatient(2);
 		PatientIdentifierType type = Context.getPatientService().getPatientIdentifierType(2);
 		Location location = Context.getLocationService().getLocation(1);
-		
+
 		// this exact same identifier exists for this patient in the database
 		PatientIdentifier pi = new PatientIdentifier();
 		pi.setIdentifier("101");
 		pi.setPatient(patient);
 		pi.setIdentifierType(type);
 		pi.setLocation(location);
-		
+
 		assertThrows(DuplicateIdentifierException.class, () -> PatientIdentifierValidator.validateIdentifier(pi));
 	}
 
@@ -111,8 +110,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
 	@Test
-	public void validateIdentifier_shouldPassValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeButDifferentLocation()
-	{
+	public void validateIdentifier_shouldPassValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeButDifferentLocation() {
 		Patient patient = Context.getPatientService().getPatient(2);
 		PatientIdentifierType type = Context.getPatientService().getPatientIdentifierType(2);
 		Location location = Context.getLocationService().getLocation(2);
@@ -131,8 +129,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
 	@Test
-	public void validateIdentifier_shouldFallValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeButDifferentLocationAndUniquenessBehaviorIsUnique()
-	{
+	public void validateIdentifier_shouldFallValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeButDifferentLocationAndUniquenessBehaviorIsUnique() {
 		Patient patient = Context.getPatientService().getPatient(2);
 		PatientIdentifierType type = Context.getPatientService().getPatientIdentifierType(2);
 		Location location = Context.getLocationService().getLocation(2);
@@ -140,7 +137,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		// update this identifier type to be unique
 		type.setUniquenessBehavior(UniquenessBehavior.UNIQUE);
 		Context.getPatientService().savePatientIdentifierType(type);
-		
+
 		// this exact same identifier exists for this patient in the database
 		PatientIdentifier pi = new PatientIdentifier();
 		pi.setIdentifier("101");
@@ -150,8 +147,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 
 		assertThrows(DuplicateIdentifierException.class, () -> PatientIdentifierValidator.validateIdentifier(pi));
 	}
-	
-	
+
 	/**
 	 * @see PatientIdentifierValidator#validateIdentifier(String,PatientIdentifierType)
 	 */

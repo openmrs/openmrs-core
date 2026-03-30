@@ -108,7 +108,7 @@ public class PatientIdentifierValidator implements Validator {
 				            new Object[] { pi.getIdentifier() }, Context.getLocale()),
 				        pi);
 			}
-			
+
 			// check that patient does not already have the same identifier of this type at this location
 			Patient patient = pi.getPatient();
 			if (patient != null) {
@@ -116,13 +116,16 @@ public class PatientIdentifierValidator implements Validator {
 
 					boolean isDifferentIdentifierObject = !existingIdentifier.getUuid().equals(pi.getUuid());
 					boolean hasSameIdentifierValue = existingIdentifier.getIdentifier().equals(pi.getIdentifier());
-					boolean shouldBeGloballyUnique = UniquenessBehavior.UNIQUE.equals(pi.getIdentifierType().getUniquenessBehavior());
+					boolean shouldBeGloballyUnique = UniquenessBehavior.UNIQUE
+					        .equals(pi.getIdentifierType().getUniquenessBehavior());
 					boolean bothLocationsNull = existingIdentifier.getLocation() == null && pi.getLocation() == null;
-					boolean sameLocation = existingIdentifier.getLocation() != null && existingIdentifier.getLocation().equals(pi.getLocation());
-					if (isDifferentIdentifierObject && hasSameIdentifierValue && (shouldBeGloballyUnique || bothLocationsNull || sameLocation)) {
+					boolean sameLocation = existingIdentifier.getLocation() != null
+					        && existingIdentifier.getLocation().equals(pi.getLocation());
+					if (isDifferentIdentifierObject && hasSameIdentifierValue
+					        && (shouldBeGloballyUnique || bothLocationsNull || sameLocation)) {
 						throw new DuplicateIdentifierException(Context.getMessageSourceService().getMessage(
-							"PatientIdentifier.error.notUniqueSamePatientWithParameter", new Object[] { pi.getIdentifier() },
-							Context.getLocale()), pi);
+						    "PatientIdentifier.error.notUniqueSamePatientWithParameter", new Object[] { pi.getIdentifier() },
+						    Context.getLocale()), pi);
 					}
 				}
 			}
