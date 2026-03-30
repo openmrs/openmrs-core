@@ -9,15 +9,11 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Decoder;
-import java.util.Arrays;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -25,13 +21,16 @@ import javax.crypto.spec.SecretKeySpec;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests the methods on the {@link Security} class
  */
 public class SecurityTest {
-	
+
 	private static final int HASH_LENGTH = 128;
-	
+
 	/**
 	 * @see Security#encodeString(String)
 	 */
@@ -40,7 +39,7 @@ public class SecurityTest {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
 		assertEquals(HASH_LENGTH, hash.length());
 	}
-	
+
 	/**
 	 * @see Security#encodeString(String)
 	 */
@@ -49,16 +48,16 @@ public class SecurityTest {
 		String hash = Security.encodeString("test" + Security.getRandomToken());
 		assertEquals(HASH_LENGTH, hash.length());
 	}
-	
+
 	/**
 	 * @see Security#hashMatches(String,String)
 	 */
 	@Test
 	public void hashMatches_shouldMatchStringsHashedWithSha1Algorithm() {
-		assertTrue(Security.hashMatches("4a1750c8607d0fa237de36c6305715c223415189", "test"
-		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
+		assertTrue(Security.hashMatches("4a1750c8607d0fa237de36c6305715c223415189",
+		    "test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
 	}
-	
+
 	/**
 	 * @see Security#hashMatches(String,String)
 	 */
@@ -69,16 +68,16 @@ public class SecurityTest {
 		        + "0d7bb319434295261601202e14494b959cdd69c6ceb54ee3890e176ae780ce9edf797f48afde5f39906a6bd75b8a5feeac8f5339615acf7429c7dda85220d329";
 		assertTrue(Security.hashMatches(password, passwordToHash));
 	}
-	
+
 	/**
 	 * @see Security#hashMatches(String,String)
 	 */
 	@Test
 	public void hashMatches_shouldMatchStringsHashedWithIncorrectSha1Algorithm() {
-		assertTrue(Security.hashMatches("4a1750c8607dfa237de36c6305715c223415189", "test"
-		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
+		assertTrue(Security.hashMatches("4a1750c8607dfa237de36c6305715c223415189",
+		    "test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
 	}
-	
+
 	/**
 	 * @see Security#decrypt(String)
 	 */
@@ -88,13 +87,13 @@ public class SecurityTest {
 		// use specific IV and Key
 		byte[] initVector = base64.decode("9wyBUNglFCRVSUhMfsTa3Q==");
 		byte[] secretKey = base64.decode("dTfyELRrAICGDwzjHDjuhw==");
-		
+
 		// perform decryption
 		String expected = "this is fantasmic";
 		String encrypted = encryptWithGcm(expected, initVector, secretKey);
 		String actual = Security.decrypt(encrypted, initVector, secretKey);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
-		
+
 		expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta sapien ac nisi imperdiet posuere. Ma"
 		        + "ecenas nec felis ac enim posuere semper. In arcu turpis, elementum nec auctor id, pretium sed tortor. Quisque "
 		        + "sit amet erat ante. Praesent metus dui, porttitor non volutpat eu, porta sed ante. Fusce quis dignissim nisl. "
@@ -133,13 +132,13 @@ public class SecurityTest {
 		        + "get, tincidunt vel nunc. Nullam at neque sem, rutrum aliquet elit. In et velit enim, tempus mollis nunc. Sed s"
 		        + "it amet quam justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur convallis dolor non lig"
 		        + "ula fermentum imperdiet.";
-		
+
 		encrypted = encryptWithGcm(expected, initVector, secretKey);
-		
+
 		actual = Security.decrypt(encrypted, initVector, secretKey);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 	}
-	
+
 	/**
 	 * @see Security#encrypt(String)
 	 */
@@ -151,7 +150,7 @@ public class SecurityTest {
 		assertTrue(StringUtils.hasText(encrypted));
 		String actual = Security.decrypt(encrypted);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
-		
+
 		// long text
 		expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta sapien ac nisi imperdiet posuere. Maecenas nec felis ac enim posuere semper. In arcu turpis, elementum nec auctor id, pretium sed tortor. Quisque sit amet erat ante. Praesent metus dui, porttitor non volutpat eu, porta sed ante. Fusce quis dignissim nisl. Vivamus id massa in nisl sollicitudin iaculis ac ut odio. Morbi et sapien non massa ultricies commodo. Nunc semper, nulla a pellentesque adipiscing, urna nisl vulputate lacus, non rutrum nulla mauris at tortor. Quisque molestie, velit nec vehicula tempor, mi eros fermentum ipsum, ut ullamcorper nisl sem at risus. Nam varius nunc sit amet velit blandit gravida sed vel purus. Nam ac justo ut metus elementum vehicula ac non ante. Aliquam pellentesque semper mauris ut pulvinar."
 		        + "Duis et orci nisi. Mauris tempor consequat felis, vel consequat diam consequat vitae. Donec eget dolor quis nulla lobortis vestibulum. Quisque vel ipsum in sapien egestas blandit. Praesent malesuada tellus nec sapien blandit sit amet molestie magna consequat. Pellentesque quis tempus urna. Quisque ut nibh ut tellus hendrerit rhoncus. Aenean ultricies lorem eu sem condimentum at consectetur magna dignissim. Nam porta lobortis consequat. Suspendisse congue, tellus quis sodales blandit, augue massa interdum sem, vel suscipit ipsum risus vitae massa. Quisque ipsum tellus, gravida sed suscipit non, ultricies eu augue. Etiam consequat consequat massa a accumsan. Quisque rhoncus nisi lectus, vel ultrices sapien. Aenean a felis felis, sit amet vestibulum lorem. Cras ut fermentum magna."
@@ -162,7 +161,7 @@ public class SecurityTest {
 		assertTrue(StringUtils.hasText(encrypted));
 		actual = Security.decrypt(encrypted);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
-		
+
 		// foreign text
 		expected = "傑里米 (Jeremy), 潔儀 (Kitty) and 贏 (Win) like encryption :-D";
 		encrypted = Security.encrypt(expected);
@@ -170,36 +169,36 @@ public class SecurityTest {
 		actual = Security.decrypt(encrypted);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 	}
-	
+
 	@Test
 	public void encrypt_shouldUseRandomIvPerEncryption() {
 		String expected = "same text";
 		String encrypted1 = Security.encrypt(expected);
 		String encrypted2 = Security.encrypt(expected);
-		
+
 		assertTrue(StringUtils.hasText(encrypted1));
 		assertTrue(StringUtils.hasText(encrypted2));
 		assertTrue(!encrypted1.equals(encrypted2));
-		
+
 		String actual1 = Security.decrypt(encrypted1);
 		String actual2 = Security.decrypt(encrypted2);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual1));
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual2));
 	}
-	
+
 	@Test
 	public void decrypt_shouldUseIvPrefixedCiphertext() {
 		String expected = "iv prefix check";
 		String encrypted = Security.encrypt(expected);
-		
+
 		byte[] combined = Base64.getDecoder().decode(encrypted);
 		assertTrue(combined.length > 1 + 12 + 16);
 		assertEquals(1, combined[0]);
-		
+
 		byte[] initVector = Arrays.copyOfRange(combined, 1, 13);
 		byte[] cipherText = Arrays.copyOfRange(combined, 13, combined.length);
 		String cipherOnly = Base64.getEncoder().encodeToString(cipherText);
-		
+
 		String actual = Security.decrypt(cipherOnly, initVector, Security.getSavedSecretKey());
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 	}
@@ -212,10 +211,9 @@ public class SecurityTest {
 			cipher.init(Cipher.ENCRYPT_MODE, secret, spec);
 			byte[] encrypted = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
 			return Base64.getEncoder().encodeToString(encrypted);
-		}
-		catch (GeneralSecurityException e) {
+		} catch (GeneralSecurityException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 }
