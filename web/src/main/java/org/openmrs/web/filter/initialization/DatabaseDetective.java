@@ -67,18 +67,15 @@ public class DatabaseDetective {
 				}
 			}
 			return true;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// consider the database to be empty
 			return true;
-		}
-		finally {
+		} finally {
 			try {
 				if (connection != null) {
 					connection.close();
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				// consider the database to be empty
 				return true;
 			}

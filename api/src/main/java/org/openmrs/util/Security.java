@@ -45,6 +45,7 @@ public class Security {
 	private static final int GCM_TAG_LENGTH_BYTES = GCM_TAG_LENGTH_BITS / 8;
 	private static final int GCM_IV_LENGTH_BYTES = 12;
 	private static final byte ENCRYPTION_VERSION_GCM_WITH_IV = 1;
+	private static final String GCM_CIPHER_ALGORITHM = "AES/GCM/NoPadding";
 
 	private Security() {
 	}
@@ -385,7 +386,7 @@ public class Security {
 	        throws GeneralSecurityException {
 		GCMParameterSpec initVectorSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, initVector);
 		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
-		Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION_GCM);
+		Cipher cipher = Cipher.getInstance(GCM_CIPHER_ALGORITHM);
 		cipher.init(Cipher.ENCRYPT_MODE, secret, initVectorSpec);
 		return cipher.doFinal(plainText);
 	}
@@ -394,7 +395,7 @@ public class Security {
 	        throws GeneralSecurityException {
 		GCMParameterSpec initVectorSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, initVector);
 		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
-		Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION_GCM);
+		Cipher cipher = Cipher.getInstance(GCM_CIPHER_ALGORITHM);
 		cipher.init(Cipher.DECRYPT_MODE, secret, initVectorSpec);
 		return cipher.doFinal(cipherText);
 	}

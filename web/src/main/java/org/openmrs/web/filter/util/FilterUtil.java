@@ -80,25 +80,21 @@ public class FilterUtil {
 				if (currentLocale == null) {
 					currentLocale = readSystemDefaultLocale(connection);
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.error("Error while retriving locale property", e);
-			}
-			finally {
+			} finally {
 				try {
 					if (statement != null) {
 						statement.close();
 					}
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Error while closing statement");
 				}
 				
 				if (connection != null) {
 					try {
 						connection.close();
-					}
-					catch (SQLException e) {
+					} catch (SQLException e) {
 						log.debug(DATABASE_CLOSING_ERROR, e);
 					}
 				}
@@ -106,8 +102,7 @@ public class FilterUtil {
 				if (results != null) {
 					try {
 						results.close();
-					}
-					catch (SQLException e) {
+					} catch (SQLException e) {
 						log.warn("Error while closing ResultSet", e);
 					}
 				}
@@ -145,16 +140,13 @@ public class FilterUtil {
 					systemDefaultLocale = results.getString(1);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Error while retrieving system default locale", e);
-		}
-		finally {
+		} finally {
 			if (needToCloseConection && connection != null) {
 				try {
 					connection.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.debug(DATABASE_CLOSING_ERROR, e);
 				}
 			}
@@ -190,13 +182,11 @@ public class FilterUtil {
 						if (statement.executeUpdate() != 1) {
 							log.warn("Unable to save user locale as admin property.");
 						}
-					}
-					finally {
+					} finally {
 						if (statement != null) {
 							try {
 								statement.close();
-							}
-							catch (Exception statementCloseEx) {
+							} catch (Exception statementCloseEx) {
 								log.error("Failed to quietly close Statement", statementCloseEx);
 							}
 						}
@@ -214,28 +204,23 @@ public class FilterUtil {
 					if (statement.executeUpdate() != 1) {
 						log.warn("Unable to set system default locale property.");
 					}
-				}
-				finally {
+				} finally {
 					if (statement != null) {
 						try {
 							statement.close();
-						}
-						catch (Exception statementCloseEx) {
+						} catch (Exception statementCloseEx) {
 							log.error("Failed to quietly close Statement", statementCloseEx);
 						}
 					}
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.warn("Locale " + locale + " could not be set for user with id " + userId + " .", e);
 				return false;
-			}
-			finally {
+			} finally {
 				if (connection != null) {
 					try {
 						connection.close();
-					}
-					catch (SQLException e) {
+					} catch (SQLException e) {
 						log.debug(DATABASE_CLOSING_ERROR, e);
 					}
 				}
