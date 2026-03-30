@@ -69,24 +69,40 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void getForms_shouldReturnFormsContainingAnyFormField() {
-		// Create a list with a single FormField
+		// Test 1 - Basic: should return forms containing any form field
 		List<FormField> anyFormFields = Arrays.asList(new FormField(2));
-
-		// Get forms containing ANY of these form fields
-		List<Form> forms = dao.getForms(
-			null,                           // partialName
-			false,                          // published
-			Collections.emptyList(),        // encounterTypes
-			null,                           // retired
-			anyFormFields,                  // containingAnyFormField
-			Collections.emptyList(),        // containingAllFormFields
-			Collections.emptyList()         // fields
-		);
-
-		// Assert that forms were found
+		List<Form> forms = dao.getForms(null, false,
+			Collections.emptyList(), null,
+			anyFormFields, Collections.emptyList(),
+			Collections.emptyList());
 		assertNotNull(forms);
-
-		// Assert at least one form contains this form field
 		assertTrue(forms.size() > 0);
+
+		// Test 2 - Empty list: should return all forms
+		List<Form> formsWithEmpty = dao.getForms(null, false,
+			Collections.emptyList(), null,
+			Collections.emptyList(), Collections.emptyList(),
+			Collections.emptyList());
+		assertNotNull(formsWithEmpty);
+
+		// Test 3 - Multiple fields: should return forms with any field
+		List<FormField> multipleFields = Arrays.asList(
+			new FormField(2), new FormField(3));
+		List<Form> formsMultiple = dao.getForms(null, false,
+			Collections.emptyList(), null,
+			multipleFields, Collections.emptyList(),
+			Collections.emptyList());
+		assertNotNull(formsMultiple);
+		assertTrue(formsMultiple.size() > 0);
+
+		// Test 4 - Non existent field: should return empty list
+		List<FormField> invalidFields = Arrays.asList(new FormField(999));
+		List<Form> formsInvalid = dao.getForms(null, false,
+			Collections.emptyList(), null,
+			invalidFields, Collections.emptyList(),
+			Collections.emptyList());
+		assertNotNull(formsInvalid);
+		assertTrue(formsInvalid.isEmpty());
 	}
+
 }
