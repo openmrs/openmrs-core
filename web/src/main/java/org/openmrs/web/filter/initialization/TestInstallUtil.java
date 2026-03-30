@@ -270,8 +270,8 @@ public class TestInstallUtil {
 
 		return connection.getInputStream();
 	}
-	private static HttpURLConnection createConnection(String url) 
-			throws IOException, MalformedURLException {
+
+	private static HttpURLConnection createConnection(String url) throws IOException, MalformedURLException {
 		URL requestUrl = new URL(url);
 		// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric IP
 		// as host, preventing DNS-rebinding / TOCTOU attacks.
