@@ -161,7 +161,8 @@ public class HibernateContextDAO implements ContextDAO {
 				if(!Security.isBCrypt(passwordOnRecord)){
 					String newBCryptHash = Security.encodeBcrypt(password);
 					//updating the database
-					session.createNativeQuery("update users set password = ?1, salt = ?2 where user_id = ?3") // brcyt has own salt so setting salt column empty;
+					// brcyt has own salt so setting salt column empty;
+					session.createNativeQuery("update users set password = ?1, salt = ?2 where user_id = ?3") 
 						.setParameter(1 , newBCryptHash)
 						.setParameter(2 , "")
 						.setParameter(3 , candidateUser.getUserId())
