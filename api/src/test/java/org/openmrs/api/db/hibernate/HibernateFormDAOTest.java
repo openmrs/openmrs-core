@@ -103,6 +103,18 @@ assertEquals(form.getFormId(), formField.getForm().getFormId());
 			Collections.emptyList());
 		assertNotNull(formsInvalid);
 		assertTrue(formsInvalid.isEmpty());
+
+		// Edge case: multiple non-existent fields
+		List<FormField> multipleInvalidFields = Arrays.asList(
+			new FormField(997),
+			new FormField(998),
+			new FormField(999));
+		List<Form> formsMultipleInvalid = dao.getForms(null, false,
+			Collections.emptyList(), null,
+			multipleInvalidFields, Collections.emptyList(),
+			Collections.emptyList());
+		assertNotNull(formsMultipleInvalid);
+		assertTrue(formsMultipleInvalid.isEmpty());
 	}
 
 }
