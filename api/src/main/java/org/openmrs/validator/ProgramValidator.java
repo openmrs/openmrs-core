@@ -18,32 +18,33 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates attributes on the {@link Program} object.
- * 
+ *
  * @since 1.5
  */
 @Handler(supports = { Program.class }, order = 50)
 public class ProgramValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return c.equals(Program.class);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 * <p>
+	 * <strong>Should</strong> pass validation if all required fields have proper values<br/>
+	 * <strong>Should</strong> pass validation and save edited program <strong>Should</strong> pass
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors) <strong>Should</strong> fail validation if name is
 	 *      null or empty or whitespace <strong>Should</strong> pass validation if description is null
 	 *      or empty or whitespace <strong>Should</strong> fail validation if program name already in
 	 *      use <strong>Should</strong> fail validation if concept is null or empty or whitespace
-	 *      <strong>Should</strong> pass validation if all required fields have proper values
-	 *      <strong>Should</strong> pass validation and save edited program <strong>Should</strong> pass
 	 *      validation if field lengths are correct <strong>Should</strong> fail validation if field
 	 *      lengths are not correct
 	 */
@@ -55,7 +56,7 @@ public class ProgramValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "concept", "error.concept");
-			
+
 			Program existingProgram = Context.getProgramWorkflowService().getProgramByName(p.getName());
 			if (existingProgram != null && !existingProgram.getUuid().equals(p.getUuid())) {
 				errors.rejectValue("name", "general.error.nameAlreadyInUse");

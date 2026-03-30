@@ -13,7 +13,6 @@ import org.hibernate.search.backend.elasticsearch.analysis.ElasticsearchAnalysis
 import org.hibernate.search.backend.elasticsearch.analysis.ElasticsearchAnalysisConfigurer;
 import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 /**
  * Provides Lucene analyzers.
@@ -23,42 +22,34 @@ import org.springframework.stereotype.Service;
  */
 @Component("elasticsearchConfig")
 public class ElasticsearchConfig implements ElasticsearchAnalysisConfigurer {
-	
+
 	public ElasticsearchConfig() {
 	}
 
 	@Override
 	public void configure(ElasticsearchAnalysisConfigurationContext context) {
-		context.analyzer(SearchAnalysis.NAME_ANALYZER).custom()
-			.tokenizer("standard")
-			.tokenFilters("lowercase", "asciifolding");
+		context.analyzer(SearchAnalysis.NAME_ANALYZER).custom().tokenizer("standard").tokenFilters("lowercase",
+		    "asciifolding");
 
-		context.analyzer(SearchAnalysis.PHRASE_ANALYZER).custom()
-			.tokenizer("whitespace")
-			.tokenFilters("lowercase", "asciifolding");
+		context.analyzer(SearchAnalysis.PHRASE_ANALYZER).custom().tokenizer("whitespace").tokenFilters("lowercase",
+		    "asciifolding");
 
-		context.analyzer(SearchAnalysis.EXACT_ANALYZER).custom()
-			.tokenizer("whitespace")
-			.tokenFilters("lowercase", "asciifolding");
+		context.analyzer(SearchAnalysis.EXACT_ANALYZER).custom().tokenizer("whitespace").tokenFilters("lowercase",
+		    "asciifolding");
 
-		context.analyzer(SearchAnalysis.START_ANALYZER).custom()
-			.tokenizer("whitespace")
-			.tokenFilters("lowercase", "asciifolding", "edge_ngram_2_20");
+		context.analyzer(SearchAnalysis.START_ANALYZER).custom().tokenizer("whitespace").tokenFilters("lowercase",
+		    "asciifolding", "edge_ngram_2_20");
 
-		context.analyzer(SearchAnalysis.ANYWHERE_ANALYZER).custom()
-			.tokenizer("whitespace")
-			.tokenFilters("lowercase", "asciifolding", "ngram_2_20");
+		context.analyzer(SearchAnalysis.ANYWHERE_ANALYZER).custom().tokenizer("whitespace").tokenFilters("lowercase",
+		    "asciifolding", "ngram_2_20");
 
-		context.analyzer(SearchAnalysis.SOUNDEX_ANALYZER).custom()
-			.tokenizer("standard")
-			.tokenFilters("lowercase", "asciifolding", "phonetic_soundex");
-		
-		context.tokenFilter("edge_ngram_2_20").type("edge_ngram")
-			.param("min_gram", "2").param("max_gram", "20");
+		context.analyzer(SearchAnalysis.SOUNDEX_ANALYZER).custom().tokenizer("standard").tokenFilters("lowercase",
+		    "asciifolding", "phonetic_soundex");
 
-		context.tokenFilter("ngram_2_20").type("ngram")
-			.param("min_gram", "2").param("max_gram", "20");
-		
+		context.tokenFilter("edge_ngram_2_20").type("edge_ngram").param("min_gram", "2").param("max_gram", "20");
+
+		context.tokenFilter("ngram_2_20").type("ngram").param("min_gram", "2").param("max_gram", "20");
+
 		context.tokenFilter("phonetic_soundex").type("phonetic").param("encoder", "soundex");
 	}
 }

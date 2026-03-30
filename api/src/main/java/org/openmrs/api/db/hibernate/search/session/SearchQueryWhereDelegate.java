@@ -21,24 +21,18 @@ import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
 import org.hibernate.search.engine.search.query.dsl.SearchQueryWhereStep;
 
 /**
- * Used by {@link SearchQuerySelectDelegate}.
- * For internal use only.
- * 
+ * Used by {@link SearchQuerySelectDelegate}. For internal use only.
+ *
  * @since 2.8.0
  */
-class SearchQueryWhereDelegate<
-	SR,
-	N extends SearchQueryOptionsStep<SR, ?, H, LOS, ?, ?>,
-	H,
-	LOS,
-	PDF extends TypedSearchPredicateFactory<SR>> implements SearchQueryWhereStep<SR, N, H, LOS, PDF> {
+class SearchQueryWhereDelegate<SR, N extends SearchQueryOptionsStep<SR, ?, H, LOS, ?, ?>, H, LOS, PDF extends TypedSearchPredicateFactory<SR>> implements SearchQueryWhereStep<SR, N, H, LOS, PDF> {
 
 	private final SearchQueryWhereStep<SR, N, H, LOS, PDF> delegate;
 
 	private final Function<SearchPredicateFactory, SearchPredicate> finalPredicate;
-	
-	public SearchQueryWhereDelegate(SearchQueryWhereStep<SR, N, H, LOS, PDF> delegate, 
-									Function<SearchPredicateFactory, SearchPredicate> finalPredicate) {
+
+	public SearchQueryWhereDelegate(SearchQueryWhereStep<SR, N, H, LOS, PDF> delegate,
+	    Function<SearchPredicateFactory, SearchPredicate> finalPredicate) {
 		this.delegate = delegate;
 		this.finalPredicate = finalPredicate;
 	}
@@ -55,7 +49,7 @@ class SearchQueryWhereDelegate<
 
 	@Override
 	public N where(Function<? super PDF, ? extends PredicateFinalStep> predicateContributor) {
-		return  delegate.where((f, root) -> {
+		return delegate.where((f, root) -> {
 			root.add(predicateContributor.apply(f));
 			if (finalPredicate != null) {
 				root.add(finalPredicate.apply(f));

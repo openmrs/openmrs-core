@@ -9,10 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.ProviderAttributeType;
@@ -21,17 +17,21 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link ProviderAttributeTypeValidator} class.
  */
 public class ProviderAttributeTypeValidatorTest extends BaseContextSensitiveTest {
-	
+
 	private static final String PROVIDER_ATTRIBUTE_DATA_XML = "org/openmrs/api/include/ProviderServiceTest-providerAttributes.xml";
-	
+
 	/**
-	 * Run this before each unit test in this class. This adds a bit more data to the base data that
-	 * is done in the "@Before" method in {@link BaseContextSensitiveTest} (which is run right
-	 * before this method).
+	 * Run this before each unit test in this class. This adds a bit more data to the base data that is
+	 * done in the "@Before" method in {@link BaseContextSensitiveTest} (which is run right before this
+	 * method).
 	 *
 	 * @throws Exception
 	 */
@@ -39,7 +39,7 @@ public class ProviderAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	public void runBeforeEachTest() {
 		executeDataSet(PROVIDER_ATTRIBUTE_DATA_XML);
 	}
-	
+
 	/**
 	 * @see ProviderAttributeTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -50,13 +50,13 @@ public class ProviderAttributeTypeValidatorTest extends BaseContextSensitiveTest
 		type.setDatatypeClassname("org.openmrs.customdatatype.datatype.FreeTextDatatype");
 		type.setDescription("description");
 		type.setRetireReason("retireReason");
-		
+
 		Errors errors = new BindException(type, "type");
 		new ProviderAttributeTypeValidator().validate(type, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see ProviderAttributeTypeValidator#validate(Object,Errors)
 	 */
@@ -67,12 +67,12 @@ public class ProviderAttributeTypeValidatorTest extends BaseContextSensitiveTest
 		type.setDatatypeClassname("");
 		type.setDescription("description");
 		type.setRetireReason("retireReason");
-		
+
 		Errors errors = new BindException(type, "type");
 		new ProviderAttributeTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("datatypeClassname"));
 	}
-	
+
 	/**
 	 * @see ProviderAttributeTypeValidator#validate(Object,Errors)
 	 */
@@ -86,26 +86,26 @@ public class ProviderAttributeTypeValidatorTest extends BaseContextSensitiveTest
 		new ProviderAttributeTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see ProviderAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ProviderAttributeType type = new ProviderAttributeType();
-		type
-			.setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		type
-			.setDatatypeClassname("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type.setName(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type.setDatatypeClassname(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		type.setDescription(new String(new char[655555]));
-		type
-			.setPreferredHandlerClassname("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		type
-			.setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+		type.setPreferredHandlerClassname(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type.setRetireReason(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+
 		Errors errors = new BindException(type, "type");
 		new ProviderAttributeTypeValidator().validate(type, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 		assertTrue(errors.hasFieldErrors("datatypeClassname"));
 		assertTrue(errors.hasFieldErrors("description"));

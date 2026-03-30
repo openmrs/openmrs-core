@@ -21,7 +21,6 @@
 		
 		<!-- API -->
 		<mapping resource="org/openmrs/api/db/hibernate/Concept.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptStopWord.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FieldType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Form.hbm.xml" />
@@ -37,7 +36,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetMember.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflow.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflowState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderFrequency.hbm.xml" />
 
 		<!-- HL7 -->
@@ -46,11 +44,7 @@
 
 		<!-- Notification -->
 		<mapping resource="org/openmrs/notification/db/hibernate/Alert.hbm.xml" />
-		
-		
-		<!-- Provider -->
-		<mapping resource="org/openmrs/api/db/hibernate/Provider.hbm.xml" />
-		
+
 		<!-- These mappings are required because of references in Obs & Concept -->
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>

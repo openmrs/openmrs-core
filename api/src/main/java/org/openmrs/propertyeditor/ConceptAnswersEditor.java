@@ -10,10 +10,10 @@
 package org.openmrs.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -28,15 +28,15 @@ import org.springframework.util.StringUtils;
  * Handles lists of conceptids that correspond to answers.
  */
 public class ConceptAnswersEditor extends PropertyEditorSupport {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ConceptAnswersEditor.class);
-	
+
 	private Collection<ConceptAnswer> originalConceptAnswers;
-	
+
 	/**
-	 * Default constructor taking in the original answers. This should be the actual list on the
-	 * pojo object to prevent hibernate errors later on.
-	 * 
+	 * Default constructor taking in the original answers. This should be the actual list on the pojo
+	 * object to prevent hibernate errors later on.
+	 *
 	 * @param originalAnswers the list on the pojo
 	 */
 	public ConceptAnswersEditor(Collection<ConceptAnswer> originalAnswers) {
@@ -46,13 +46,14 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 			originalConceptAnswers = originalAnswers;
 		}
 	}
-	
+
 	/**
 	 * loops over the textbox assigned to this property. The textbox is assumed to be a string of
 	 * conceptIds^drugIds separated by spaces.
-	 * 
-	 * @param text list of conceptIds (not conceptAnswerIds)
+	 * <p>
 	 * <strong>Should</strong> set the sort weights with the least possible changes
+	 *
+	 * @param text list of conceptIds (not conceptAnswerIds)
 	 */
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
@@ -67,9 +68,9 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					requestConceptIds.add(id);
 				}
 			}
-			
+
 			Collection<ConceptAnswer> deletedConceptAnswers = new HashSet<>();
-			
+
 			// loop over original concept answers to find any deleted answers
 			for (ConceptAnswer origConceptAnswer : originalConceptAnswers) {
 				boolean answerDeleted = true;
@@ -90,12 +91,12 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					deletedConceptAnswers.add(origConceptAnswer);
 				}
 			}
-			
+
 			// loop over those deleted answers to delete them
 			for (ConceptAnswer conceptAnswer : deletedConceptAnswers) {
 				originalConceptAnswers.remove(conceptAnswer);
 			}
-			
+
 			// loop over concept ids in the request to add any that are new
 			for (String conceptId : requestConceptIds) {
 				Integer id = getConceptId(conceptId);
@@ -122,7 +123,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					originalConceptAnswers.add(ac);
 				}
 			}
-			
+
 			//loop over to set the order
 			//as the list comes into 'requestConceptIds' in the order the user wants
 			//  there are 2 conditions that will require the sort_weights to be reassigned
@@ -134,7 +135,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 			for (int i = 0; i < requestConceptIds.size() - 1; i++) {
 				Integer id1 = getConceptId(requestConceptIds.get(i));
 				ConceptAnswer ca1 = getConceptAnswerFromOriginal(id1);
-				
+
 				if (ca1.getSortWeight() == null) {
 					if (lastWeightSeen == null) {
 						//start at 1, we're at the beginning
@@ -146,7 +147,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					startIdx = i;
 					break;
 				}
-				
+
 				Integer id2 = getConceptId(requestConceptIds.get(i + 1));
 				ConceptAnswer ca2 = getConceptAnswerFromOriginal(id2);
 				int c = ca1.compareTo(ca2);
@@ -155,10 +156,10 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					lastWeightSeen = ca1.getSortWeight();
 					break;
 				}
-				
+
 				lastWeightSeen = ca1.getSortWeight();
 			}
-			
+
 			if (startIdx != -1) {
 				//then we need to re-weight
 				for (int i = startIdx; i < requestConceptIds.size(); i++) {
@@ -167,12 +168,12 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					ca.setSortWeight(lastWeightSeen++);
 				}
 			}
-			
+
 			log.debug("originalConceptAnswers.getConceptId(): ");
 			for (ConceptAnswer a : originalConceptAnswers) {
 				log.debug("id: " + a.getAnswerConcept().getConceptId());
 			}
-			
+
 			log.debug("requestConceptIds: ");
 			for (String i : requestConceptIds) {
 				log.debug("id: " + i);
@@ -180,10 +181,10 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 		} else {
 			originalConceptAnswers.clear();
 		}
-		
+
 		setValue(originalConceptAnswers);
 	}
-	
+
 	/**
 	 * find this conceptId in the original set and set its weight
 	 */
@@ -195,11 +196,11 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Parses the string and returns the Integer concept id Expected string: "123" or "123^34"
 	 * ("conceptId^drugId")
-	 * 
+	 *
 	 * @param conceptId
 	 * @return
 	 */
@@ -210,11 +211,11 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 			return Integer.valueOf(conceptId);
 		}
 	}
-	
+
 	/**
 	 * Parses the string and returns the Integer drug id or null if none Expected string: "123" or
 	 * "123^34" ("conceptId^drugId")
-	 * 
+	 *
 	 * @param conceptId
 	 * @return
 	 */
@@ -222,8 +223,8 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 		if (conceptId.contains("^")) {
 			return Integer.valueOf(conceptId.substring(conceptId.indexOf("^") + 1));
 		}
-		
+
 		return null;
 	}
-	
+
 }

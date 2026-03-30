@@ -16,28 +16,28 @@ import java.util.List;
  * start. <br>
  * <br>
  * This error is also thrown when trying to stop a module that is marked as mandatory.
- * 
+ *
  * @see org.openmrs.api.context.Context#startup(java.util.Properties)
  * @see ModuleUtil#getMandatoryModules()
  */
 public class MandatoryModuleException extends ModuleMustStartException {
-	
+
 	public static final long serialVersionUID = 236472655L;
-	
+
 	private String moduleId;
-	
+
 	/**
 	 * This constructor is used when a user tries to stop a mandatory module.
-	 * 
+	 *
 	 * @param moduleId the module id that is trying to be stopped
 	 */
 	public MandatoryModuleException(String moduleId) {
 		this(moduleId, "");
 	}
-	
+
 	/**
 	 * This constructor is used when a user tries to stop a mandatory module.
-	 * 
+	 *
 	 * @param moduleId the module id that is trying to be stopped
 	 * @param extraErrorMessage extra data to provide in the error's message
 	 */
@@ -46,19 +46,18 @@ public class MandatoryModuleException extends ModuleMustStartException {
 		        + extraErrorMessage);
 		this.moduleId = moduleId;
 	}
-	
+
 	/**
 	 * @param moduleIds list of module ids that are mandatory and didn't start
 	 */
 	public MandatoryModuleException(List<String> moduleIds) {
-		super("The following modules are marked as 'mandatory' but were unable to start: "
-		        + String.join(",", moduleIds));
+		super("The following modules are marked as 'mandatory' but were unable to start: " + String.join(",", moduleIds));
 		this.moduleId = String.join(",", moduleIds);
 	}
-	
+
 	/**
 	 * The id (or ids) of the module that is mandatory
-	 * 
+	 *
 	 * @return the module id (or ids) that caused this exception
 	 */
 	public String getModuleId() {

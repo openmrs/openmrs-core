@@ -16,9 +16,9 @@ import jakarta.persistence.Query;
 public class JpaUtils {
 
 	/**
-	 * Tries to get a single result from a JPA query, similar to Hibernate's uniqueResult.
-	 * Returns null if no result is found, the single result if one result is found,
-	 * and throws an exception if more than one result is found.
+	 * Tries to get a single result from a JPA query, similar to Hibernate's uniqueResult. Returns null
+	 * if no result is found, the single result if one result is found, and throws an exception if more
+	 * than one result is found.
 	 *
 	 * @param query the JPA query to execute
 	 * @param <T> the type of the query result

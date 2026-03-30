@@ -9,23 +9,24 @@
  */
 package org.openmrs;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import jakarta.persistence.Column;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
+import org.hibernate.type.SqlTypes;
 
 /**
- * Provides properties for several order types like TestOrder , ReferralOrder
- * and others depending on the openmrs implementation use case as need arises
- * 
+ * Provides properties for several order types like TestOrder , ReferralOrder and others depending
+ * on the openmrs implementation use case as need arises
+ *
  * @since 2.5.0
  */
-@MappedSuperclass 
+@MappedSuperclass
 @Audited
 public abstract class ServiceOrder extends Order {
 
@@ -190,9 +191,9 @@ public abstract class ServiceOrder extends Order {
 	}
 
 	/**
-	 * The purpose of this method is to allow subclasses of a ServiceOrder to delegate a portion of their
-	 * cloneForDiscontinuing() method back to the superclass, in case the base class implementation
-	 * changes.
+	 * The purpose of this method is to allow subclasses of a ServiceOrder to delegate a portion of
+	 * their cloneForDiscontinuing() method back to the superclass, in case the base class
+	 * implementation changes.
 	 *
 	 * @param target a particular order that will have the state of <code>this</code> copied into it
 	 * @return Returns the Order that was passed in, with state copied into it

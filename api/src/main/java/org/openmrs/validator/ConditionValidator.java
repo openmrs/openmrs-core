@@ -15,12 +15,12 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
- * * Validates {@link Condition} objects
- * This class ensures that the condition object is valid and properly structured
- * 
+ * * Validates {@link Condition} objects This class ensures that the condition object is valid and
+ * properly structured
+ *
  * @since 2.2
  */
-@Handler(supports = {Condition.class}, order = 50)
+@Handler(supports = { Condition.class }, order = 50)
 public class ConditionValidator implements Validator {
 
 	@Override
@@ -29,26 +29,29 @@ public class ConditionValidator implements Validator {
 	}
 
 	/**
+	 * <p>
+	 * <strong>Should</strong> fail validation if condition object is null<br/>
+	 * <strong>Should</strong> fail validation if condition object is not an instance of the Condition
+	 * class
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 *      
-	 * <strong>Should</strong> fail validation if condition object is null
-	 * <strong>Should</strong> fail validation if condition object is not an instance of the Condition class
 	 */
 	@Override
 	public void validate(Object object, Errors errors) {
-		if(object == null){
+		if (object == null) {
 			throw new IllegalArgumentException("The object parameter should not be null");
 		}
-		if(!(object instanceof Condition)){
-			throw  new IllegalArgumentException("The object parameter should be of type " + Condition.class);
+		if (!(object instanceof Condition)) {
+			throw new IllegalArgumentException("The object parameter should be of type " + Condition.class);
 		}
 		Condition condition = (Condition) object;
-		if(condition.getCondition() == null){
+		if (condition.getCondition() == null) {
 			errors.rejectValue("condition", "Condition.conditionShouldNotBeNull", "The condition is required");
 		}
-		if(condition.getClinicalStatus() == null){
-			errors.rejectValue("clinicalStatus", "Condition.clinicalStatusShouldNotBeNull", "The clinical status is required");
+		if (condition.getClinicalStatus() == null) {
+			errors.rejectValue("clinicalStatus", "Condition.clinicalStatusShouldNotBeNull",
+			    "The clinical status is required");
 		}
 	}
 }

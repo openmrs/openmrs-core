@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import java.sql.Time;
 import java.util.Date;
 
@@ -24,15 +20,19 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 /**
- * We can't easily test the full behavior against different database versions, so we just verify that milliseconds are
- * zeroed out when saving or updating an item.
+ * We can't easily test the full behavior against different database versions, so we just verify
+ * that milliseconds are zeroed out when saving or updating an item.
  */
 public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	PersonService personService;
-	
+
 	@Autowired
 	DropMillisecondsHibernateInterceptor dropMillisecondsHibernateInterceptor;
 
@@ -65,17 +65,17 @@ public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensiti
 
 		assertThat(person.getBirthdate(), is(dateWithoutMillisecond));
 	}
-	
+
 	@Test
 	public void shouldNotChangeWhenInstanceOfTime() throws Exception {
 		Time[] time = { Time.valueOf("17:00:00") };
 		boolean anyChanges = dropMillisecondsHibernateInterceptor.onSave(null, null, time, null, null);
 		assertFalse(anyChanges);
 	}
-	
+
 	@Test
 	public void shouldNotThrowUnsupportedOperationExceptionWhenInstanceOfSqlDate() throws Exception {
-		Date[] sqlDate = {new java.sql.Date(567L)};
+		Date[] sqlDate = { new java.sql.Date(567L) };
 		boolean anyChanges = dropMillisecondsHibernateInterceptor.onSave(null, null, sqlDate, null, null);
 		assertFalse(anyChanges);
 	}
