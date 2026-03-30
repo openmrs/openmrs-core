@@ -145,6 +145,19 @@
 		</snapshotRepository>
 	</distributionManagement>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>3.4.0</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencyManagement>
 		<dependencies>
 			<!-- OpenMRS Dependencies -->
