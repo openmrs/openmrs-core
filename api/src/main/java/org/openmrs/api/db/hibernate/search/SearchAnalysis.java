@@ -19,24 +19,24 @@ import org.openmrs.api.db.hibernate.search.lucene.LuceneConfig;
  * an entire phrase, including whitespace startAnalyzer, which allows searching for tokens that
  * match at the beginning exactAnalyzer, which allows searching for tokens that are identical
  * anywhereAnalyzer, which allows searching for text within tokens
- * 
+ *
  * @see LuceneConfig
  * @since 2.8.0
  */
 public class SearchAnalysis {
-	
+
 	private SearchAnalysis() {
 	}
-	
+
 	public static final String START_ANALYZER = "startAnalyzer";
-	
+
 	public static final String ANYWHERE_ANALYZER = "anywhereAnalyzer";
-	
+
 	public static final String EXACT_ANALYZER = "exactAnalyzer";
-	
+
 	public static final String PHRASE_ANALYZER = "phraseAnalyzer";
-	
+
 	public static final String SOUNDEX_ANALYZER = "soundexAnalyzer";
-	
+
 	public static final String NAME_ANALYZER = "nameAnalyzer";
 }

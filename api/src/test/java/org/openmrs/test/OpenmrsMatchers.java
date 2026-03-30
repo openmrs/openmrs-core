@@ -9,65 +9,62 @@
  */
 package org.openmrs.test;
 
-import static org.hamcrest.Matchers.is;
-
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.OpenmrsObject;
 
+import static org.hamcrest.Matchers.is;
+
 /**
  * Useful OpenMRS specific matchers.
- * 
+ *
  * @since 1.9.4
  */
 public class OpenmrsMatchers {
-	
+
 	/**
 	 * Matches by id.
-	 * 
+	 *
 	 * @param id
 	 * @return the matcher
 	 */
 	public static Matcher<OpenmrsObject> hasId(final Integer id) {
-		return new FeatureMatcher<OpenmrsObject, Integer>(
-		                                                  is(id), "id", "id") {
-			
+		return new FeatureMatcher<OpenmrsObject, Integer>(is(id), "id", "id") {
+
 			@Override
 			protected Integer featureValueOf(final OpenmrsObject actual) {
 				return actual.getId();
 			}
 		};
 	}
-	
+
 	/**
 	 * Matches by uuid.
-	 * 
+	 *
 	 * @param uuid
 	 * @return the uuid
 	 */
 	public static Matcher<OpenmrsObject> hasUuid(final String uuid) {
-		return new FeatureMatcher<OpenmrsObject, String>(
-		                                                 is(uuid), "uuid", "uuid") {
-			
+		return new FeatureMatcher<OpenmrsObject, String>(is(uuid), "uuid", "uuid") {
+
 			@Override
 			protected String featureValueOf(final OpenmrsObject actual) {
 				return actual.getUuid();
 			}
 		};
 	}
-	
+
 	/**
 	 * Matches by concept.
-	 * 
+	 *
 	 * @param concept
 	 * @return the concept
 	 */
 	public static Matcher<ConceptSearchResult> hasConcept(final Matcher<Concept> concept) {
-		return new FeatureMatcher<ConceptSearchResult, Concept>(
-		                                                        concept, "concept", "concept") {
-			
+		return new FeatureMatcher<ConceptSearchResult, Concept>(concept, "concept", "concept") {
+
 			@Override
 			protected Concept featureValueOf(ConceptSearchResult actual) {
 				return actual.getConcept();

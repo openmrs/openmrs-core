@@ -9,17 +9,7 @@
  */
 package org.openmrs.liquibase;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,78 +29,87 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 import org.xml.sax.SAXException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+
 public class SchemaOnlyTunerTest {
-	
+
 	private static final String LIQUIBASE_SCHEMA_ONLY_SNAPSHOT_XML = Paths
 	        .get("org", "openmrs", "liquibase", "snapshots", "schema-only", "liquibase-schema-only-SNAPSHOT.xml").toString();
-	
+
 	private static final String LIQUIBASE_SCHEMA_ONLY_UPDATED_SNAPSHOT_XML = Paths
 	        .get("org", "openmrs", "liquibase", "snapshots", "schema-only", "liquibase-schema-only-UPDATED-SNAPSHOT.xml")
 	        .toString();
-	
+
 	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString();
-	
+
 	private Document document;
-	
+
 	private Map<String, String> namespaceUris;
-	
+
 	private SchemaOnlyTuner schemaOnlyTuner;
-	
+
 	@BeforeEach
 	public void setup() throws DocumentException, IOException {
 		schemaOnlyTuner = new SchemaOnlyTuner();
 		document = schemaOnlyTuner.readChangeLogResource(LIQUIBASE_SCHEMA_ONLY_SNAPSHOT_XML);
 		namespaceUris = schemaOnlyTuner.getNamespaceUris();
 	}
-	
+
 	@Test
 	public void shouldCreateUpdatedChangeLogFile(@TempDir Path tempDir) throws DocumentException, IOException, SAXException {
 		// given
 		String sourcePath = PATH_TO_TEST_RESOURCES + File.separator + LIQUIBASE_SCHEMA_ONLY_SNAPSHOT_XML;
 		String targetPath = tempDir.resolve("liquibase-schema-only-UPDATED-SNAPSHOT.xml").toString();
-		
+
 		// when
 		schemaOnlyTuner.createUpdatedChangeLogFile(sourcePath, targetPath);
-		
+
 		// then
 		Document expected = schemaOnlyTuner.readChangeLogResource(LIQUIBASE_SCHEMA_ONLY_UPDATED_SNAPSHOT_XML);
 		Document actual = schemaOnlyTuner.readChangeLogFile(targetPath);
-		
+
 		assertThat(expected.asXML(), equalToCompressingWhiteSpace(actual.asXML()));
 	}
-	
+
 	@Test
 	public void shouldDetachChangeSetsForLiquibaseTables() {
 		// given
 		XPath xpathOne = DocumentHelper.createXPath("//dbchangelog:createTable[@tableName=\"liquibasechangelog\"]\"");
 		xpathOne.setNamespaceURIs(namespaceUris);
-		
+
 		XPath xpathTwo = DocumentHelper.createXPath("//dbchangelog:createTable[@tableName=\"liquibasechangeloglock\"]\"");
 		xpathTwo.setNamespaceURIs(namespaceUris);
-		
+
 		assertEquals(1, xpathOne.selectNodes(document).size());
 		assertEquals(1, xpathTwo.selectNodes(document).size());
-		
+
 		// when
 		Document actual = schemaOnlyTuner.detachLiquibaseTables(document);
-		
+
 		// then
 		assertEquals(0, xpathOne.selectNodes(actual).size());
 		assertEquals(0, xpathTwo.selectNodes(actual).size());
 	}
-	
+
 	@Test
 	public void shouldReplaceBitTypeWithBooleanType() {
 		// given
 		XPath xpath = DocumentHelper.createXPath("//dbchangelog:column[@type=\"BIT\"]/attribute::type");
 		xpath.setNamespaceURIs(namespaceUris);
-		
+
 		List<Node> nodes = xpath.selectNodes(document);
 		assertEquals(104, nodes.size());
-		
+
 		// when
 		Document actual = schemaOnlyTuner.replaceBitWithBoolean(document);
-		
+
 		// then
 		for (Node node : nodes) {
 			assertEquals("BOOLEAN", node.getParent().attributeValue("type"));
@@ -122,67 +121,67 @@ public class SchemaOnlyTunerTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void shouldReplaceLongtextTypeWithClobType() {
 		// given
 		XPath xPath = DocumentHelper.createXPath("//dbchangelog:column[@type=\"LONGTEXT\"]/attribute::type");
 		xPath.setNamespaceURIs(namespaceUris);
-		
+
 		List<Node> nodes = xPath.selectNodes(document);
 		assertEquals(2, nodes.size());
-		
+
 		// when
 		SchemaOnlyTuner schemaOnlyTunerSpy = Mockito.spy(schemaOnlyTuner);
 		Document actual = schemaOnlyTunerSpy.replaceLongtextWithClob(document);
-		
+
 		// then
 		for (Node node : nodes) {
 			assertEquals("CLOB", node.getParent().attributeValue("type"));
 		}
-		
+
 		Mockito.verify(schemaOnlyTunerSpy).assertLongtextNodes(any());
 	}
-	
+
 	@Test
 	public void shouldAssertLongtextNode() {
 		// given
 		XPath xPath = DocumentHelper.createXPath("//dbchangelog:column[@type=\"LONGTEXT\"]/attribute::type");
 		xPath.setNamespaceURIs(namespaceUris);
-		
+
 		List<Node> nodes = xPath.selectNodes(document);
 		assertEquals(2, nodes.size());
-		
+
 		// when and then
 		assertTrue(schemaOnlyTuner.assertLongtextNodes(nodes));
 	}
-	
+
 	@Test
 	public void shouldDetectWrongNumberOfLongtextNodes() {
 		assertThrows(AssertionError.class, () -> {
 			// given
 			XPath xPath = DocumentHelper.createXPath("//dbchangelog:column[@type=\"BIT(1)\"]/attribute::type");
 			xPath.setNamespaceURIs(namespaceUris);
-			
+
 			List<Node> nodes = xPath.selectNodes(document);
 			assertEquals(94, nodes.size());
-			
+
 			// when
 			schemaOnlyTuner.assertLongtextNodes(nodes);
 		});
 	}
-	
+
 	@Test
 	public void shouldDetectWrongGrandParentNodeOfLongtextNode() {
 		assertThrows(AssertionError.class, () -> {
 			// given
 			XPath xPath = DocumentHelper.createXPath("//dbchangelog:column[@type=\"BIT\"]/attribute::type");
 			xPath.setNamespaceURIs(namespaceUris);
-			
+
 			Node node = xPath.selectSingleNode(document);
 			List<Node> nodes = new ArrayList<>();
 			nodes.add(node);
-			
+
 			// when
 			schemaOnlyTuner.assertLongtextNodes(nodes);
 		});
@@ -191,8 +190,7 @@ public class SchemaOnlyTunerTest {
 	@Test
 	public void shouldRemoveEmptyOrNullDefaultValues() {
 		XPath xPath = DocumentHelper.createXPath(
-				"//dbchangelog:column[@defaultValue=\"\"] | //dbchangelog:column[@defaultValueComputed=\"NULL\"]"
-		);
+		    "//dbchangelog:column[@defaultValue=\"\"] | //dbchangelog:column[@defaultValueComputed=\"NULL\"]");
 		xPath.setNamespaceURIs(namespaceUris);
 		List<Node> nodes = xPath.selectNodes(document);
 		assertFalse(nodes.isEmpty());

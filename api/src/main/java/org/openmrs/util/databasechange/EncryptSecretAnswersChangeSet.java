@@ -31,9 +31,9 @@ import liquibase.resource.ResourceAccessor;
  * This change set is run to encrypt the users.secret_answer column
  */
 public class EncryptSecretAnswersChangeSet implements CustomTaskChange {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(EncryptSecretAnswersChangeSet.class);
-	
+
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
@@ -42,7 +42,7 @@ public class EncryptSecretAnswersChangeSet implements CustomTaskChange {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		Statement stmt = null;
 		PreparedStatement pStmt = null;
-		
+
 		try {
 			stmt = connection.createStatement();
 			ResultSet rs = stmt
@@ -52,37 +52,33 @@ public class EncryptSecretAnswersChangeSet implements CustomTaskChange {
 				String answer = rs.getString("secret_answer");
 				String salt = rs.getString("salt");
 				String encryptedAnswer = Security.encodeString(answer.toLowerCase() + salt);
-				
+
 				pStmt.setString(1, encryptedAnswer);
 				pStmt.setInt(2, rs.getInt("user_id"));
 				pStmt.addBatch();
 			}
 			pStmt.executeBatch();
-		}
-		catch (DatabaseException | SQLException e) {
+		} catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Failed to update secret answers: " + e);
-		}
-		finally {
+		} finally {
 			if (stmt != null) {
 				try {
 					stmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the statement object");
 				}
 			}
-			
+
 			if (pStmt != null) {
 				try {
 					pStmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the prepared statement object");
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
@@ -90,21 +86,21 @@ public class EncryptSecretAnswersChangeSet implements CustomTaskChange {
 	public String getConfirmationMessage() {
 		return "Finished encrypting secret answers";
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
 	@Override
 	public void setUp() throws SetupException {
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.resource.ResourceAccessor)
 	 */
 	@Override
 	public void setFileOpener(ResourceAccessor resourceAccessor) {
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#validate(liquibase.database.Database)
 	 */

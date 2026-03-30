@@ -48,11 +48,12 @@ import org.slf4j.LoggerFactory;
  * installation
  */
 public class TestInstallUtil {
+
 	private TestInstallUtil() {
 	}
-	
+
 	private static final Logger log = LoggerFactory.getLogger(TestInstallUtil.class);
-	
+
 	/**
 	 * Adds data to the test database from a sql dump file
 	 *
@@ -63,21 +64,22 @@ public class TestInstallUtil {
 	 * @param pwd
 	 * @return true if data was added successfully
 	 */
-	protected static boolean addTestData(String host, int port, String databaseName, String user, String pwd, String filePath) {
+	protected static boolean addTestData(String host, int port, String databaseName, String user, String pwd,
+	        String filePath) {
 		Process proc;
 		BufferedReader br = null;
 		String errorMsg = null;
-		String[] command = new String[] { "mysql", "--host=" + host, "--port=" + port, "--user=" + user,
-		        "--password=" + pwd, "--database=" + databaseName, "-e", "source " + filePath };
-		
+		String[] command = new String[] { "mysql", "--host=" + host, "--port=" + port, "--user=" + user, "--password=" + pwd,
+		        "--database=" + databaseName, "-e", "source " + filePath };
+
 		//For stand-alone, use explicit path to the mysql executable.
 		String runDirectory = System.getProperties().getProperty("user.dir");
 		File file = Paths.get(runDirectory, "database", "bin", "mysql").toFile();
-		
+
 		if (file.exists()) {
 			command[0] = file.getAbsolutePath();
 		}
-		
+
 		try {
 			proc = Runtime.getRuntime().exec(command);
 			try {
@@ -89,45 +91,40 @@ public class TestInstallUtil {
 					sb.append(line);
 				}
 				errorMsg = sb.toString();
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				log.error("Failed to add test data:", e);
-			}
-			finally {
+			} finally {
 				if (br != null) {
 					try {
 						br.close();
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						log.error("Failed to close the inputstream:", e);
 					}
 				}
 			}
-			
+
 			//print out the error messages from the process
 			if (StringUtils.isNotBlank(errorMsg)) {
 				log.error(errorMsg);
 			}
-			
+
 			if (proc.waitFor() == 0) {
 				log.debug("Added test data successfully");
 				return true;
 			}
-			
-			log
-	        .error("The process terminated abnormally while adding test data. Please look under the Configuration section at: https://wiki.openmrs.org/display/docs/Release+Testing+Helper+Module");
-			
-		}
-		catch (IOException e) {
+
+			log.error(
+			    "The process terminated abnormally while adding test data. Please look under the Configuration section at: https://wiki.openmrs.org/display/docs/Release+Testing+Helper+Module");
+
+		} catch (IOException e) {
 			log.error("Failed to create the sql dump", e);
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			log.error("The back up was interrupted while adding test data", e);
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Extracts .omod files from the specified {@link InputStream} and copies them to the module
 	 * repository of the test application data directory, the method always closes the InputStream
@@ -141,7 +138,7 @@ public class TestInstallUtil {
 		FileOutputStream out = null;
 		File tempFile = null;
 		boolean successfullyAdded = true;
-		
+
 		try {
 			tempFile = File.createTempFile("modules", null);
 			out = new FileOutputStream(tempFile);
@@ -154,7 +151,7 @@ public class TestInstallUtil {
 					log.debug("Skipping directory: {}", entry.getName());
 					continue;
 				}
-				
+
 				String fileName = entry.getName();
 				if (fileName.endsWith(".omod")) {
 					//Convert the names of .omod files located in nested directories so that they get
@@ -162,27 +159,27 @@ public class TestInstallUtil {
 					if (fileName.contains(System.getProperty("file.separator"))) {
 						fileName = new File(entry.getName()).getName();
 					}
-					
+
 					log.debug("Extracting module file: {}", fileName);
-					
+
 					//use the module repository folder GP value if specified
 					String moduleRepositoryFolder = FilterUtil
 					        .getGlobalPropertyValue(ModuleConstants.REPOSITORY_FOLDER_PROPERTY);
 					if (StringUtils.isBlank(moduleRepositoryFolder)) {
 						moduleRepositoryFolder = ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT;
 					}
-					
+
 					//At this point 'OpenmrsConstants.APPLICATION_DATA_DIRECTORY' is still null so we need check
 					//for the app data directory defined in the runtime props file if any otherwise the logic in
 					//the OpenmrsUtil.getDirectoryInApplicationDataDirectory(String) will default to the other
-					String appDataDirectory = Context.getRuntimeProperties().getProperty(
-					    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY);
+					String appDataDirectory = Context.getRuntimeProperties()
+					        .getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY);
 					if (StringUtils.isNotBlank(appDataDirectory)) {
 						OpenmrsUtil.setApplicationDataDirectory(appDataDirectory);
 					}
-					
+
 					File moduleRepository = OpenmrsUtil.getDirectoryInApplicationDataDirectory(moduleRepositoryFolder);
-					
+
 					//delete all previously added modules in case of prior test installations
 					FileUtils.cleanDirectory(moduleRepository);
 
@@ -191,25 +188,23 @@ public class TestInstallUtil {
 					if (!zipEntryFile.toPath().normalize().startsWith(moduleRepository.toPath().normalize())) {
 						throw new IOException("Bad zip entry");
 					}
-					
-					OpenmrsUtil.copyFile(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(zipEntryFile)));
+
+					OpenmrsUtil.copyFile(zipFile.getInputStream(entry),
+					    new BufferedOutputStream(new FileOutputStream(zipEntryFile)));
 				} else {
 					log.debug("Ignoring file that is not a .omod '{}'", fileName);
 				}
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error("An error occured while copying modules to the test system:", e);
 			successfullyAdded = false;
-		}
-		finally {
+		} finally {
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(out);
 			if (zipFile != null) {
 				try {
 					zipFile.close();
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 					log.error("Failed to close zip file: ", e);
 				}
 			}
@@ -217,10 +212,10 @@ public class TestInstallUtil {
 				tempFile.delete();
 			}
 		}
-		
+
 		return successfullyAdded;
 	}
-	
+
 	/**
 	 * Tests the connection to the specified URL
 	 *
@@ -241,14 +236,13 @@ public class TestInstallUtil {
 			//is no connection, this line will fail
 			urlConnect.getContent();
 			return true;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.debug("Error generated:", e);
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * @param url
 	 * @param openmrsUsername
@@ -259,21 +253,21 @@ public class TestInstallUtil {
 	 */
 	protected static InputStream getResourceInputStream(String url, String openmrsUsername, String openmrsPassword)
 	        throws MalformedURLException, IOException, APIException {
-		
+
 		HttpURLConnection connection = createConnection(url);
 		OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
 		out.write(encodeCredentials(openmrsUsername, openmrsPassword));
 		out.flush();
 		out.close();
-		
+
 		log.info("Http response message: {}, Code: {}", connection.getResponseMessage(), connection.getResponseCode());
-		
+
 		if (connection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
 			throw new APIAuthenticationException("Invalid username or password");
 		} else if (connection.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
 			throw new APIException("error.occurred.on.remote.server", (Object[]) null);
 		}
-		
+
 		return connection.getInputStream();
 	}
 	private static HttpURLConnection createConnection(String url) 
@@ -289,6 +283,7 @@ public class TestInstallUtil {
 		result.setDoOutput(true);
 		return result;
 	}
+
 	private static String encodeCredentials(String openmrsUsername, String openmrsPassword) {
 		final StringBuilder result = new StringBuilder();
 		result.append("username=");

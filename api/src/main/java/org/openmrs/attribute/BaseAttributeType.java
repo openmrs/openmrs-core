@@ -18,34 +18,36 @@ import org.openmrs.BaseChangeableOpenmrsMetadata;
 import org.openmrs.customdatatype.Customizable;
 
 /**
- * Abstract base implementation of {@link AttributeType}. Actual implementations (e.g. VisitAttributeType,
- * ProviderAttributeType) should be able to extend this and provide very little of their own code.
+ * Abstract base implementation of {@link AttributeType}. Actual implementations (e.g.
+ * VisitAttributeType, ProviderAttributeType) should be able to extend this and provide very little
+ * of their own code.
+ *
  * @since 1.9
  */
 @MappedSuperclass
 @Audited
 public abstract class BaseAttributeType<OwningType extends Customizable<?>> extends BaseChangeableOpenmrsMetadata implements AttributeType<OwningType> {
-	
+
 	@Column(name = "min_occurs", nullable = false, length = 11)
 	private Integer minOccurs = 0;
-	
+
 	@Column(name = "max_occurs", length = 11)
 	private Integer maxOccurs = null;
-	
+
 	@Column(name = "datatype", length = 255)
 	private String datatypeClassname;
-	
-	@Column(name = "datatype_config", length = 65535 )
+
+	@Column(name = "datatype_config", length = 65535)
 	@Lob
 	private String datatypeConfig;
-	
+
 	@Column(name = "preferred_handler", length = 255)
 	private String preferredHandlerClassname;
-	
-	@Column(name = "handler_config", length = 65535 )
+
+	@Column(name = "handler_config", length = 65535)
 	@Lob
 	private String handlerConfig;
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.RepeatingCustomValueDescriptor#getMinOccurs()
 	 */
@@ -53,7 +55,7 @@ public abstract class BaseAttributeType<OwningType extends Customizable<?>> exte
 	public Integer getMinOccurs() {
 		return minOccurs;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.RepeatingCustomValueDescriptor#getMaxOccurs()
 	 */
@@ -61,7 +63,7 @@ public abstract class BaseAttributeType<OwningType extends Customizable<?>> exte
 	public Integer getMaxOccurs() {
 		return maxOccurs;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getDatatypeClassname()
 	 */
@@ -69,7 +71,7 @@ public abstract class BaseAttributeType<OwningType extends Customizable<?>> exte
 	public String getDatatypeClassname() {
 		return datatypeClassname;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getDatatypeConfig()
 	 */
@@ -77,7 +79,7 @@ public abstract class BaseAttributeType<OwningType extends Customizable<?>> exte
 	public String getDatatypeConfig() {
 		return datatypeConfig;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getPreferredHandlerClassname()
 	 */
@@ -85,7 +87,7 @@ public abstract class BaseAttributeType<OwningType extends Customizable<?>> exte
 	public String getPreferredHandlerClassname() {
 		return preferredHandlerClassname;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getHandlerConfig()
 	 */
@@ -93,47 +95,47 @@ public abstract class BaseAttributeType<OwningType extends Customizable<?>> exte
 	public String getHandlerConfig() {
 		return handlerConfig;
 	}
-	
+
 	/**
 	 * @param minOccurs the minOccurs to set
 	 */
 	public void setMinOccurs(Integer minOccurs) {
 		this.minOccurs = minOccurs;
 	}
-	
+
 	/**
 	 * @param maxOccurs the maxOccurs to set
 	 */
 	public void setMaxOccurs(Integer maxOccurs) {
 		this.maxOccurs = maxOccurs;
 	}
-	
+
 	/**
 	 * @param datatypeClassname the datatypeClassname to set
 	 */
 	public void setDatatypeClassname(String datatypeClassname) {
 		this.datatypeClassname = datatypeClassname;
 	}
-	
+
 	/**
 	 * @param datatypeConfig the datatypeConfig to set
 	 */
 	public void setDatatypeConfig(String datatypeConfig) {
 		this.datatypeConfig = datatypeConfig;
 	}
-	
+
 	/**
 	 * @param preferredHandlerClassname the preferredHandlerClassname to set
 	 */
 	public void setPreferredHandlerClassname(String preferredHandlerClassname) {
 		this.preferredHandlerClassname = preferredHandlerClassname;
 	}
-	
+
 	/**
 	 * @param handlerConfig the handlerConfig to set
 	 */
 	public void setHandlerConfig(String handlerConfig) {
 		this.handlerConfig = handlerConfig;
 	}
-	
+
 }

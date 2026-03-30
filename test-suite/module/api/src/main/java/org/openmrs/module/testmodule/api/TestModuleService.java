@@ -12,6 +12,6 @@ package org.openmrs.module.testmodule.api;
 import org.openmrs.api.OpenmrsService;
 
 public interface TestModuleService extends OpenmrsService {
-	
+
 	String hello();
 }

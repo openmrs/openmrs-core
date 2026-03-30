@@ -9,9 +9,6 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -20,24 +17,26 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 /**
  * Consists of the tests for the methods in the location utility class
  */
 public class LocationUtilityTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see LocationUtility#getDefaultLocation()
 	 */
 	@Test
-	public void getDefaultLocation_shouldReturnTheUpdatedDefaultLocationWhenTheValueOfTheGlobalPropertyIsChanged()
-	{
+	public void getDefaultLocation_shouldReturnTheUpdatedDefaultLocationWhenTheValueOfTheGlobalPropertyIsChanged() {
 		//sanity check
 		assertEquals("Unknown Location", LocationUtility.getDefaultLocation().getName());
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME, "Xanadu", "Testing");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		assertEquals("Xanadu", LocationUtility.getDefaultLocation().getName());
 	}
-	
+
 	/**
 	 * @see LocationUtility#getUserDefaultLocation()
 	 */
@@ -45,16 +44,16 @@ public class LocationUtilityTest extends BaseContextSensitiveTest {
 	public void getUserDefaultLocation_shouldReturnTheUserSpecifiedLocationIfAnyIsSet() {
 		//sanity check
 		assertNull(LocationUtility.getUserDefaultLocation());
-		
+
 		User user = Context.getAuthenticatedUser();
 		Map<String, String> properties = user.getUserProperties();
 		properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "2");
 		user.setUserProperties(properties);
 		Context.getUserService().saveUser(user);
-		
+
 		Context.logout();
 		authenticate();
-		
+
 		assertEquals("Xanadu", LocationUtility.getUserDefaultLocation().getName());
 	}
 }

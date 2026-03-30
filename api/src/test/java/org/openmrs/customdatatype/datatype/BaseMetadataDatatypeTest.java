@@ -9,16 +9,16 @@
  */
 package org.openmrs.customdatatype.datatype;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.customdatatype.CustomDatatype;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class BaseMetadataDatatypeTest {
-	
+
 	/**
 	 * @see BaseMetadataDatatype#doGetTextSummary(org.openmrs.OpenmrsMetadata)
 	 */
