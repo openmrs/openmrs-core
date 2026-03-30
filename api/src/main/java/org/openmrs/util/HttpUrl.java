@@ -32,16 +32,18 @@ public class HttpUrl {
 		}
 		
 		URL parsed = new URL(url);
+		URL validated;
 		try {
 			// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric
 			// IP as host, preventing DNS-rebinding / TOCTOU attacks.
-			this.url = Security.validateUrlForServerRequest(parsed);
+			validated = Security.validateUrlForServerRequest(parsed);
 		}
 		catch (SecurityException e) {
 			MalformedURLException exception = new MalformedURLException(e.getMessage());
 			exception.initCause(e);
 			throw exception;
 		}
+		this.url = validated;
 	}
 	
 	public HttpURLConnection openConnection() throws IOException {
