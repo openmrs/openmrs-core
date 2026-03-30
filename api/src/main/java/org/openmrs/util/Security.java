@@ -9,12 +9,12 @@
  */
 package org.openmrs.util;
 
-import java.nio.charset.StandardCharsets;
 import java.net.IDN;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -25,7 +25,6 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
-
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -344,14 +343,14 @@ public class Security {
 	}
 
 	/**
-	 * Validates outbound URLs used in server-side requests to reduce SSRF risk.
-	 * Only http/https are allowed. If {@link OpenmrsConstants#GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS}
-	 * is set, the host must match the allowlist; otherwise, private/local/reserved
-	 * addresses are blocked.
-	 *
-	 * <p>DNS is resolved exactly once inside this method. The returned URL has the hostname
-	 * replaced with the resolved numeric IP address so callers can open a connection without
-	 * ever re-resolving the hostname, preventing DNS-rebinding / TOCTOU attacks.</p>
+	 * Validates outbound URLs used in server-side requests to reduce SSRF risk. Only http/https are
+	 * allowed. If {@link OpenmrsConstants#GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS} is set, the host must
+	 * match the allowlist; otherwise, private/local/reserved addresses are blocked.
+	 * <p>
+	 * DNS is resolved exactly once inside this method. The returned URL has the hostname replaced with
+	 * the resolved numeric IP address so callers can open a connection without ever re-resolving the
+	 * hostname, preventing DNS-rebinding / TOCTOU attacks.
+	 * </p>
 	 *
 	 * @param url the URL to validate
 	 * @return a safe URL whose host is the resolved numeric IP address
@@ -388,8 +387,7 @@ public class Security {
 		InetAddress resolved = resolveAndValidatePublicAddress(normalizedHost, allowedHosts.isEmpty());
 		try {
 			return new URL(protocol, resolved.getHostAddress(), url.getPort(), url.getFile());
-		}
-		catch (MalformedURLException e) {
+		} catch (MalformedURLException e) {
 			throw new SecurityException("Failed to build safe URL", e);
 		}
 	}
@@ -401,8 +399,7 @@ public class Security {
 			try {
 				configuredHosts = Context.getAdministrationService()
 				        .getGlobalProperty(OpenmrsConstants.GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS, "");
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.debug("Unable to read allowed outbound URL hosts global property", e);
 			}
 		}
@@ -437,8 +434,7 @@ public class Security {
 				if (StringUtils.hasText(url.getHost())) {
 					host = url.getHost();
 				}
-			}
-			catch (MalformedURLException e) {
+			} catch (MalformedURLException e) {
 				// fall back to the provided value
 			}
 		} else if (value.contains("/")) {
@@ -466,8 +462,7 @@ public class Security {
 		}
 		try {
 			return IDN.toASCII(normalized);
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			return normalized;
 		}
 	}
@@ -490,8 +485,7 @@ public class Security {
 		InetAddress[] addresses;
 		try {
 			addresses = InetAddress.getAllByName(host);
-		}
-		catch (UnknownHostException e) {
+		} catch (UnknownHostException e) {
 			// Fail closed: an unresolvable host is not safe to connect to.
 			throw new SecurityException("URL host could not be resolved: " + host, e);
 		}

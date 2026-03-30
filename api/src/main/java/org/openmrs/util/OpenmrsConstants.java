@@ -572,14 +572,14 @@ public final class OpenmrsConstants {
 
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
 
-	public static final String GP_UNLOCK_ACCOUNT_WAITING_TIME  = "security.unlockAccountWaitingTime";
+	public static final String GP_UNLOCK_ACCOUNT_WAITING_TIME = "security.unlockAccountWaitingTime";
 
 	/**
-	 * Comma-separated list of allowed outbound URL hosts for server-side requests.
-	 * Supports exact hosts (e.g. example.com) and subdomain wildcards via leading dot (e.g. .example.com).
+	 * Comma-separated list of allowed outbound URL hosts for server-side requests. Supports exact hosts
+	 * (e.g. example.com) and subdomain wildcards via leading dot (e.g. .example.com).
 	 */
 	public static final String GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS = "security.allowedOutboundUrlHosts";
-	
+
 	/**
 	 * @since 1.9.9, 1.10.2, 1.11
 	 */

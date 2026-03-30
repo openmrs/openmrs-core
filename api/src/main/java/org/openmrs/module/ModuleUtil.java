@@ -24,12 +24,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -689,11 +689,9 @@ public class ModuleUtil {
 			log.debug("Logging an attempt to connect to: " + url);
 
 			in = openConnectionCheckRedirects(uc);
-		}
-		catch (SecurityException se) {
+		} catch (SecurityException se) {
 			log.warn("Blocked unsafe URL request: {}", url, se);
-		}
-		catch (IOException io) {
+		} catch (IOException io) {
 			log.warn("io while reading: " + url, io);
 		}
 

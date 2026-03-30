@@ -30,15 +30,14 @@ public class HttpUrl {
 		        && !url.toLowerCase(Locale.ROOT).startsWith("https://")) {
 			throw new MalformedURLException("Not a valid http(s) url");
 		}
-		
+
 		URL parsed = new URL(url);
 		URL validated;
 		try {
 			// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric
 			// IP as host, preventing DNS-rebinding / TOCTOU attacks.
 			validated = Security.validateUrlForServerRequest(parsed);
-		}
-		catch (SecurityException e) {
+		} catch (SecurityException e) {
 			MalformedURLException exception = new MalformedURLException(e.getMessage());
 			exception.initCause(e);
 			throw exception;
