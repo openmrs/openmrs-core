@@ -555,6 +555,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see EncounterService#purgeEncounter(Encounter)
+	 */
+	@Test
+	public void purgeEncounter_shouldDoNothingWhenEncounterIsNull() {
+		EncounterService es = Context.getEncounterService();
+		es.purgeEncounter(null);
+	}
+
+	/**
 	 * Make sure that purging an encounter removes the row from the database
 	 *
 	 * @see EncounterService#purgeEncounter(Encounter)
