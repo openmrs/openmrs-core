@@ -124,7 +124,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		pi.setIdentifier("101");
 		pi.setPatient(patient);
 		pi.setIdentifierType(type);
-		pi.setLocation(location); // different locaation, location 2
+		pi.setLocation(location); // different location, location 2
 
 		PatientIdentifierValidator.validateIdentifier(pi);
 	}
