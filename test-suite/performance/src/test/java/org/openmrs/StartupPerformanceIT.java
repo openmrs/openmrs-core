@@ -88,7 +88,7 @@ public class StartupPerformanceIT {
 	public void shouldFailIfStartupTimeOfO3Increases() throws SQLException, IOException {
 		// Using O3 3.6.x as a reference, which is running on openmrs-core 2.8.x and webservices.rest 2.51.x
 		// 2.9.x with webservices.rest 3.1.x should start at least 15% faster than 2.8.x thanks to TRUNK-6417
-		compareStartupPerformance("openmrs/openmrs-reference-application-3-backend:3.6.x-no-demo",
+		compareStartupPerformance("openmrs/openmrs-reference-application-3-backend:3.6.x-no-demo-46c47a6",
 				"openmrs/openmrs-reference-application-3-backend:3.6.x-core-2.9-no-demo", -15);
 	}
 
