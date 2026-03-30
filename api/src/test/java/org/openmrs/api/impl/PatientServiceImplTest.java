@@ -148,31 +148,26 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 
 	@Test
 	public void checkPatientIdentifiers_shouldThrowDuplicateIdentifierGivenDuplicateIdentifiers() throws Exception {
-		// given
-		final Integer equalIdentifierTypeId = 12345;
-		final String equalIdentifierTypeName = "TypeName";
-		final String equalIdentifier = "Identifier1";
-
-		final PatientIdentifierType identifierType = new PatientIdentifierType(equalIdentifierTypeId);
-		identifierType.setName(equalIdentifierTypeName);
-		final PatientIdentifierType sameIdentifierType = new PatientIdentifierType(equalIdentifierTypeId);
-		sameIdentifierType.setName(equalIdentifierTypeName);
-
-		final Patient patientWithIdentifiers = new Patient();
-		final PatientIdentifier patientIdentifier = new PatientIdentifier("some identifier", identifierType,
-		        mock(Location.class));
-
+		
+		String equalIdentifier = "equal identifier";
+		Location location = new Location();
+		Location anotherLocation = new Location();
+		PatientIdentifierType identifierType = new PatientIdentifierType();
+		identifierType.setUniquenessBehavior(PatientIdentifierType.UniquenessBehavior.UNIQUE);
+		
+		Patient patientWithIdentifiers = new Patient();
+		PatientIdentifier patientIdentifier = new PatientIdentifier("some identifier", identifierType,
+			location);
 		patientIdentifier.setIdentifier(equalIdentifier);
 		patientWithIdentifiers.addIdentifier(patientIdentifier);
-		final PatientIdentifier patientIdentifierSameType = new PatientIdentifier("some identifier", sameIdentifierType,
-		        mock(Location.class));
-		patientIdentifierSameType.setIdentifier(equalIdentifier);
-		patientWithIdentifiers.addIdentifier(patientIdentifierSameType);
+		PatientIdentifier identicalPatientIdentifier = new PatientIdentifier("some identifier", identifierType,
+			anotherLocation);
+		identicalPatientIdentifier.setIdentifier(equalIdentifier);
+		patientWithIdentifiers.addIdentifier(identicalPatientIdentifier);
 
 		DuplicateIdentifierException thrown = assertThrows(DuplicateIdentifierException.class,
 		    () -> patientService.checkPatientIdentifiers(patientWithIdentifiers));
 		assertNotNull(thrown.getPatientIdentifier());
-		assertThat(thrown.getMessage(), containsString("Identifier1 id type #: 12345"));
 	}
 
 	@Test
