@@ -164,8 +164,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 				ret.append("=");
 			}
 			ret.append(" ").append(Format.format(low));
-			if (high != null && high != Double.NEGATIVE_INFINITY) {
-				//BUG: should not append this if high is also infinite
+			if (high != null && !Double.isInfinite(high)) {
 				ret.append(" and ");
 			}
 		}
