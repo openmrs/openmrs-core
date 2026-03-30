@@ -472,8 +472,11 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	public void purgeRelationship(Relationship relationship) throws APIException {
-		dao.deleteRelationship(relationship);
-	}
+    if (relationship == null) {
+        throw new IllegalArgumentException("relationship must not be null");
+      }
+    dao.deleteRelationship(relationship);
+   }
 
 	/**
 	 * @see org.openmrs.api.PersonService#saveRelationship(org.openmrs.Relationship)
