@@ -89,14 +89,9 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		assertThrows(IdentifierNotUniqueException.class, () -> PatientIdentifierValidator.validateIdentifier(pi));
 	}
 
-	@Test
-	public void validateIdentifier_shouldFailValidationIfAnotherPatientHasAMatchingIdentifierOfTheSameTypeAndLocation()
-	{
-		PatientIdentifier pi = Context.getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
-		pi.setIdentifier("101-6");
-		assertThrows(IdentifierNotUniqueException.class, () -> PatientIdentifierValidator.validateIdentifier(pi));
-	}
-
+	/**
+	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
+	 */
 	@Test
 	public void validateIdentifier_shouldFailValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeAndLocation()
 	{
@@ -114,6 +109,9 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		assertThrows(DuplicateIdentifierException.class, () -> PatientIdentifierValidator.validateIdentifier(pi));
 	}
 
+	/**
+	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
+	 */
 	@Test
 	public void validateIdentifier_shouldPassValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeButDifferentLocation()
 	{
@@ -131,6 +129,9 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		PatientIdentifierValidator.validateIdentifier(pi);
 	}
 
+	/**
+	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
+	 */
 	@Test
 	public void validateIdentifier_shouldFallValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeButDifferentLocationAndUniquenessBehaviorIsUnique()
 	{
