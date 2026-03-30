@@ -14,17 +14,17 @@ import org.openmrs.api.FormService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class FormEditorTest extends BasePropertyEditorTest<Form, FormEditor> {
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	@Autowired
 	private FormService formService;
-	
+
 	@Override
 	protected FormEditor getNewEditor() {
 		return new FormEditor();
 	}
-	
+
 	@Override
 	protected Form getExistingObject() {
 		return formService.getForm(EXISTING_ID);

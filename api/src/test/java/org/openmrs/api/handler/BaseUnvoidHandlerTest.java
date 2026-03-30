@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.handler;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -20,11 +16,15 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.Voidable;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests the {@link BaseUnvoidHandler} class.
  */
 public class BaseUnvoidHandlerTest {
-	
+
 	/**
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
@@ -36,7 +36,7 @@ public class BaseUnvoidHandlerTest {
 		handler.handle(voidable, null, null, null);
 		assertFalse(voidable.getVoided());
 	}
-	
+
 	/**
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
@@ -49,7 +49,7 @@ public class BaseUnvoidHandlerTest {
 		handler.handle(voidable, null, null, null);
 		assertNull(voidable.getVoidedBy());
 	}
-	
+
 	/**
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
@@ -62,7 +62,7 @@ public class BaseUnvoidHandlerTest {
 		handler.handle(voidable, null, null, null);
 		assertNull(voidable.getDateVoided());
 	}
-	
+
 	/**
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
@@ -75,7 +75,7 @@ public class BaseUnvoidHandlerTest {
 		handler.handle(voidable, null, null, null);
 		assertNull(voidable.getVoidReason());
 	}
-	
+
 	/**
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
@@ -87,19 +87,19 @@ public class BaseUnvoidHandlerTest {
 		handler.handle(voidable, null, null, "SOME REASON");
 		assertNull(voidable.getVoidReason());
 	}
-	
+
 	/**
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldNotActOnObjectsWithADifferentDateVoided() {
 		Date d = new Date(new Date().getTime() - 1000); // a time that isn't right now
-		
+
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
 		voidable.setVoided(true);
 		voidable.setDateVoided(d);
-		
+
 		handler.handle(voidable, null, new Date(), "SOME REASON");
 		assertTrue(voidable.getVoided());
 	}

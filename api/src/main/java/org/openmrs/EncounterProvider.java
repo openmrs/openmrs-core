@@ -9,34 +9,56 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
 /**
  * Mapping Class between Encounters and Providers which allows many to many relationship.
- * 
+ *
  * @since 1.9
  */
+@Entity
+@Table(name = "encounter_provider")
+@BatchSize(size = 25)
 @Audited
 public class EncounterProvider extends BaseChangeableOpenmrsData {
-	
+
 	public static final long serialVersionUID = 1L;
-	
+
+	@Id
+	@Column(name = "encounter_provider_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer encounterProviderId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "provider_id", nullable = false)
 	private Provider provider;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "encounter_role_id", nullable = false)
 	private EncounterRole encounterRole;
-	
+
 	public void setEncounterProviderId(Integer encounterProviderId) {
 		this.encounterProviderId = encounterProviderId;
 	}
-	
+
 	public Integer getEncounterProviderId() {
 		return this.encounterProviderId;
 	}
-	
+
 	/**
 	 * @see OpenmrsObject#getId()
 	 */
@@ -44,7 +66,7 @@ public class EncounterProvider extends BaseChangeableOpenmrsData {
 	public Integer getId() {
 		return getEncounterProviderId();
 	}
-	
+
 	/**
 	 * @see OpenmrsObject#setId(Integer)
 	 */
@@ -52,7 +74,7 @@ public class EncounterProvider extends BaseChangeableOpenmrsData {
 	public void setId(Integer id) {
 		setEncounterProviderId(id);
 	}
-	
+
 	/**
 	 * @return the encounter
 	 * @see Encounter
@@ -60,14 +82,14 @@ public class EncounterProvider extends BaseChangeableOpenmrsData {
 	public Encounter getEncounter() {
 		return this.encounter;
 	}
-	
+
 	/**
 	 * @param encounter the encounter to set
 	 */
 	public void setEncounter(Encounter encounter) {
 		this.encounter = encounter;
 	}
-	
+
 	/**
 	 * @return the provider
 	 * @see Provider
@@ -75,14 +97,14 @@ public class EncounterProvider extends BaseChangeableOpenmrsData {
 	public Provider getProvider() {
 		return this.provider;
 	}
-	
+
 	/**
 	 * @param provider the provider to set
 	 */
 	public void setProvider(Provider provider) {
 		this.provider = provider;
 	}
-	
+
 	/**
 	 * @return the encounterRole
 	 * @see EncounterRole
@@ -90,18 +112,19 @@ public class EncounterProvider extends BaseChangeableOpenmrsData {
 	public EncounterRole getEncounterRole() {
 		return this.encounterRole;
 	}
-	
+
 	/**
 	 * @param encounterRole the encounterRole to set
 	 */
 	public void setEncounterRole(EncounterRole encounterRole) {
 		this.encounterRole = encounterRole;
 	}
-	
+
 	/**
-	 * @return copied encounter provider
-	 *
+	 * <p>
 	 * <strong>Should</strong> copy all EncounterProvider data
+	 *
+	 * @return copied encounter provider
 	 */
 	public EncounterProvider copy() {
 		EncounterProvider target = new EncounterProvider();

@@ -16,7 +16,7 @@
 <hibernate-mapping>
 	<class name="org.openmrs.FieldType" table="field_type">
 		<id name="fieldTypeId" type="int" column="field_type_id" unsaved-value="0">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">field_type_field_type_id_seq</param>
 			</generator>
 		</id>

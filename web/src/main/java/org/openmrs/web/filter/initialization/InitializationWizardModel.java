@@ -22,62 +22,62 @@ import org.openmrs.web.WebConstants;
  * by the {@link InitializationFilter}.
  */
 public class InitializationWizardModel {
-	
+
 	// automatically given to the .vm files and used there
 	public static final String HEADER_TEMPLATE = "org/openmrs/web/filter/initialization/header.vm";
-	
+
 	// automatically given to the .vm files and used there
 	public static final String FOOTER_TEMPLATE = "org/openmrs/web/filter/footer.vm";
-	
+
 	// Values for installMethod field.
 	public static final String INSTALL_METHOD_SIMPLE = "simple";
-	
+
 	public static final String INSTALL_METHOD_TESTING = "testing";
-	
+
 	public static final String INSTALL_METHOD_AUTO = "auto";
-	
+
 	// Default OpenMRS admin password set by the simple installation.
 	public static final String ADMIN_DEFAULT_PASSWORD = "Admin123";
-	
+
 	/**
-	 * Default database name to use unless user specifies another in the wizard or they are creating
-	 * a test installation
+	 * Default database name to use unless user specifies another in the wizard or they are creating a
+	 * test installation
 	 */
 	public static final String DEFAULT_DATABASE_NAME = WebConstants.WEBAPP_NAME;
-	
+
 	/**
 	 * Records completed tasks and are displayed at the top of the page upon error
 	 */
 	public List<String> workLog = new ArrayList<>();
-	
+
 	/**
 	 * Whether the runtime properties file could possible be created. (only read by the velocity
 	 * scripts)
 	 */
-	
+
 	public boolean canCreate = true;
-	
+
 	/**
 	 * Error message from not being able to create the runtime properties file (only read by the
 	 * velocity scripts)
 	 */
-	
+
 	public String cannotCreateErrorMessage = "";
-	
+
 	/**
 	 * Whether the runtime file can be edited (only read by the velocity scripts)
 	 */
-	
+
 	public boolean canWrite = true;
-	
+
 	/**
 	 * The location of the runtime properties file (only read by the velocity scripts)
 	 */
-	
+
 	public String runtimePropertiesPath = "";
-	
+
 	public String installMethod = INSTALL_METHOD_SIMPLE;
-	
+
 	/**
 	 * The type of database being used (mysql or postgresql)
 	 */
@@ -92,38 +92,38 @@ public class InitializationWizardModel {
 	 * Default PostgreSQL connection string
 	 */
 	protected static final String DEFAULT_POSTGRESQL_CONNECTION = "jdbc:postgresql://localhost:5432/postgres";
-	
+
 	/**
 	 * True/false marker for the question "Do you currently have an OpenMRS database installed"
 	 */
 	public Boolean hasCurrentOpenmrsDatabase = true;
-	
+
 	/**
-	 * True/false marker for the
-	 * question"Do you currently have a database user other than root that has read/write access"
+	 * True/false marker for the question"Do you currently have a database user other than root that has
+	 * read/write access"
 	 */
 	public Boolean hasCurrentDatabaseUser = true;
-	
+
 	/**
 	 * Filled out by the user on the databasesetup.vm page
 	 */
 	public String databaseName = DEFAULT_DATABASE_NAME;
-	
+
 	/**
 	 * Filled out by user on the databasesetup.vm page Looks like:
 	 */
 	public String databaseConnection = DEFAULT_MYSQL_CONNECTION;
-	
+
 	/**
 	 * Optional Database Driver string filled in on databasesetup.vm
 	 */
 	public String databaseDriver = "";
-	
+
 	/**
 	 * MySQL root account password used for simple installation. Filled in simplesetup.vm.
 	 */
 	public String databaseRootPassword = "";
-	
+
 	/**
 	 * Filled in on databasesetup.vm
 	 */
@@ -133,125 +133,125 @@ public class InitializationWizardModel {
 	 * Default postgres super user
 	 */
 	public String postgresUsername = "postgres";
-	
+
 	/**
 	 * Filled in on databasesetup.vm
 	 */
 	public String createDatabasePassword = "";
-	
+
 	/**
 	 * DB user that can create an openmrs db user Filled in on databasetablesanduser.vm
 	 */
 	public String createUserUsername = "root";
-	
+
 	/**
 	 * DB user that can create an openmrs db user Filled in on databasetablesanduser.vm
 	 */
 	public String createUserPassword = "";
-	
+
 	/**
 	 * The username of a user that exists that can read/write to openmrs. Entered on
 	 * databasetablesanduser page
 	 */
 	public String currentDatabaseUsername = "";
-	
+
 	/**
 	 * The password of a user that exists that can read/write to openmrs. Entered on
 	 * databasetablesanduser page
 	 */
 	public String currentDatabasePassword = "";
-	
+
 	/**
-	 * Asked for on the databasetablesanduser.vm page to know if their existing database has the
-	 * tables or not
+	 * Asked for on the databasetablesanduser.vm page to know if their existing database has the tables
+	 * or not
 	 */
 	public boolean createTables = false;
-	
+
 	/**
 	 * if the user asked us to create the user for openmrs
 	 */
 	public boolean createDatabaseUser = false;
-	
+
 	/**
 	 * Enables importing test data from the remote server
 	 */
 	public boolean importTestData = false;
-	
+
 	/**
 	 * Asked for on the otherproperties.vm page to know if the allow_web_admin runtime property is
 	 * true/false
 	 */
 	public boolean moduleWebAdmin = true;
-	
+
 	/**
-	 * Asked for on otherproperties.vm page to know if the runtime property for auto updating their
-	 * db is true/false
+	 * Asked for on otherproperties.vm page to know if the runtime property for auto updating their db
+	 * is true/false
 	 */
 	public boolean autoUpdateDatabase = Boolean.FALSE;
-	
+
 	/**
 	 * Password for the admin user if the database was created now
 	 */
 	public String adminUserPassword = ADMIN_DEFAULT_PASSWORD;
-	
+
 	/**
 	 * Implementation name.
 	 */
 	public String implementationIdName = "";
-	
+
 	/**
 	 * Implementation ID.
 	 */
 	public String implementationId = "";
-	
+
 	/**
 	 * Pass phrase used to validate who uses your implementation ID.
 	 */
 	public String implementationIdPassPhrase = "";
-	
+
 	/**
 	 * Text describing the implementation.
 	 */
 	public String implementationIdDescription = "";
-	
+
 	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
-	
+
 	/**
 	 * OpenMRS version for display in templates
 	 */
 	public String OPENMRS_VERSION = OpenmrsConstants.OPENMRS_VERSION_SHORT;
-	
+
 	/**
 	 * The tasks to be executed that the user selected from the wizard's prompts
 	 */
 	public List<WizardTask> tasksToExecute;
-	
+
 	public String localeToSave = "";
-	
+
 	/**
 	 * The url to the remote system
 	 */
 	public String remoteUrl = "";
-	
+
 	/**
 	 * The username to use to authenticate to the remote system
 	 */
 	public String remoteUsername = "";
-	
+
 	/**
 	 * The password to use to authenticate to the remote system
 	 */
 	public String remotePassword = "";
-	
+
 	/**
 	 * The current step. e.g Step 1 of ...
 	 */
 	public int currentStepNumber = 1;
-	
+
 	/**
 	 * The total number of steps. e.g Step ... of 5
 	 */
 	public int numberOfSteps = 1;
-	
+
 	public Properties additionalPropertiesFromInstallationScript = new Properties();
 }

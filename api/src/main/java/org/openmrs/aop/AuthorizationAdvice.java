@@ -23,8 +23,6 @@ import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.MethodBeforeAdvice;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,26 +31,28 @@ import org.springframework.stereotype.Component;
  */
 @Component("authorizationInterceptor")
 public class AuthorizationAdvice implements MethodBeforeAdvice {
-	
+
 	/**
 	 * Logger for this class and subclasses
 	 */
 	private static final Logger log = LoggerFactory.getLogger(AuthorizationAdvice.class);
-        private static final String USER_IS_NOT_AUTHORIZED_TO_ACCESS = "User {} is not authorized to access {}";
-	
+
+	private static final String USER_IS_NOT_AUTHORIZED_TO_ACCESS = "User {} is not authorized to access {}";
+
 	/**
 	 * Allows us to check whether a user is authorized to access a particular method.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> notify listeners about checked privileges
+	 *
 	 * @param method
 	 * @param args
 	 * @param target
 	 * @throws Throwable
-	 * <strong>Should</strong> notify listeners about checked privileges
 	 */
 	@Override
 	public void before(Method method, Object[] args, Object target) throws Throwable {
 		log.debug("Calling authorization advice before {}", method.getName());
-		
+
 		if (log.isDebugEnabled()) {
 			User user = Context.getAuthenticatedUser();
 			log.debug("User {}", user);
@@ -60,15 +60,15 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 				log.debug("has roles {}", user.getAllRoles());
 			}
 		}
-		
+
 		if (Daemon.isDaemonThread()) {
 			return;
 		}
-		
+
 		AuthorizedAnnotationAttributes attributes = new AuthorizedAnnotationAttributes();
 		Collection<String> privileges = attributes.getAttributes(method);
 		boolean requireAll = attributes.getRequireAll(method);
-		
+
 		// Only execute if the "secure" method has authorization attributes
 		// Iterate through required privileges and return only if the user has
 		// one of them
@@ -80,7 +80,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 					if (privilege == null || privilege.isEmpty()) {
 						return;
 					}
-					boolean hasPrivilege  = Context.hasPrivilege(privilege);
+					boolean hasPrivilege = Context.hasPrivilege(privilege);
 					log.debug("User has privilege {}? {}", privilege, hasPrivilege);
 
 					if (hasPrivilege) {
@@ -100,22 +100,22 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 			} finally {
 				Context.removeProxyPrivilege(PrivilegeConstants.GET_ROLES);
 			}
-			
+
 			if (!requireAll) {
 				// If there's no match, then we know there are privileges and
 				// that the user didn't have any of them. The user is not
 				// authorized to access the method
 				throwUnauthorized(Context.getAuthenticatedUser(), method, privileges);
 			}
-			
+
 		} else if (attributes.hasAuthorizedAnnotation(method) && !Context.isAuthenticated()) {
 			throwUnauthorized(Context.getAuthenticatedUser(), method);
 		}
 	}
-	
+
 	/**
 	 * Throws an APIAuthorization exception stating why the user failed
-	 * 
+	 *
 	 * @param user authenticated user
 	 * @param method acting method
 	 * @param attrs Collection of String privilege names that the user must have
@@ -125,10 +125,10 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { StringUtils.join(attrs, ",") }, Locale.getDefault()));
 	}
-	
+
 	/**
 	 * Throws an APIAuthorization exception stating why the user failed
-	 * 
+	 *
 	 * @param user authenticated user
 	 * @param method acting method
 	 * @param attr privilege names that the user must have
@@ -138,10 +138,10 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { attr }, Locale.getDefault()));
 	}
-	
+
 	/**
 	 * Throws an APIAuthorization exception stating why the user failed
-	 * 
+	 *
 	 * @param user authenticated user
 	 * @param method acting method
 	 */

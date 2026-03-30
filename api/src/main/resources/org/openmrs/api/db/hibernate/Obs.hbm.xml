@@ -64,15 +64,13 @@
 		<property name="formNamespaceAndPath" type="java.lang.String"
 			column="form_namespace_and_path" length="255" access="field" />
 		<property name="status" column="status" length="16" not-null="true">
-			<type name="org.hibernate.type.EnumType">
+			<type name="org.openmrs.api.db.hibernate.type.StringEnumType">
 				<param name="enumClass">org.openmrs.Obs$Status</param>
-				<param name="useNamed">true</param>
 			</type>
 		</property>
 		<property name="interpretation" column="interpretation" length="32">
-			<type name="org.hibernate.type.EnumType">
+			<type name="org.openmrs.api.db.hibernate.type.StringEnumType">
 				<param name="enumClass">org.openmrs.Obs$Interpretation</param>
-				<param name="useNamed">true</param>
 			</type>
 		</property>
 		

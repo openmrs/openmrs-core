@@ -56,7 +56,8 @@ rm -fR "${TOMCAT_TEMP_DIR:?}/*"
 
 echo "Loading WAR into appropriate location"
 
-cp -r "${OMRS_DISTRO_CORE}/." "${TOMCAT_WEBAPPS_DIR}"
+# Copy preserving timestamps to avoid redeploys
+cp -a "${OMRS_DISTRO_CORE}/." "${TOMCAT_WEBAPPS_DIR}"
 
 echo "Writing out $TOMCAT_SETENV_FILE file"
 
@@ -82,12 +83,4 @@ EOF
 
 echo "Starting up OpenMRS..."
 
-/usr/local/tomcat/bin/catalina.sh run &
-
-# Trigger first filter to start data import
-sleep 15
-curl -sL "http://localhost:8080/${OMRS_WEBAPP_NAME}/" > /dev/null || true
-sleep 15
-
-# Bring tomcat process to foreground again
-wait ${!}
+exec /usr/local/tomcat/bin/catalina.sh run

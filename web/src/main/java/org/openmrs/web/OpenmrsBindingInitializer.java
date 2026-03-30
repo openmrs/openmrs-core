@@ -87,7 +87,7 @@ import org.springframework.web.bind.support.WebBindingInitializer;
  * editors.
  */
 public class OpenmrsBindingInitializer implements WebBindingInitializer {
-	
+
 	/**
 	 * @see org.springframework.web.bind.support.WebBindingInitializer#initBinder(org.springframework.web.bind.WebDataBinder,
 	 *      org.springframework.web.context.request.WebRequest)
@@ -121,8 +121,8 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(Provider.class, new ProviderEditor());
 		wdb.registerCustomEditor(Role.class, new RoleEditor());
 		wdb.registerCustomEditor(User.class, new UserEditor());
-		wdb.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, NumberFormat
-		        .getInstance(Context.getLocale()), true));
+		wdb.registerCustomEditor(java.lang.Integer.class,
+		    new CustomNumberEditor(java.lang.Integer.class, NumberFormat.getInstance(Context.getLocale()), true));
 		wdb.registerCustomEditor(Date.class, new DateOrDatetimeEditor());
 		wdb.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
 		wdb.registerCustomEditor(ConceptMapType.class, new ConceptMapTypeEditor());
@@ -131,7 +131,7 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(ConceptAttributeType.class, new ConceptAttributeTypeEditor());
 		wdb.registerCustomEditor(VisitType.class, new VisitTypeEditor());
 		wdb.registerCustomEditor(Visit.class, new VisitEditor());
-		
+
 	}
-	
+
 }

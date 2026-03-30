@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,29 +21,33 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class HibernateProviderDAOTest extends BaseContextSensitiveTest {
-	
+
 	private static final String PROVIDERS_INITIAL_XML = "org/openmrs/api/include/ProviderServiceTest-initial.xml";
-	
+
 	private HibernatePersonDAO personDao = null;
-	
+
 	private ProviderService service;
-	
+
 	/**
 	 * Run this before each unit test in this class.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@BeforeEach
 	public void runBeforeEachTest() {
 		service = Context.getProviderService();
-		
+
 		if (personDao == null)
 			personDao = (HibernatePersonDAO) applicationContext.getBean("personDAO");
-		
+
 		executeDataSet(PROVIDERS_INITIAL_XML);
 	}
-	
+
 	/**
 	 * @see HibernateProviderDAO#getProvidersByPerson(Person,boolean)
 	 */
@@ -57,7 +57,7 @@ public class HibernateProviderDAOTest extends BaseContextSensitiveTest {
 		assertEquals(1, providers.size());
 		assertFalse(providers.iterator().next().getRetired());
 	}
-	
+
 	/**
 	 * @see HibernateProviderDAO#getProvidersByPerson(Person,boolean)
 	 */
@@ -65,10 +65,10 @@ public class HibernateProviderDAOTest extends BaseContextSensitiveTest {
 	public void getProvidersByPerson_shouldListRetiredProvidersAtTheEnd() {
 		List<Provider> providers = new ArrayList<>();
 		providers = (List<Provider>) service.getProvidersByPerson(personDao.getPerson(2), true);
-		
+
 		assertTrue(providers.get(1).getRetired());
 	}
-	
+
 	/**
 	 * @see HibernateProviderDAO#getProvidersByPerson(Person,boolean)
 	 */

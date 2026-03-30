@@ -11,11 +11,6 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.envers.Audited;
-import org.openmrs.util.OpenmrsUtil;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +20,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import org.hibernate.envers.Audited;
+import org.openmrs.util.OpenmrsUtil;
+
 /**
  * PatientState
  */
@@ -32,20 +30,15 @@ import jakarta.persistence.Table;
 @Table(name = "patient_state")
 @Audited
 public class PatientState extends BaseFormRecordableOpenmrsData implements java.io.Serializable, Comparable<PatientState> {
-	
+
 	public static final long serialVersionUID = 0L;
-	
+
 	// ******************
 	// Properties
 	// ******************
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "patient_state_id_seq")
-	@GenericGenerator(
-		name = "patient_state_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "patient_state_patient_state_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "patient_state_id")
 	private Integer patientStateId;
 
@@ -66,33 +59,33 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	@ManyToOne
 	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
-	
+
 	// ******************
 	// Constructors
 	// ******************
-	
+
 	/** Default Constructor */
 	public PatientState() {
 	}
-	
+
 	/** Constructor with id */
 	public PatientState(Integer patientStateId) {
 		setPatientStateId(patientStateId);
 	}
-	
+
 	/**
 	 * Does a shallow copy of this PatientState. Does NOT copy patientStateId
-	 * 
+	 *
 	 * @return a copy of this PatientState
 	 */
 	public PatientState copy() {
 		return copyHelper(new PatientState());
 	}
-	
+
 	/**
-	 * The purpose of this method is to allow subclasses of PatientState to delegate a portion of
-	 * their copy() method back to the superclass, in case the base class implementation changes.
-	 * 
+	 * The purpose of this method is to allow subclasses of PatientState to delegate a portion of their
+	 * copy() method back to the superclass, in case the base class implementation changes.
+	 *
 	 * @param target a PatientState that will have the state of <code>this</code> copied into it
 	 * @return the PatientState that was passed in, with state copied into it
 	 */
@@ -112,25 +105,26 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 		target.setVoidReason(this.getVoidReason());
 		return target;
 	}
-	
+
 	// ******************
 	// Instance methods
 	// ******************
-	
+
 	/**
 	 * Returns true if this {@link PatientState} is active as of the passed {@link Date}
-	 * 
+	 * <p>
+	 * <strong>Should</strong> return false if voided and date in range<br/>
+	 * <strong>Should</strong> return false if voided and date not in range<br/>
+	 * <strong>Should</strong> return true if not voided and date in range<br/>
+	 * <strong>Should</strong> return false if not voided and date earlier than startDate<br/>
+	 * <strong>Should</strong> return false if not voided and date later than endDate<br/>
+	 * <strong>Should</strong> return true if not voided and date in range with null startDate<br/>
+	 * <strong>Should</strong> return true if not voided and date in range with null endDate<br/>
+	 * <strong>Should</strong> return true if not voided and both startDate and endDate nulled<br/>
+	 * <strong>Should</strong> compare with current date if date null
+	 *
 	 * @param onDate - {@link Date} to check for {@link PatientState} enrollment
 	 * @return boolean - true if this {@link PatientState} is active as of the passed {@link Date}
-	 * <strong>Should</strong> return false if voided and date in range
-	 * <strong>Should</strong> return false if voided and date not in range
-	 * <strong>Should</strong> return true if not voided and date in range
-	 * <strong>Should</strong> return false if not voided and date earlier than startDate
-	 * <strong>Should</strong> return false if not voided and date later than endDate
-	 * <strong>Should</strong> return true if not voided and date in range with null startDate
-	 * <strong>Should</strong> return true if not voided and date in range with null endDate
-	 * <strong>Should</strong> return true if not voided and both startDate and endDate nulled
-	 * <strong>Should</strong> compare with current date if date null
 	 */
 	public boolean getActive(Date onDate) {
 		if (onDate == null) {
@@ -139,64 +133,64 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 		return !getVoided() && (OpenmrsUtil.compareWithNullAsEarliest(startDate, onDate) <= 0)
 		        && (OpenmrsUtil.compareWithNullAsLatest(endDate, onDate) > 0);
 	}
-	
+
 	/**
 	 * Returns true if this {@link PatientState} is currently active
-	 * 
+	 *
 	 * @return boolean - true if this {@link PatientState} is currently active
 	 */
 	public boolean getActive() {
 		return getActive(null);
 	}
-	
+
 	/** @see Object#toString() */
 	@Override
 	public String toString() {
 		return "id=" + getPatientStateId() + ", patientProgram=" + getPatientProgram() + ", state=" + getState()
-		        + ", startDate=" + getStartDate() + ", endDate=" + getEndDate() + ", encounter=" + getEncounter() + ", dateCreated=" + getDateCreated()
-		        + ", dateChanged=" + getDateChanged();
+		        + ", startDate=" + getStartDate() + ", endDate=" + getEndDate() + ", encounter=" + getEncounter()
+		        + ", dateCreated=" + getDateCreated() + ", dateChanged=" + getDateChanged();
 	}
-	
+
 	// ******************
 	// Property Access
 	// ******************
-	
+
 	public PatientProgram getPatientProgram() {
 		return patientProgram;
 	}
-	
+
 	public void setPatientProgram(PatientProgram patientProgram) {
 		this.patientProgram = patientProgram;
 	}
-	
+
 	public Integer getPatientStateId() {
 		return patientStateId;
 	}
-	
+
 	public void setPatientStateId(Integer patientStatusId) {
 		this.patientStateId = patientStatusId;
 	}
-	
+
 	public ProgramWorkflowState getState() {
 		return state;
 	}
-	
+
 	public void setState(ProgramWorkflowState state) {
 		this.state = state;
 	}
-	
+
 	public Date getEndDate() {
 		return endDate;
 	}
-	
+
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	
+
 	public Date getStartDate() {
 		return startDate;
 	}
-	
+
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
@@ -225,7 +219,7 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	public Integer getId() {
 		return getPatientStateId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -234,16 +228,18 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	public void setId(Integer id) {
 		setPatientStateId(id);
 	}
-	
+
 	/**
 	 * Compares by startDate with null as earliest and endDate with null as latest.
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 * <strong>Should</strong> return positive if startDates equal and this endDate null
-	 * <strong>Should</strong> return negative if this startDate null
-	 * <strong>Should</strong> pass if two states have the same start date, end date and uuid
-	 * <strong>Should</strong> return positive or negative if two states have the same start date and end date but different uuids
-	 * Note: this comparator imposes orderings that are inconsistent with equals.
+	 * <p>
+	 * <strong>Should</strong> return positive if startDates equal and this endDate null<br/>
+	 * <strong>Should</strong> return negative if this startDate null<br/>
+	 * <strong>Should</strong> pass if two states have the same start date, end date and uuid<br/>
+	 * <strong>Should</strong> return positive or negative if two states have the same start date and
+	 * end date but different uuids
+	 *
+	 * @see java.lang.Comparable#compareTo(java.lang.Object) Note: this comparator imposes orderings
+	 *      that are inconsistent with equals.
 	 */
 	@SuppressWarnings("squid:S1210")
 	@Override

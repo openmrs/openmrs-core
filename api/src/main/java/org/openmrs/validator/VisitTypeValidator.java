@@ -17,32 +17,33 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates attributes on the {@link VisitType} object.
- * 
+ *
  * @since 1.9
  */
 @Handler(supports = { VisitType.class }, order = 50)
 public class VisitTypeValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return c.equals(VisitType.class);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fail validation if name is null or empty or whitespace<br/>
+	 * <strong>Should</strong> fail validation if description is null or empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if all required fields have proper values<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if name is null or empty or whitespace
-	 * <strong>Should</strong> fail validation if description is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if all required fields have proper values
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {

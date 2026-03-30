@@ -11,14 +11,14 @@ package org.openmrs.api.db.hibernate.search.bridge;
 
 import java.util.Locale;
 
-import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang3.LocaleUtils;
 import org.hibernate.search.mapper.pojo.bridge.ValueBridge;
 import org.hibernate.search.mapper.pojo.bridge.runtime.ValueBridgeFromIndexedValueContext;
 import org.hibernate.search.mapper.pojo.bridge.runtime.ValueBridgeToIndexedValueContext;
 
 /**
  * Indexes {@link java.util.Locale} as string.
- * 
+ *
  * @since 2.8.0
  */
 public class LocaleValueBridge implements ValueBridge<Locale, String> {

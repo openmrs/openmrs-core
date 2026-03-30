@@ -12,15 +12,17 @@ package org.openmrs.messagesource.impl;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 /**
- * Ensures that, when an exception with a message to localize, is thrown
- * before spring starts up, we do not get this exception:
- * org.openmrs.api.APIException: Service not found: interface org.openmrs.messagesource.MessageSourceService
+ * Ensures that, when an exception with a message to localize, is thrown before spring starts up, we
+ * do not get this exception: org.openmrs.api.APIException: Service not found: interface
+ * org.openmrs.messagesource.MessageSourceService
  */
 public class DefaultMessageSourceServiceImplTest {
-	
+
 	@Test
 	public void getMessageSourceService_shouldNotThrowServiceNotFoundException() {
-		Context.getMessageSourceService();
+		assertDoesNotThrow(() -> Context.getMessageSourceService());
 	}
 }

@@ -9,13 +9,16 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+
 public class QueryResult {
+
 	private List<Predicate> predicates;
+
 	private List<Order> orders;
 
 	public QueryResult() {
@@ -35,10 +38,11 @@ public class QueryResult {
 	public void setPredicates(List<Predicate> predicates) {
 		this.predicates = predicates;
 	}
-	
+
 	public void addPredicates(List<Predicate> predicates) {
 		this.predicates.addAll(predicates);
 	}
+
 	public List<Order> getOrders() {
 		return orders;
 	}
@@ -46,9 +50,8 @@ public class QueryResult {
 	public void setOrders(List<Order> orders) {
 		this.orders = orders;
 	}
-	
+
 	public void addOrder(Order order) {
 		this.orders.add(order);
 	}
 }
-

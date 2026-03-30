@@ -19,26 +19,26 @@ import org.openmrs.FormField;
  * {@link FormField}s to embed inside a parent {@link FormField}. When a form is submitted and it
  * has a {@link ConceptComplex} associated to an implementing handler class, then the handler's
  * serializeFormData method is invoked to perform the serialization of the complex data.
- * 
+ *
  * @since 1.10
  */
 public interface SerializableComplexObsHandler extends ComplexObsHandler {
-	
+
 	/**
-	 * Gets the form fields that should be added to the forms using complex concepts that are
-	 * associated to this handler
-	 * 
+	 * Gets the form fields that should be added to the forms using complex concepts that are associated
+	 * to this handler
+	 *
 	 * @return Set of form fields
 	 */
 	public Set<FormField> getFormFields();
-	
+
 	/**
-	 * Transforms the incoming data from one format to another. For example, this can be useful if
-	 * the data is to be sent as an hl7 message which doesn't support xml
-	 * 
+	 * Transforms the incoming data from one format to another. For example, this can be useful if the
+	 * data is to be sent as an hl7 message which doesn't support xml
+	 *
 	 * @param data the data to serialize
 	 * @return the serialized form data
 	 */
 	public String serializeFormData(String data);
-	
+
 }

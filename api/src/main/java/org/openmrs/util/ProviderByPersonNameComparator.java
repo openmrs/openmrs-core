@@ -15,24 +15,21 @@ import java.util.Comparator;
 import org.openmrs.Provider;
 
 /**
- * Sorts providers by the primary person name associated with the underlying person
- *
- * Note that this ignores any values stored in the provider "name" property and sorts
- * solely on the underlying person name               l
- *
- * Utilizes the {@link PersonByNameComparator} comparator to do the underlying sort
+ * Sorts providers by the primary person name associated with the underlying person Note that this
+ * ignores any values stored in the provider "name" property and sorts solely on the underlying
+ * person name l Utilizes the {@link PersonByNameComparator} comparator to do the underlying sort
  */
 public class ProviderByPersonNameComparator implements Comparator<Provider>, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public int compare(Provider provider1, Provider provider2) {
-		
+
 		// test for null cases (sorting them to be last in a list)
 		boolean provider1IsNull = (provider1 == null || provider1.getPerson() == null);
 		boolean provider2IsNull = (provider2 == null || provider2.getPerson() == null);
-		
+
 		if (provider1IsNull && provider2IsNull) {
 			return 0;
 		} else if (provider1IsNull) {
@@ -40,7 +37,7 @@ public class ProviderByPersonNameComparator implements Comparator<Provider>, Ser
 		} else if (provider2IsNull) {
 			return -1;
 		}
-		
+
 		// delegate to the person by name comparator
 		return new PersonByNameComparator().compare(provider1.getPerson(), provider2.getPerson());
 	}
