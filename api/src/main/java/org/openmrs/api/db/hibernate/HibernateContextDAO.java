@@ -157,6 +157,20 @@ public class HibernateContextDAO implements ContextDAO {
 
 			// if the username and password match, hydrate the user and return it
 			if (passwordOnRecord != null && Security.hashMatches(passwordOnRecord, password + saltOnRecord)) {
+				//migration of old hash to new hash
+				if(!Security.isBCrypt(passwordOnRecord)){
+					String newBCryptHash = Security.encodeBcrypt(password);
+					//updating the database
+					session.createNativeQuery("update users set password = ?1, salt = ?2 where user_id = ?3") // brcyt has own salt so setting salt column empty;
+						.setParameter(1 , newBCryptHash)
+						.setParameter(2 , "")
+						.setParameter(3 , candidateUser.getUserId())
+						.executeUpdate();
+				}
+				
+				log.info("Transparency migrated user {} to BCrypt hashing" , candidateUser.getUsername());
+			
+				
 				// hydrate the user object
 				candidateUser.getAllRoles().size();
 				candidateUser.getUserProperties().size();
