@@ -1118,16 +1118,16 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientHasIdenticalIdentifiers() throws Exception {
-		
+
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getPatientIdentifierType(2);
 		patientIdentifierType.setUniquenessBehavior(UniquenessBehavior.UNIQUE);
 		Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
-		
+
 		Location location1 = Context.getLocationService().getLocation(1);
 		Location location2 = Context.getLocationService().getLocation(2);
-		
+
 		Patient patient = new Patient();
-		
+
 		// Identifier #1
 		PatientIdentifier patientIdentifier1 = new PatientIdentifier();
 		patientIdentifier1.setIdentifier("123456789");
