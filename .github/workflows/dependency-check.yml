@@ -38,7 +38,7 @@ jobs:
             --nvdApiKey ${{ secrets.NVD_API_KEY }}
       - name: Upload Test results
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
            name: Dependency Check report
            path: ${{github.workspace}}/reports

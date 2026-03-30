@@ -19,36 +19,38 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates attributes on the {@link PatientIdentifierType} object.
- * 
+ *
  * @since 1.5
  */
 @Handler(supports = { PatientIdentifierType.class }, order = 50)
 public class PatientIdentifierTypeValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return c.equals(PatientIdentifierType.class);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fail validation if name is null or empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if description is null or empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if all required fields have proper values<br/>
+	 * <strong>Should</strong> pass validation if regEx field length is not too long<br/>
+	 * <strong>Should</strong> fail validation if regEx field length is too long<br/>
+	 * <strong>Should</strong> fail validation if name field length is too long<br/>
+	 * <strong>Should</strong> fail validation if name is already exist in non retired identifier
+	 * types<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if name is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if description is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if all required fields have proper values
-	 * <strong>Should</strong> pass validation if regEx field length is not too long
-	 * <strong>Should</strong> fail validation if regEx field length is too long
-	 * <strong>Should</strong> fail validation if name field length is too long
-	 * <strong>Should</strong> fail validation if name is already exist in non retired identifier types
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -59,8 +61,8 @@ public class PatientIdentifierTypeValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidateUtil.validateFieldLengths(errors, identifierType.getClass(), "name", "format", "formatDescription",
 			    "validator", "retireReason");
-			PatientIdentifierType exist = Context.getPatientService().getPatientIdentifierTypeByName(
-			    identifierType.getName());
+			PatientIdentifierType exist = Context.getPatientService()
+			        .getPatientIdentifierTypeByName(identifierType.getName());
 			if (exist != null && !exist.getRetired()
 			        && !OpenmrsUtil.nullSafeEquals(identifierType.getUuid(), exist.getUuid())) {
 				errors.rejectValue("name", "identifierType.duplicate.name");

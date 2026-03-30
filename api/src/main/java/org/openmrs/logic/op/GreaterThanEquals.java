@@ -17,16 +17,16 @@ package org.openmrs.logic.op;
  * - <code>logicService.parse("'CD4 COUNT'").gte(200);</code><br>
  * The above will give us a criteria to get the "CD4 COUNT" observations that has the value numeric
  * more than or equals to 200
- * 
+ *
  * @see GreaterThan
  * @see LessThan
  * @see LessThanEquals
  */
 public class GreaterThanEquals implements ComparisonOperator {
-	
+
 	@Override
 	public String toString() {
 		return "GREATER THAN EQUALS";
 	}
-	
+
 }

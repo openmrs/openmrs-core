@@ -19,21 +19,20 @@ import org.openmrs.api.context.UserContext;
 
 /**
  * Tests extending this class have a mocked authenticated UserContext. In addition you can mock
- * Context.get...Service() calls by annotating fields with {@link Mock}.
- * 
- * Use this class for Junit 5 tests.
- * 
+ * Context.get...Service() calls by annotating fields with {@link Mock}. Use this class for Junit 5
+ * tests.
+ *
  * @since 2.4.0
  */
 @ExtendWith(MockitoExtension.class)
 public abstract class BaseContextMockTest {
-	
+
 	@Mock
 	protected UserContext userContext;
-	
+
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
-	
+
 	@AfterEach
 	public void revertContextMocks() {
 		contextMockHelper.revertMocks();

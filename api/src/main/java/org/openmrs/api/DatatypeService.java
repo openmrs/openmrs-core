@@ -19,20 +19,21 @@ import org.openmrs.customdatatype.CustomDatatypeHandler;
 
 /**
  * API methods related to {@link CustomDatatype} and {@link CustomDatatypeHandler}.
+ *
  * @since 1.9
  */
 public interface DatatypeService extends OpenmrsService {
-	
+
 	/**
 	 * @return all datatypes registered by core code and modules
 	 */
 	Set<Class<? extends CustomDatatype<?>>> getAllDatatypeClasses();
-	
+
 	/**
 	 * @return all handlers registered by core code and modules
 	 */
 	Set<Class<? extends CustomDatatypeHandler<?, ?>>> getAllHandlerClasses();
-	
+
 	/**
 	 * @param clazz
 	 * @param config
@@ -40,55 +41,55 @@ public interface DatatypeService extends OpenmrsService {
 	 * @throws CustomDatatypeException
 	 */
 	<T extends CustomDatatype<?>> T getDatatype(Class<T> clazz, String config) throws CustomDatatypeException;
-	
+
 	/**
 	 * Gets the default handler for a {@link CustomDatatype}, and sets its configuration
-	 *  
-	 * 
+	 * <p>
+	 * <strong>Should</strong> return a handler for the specified datatype<br/>
+	 * <strong>Should</strong> return a handler for a datatype that extends a generic superclass
+	 *
 	 * @param datatype
 	 * @param handlerConfig
 	 * @return default handler with the given configuration
-     * <strong>Should</strong> return a handler for the specified datatype
-     * <strong>Should</strong> return a handler for a datatype that extends a generic superclass
 	 */
 	CustomDatatypeHandler<?, ?> getHandler(CustomDatatype<?> datatype, String handlerConfig);
-	
+
 	/**
 	 * @param datatypeClass
 	 * @return all handlers suitable for the given {@link CustomDatatype} class
 	 */
 	@SuppressWarnings("rawtypes")
 	List<Class<? extends CustomDatatypeHandler>> getHandlerClasses(Class<? extends CustomDatatype<?>> datatypeClass);
-	
+
 	/**
 	 * Gets a clob storage object by its id
-	 * 
+	 *
 	 * @param id
 	 * @return clob storage object
 	 */
 	ClobDatatypeStorage getClobDatatypeStorage(Integer id);
-	
+
 	/**
 	 * Gets a clob storage object by its uuid
-	 * 
+	 *
 	 * @param uuid
 	 * @return clob storage object
 	 */
 	ClobDatatypeStorage getClobDatatypeStorageByUuid(String uuid);
-	
+
 	/**
 	 * Creates or updates a clob storage object
-	 * 
+	 *
 	 * @param storage
 	 * @return the saved object
 	 */
 	ClobDatatypeStorage saveClobDatatypeStorage(ClobDatatypeStorage storage);
-	
+
 	/**
 	 * Deletes a clob storage object from the database
-	 * 
+	 *
 	 * @param storage the object to delete
 	 */
 	void deleteClobDatatypeStorage(ClobDatatypeStorage storage);
-	
+
 }

@@ -14,13 +14,13 @@ import org.openmrs.customdatatype.Customizable;
 import org.openmrs.customdatatype.SingleCustomValue;
 
 /**
- * Common interface for user-defined attribute that is are added to a base class.
- * Every attribute corresponds to a {@link AttributeType}, which defines, among other things, whether it
- * is required, whether it may repeat, and how it is serialized and deserialized for storage.
- * These attribute types are intended for use cases that would involve adding custom columns to the base
- * table in a less generic system. 
- * For example Visit has VisitAttributes (which implements Attribute&lt;Visit&gt;) that are defined by
- * VisitAttributeTypes.
+ * Common interface for user-defined attribute that is are added to a base class. Every attribute
+ * corresponds to a {@link AttributeType}, which defines, among other things, whether it is
+ * required, whether it may repeat, and how it is serialized and deserialized for storage. These
+ * attribute types are intended for use cases that would involve adding custom columns to the base
+ * table in a less generic system. For example Visit has VisitAttributes (which implements
+ * Attribute&lt;Visit&gt;) that are defined by VisitAttributeTypes.
+ *
  * @param <AT> the AttributeType for this Attribute
  * @param <OT> the type this attribute can belong to
  * @see AttributeType
@@ -28,22 +28,22 @@ import org.openmrs.customdatatype.SingleCustomValue;
  * @since 1.9
  */
 public interface Attribute<AT extends AttributeType, OT extends Customizable<?>> extends OpenmrsData, SingleCustomValue<AT> {
-	
+
 	/**
 	 * @return the owner that this attribute belongs to
 	 */
 	OT getOwner();
-	
+
 	/**
 	 * Sets the owner of this attribute
-	 * 
+	 *
 	 * @param owner
 	 */
 	void setOwner(OT owner);
-	
+
 	/**
 	 * @return the AttributeType that controls the behaviour of this attribute
 	 */
 	AT getAttributeType();
-	
+
 }

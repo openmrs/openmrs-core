@@ -25,17 +25,17 @@ import jakarta.servlet.ServletResponse;
  * the initial filter chain.
  */
 public class ModuleFilterChain implements FilterChain {
-	
+
 	// Properties
 	private Iterator<Filter> filterIterator;
-	
+
 	private FilterChain initialFilterChain;
-	
+
 	/**
 	 * Private constructor which sets all required properties
-	 * 
-	 * @param filters: The Collection of {@link Filter}s that this FilterChain will iterate over
-	 *            before returning control back the the <code>initialFilterChain</code>
+	 *
+	 * @param filters: The Collection of {@link Filter}s that this FilterChain will iterate over before
+	 *            returning control back the the <code>initialFilterChain</code>
 	 * @param initialFilterChain: The {@link FilterChain} to return control to once all of the
 	 *            {@link Filter}s have been executed
 	 */
@@ -43,12 +43,12 @@ public class ModuleFilterChain implements FilterChain {
 		this.filterIterator = filters.iterator();
 		this.initialFilterChain = initialFilterChain;
 	}
-	
+
 	/**
 	 * Factory method to construct and return a ModuleFilterChain
-	 * 
-	 * @param filters The Collection of {@link Filter}s that this FilterChain will iterate over
-	 *            before returning control back to the <code>initialFilterChain</code>
+	 *
+	 * @param filters The Collection of {@link Filter}s that this FilterChain will iterate over before
+	 *            returning control back to the <code>initialFilterChain</code>
 	 * @param initialFilterChain The {@link FilterChain} to return control to once all of the
 	 *            {@link Filter}s have been executed
 	 * @return The ModuleFilterChain that is fully initialized with the passed parameters
@@ -56,11 +56,11 @@ public class ModuleFilterChain implements FilterChain {
 	public static ModuleFilterChain getInstance(Collection<Filter> filters, FilterChain initialFilterChain) {
 		return new ModuleFilterChain(filters, initialFilterChain);
 	}
-	
+
 	/**
-	 * This Iterates across all of the Filters defined by modules before handing control back over
-	 * to the initial filter chain to continue on.
-	 * 
+	 * This Iterates across all of the Filters defined by modules before handing control back over to
+	 * the initial filter chain to continue on.
+	 *
 	 * @see jakarta.servlet.FilterChain#doFilter(jakarta.servlet.ServletRequest,
 	 *      jakarta.servlet.ServletResponse)
 	 */

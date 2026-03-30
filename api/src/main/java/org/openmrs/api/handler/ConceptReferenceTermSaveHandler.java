@@ -30,10 +30,10 @@ import org.openmrs.aop.RequiredDataAdvice;
  */
 @Handler(supports = ConceptReferenceTerm.class)
 public class ConceptReferenceTermSaveHandler implements SaveHandler<ConceptReferenceTerm> {
-	
+
 	/**
-	 * Sets the concept reference term as the term A for all the {@link ConceptReferenceTermMap}s
-	 * added to it.
+	 * Sets the concept reference term as the term A for all the {@link ConceptReferenceTermMap}s added
+	 * to it.
 	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)

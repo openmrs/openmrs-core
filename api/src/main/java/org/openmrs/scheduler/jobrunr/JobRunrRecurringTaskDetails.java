@@ -1,0 +1,52 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
+package org.openmrs.scheduler.jobrunr;
+
+import java.time.Instant;
+
+import org.jobrunr.jobs.RecurringJob;
+import org.openmrs.scheduler.RecurringTaskDetails;
+
+/**
+ * @since 2.9.x
+ */
+public class JobRunrRecurringTaskDetails implements RecurringTaskDetails {
+
+	private final RecurringJob recurringJob;
+
+	public JobRunrRecurringTaskDetails(RecurringJob recurringJob) {
+		this.recurringJob = recurringJob;
+	}
+
+	@Override
+	public String getUuid() {
+		return recurringJob.getId();
+	}
+
+	@Override
+	public String getName() {
+		return recurringJob.getJobName();
+	}
+
+	@Override
+	public Instant getCreatedAt() {
+		return recurringJob.getCreatedAt();
+	}
+
+	@Override
+	public String getSignature() {
+		return recurringJob.getJobSignature();
+	}
+
+	@Override
+	public String getScheduleExpression() {
+		return recurringJob.getScheduleExpression();
+	}
+}
