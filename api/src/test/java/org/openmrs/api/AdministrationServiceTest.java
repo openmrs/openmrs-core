@@ -1180,4 +1180,28 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// verify hook methods must be called
 		verify(activator).setupOnVersionChange(previousCoreVersion, previousModuleVersion);
 	}
+
+	@Test
+	public void globalPropertyDeleted_shouldResetPresentationLocalesWhenLocaleAllowedListDeleted() {
+		// First get presentation locales to initialize them
+		AdministrationService as = Context.getAdministrationService();
+
+		// Set allowed locales so presentationLocales gets initialized
+		GlobalProperty gp = new GlobalProperty(
+			OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB");
+		as.saveGlobalProperty(gp);
+
+		// Initialize presentationLocales by calling getPresentationLocales
+		as.getPresentationLocales();
+
+		// Now delete the global property
+		((GlobalPropertyListener) as).globalPropertyDeleted(
+			OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
+
+		// presentationLocales should be reset to null
+		// Calling getPresentationLocales again should 
+		// reinitialize it from scratch
+		assertNotNull(as.getPresentationLocales());
+	}
+
 }
