@@ -43,7 +43,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 
 	/**
-	 * @see PatientValidator#validate(Object,Errors)
+	 * @see PatientValidator#validate(Object, Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosen() {
@@ -59,7 +59,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 
 	/**
-	 * @see PatientValidator#validate(Object,Errors)
+	 * @see PatientValidator#validate(Object, Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosenForVoidedPatients() {
@@ -108,7 +108,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 
 	/**
-	 * @see org.openmrs.validator.PatientValidator#validate(Object,Errors)
+	 * @see org.openmrs.validator.PatientValidator#validate(Object, Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfGenderIsBlank() {
@@ -120,7 +120,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 
 	/**
-	 * @see PatientValidator#validate(Object,Errors)
+	 * @see PatientValidator#validate(Object, Errors)
 	 */
 	@Override
 	@Test
@@ -158,7 +158,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 
 	/**
-	 * @see PatientValidator#validate(Object,Errors)
+	 * @see PatientValidator#validate(Object, Errors)
 	 */
 	@Override
 	@Test
