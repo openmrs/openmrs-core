@@ -99,9 +99,12 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 	 */
 	List<String[]> discoverAuditPairs(Connection connection) throws SQLException {
 		DatabaseMetaData metaData = connection.getMetaData();
+		// Restrict to the current catalog so system tables from other databases
+		// (mysql, information_schema, etc.) are not included in the search.
+		String catalog = connection.getCatalog();
 
 		List<String> allTables = new ArrayList<>();
-		try (ResultSet tables = metaData.getTables(null, null, "%", new String[] { "TABLE" })) {
+		try (ResultSet tables = metaData.getTables(catalog, null, "%", new String[] { "TABLE" })) {
 			while (tables.next()) {
 				allTables.add(tables.getString("TABLE_NAME"));
 			}
@@ -145,6 +148,8 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 				}
 			}
 		}
+		log.info("Discovered {} audit table pairs to backfill: {}", pairs.size(),
+		    pairs.stream().map(p -> p[0] + " -> " + p[1]).collect(java.util.stream.Collectors.joining(", ")));
 		return pairs;
 	}
 
