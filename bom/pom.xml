@@ -58,12 +58,12 @@
 		<aspectjVersion>1.9.25.1</aspectjVersion>
 		<jacksonVersion>2.21.2</jacksonVersion>
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.25.3</log4jVersion>
+		<log4jVersion>2.25.4</log4jVersion>
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<owaspEncoderVersion>1.4.0</owaspEncoderVersion>
 		<graalJsVersion>25.0.2</graalJsVersion>
-		<nettyVersion>4.1.131.Final</nettyVersion>
+		<nettyVersion>4.2.12.Final</nettyVersion>
 
 		<!-- Jakarta -->
 		<jakartaServletVersion>6.1.0</jakartaServletVersion>
@@ -144,6 +144,19 @@
 			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>3.4.0</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencyManagement>
 		<dependencies>
