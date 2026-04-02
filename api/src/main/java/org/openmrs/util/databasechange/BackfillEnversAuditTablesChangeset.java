@@ -16,8 +16,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -147,6 +149,21 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 					}
 				}
 			}
+		}
+		// Infer the audit suffix by majority vote to filter out false prefix matches.
+		// For example, "Location_LocationAttribute_aud" would match source "location" with
+		// suffix "_locationattribute_aud", which is not the majority suffix "_aud" and is rejected.
+		if (!pairs.isEmpty()) {
+			Map<String, Integer> suffixVotes = new HashMap<>();
+			for (String[] pair : pairs) {
+				String suffix = pair[1].toLowerCase().substring(pair[0].toLowerCase().length());
+				suffixVotes.merge(suffix, 1, Integer::sum);
+			}
+			String inferredSuffix = suffixVotes.entrySet().stream()
+			        .max(Map.Entry.comparingByValue())
+			        .get().getKey();
+			log.info("Inferred audit suffix '{}' from majority vote across {} pairs", inferredSuffix, pairs.size());
+			pairs.removeIf(pair -> !pair[1].toLowerCase().substring(pair[0].toLowerCase().length()).equals(inferredSuffix));
 		}
 		log.info("Discovered {} audit table pairs to backfill: {}", pairs.size(),
 		    pairs.stream().map(p -> p[0] + " -> " + p[1]).collect(java.util.stream.Collectors.joining(", ")));
