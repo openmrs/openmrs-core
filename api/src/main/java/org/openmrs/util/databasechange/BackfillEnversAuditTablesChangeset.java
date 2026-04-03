@@ -64,18 +64,29 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 
 			// Discover (sourceTable, auditTable) pairs by detecting Envers audit tables via
 			// REV + REVTYPE columns — independent of the configured audit suffix.
-			// Collect all pairs first so we can iterate them multiple times: a second pass
-			// is needed for joined-subclass audit tables (e.g. patient_aud, drug_order_aud)
-			// whose FK to the parent audit table would otherwise fail when the parent has
-			// not been backfilled yet.
 			List<String[]> auditPairs = discoverAuditPairs(connection);
 
+			// Temporarily disable FK checks on MySQL/MariaDB so that joined-subclass audit
+			// tables (patient_aud → person_aud, drug_order_aud → orders_aud) can be
+			// backfilled regardless of iteration order.
+			boolean mysqlCompatible = isMysqlCompatible(connection);
+			if (mysqlCompatible) {
+				try (Statement stmt = connection.createStatement()) {
+					stmt.execute("SET FOREIGN_KEY_CHECKS=0");
+				}
+			}
+
 			Integer revId = null;
-			// Two passes: pass 1 populates parent audit tables; pass 2 handles child
-			// audit tables whose FK dependency on the parent is now satisfied.
-			for (int pass = 0; pass < 2; pass++) {
+			try {
 				for (String[] pair : auditPairs) {
 					revId = tryBackfillEntity(connection, pair[0], pair[1], revisionTableName, revId);
+				}
+			}
+			finally {
+				if (mysqlCompatible) {
+					try (Statement stmt = connection.createStatement()) {
+						stmt.execute("SET FOREIGN_KEY_CHECKS=1");
+					}
 				}
 			}
 
@@ -87,6 +98,16 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 		}
 		catch (Exception e) {
 			throw new CustomChangeException("Failed to backfill Envers audit tables", e);
+		}
+	}
+
+	private boolean isMysqlCompatible(Connection connection) {
+		try {
+			String productName = connection.getMetaData().getDatabaseProductName().toLowerCase();
+			return productName.contains("mysql") || productName.contains("mariadb");
+		}
+		catch (SQLException e) {
+			return false;
 		}
 	}
 
