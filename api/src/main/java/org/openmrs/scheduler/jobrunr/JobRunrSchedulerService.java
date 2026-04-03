@@ -191,7 +191,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		TaskDefinition task = getTaskByUuid(uuid);
 		if (task != null) {
 			String scheduledBy = task.getCreator() != null ? task.getCreator().getSystemId() : "daemon";
-			String jobId = jobRequestScheduler.scheduleRecurrently(task.getUuid(),
+			String jobId = jobRequestScheduler.scheduleRecurrently(task.getUuid().replace("-", ""),
 			    Duration.ofSeconds(task.getRepeatInterval()), new JobRequestAdapter(task, scheduledBy));
 			updateRecurringJobWithName(jobId, task.getName());
 		}
