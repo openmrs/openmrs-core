@@ -82,11 +82,31 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		this.schedulerDAO = schedulerDAO;
 	}
 
+	/**
+	 * Normalises a UUID string for use as a JobRunr recurring-job ID.
+	 * <p>
+	 * H2 stores {@code CHAR(38)} values padded with trailing spaces (a UUID is 36 chars), and JobRunr's
+	 * ID validator rejects whitespace. MySQL trims CHAR on read, so this is only visible with H2.
+	 * Trimming and removing hyphens makes the value safe for both databases.
+	 * </p>
+	 */
+	private static String toJobRunrId(String uuid) {
+		return uuid == null ? null : uuid.trim().replace("-", "");
+	}
+
+	/**
+	 * Returns a trimmed UUID string safe for {@link java.util.UUID#fromString(String)}. H2 pads
+	 * {@code CHAR(38)} with trailing spaces; trimming prevents parse errors.
+	 */
+	private static String trimUuid(String uuid) {
+		return uuid == null ? null : uuid.trim();
+	}
+
 	@Override
 	public void onStartup() {
 		for (TaskDefinition taskDefinition : schedulerDAO.getTasks()) {
 			if (Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
-				JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(taskDefinition.getUuid()),
+				JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(trimUuid(taskDefinition.getUuid())),
 				    new JobRequestAdapter(taskDefinition, taskDefinition.getCreator().getSystemId()));
 				String name = taskDefinition.getName();
 				if (name == null) {
@@ -145,27 +165,27 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 				if (task.getRepeatInterval() != null && task.getRepeatInterval() > 0) {
 					if (task.getStartTime() == null) {
-						String recurringJobId = jobRequestScheduler.scheduleRecurrently(task.getUuid().replace("-", ""),
+						String recurringJobId = jobRequestScheduler.scheduleRecurrently(toJobRunrId(task.getUuid()),
 						    Duration.ofSeconds(task.getRepeatInterval()), new JobRequestAdapter(task, scheduledBy));
 						updateRecurringJobWithName(recurringJobId, name);
 					} else {
 						Date nextExecution = SchedulerUtil.getNextExecution(task);
 						JobId jobId = jobScheduler.schedule(UUID.randomUUID(), nextExecution.toInstant(),
-						    (JobRunrSchedulerService service) -> service.scheduleRecurrently(task.getUuid()));
+						    (JobRunrSchedulerService service) -> service.scheduleRecurrently(trimUuid(task.getUuid())));
 						updateJobWithName(jobId, task.getName());
 						// Create a placeholder recurring task that will be updated by the above task to the correct interval
-						String recurringJobId = jobRequestScheduler.scheduleRecurrently(task.getUuid().replace("-", ""),
+						String recurringJobId = jobRequestScheduler.scheduleRecurrently(toJobRunrId(task.getUuid()),
 						    Duration.between(Instant.now(), nextExecution.toInstant()).plus(1, ChronoUnit.DAYS),
 						    new JobRequestAdapter(task, scheduledBy));
 						updateRecurringJobWithName(recurringJobId, name);
 					}
 				} else if (task.getStartTime() != null) {
 					Instant runAt = task.getStartTime().toInstant();
-					JobId jobId = jobRequestScheduler.schedule(UUID.fromString(task.getUuid()), runAt,
+					JobId jobId = jobRequestScheduler.schedule(UUID.fromString(trimUuid(task.getUuid())), runAt,
 					    new JobRequestAdapter(task, scheduledBy));
 					updateJobWithName(jobId, name);
 				} else {
-					JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(task.getUuid()),
+					JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(trimUuid(task.getUuid())),
 					    new JobRequestAdapter(task, scheduledBy));
 					updateJobWithName(jobId, name);
 				}
@@ -191,7 +211,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		TaskDefinition task = getTaskByUuid(uuid);
 		if (task != null) {
 			String scheduledBy = task.getCreator() != null ? task.getCreator().getSystemId() : "daemon";
-			String jobId = jobRequestScheduler.scheduleRecurrently(task.getUuid().replace("-", ""),
+			String jobId = jobRequestScheduler.scheduleRecurrently(toJobRunrId(task.getUuid()),
 			    Duration.ofSeconds(task.getRepeatInterval()), new JobRequestAdapter(task, scheduledBy));
 			updateRecurringJobWithName(jobId, task.getName());
 		}
@@ -277,7 +297,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	@Override
 	public Optional<TaskDetails> getTask(String uuid) {
 		try {
-			Job job = storageProvider.getJobById(JobId.parse(uuid));
+			Job job = storageProvider.getJobById(JobId.parse(trimUuid(uuid)));
 			if (!hasPrivileges(job.getJobDetails())) {
 				return Optional.empty();
 			} else if (StateName.DELETED.equals(job.getState())) {
@@ -293,7 +313,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	@Override
 	public Optional<RecurringTaskDetails> getRecurringTask(String uuid) {
 		return storageProvider.getRecurringJobs().stream()
-		        .filter(r -> r.getId().equals(uuid.replace("-", "")) && hasPrivileges(r.getJobDetails())).findFirst()
+		        .filter(r -> r.getId().equals(toJobRunrId(uuid)) && hasPrivileges(r.getJobDetails())).findFirst()
 		        .map(JobRunrRecurringTaskDetails::new);
 	}
 
