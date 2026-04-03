@@ -274,6 +274,43 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 
 	/**
+	 * @see PatientValidator#validate(Object, Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfOnlyOneOfTwoRequiredIdentifiersIsPresent() {
+		List<PatientIdentifierType> types = Context.getPatientService().getAllPatientIdentifierTypes(false);
+
+		PatientIdentifierType requiredType1 = types.get(0);
+		requiredType1.setRequired(true);
+		requiredType1.setRetired(false);
+		Context.getPatientService().savePatientIdentifierType(requiredType1);
+
+		PatientIdentifierType requiredType2 = types.get(1);
+		requiredType2.setRequired(true);
+		requiredType2.setRetired(false);
+		Context.getPatientService().savePatientIdentifierType(requiredType2);
+
+		Patient patient = new Patient();
+		patient.addName(new PersonName("Tom", "", "Patient"));
+		patient.setGender("male");
+		patient.setBirthdate(new Date());
+
+		// Only assign identifier for the first required type
+		PatientIdentifier identifier = new PatientIdentifier();
+		identifier.setIdentifier("REQ001");
+		identifier.setIdentifierType(requiredType1);
+		identifier.setLocation(new Location(1));
+		identifier.setPreferred(true);
+		patient.addIdentifier(identifier);
+
+		Errors errors = new BindException(patient, "patient");
+		validator.validate(patient, errors);
+
+		assertTrue(errors.hasFieldErrors("identifiers"));
+		assertEquals("Patient.missingRequiredIdentifier", errors.getFieldError("identifiers").getCode());
+	}
+
+	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
 	@Test
@@ -434,7 +471,6 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
-
 	@Test
 	public void validate_shouldNotFailForVoidedPatientWithoutRequiredIdentifier() {
 
@@ -449,6 +485,14 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		patient.addName(new PersonName("Tom", "", "Patient"));
 		patient.setGender("male");
 		patient.setBirthdate(new Date());
+
+		// Patient is voided and has no active identifier for the required type
+		PatientIdentifier voidedIdentifier = new PatientIdentifier();
+		voidedIdentifier.setIdentifier("VOIDED123");
+		voidedIdentifier.setIdentifierType(type);
+		voidedIdentifier.setLocation(new Location(1));
+		voidedIdentifier.setVoided(true);
+		patient.addIdentifier(voidedIdentifier);
 
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);

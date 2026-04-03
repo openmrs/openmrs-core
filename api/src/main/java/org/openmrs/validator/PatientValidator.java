@@ -18,7 +18,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
+import org.openmrs.api.PatientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +33,15 @@ public class PatientValidator extends PersonValidator {
 
 	private static final Logger log = LoggerFactory.getLogger(PersonNameValidator.class);
 
+	private final PatientIdentifierValidator patientIdentifierValidator;
+
+	private final PatientService patientService;
+
 	@Autowired
-	private PatientIdentifierValidator patientIdentifierValidator;
+	public PatientValidator(PatientIdentifierValidator patientIdentifierValidator, PatientService patientService) {
+		this.patientIdentifierValidator = patientIdentifierValidator;
+		this.patientService = patientService;
+	}
 
 	/**
 	 * Returns whether or not this validator supports validating a given class.
@@ -90,54 +97,43 @@ public class PatientValidator extends PersonValidator {
 
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "Person.gender.required");
 
-		validatePreferredIdentifier(patient, errors);
-
-		if (!Boolean.TRUE.equals(patient.getVoided())) {
-			validateRequiredIdentifiers(patient, errors);
-		}
+		validatePreferredAndRequiredIdentifiers(patient, errors);
 
 		validatePatientIdentifiers(patient, errors);
 
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 	}
 
-	private void validatePreferredIdentifier(Patient patient, Errors errors) {
-		boolean preferredIdentifierChosen = false;
-
-		Collection<PatientIdentifier> identifiers = Boolean.TRUE.equals(patient.getVoided()) ? patient.getIdentifiers()
+	private void validatePreferredAndRequiredIdentifiers(Patient patient, Errors errors) {
+		boolean isVoidedPatient = Boolean.TRUE.equals(patient.getVoided());
+		Collection<PatientIdentifier> identifiers = isVoidedPatient ? patient.getIdentifiers()
 		        : patient.getActiveIdentifiers();
 
+		Set<PatientIdentifierType> requiredTypes = new HashSet<>();
+		if (!isVoidedPatient) {
+			for (PatientIdentifierType type : patientService.getAllPatientIdentifierTypes(false)) {
+				if (Boolean.TRUE.equals(type.getRequired())) {
+					requiredTypes.add(type);
+				}
+			}
+		}
+
+		boolean preferredIdentifierChosen = false;
 		for (PatientIdentifier pi : identifiers) {
 			if (Boolean.TRUE.equals(pi.getPreferred())) {
 				preferredIdentifierChosen = true;
+			}
+			if (pi.getIdentifierType() != null) {
+				requiredTypes.remove(pi.getIdentifierType());
 			}
 		}
 
 		if (!preferredIdentifierChosen && identifiers.size() != 1) {
 			errors.reject("error.preferredIdentifier");
 		}
-	}
-
-	private void validateRequiredIdentifiers(Patient patient, Errors errors) {
-		Collection<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes(false);
-
-		Set<PatientIdentifierType> requiredTypes = new HashSet<>();
-
-		for (PatientIdentifierType type : identifierTypes) {
-			if (Boolean.TRUE.equals(type.getRequired())) {
-				requiredTypes.add(type);
-			}
-		}
-
-		for (PatientIdentifier pi : patient.getActiveIdentifiers()) {
-			if (pi.getIdentifierType() != null) {
-				requiredTypes.remove(pi.getIdentifierType());
-			}
-		}
 
 		if (!requiredTypes.isEmpty()) {
 			List<String> missingRequiredIdentifiers = requiredTypes.stream().map(PatientIdentifierType::getName).toList();
-
 			errors.rejectValue("identifiers", "Patient.missingRequiredIdentifier",
 			    new Object[] { String.join(", ", missingRequiredIdentifiers) }, null);
 		}
