@@ -183,10 +183,10 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 			String inferredSuffix = suffixVotes.entrySet().stream()
 			        .max(Map.Entry.comparingByValue())
 			        .get().getKey();
-			log.info("Inferred audit suffix '{}' from majority vote across {} pairs", inferredSuffix, pairs.size());
+			log.warn("Inferred audit suffix '{}' from majority vote across {} pairs", inferredSuffix, pairs.size());
 			pairs.removeIf(pair -> !pair[1].toLowerCase().substring(pair[0].toLowerCase().length()).equals(inferredSuffix));
 		}
-		log.info("Discovered {} audit table pairs to backfill: {}", pairs.size(),
+		log.warn("Discovered {} audit table pairs to backfill: {}", pairs.size(),
 		    pairs.stream().map(p -> p[0] + " -> " + p[1]).collect(java.util.stream.Collectors.joining(", ")));
 		return pairs;
 	}
@@ -215,16 +215,23 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 	private Integer tryBackfillEntity(Connection connection, String sourceTable, String auditTable, String revisionTableName,
 	        Integer revId) {
 		try {
-			if (!isAuditTableEmpty(connection, auditTable) || isTableEmpty(connection, sourceTable)) {
+			if (!isAuditTableEmpty(connection, auditTable)) {
+				log.warn("Skipping {} - audit table already has data", auditTable);
+				return revId;
+			}
+			if (isTableEmpty(connection, sourceTable)) {
+				log.warn("Skipping {} - source table {} is empty", auditTable, sourceTable);
 				return revId;
 			}
 			if (revId == null) {
 				revId = createBackfillRevision(connection, revisionTableName);
 			}
 			List<String> columns = getAuditTableDataColumns(connection, auditTable, sourceTable);
-			if (!columns.isEmpty()) {
-				backfillTable(connection, sourceTable, auditTable, columns, revId);
+			if (columns.isEmpty()) {
+				log.warn("Skipping {} - no common columns found between {} and {}", auditTable, sourceTable, auditTable);
+				return revId;
 			}
+			backfillTable(connection, sourceTable, auditTable, columns, revId);
 		}
 		catch (SQLException e) {
 			log.warn("Failed to backfill audit table {}: {}", auditTable, e.getMessage());
@@ -398,7 +405,7 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 		        + columnList + " FROM " + sourceTable;
 		try (Statement stmt = connection.createStatement()) {
 			int rows = stmt.executeUpdate(sql);
-			log.info("Backfilled {} rows from {} into {}", rows, sourceTable, auditTable);
+			log.warn("Backfilled {} rows from {} into {}", rows, sourceTable, auditTable);
 		}
 	}
 
