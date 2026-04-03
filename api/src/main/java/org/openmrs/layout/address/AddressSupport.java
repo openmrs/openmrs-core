@@ -12,7 +12,8 @@ package org.openmrs.layout.address;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
@@ -57,7 +58,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 
 			String layoutTemplateXml = Context.getAdministrationService()
 			        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE);
-			setAddressTemplate(StringEscapeUtils.unescapeXml(layoutTemplateXml));
+			setAddressTemplate(layoutTemplateXml);
 
 			List<String> specialTokens = new ArrayList<>();
 			specialTokens.add("address1");
@@ -142,9 +143,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	private void setAddressTemplate(String xml) {
 		AddressTemplate addressTemplate;
 		try {
-
-			addressTemplate = Context.getSerializationService().getDefaultSerializer()
-			        .deserialize(StringEscapeUtils.unescapeXml(xml), AddressTemplate.class);
+			addressTemplate = deserializeAddressTemplate(xml);
 		} catch (SerializationException e) {
 			log.error("Error in deserializing address template", e);
 			addressTemplate = new AddressTemplate("Error while deserializing address layout template.");
@@ -153,6 +152,32 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 		List<AddressTemplate> list = new ArrayList<>();
 		list.add(addressTemplate);
 		setAddressTemplate(list);
+	}
+
+	/**
+	 * Supports both raw XML and XML-escaped text as persisted by different GP edit flows.
+	 */
+	private AddressTemplate deserializeAddressTemplate(String xml) throws SerializationException {
+		if (StringUtils.isBlank(xml)) {
+			throw new SerializationException("Address template xml is blank");
+		}
+
+		try {
+			return Context.getSerializationService().getDefaultSerializer().deserialize(xml, AddressTemplate.class);
+		} catch (SerializationException firstException) {
+			String unescaped = StringEscapeUtils.unescapeXml(xml);
+			if (xml.equals(unescaped)) {
+				throw firstException;
+			}
+
+			try {
+				return Context.getSerializationService().getDefaultSerializer().deserialize(unescaped,
+				    AddressTemplate.class);
+			} catch (SerializationException secondException) {
+				secondException.addSuppressed(firstException);
+				throw secondException;
+			}
+		}
 	}
 
 	/**
