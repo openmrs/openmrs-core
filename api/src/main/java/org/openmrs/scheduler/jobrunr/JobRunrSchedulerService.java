@@ -285,7 +285,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 			} else {
 				return Optional.of(new JobRunrTaskDetails(job));
 			}
-		} catch (JobNotFoundException e) {
+		} catch (JobNotFoundException | IllegalArgumentException e) {
 			return Optional.empty();
 		}
 	}
