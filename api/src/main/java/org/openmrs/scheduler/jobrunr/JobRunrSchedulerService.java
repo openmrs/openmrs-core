@@ -170,8 +170,9 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 						updateRecurringJobWithName(recurringJobId, name);
 					} else {
 						Date nextExecution = SchedulerUtil.getNextExecution(task);
+						final String taskUuid = trimUuid(task.getUuid());
 						JobId jobId = jobScheduler.schedule(UUID.randomUUID(), nextExecution.toInstant(),
-						    (JobRunrSchedulerService service) -> service.scheduleRecurrently(trimUuid(task.getUuid())));
+						    (JobRunrSchedulerService service) -> service.scheduleRecurrently(taskUuid));
 						updateJobWithName(jobId, task.getName());
 						// Create a placeholder recurring task that will be updated by the above task to the correct interval
 						String recurringJobId = jobRequestScheduler.scheduleRecurrently(toJobRunrId(task.getUuid()),
