@@ -145,7 +145,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 				if (task.getRepeatInterval() != null && task.getRepeatInterval() > 0) {
 					if (task.getStartTime() == null) {
-						String recurringJobId = jobRequestScheduler.scheduleRecurrently(task.getUuid(),
+						String recurringJobId = jobRequestScheduler.scheduleRecurrently(task.getUuid().replace("-", ""),
 						    Duration.ofSeconds(task.getRepeatInterval()), new JobRequestAdapter(task, scheduledBy));
 						updateRecurringJobWithName(recurringJobId, name);
 					} else {
@@ -154,7 +154,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 						    (JobRunrSchedulerService service) -> service.scheduleRecurrently(task.getUuid()));
 						updateJobWithName(jobId, task.getName());
 						// Create a placeholder recurring task that will be updated by the above task to the correct interval
-						String recurringJobId = jobRequestScheduler.scheduleRecurrently(task.getUuid(),
+						String recurringJobId = jobRequestScheduler.scheduleRecurrently(task.getUuid().replace("-", ""),
 						    Duration.between(Instant.now(), nextExecution.toInstant()).plus(1, ChronoUnit.DAYS),
 						    new JobRequestAdapter(task, scheduledBy));
 						updateRecurringJobWithName(recurringJobId, name);
@@ -293,7 +293,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	@Override
 	public Optional<RecurringTaskDetails> getRecurringTask(String uuid) {
 		return storageProvider.getRecurringJobs().stream()
-		        .filter(r -> r.getId().equals(uuid) && hasPrivileges(r.getJobDetails())).findFirst()
+		        .filter(r -> r.getId().equals(uuid.replace("-", "")) && hasPrivileges(r.getJobDetails())).findFirst()
 		        .map(JobRunrRecurringTaskDetails::new);
 	}
 
