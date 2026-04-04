@@ -133,25 +133,32 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 			}
 		}
 
-		// Partition into audit tables (have REV + REVTYPE) and potential source tables
-		Set<String> auditTableSet = new HashSet<>();
+		// Phase 1: Find definite Envers audit tables (have both REV and REVTYPE) and
+		// potential subclass audit tables (have REV but not REVTYPE).
+		// In Hibernate Envers with joined-table inheritance, subclass audit tables
+		// (e.g. patient_aud, drug_order_aud) do NOT have their own REVTYPE column —
+		// only the root-class audit table does. So we detect them separately.
+		Set<String> definiteAuditSet = new HashSet<>();
+		Set<String> revOnlySet = new HashSet<>();
 		for (String tableName : allTables) {
 			if (isEnversAuditTable(connection, tableName)) {
-				auditTableSet.add(tableName);
+				definiteAuditSet.add(tableName);
+			} else if (hasRevColumn(connection, tableName)) {
+				revOnlySet.add(tableName);
 			}
 		}
 
-		// Build lowercase set of non-audit table names for prefix matching
+		// Source tables: everything that is not a (potential) audit table
 		Set<String> sourceTableNames = new HashSet<>();
 		for (String tableName : allTables) {
-			if (!auditTableSet.contains(tableName)) {
+			if (!definiteAuditSet.contains(tableName) && !revOnlySet.contains(tableName)) {
 				sourceTableNames.add(tableName.toLowerCase());
 			}
 		}
 
-		// For each audit table, find the longest-prefix matching source table
+		// For each definite audit table, find the longest-prefix matching source table
 		List<String[]> pairs = new ArrayList<>();
-		for (String auditTable : auditTableSet) {
+		for (String auditTable : definiteAuditSet) {
 			String lowerAudit = auditTable.toLowerCase();
 			String bestMatch = null;
 			for (String sourceTable : sourceTableNames) {
@@ -162,7 +169,6 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 				}
 			}
 			if (bestMatch != null) {
-				// Recover original-case source table name
 				for (String tableName : allTables) {
 					if (tableName.equalsIgnoreCase(bestMatch)) {
 						pairs.add(new String[] { tableName, auditTable });
@@ -171,21 +177,43 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 				}
 			}
 		}
-		// Infer the audit suffix by majority vote to filter out false prefix matches.
-		// For example, "Location_LocationAttribute_aud" would match source "location" with
-		// suffix "_locationattribute_aud", which is not the majority suffix "_aud" and is rejected.
+
+		// Infer the audit suffix by majority vote from definite pairs to filter false matches.
+		String inferredSuffix = null;
 		if (!pairs.isEmpty()) {
 			Map<String, Integer> suffixVotes = new HashMap<>();
 			for (String[] pair : pairs) {
 				String suffix = pair[1].toLowerCase().substring(pair[0].toLowerCase().length());
 				suffixVotes.merge(suffix, 1, Integer::sum);
 			}
-			String inferredSuffix = suffixVotes.entrySet().stream()
+			inferredSuffix = suffixVotes.entrySet().stream()
 			        .max(Map.Entry.comparingByValue())
 			        .get().getKey();
 			log.warn("Inferred audit suffix '{}' from majority vote across {} pairs", inferredSuffix, pairs.size());
-			pairs.removeIf(pair -> !pair[1].toLowerCase().substring(pair[0].toLowerCase().length()).equals(inferredSuffix));
+			final String finalSuffix = inferredSuffix;
+			pairs.removeIf(pair -> !pair[1].toLowerCase().substring(pair[0].toLowerCase().length()).equals(finalSuffix));
 		}
+
+		// Phase 2: Add joined-subclass audit tables (have REV but not REVTYPE).
+		// These are matched by checking their name ends with the inferred suffix
+		// and a matching source table exists (e.g. patient_aud → patient).
+		if (inferredSuffix != null) {
+			for (String auditTable : revOnlySet) {
+				String lowerAudit = auditTable.toLowerCase();
+				if (lowerAudit.endsWith(inferredSuffix)) {
+					String sourceTableLower = lowerAudit.substring(0, lowerAudit.length() - inferredSuffix.length());
+					if (sourceTableNames.contains(sourceTableLower)) {
+						for (String tableName : allTables) {
+							if (tableName.equalsIgnoreCase(sourceTableLower)) {
+								pairs.add(new String[] { tableName, auditTable });
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
 		log.warn("Discovered {} audit table pairs to backfill: {}", pairs.size(),
 		    pairs.stream().map(p -> p[0] + " -> " + p[1]).collect(java.util.stream.Collectors.joining(", ")));
 		return pairs;
@@ -205,6 +233,27 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 		}
 		try (Statement stmt = connection.createStatement()) {
 			stmt.execute("SELECT REV, REVTYPE FROM " + safeTableName + " WHERE 1=0");
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Returns true if the table has a {@code REV} column but not {@code REVTYPE}.
+	 * Used to detect joined-subclass Envers audit tables which only carry the REV FK.
+	 */
+	boolean hasRevColumn(Connection connection, String tableName) {
+		String safeTableName;
+		try {
+			safeTableName = requireSafeIdentifier(tableName);
+		}
+		catch (IllegalArgumentException e) {
+			return false;
+		}
+		try (Statement stmt = connection.createStatement()) {
+			stmt.execute("SELECT REV FROM " + safeTableName + " WHERE 1=0");
 			return true;
 		}
 		catch (Exception e) {
