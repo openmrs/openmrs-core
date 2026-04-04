@@ -89,6 +89,35 @@ public class HibernateAlertDAO implements AlertDAO {
 	}
 
 	/**
+	 * @see org.openmrs.notification.AlertService#getAllAlerts(boolean, boolean)
+	 */
+	@Override
+	public List<Alert> getAllAlerts(boolean includeRead, boolean includeExpired) throws DAOException {
+		log.debug("Getting alerts for all users read? {} expired? {}", includeRead, includeExpired);
+
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Alert> cq = cb.createQuery(Alert.class);
+		Root<Alert> root = cq.from(Alert.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		// exclude expired alerts unless requested
+		if (!includeExpired) {
+			predicates.add(cb.or(cb.isNull(root.get("dateToExpire")), cb.greaterThan(root.get("dateToExpire"), new Date())));
+		}
+
+		// exclude read alerts unless requested
+		if (!includeRead) {
+			predicates.add(cb.isFalse(root.get("alertRead")));
+		}
+
+		cq.where(predicates.toArray(new Predicate[] {})).orderBy(cb.desc(root.get("dateChanged")));
+
+		return session.createQuery(cq).getResultList();
+	}
+
+	/**
 	 * @see org.openmrs.notification.db.AlertDAO#getAlerts(org.openmrs.User, boolean, boolean)
 	 */
 	@Override
