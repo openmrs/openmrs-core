@@ -121,7 +121,10 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 		try (Statement stmt = connection.createStatement();
 		        ResultSet rs = stmt.executeQuery("SELECT COALESCE(MAX(" + requireSafeIdentifier(pkColumn) + "), 0) + 1 FROM "
 		                + requireSafeIdentifier(revisionTableName))) {
-			nextId = rs.next() ? rs.getInt(1) : 1;
+			if (!rs.next()) {
+				throw new SQLException("Failed to compute next revision ID from table: " + revisionTableName);
+			}
+			nextId = rs.getInt(1);
 		}
 		String sql = "INSERT INTO " + requireSafeIdentifier(revisionTableName) + " (" + requireSafeIdentifier(pkColumn)
 		        + ", " + requireSafeIdentifier(timestampColumn) + ") VALUES (?, ?)";
@@ -150,7 +153,7 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 				}
 			}
 		}
-		return "id";
+		throw new SQLException("Could not determine primary key column for revision table: " + revisionTableName);
 	}
 
 	/**
