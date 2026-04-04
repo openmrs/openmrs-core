@@ -36,8 +36,7 @@ public class AlertReminderTask extends AbstractTask {
 	public void execute() {
 		try {
 			// Get all unread alerts
-			// TODO Change to getAllAlerts(Boolean includeRead, Boolean includeExpired);
-			Collection<Alert> alerts = Context.getAlertService().getAllAlerts(false);
+			Collection<Alert> alerts = Context.getAlertService().getAllAlerts(false, false);
 
 			// Send alert notifications to users who have unread alerts
 			sendAlertNotifications(alerts);
