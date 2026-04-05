@@ -50,6 +50,7 @@ import org.openmrs.util.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -200,6 +201,16 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User unsavedUser = new User();
 
 		assertThrows(ValidationException.class, () -> userService.createUser(unsavedUser, null));
+	}
+
+	@Test
+	public void createUser_shouldValidateUserBeforePassword() {
+		User newUser = userWithValidPerson();
+		newUser.setPerson(null);
+
+		ValidationException exception = assertThrows(ValidationException.class,
+		    () -> userService.createUser(newUser, "short"));
+		assertThat(exception.getMessage(), containsString("person: Cannot be empty or null"));
 	}
 
 	@Test

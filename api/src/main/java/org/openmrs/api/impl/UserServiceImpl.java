@@ -50,6 +50,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
+import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +121,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			        "Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
 		}
 
-		// TODO Check required fields for user!!
+		ValidateUtil.validate(user);
 		OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
 
 		return dao.saveUser(user, password);
