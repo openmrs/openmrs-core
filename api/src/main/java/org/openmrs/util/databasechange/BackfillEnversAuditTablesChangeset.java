@@ -450,8 +450,21 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 		requireSafeIdentifier(auditTable);
 		columns.forEach(BackfillEnversAuditTablesChangeset::requireSafeIdentifier);
 		String columnList = String.join(", ", columns);
-		String sql = "INSERT INTO " + auditTable + " (REV, REVTYPE, " + columnList + ") SELECT " + revId + ", 0, "
-		        + columnList + " FROM " + sourceTable;
+		// Subclass audit tables (e.g. patient_aud, drug_order_aud) do not have a REVTYPE
+		// column — only root-class audit tables do. Check before including it in the INSERT.
+		boolean hasRevtype;
+		try (Statement check = connection.createStatement()) {
+			check.execute("SELECT REVTYPE FROM " + auditTable + " WHERE 1=0");
+			hasRevtype = true;
+		}
+		catch (Exception e) {
+			hasRevtype = false;
+		}
+		String sql = hasRevtype
+		        ? "INSERT INTO " + auditTable + " (REV, REVTYPE, " + columnList + ") SELECT " + revId + ", 0, "
+		                + columnList + " FROM " + sourceTable
+		        : "INSERT INTO " + auditTable + " (REV, " + columnList + ") SELECT " + revId + ", "
+		                + columnList + " FROM " + sourceTable;
 		try (Statement stmt = connection.createStatement()) {
 			int rows = stmt.executeUpdate(sql);
 			log.warn("Backfilled {} rows from {} into {}", rows, sourceTable, auditTable);
