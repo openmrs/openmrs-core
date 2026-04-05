@@ -15,6 +15,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.impl.AlertServiceImpl;
+import org.openmrs.scheduler.tasks.AlertReminderTask;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -129,5 +130,20 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		for (Alert a : alerts) {
 			assertTrue(a.getDateToExpire() == null || a.getDateToExpire().after(now));
 		}
+	}
+
+	@Test
+	public void alertReminderTask_shouldExecuteWithoutErrors() {
+
+		Alert alert = new Alert();
+		alert.setText("test alert");
+		alert.setAlertRead(false);
+		alert.setDateToExpire(null);
+		Context.getAlertService().saveAlert(alert);
+
+		AlertReminderTask task = new AlertReminderTask();
+		task.execute();
+
+		assertTrue(true);
 	}
 }
