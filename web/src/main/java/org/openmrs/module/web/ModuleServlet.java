@@ -34,59 +34,61 @@ public class ModuleServlet extends HttpServlet {
 
 	@Override
 protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
 	try {
-	log.debug("In service method for module servlet: {}", request.getPathInfo());
+		log.debug("In service method for module servlet: {}", request.getPathInfo());
 
-	String servletName = request.getPathInfo();
-	int end = servletName.indexOf("/", 1);
+		String servletName = request.getPathInfo();
+		if (servletName == null) {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+		int end = servletName.indexOf("/", 1);
 
-	String moduleId = null;
-	if (end > 0) {
-	moduleId = servletName.substring(1, end);
-	}
+		String moduleId = null;
+		if (end > 0) {
+			moduleId = servletName.substring(1, end);
+		}
 
-	log.debug("ModuleId: {}", moduleId);
-	Module mod = ModuleFactory.getModuleById(moduleId);
+		log.debug("ModuleId: {}", moduleId);
+		Module mod = ModuleFactory.getModuleById(moduleId);
 
-	int start = 1;
-	if (mod != null) {
-	log.debug("Module with id {} found. Looking for servlet name after {} in url path",
-	moduleId, moduleId);
-	start = moduleId.length() + 2;
-	}
+		// where in the path to start trimming
+		int start = 1;
+		if (mod != null) {
+			log.debug("Module with id {} found. Looking for servlet name after {} in url path", moduleId, moduleId);
+			start = moduleId.length() + 2;
+			// this skips over the moduleId that is in the path
+		}
 
-	end = servletName.indexOf("/", start);
-	if (end == -1 || end > servletName.length()) {
-	end = servletName.length();
-	}
+		end = servletName.indexOf("/", start);
+		if (end == -1 || end > servletName.length()) {
+			end = servletName.length();
+		}
 
-	servletName = servletName.substring(start, end);
+		servletName = servletName.substring(start, end);
 
-	log.debug("Servlet name: {}", servletName);
+		log.debug("Servlet name: {}", servletName);
 
-	HttpServlet servlet = WebModuleUtil.getServlet(servletName);
+		HttpServlet servlet = WebModuleUtil.getServlet(servletName);
 
-	if (servlet == null) {
-	log.warn("No servlet with name: {} was found", servletName);
-	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-	return;
-	}
+		if (servlet == null) {
+			log.warn("No servlet with name: {} was found", servletName);
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
 
-	servlet.service(request, response);
+		servlet.service(request, response);
 
 	} catch (Exception e) {
-	log.error("An unexpected error occurred while processing a request for ", 
-	 request.getPathInfo(), e);
-
-	try {
-	if (!response.isCommitted()) {
-	response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-	"An unexpected error occurred while processing the request.");
-	}
-	} catch (IOException ioException) {
-	log.warn("Failed to send error response", ioException);
-	}
+		log.error("An unexpected error occurred while processing a request for {}", request.getPathInfo(), e);
+		try {
+			if (!response.isCommitted()) {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"An unexpected error occurred while processing the request.");
+			}
+		} catch (IOException ioException) {
+			log.warn("Failed to send error response", ioException);
+		}
 	}
 }
 	/**
