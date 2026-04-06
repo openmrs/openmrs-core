@@ -146,14 +146,9 @@
 		<comment>
 			Add discontinue_reason and discontinue_reason_non_coded to orders table for TRUNK-6284
 		</comment>
-
 		<addColumn tableName="orders">
 			<column name="discontinue_reason" type="int"/>
 			<column name="discontinue_reason_non_coded" type="varchar(255)"/>
 		</addColumn>
 	</changeSet>
-
-
-
 	</databaseChangeLog>
-
