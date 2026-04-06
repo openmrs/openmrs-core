@@ -58,7 +58,7 @@
 		<aspectjVersion>1.9.25.1</aspectjVersion>
 		<jacksonVersion>2.21.2</jacksonVersion>
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.25.3</log4jVersion>
+		<log4jVersion>2.25.4</log4jVersion>
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<owaspEncoderVersion>1.4.0</owaspEncoderVersion>
@@ -104,7 +104,7 @@
 
 		<!-- Database -->
 		<mysqlConnectorVersion>9.6.0</mysqlConnectorVersion>
-		<mariadbClientVersion>3.5.7</mariadbClientVersion>
+		<mariadbClientVersion>3.5.8</mariadbClientVersion>
 		<postgresqlVersion>42.7.10</postgresqlVersion>
 		<liquibaseVersion>4.32.0</liquibaseVersion>
 		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
@@ -144,6 +144,19 @@
 			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>3.4.0</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencyManagement>
 		<dependencies>
