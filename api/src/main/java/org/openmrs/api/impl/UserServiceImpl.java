@@ -116,12 +116,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			throw new APIException("User.creating.password.required", (Object[]) null);
 		}
 
+		ValidateUtil.validate(user);
 		if (hasDuplicateUsername(user)) {
 			throw new DAOException(
 			        "Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
 		}
 
-		ValidateUtil.validate(user);
 		OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
 
 		return dao.saveUser(user, password);
