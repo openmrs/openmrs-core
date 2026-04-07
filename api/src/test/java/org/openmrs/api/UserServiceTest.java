@@ -210,7 +210,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 		ValidationException exception = assertThrows(ValidationException.class,
 		    () -> userService.createUser(newUser, "short"));
-		assertThat(exception.getMessage(), containsString("person: Cannot be empty or null"));
+		assertTrue(exception.getErrors().hasFieldErrors("person"));
 	}
 
 	@Test
