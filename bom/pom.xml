@@ -129,7 +129,7 @@
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.4</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
-		<s3mockVersion>4.11.0</s3mockVersion>
+		<s3mockVersion>4.12.4</s3mockVersion>
 	</properties>
 
 	<distributionManagement>
