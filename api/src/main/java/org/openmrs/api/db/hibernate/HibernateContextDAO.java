@@ -35,7 +35,9 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.openmrs.event.LoginAttemptEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,6 +74,9 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	@Autowired
 	private FullTextSessionFactory fullTextSessionFactory;
+
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
 	
 	private UserDAO userDao;
 	
@@ -151,6 +156,9 @@ public class HibernateContextDAO implements ContextDAO {
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
 						.currentTimeMillis()));
+					// Publish LOGIN_FAILURE event — account is still within lockout period
+					eventPublisher.publishEvent(
+						new LoginAttemptEvent(this, login, candidateUser.getUserId(), false, "ACCOUNT_LOCKED", true));
 					throw new ContextAuthenticationException(
 						"Invalid number of connection attempts. Please try again later.");
 				}
@@ -179,6 +187,10 @@ public class HibernateContextDAO implements ContextDAO {
 				}
 				setLastLoginTime(candidateUser);
 				saveUserProperties(candidateUser);
+				
+				// Publish LOGIN_SUCCESS event for audit listeners
+				eventPublisher.publishEvent(
+					new LoginAttemptEvent(this, login, candidateUser.getUserId(), true, null, false));
 
 				// skip out of the method early (instead of throwing the exception)
 				// to indicate that this is the valid user
@@ -208,8 +220,14 @@ public class HibernateContextDAO implements ContextDAO {
 					// set the user as locked out at this exact time
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
 						.currentTimeMillis()));
+					// Publish LOGIN_FAILURE event wrong password triggered lockout (root cause: invalid credentials)
+					eventPublisher.publishEvent(
+						new LoginAttemptEvent(this, login, candidateUser.getUserId(), false, "INVALID_CREDENTIALS", true));
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
+					// Publish LOGIN_FAILURE event, invalid credentials, account not yet locked
+					eventPublisher.publishEvent(
+						new LoginAttemptEvent(this, login, candidateUser.getUserId(), false, "INVALID_CREDENTIALS", false));
 				}
 
 				saveUserProperties(candidateUser);
