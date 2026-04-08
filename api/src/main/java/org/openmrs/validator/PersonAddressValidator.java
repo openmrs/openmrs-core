@@ -9,15 +9,16 @@
  */
 package org.openmrs.validator;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.PersonAddress;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.layout.address.AddressSupport;
 import org.openmrs.layout.address.AddressTemplate;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -95,13 +96,16 @@ public class PersonAddressValidator implements Validator {
 			    "The End Date for address '" + addressString + "' shouldn't be earlier than the Start Date");
 		}
 
-		String xml = Context.getLocationService().getAddressTemplate();
 		List<String> requiredElements;
 
 		try {
-			AddressTemplate addressTemplate = Context.getSerializationService().getDefaultSerializer()
-			        .deserialize(StringEscapeUtils.unescapeXml(xml), AddressTemplate.class);
-			requiredElements = addressTemplate.getRequiredElements();
+			List<AddressTemplate> addressTemplates = AddressSupport.getInstance().getAddressTemplate();
+			if (addressTemplates == null || addressTemplates.isEmpty()) {
+				errors.reject(Context.getMessageSourceService().getMessage("AddressTemplate.error"));
+				return;
+			}
+
+			requiredElements = addressTemplates.get(0).getRequiredElements();
 		} catch (Exception e) {
 			errors.reject(Context.getMessageSourceService().getMessage("AddressTemplate.error"));
 			return;
@@ -117,11 +121,14 @@ public class PersonAddressValidator implements Validator {
 						    Context.getMessageSourceService().getMessage("AddressTemplate.error.requiredAddressFieldIsBlank",
 						        new Object[] { fieldName }, Context.getLocale()));
 					}
-				} catch (Exception e) {
+				} catch (IllegalAccessException | ClassCastException | InvocationTargetException | NoSuchMethodException e) {
 					//wrong field declared in template
 					errors.reject(
 					    Context.getMessageSourceService().getMessage("AddressTemplate.error.fieldNotDeclaredInTemplate",
 					        new Object[] { fieldName }, Context.getLocale()));
+				} catch (Exception e) {
+					//for any other exception
+					errors.reject(Context.getMessageSourceService().getMessage("AddressTemplate.error"));
 				}
 			}
 		}

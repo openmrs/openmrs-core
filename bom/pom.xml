@@ -58,7 +58,7 @@
 		<aspectjVersion>1.9.25.1</aspectjVersion>
 		<jacksonVersion>2.21.2</jacksonVersion>
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.25.3</log4jVersion>
+		<log4jVersion>2.25.4</log4jVersion>
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<owaspEncoderVersion>1.4.0</owaspEncoderVersion>
@@ -104,7 +104,7 @@
 
 		<!-- Database -->
 		<mysqlConnectorVersion>9.6.0</mysqlConnectorVersion>
-		<mariadbClientVersion>3.5.7</mariadbClientVersion>
+		<mariadbClientVersion>3.5.8</mariadbClientVersion>
 		<postgresqlVersion>42.7.10</postgresqlVersion>
 		<liquibaseVersion>4.32.0</liquibaseVersion>
 		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
@@ -113,7 +113,7 @@
 		<javassistVersion>3.30.2-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
-		<tomcatVersion>11.0.18</tomcatVersion>
+		<tomcatVersion>11.0.21</tomcatVersion>
 		<jodaTimeVersion>2.14.1</jodaTimeVersion>
 		<guavaVersion>33.5.0-jre</guavaVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
@@ -129,7 +129,7 @@
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.4</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
-		<s3mockVersion>4.11.0</s3mockVersion>
+		<s3mockVersion>4.12.4</s3mockVersion>
 	</properties>
 
 	<distributionManagement>
@@ -144,6 +144,19 @@
 			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>3.4.0</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencyManagement>
 		<dependencies>
