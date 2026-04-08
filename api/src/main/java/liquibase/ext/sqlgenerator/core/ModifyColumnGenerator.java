@@ -48,22 +48,21 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 
 	@Override
 	public Warnings warn(ModifyColumnStatement modifyColumnStatement, Database database,
-						 SqlGeneratorChain sqlGeneratorChain) {
+	        SqlGeneratorChain sqlGeneratorChain) {
 		return new Warnings();
 	}
 
 	public ValidationErrors validate(ModifyColumnStatement statement, Database database,
-									 SqlGeneratorChain sqlGeneratorChain) {
+	        SqlGeneratorChain sqlGeneratorChain) {
 		ValidationErrors validationErrors = new ValidationErrors();
 		validationErrors.checkRequiredField("tableName", statement.getTableName());
 		validationErrors.checkRequiredField("columns", statement.getColumns());
 
 		for (ColumnConfig column : statement.getColumns()) {
-			if (column.getConstraints() != null && column.getConstraints().isPrimaryKey() != null && column.getConstraints()
-				.isPrimaryKey() && (database instanceof H2Database
-				|| database instanceof DB2Database
-				|| database instanceof DerbyDatabase
-				|| database instanceof SQLiteDatabase)) {
+			if (column.getConstraints() != null && column.getConstraints().isPrimaryKey() != null
+			        && column.getConstraints().isPrimaryKey()
+			        && (database instanceof H2Database || database instanceof DB2Database
+			                || database instanceof DerbyDatabase || database instanceof SQLiteDatabase)) {
 				validationErrors.addError("Adding primary key columns is not supported on " + database.getShortName());
 			}
 		}
@@ -74,21 +73,21 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 	public Sql[] generateSql(ModifyColumnStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
 		List<Sql> sql = new ArrayList<>();
 		for (ColumnConfig column : statement.getColumns()) {
-			String alterTable =
-				"ALTER TABLE " + database.escapeTableName(null, statement.getSchemaName(), statement.getTableName());
+			String alterTable = "ALTER TABLE "
+			        + database.escapeTableName(null, statement.getSchemaName(), statement.getTableName());
 
 			// add "MODIFY"
 			alterTable += " " + getModifyString(database) + " ";
 
 			// add column name
-			alterTable += database
-				.escapeColumnName(null, statement.getSchemaName(), statement.getTableName(), column.getName());
+			alterTable += database.escapeColumnName(null, statement.getSchemaName(), statement.getTableName(),
+			    column.getName());
 
 			alterTable += getPreDataTypeString(database); // adds a space if nothing else
 
 			// add column type
 			alterTable += DataTypeFactory.getInstance().fromDescription(column.getType(), database)
-				.toDatabaseDataType(database);
+			        .toDatabaseDataType(database);
 
 			if (supportsExtraMetaData(database)) {
 				if (column.getConstraints() != null && !column.getConstraints().isNullable()) {
@@ -105,8 +104,8 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 					alterTable += " " + database.getAutoIncrementClause(BigInteger.ONE, BigInteger.ONE, null, null);
 				}
 
-				if (column.getConstraints() != null && column.getConstraints().isPrimaryKey() != null && column
-					.getConstraints().isPrimaryKey()) {
+				if (column.getConstraints() != null && column.getConstraints().isPrimaryKey() != null
+				        && column.getConstraints().isPrimaryKey()) {
 					alterTable += " PRIMARY KEY";
 				}
 			}
@@ -115,14 +114,15 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 
 			sql.add(new UnparsedSql(alterTable));
 		}
-		
+
 		log.debug("generated sql is '{}'", sql);
 
 		return sql.toArray(new Sql[0]);
 	}
 
 	/**
-	 * Whether the ALTER command can take things like "DEFAULT VALUE" or "PRIMARY KEY" as well as type changes
+	 * Whether the ALTER command can take things like "DEFAULT VALUE" or "PRIMARY KEY" as well as type
+	 * changes
 	 *
 	 * @param database
 	 * @return true/false whether extra information can be included
@@ -135,15 +135,11 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 	 * @return either "MODIFY" or "ALTER COLUMN" depending on the current db
 	 */
 	String getModifyString(Database database) {
-		if (database instanceof HsqlDatabase
-			|| database instanceof H2Database
-			|| database instanceof DerbyDatabase
-			|| database instanceof DB2Database
-			|| database instanceof MSSQLDatabase) {
+		if (database instanceof HsqlDatabase || database instanceof H2Database || database instanceof DerbyDatabase
+		        || database instanceof DB2Database || database instanceof MSSQLDatabase) {
 			return "ALTER COLUMN";
-		} else if (database instanceof SybaseASADatabase
-			|| database instanceof SybaseDatabase
-			|| database instanceof MySQLDatabase) {
+		} else if (database instanceof SybaseASADatabase || database instanceof SybaseDatabase
+		        || database instanceof MySQLDatabase) {
 			return "MODIFY";
 		} else if (database instanceof OracleDatabase) {
 			return "MODIFY (";
@@ -153,20 +149,15 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 	}
 
 	/**
-	 * @return the string that comes before the column type
-	 * definition (like 'set data type' for derby or an open parentheses for Oracle)
+	 * @return the string that comes before the column type definition (like 'set data type' for derby
+	 *         or an open parentheses for Oracle)
 	 */
 	String getPreDataTypeString(Database database) {
-		if (database instanceof DerbyDatabase
-			|| database instanceof DB2Database) {
+		if (database instanceof DerbyDatabase || database instanceof DB2Database) {
 			return " SET DATA TYPE ";
-		} else if (database instanceof SybaseASADatabase
-			|| database instanceof SybaseDatabase
-			|| database instanceof MSSQLDatabase
-			|| database instanceof MySQLDatabase
-			|| database instanceof HsqlDatabase
-			|| database instanceof H2Database
-			|| database instanceof OracleDatabase) {
+		} else if (database instanceof SybaseASADatabase || database instanceof SybaseDatabase
+		        || database instanceof MSSQLDatabase || database instanceof MySQLDatabase || database instanceof HsqlDatabase
+		        || database instanceof H2Database || database instanceof OracleDatabase) {
 			return " ";
 		} else {
 			return " TYPE ";
@@ -174,7 +165,8 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 	}
 
 	/**
-	 * @return the string that comes after the column type definition (like a close parentheses for Oracle)
+	 * @return the string that comes after the column type definition (like a close parentheses for
+	 *         Oracle)
 	 */
 	String getPostDataTypeString(Database database) {
 		if (database instanceof OracleDatabase) {
@@ -188,8 +180,8 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 		String clause = "";
 		String defaultValue = column.getDefaultValue();
 		if (defaultValue != null && database instanceof MySQLDatabase) {
-			clause += " DEFAULT " + DataTypeFactory.getInstance().fromObject(defaultValue, database)
-				.objectToSql(defaultValue, database);
+			clause += " DEFAULT "
+			        + DataTypeFactory.getInstance().fromObject(defaultValue, database).objectToSql(defaultValue, database);
 		}
 		return clause;
 	}

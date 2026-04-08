@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.db;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.Date;
 import java.util.List;
 
@@ -23,52 +19,56 @@ import org.openmrs.Program;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateSerializedObjectDAO;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.test.StartModule;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * This class tests the {@link SerializedObjectDAO} linked to from the Context. Currently that file
  * is the {@link HibernateSerializedObjectDAO}.
  */
 @Disabled("TRUNK-4704 Serialization.xstream module must be fixed to work with Hibernate 4")
-@StartModule( { "org/openmrs/api/db/include/serialization.xstream-0.2.8-SNAPSHOT.omod" })
+@StartModule({ "org/openmrs/api/db/include/serialization.xstream-0.2.8-SNAPSHOT.omod" })
 public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
-	
+
 	private SerializedObjectDAO dao = null;
-	
+
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@BeforeEach
 	public void runBeforeEachTest() {
-		
+
 		assertNotNull(Context.getSerializationService().getDefaultSerializer());
-		
+
 		executeDataSet("org/openmrs/api/db/include/SerializedObjectDAOTest-initialData.xml");
 		if (dao == null) {
 			dao = (SerializedObjectDAO) applicationContext.getBean("serializedObjectDAO");
 			dao.registerSupportedType(Program.class);
 		}
-		
+
 	}
-	
+
 	@Test
 	public void getObject_shouldReturnTheSavedObject() {
 		Program data = dao.getObject(Program.class, 1);
 		assertEquals(data.getId().intValue(), 1);
 		assertEquals(data.getName(), "TestProgram");
 	}
-	
+
 	@Test
 	public void getObjectByUuid_shouldReturnTheSavedObject() {
 		Program data = dao.getObjectByUuid(Program.class, "83b452ca-a4c8-4bf2-9e0b-8bbddf2f9901");
 		assertEquals(data.getId().intValue(), 2);
 		assertEquals(data.getName(), "TestProgram2");
 	}
-	
+
 	@Test
 	public void saveObject_shouldSaveThePassedObjectIfSupported() {
 		Program data = new Program();
@@ -81,7 +81,7 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		Program newData = dao.getObject(Program.class, data.getId());
 		assertEquals("NewProgram", newData.getName());
 	}
-	
+
 	@Test
 	public void saveObject_shouldSetAuditableFieldsBeforeSerializing() {
 		Program data = new Program();
@@ -94,7 +94,7 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		assertNotNull(newData.getCreator());
 		assertNotNull(newData.getDateCreated());
 	}
-	
+
 	@Test
 	public void saveObject_shouldThrowAnExceptionIfObjectNotSupported() {
 		dao.unregisterSupportedType(Program.class);
@@ -103,13 +103,13 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		data.setDescription("This is to test saving a Program");
 		assertThrows(DAOException.class, () -> dao.saveObject(data));
 	}
-	
+
 	@Test
 	public void getAllObjects_shouldReturnAllSavedObjectsOfThePassedType() {
 		List<Program> l = dao.getAllObjects(Program.class);
 		assertEquals(2, l.size());
 	}
-	
+
 	@Test
 	public void getAllObjects_shouldReturnOnlyNonRetiredObjectsOfThePassedTypeIfNotIncludeRetired() {
 		List<Program> l = dao.getAllObjects(Program.class, false);
@@ -117,20 +117,20 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		l = dao.getAllObjects(Program.class, true);
 		assertEquals(3, l.size());
 	}
-	
+
 	@Test
 	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndExactName() {
 		List<Program> l = dao.getAllObjectsByName(Program.class, "TestProgram", true);
 		assertEquals(1, l.size());
 		assertEquals(l.get(0).getName(), "TestProgram");
 	}
-	
+
 	@Test
 	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndPartialName() {
 		List<Program> l = dao.getAllObjectsByName(Program.class, "TestProgram", false);
 		assertEquals(3, l.size());
 	}
-	
+
 	@Test
 	public void purgeObject_shouldDeleteTheObjectWithThePassedId() {
 		List<Program> l = dao.getAllObjects(Program.class);
@@ -140,5 +140,5 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		l = dao.getAllObjects(Program.class);
 		assertEquals(1, l.size());
 	}
-	
+
 }

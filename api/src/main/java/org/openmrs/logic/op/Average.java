@@ -18,10 +18,10 @@ package org.openmrs.logic.op;
  * The above will give us a criteria to get the average result of the "CD4 COUNT" observations
  */
 public class Average implements TransformOperator {
-	
+
 	@Override
 	public String toString() {
 		return "Average";
 	}
-	
+
 }

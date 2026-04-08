@@ -17,10 +17,10 @@ package org.openmrs.logic.op;
  * The above will give us a criteria to get only ADULTRETURN encounters
  */
 public class Equals implements ComparisonOperator {
-	
+
 	@Override
 	public String toString() {
 		return "EQUALS";
 	}
-	
+
 }

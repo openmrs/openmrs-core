@@ -25,37 +25,41 @@ import org.springframework.validation.Validator;
  * @since 1.9
  */
 public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> implements Validator {
-	
+
 	/**
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 * <strong>Should</strong> require name
-	 * <strong>Should</strong> require minOccurs
-	 * <strong>Should</strong> not allow maxOccurs less than 1
-	 * <strong>Should</strong> not allow maxOccurs less than minOccurs
-	 * <strong>Should</strong> require datatypeClassname
-	 * <strong>Should</strong> require DatatypeConfiguration if Datatype equals Regex-Validated Text
-	 * <strong>Should</strong> pass validation if all required values are set
-	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <p>
+	 * <strong>Should</strong> require name<br/>
+	 * <strong>Should</strong> require minOccurs<br/>
+	 * <strong>Should</strong> not allow maxOccurs less than 1<br/>
+	 * <strong>Should</strong> not allow maxOccurs less than minOccurs<br/>
+	 * <strong>Should</strong> require datatypeClassname<br/>
+	 * <strong>Should</strong> require DatatypeConfiguration if Datatype equals Regex-Validated
+	 * Text<br/>
+	 * <strong>Should</strong> pass validation if all required values are set<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
 	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
 		@SuppressWarnings("unchecked")
 		T attributeType = (T) target;
-		
+
 		if (attributeType == null) {
 			errors.reject("error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "minOccurs", "error.null");
-			
+
 			Integer minOccurs = attributeType.getMinOccurs();
 			Integer maxOccurs = attributeType.getMaxOccurs();
-			
+
 			if (minOccurs != null && minOccurs < 0) {
 				errors.rejectValue("minOccurs", "AttributeType.minOccursShouldNotBeLessThanZero");
 			}
-			
+
 			if (maxOccurs != null) {
 				if (maxOccurs < 1) {
 					errors.rejectValue("maxOccurs", "AttributeType.maxOccursShouldNotBeLessThanOne");
@@ -63,7 +67,7 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 					errors.rejectValue("maxOccurs", "AttributeType.maxOccursShouldNotBeLessThanMinOccurs");
 				}
 			}
-			
+
 			if (StringUtils.isBlank(attributeType.getDatatypeClassname())) {
 				errors.rejectValue("datatypeClassname", "error.null");
 			} else {
@@ -73,13 +77,12 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 					        && StringUtils.isBlank(attributeType.getDatatypeConfig())) {
 						errors.rejectValue("datatypeConfig", "error.null");
 					}
-				}
-				catch (Exception ex) {
-					errors.rejectValue("datatypeConfig", "AttributeType.datatypeConfig.invalid", new Object[] { ex
-					        .getMessage() }, "Invalid");
+				} catch (Exception ex) {
+					errors.rejectValue("datatypeConfig", "AttributeType.datatypeConfig.invalid",
+					    new Object[] { ex.getMessage() }, "Invalid");
 				}
 			}
-			
+
 			// ensure that handler is suitable for datatype
 			if (StringUtils.isNotEmpty(attributeType.getPreferredHandlerClassname())) {
 				try {
@@ -89,14 +92,13 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 						errors.rejectValue("preferredHandlerClassname",
 						    "AttributeType.preferredHandlerClassname.wrongDatatype");
 					}
-				}
-				catch (Exception ex) {
-					errors.rejectValue("handlerConfig", "AttributeType.handlerConfig.invalid", new Object[] { ex
-					        .getMessage() }, "Invalid");
+				} catch (Exception ex) {
+					errors.rejectValue("handlerConfig", "AttributeType.handlerConfig.invalid",
+					    new Object[] { ex.getMessage() }, "Invalid");
 				}
 			}
 			ValidateUtil.validateFieldLengths(errors, target.getClass(), "datatypeConfig", "handlerConfig");
 		}
 	}
-	
+
 }

@@ -21,13 +21,13 @@ import org.springframework.stereotype.Component;
  */
 @Component("searchSessionFactory")
 public class SearchSessionFactoryImpl implements SearchSessionFactory {
-	
+
 	@Autowired
 	private SessionFactory sessionFactory;
-	
+
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
-	
+
 	/**
 	 * @see SearchSessionFactory#getSearchSession()
 	 */

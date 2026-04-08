@@ -16,13 +16,13 @@ import org.hamcrest.TypeSafeMatcher;
 import org.openmrs.PersonAddress;
 
 public class AddressMatcher extends TypeSafeMatcher<Set<PersonAddress>> {
-	
+
 	private String address;
-	
+
 	public AddressMatcher(String address) {
 		this.address = address;
 	}
-	
+
 	@Override
 	public boolean matchesSafely(Set<PersonAddress> personAddresses) {
 		for (PersonAddress personAddress : personAddresses) {
@@ -32,12 +32,12 @@ public class AddressMatcher extends TypeSafeMatcher<Set<PersonAddress>> {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void describeTo(Description description) {
 		description.appendText(address);
 	}
-	
+
 	public static AddressMatcher containsAddress(String address) {
 		return new AddressMatcher(address);
 	}

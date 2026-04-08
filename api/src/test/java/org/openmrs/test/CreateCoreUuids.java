@@ -24,20 +24,20 @@ import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This is a helper class that creates the liquibase xml for setting common UUIDs on the base
- * dataset. See ticket <a href="http://dev.openmrs.org/ticket/1842">#1842</a>:
- * "Synchronize core metadata UUIDs across sites".
+ * dataset. See ticket <a href="http://dev.openmrs.org/ticket/1842">#1842</a>: "Synchronize core
+ * metadata UUIDs across sites".
  */
 @Disabled
 public class CreateCoreUuids extends BaseContextSensitiveTest {
-	
+
 	//@Test
 	@SkipBaseSetup
 	public void getUUIDs() throws Exception {
 		Context.authenticate("admin", "test");
 		System.out.println("db: " + OpenmrsConstants.DATABASE_NAME);
-		
+
 		Map<String, List<? extends OpenmrsMetadata>> coremetadatas = new LinkedHashMap<>();
-		
+
 		coremetadatas.put("field_type", Context.getFormService().getAllFieldTypes(true));
 		coremetadatas.put("person_attribute_type", Context.getPersonService().getAllPersonAttributeTypes(true));
 		coremetadatas.put("encounter_type", Context.getEncounterService().getAllEncounterTypes(true));
@@ -46,23 +46,23 @@ public class CreateCoreUuids extends BaseContextSensitiveTest {
 		coremetadatas.put("patient_identifier_type", Context.getPatientService().getAllPatientIdentifierTypes(true));
 		coremetadatas.put("location", Context.getLocationService().getAllLocations(true));
 		coremetadatas.put("hl7_source", Context.getHL7Service().getAllHL7Sources());
-		
+
 		for (Map.Entry<String, List<? extends OpenmrsMetadata>> entry : coremetadatas.entrySet()) {
 			System.out.println("new table: " + entry.getKey());
-			
+
 			for (OpenmrsMetadata obj : entry.getValue()) {
-				
-				String output = "<update tableName=\"" + entry.getKey() + "\"><column name=\"uuid\" value=\""
-				        + obj.getUuid() + "\"/><where>" + entry.getKey() + "_id" + "= '" + obj.getId() + "' and name = '"
+
+				String output = "<update tableName=\"" + entry.getKey() + "\"><column name=\"uuid\" value=\"" + obj.getUuid()
+				        + "\"/><where>" + entry.getKey() + "_id" + "= '" + obj.getId() + "' and name = '"
 				        + obj.getName().replace("'", "\\'") + "'</where></update>";
 				System.out.println(output);
 			}
 		}
-		
+
 		///////////////////////////////////////
 		// exceptions:
 		//
-		
+
 		// relationship types
 		System.out.println("Relationship type");
 		for (RelationshipType type : Context.getPersonService().getAllRelationshipTypes()) {
@@ -72,7 +72,7 @@ public class CreateCoreUuids extends BaseContextSensitiveTest {
 			        + "'</where></update>";
 			System.out.println(output);
 		}
-		
+
 		// roles:
 		System.out.println("Roles");
 		for (Role role : Context.getUserService().getAllRoles()) {
@@ -80,7 +80,7 @@ public class CreateCoreUuids extends BaseContextSensitiveTest {
 			        + "\"/><where> role = '" + role.getRole().replace("'", "\\'") + "'</where></update>";
 			System.out.println(output);
 		}
-		
+
 		// user:
 		System.out.println("Users");
 		for (User user : Context.getUserService().getAllUsers()) {
@@ -89,13 +89,13 @@ public class CreateCoreUuids extends BaseContextSensitiveTest {
 			        + user.getSystemId().replace("'", "\\'") + "'</where></update>";
 			System.out.println(output);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Make sure we use the database defined by the runtime properties and not the hsql in-memory
 	 * database
-	 * 
+	 *
 	 * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#useInMemoryDatabase()
 	 */
 	@Override

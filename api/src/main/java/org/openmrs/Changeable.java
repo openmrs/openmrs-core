@@ -14,26 +14,26 @@ import java.util.Date;
 /**
  * Base interface for domain objects that need to track information related to when they were
  * changed and the user that last changed them.
- * 
+ *
  * @since 2.2
  */
 public interface Changeable extends OpenmrsObject {
-	
+
 	/**
 	 * @return User - the user who last changed the object
 	 */
 	User getChangedBy();
-	
+
 	/**
 	 * @param changedBy - the user who last changed the object
 	 */
 	void setChangedBy(User changedBy);
-	
+
 	/**
 	 * @return Date - the date the object was last changed
 	 */
 	Date getDateChanged();
-	
+
 	/**
 	 * @param dateChanged - the date the object was last changed
 	 */

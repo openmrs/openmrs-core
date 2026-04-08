@@ -29,58 +29,58 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * <br>
  * After creation, this object is saved to WebUtil for later use. When Spring's
  * webApplicationContext is refreshed, the DispatcherServlet needs to be refreshed too.
- * 
+ *
  * @see #reInitFrameworkServlet()
  */
 public class DispatcherServlet extends org.springframework.web.servlet.DispatcherServlet {
-	
+
 	private static final long serialVersionUID = -6925172744402818729L;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DispatcherServlet.class);
-	
+
 	/**
 	 * @see org.springframework.web.servlet.FrameworkServlet#initFrameworkServlet()
 	 */
 	@Override
 	protected void initFrameworkServlet() throws ServletException, BeansException {
 		// refresh the application context to look for module xml config files as well
-		
+
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		
+
 		log.debug("Framework being initialized");
 		WebModuleUtil.setDispatcherServlet(this);
-		
+
 		super.initFrameworkServlet();
 	}
-	
+
 	/**
-	 * Called by the ModuleUtil after adding in a new module. This needs to be called because the
-	 * new mappings and advice that a new module adds in are cached by Spring's DispatcherServlet.
-	 * This method will reload that cache.
-	 * 
+	 * Called by the ModuleUtil after adding in a new module. This needs to be called because the new
+	 * mappings and advice that a new module adds in are cached by Spring's DispatcherServlet. This
+	 * method will reload that cache.
+	 *
 	 * @throws ServletException
 	 */
 	public void reInitFrameworkServlet() throws ServletException {
 		log.debug("Framework being REinitialized");
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		((XmlWebApplicationContext) getWebApplicationContext()).setClassLoader(OpenmrsClassLoader.getInstance());
-		
+
 		init();
-		
-		// the spring context gets reset by the framework servlet, so we need to 
+
+		// the spring context gets reset by the framework servlet, so we need to
 		// reload the advice points that were lost when refreshing Spring
 		for (Module module : ModuleFactory.getStartedModules()) {
 			ModuleFactory.loadAdvice(module);
 		}
 	}
-	
+
 	/**
 	 * @see jakarta.servlet.GenericServlet#init(jakarta.servlet.ServletConfig)
 	 */
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		
+
 		// hacky way to know if one of the startup filters needs to be run
 		if (UpdateFilter.updatesRequired() && !DatabaseUpdater.allowAutoUpdate()) {
 			log.info("DB updates are required, the update wizard must be run");
@@ -89,7 +89,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 			log.info("Runtime properties were not found or the database is empty, so initialization is required");
 		}
 	}
-	
+
 	/**
 	 * Stops and closes the application context created by this dispatcher servlet.
 	 */
@@ -98,8 +98,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 			XmlWebApplicationContext ctx = (XmlWebApplicationContext) getWebApplicationContext();
 			ctx.stop();
 			ctx.close();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Exception while stopping and closing dispatcherServlet context: ", e);
 		}
 	}

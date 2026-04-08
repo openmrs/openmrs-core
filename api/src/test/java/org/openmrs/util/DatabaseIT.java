@@ -15,13 +15,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import liquibase.Contexts;
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.LiquibaseException;
-import liquibase.resource.ClassLoaderResourceAccessor;
 import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,38 +24,46 @@ import org.openmrs.util.databasechange.H2LessStrictDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import liquibase.Contexts;
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.LiquibaseException;
+import liquibase.resource.ClassLoaderResourceAccessor;
+
 public class DatabaseIT implements LiquibaseProvider {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DatabaseIT.class);
 
 	public static String CONNECTION_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=LEGACY;NON_KEYWORDS=VALUE";
-	
+
 	private static final String CONTEXT = "some context";
-	
+
 	protected static final String USER_NAME = "test";
-	
+
 	protected static final String PASSWORD = "test";
-	
+
 	@BeforeEach
 	public void setup() throws Exception {
 		this.initializeDatabase();
 	}
-	
+
 	@AfterEach
 	public void tearDown() throws SQLException {
 		this.dropAllDatabaseObjects();
 	}
-	
+
 	public Liquibase getLiquibase(String filename) throws LiquibaseException, SQLException {
 		Database liquibaseConnection = DatabaseFactory.getInstance()
 		        .findCorrectDatabaseImplementation(new JdbcConnection(getConnection()));
-		
+
 		liquibaseConnection.setDatabaseChangeLogTableName("liquibasechangelog");
 		liquibaseConnection.setDatabaseChangeLogLockTableName("liquibasechangeloglock");
-		
+
 		return new Liquibase(filename, new ClassLoaderResourceAccessor(getClass().getClassLoader()), liquibaseConnection);
 	}
-	
+
 	protected void initializeDatabase() throws ClassNotFoundException {
 		if (!useInMemoryDatabase()) {
 			setupContainerDB();
@@ -91,15 +92,10 @@ public class DatabaseIT implements LiquibaseProvider {
 			} else {
 				if ("postgres".equalsIgnoreCase(System.getProperty("database"))) {
 					connection.setAutoCommit(true);
-					String dropTables =
-						"DO $$ DECLARE " +
-							"    r RECORD; " +
-							"BEGIN " +
-							"    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') " +
-							"    LOOP " +
-							"        EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE'; " +
-							"    END LOOP; " +
-							"END $$;";
+					String dropTables = "DO $$ DECLARE " + "    r RECORD; " + "BEGIN "
+					        + "    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') " + "    LOOP "
+					        + "        EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE'; "
+					        + "    END LOOP; " + "END $$;";
 					statement.execute(dropTables);
 					connection.setAutoCommit(false);
 				} else if ("mysql".equalsIgnoreCase(System.getProperty("database"))) {
@@ -123,10 +119,10 @@ public class DatabaseIT implements LiquibaseProvider {
 
 	protected Connection getConnection() throws SQLException {
 		Connection connection = DriverManager.getConnection(CONNECTION_URL, USER_NAME, PASSWORD);
-		connection.setAutoCommit( false );
+		connection.setAutoCommit(false);
 		return connection;
 	}
-	
+
 	private Boolean useInMemoryDatabase() {
 		return !"false".equalsIgnoreCase(System.getProperty("useInMemoryDatabase"));
 	}

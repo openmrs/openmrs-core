@@ -172,8 +172,9 @@
 			<artifactId>xstream</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
+			<groupId>jakarta.mail</groupId>
+			<artifactId>jakarta.mail-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.liquibase</groupId>
@@ -237,6 +238,10 @@
 			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-hibernate7</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
 		</dependency>
@@ -265,16 +270,16 @@
 			<artifactId>jakarta.annotation-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.activation</groupId>
-			<artifactId>jakarta.activation</artifactId>
+			<groupId>org.eclipse.angus</groupId>
+			<artifactId>angus-activation</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
+			<groupId>org.eclipse.angus</groupId>
+			<artifactId>angus-mail</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -292,6 +297,18 @@
 			<groupId>org.graalvm.js</groupId>
 			<artifactId>js-scriptengine</artifactId>
 			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>org.jobrunr</groupId>
+			<artifactId>jobrunr</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-spring</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-provider-jdbc-template</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
@@ -346,17 +363,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-				<artifactId>maven-java-formatter-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>format</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 			</plugin>
@@ -389,4 +395,3 @@
 		</profile>
 	</profiles>
 </project>
-
