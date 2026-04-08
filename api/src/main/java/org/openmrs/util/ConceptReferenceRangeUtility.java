@@ -260,8 +260,8 @@ public class ConceptReferenceRangeUtility {
 				return false;
 			}
 
-			Concept valudeCoded = obs.getValueCoded();
-			if (valudeCoded == null) {
+			Concept valueCoded = obs.getValueCoded();
+			if (valueCoded == null) {
 				return false;
 			}
 
@@ -270,7 +270,7 @@ public class ConceptReferenceRangeUtility {
 				return false;
 			}
 
-			return valudeCoded.equals(answerConcept);
+			return valueCoded.equals(answerConcept);
 		}
 
 		/**
