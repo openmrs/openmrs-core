@@ -11,13 +11,16 @@ package org.openmrs.validator;
 
 import java.util.Calendar;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Address;
+import org.openmrs.GlobalProperty;
 import org.openmrs.PersonAddress;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -35,6 +38,14 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 
 	PersonService ps = null;
 
+	private static final String REQUIRED_ADDRESS_TEMPLATE_XML = "<org.openmrs.layout.address.AddressTemplate>\n"
+	        + "    <nameMappings class=\"properties\">\n"
+	        + "      <property name=\"address1\" value=\"Location.address1\"/>\n" + "    </nameMappings>\n"
+	        + "    <sizeMappings class=\"properties\">\n" + "      <property name=\"address1\" value=\"40\"/>\n"
+	        + "    </sizeMappings>\n" + "    <lineByLineFormat>\n" + "      <string>address1</string>\n"
+	        + "    </lineByLineFormat>\n" + "    <requiredElements>\n" + "      <string>address1</string>\n"
+	        + "    </requiredElements>\n" + "</org.openmrs.layout.address.AddressTemplate>";
+
 	/**
 	 * Run this before each unit test in this class.
 	 *
@@ -44,6 +55,14 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	public void runBeforeAllTests() {
 		validator = new PersonAddressValidator();
 		ps = Context.getPersonService();
+	}
+
+	@AfterEach
+	public void resetAddressTemplateAfterEachTest() {
+		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(
+		        OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE, OpenmrsConstants.DEFAULT_ADDRESS_TEMPLATE));
+		Context.getAdministrationService().saveGlobalProperty(
+		    Context.getAdministrationService().getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE));
 	}
 
 	/**
@@ -137,6 +156,10 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailIfRequiredFieldsAreEmpty() {
 		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
+		// Reload AddressSupport so it picks up the GP value inserted by the dataset.
+		// executeDataSet() writes directly to the DB and does not fire GlobalPropertyListeners.
+		Context.getAdministrationService().saveGlobalProperty(
+		    Context.getAdministrationService().getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE));
 		Address personAddress = new PersonAddress();
 
 		Errors errors = new BindException(personAddress, "personAddress");
@@ -150,6 +173,9 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldPassIfRequiredFieldsAreNotEmpty() {
 		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
+		// Reload AddressSupport so it picks up the GP value inserted by the dataset.
+		Context.getAdministrationService().saveGlobalProperty(
+		    Context.getAdministrationService().getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE));
 		Address personAddress = new PersonAddress();
 		personAddress.setAddress1("Address1");
 
@@ -241,5 +267,43 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("address13"), "address13 missing in errors");
 		assertTrue(errors.hasFieldErrors("address14"), "address14 missing in errors");
 		assertTrue(errors.hasFieldErrors("address15"), "address15 missing in errors");
+	}
+
+	/**
+	 * Regression test for ticket: editing the address template in GP screens can store xml-escaped
+	 * text, and validator should still resolve required elements correctly.
+	 */
+	@Test
+	public void validate_shouldPassWhenRequiredFieldIsPresentForXmlEscapedTemplate() {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE, escapeXml(REQUIRED_ADDRESS_TEMPLATE_XML)));
+
+		PersonAddress personAddress = new PersonAddress();
+		personAddress.setAddress1("Address1");
+
+		Errors errors = new BindException(personAddress, "personAddress");
+		validator.validate(personAddress, errors);
+		assertFalse(errors.hasErrors());
+	}
+
+	/**
+	 * Regression test for ticket: when required field is missing with xml-escaped template, validation
+	 * should report an error instead of failing template deserialization silently.
+	 */
+	@Test
+	public void validate_shouldFailWhenRequiredFieldIsMissingForXmlEscapedTemplate() {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE, escapeXml(REQUIRED_ADDRESS_TEMPLATE_XML)));
+
+		PersonAddress personAddress = new PersonAddress();
+
+		Errors errors = new BindException(personAddress, "personAddress");
+		validator.validate(personAddress, errors);
+		assertTrue(errors.hasErrors());
+	}
+
+	private String escapeXml(String xml) {
+		return xml.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'",
+		    "&apos;");
 	}
 }
