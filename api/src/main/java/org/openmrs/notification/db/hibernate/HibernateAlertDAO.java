@@ -39,6 +39,8 @@ public class HibernateAlertDAO implements AlertDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(HibernateAlertDAO.class);
 
+	private static final String ALERT_READ = "alertRead";
+
 	private final SessionFactory sessionFactory;
 
 	@Autowired
@@ -109,7 +111,7 @@ public class HibernateAlertDAO implements AlertDAO {
 
 		// exclude read alerts unless requested
 		if (!includeRead) {
-			predicates.add(cb.isFalse(root.get("alertRead")));
+			predicates.add(cb.isFalse(root.get(ALERT_READ)));
 		}
 
 		cq.where(predicates.toArray(new Predicate[] {})).orderBy(cb.desc(root.get("dateChanged")));
