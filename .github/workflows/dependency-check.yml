@@ -27,7 +27,7 @@ jobs:
       - name: Cache NVD database
         uses: actions/cache@v4
         with:
-          path: ~/.dependency-check/data
+          path: /github/home/.dependency-check/data
           key: nvd-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             nvd-${{ runner.os }}-
@@ -50,7 +50,7 @@ jobs:
             --disableCentral
             --disableOssIndex
             --suppression dependency-check-suppressions.xml
-            --data ~/.dependency-check/data
+            --data /github/home/.dependency-check/data
 
       - name: Run OWASP Dependency-Check (master push)
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
@@ -70,7 +70,7 @@ jobs:
             --disableCentral
             --disableOssIndex
             --suppression dependency-check-suppressions.xml
-            --data ~/.dependency-check/data
+            --data /github/home/.dependency-check/data
             --nvdApiKey ${{ secrets.NVD_API_KEY }}
 
       - name: Upload Test results
