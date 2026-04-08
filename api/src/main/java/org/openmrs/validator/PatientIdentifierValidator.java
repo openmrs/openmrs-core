@@ -10,12 +10,14 @@
 package org.openmrs.validator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientIdentifierType.LocationBehavior;
 import org.openmrs.PatientIdentifierType.UniquenessBehavior;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.BlankIdentifierException;
+import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.InvalidIdentifierFormatException;
@@ -105,6 +107,27 @@ public class PatientIdentifierValidator implements Validator {
 				        Context.getMessageSourceService().getMessage("PatientIdentifier.error.notUniqueWithParameter",
 				            new Object[] { pi.getIdentifier() }, Context.getLocale()),
 				        pi);
+			}
+
+			// check that patient does not already have the same identifier of this type at this location
+			Patient patient = pi.getPatient();
+			if (patient != null) {
+				for (PatientIdentifier existingIdentifier : patient.getPatientIdentifiers(pi.getIdentifierType())) {
+
+					boolean isDifferentIdentifierObject = !existingIdentifier.getUuid().equals(pi.getUuid());
+					boolean hasSameIdentifierValue = existingIdentifier.getIdentifier().equals(pi.getIdentifier());
+					boolean shouldBeGloballyUnique = UniquenessBehavior.UNIQUE
+					        .equals(pi.getIdentifierType().getUniquenessBehavior());
+					boolean bothLocationsNull = existingIdentifier.getLocation() == null && pi.getLocation() == null;
+					boolean sameLocation = existingIdentifier.getLocation() != null
+					        && existingIdentifier.getLocation().equals(pi.getLocation());
+					if (isDifferentIdentifierObject && hasSameIdentifierValue
+					        && (shouldBeGloballyUnique || bothLocationsNull || sameLocation)) {
+						throw new DuplicateIdentifierException(Context.getMessageSourceService().getMessage(
+						    "PatientIdentifier.error.notUniqueSamePatientWithParameter", new Object[] { pi.getIdentifier() },
+						    Context.getLocale()), pi);
+					}
+				}
 			}
 		}
 	}

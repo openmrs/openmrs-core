@@ -183,6 +183,21 @@
 							<endWithNewline/>
 						</java>
 					</configuration>
+					<executions>
+						<execution>
+							<id>spotless-apply</id>
+							<phase>process-sources</phase>
+							<goals>
+								<goal>apply</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>spotless-check</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -195,7 +210,7 @@
 				<plugin>
 					<groupId>com.github.spotbugs</groupId>
 					<artifactId>spotbugs-maven-plugin</artifactId>
-					<version>4.9.8.2</version>
+					<version>4.9.8.3</version>
 					<configuration>
 						<excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
 						<effort>Max</effort>
@@ -519,6 +534,10 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
