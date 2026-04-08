@@ -153,8 +153,8 @@ public class HibernateAlertDAO implements AlertDAO {
 
 		// exclude the read alerts unless requested
 		if (!includeRead && user.getUserId() != null) {
-			predicates.add(cb.isFalse(root.get("alertRead")));
-			predicates.add(cb.isFalse(root.join("recipients").get("alertRead")));
+			predicates.add(cb.isFalse(root.get(ALERT_READ)));
+			predicates.add(cb.isFalse(root.join("recipients").get(ALERT_READ)));
 		}
 
 		cq.where(predicates.toArray(new Predicate[] {})).orderBy(cb.desc(root.get("dateChanged")));
