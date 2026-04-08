@@ -488,6 +488,25 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void testRelevantObs_shouldReturnCurrentObsWhenItMatchesConceptAndHasValue() {
+		Concept obsConcept = new Concept(5089);
+		obsConcept.setDatatype(new ConceptDatatype(3));
+
+		Obs obs = new Obs();
+		obs.setConcept(obsConcept);
+		obs.setPerson(person);
+		obs.setValueNumeric(42.0);
+		obs.setObsDatetime(new Date());
+		obs.setEncounter(new Encounter(3));
+		obs.setLocation(new Location(1));
+
+		Mockito.when(conceptService.getConceptByReference("test-concept-ref")).thenReturn(obsConcept);
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getCurrentObs('test-concept-ref', $obs).getValueNumeric() == 42.0", obs));
+	}
+
+	@Test
 	public void testRelevantObs_shouldReturnTrueIfBMIIsInTheExpectedRange() {
 		Obs obs = buildObs();
 		obs.setPerson(person);
@@ -624,6 +643,104 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		assertTrue(conceptReferenceRangeUtility
 		        .evaluateCriteria("$fn.getObsWeeks('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == -1", obs));
+	}
+
+	@Test
+	public void getObsDays_shouldReturnNegativeOneForNullValueDate() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setValueDate(null);
+
+		Concept concept = new Concept(4900);
+
+		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(concept),
+		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(obs));
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getObsDays('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == -1", obs));
+	}
+
+	@Test
+	public void getObsMonths_shouldReturnNegativeOneForNullValueDate() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setValueDate(null);
+
+		Concept concept = new Concept(4900);
+
+		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(concept),
+		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(obs));
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getObsMonths('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == -1", obs));
+	}
+
+	@Test
+	public void getObsYears_shouldReturnNegativeOneForNullValueDate() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setValueDate(null);
+
+		Concept concept = new Concept(4900);
+
+		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person), null, Collections.singletonList(concept),
+		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
+		        .thenReturn(Collections.singletonList(obs));
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getObsYears('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == -1", obs));
+	}
+
+	@Test
+	public void getDaysBetween_shouldReturnNegativeOneForNullDate() {
+		person.setBirthdate(null);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getDaysBetween($patient.birthdate, $obs.obsDatetime) == -1", obs));
+	}
+
+	@Test
+	public void getWeeksBetween_shouldReturnNegativeOneForNullDate() {
+		person.setBirthdate(null);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getWeeksBetween($patient.birthdate, $obs.obsDatetime) == -1", obs));
+	}
+
+	@Test
+	public void getMonthsBetween_shouldReturnNegativeOneForNullDate() {
+		person.setBirthdate(null);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getMonthsBetween($patient.birthdate, $obs.obsDatetime) == -1", obs));
+	}
+
+	@Test
+	public void getYearsBetween_shouldReturnNegativeOneForNullDate() {
+		person.setBirthdate(null);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.getYearsBetween($patient.birthdate, $obs.obsDatetime) == -1", obs));
 	}
 
 	@Test

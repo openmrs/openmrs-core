@@ -56,7 +56,7 @@ public class ConceptReferenceRangeUtility {
 	/**
 	 * A local-only cache for expressions, which should alleviate parsing overhead in hot loops, i.e.,
 	 * if the same expressions are evaluated multiple times within a relatively short succession.
-	 * Expires each element 5 minutes after it's last access.
+	 * Expires each element 5 minutes after its last access.
 	 */
 	private static final Cache<String, Expression> EXPRESSION_CACHE = Caffeine.newBuilder().maximumSize(20000)
 	        .expireAfterAccess(5, TimeUnit.MINUTES).build();
@@ -164,6 +164,14 @@ public class ConceptReferenceRangeUtility {
 
 		private final long NULL_DATE_RETURN_VALUE = -1;
 
+		/**
+		 * Gets the latest Obs by concept.
+		 *
+		 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
+		 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+		 * @param person person to get obs for
+		 * @return Obs latest Obs
+		 */
 		public Obs getLatestObs(String conceptRef, Person person) {
 			if (person == null) {
 				return null;
@@ -181,21 +189,46 @@ public class ConceptReferenceRangeUtility {
 			return null;
 		}
 
+		/**
+		 * Gets the time of the day in hours.
+		 *
+		 * @return the hour of the day in 24hr format (e.g. 14 to mean 2pm)
+		 */
 		public int getCurrentHour() {
 			return LocalTime.now().getHourOfDay();
 		}
 
+		/**
+		 * Retrieves the most relevant Obs for the given current Obs and conceptRef. If the current Obs
+		 * contains a valid value (coded, numeric, date, text etc.) and the concept in Obs is the same as
+		 * the supplied concept, the method returns the current Obs. Otherwise, it fetches the latest Obs
+		 * for the supplied concept and patient.
+		 *
+		 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName
+		 * @param currentObs the current Obs being evaluated
+		 * @return the most relevant Obs based on the current Obs, or the latest Obs if the current one has
+		 *         no valid value
+		 */
 		public Obs getCurrentObs(String conceptRef, Obs currentObs) {
 			Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
 
-			if (currentObs.getValueAsString(Locale.ENGLISH).isEmpty()
-			        && (concept != null && concept == currentObs.getConcept())) {
+			if (concept != null && concept.equals(currentObs.getConcept())
+			        && !currentObs.getValueAsString(Locale.ENGLISH).isEmpty()) {
 				return currentObs;
 			} else {
 				return getLatestObs(conceptRef, currentObs.getPerson());
 			}
 		}
 
+		/**
+		 * Gets the person's latest observation date for a given concept
+		 *
+		 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
+		 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+		 * @param person the person
+		 * @return the observation date
+		 * @since 2.7.0
+		 */
 		public Date getLatestObsDate(String conceptRef, Person person) {
 			Obs obs = getLatestObs(conceptRef, person);
 			if (obs == null) {
@@ -210,6 +243,17 @@ public class ConceptReferenceRangeUtility {
 			return date;
 		}
 
+		/**
+		 * Checks if an observation's value coded answer is equal to a given concept
+		 *
+		 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
+		 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434" for the observation's question
+		 * @param person the person
+		 * @param answerConceptRef can be either concept uuid or conceptMap's code and sourceName for the
+		 *            observation's coded answer
+		 * @return true if the given concept is equal to the observation's value coded answer
+		 * @since 2.7.0
+		 */
 		public boolean isObsValueCodedAnswer(String conceptRef, Person person, String answerConceptRef) {
 			Obs obs = getLatestObs(conceptRef, person);
 			if (obs == null) {
@@ -229,6 +273,15 @@ public class ConceptReferenceRangeUtility {
 			return valudeCoded.equals(answerConcept);
 		}
 
+		/**
+		 * Gets the number of days from the person's latest observation date value for a given concept to
+		 * the current date
+		 *
+		 * @param conceptRef concept uuid or conceptMap code and sourceName
+		 * @param person the person
+		 * @return the number of days
+		 * @since 2.7.0
+		 */
 		public long getObsDays(String conceptRef, Person person) {
 			Date date = getLatestObsDate(conceptRef, person);
 			if (date == null) {
@@ -237,6 +290,15 @@ public class ConceptReferenceRangeUtility {
 			return getDays(date);
 		}
 
+		/**
+		 * Gets the number of weeks from the person's latest observation date value for a given concept to
+		 * the current date
+		 *
+		 * @param conceptRef concept uuid or conceptMap code and sourceName
+		 * @param person the person
+		 * @return the number of weeks
+		 * @since 2.7.0
+		 */
 		public long getObsWeeks(String conceptRef, Person person) {
 			Date date = getLatestObsDate(conceptRef, person);
 			if (date == null) {
@@ -245,6 +307,15 @@ public class ConceptReferenceRangeUtility {
 			return getWeeks(date);
 		}
 
+		/**
+		 * Gets the number of months from the person's latest observation date value for a given concept to
+		 * the current date
+		 *
+		 * @param conceptRef concept uuid or conceptMap code and sourceName
+		 * @param person the person
+		 * @return the number of months
+		 * @since 2.7.0
+		 */
 		public long getObsMonths(String conceptRef, Person person) {
 			Date date = getLatestObsDate(conceptRef, person);
 			if (date == null) {
@@ -253,6 +324,15 @@ public class ConceptReferenceRangeUtility {
 			return getMonths(date);
 		}
 
+		/**
+		 * Gets the number of years from the person's latest observation date value for a given concept to
+		 * the current date
+		 *
+		 * @param conceptRef concept uuid or conceptMap code and sourceName
+		 * @param person the person
+		 * @return the number of years
+		 * @since 2.7.0
+		 */
 		public long getObsYears(String conceptRef, Person person) {
 			Date date = getLatestObsDate(conceptRef, person);
 			if (date == null) {
@@ -261,6 +341,14 @@ public class ConceptReferenceRangeUtility {
 			return getYears(date);
 		}
 
+		/**
+		 * Gets the number of days between two given dates
+		 *
+		 * @param fromDate the date from which to start counting
+		 * @param toDate the date up to which to stop counting
+		 * @return the number of days between
+		 * @since 2.7.0
+		 */
 		public long getDaysBetween(Date fromDate, Date toDate) {
 			if (fromDate == null || toDate == null) {
 				return NULL_DATE_RETURN_VALUE;
@@ -268,6 +356,14 @@ public class ConceptReferenceRangeUtility {
 			return ChronoUnit.DAYS.between(toLocalDate(fromDate), toLocalDate(toDate));
 		}
 
+		/**
+		 * Gets the number of weeks between two given dates
+		 *
+		 * @param fromDate the date from which to start counting
+		 * @param toDate the date up to which to stop counting
+		 * @return the number of weeks between
+		 * @since 2.7.0
+		 */
 		public long getWeeksBetween(Date fromDate, Date toDate) {
 			if (fromDate == null || toDate == null) {
 				return NULL_DATE_RETURN_VALUE;
@@ -275,6 +371,14 @@ public class ConceptReferenceRangeUtility {
 			return ChronoUnit.WEEKS.between(toLocalDate(fromDate), toLocalDate(toDate));
 		}
 
+		/**
+		 * Gets the number of months between two given dates
+		 *
+		 * @param fromDate the date from which to start counting
+		 * @param toDate the date up to which to stop counting
+		 * @return the number of months between
+		 * @since 2.7.0
+		 */
 		public long getMonthsBetween(Date fromDate, Date toDate) {
 			if (fromDate == null || toDate == null) {
 				return NULL_DATE_RETURN_VALUE;
@@ -282,6 +386,14 @@ public class ConceptReferenceRangeUtility {
 			return ChronoUnit.MONTHS.between(toLocalDate(fromDate), toLocalDate(toDate));
 		}
 
+		/**
+		 * Gets the number of years between two given dates
+		 *
+		 * @param fromDate the date from which to start counting
+		 * @param toDate the date up to which to stop counting
+		 * @return the number of years between
+		 * @since 2.7.0
+		 */
 		public long getYearsBetween(Date fromDate, Date toDate) {
 			if (fromDate == null || toDate == null) {
 				return NULL_DATE_RETURN_VALUE;
@@ -289,22 +401,59 @@ public class ConceptReferenceRangeUtility {
 			return ChronoUnit.YEARS.between(toLocalDate(fromDate), toLocalDate(toDate));
 		}
 
+		/**
+		 * Gets the number of days from a given date up to the current date.
+		 *
+		 * @param fromDate the date from which to start counting
+		 * @return the number of days
+		 * @since 2.7.0
+		 */
 		public long getDays(Date fromDate) {
 			return getDaysBetween(fromDate, new Date());
 		}
 
+		/**
+		 * Gets the number of weeks from a given date up to the current date.
+		 *
+		 * @param fromDate the date from which to start counting
+		 * @return the number of weeks
+		 * @since 2.7.0
+		 */
 		public long getWeeks(Date fromDate) {
 			return getWeeksBetween(fromDate, new Date());
 		}
 
+		/**
+		 * Gets the number of months from a given date up to the current date.
+		 *
+		 * @param fromDate the date from which to start counting
+		 * @return the number of months
+		 * @since 2.7.0
+		 */
 		public long getMonths(Date fromDate) {
 			return getMonthsBetween(fromDate, new Date());
 		}
 
+		/**
+		 * Gets the number of years from a given date up to the current date.
+		 *
+		 * @param fromDate the date from which to start counting
+		 * @return the number of years
+		 * @since 2.7.0
+		 */
 		public long getYears(Date fromDate) {
 			return getYearsBetween(fromDate, new Date());
 		}
 
+		/**
+		 * Returns whether the patient is the specified program on the specified date
+		 *
+		 * @param uuid of program
+		 * @param person the patient to test
+		 * @param onDate the date to test whether the patient is in the program
+		 * @return true if the patient is in the program on the specified date, false otherwise
+		 * @since 2.7.0
+		 */
 		public boolean isEnrolledInProgram(String uuid, Person person, Date onDate) {
 			if (person == null) {
 				return false;
@@ -316,6 +465,15 @@ public class ConceptReferenceRangeUtility {
 			        .anyMatch(pp -> pp.getProgram().getUuid().equals(uuid));
 		}
 
+		/**
+		 * Returns whether the patient is the specified program state on the specified date
+		 *
+		 * @param uuid of program state
+		 * @param person the patient to test
+		 * @param onDate the date to test whether the patient is in the program state
+		 * @return true if the patient is in the program state on the specified date, false otherwise
+		 * @since 2.7.0
+		 */
 		public boolean isInProgramState(String uuid, Person person, Date onDate) {
 			if (person == null) {
 				return false;
