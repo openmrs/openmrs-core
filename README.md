@@ -42,9 +42,17 @@ The mission of OpenMRS is to improve health care delivery in resource-constraine
 
 #### Java
 
-OpenMRS is a Java application which is why you need to install a Java JDK.
+OpenMRS is a Java application, so you must install a Java JDK. The required version depends on your goal and the specific branch or tag you are building:
 
-If you want to build the master branch you will need a Java JDK of minimum version 8.
+| Goal | Branch / Tag | Java Version |
+| :--- | :--- | :--- |
+| **Active Development** | `master` | **Java 21** |
+| **Stable Releases** | `x.y.z`* | **Java 8+** (varies by release) |
+
+*\*Check the [Releases](https://github.com/openmrs/openmrs-core/releases) section for the latest stable version.*
+
+> [!IMPORTANT]
+> The **current development version on `master`** targets **Java 21**. If you build **`master`** with older JDKs (8, 11, or 17), you will get `release version 21 not supported`.
 
 #### Maven
 
