@@ -384,6 +384,8 @@ public class HibernateObsDAO implements ObsDAO {
 				);
 				deleteQuery.setParameterList("obsIds", obsIds);
 				deleteQuery.executeUpdate();
+				session.flush();
+				session.clear();
 			}
 		}
 	}
