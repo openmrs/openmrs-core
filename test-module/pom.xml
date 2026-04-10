@@ -40,7 +40,7 @@
 	</modules>
 	
 	<properties>
-		<openmrsPlatformVersion>${project.version}</openmrsPlatformVersion>
+		<openmrsPlatformVersion>2.6.16-SNAPSHOT</openmrsPlatformVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javaCompilerVersion>1.8</javaCompilerVersion>
 	</properties>
