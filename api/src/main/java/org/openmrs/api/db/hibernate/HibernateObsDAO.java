@@ -353,4 +353,37 @@ public class HibernateObsDAO implements ObsDAO {
 			session.setHibernateFlushMode(flushMode);
 		}
 	}
+	public void archiveVoidedObs(int batchSize) {
+
+		Session session = sessionFactory.getCurrentSession();
+
+		// Step 1: Fetch only IDs
+		List<Integer> obsIds = session.createQuery(
+			"select o.obsId from Obs o where o.voided = true",
+			Integer.class
+		)
+		.setMaxResults(batchSize)
+		.getResultList();
+
+		if (!obsIds.isEmpty()) {
+
+			// Step 2: Bulk INSERT
+			NativeQuery<?> insertQuery = session.createNativeQuery(
+				"INSERT INTO obs_archive (obs_id, person_id, encounter_id, concept_id, value_text, value_numeric, voided, date_voided, date_created, creator, uuid) " +
+				"SELECT obs_id, person_id, encounter_id, concept_id, value_text, value_numeric, voided, date_voided, date_created, creator, uuid " +
+				"FROM obs WHERE obs_id IN (:obsIds)"
+			);
+
+			insertQuery.setParameterList("obsIds", obsIds);
+			int inserted = insertQuery.executeUpdate();
+
+			// Step 3: Bulk DELETE
+			if (inserted > 0) {
+				NativeQuery<?> deleteQuery = session.createNativeQuery(
+					"DELETE FROM obs WHERE obs_id IN (:obsIds)"
+				);
+				deleteQuery.setParameterList("obsIds", obsIds);
+			}
+		}
+	}
 }
