@@ -547,4 +547,7 @@ public interface ObsService extends OpenmrsService {
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<Visit> visits,
 	        Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber)
 	        throws APIException;
+	
+	
+	void archiveVoidedObs(int batchSize);
 }
