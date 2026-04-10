@@ -258,7 +258,7 @@ public class Allergies implements List<Allergy> {
 	}
 	
 	/**
-	 * @see java.util.List#toArray(T[])
+	 * @see java.util.List#toArray(Object[])
 	 */
 	@Override
 	public <T> T[] toArray(T[] a) {

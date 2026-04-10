@@ -16,7 +16,7 @@ import org.openmrs.util.OpenmrsConstants;
 /**
  * This is a GlobalPropertyListener that updates logging levels whenever any of the log-related settings supported by core
  * are updated.
- * <p/>
+ * <p>
  * Note that changing <tt>log.level</tt> will result in an in-memory change to the logger (which should be preserved across
  * reloads of logging configuration). Modifying other settings will result in the logging configuration being fully reloaded,
  * which may result in log-file rollovers, etc.

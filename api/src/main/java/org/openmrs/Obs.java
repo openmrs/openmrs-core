@@ -896,8 +896,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 * <pre>
 	 * Obs obsWithComplexData =
 	 * Context.getObsService().getComplexObs(obsId, OpenmrsConstants.RAW_VIEW);
-	 * 
-	 * <pre/>
+	 * </pre>
 	 *
 	 * @return the complex data for this obs (if its a complex obs)
 	 * @since 1.5

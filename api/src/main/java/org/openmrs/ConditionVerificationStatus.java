@@ -13,9 +13,11 @@ package org.openmrs;
  * The ConditionVerificationStatus is what we've historically called "diagnosis certainty" and what FHIR refers to as
  * ConditionVerificationStatus. This is the verification status to support or decline the clinical status of the condition or
  * diagnosis. The following subset of FHIR statuses are currently defined:
+ * <ul>
  * <li>{@link #PROVISIONAL}</li>
  * <li>{@link #CONFIRMED}</li>
- * 
+ * </ul>
+ *
  * @since 2.2
  */
 public enum ConditionVerificationStatus {

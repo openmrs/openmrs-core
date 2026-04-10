@@ -119,7 +119,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#getProgram(java.lang.String)
+	 * @see org.openmrs.api.ProgramWorkflowService#getProgramByName(String)
 	 */
 	@Transactional(readOnly = true)
 	public Program getProgram(String name) {
@@ -127,7 +127,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#getProgram(java.lang.String)
+	 * @see org.openmrs.api.ProgramWorkflowService#getProgramByName(String)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -440,8 +440,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#triggerStateConversion(org.openmrs.Patient,
-	 *      org.openmrs.Concept, java.util.Date)
+	 * Trigger state conversion for a patient based on a concept trigger.
 	 */
 	public void triggerStateConversion(Patient patient, Concept trigger, Date dateConverted) {
 		

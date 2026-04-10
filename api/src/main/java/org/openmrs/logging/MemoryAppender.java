@@ -37,7 +37,7 @@ import org.openmrs.util.ThreadSafeCircularFifoQueue;
 
 /**
  * This class stores a configurable number lines of the output from the log file.
- * <p/>
+ * <p>
  * Note that this class is implemented as a single-buffer-per-appender-name meaning that each appender name can only support
  * a single configuration (the most recent applied)
  */

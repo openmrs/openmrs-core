@@ -1052,7 +1052,7 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Returns the location of the OpenMRS log file.
-	 * <p/>
+	 * <p>
 	 * <strong>Warning:</strong> as of 2.4.4, 2.5.1, and 2.6.0 which allows configuration via a configuration file, the
 	 * result of this call can return null if either the file appender uses a name other than
 	 * {@link OpenmrsConstants#LOG_OPENMRS_FILE_APPENDER} or if the appender with that name is not one of the default file

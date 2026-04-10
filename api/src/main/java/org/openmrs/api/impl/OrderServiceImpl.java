@@ -1102,7 +1102,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypes()
+	 * @see org.openmrs.api.OrderService#getAllOrderGroupAttributeTypes()
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1111,7 +1111,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeById()
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeType(Integer)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1120,7 +1120,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByUuid()
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByUuid(String)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1129,7 +1129,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#saveOrderGroupAttributeType()
+	 * @see org.openmrs.api.OrderService#saveOrderGroupAttributeType(OrderGroupAttributeType)
 	 */
 	@Override
 	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
@@ -1137,7 +1137,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#retireOrderGroupAttributeType()
+	 * @see org.openmrs.api.OrderService#retireOrderGroupAttributeType(OrderGroupAttributeType, String)
 	 */
 	@Override
 	public OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason)throws APIException {
@@ -1145,7 +1145,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#unretireOrderGroupAttributeType()
+	 * @see org.openmrs.api.OrderService#unretireOrderGroupAttributeType(OrderGroupAttributeType)
 	 */
 	@Override
 	public OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws APIException {
@@ -1153,7 +1153,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#purgeOrderGroupAttributeType()
+	 * @see org.openmrs.api.OrderService#purgeOrderGroupAttributeType(OrderGroupAttributeType)
 	 */
 	@Override
 	public void purgeOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
@@ -1161,7 +1161,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByName()
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByName(String)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1170,7 +1170,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeByUuid()
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeByUuid(String)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1214,7 +1214,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#retireOrderAttributeType(OrderAttributeType)
+	 * @see org.openmrs.api.OrderService#retireOrderAttributeType(OrderAttributeType, String)
 	 */
 	@Override
 	public OrderAttributeType retireOrderAttributeType(OrderAttributeType orderAttributeType, String reason)throws APIException {

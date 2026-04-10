@@ -117,7 +117,7 @@ public class PersonLuceneQuery {
 	}
 	
 	/**
-	 * This method creates a Lucene search query for a Person based on a soundex search on n>3 names
+	 * This method creates a Lucene search query for a Person based on a soundex search on n&gt;3 names
 	 *
 	 * @param searchNames an array of names that should be searched for
 	 * @param birthyear the birthyear the searched person should have 

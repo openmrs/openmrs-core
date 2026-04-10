@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 /**
  * This is a Jackson-Databind module that simply changes how we serialize locales by pre-adopting the Jackson 3.0 convention
  * of using toLanguageTag() instead of toString(). When Jackson 3.0 is available, we should be able to drop this class.
- * <p/>
+ * <p>
  * This module is available to be used by any use-case that creates an ObjectMapper. However, it is only registered by default
  * for the Spring MappingJackson2HttpMessageConverter class.
  */

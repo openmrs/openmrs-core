@@ -514,7 +514,6 @@ public final class Module {
 	 * </extension>
 	 * }
 	 * </pre>
-	 * </p>
 	 *
 	 * @param map from pointid to classname of an extension
 	 * @see ModuleFileParser

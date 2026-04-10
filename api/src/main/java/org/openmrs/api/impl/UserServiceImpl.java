@@ -783,7 +783,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#changePasswordUsingActivationKey(String, String);
+	 * @see org.openmrs.api.UserService#changePasswordUsingActivationKey(String, String)
 	 */
 	@Override
 	public void changePasswordUsingActivationKey(String activationKey, String newPassword) {

@@ -115,8 +115,8 @@ public interface OrderSetService extends OpenmrsService {
 	 * @param uuid specifies the order set attribute uuid
 	 * @return the {@link OrderSetAttribute} with the given uuid
 	 * @since 2.4.0
-	 * @should get the order set attribute with the given uuid
-	 * @should return null if no order set attribute has the given uuid
+	 * <strong>Should</strong> get the order set attribute with the given uuid
+	 * <strong>Should</strong> return null if no order set attribute has the given uuid
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
 	OrderSetAttribute getOrderSetAttributeByUuid(String uuid);
@@ -126,7 +126,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * 
 	 * @return all {@link OrderSetAttributeType}s
 	 * @since 2.4.0
-	 * @should return all orderSet attribute types including retired ones
+	 * <strong>Should</strong> return all orderSet attribute types including retired ones
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
 	List<OrderSetAttributeType> getAllOrderSetAttributeTypes();
@@ -137,8 +137,8 @@ public interface OrderSetService extends OpenmrsService {
 	 * @param id specifies the set attribute type id
 	 * @return the {@link OrderSetAttributeType} with the given internal id
 	 * @since 2.4.0
-	 * @should return the orderSet attribute type with the given id
-	 * @should return null if no orderSet attribute type exists with the given id
+	 * <strong>Should</strong> return the orderSet attribute type with the given id
+	 * <strong>Should</strong> return null if no orderSet attribute type exists with the given id
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
 	OrderSetAttributeType getOrderSetAttributeType(Integer id);
@@ -149,8 +149,8 @@ public interface OrderSetService extends OpenmrsService {
 	 * @param uuid specifies the order set attribute type uuid
 	 * @return the {@link OrderSetAttributeType} with the given uuid
 	 * @since 2.4.0
-	 * @should return the orderSet attribute type with the given uuid
-	 * @should return null if no orderSet attribute type exists with the given uuid
+	 * <strong>Should</strong> return the orderSet attribute type with the given uuid
+	 * <strong>Should</strong> return null if no orderSet attribute type exists with the given uuid
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
 	OrderSetAttributeType getOrderSetAttributeTypeByUuid(String uuid);
@@ -161,8 +161,8 @@ public interface OrderSetService extends OpenmrsService {
 	 * @param orderSetAttributeType the order set attribute type to save
 	 * @return the OrderSetAttributeType created/saved
 	 * @since 2.4.0
-	 * @should create a new orderSet attribute type
-	 * @should edit an existing orderSet attribute type
+	 * <strong>Should</strong> create a new orderSet attribute type
+	 * <strong>Should</strong> edit an existing orderSet attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
 	OrderSetAttributeType saveOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
@@ -173,7 +173,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @param orderSetAttributeType specifies the order set attribute type to be retired 
 	 * @return the orderSetAttribute retired
 	 * @since 2.4.0
-	 * @should retire a orderSet attribute type
+	 * <strong>Should</strong> retire a orderSet attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
 	OrderSetAttributeType retireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType, String reason);
@@ -184,7 +184,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @param orderSetAttributeType the order set attribute type to be un-retired
 	 * @return the OrderSetAttributeType unretired
 	 * @since 2.4.0
-	 * @should unretire a retired orderSet attribute type
+	 * <strong>Should</strong> unretire a retired orderSet attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
 	OrderSetAttributeType unretireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
@@ -194,7 +194,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * 
 	 * @param orderSetAttributeType the order set attribute type to be purged
 	 * @since 2.4.0
-	 * @should completely remove an order set attribute type
+	 * <strong>Should</strong> completely remove an order set attribute type
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDER_SET_ATTRIBUTE_TYPES)
 	void purgeOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
@@ -205,8 +205,8 @@ public interface OrderSetService extends OpenmrsService {
 	 * @param orderSetAttributeTypeName fetches a given order set attribute type by name
 	 * @return the {@link OrderSetAttributeType} with the specified name
 	 * @since 2.4.0
-	 * @should return the orderSet attribute type with the specified name
-	 * @should return null if no orderSet attribute type exists with the specified
+	 * <strong>Should</strong> return the orderSet attribute type with the specified name
+	 * <strong>Should</strong> return null if no orderSet attribute type exists with the specified
 	 *         name
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)

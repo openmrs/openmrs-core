@@ -791,7 +791,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Gets the non coded drug concept, i.e the concept that matches the uuid specified as the value
-	 * for the global property {@link OpenmrsConstants#GP_DRUG_ORDER_DRUG_OTHER
+	 * for the global property {@link OpenmrsConstants#GP_DRUG_ORDER_DRUG_OTHER}
 	 *
 	 * @return concept of non coded drug
 	 * @since 1.12
@@ -860,18 +860,18 @@ public interface OrderService extends OpenmrsService {
 	 * Returns all order group attribute types
 	 *
 	 * @return all {@link OrderGroupAttributeType}s
-	 * @should return all order group attribute types including retired ones
+	 * <strong>Should</strong> return all order group attribute types including retired ones
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	 List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes() throws APIException;
 	
 	/**
 	 * Fetches order group attribute type using provided Id
-	 * 
-	 * @param id The Id of the order group attribute type to fetch from the database
+	 *
+	 * @param orderGroupAttributeTypeId The Id of the order group attribute type to fetch from the database
 	 * @return the {@link OrderGroupAttributeType} with the given internal id
-	 * @should return the order group attribute type using the provided id
-	 * @should return null if no order group attribute type exists with the given id
+	 * <strong>Should</strong> return the order group attribute type using the provided id
+	 * <strong>Should</strong> return null if no order group attribute type exists with the given id
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	OrderGroupAttributeType getOrderGroupAttributeType(Integer orderGroupAttributeTypeId) throws APIException;
@@ -881,8 +881,8 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param uuid The uuid of the order group attribute type to fetch from the database
 	 * @return the {@link OrderGroupAttributeType} with the given uuid
-	 * @should return the order group attribute type with the given uuid
-	 * @should return null if no order group attribute type exists with the given uuid
+	 * <strong>Should</strong> return the order group attribute type with the given uuid
+	 * <strong>Should</strong> return null if no order group attribute type exists with the given uuid
 	 */
 	OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) throws APIException;
 	
@@ -891,8 +891,8 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderGroupAttributeType The order group attribute type to save in the database
 	 * @return the order group attribute type created or saved
-	 * @should create a new order group attribute type
-	 * @should edit an existing order group attribute type
+	 * <strong>Should</strong> create a new order group attribute type
+	 * <strong>Should</strong> edit an existing order group attribute type
 	 */
     @Authorized({PrivilegeConstants.EDIT_ORDERS,PrivilegeConstants.ADD_ORDERS})
 	OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
@@ -903,7 +903,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderGroupAttributeType The order group attribute type to retire
 	 * @param reason The reason why the order group attribute type is being retired
 	 * @return the order group attribute type retired
-	 * @should retire an order group attribute type
+	 * <strong>Should</strong> retire an order group attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason) throws APIException;
@@ -913,7 +913,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param orderGroupAttributeType The order group attribute type to unretire
 	 * @return the order group attribute type unretired
-	 * @should unretire an order group attribute type
+	 * <strong>Should</strong> unretire an order group attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
@@ -922,7 +922,7 @@ public interface OrderService extends OpenmrsService {
 	 * Completely removes an order group attribute type from the database
 	 *
 	 * @param orderGroupAttributeType The order group attribute type to purge
-	 * @should completely remove an order group attribute type
+	 * <strong>Should</strong> completely remove an order group attribute type
 	 */
     @Authorized(PrivilegeConstants.PURGE_ORDERS)
 	void purgeOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
@@ -932,8 +932,8 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderGroupAttributeTypeName The name of the order group attribute type to fetch
 	 * @return the {@link OrderGroupAttributeType} with the specified name
-	 * @should return the order group attribute type with the specified name
-	 * @should return null if no order group attribute type exists with the specified name
+	 * <strong>Should</strong> return the order group attribute type with the specified name
+	 * <strong>Should</strong> return null if no order group attribute type exists with the specified name
 	 */
     @Authorized(PrivilegeConstants.GET_ORDERS)
 	OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName) throws APIException;
@@ -944,8 +944,8 @@ public interface OrderService extends OpenmrsService {
 	 * @param uuid The uuid of the order group attribute to fetch
 	 * @return the {@link OrderGroupAttribute} with the given uuid
 	 * @since 2.4.0
-	 * @should get the order group attribute with the given uuid
-	 * @should return null if no order group attribute has the given uuid
+	 * <strong>Should</strong> get the order group attribute with the given uuid
+	 * <strong>Should</strong> return null if no order group attribute has the given uuid
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) throws APIException;
@@ -955,7 +955,7 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @return all {@link OrderAttributeType}s
 	 * @since 2.5.0
-	 * @should return all order attribute types including retired ones
+	 * <strong>Should</strong> return all order attribute types including retired ones
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	List<OrderAttributeType> getAllOrderAttributeTypes() throws APIException;
@@ -963,11 +963,11 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Fetches order attribute type using provided Id
 	 *
-	 * @param id The Id of the order attribute type to fetch from the database
+	 * @param orderAttributeTypeId The Id of the order attribute type to fetch from the database
 	 * @return the {@link OrderAttributeType} with the given internal id
 	 * @since 2.5.0
-	 * @should return the order attribute type using the provided id
-	 * @should return null if no order attribute type exists with the given id
+	 * <strong>Should</strong> return the order attribute type using the provided id
+	 * <strong>Should</strong> return null if no order attribute type exists with the given id
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	OrderAttributeType getOrderAttributeTypeById(Integer orderAttributeTypeId) throws APIException;
@@ -978,8 +978,8 @@ public interface OrderService extends OpenmrsService {
 	 * @param uuid The uuid of the order attribute type to fetch from the database
 	 * @return the {@link OrderAttributeType} with the given uuid
 	 * @since 2.5.0
-	 * @should return the order attribute type with the given uuid
-	 * @should return null if no order attribute type exists with the given uuid
+	 * <strong>Should</strong> return the order attribute type with the given uuid
+	 * <strong>Should</strong> return null if no order attribute type exists with the given uuid
 	 */
 	OrderAttributeType getOrderAttributeTypeByUuid(String uuid) throws APIException;
 
@@ -989,8 +989,8 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderAttributeType The order attribute type to save in the database
 	 * @return the order attribute type created or saved
 	 * @since 2.5.0
-	 * @should create a new order attribute type
-	 * @should edit an existing order attribute type
+	 * <strong>Should</strong> create a new order attribute type
+	 * <strong>Should</strong> edit an existing order attribute type
 	 */
 	@Authorized({PrivilegeConstants.EDIT_ORDERS,PrivilegeConstants.ADD_ORDERS})
 	OrderAttributeType saveOrderAttributeType(OrderAttributeType orderAttributeType) throws APIException;
@@ -1002,7 +1002,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param reason The reason why the order attribute type is being retired
 	 * @return the order attribute type retired
 	 * @since 2.5.0
-	 * @should retire an order attribute type
+	 * <strong>Should</strong> retire an order attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	OrderAttributeType retireOrderAttributeType(OrderAttributeType orderAttributeType, String reason) throws APIException;
@@ -1013,7 +1013,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderAttributeType The order attribute type to unretire
 	 * @return the order attribute type unretired
 	 * @since 2.5.0
-	 * @should unretire an order attribute type
+	 * <strong>Should</strong> unretire an order attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	OrderAttributeType unretireOrderAttributeType(OrderAttributeType orderAttributeType) throws APIException;
@@ -1023,7 +1023,7 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderAttributeType The order attribute type to purge
 	 * @since 2.5.0
-	 * @should completely remove an order attribute type
+	 * <strong>Should</strong> completely remove an order attribute type
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDERS)
 	void purgeOrderAttributeType(OrderAttributeType orderAttributeType) throws APIException;
@@ -1034,8 +1034,8 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderAttributeTypeName The name of the order attribute type to fetch
 	 * @return the {@link OrderAttributeType} with the specified name
 	 * @since 2.5.0
-	 * @should return the order attribute type with the specified name
-	 * @should return null if no order attribute type exists with the specified name
+	 * <strong>Should</strong> return the order attribute type with the specified name
+	 * <strong>Should</strong> return null if no order attribute type exists with the specified name
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	OrderAttributeType getOrderAttributeTypeByName(String orderAttributeTypeName) throws APIException;
@@ -1046,8 +1046,8 @@ public interface OrderService extends OpenmrsService {
 	 * @param uuid The uuid of the order attribute to fetch
 	 * @return the {@link OrderAttribute} with the given uuid
 	 * @since 2.5.0
-	 * @should get the order attribute with the given uuid
-	 * @should return null if no order attribute has the given uuid
+	 * <strong>Should</strong> get the order attribute with the given uuid
+	 * <strong>Should</strong> return null if no order attribute has the given uuid
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	OrderAttribute getOrderAttributeByUuid(String uuid) throws APIException;

@@ -833,7 +833,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	
 	/**
 	 * @since 1.12 {@link org.openmrs.OrderGroup}
-	 * @returns the OrderGroup
+	 * @return the OrderGroup
 	 */
 	public OrderGroup getOrderGroup() {
 		return orderGroup;

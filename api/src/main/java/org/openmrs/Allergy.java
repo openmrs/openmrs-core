@@ -366,8 +366,6 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 	 * from the given allergy into this object
 	 * 
 	 * @param allergy the allergy whose property values to copy
-	 * @throws InvocationTargetException
-	 * @throws IllegalAccessException
 	 */
 	public void copy(Allergy allergy) {
 		setAllergyId(null);

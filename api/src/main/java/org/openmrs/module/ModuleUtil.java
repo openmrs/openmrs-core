@@ -258,7 +258,6 @@ public class ModuleUtil {
 	 * <li>1.2.2 - 1.2.3 means 1.2.2 and 1.2.3 (inclusive)</li>
 	 * <li>1.2.* - 1.3.* means any version of the 1.2.x and 1.3.x branch</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @param version openmrs version number to be compared
 	 * @param versionRange value in the config file for required openmrs version
@@ -375,7 +374,6 @@ public class ModuleUtil {
 	 * <li>1.2.2 - 1.2.3 means 1.2.2 and 1.2.3 (inclusive)</li>
 	 * <li>1.2.* - 1.3.* means any version of the 1.2.x and 1.3.x branch</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @param version openmrs version number to be compared
 	 * @param versionRange value in the config file for required openmrs version

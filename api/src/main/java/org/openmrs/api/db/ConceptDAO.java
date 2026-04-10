@@ -199,12 +199,12 @@ public interface ConceptDAO {
 	public ConceptDatatype getConceptDatatype(Integer i) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#saveConceptDatatype(org.openmrs.ConceptDatatype)
+	 * Saves the given ConceptDatatype to the database.
 	 */
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws DAOException;
-	
+
 	/**
-	 * @see org.openmrs.api.ConceptService#purgeConceptDatatype(org.openmrs.ConceptDatatype)
+	 * Purges the given ConceptDatatype from the database.
 	 */
 	public void purgeConceptDatatype(ConceptDatatype cd) throws DAOException;
 	

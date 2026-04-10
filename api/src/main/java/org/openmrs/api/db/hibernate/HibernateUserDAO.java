@@ -66,7 +66,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User)
 	 */
 	@Override
 	public User saveUser(User user, String password) {
@@ -116,9 +116,6 @@ public class HibernateUserDAO implements UserDAO {
 		return users.get(0);
 	}
 	
-	/**
-	 * @see org.openmrs.api.UserService#getUserByEmail(java.lang.String)
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public User getUserByEmail(String email) {
@@ -203,7 +200,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#deleteUser(org.openmrs.User)
+	 * @see org.openmrs.api.UserService#purgeUser(org.openmrs.User)
 	 */
 	@Override
 	public void deleteUser(User user) {
@@ -669,7 +666,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.UserDAO#createActivationKey(org.openmrs.User)
+	 * @see org.openmrs.api.db.UserDAO#setUserActivationKey(org.openmrs.api.db.LoginCredential)
 	 */
 	@Override
 	public void setUserActivationKey(LoginCredential credentials) {		

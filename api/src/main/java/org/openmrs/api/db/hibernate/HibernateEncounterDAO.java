@@ -75,7 +75,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#deleteEncounter(org.openmrs.Encounter)
+	 * @see org.openmrs.api.EncounterService#purgeEncounter(org.openmrs.Encounter)
 	 */
 	@Override
 	public void deleteEncounter(Encounter encounter) throws DAOException {

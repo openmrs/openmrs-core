@@ -14,9 +14,11 @@ package org.openmrs;
  * The ConditionClinicalStatus is what we've historically called "condition status" and what FHIR refers to as
  * ConditionClinicalStatus . This is a clinical condition that has risen to a level of concern.
  * The custom status and subset of FHIR statuses are defined as follows:
+ * <ul>
  * <li>{@link #ACTIVE}</li>
  * <li>{@link #INACTIVE}</li>
  * <li>{@link #HISTORY_OF}</li>
+ * </ul>
  *
  * @since 2.2
  * */
