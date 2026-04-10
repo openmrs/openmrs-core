@@ -25,7 +25,6 @@ public class ProgramDatatype extends BaseMetadataDatatype<Program> {
 	/**
 	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
 	 * <strong>Should</strong> return the object by given uuid string
-	 * @override
 	 */
 	@Override
 	public Program deserialize(String uuid) {

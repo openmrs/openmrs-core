@@ -58,7 +58,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	/**
 	 * Valid values for the status of an order that is received from a filler
 	 * @since 2.2.0  
-	 * @since 2.6.1 added ON_HOLD & DECLINED
+	 * @since 2.6.1 added ON_HOLD &amp; DECLINED
 	 */
 	public enum FulfillerStatus {
 		RECEIVED, 
@@ -836,7 +836,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	
 	/**
 	 * @since 1.12 {@link org.openmrs.OrderGroup}
-	 * @returns the OrderGroup
+	 * @return the OrderGroup
 	 */
 	public OrderGroup getOrderGroup() {
 		return orderGroup;

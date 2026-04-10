@@ -94,7 +94,6 @@ public interface ObsService extends OpenmrsService {
 	 *     <li>the obs you pass in is returned</li>
 	 *     <li>the changeMesssage parameter is ignored</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * <p>When you edit an existing observation:
 	 * <ul>
@@ -103,7 +102,6 @@ public interface ObsService extends OpenmrsService {
 	 *     <li>the obs you passed is marked as voided, with changeMessage as the void reason</li>
 	 *     <li>the newly-created obs points back to the voided one via its previousVersion field</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @param obs the Obs to save to the database
 	 * @param changeMessage String explaining why <code>obs</code> is being changed. If

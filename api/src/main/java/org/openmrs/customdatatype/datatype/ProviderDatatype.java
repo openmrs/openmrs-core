@@ -24,7 +24,6 @@ public class ProviderDatatype extends BaseMetadataDatatype<Provider> {
 	
 	/**
 	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(String)
-	 * @override
 	 */
 	@Override
 	public Provider deserialize(String uuid) {

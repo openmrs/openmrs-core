@@ -1052,11 +1052,11 @@ public interface ConceptService extends OpenmrsService {
 	 * @param includeRetired whether or not to include retired concepts
 	 * @return the list ids for all non-voided {@link Concept}s that have the given mapping, or an empty List if none found
 	 * @throws APIException if the specified source+code maps to more than one concept
-	 * @should get concepts with given code and and source hl7 code
-	 * @should get concepts with given code and source name
-	 * @should return empty list if source code does not exist
-	 * @should return empty list if mapping does not exist
-	 * @should include retired concepts
+	 * <strong>Should</strong> get concepts with given code and and source hl7 code
+	 * <strong>Should</strong> get concepts with given code and source name
+	 * <strong>Should</strong> return empty list if source code does not exist
+	 * <strong>Should</strong> return empty list if mapping does not exist
+	 * <strong>Should</strong> include retired concepts
 	 * @since 2.3
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
