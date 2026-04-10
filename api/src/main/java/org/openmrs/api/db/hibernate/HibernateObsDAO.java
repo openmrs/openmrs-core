@@ -383,6 +383,7 @@ public class HibernateObsDAO implements ObsDAO {
 					"DELETE FROM obs WHERE obs_id IN (:obsIds)"
 				);
 				deleteQuery.setParameterList("obsIds", obsIds);
+				deleteQuery.executeUpdate();
 			}
 		}
 	}
