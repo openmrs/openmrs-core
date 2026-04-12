@@ -34,7 +34,7 @@
 	   are processed through mchange-commons-java. The fixed version (0.4.0) is not yet
 	   published on Maven Central. Revisit when 0.4.0 is available and upgrade.
 	   ]]></notes>
-	   <packageUrl regex="true">^pkg:maven/com\.mchange/mchange-commons-java@.*$</packageUrl>
+	   <packageUrl regex="true">^pkg:maven/com\.mchange/mchange-commons-java@0\.3\.2$</packageUrl>
 	   <cve>CVE-2026-27727</cve>
 	</suppress>
 	<suppress>
