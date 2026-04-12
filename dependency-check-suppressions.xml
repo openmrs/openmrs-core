@@ -28,8 +28,11 @@
 	</suppress>
 	<suppress>
 	   <notes><![CDATA[
-	   CVE-2026-27727: mchange-commons-java 0.3.2 is the latest available version.
-	   No upstream fix available yet. Suppressing until a patched version is released.
+	   CVE-2026-27727: RCE via JNDI Reference resolution in mchange-commons-java.
+	   Not exploitable in openmrs-core — c3p0 is used only as a JDBC connection pool
+	   and the vulnerable JNDI code path is not reachable. No untrusted JNDI References
+	   are processed through mchange-commons-java. The fixed version (0.4.0) is not yet
+	   published on Maven Central. Revisit when 0.4.0 is available and upgrade.
 	   ]]></notes>
 	   <packageUrl regex="true">^pkg:maven/com\.mchange/mchange-commons-java@.*$</packageUrl>
 	   <cve>CVE-2026-27727</cve>
