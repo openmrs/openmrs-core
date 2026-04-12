@@ -26,4 +26,49 @@
 	   <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
 	   <vulnerabilityName regex="true">^jquery issue:.*$</vulnerabilityName>
 	</suppress>
+	<suppress>
+	   <notes><![CDATA[
+	   CVE-2026-27727: mchange-commons-java 0.3.2 is the latest available version.
+	   No upstream fix available yet. Suppressing until a patched version is released.
+	   ]]></notes>
+	   <packageUrl regex="true">^pkg:maven/com\.mchange/mchange-commons-java@.*$</packageUrl>
+	   <cve>CVE-2026-27727</cve>
+	</suppress>
+	<suppress>
+	   <notes><![CDATA[
+	   False positives: these CVEs are matched against the openmrs.war file via CPE
+	   cpe:2.3:a:openmrs:openmrs but refer to vulnerabilities in older OpenMRS releases
+	   or the OpenMRS Reference Application, not the current openmrs-core codebase.
+	   ]]></notes>
+	   <cpe>cpe:2.3:a:openmrs:openmrs</cpe>
+	   <cve>CVE-2021-43094</cve>
+	</suppress>
+	<suppress>
+	   <notes><![CDATA[
+	   False positive: CVE applies to OpenMRS 2.x Reference Application, not openmrs-core.
+	   ]]></notes>
+	   <cpe>cpe:2.3:a:openmrs:openmrs</cpe>
+	   <cve>CVE-2017-12796</cve>
+	</suppress>
+	<suppress>
+	   <notes><![CDATA[
+	   False positive: CVE applies to OpenMRS Reference Application, not openmrs-core.
+	   ]]></notes>
+	   <cpe>cpe:2.3:a:openmrs:openmrs</cpe>
+	   <cve>CVE-2025-25928</cve>
+	</suppress>
+	<suppress>
+	   <notes><![CDATA[
+	   False positive: CVE applies to older OpenMRS version, not the current openmrs-core.
+	   ]]></notes>
+	   <cpe>cpe:2.3:a:openmrs:openmrs</cpe>
+	   <cve>CVE-2014-8073</cve>
+	</suppress>
+	<suppress>
+	   <notes><![CDATA[
+	   False positive: CVE applies to OpenMRS Reference Application, not openmrs-core.
+	   ]]></notes>
+	   <cpe>cpe:2.3:a:openmrs:openmrs</cpe>
+	   <cve>CVE-2025-25927</cve>
+	</suppress>
 </suppressions>
