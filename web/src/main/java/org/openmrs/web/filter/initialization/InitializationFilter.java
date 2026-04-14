@@ -397,8 +397,8 @@ public class InitializationFilter extends StartupFilter {
 			String adminPasswordLocked = script.getProperty("admin_password_locked",
 			    script.getProperty("admin.password.locked"));
 			if (adminPasswordLocked != null) {
-				wizardModel.additionalPropertiesFromInstallationScript.put(
-				    UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, adminPasswordLocked);
+				wizardModel.additionalPropertiesFromInstallationScript.put(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY,
+				    adminPasswordLocked);
 			}
 
 			for (Map.Entry<Object, Object> entry : installScript.entrySet()) {
