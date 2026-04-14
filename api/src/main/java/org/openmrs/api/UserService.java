@@ -36,8 +36,8 @@ import org.openmrs.notification.MessageException;
  */
 public interface UserService extends OpenmrsService {
 
-	String ADMIN_PASSWORD_LOCKED_PROPERTY = "admin_password_locked";
-	
+	String ADMIN_PASSWORD_LOCKED_PROPERTY = "admin.password.locked";
+
 	/**
 	 * Create user with given password.
 	 *
