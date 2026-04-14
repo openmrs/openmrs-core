@@ -739,8 +739,7 @@
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
-						<useReleaseProfile>false</useReleaseProfile>
-						<arguments>-Prelease</arguments>
+						<releaseProfiles>release</releaseProfiles>
 						<tagNameFormat>@{project.version}</tagNameFormat>
 					</configuration>
 				</plugin>
