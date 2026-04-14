@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -105,8 +106,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 			basePath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources";
 		}
 
-		Path normalizedPath = Path.of(realPath).normalize();
-		Path normalizedBase = Path.of(basePath).normalize();
+		Path normalizedPath = Paths.get(realPath).normalize();
+		Path normalizedBase = Paths.get(basePath).normalize();
 		if (!normalizedPath.startsWith(normalizedBase)) {
 			log.warn("Detected attempted directory traversal with path: " + path);
 			return null;
