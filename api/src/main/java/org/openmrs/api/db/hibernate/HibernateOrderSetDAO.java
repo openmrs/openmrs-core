@@ -26,8 +26,8 @@ import org.openmrs.api.db.OrderSetDAO;
  * This class should not be used directly. This is just a common implementation of the OrderSetDAO that
  * is used by the OrderSetService. This class is injected by spring into the desired OrderSetService
  * class. This injection is determined by the xml mappings and elements in the spring application
- * context: /metadata/api/spring/applicationContext.xml.<br/>
- * <br/>
+ * context: /metadata/api/spring/applicationContext.xml.
+ * <p>
  * The OrderSetService should be used for all Order related database manipulation.
  *
  * @see org.openmrs.api.OrderSetService

@@ -844,7 +844,7 @@ public class HibernateOrderDAO implements OrderDAO {
 
 	/**
 	 * @param orderAttributeType The orderAttributeType to retire
-	 * @see org.openmrs.api.db.OrderDAO#purgeOrderAttributeType(OrderAttributeType)
+	 * @see org.openmrs.api.OrderService#purgeOrderAttributeType(OrderAttributeType)
 	 */
 	@Override
 	public void deleteOrderAttributeType(OrderAttributeType orderAttributeType) throws DAOException {

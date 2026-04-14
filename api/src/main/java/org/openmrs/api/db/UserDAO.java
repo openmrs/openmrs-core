@@ -26,7 +26,7 @@ import org.openmrs.api.UserService;
 public interface UserDAO {
 	
 	/**
-	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
+	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User)
 	 */
 	public User saveUser(User user, String password) throws DAOException;
 	
@@ -40,9 +40,6 @@ public interface UserDAO {
 	 */
 	public User getUserByUsername(String username) throws DAOException;
 	
-	/**
-	 * @see org.openmrs.api.UserService#getUserByEmail(java.lang.String)
-	 */
 	public User getUserByEmail(String email);
 	
 	/**
@@ -208,7 +205,7 @@ public interface UserDAO {
 	public Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired);
 	
 	/**
-	 * @see UserService#setUserActivationKey(LoginCredential)
+	 * @see org.openmrs.api.UserService#setUserActivationKey(org.openmrs.User)
 	 */
 	public void setUserActivationKey(LoginCredential credentials);
 }

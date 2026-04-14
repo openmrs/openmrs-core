@@ -112,7 +112,7 @@ public interface PersonDAO {
 	public Person savePerson(Person person) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.PersonService#deletePerson(org.openmrs.Person)
+	 * @see org.openmrs.api.PersonService#purgePerson(org.openmrs.Person)
 	 */
 	public void deletePerson(Person person) throws DAOException;
 	
@@ -151,7 +151,7 @@ public interface PersonDAO {
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.PersonService#deleteRelationshipType(org.openmrs.RelationshipType)
+	 * @see org.openmrs.api.PersonService#purgeRelationshipType(org.openmrs.RelationshipType)
 	 */
 	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException;
 	

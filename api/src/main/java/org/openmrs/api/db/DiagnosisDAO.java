@@ -101,7 +101,7 @@ public interface DiagnosisDAO {
 	DiagnosisAttributeType saveDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws DAOException;
 
 	/**
-	 * @see org.openmrs.api.DiagnosisService#deleteDiagnosisAttributeType(DiagnosisAttributeType)
+	 * @see org.openmrs.api.DiagnosisService#purgeDiagnosisAttributeType(DiagnosisAttributeType)
 	 */
 	void deleteDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws DAOException;
 

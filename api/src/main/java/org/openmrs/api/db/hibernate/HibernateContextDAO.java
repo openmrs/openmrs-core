@@ -256,7 +256,7 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	/**
 	 * @throws Exception 
-	 * @see org.openmrs.api.db.ContextDAO#createUser(User, String)
+	 * @see org.openmrs.api.db.ContextDAO#createUser(User, String, java.util.List)
 	 */
 	@Override
 	@Transactional

@@ -68,7 +68,7 @@ public class HibernateFormDAO implements FormDAO {
 	/**
 	 * Returns the form object originally passed in, which will have been persisted.
 	 *
-	 * @see org.openmrs.api.FormService#createForm(org.openmrs.Form)
+	 * @see org.openmrs.api.FormService#saveForm(org.openmrs.Form)
 	 */
 	@Override
 	public Form saveForm(Form form) throws DAOException {
@@ -85,7 +85,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#deleteForm(org.openmrs.Form)
+	 * @see org.openmrs.api.FormService#purgeForm(org.openmrs.Form)
 	 */
 	@Override
 	public void deleteForm(Form form) throws DAOException {
@@ -101,7 +101,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#getFormFields(Form)
+	 * @see org.openmrs.api.db.FormDAO#getFormFieldsByField(org.openmrs.Field)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<FormField> getFormFields(Form form) throws DAOException {
@@ -167,7 +167,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#getFieldTypes()
+	 * @see org.openmrs.api.FormService#getAllFieldTypes()
 	 * @see org.openmrs.api.db.FormDAO#getAllFieldTypes(boolean)
 	 */
 	@Override
@@ -240,7 +240,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#getForms()
+	 * @see org.openmrs.api.FormService#getAllForms()
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -281,7 +281,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#deleteField(org.openmrs.Field)
+	 * @see org.openmrs.api.FormService#purgeField(org.openmrs.Field)
 	 * @see org.openmrs.api.db.FormDAO#deleteField(org.openmrs.Field)
 	 */
 	@Override
@@ -290,7 +290,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#createFormField(org.openmrs.FormField)
+	 * @see org.openmrs.api.FormService#saveFormField(org.openmrs.FormField)
 	 */
 	@Override
 	public FormField saveFormField(FormField formField) throws DAOException {
@@ -299,7 +299,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#deleteFormField(org.openmrs.FormField)
+	 * @see org.openmrs.api.FormService#purgeFormField(org.openmrs.FormField)
 	 * @see org.openmrs.api.db.FormDAO#deleteFormField(org.openmrs.FormField)
 	 */
 	@Override

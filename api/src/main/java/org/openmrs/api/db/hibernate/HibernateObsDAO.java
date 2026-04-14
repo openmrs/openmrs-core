@@ -58,7 +58,7 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
+	 * @see org.openmrs.api.ObsService#purgeObs(org.openmrs.Obs)
 	 */
 	@Override
 	public void deleteObs(Obs obs) throws DAOException {

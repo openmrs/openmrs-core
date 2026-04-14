@@ -43,7 +43,7 @@ import java.util.Locale;
 
 /**
  * {@link ConfigurationFactory} to handle OpenMRS's logging configuration.
- * <p/>
+ * <p>
  * Functionality provided by this {@link ConfigurationFactory}:
  * <ul>
  *     <li>Load log4j2 configuration files from the OpenMRS application directory</li>

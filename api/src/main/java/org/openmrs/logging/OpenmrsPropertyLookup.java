@@ -22,10 +22,10 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * This class exposes a subset of OpenMRS properties to the log4j context configuration. This is intended to allow the
  * logger to make use of certain OpenMRS properties.
- * <p/>
+ * <p>
  * To use these properties in your logger configuration, reference them like <tt>${openmrs:&lt;property&gt;}</tt>, e.g.
  * <tt>${openmrs:applicationDirectory}</tt>.
- * <p/>
+ * <p>
  * Supported properties:
  * <dl>
  *     <dt>applicationDirectory</dt>
@@ -35,7 +35,7 @@ import org.openmrs.util.OpenmrsUtil;
  *     <dt>logLayout</dt>
  *     <dd>The current value for the <tt>log.layout</tt> setting</dd>
  * </dl>
- * <p/>
+ * <p>
  * Care should be taken in exposing information through this class to ensure that no
  */
 @Plugin(name = OpenmrsPropertyLookup.NAME, category = StrLookup.CATEGORY)

@@ -309,7 +309,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientDAO#deletePatient(org.openmrs.Patient)
+	 * @see org.openmrs.api.db.PatientDAO#deletePatient(org.openmrs.Patient)
 	 */
         @Override
 	public void deletePatient(Patient patient) throws DAOException {
@@ -927,7 +927,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 
     /**
-	 * @see org.openmrs..api.db.PatientDAO#getAllergies(org.openmrs.Patient)
+	 * @see org.openmrs.api.db.PatientDAO#getAllergies(org.openmrs.Patient)
 	 */
 	//@Override
         @Override
@@ -970,7 +970,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.PatientDAO#getAllergy(Integer)
+	 * @see org.openmrs.api.db.PatientDAO#getAllergy(Integer)
 	 */
         @Override
 	public Allergy getAllergy(Integer allergyId) {
@@ -979,7 +979,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.PatientDAO#getAllergyByUuid(String)
+	 * @see org.openmrs.api.db.PatientDAO#getAllergyByUuid(String)
 	 */
         @Override
 	public Allergy getAllergyByUuid(String uuid) {

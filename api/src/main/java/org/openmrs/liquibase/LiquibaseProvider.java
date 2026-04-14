@@ -13,10 +13,12 @@ import liquibase.Liquibase;
 
 /**
  * Provides access to Liquibase instances. The interface was introduced for two reasons:
+ * <ul>
  * <li>to decouple the org.openmrs.liquibase.ChangeLogDetective class from the
- * org.openmrs.util.DatabaseUpdater class
+ * org.openmrs.util.DatabaseUpdater class</li>
  * <li>to support integration testing of the org.openmrs.liquibase.ChangeLogDetective class with
- * the H2 database.
+ * the H2 database.</li>
+ * </ul>
  *
  * @since 2.4
  */

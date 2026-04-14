@@ -167,7 +167,7 @@ public class LoginCredential extends BaseOpenmrsObject implements OpenmrsObject 
 	}
 	
 	/**
-	 * @returns the activation key
+	 * @return the activation key
 	 */
 	public String getActivationKey() {
 		return activationKey;
