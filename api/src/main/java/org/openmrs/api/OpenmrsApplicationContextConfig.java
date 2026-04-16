@@ -31,6 +31,7 @@ import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.SimpleXStreamSerializer;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.Security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -39,6 +40,9 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.orm.jpa.hibernate.HibernateTransactionManager;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.TransactionManager;
 
 import ca.uhn.hl7v2.app.Application;
@@ -137,6 +141,26 @@ public class OpenmrsApplicationContextConfig {
 	@Bean
 	public MessageTypeRouter hL7Router() {
 		return new MessageTypeRouter();
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		Map<String, PasswordEncoder> encoders = new LinkedHashMap<>();
+		encoders.put("bcrypt", new BCryptPasswordEncoder());
+		encoders.put("sha512", new PasswordEncoder() {
+
+			@Override
+			public String encode(CharSequence rawPassword) {
+				return Security.encodeString(rawPassword.toString());
+			}
+
+			@Override
+			public boolean matches(CharSequence rawPassword, String encodedPassword) {
+				return encode(rawPassword).equals(encodedPassword);
+			}
+		});
+
+		return new DelegatingPasswordEncoder("bcrypt", encoders);
 	}
 
 	@Bean
