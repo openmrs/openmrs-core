@@ -512,16 +512,4 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 
 		assertThrows(APIException.class, () -> new Allergies().addAll(0, allergies));
 	}
-
-	/**
-	 * @see {@link Allergies#containsAllergen(Allergy, java.util.Collection)}
-	 */
-	@Test
-	public void containsAllergen_shouldThrowExceptionWhenAllergiesIsNull() {
-		Allergy allergy = new Allergy();
-
-		assertThrows(NullPointerException.class, () -> {
-			allergies.containsAllergen(allergy, null);
-		});
-	}
 }

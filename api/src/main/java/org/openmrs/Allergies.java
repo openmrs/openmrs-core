@@ -327,7 +327,12 @@ public class Allergies implements List<Allergy> {
 	 * @return true if the same allergen exists, else false
 	 */
 	public boolean containsAllergen(Allergy allergy, Collection<? extends Allergy> allergies) {
-		return allergies.stream().anyMatch(a -> a.hasSameAllergen(allergy));
+		for (Allergy alg : allergies) {
+			if (alg.hasSameAllergen(allergy)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
