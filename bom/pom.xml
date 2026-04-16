@@ -48,7 +48,7 @@
 		     with our version of Spring. -->
 		<springVersion>7.0.6</springVersion>
 		<springTestVersion>${springVersion}</springTestVersion>
-		<hibernateVersion>7.2.6.Final</hibernateVersion>
+		<hibernateVersion>7.3.1.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.0.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.0.Final</hibernateValidatorVersion>
@@ -113,9 +113,9 @@
 		<javassistVersion>3.30.2-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
-		<tomcatVersion>11.0.18</tomcatVersion>
+		<tomcatVersion>11.0.21</tomcatVersion>
 		<jodaTimeVersion>2.14.1</jodaTimeVersion>
-		<guavaVersion>33.5.0-jre</guavaVersion>
+		<guavaVersion>33.6.0-jre</guavaVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 		<jobrunrVersion>8.5.2</jobrunrVersion>
 		<shedlockVersion>7.7.0</shedlockVersion>
@@ -129,7 +129,7 @@
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.4</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
-		<s3mockVersion>4.11.0</s3mockVersion>
+		<s3mockVersion>5.0.0</s3mockVersion>
 	</properties>
 
 	<distributionManagement>
