@@ -14,6 +14,14 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -1109,8 +1117,27 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
 					setValueDatetime(timeFormat.parse(s));
 				} else if ("TS".equals(abbrev)) {
-					DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
-					setValueDatetime(datetimeFormat.parse(s));
+					if (s.contains("T")) {
+						// ISO 8601 format — handles with/without timezone, and both offset styles (+05:00 and +0500)
+						// ISO_DATE_TIME only accepts +HH:MM offsets, so we build a formatter that also accepts +HHMM (no colon--which is what the REST-WS module uses)
+						DateTimeFormatter isoFormatter = new DateTimeFormatterBuilder()
+							.append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+							.optionalStart().appendPattern("XXX").optionalEnd()  // e.g. +05:00 or Z
+							.optionalStart().appendPattern("XX").optionalEnd()   // e.g. +0500
+							.optionalStart().appendPattern("X").optionalEnd()    // e.g. +05
+							.toFormatter();
+						// Returns a TemporalAccessor — the common supertype for all java.time datetime types
+						TemporalAccessor parsed = isoFormatter.parse(s);
+						// If the string included a timezone/offset, convert using that offset; otherwise assume system timezone
+						Instant instant = parsed.isSupported(ChronoField.OFFSET_SECONDS)
+							? OffsetDateTime.from(parsed).toInstant()
+							: LocalDateTime.from(parsed).atZone(ZoneId.systemDefault()).toInstant();
+						setValueDatetime(Date.from(instant));
+					} else {
+						// Legacy format without T separator (e.g. "2023-06-15 10:30")
+						DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
+						setValueDatetime(datetimeFormat.parse(s));
+					}
 				}  else {
 					throw new RuntimeException("Don't know how to handle " + abbrev + " for concept: " + getConcept().getDisplayString());
 				}
