@@ -115,7 +115,7 @@
 		<groovyVersion>2.4.21</groovyVersion>
 		<tomcatVersion>11.0.21</tomcatVersion>
 		<jodaTimeVersion>2.14.1</jodaTimeVersion>
-		<guavaVersion>33.5.0-jre</guavaVersion>
+		<guavaVersion>33.6.0-jre</guavaVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 		<jobrunrVersion>8.5.2</jobrunrVersion>
 		<shedlockVersion>7.7.0</shedlockVersion>
