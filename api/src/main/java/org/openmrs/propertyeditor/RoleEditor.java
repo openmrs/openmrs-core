@@ -19,22 +19,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
- * an object back and forth through an html form or other medium. <br>
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass an
+ * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
  *
  * @see Role
  */
 public class RoleEditor extends PropertyEditorSupport {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(RoleEditor.class);
-	
+
 	public RoleEditor() {
 	}
-	
+
 	/**
-	 * <strong>Should</strong> set using name
+	 * <p>
+	 * <strong>Should</strong> set using name<br/>
 	 * <strong>Should</strong> set using uuid
 	 */
 	@Override
@@ -48,8 +49,7 @@ public class RoleEditor extends PropertyEditorSupport {
 				if (r == null) {
 					throw new Exception();
 				}
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				Role r = es.getRoleByUuid(text);
 				setValue(r);
 				if (r == null) {
@@ -61,7 +61,7 @@ public class RoleEditor extends PropertyEditorSupport {
 			setValue(null);
 		}
 	}
-	
+
 	@Override
 	public String getAsText() {
 		Role r = (Role) getValue();
@@ -71,5 +71,5 @@ public class RoleEditor extends PropertyEditorSupport {
 			return r.getRole();
 		}
 	}
-	
+
 }

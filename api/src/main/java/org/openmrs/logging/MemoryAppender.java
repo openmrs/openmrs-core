@@ -38,8 +38,8 @@ import org.openmrs.util.ThreadSafeCircularFifoQueue;
 /**
  * This class stores a configurable number lines of the output from the log file.
  * <p/>
- * Note that this class is implemented as a single-buffer-per-appender-name meaning that each appender name can only support
- * a single configuration (the most recent applied)
+ * Note that this class is implemented as a single-buffer-per-appender-name meaning that each
+ * appender name can only support a single configuration (the most recent applied)
  */
 @Plugin(name = "Memory", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class MemoryAppender extends AbstractAppender {
@@ -53,9 +53,8 @@ public class MemoryAppender extends AbstractAppender {
 
 	private int bufferSize;
 
-	protected MemoryAppender(String name, Filter filter,
-		StringLayout layout, boolean ignoreExceptions,
-		Property[] properties, int bufferSize) {
+	protected MemoryAppender(String name, Filter filter, StringLayout layout, boolean ignoreExceptions,
+	    Property[] properties, int bufferSize) {
 		super(name, filter, layout, ignoreExceptions, properties);
 
 		this.buffer = new ThreadSafeCircularFifoQueue<>(bufferSize);
@@ -68,13 +67,10 @@ public class MemoryAppender extends AbstractAppender {
 
 	@PluginFactory
 	@SuppressWarnings("unused")
-	protected static MemoryAppender createAppender(
-		@PluginAttribute("name") final String name,
-		@PluginAttribute("bufferSize") final int bufferSize,
-		@PluginAttribute(value = "ignoreExceptions", defaultBoolean = true) final boolean ignoreExceptions,
-		@PluginElement("Filter") final Filter filter,
-		@PluginElement("Layout") final StringLayout layout
-	) {
+	protected static MemoryAppender createAppender(@PluginAttribute("name") final String name,
+	        @PluginAttribute("bufferSize") final int bufferSize,
+	        @PluginAttribute(value = "ignoreExceptions", defaultBoolean = true) final boolean ignoreExceptions,
+	        @PluginElement("Filter") final Filter filter, @PluginElement("Layout") final StringLayout layout) {
 		final int theBufferSize = bufferSize <= 0 ? 100 : bufferSize;
 		MemoryAppender appender = null;
 		if (APPENDERS.containsKey(name)) {
@@ -92,7 +88,7 @@ public class MemoryAppender extends AbstractAppender {
 			appender = new MemoryAppender(name, filter, layout, ignoreExceptions, null, theBufferSize);
 			APPENDERS.put(name, new SoftReference<>(appender));
 		}
-		
+
 		if (!appender.isStarted()) {
 			appender.start();
 		}
@@ -104,11 +100,11 @@ public class MemoryAppender extends AbstractAppender {
 	public void append(LogEvent logEvent) {
 		buffer.add(logEvent.toImmutable());
 	}
-	
+
 	public int getBufferSize() {
 		return bufferSize;
 	}
-	
+
 	public List<String> getLogLines() {
 		if (buffer == null) {
 			return new ArrayList<>(0);
@@ -118,9 +114,9 @@ public class MemoryAppender extends AbstractAppender {
 		if (events.length == 0) {
 			return Collections.emptyList();
 		}
-		
+
 		return Arrays.stream(events).filter(Objects::nonNull).map(((StringLayout) getLayout())::toSerializable)
-			.collect(Collectors.toList());
+		        .collect(Collectors.toList());
 	}
 
 	public static class MemoryAppenderBuilder extends AbstractAppender.Builder<MemoryAppenderBuilder> {
@@ -128,12 +124,12 @@ public class MemoryAppender extends AbstractAppender {
 		private int bufferSize = 100;
 
 		private StringLayout layout;
-		
+
 		public MemoryAppenderBuilder() {
 			super();
 			setName(OpenmrsConstants.MEMORY_APPENDER_NAME);
 		}
-		
+
 		public MemoryAppenderBuilder setBufferSize(int bufferSize) {
 			if (bufferSize < 0) {
 				throw new IllegalArgumentException("bufferSize must be a positive number or 0");
@@ -163,8 +159,7 @@ public class MemoryAppender extends AbstractAppender {
 		}
 
 		public MemoryAppender build() {
-			return new MemoryAppender(getName(), getFilter(), layout, isIgnoreExceptions(), getPropertyArray(),
-				bufferSize);
+			return new MemoryAppender(getName(), getFilter(), layout, isIgnoreExceptions(), getPropertyArray(), bufferSize);
 		}
 	}
 

@@ -14,15 +14,12 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Assertions;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
-import org.openmrs.notification.AlertRecipient;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,18 +33,17 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private HibernateAlertDAO hibernateAlertDAO;
-	
+
 	private volatile boolean didUpdateExpirationDate = false;
 
 	@BeforeEach
 	public void setUp() {
 		executeDataSet(DATA_XML);
-		
+
 		if (!didUpdateExpirationDate) {
 			Alert activeAlert = hibernateAlertDAO.getAlert(2);
-			activeAlert.setDateToExpire(
-				Date.from(
-					LocalDate.now().plus(5, ChronoUnit.DAYS).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+			activeAlert.setDateToExpire(Date.from(
+			    LocalDate.now().plus(5, ChronoUnit.DAYS).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
 
 			hibernateAlertDAO.saveAlert(activeAlert);
 			didUpdateExpirationDate = true;
@@ -58,10 +54,10 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	public void saveAlert_shouldSaveAlertToDb() {
 		Alert alert = new Alert();
 		alert.setText("Coding time");
-		alert.setId(5);
 		hibernateAlertDAO.saveAlert(alert);
 
-		Assertions.assertNotNull(hibernateAlertDAO.getAlert(5));
+		Assertions.assertNotNull(alert.getAlertId());
+		Assertions.assertNotNull(hibernateAlertDAO.getAlert(alert.getAlertId()));
 	}
 
 	@Test

@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.handler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -20,11 +16,15 @@ import org.openmrs.Location;
 import org.openmrs.Retireable;
 import org.openmrs.User;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests for the {@link BaseRetireHandler} class.
  */
 public class BaseRetireHandlerTest {
-	
+
 	/**
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
@@ -36,7 +36,7 @@ public class BaseRetireHandlerTest {
 		handler.handle(retireable, null, null, " ");
 		assertTrue(retireable.getRetired());
 	}
-	
+
 	/**
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
@@ -47,7 +47,7 @@ public class BaseRetireHandlerTest {
 		handler.handle(retireable, null, null, "THE REASON");
 		assertEquals("THE REASON", retireable.getRetireReason());
 	}
-	
+
 	/**
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
@@ -58,7 +58,7 @@ public class BaseRetireHandlerTest {
 		handler.handle(retireable, new User(2), null, " ");
 		assertEquals(2, retireable.getRetiredBy().getId().intValue());
 	}
-	
+
 	/**
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
@@ -70,35 +70,35 @@ public class BaseRetireHandlerTest {
 		handler.handle(retireable, new User(2), null, " ");
 		assertEquals(3, retireable.getRetiredBy().getId().intValue());
 	}
-	
+
 	/**
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetDateRetired() {
 		Date d = new Date();
-		
+
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
 		handler.handle(retireable, null, d, " ");
 		assertEquals(d, retireable.getDateRetired());
 	}
-	
+
 	/**
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldNotSetDateRetiredIfNonNull() {
 		Date d = new Date(new Date().getTime() - 1000); // a time that is not "now"
-		
+
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
 		retireable.setDateRetired(d); // make dateRetired non null
-		
+
 		handler.handle(retireable, null, new Date(), " ");
 		assertEquals(d, retireable.getDateRetired());
 	}
-	
+
 	/**
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
@@ -111,7 +111,7 @@ public class BaseRetireHandlerTest {
 		handler.handle(retireable, null, null, "THE REASON");
 		assertNull(retireable.getRetireReason());
 	}
-	
+
 	/**
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
@@ -123,5 +123,5 @@ public class BaseRetireHandlerTest {
 		handler.handle(retireable, null, null, "THE REASON");
 		assertEquals("THE REASON", retireable.getRetireReason());
 	}
-	
+
 }

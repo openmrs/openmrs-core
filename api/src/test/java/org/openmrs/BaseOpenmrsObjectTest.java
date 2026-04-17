@@ -9,30 +9,31 @@
  */
 package org.openmrs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
-	
+
 	private static class BaseOpenmrsObjectMock extends BaseOpenmrsObject {
-		
+
 		@Override
 		public Integer getId() {
 			return null;
 		}
-		
+
 		@Override
 		public void setId(Integer id) {
 		}
-		
+
 	}
-	
+
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
 	 */
@@ -41,14 +42,14 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		//given
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
 		BaseOpenmrsObject obj = new BaseOpenmrsObjectMock();
-		
+
 		//when
 		obj.setUuid(null);
-		
+
 		//then
 		assertFalse(o.equals(obj));
 	}
-	
+
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
 	 */
@@ -56,14 +57,14 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	public void equals_shouldReturnFalseIfGivenObjIsNotInstanceOfBaseOpenmrsObject() {
 		//given
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
-		
+
 		//when
 		Object obj = new Object();
-		
+
 		//then
 		assertFalse(o.equals(obj));
 	}
-	
+
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
 	 */
@@ -71,14 +72,14 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	public void equals_shouldReturnFalseIfGivenObjIsNull() {
 		//given
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
-		
+
 		//when
 		BaseOpenmrsObject obj = null;
-		
+
 		//then
 		assertFalse(o.equals(obj));
 	}
-	
+
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
 	 */
@@ -87,14 +88,14 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		//given
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
 		BaseOpenmrsObject obj = new BaseOpenmrsObjectMock();
-		
+
 		//when
 		o.setUuid(null);
-		
+
 		//then
 		assertFalse(o.equals(obj));
 	}
-	
+
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
 	 */
@@ -102,14 +103,14 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	public void equals_shouldReturnTrueIfObjectsAreTheSame() {
 		//given
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
-		
+
 		//when
 		BaseOpenmrsObject obj = o;
-		
+
 		//then
 		assertTrue(o.equals(obj));
 	}
-	
+
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
 	 */
@@ -118,14 +119,14 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		//given
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
 		BaseOpenmrsObject obj = new BaseOpenmrsObjectMock();
-		
+
 		//when
 		obj.setUuid(o.getUuid());
-		
+
 		//then
 		assertTrue(o.equals(obj));
 	}
-	
+
 	/**
 	 * @see BaseOpenmrsObject#hashCode()
 	 */
@@ -133,39 +134,40 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	public void hashCode_shouldNotFailIfUuidIsNull() {
 		//given
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
-		
+
 		//when
 		o.setUuid(null);
-		
+
 		//then
-		o.hashCode();
+		assertDoesNotThrow(() -> o.hashCode());
 	}
-	
+
 	@Test
 	public void shouldNotBeEqualWhenDifferentClassesAndSameId() {
 		Encounter encounter = new Encounter(2);
 		Order order = new Order(2);
-		
+
 		assertFalse(encounter.equals(order));
 	}
-	
+
 	@Test
 	public void shouldNotBeEqualWhenFirstIsNull() {
 		Encounter encounter = new Encounter(2);
 		assertFalse(encounter.equals(null));
 	}
-	
+
 	/**
 	 * @see BaseOpenmrsObject#toString()
 	 */
 	@Test
 	public void toString_shouldIncludeUuidIfNotNull() {
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
-		
+
 		assertEquals("BaseOpenmrsObjectTest.BaseOpenmrsObjectMock[hashCode=" + Integer.toHexString(o.hashCode()) + ",uuid="
-		        + o.getUuid() + "]", o.toString());
+		        + o.getUuid() + "]",
+		    o.toString());
 	}
-	
+
 	/**
 	 * @see BaseOpenmrsObject#toString()
 	 */
@@ -174,11 +176,12 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		//given
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
 		o.setUuid(null);
-		
+
 		//when
 		//then
-		assertEquals("BaseOpenmrsObjectTest.BaseOpenmrsObjectMock[hashCode=" + Integer.toHexString(o.hashCode())
-		        + ",uuid=<null>]", o.toString());
+		assertEquals(
+		    "BaseOpenmrsObjectTest.BaseOpenmrsObjectMock[hashCode=" + Integer.toHexString(o.hashCode()) + ",uuid=<null>]",
+		    o.toString());
 	}
 
 	/**
@@ -236,7 +239,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	public void equals_shouldReturnfalseIfHibernateProxyOfOneThingIsComparedtoHibernateProxyofSomething() {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		Session session = sessionFactory.getCurrentSession();
-		assertFalse((session.load(Patient.class, 2)).equals((session.load(Concept.class, 11))));
+		assertFalse((session.getReference(Patient.class, 2)).equals((session.getReference(Concept.class, 11))));
 	}
 
 	/**
@@ -249,17 +252,22 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 		//NonHibernate managed class declaration
 		class TestClass extends BaseOpenmrsObject {
+
 			private Integer id;
+
 			TestClass() {
 			}
+
 			@Override
 			public Integer getId() {
 				return id;
 			}
+
 			@Override
 			public void setId(Integer id) {
 				this.id = id;
 			}
+
 			@Override
 			public int hashCode() {
 				if (getUuid() == null) {
@@ -267,6 +275,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 				}
 				return getUuid().hashCode();
 			}
+
 			@Override
 			public boolean equals(Object obj) {
 				if (this == obj) {
@@ -281,10 +290,12 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 				}
 				return getUuid().equals(other.getUuid());
 			}
+
 			@Override
 			public String toString() {
-				return new org.apache.commons.lang3.builder.ToStringBuilder(this, org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE).append("hashCode",
-						Integer.toHexString(hashCode())).append("uuid", getUuid()).build();
+				return new org.apache.commons.lang3.builder.ToStringBuilder(this,
+				        org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE)
+				        .append("hashCode", Integer.toHexString(hashCode())).append("uuid", getUuid()).build();
 			}
 		}
 
@@ -295,8 +306,8 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		TestClass obj = new TestClass();
 		obj.setUuid(uid);
 
-		assertFalse(obj.equals((session.load(Patient.class, 2))));
-		assertFalse((session.load(Patient.class, 2)).equals(obj));
+		assertFalse(obj.equals((session.getReference(Patient.class, 2))));
+		assertFalse((session.getReference(Patient.class, 2)).equals(obj));
 	}
 
 	/**
@@ -306,17 +317,22 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	public void equals_shouldWorkOnNonHibernateManagedClasses() {
 		//NonHibernate managed class
 		class TestClass extends BaseOpenmrsObject {
+
 			private Integer id;
+
 			TestClass() {
 			}
+
 			@Override
 			public Integer getId() {
 				return id;
 			}
+
 			@Override
 			public void setId(Integer id) {
 				this.id = id;
 			}
+
 			@Override
 			public int hashCode() {
 				if (getUuid() == null) {
@@ -324,6 +340,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 				}
 				return getUuid().hashCode();
 			}
+
 			@Override
 			public boolean equals(Object obj) {
 				if (this == obj) {
@@ -335,21 +352,24 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 				TestClass other = (TestClass) obj;
 				if (getUuid() == null) {
 					return false;
-				}
-				else {
+				} else {
 					return getUuid().equals(other.getUuid());
 				}
 			}
+
 			@Override
 			public String toString() {
-				return new org.apache.commons.lang3.builder.ToStringBuilder(this, org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE).append("hashCode",
-						Integer.toHexString(hashCode())).append("uuid", getUuid()).build();
+				return new org.apache.commons.lang3.builder.ToStringBuilder(this,
+				        org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE)
+				        .append("hashCode", Integer.toHexString(hashCode())).append("uuid", getUuid()).build();
 			}
 		}
 
 		//Another NonHibernate managed class
 		class AnotherTestClass extends BaseOpenmrsObject {
+
 			private int id;
+
 			@Override
 			public boolean equals(Object obj) {
 				if (this == obj) {
@@ -402,12 +422,12 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	 * @see BaseOpenmrsObject#equals(Object)
 	 */
 	@Test
-	public void equals_shouldReturnTrueIfHibernateProxyOfOneObjectComparedToNonHibernateProxyOfTheSameObject(){
+	public void equals_shouldReturnTrueIfHibernateProxyOfOneObjectComparedToNonHibernateProxyOfTheSameObject() {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		Session session = sessionFactory.getCurrentSession();
 
 		Patient patient = (Patient) session.get(Patient.class, 2);
-		Patient patientproxyobject = (Patient) session.load(Patient.class, 2);
+		Patient patientproxyobject = (Patient) session.getReference(Patient.class, 2);
 
 		assertTrue(patient.equals(patientproxyobject));
 	}
@@ -416,10 +436,10 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	 * @see BaseOpenmrsObject#equals(Object)
 	 */
 	@Test
-	public void equals_shouldReturnTrueIfHibernateProxyOfSomeObjectComparedToAnotherHibernateProxyOfTheSameObject(){
+	public void equals_shouldReturnTrueIfHibernateProxyOfSomeObjectComparedToAnotherHibernateProxyOfTheSameObject() {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		Session session = sessionFactory.getCurrentSession();
 
-		assertTrue(session.load(Patient.class, 2).equals((session.load(Patient.class, 2)))) ;
+		assertTrue(session.getReference(Patient.class, 2).equals((session.getReference(Patient.class, 2))));
 	}
 }

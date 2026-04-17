@@ -9,14 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
-import org.openmrs.OrderAttribute;
 import org.openmrs.OrderAttributeType;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderGroupAttributeType;
@@ -37,27 +28,32 @@ import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * Tests the saving of orders as part of the OrderGroup
  */
 public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
-	
+
 	@Autowired
 	private HibernateOrderDAO dao;
 
 	private static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
-	
+
 	private static final String ORDER_GROUP = "org/openmrs/api/include/OrderServiceTest-createOrderGroup.xml";
 
 	private static final String ORDER_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderAttributes.xml";
-	
+
 	@BeforeEach
 	public void setUp() {
 		executeDataSet(ORDER_SET);
 		executeDataSet(ORDER_GROUP);
 		executeDataSet(ORDER_ATTRIBUTES);
 	}
-	
+
 	/**
 	 * @see {@link HibernateOrderDAO#saveOrderGroup(OrderGroup)}
 	 * @throws Exception
@@ -65,29 +61,29 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrderGroup_shouldSaveOrderGroup() {
 		OrderGroup newOrderGroup = new OrderGroup();
-		
+
 		final Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
 		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
 		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).build();
-		
+
 		newOrderGroup.setOrders(new ArrayList<Order>() {
-			
+
 			{
 				add(order);
 			}
 		});
-		
+
 		newOrderGroup.setPatient(order.getPatient());
 		newOrderGroup.setEncounter(order.getEncounter());
-		
+
 		OrderGroup savedOrderGroup = dao.saveOrderGroup(newOrderGroup);
 		assertNotNull(savedOrderGroup.getOrderGroupId(), "OrderGroup gets saved");
-		
+
 		for (Order savedOrder : savedOrderGroup.getOrders()) {
 			assertNull(savedOrder.getOrderId(), "Order is not saved as a part of Order Group");
 		}
 	}
-	
+
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupsByEncounter(Encounter)}
 	 * @throws Exception
@@ -96,7 +92,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	public void getOrderGroupsByEncounter_shouldFailGivenNullEncounter() {
 		assertThrows(APIException.class, () -> dao.getOrderGroupsByEncounter(null));
 	}
-	
+
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupsByPatient(Patient)}
 	 * @throws Exception
@@ -105,7 +101,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	public void getOrderGroupsByPatient_shouldFailGivenNullPatient() {
 		assertThrows(APIException.class, () -> dao.getOrderGroupsByPatient(null));
 	}
-	
+
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupsByEncounter(Encounter)}
 	 * @throws Exception
@@ -116,7 +112,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		List<OrderGroup> ordergroups = Context.getOrderService().getOrderGroupsByEncounter(existingEncounter);
 		assertEquals(1, ordergroups.size());
 	}
-	
+
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupsByPatient(Patient)}
 	 * @throws Exception
@@ -126,9 +122,9 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		Patient existingPatient = Context.getPatientService().getPatient(8);
 		List<OrderGroup> ordergroups = Context.getOrderService().getOrderGroupsByPatient(existingPatient);
 		assertEquals(1, ordergroups.size());
-		
+
 	}
-	
+
 	/**
 	 * @see {@link HibernateOrderDAO#getAllOrderGroupAttributeTypes()}
 	 * @throws Exception
@@ -138,7 +134,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		List<OrderGroupAttributeType> orderGroupAttributeTypes = dao.getAllOrderGroupAttributeTypes();
 		assertEquals(orderGroupAttributeTypes.size(), 4);
 	}
-	
+
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeTypeByUuid(String)}
 	 * @throws Exception
@@ -149,7 +145,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		        .getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
 		assertEquals("Bacteriology", orderGroupAttributeType.getName());
 	}
-	
+
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeType(Integer)}
 	 * @throws Exception
@@ -159,7 +155,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeType(4);
 		assertEquals("ECG", orderGroupAttributeType.getName());
 	}
-	
+
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeTypeByName(String)}
 	 * @throws Exception
@@ -172,7 +168,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		assertEquals(4, OrderGroupAttributeType.getId());
 		assertEquals("9cf1bdb2-d18e-11ea-87d0-0242ac130003", OrderGroupAttributeType.getUuid());
 	}
-	
+
 	/**
 	 * @see {@link HibernateOrderDAO#deleteOrderGroupAttributeType(OrderGroupAttributeType)}
 	 * @throws Exception
@@ -185,7 +181,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
 		assertNull(dao.getOrderGroupAttributeByUuid(UUID));
 	}
-	
+
 	@Test
 	public void saveOrderAttributeType_shouldSaveTheProvidedOrderAttributeTypeToDatabase() {
 		final Order order = Context.getOrderService().getOrder(1);

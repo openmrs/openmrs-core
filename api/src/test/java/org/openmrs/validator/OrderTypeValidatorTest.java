@@ -9,15 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,15 +23,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Contains tests methods for the {@link OrderTypeValidator}
  */
 public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
-	
+
 	@Autowired
 	private OrderService orderService;
-	
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
@@ -49,7 +47,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(new OrderType(), "orderType");
 		assertThrows(IllegalArgumentException.class, () -> new OrderTypeValidator().validate(null, errors));
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
@@ -60,7 +58,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
@@ -72,7 +70,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -84,7 +82,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
@@ -96,7 +94,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
@@ -108,7 +106,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
@@ -123,7 +121,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("conceptClasses[0]"));
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
@@ -137,7 +135,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("parent"));
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
@@ -151,7 +149,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("parent"));
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -165,10 +163,10 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.setConceptClasses(col);
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -178,10 +176,10 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		assertNotNull(orderType);
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -189,11 +187,12 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldBeInvokedWhenAnOrderTypeIsSaved() {
 		OrderType orderType = orderService.getOrderType(1);
 		orderType.setName(null);
-		String expectedMsg = "'" + orderType + "' failed to validate with reason: name: " + Context.getMessageSourceService().getMessage("error.name");
+		String expectedMsg = "'" + orderType + "' failed to validate with reason: name: "
+		        + Context.getMessageSourceService().getMessage("error.name");
 		APIException exception = assertThrows(APIException.class, () -> orderService.saveOrderType(orderType));
 		assertThat(exception.getMessage(), is(expectedMsg));
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -205,38 +204,38 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Set<ConceptClass> col = new HashSet<>();
 		col.add(Context.getConceptService().getConceptClass(2));
 		orderType.setConceptClasses(col);
-		
+
 		orderType.setDescription("description");
 		orderType.setRetireReason("retireReason");
-		
+
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		OrderType orderType = new OrderType();
-		orderType
-		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		orderType
-		        .setJavaClassName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		orderType.setName(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		orderType.setJavaClassName(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		Set<ConceptClass> col = new HashSet<>();
 		col.add(Context.getConceptService().getConceptClass(2));
 		orderType.setConceptClasses(col);
-		
-		orderType
-		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		orderType
-		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+
+		orderType.setDescription(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		orderType.setRetireReason(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 		assertTrue(errors.hasFieldErrors("javaClassName"));
 		assertTrue(errors.hasFieldErrors("description"));

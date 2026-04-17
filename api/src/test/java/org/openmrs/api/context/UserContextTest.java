@@ -25,33 +25,34 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UserContextTest extends BaseContextSensitiveTest {
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private PersonService personService;
-	
+
 	Person testPerson;
-	
+
 	User testUser;
-	
+
 	@BeforeEach
 	void createUser() {
 		testPerson = new Person();
 		testPerson.addName(new PersonName("Carroll", "", "Deacon"));
 		testPerson.setGender("U");
 		testPerson = personService.savePerson(testPerson);
-		
+
 		testUser = new User();
 		testUser.setUsername("testUser");
 		testUser.setPerson(testPerson);
 		testUser = userService.createUser(testUser, "Test1234");
 	}
-	
+
 	@AfterEach
 	void deleteUser() {
 		userService.purgeUser(testUser);
@@ -64,7 +65,7 @@ public class UserContextTest extends BaseContextSensitiveTest {
 		Context.getUserContext().setLocationId(null);
 		testUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "1");
 		userService.saveUser(testUser);
-		
+
 		// act
 		Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
 
@@ -78,7 +79,7 @@ public class UserContextTest extends BaseContextSensitiveTest {
 		Context.getUserContext().setLocationId(null);
 		testUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "8d6c993e-c2cc-11de-8d13-0010c6dffd0f");
 		userService.saveUser(testUser);
-		
+
 		// act
 		Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
 
@@ -92,7 +93,7 @@ public class UserContextTest extends BaseContextSensitiveTest {
 		Context.getUserContext().setLocationId(null);
 		testUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, String.valueOf(Integer.MAX_VALUE));
 		userService.saveUser(testUser);
-		
+
 		// act
 		Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
 
@@ -172,17 +173,15 @@ public class UserContextTest extends BaseContextSensitiveTest {
 		// arrange
 		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
 
-		// act
-		userContext.removeProxyPrivilege("Privilege 1");
-
-		// assert - no error thrown
+		// act & assert
+		assertDoesNotThrow(() -> userContext.removeProxyPrivilege("Privilege 1"));
 	}
-	
+
 	@Test
 	void proxyPrivileges_shouldStackCorrectly() {
 		// arrange
 		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
-		
+
 		// act - deep nesting
 		userContext.addProxyPrivilege("Privilege1");
 		try {
@@ -200,7 +199,7 @@ public class UserContextTest extends BaseContextSensitiveTest {
 		} finally {
 			userContext.removeProxyPrivilege("Privilege1");
 		}
-		
+
 		// assert
 		assertThat(userContext.hasPrivilege("Privilege1"), is(true));
 	}

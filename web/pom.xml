@@ -74,6 +74,10 @@
          <artifactId>commons-fileupload</artifactId>
       </dependency>
       <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
+      </dependency>
+      <dependency>
          <groupId>org.springframework</groupId>
          <artifactId>spring-web</artifactId>
       </dependency>
@@ -94,8 +98,8 @@
          <artifactId>jcl-over-slf4j</artifactId>
       </dependency>
       <dependency>
-		 <groupId>org.apache.velocity</groupId>
-		 <artifactId>velocity-tools</artifactId>
+		 <groupId>org.apache.velocity.tools</groupId>
+		 <artifactId>velocity-tools-generic</artifactId>
 		 <exclusions>
 		 	<exclusion>
 		 		<groupId>dom4j</groupId>
@@ -136,17 +140,6 @@
                   <java.awt.headless>true</java.awt.headless>
                </systemPropertyVariables>
             </configuration>
-         </plugin>
-         <plugin>
-            <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-            <artifactId>maven-java-formatter-plugin</artifactId>
-            <executions>
-               <execution>
-                  <goals>
-                     <goal>format</goal>
-                  </goals>
-               </execution>
-            </executions>
          </plugin>
 		 <plugin>
 			<groupId>org.jacoco</groupId>

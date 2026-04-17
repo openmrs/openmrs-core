@@ -17,8 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+
 import org.hibernate.envers.Audited;
 
 /**
@@ -32,37 +31,33 @@ import org.hibernate.envers.Audited;
 @Table(name = "concept_reference_term_map")
 @Audited
 public class ConceptReferenceTermMap extends BaseConceptMap {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_reference_term_map_id_seq")
-	@GenericGenerator(
-		name = "concept_reference_term_map_id_seq", 
-		parameters = @Parameter(name = "sequence", value = "concept_reference_term_map_concept_reference_term_map_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "concept_reference_term_map_id", nullable = false)
 	private Integer conceptReferenceTermMapId;
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "term_a_id", nullable = false)
 	private ConceptReferenceTerm termA;
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "term_b_id", nullable = false)
 	private ConceptReferenceTerm termB;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public ConceptReferenceTermMap() {
 	}
-	
+
 	/** constructor with concept reference term map id */
 	public ConceptReferenceTermMap(Integer conceptReferenceTermMapId) {
 		this.conceptReferenceTermMapId = conceptReferenceTermMapId;
 	}
-	
+
 	/**
 	 * Convenience constructor that takes the term to be mapped to and the type of the map
 	 *
@@ -73,49 +68,49 @@ public class ConceptReferenceTermMap extends BaseConceptMap {
 		this.termB = termB;
 		setConceptMapType(conceptMapType);
 	}
-	
+
 	/**
 	 * @return the conceptReferenceTermMapId
 	 */
 	public Integer getConceptReferenceTermMapId() {
 		return conceptReferenceTermMapId;
 	}
-	
+
 	/**
 	 * @param conceptReferenceTermMapId the conceptReferenceTermMapId to set
 	 */
 	public void setConceptReferenceTermMapId(Integer conceptReferenceTermMapId) {
 		this.conceptReferenceTermMapId = conceptReferenceTermMapId;
 	}
-	
+
 	/**
 	 * @return the termA
 	 */
 	public ConceptReferenceTerm getTermA() {
 		return termA;
 	}
-	
+
 	/**
 	 * @param termA the termA to set
 	 */
 	public void setTermA(ConceptReferenceTerm termA) {
 		this.termA = termA;
 	}
-	
+
 	/**
 	 * @return the termB
 	 */
 	public ConceptReferenceTerm getTermB() {
 		return termB;
 	}
-	
+
 	/**
 	 * @param termB the termB to set
 	 */
 	public void setTermB(ConceptReferenceTerm termB) {
 		this.termB = termB;
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -123,7 +118,7 @@ public class ConceptReferenceTermMap extends BaseConceptMap {
 	public Integer getId() {
 		return getConceptReferenceTermMapId();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
@@ -131,7 +126,7 @@ public class ConceptReferenceTermMap extends BaseConceptMap {
 	public void setId(Integer id) {
 		setConceptReferenceTermMapId(id);
 	}
-	
+
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -144,10 +139,10 @@ public class ConceptReferenceTermMap extends BaseConceptMap {
 		if (this.conceptReferenceTermMapId != null && rhs.conceptReferenceTermMapId != null) {
 			return this.conceptReferenceTermMapId.equals(rhs.conceptReferenceTermMapId);
 		}
-		
+
 		return this == obj;
 	}
-	
+
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -160,7 +155,7 @@ public class ConceptReferenceTermMap extends BaseConceptMap {
 		hash = hash + 31 * this.conceptReferenceTermMapId;
 		return hash;
 	}
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -171,5 +166,5 @@ public class ConceptReferenceTermMap extends BaseConceptMap {
 		}
 		return conceptReferenceTermMapId.toString();
 	}
-	
+
 }
