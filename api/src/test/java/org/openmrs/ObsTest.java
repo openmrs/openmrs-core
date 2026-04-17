@@ -512,7 +512,6 @@ public class ObsTest {
 		assertEquals(30, cal.get(Calendar.MINUTE));
 	}
 
-
 	/**
 	 * @see Obs#getValueAsBoolean()
 	 */

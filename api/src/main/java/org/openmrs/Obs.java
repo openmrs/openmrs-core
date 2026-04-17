@@ -97,7 +97,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		FINAL,
 		AMENDED
 	}
-	
+
 	private static final String TIME_PATTERN = "HH:mm";
 
 	private static final String DATE_PATTERN = "yyyy-MM-dd";
@@ -1138,8 +1138,9 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					setValueDatetime(timeFormat.parse(s));
 				} else if ("TS".equals(abbrev)) {
 					setValueDatetime(DateUtil.parseDatetimeString(s));
-				}  else {
-					throw new RuntimeException("Don't know how to handle " + abbrev + " for concept: " + getConcept().getDisplayString());
+				} else {
+					throw new RuntimeException(
+					        "Don't know how to handle " + abbrev + " for concept: " + getConcept().getDisplayString());
 				}
 			} else {
 				throw new RuntimeException(

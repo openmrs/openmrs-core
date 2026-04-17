@@ -29,26 +29,28 @@ import java.util.Date;
  * @since 2.0
  */
 public class DateUtil {
-	
-	/** Legacy space-separated datetime format used when parsing strings without a {@code T} separator */
+
+	/**
+	 * Legacy space-separated datetime format used when parsing strings without a {@code T} separator
+	 */
 	public static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm";
-	
+
 	private DateUtil() {
 	}
-	
+
 	/**
 	 * Parses a datetime string into a {@link Date}.
-	 *
-	 * <p>Handles both the modern ISO 8601 format (with a {@code T} separator) and the legacy
+	 * <p>
+	 * Handles both the modern ISO 8601 format (with a {@code T} separator) and the legacy
 	 * space-separated format (e.g. {@code "2023-06-15 10:30:00"}).
-	 *
-	 * <p>For ISO 8601 strings, the following timezone/offset styles are all accepted:
+	 * <p>
+	 * For ISO 8601 strings, the following timezone/offset styles are all accepted:
 	 * <ul>
-	 *   <li>{@code Z} — UTC</li>
-	 *   <li>{@code +05:00} — offset with colon (standard ISO 8601)</li>
-	 *   <li>{@code +0500} — offset without colon (used by the REST-WS module)</li>
-	 *   <li>{@code +05} — hour-only offset</li>
-	 *   <li>No offset — interpreted as the system default timezone</li>
+	 * <li>{@code Z} — UTC</li>
+	 * <li>{@code +05:00} — offset with colon (standard ISO 8601)</li>
+	 * <li>{@code +0500} — offset without colon (used by the REST-WS module)</li>
+	 * <li>{@code +05} — hour-only offset</li>
+	 * <li>No offset — interpreted as the system default timezone</li>
 	 * </ul>
 	 *
 	 * @param str the datetime string to parse; must not be null
@@ -76,7 +78,7 @@ public class DateUtil {
 			return legacyFormat.parse(str);
 		}
 	}
-	
+
 	/**
 	 * @param date
 	 * @return date truncated to second precision (e.g. with milliseconds dropped)
@@ -85,5 +87,5 @@ public class DateUtil {
 		Instant instant = date.toInstant().truncatedTo(ChronoUnit.SECONDS);
 		return Date.from(instant);
 	}
-	
+
 }
