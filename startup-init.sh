@@ -183,6 +183,12 @@ if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
     mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
     cat "$OMRS_RUNTIME_PROPERTIES_FILE"
   fi
+
+  # Ensure admin.password.locked is set in runtime properties
+  echo "admin.password.locked=${OMRS_ADMIN_PASSWORD_LOCKED}" > openmrs-admin-locked.properties
+  awk -F= '!a[$1]++' openmrs-admin-locked.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+  mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
+  rm openmrs-admin-locked.properties
 else
   # on installation, we place the extra properties in the server properties, prefixed with `property` so that they
   # are correctly pulled out by the InitializationFilter. This leverages a system originally used by the SDK.
