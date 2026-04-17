@@ -353,6 +353,13 @@ public class HibernateObsDAO implements ObsDAO {
 			session.setHibernateFlushMode(flushMode);
 		}
 	}
+	/**
+	 * Archives voided observations in batches using bulk database operations.
+	 * Avoids N+1 query problem by using INSERT...SELECT and DELETE.
+	 *
+	 * @param batchSize maximum number of records to process in one batch
+	 */
+	@Override
 	public void archiveVoidedObs(int batchSize) {
 
 		Session session = sessionFactory.getCurrentSession();
@@ -378,7 +385,8 @@ public class HibernateObsDAO implements ObsDAO {
 			int inserted = insertQuery.executeUpdate();
 
 			// Step 3: Bulk DELETE
-			if (inserted > 0) {
+			// Ensure all records are inserted before deletion to maintain data integrity
+			if (inserted == obsIds.size()) {
 				NativeQuery<?> deleteQuery = session.createNativeQuery(
 					"DELETE FROM obs WHERE obs_id IN (:obsIds)"
 				);
