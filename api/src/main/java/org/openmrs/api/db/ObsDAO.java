@@ -90,6 +90,14 @@ public interface ObsDAO {
 	public Obs.Status getSavedStatus(Obs obs);
 
 	/**
+	 * @see org.openmrs.api.ObsService#getObsVersionHistory(Obs)
+	 * @param obs the Obs to retrieve version history for; must not be null and must have a non-null
+	 *            obsId
+	 * @since 3.0.0
+	 */
+	List<Obs> getObsVersionHistory(Obs obs);
+
+	/**
 	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
 	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean,

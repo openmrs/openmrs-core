@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!--
+  Test data for getObsVersionHistory recursive CTE tests.
+  Chain: obs_id=90102 -> previous_version=90101 -> previous_version=90100 (oldest)
+  obs 90100 is an isolated obs with no previous version (used for single-obs test).
+  Previous versions (90100, 90101) are voided=true because saveObs() voids old revisions.
+  IDs use a high range (90100+) to avoid conflicts with standardTestDataset.xml and other fixtures.
+-->
+<dataset>
+  <!-- Relies on encounter_id="3" from standardTestDataset.xml (patient 7, location 1) -->
+
+  <!-- Version 1 (oldest): no previous_version, voided when version 2 was saved -->
+  <obs obs_id="90100" person_id="7" status="FINAL" concept_id="23" encounter_id="3"
+    obs_datetime="2008-09-01 00:00:00.0" location_id="1" comments="" creator="1"
+    date_created="2008-09-01 10:00:00.0" voided="true" voided_by="1"
+    date_voided="2008-09-02 10:00:00.0" void_reason="obs revised" uuid="prev-ver-uuid-obs-90100"/>
+
+  <!-- Version 2: points back to version 1, voided when version 3 was saved -->
+  <obs obs_id="90101" person_id="7" status="FINAL" concept_id="23" encounter_id="3"
+    obs_datetime="2008-09-02 00:00:00.0" location_id="1" comments="" creator="1"
+    date_created="2008-09-02 10:00:00.0" voided="true" voided_by="1"
+    date_voided="2008-09-03 10:00:00.0" void_reason="obs revised" uuid="prev-ver-uuid-obs-90101"
+    previous_version="90100"/>
+
+  <!-- Version 3 (latest/current): points back to version 2, not voided -->
+  <obs obs_id="90102" person_id="7" status="FINAL" concept_id="23" encounter_id="3"
+    obs_datetime="2008-09-03 00:00:00.0" location_id="1" comments="" creator="1"
+    date_created="2008-09-03 10:00:00.0" voided="false" uuid="prev-ver-uuid-obs-90102"
+    previous_version="90101"/>
+</dataset>

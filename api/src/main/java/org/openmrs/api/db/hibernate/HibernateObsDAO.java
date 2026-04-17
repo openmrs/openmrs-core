@@ -68,6 +68,32 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
+	 * @see org.openmrs.api.ObsService#getObsVersionHistory(Obs)
+	 */
+	@Override
+	public List<Obs> getObsVersionHistory(Obs obs) {
+		// Use a single recursive CTE to collect all obs_ids in the previousVersion chain,
+		// then load the Obs entities in one IN-clause query — O(1) round-trips instead of O(N).
+		// Voided obs are included intentionally — previous versions are voided by saveObs().
+		// Results are ordered newest→oldest (descending date_created) to match the traversal order.
+		String cteSql = "WITH RECURSIVE version_chain (obs_id, previous_version, date_created) AS ("
+		        + "  SELECT obs_id, previous_version, date_created FROM obs WHERE obs_id = :startId" + "  UNION ALL"
+		        + "  SELECT o.obs_id, o.previous_version, o.date_created" + "  FROM obs o"
+		        + "  INNER JOIN version_chain vc ON o.obs_id = vc.previous_version" + ")"
+		        + "SELECT obs_id FROM version_chain ORDER BY date_created DESC";
+
+		Session session = sessionFactory.getCurrentSession();
+		List<Integer> ids = session.createNativeQuery(cteSql, Integer.class).setParameter("startId", obs.getObsId()).list();
+
+		if (ids.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		return session.createQuery("FROM Obs o WHERE o.obsId IN (:obsIds) ORDER BY o.dateCreated DESC", Obs.class)
+		        .setParameter("obsIds", ids).getResultList();
+	}
+
+	/**
 	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
 	@Override
