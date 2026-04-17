@@ -54,7 +54,7 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	 * priority (descending order) is selected. A null priority falls back to the legacy "strictest
 	 * bounds" merging behaviour for backward compatibility.
 	 *
-	 * @since 2.9.0
+	 * @since 3.0.0
 	 */
 	@Column(name = "priority")
 	private Integer priority;

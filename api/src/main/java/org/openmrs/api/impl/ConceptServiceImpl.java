@@ -2167,7 +2167,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		int maxPriority = prioritizedRanges.stream().mapToInt(ConceptReferenceRange::getPriority).max().getAsInt();
 
 		List<ConceptReferenceRange> highestPriorityRanges = prioritizedRanges.stream()
-		        .filter(r -> r.getPriority() == maxPriority).collect(Collectors.toList());
+		        .filter(r -> r.getPriority().equals(maxPriority)).collect(Collectors.toList());
 
 		return findStrictestReferenceRange(highestPriorityRanges);
 	}
