@@ -132,7 +132,7 @@ public class LoggingAdvice implements MethodInterceptor {
 					username = "Guest (Not logged in)";
 				} else {
 					username = user.getUsername();
-					if (username == null || username.length() == 0) {
+					if (username == null || username.isEmpty()) {
 						username = user.getSystemId();
 					}
 				}

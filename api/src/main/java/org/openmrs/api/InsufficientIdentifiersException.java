@@ -9,6 +9,7 @@
  */
 package org.openmrs.api;
 
+@SuppressWarnings("java:S110")
 public class InsufficientIdentifiersException extends PatientIdentifierException {
 
 	private static final long serialVersionUID = 1L;

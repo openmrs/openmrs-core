@@ -13,8 +13,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -247,7 +245,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @since 1.11.0, 1.12.0
 	 */
 	public List<Encounter> getNonVoidedEncounters() {
-		return getEncounters().stream().filter(e -> !e.getVoided()).collect(Collectors.toList());
+		return getEncounters().stream().filter(e -> !e.getVoided()).toList();
 	}
 
 	/**
