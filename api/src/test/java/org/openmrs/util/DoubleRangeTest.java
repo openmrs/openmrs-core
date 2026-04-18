@@ -220,11 +220,11 @@ public class DoubleRangeTest {
 	 */
 	@Test
 	void contains_shouldReturnTrueWhenLowIsNullAndValueIsWithinRange() {
-	    DoubleRange r = new DoubleRange(null, 10.0);
-	    Double d = 5.0;
-	    assertTrue(r.contains(d));
+		DoubleRange r = new DoubleRange(null, 10.0);
+		Double d = 5.0;
+		assertTrue(r.contains(d));
 	}
-	
+
 	/**
 	 * @see DoubleRange#toString()
 	 */
@@ -279,13 +279,14 @@ public class DoubleRangeTest {
 		DoubleRange r = new DoubleRange(null, 1.0);
 		assertEquals("< 1.0", r.toString());
 	}
-	
+
 	/**
-	 * Verifies that contains() returns true when the upper bound is unbounded (null).
+	 * Verifies that contains() returns true when the upper bound is unbounded
+	 * (null).
 	 */
 	@Test
 	void contains_shouldReturnTrueWhenUpperBoundIsUnbounded() {
-	    DoubleRange r = new DoubleRange(5.0, null);
-	    assertTrue(r.contains(10.0));
+		DoubleRange r = new DoubleRange(5.0, null);
+		assertTrue(r.contains(10.0));
 	}
 }
