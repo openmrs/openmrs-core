@@ -26,10 +26,20 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
+import org.openmrs.notification.Message;
+import org.openmrs.notification.MessageException;
+import org.openmrs.notification.MessagePreparator;
+import org.openmrs.notification.MessageSender;
+import org.openmrs.notification.MessageService;
+import org.openmrs.notification.Template;
+import org.openmrs.notification.mail.MailMessageSender;
+import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.validation.Validator;
 
@@ -441,6 +451,96 @@ public class ContextTest extends BaseContextSensitiveTest {
 		} finally {
 			Context.removeProxyPrivilege("Some Test Privilege");
 			authenticate();
+		}
+	}
+
+	/**
+	 * Dummy implementations used strictly for testing dynamic Spring bean loading.
+	 */
+	class DummyTestMessageSender implements MessageSender {
+
+		@Override
+		public void send(Message message) throws MessageException {
+			// No operation required for the test
+		}
+	}
+
+	class DummyTestMessagePreparator implements MessagePreparator {
+
+		@Override
+		public Message prepare(Template template) throws MessageException {
+			// No operation required for the test, returning null is perfectly fine
+			// because the test only checks if the object is loaded, not if it runs.
+			return null;
+		}
+	}
+
+	/**
+	 * @see Context#getMessageService()
+	 */
+	@Test
+	public void getMessageService_shouldDynamicallyLoadMessageSenderAndPreparatorFromSpringContext() {
+
+		MessageService service = Context.getMessageService();
+		service.setMessageSender(null);
+		service.setMessagePreparator(null);
+
+		ConfigurableApplicationContext appContext = (ConfigurableApplicationContext) Context.getServiceContext()
+		        .getApplicationContext();
+
+		DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) appContext.getBeanFactory();
+
+		DummyTestMessageSender dummySender = new DummyTestMessageSender();
+		DummyTestMessagePreparator dummyPreparator = new DummyTestMessagePreparator();
+
+		try {
+			beanFactory.registerSingleton("dummyTestMessageSender", dummySender);
+			beanFactory.registerSingleton("dummyTestMessagePreparator", dummyPreparator);
+
+			MessageService reinitializedService = Context.getMessageService();
+			MessagePreparator activePreparator = reinitializedService.getMessagePreparator();
+
+			MessageSender activeSender = reinitializedService.getMessageSender();
+			assertEquals(dummySender, activeSender,
+			    "The MessageService should use the dynamically registered DummyTestMessageSender");
+			assertEquals(dummyPreparator, activePreparator,
+			    "The MessageService should use the dynamically registered DummyTestMessagePreparator");
+
+		} finally {
+			beanFactory.destroySingleton("dummyTestMessageSender");
+			beanFactory.destroySingleton("dummyTestMessagePreparator");
+
+			Context.getMessageService().setMessageSender(null);
+			Context.getMessageService().setMessagePreparator(null);
+		}
+	}
+
+	/**
+	 * @see Context#getMessageService()
+	 */
+	@Test
+	public void getMessageService_shouldFallbackToDefaultSenderAndPreparatorWhenNoBeansRegistered() {
+		MessageService service = Context.getMessageService();
+
+		// Clear the current instances to force the Context to run its initialization logic
+		service.setMessageSender(null);
+		service.setMessagePreparator(null);
+
+		try {
+			// Call getMessageService() again to trigger the lookup.
+			// Since we haven't registered any dummy beans in this test, it should use the defaults.
+			MessageService reinitializedService = Context.getMessageService();
+
+			assertTrue(reinitializedService.getMessageSender() instanceof MailMessageSender,
+			    "The MessageService should fallback to MailMessageSender when no custom beans are registered.");
+
+			assertTrue(reinitializedService.getMessagePreparator() instanceof VelocityMessagePreparator,
+			    "The MessageService should fallback to VelocityMessagePreparator when no custom beans are registered.");
+
+		} finally {
+			// CLEANUP: Reset the MessageService so the next tests start with a clean slate
+			Context.getMessageService().setMessageSender(null);
+			Context.getMessageService().setMessagePreparator(null);
 		}
 	}
 }
