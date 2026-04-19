@@ -121,7 +121,11 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	@Transactional(readOnly = true)
 	public Provider getProviderByUuid(String uuid) {
-		return dao.getProviderByUuid(uuid);
+		Provider provider = dao.getProviderByUuid(uuid);
+		if (provider == null) {
+			throw new APIException("Provider not found for uuid: " + uuid);
+		}
+		return provider;
 	}
 
 	/**
