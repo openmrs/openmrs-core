@@ -92,9 +92,11 @@ class BackfillEnversAuditTablesChangesetTest {
 	}
 
 	@Test
-	void isAuditTableEmpty_shouldReturnFalseWhenTableDoesNotExist() {
-		// Table doesn't exist — should not throw, should return false (skip backfill safely)
-		assertFalse(BackfillEnversAuditTablesChangeset.isAuditTableEmpty(connection, "nonexistent_audit"));
+	void isAuditTableEmpty_shouldThrowWhenTableDoesNotExist() {
+		// Table doesn't exist — should now throw SQLException so the migration fails fast
+		// rather than silently skipping and leaving the database in an inconsistent state
+		org.junit.jupiter.api.Assertions.assertThrows(java.sql.SQLException.class,
+		    () -> BackfillEnversAuditTablesChangeset.isAuditTableEmpty(connection, "nonexistent_audit"));
 	}
 
 	@Test

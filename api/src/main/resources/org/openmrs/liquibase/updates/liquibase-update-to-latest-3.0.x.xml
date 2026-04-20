@@ -145,9 +145,7 @@
 	<changeSet id="AUDIT-28-2026-03-19" author="Binayak490-cyber">
 		<comment>Backfill pre-existing rows into Envers audit tables so that the audit UI can resolve
 			references to entities that existed before auditing was enabled</comment>
-		<customChange class="org.openmrs.util.databasechange.BackfillEnversAuditTablesChangeset">
-			<param name="auditSuffix" value="_audit"/>
-		</customChange>
+		<customChange class="org.openmrs.util.databasechange.BackfillEnversAuditTablesChangeset"/>
 	</changeSet>
 
 </databaseChangeLog>

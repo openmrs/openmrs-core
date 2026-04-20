@@ -47,6 +47,9 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 
 	private static final Pattern SAFE_SQL_IDENTIFIER = Pattern.compile("[a-zA-Z_]\\w*");
 
+	private static final String COLUMN_NAME = "COLUMN_NAME";
+
+	// Must match org.hibernate.envers.audit_table_suffix in hibernate.default.properties
 	private String auditSuffix = "_audit";
 
 	public void setAuditSuffix(String auditSuffix) {
@@ -65,7 +68,7 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 			try (ResultSet tables = metaData.getTables(null, null, "%", new String[] { "TABLE" })) {
 				while (tables.next()) {
 					String tableName = tables.getString("TABLE_NAME");
-					if (!tableName.endsWith(auditSuffix)) {
+					if (!tableName.toLowerCase().endsWith(auditSuffix.toLowerCase())) {
 						continue;
 					}
 					String sourceTable = tableName.substring(0, tableName.length() - auditSuffix.length());
@@ -86,20 +89,16 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 	}
 
 	private Integer tryBackfillEntity(Connection connection, String sourceTable, String auditTable, String revisionTableName,
-	        Integer revId) {
-		try {
-			if (!isAuditTableEmpty(connection, auditTable) || isTableEmpty(connection, sourceTable)) {
-				return revId;
-			}
-			if (revId == null) {
-				revId = createBackfillRevision(connection, revisionTableName);
-			}
-			List<String> columns = getAuditTableDataColumns(connection, auditTable);
-			if (!columns.isEmpty()) {
-				backfillTable(connection, sourceTable, auditTable, columns, revId);
-			}
-		} catch (SQLException e) {
-			log.warn("Failed to backfill audit table {}: {}", auditTable, e.getMessage());
+	        Integer revId) throws SQLException {
+		if (!isAuditTableEmpty(connection, auditTable) || isTableEmpty(connection, sourceTable)) {
+			return revId;
+		}
+		if (revId == null) {
+			revId = createBackfillRevision(connection, revisionTableName);
+		}
+		List<String> columns = getAuditTableDataColumns(connection, auditTable);
+		if (!columns.isEmpty()) {
+			backfillTable(connection, sourceTable, auditTable, columns, revId);
 		}
 		return revId;
 	}
@@ -149,7 +148,7 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 		for (String name : new String[] { revisionTableName, revisionTableName.toUpperCase() }) {
 			try (ResultSet rs = metaData.getPrimaryKeys(null, null, name)) {
 				if (rs.next()) {
-					return rs.getString("COLUMN_NAME");
+					return rs.getString(COLUMN_NAME);
 				}
 			}
 		}
@@ -172,7 +171,7 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 		for (String name : new String[] { revisionTableName, revisionTableName.toUpperCase() }) {
 			try (ResultSet pkRs = metaData.getPrimaryKeys(null, null, name)) {
 				if (pkRs.next()) {
-					pkColumn = pkRs.getString("COLUMN_NAME");
+					pkColumn = pkRs.getString(COLUMN_NAME);
 					break;
 				}
 			}
@@ -180,7 +179,7 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 		for (String name : new String[] { revisionTableName, revisionTableName.toUpperCase() }) {
 			try (ResultSet colRs = metaData.getColumns(null, null, name, null)) {
 				while (colRs.next()) {
-					String colName = colRs.getString("COLUMN_NAME");
+					String colName = colRs.getString(COLUMN_NAME);
 					int dataType = colRs.getInt("DATA_TYPE");
 					if (dataType == java.sql.Types.BIGINT && !colName.equalsIgnoreCase(pkColumn)) {
 						return colName;
@@ -209,13 +208,10 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 	/**
 	 * Returns true if the given audit table exists but contains no rows.
 	 */
-	static boolean isAuditTableEmpty(Connection connection, String tableName) {
+	static boolean isAuditTableEmpty(Connection connection, String tableName) throws SQLException {
 		try (Statement stmt = connection.createStatement();
 		        ResultSet rs = stmt.executeQuery("SELECT 1 FROM " + requireSafeIdentifier(tableName) + " LIMIT 1")) {
 			return !rs.next();
-		} catch (SQLException e) {
-			log.debug("Audit table {} not accessible, skipping backfill: {}", tableName, e.getMessage());
-			return false;
 		}
 	}
 
@@ -239,7 +235,7 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 		DatabaseMetaData metaData = connection.getMetaData();
 		try (ResultSet rs = metaData.getColumns(null, null, auditTable, null)) {
 			while (rs.next()) {
-				String colName = rs.getString("COLUMN_NAME");
+				String colName = rs.getString(COLUMN_NAME);
 				if (!colName.equalsIgnoreCase("REV") && !colName.equalsIgnoreCase("REVTYPE")) {
 					columns.add(colName);
 				}
@@ -288,10 +284,12 @@ public class BackfillEnversAuditTablesChangeset implements CustomTaskChange {
 
 	@Override
 	public void setUp() throws SetupException {
+		// No setup required for this changeset
 	}
 
 	@Override
 	public void setFileOpener(ResourceAccessor resourceAccessor) {
+		// No resource accessor needed; this changeset uses only JDBC
 	}
 
 	@Override
