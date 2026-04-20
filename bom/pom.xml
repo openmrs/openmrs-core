@@ -93,7 +93,7 @@
 
 		<!-- XML/Serialization -->
 		<dom4jVersion>2.1.4</dom4jVersion>
-		<jaxenVersion>2.0.0</jaxenVersion>
+		<jaxenVersion>2.0.1</jaxenVersion>
 		<xercesVersion>2.12.2</xercesVersion>
 		<xstreamVersion>1.4.21</xstreamVersion>
 		<jaxbRuntimeVersion>4.0.7</jaxbRuntimeVersion>
