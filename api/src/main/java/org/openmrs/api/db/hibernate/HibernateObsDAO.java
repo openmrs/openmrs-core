@@ -363,8 +363,7 @@ public class HibernateObsDAO implements ObsDAO {
 	public void archiveVoidedObs(int batchSize) {
 
 		Session session = sessionFactory.getCurrentSession();
-
-		//Fetch only IDs
+		//Fetch voided observation IDs (batch-limited)
 		List<Integer> obsIds = session.createQuery(
 			"select o.obsId from Obs o where o.voided = true",
 			Integer.class
@@ -382,6 +381,7 @@ public class HibernateObsDAO implements ObsDAO {
 			"SELECT o.obs_id, o.person_id, o.encounter_id, o.concept_id, o.value_text, o.value_numeric, o.voided, o.date_voided, o.date_created, o.creator, o.uuid " +
 			"FROM obs o " +
 			"WHERE o.obs_id IN (:obsIds) " +
+			"AND o.voided = true " +
 			"AND NOT EXISTS ( " +
 			"   SELECT 1 FROM obs_archive a WHERE a.obs_id = o.obs_id " +
 			")"
@@ -391,7 +391,8 @@ public class HibernateObsDAO implements ObsDAO {
 		//Safe DELETE (only delete successfully archived records)
 		NativeQuery<?> deleteQuery = session.createNativeQuery(
 			"DELETE FROM obs " +
-			"WHERE obs_id IN ( " +
+			"WHERE voided = true " +
+			"AND obs_id IN ( " +
 			"   SELECT a.obs_id FROM obs_archive a WHERE a.obs_id IN (:obsIds) " +
 			")"
 		);
