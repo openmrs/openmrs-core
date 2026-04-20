@@ -110,7 +110,7 @@
 		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
 
 		<!-- Other Runtime -->
-		<javassistVersion>3.30.2-GA</javassistVersion>
+		<javassistVersion>3.31.0-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
 		<tomcatVersion>11.0.21</tomcatVersion>
