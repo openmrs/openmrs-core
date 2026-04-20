@@ -364,7 +364,7 @@ public class HibernateObsDAO implements ObsDAO {
 
 		Session session = sessionFactory.getCurrentSession();
 
-		// Step 1: Fetch only IDs
+		//Fetch only IDs
 		List<Integer> obsIds = session.createQuery(
 			"select o.obsId from Obs o where o.voided = true",
 			Integer.class
@@ -372,29 +372,41 @@ public class HibernateObsDAO implements ObsDAO {
 		.setMaxResults(batchSize)
 		.getResultList();
 
-		if (!obsIds.isEmpty()) {
-
-			// Step 2: Bulk INSERT
-			NativeQuery<?> insertQuery = session.createNativeQuery(
-				"INSERT INTO obs_archive (obs_id, person_id, encounter_id, concept_id, value_text, value_numeric, voided, date_voided, date_created, creator, uuid) " +
-				"SELECT obs_id, person_id, encounter_id, concept_id, value_text, value_numeric, voided, date_voided, date_created, creator, uuid " +
-				"FROM obs WHERE obs_id IN (:obsIds)"
-			);
-
-			insertQuery.setParameterList("obsIds", obsIds);
-			int inserted = insertQuery.executeUpdate();
-
-			// Step 3: Bulk DELETE
-			// Ensure all records are inserted before deletion to maintain data integrity
-			if (inserted == obsIds.size()) {
-				NativeQuery<?> deleteQuery = session.createNativeQuery(
-					"DELETE FROM obs WHERE obs_id IN (:obsIds)"
-				);
-				deleteQuery.setParameterList("obsIds", obsIds);
-				deleteQuery.executeUpdate();
-				session.flush();
-				session.clear();
-			}
+		if (obsIds.isEmpty()) {
+			return; // No more voided obs to archive
 		}
+
+		//Insert into archive table using IDs
+		NativeQuery<?> insertQuery = session.createNativeQuery(
+			"INSERT INTO obs_archive (obs_id, person_id, encounter_id, concept_id, value_text, value_numeric, voided, date_voided, date_created, creator, uuid) " +
+			"SELECT o.obs_id, o.person_id, o.encounter_id, o.concept_id, o.value_text, o.value_numeric, o.voided, o.date_voided, o.date_created, o.creator, o.uuid " +
+			"FROM obs o " +
+			"WHERE o.obs_id IN (:obsIds) " +
+			"AND NOT EXISTS ( " +
+			"   SELECT 1 FROM obs_archive a WHERE a.obs_id = o.obs_id " +
+			")"
+		);
+		insertQuery.setParameterList("obsIds", obsIds);
+
+		//Safe DELETE (only delete successfully archived records)
+		NativeQuery<?> deleteQuery = session.createNativeQuery(
+			"DELETE FROM obs " +
+			"WHERE obs_id IN ( " +
+			"   SELECT a.obs_id FROM obs_archive a WHERE a.obs_id IN (:obsIds) " +
+			")"
+		);
+		deleteQuery.setParameterList("obsIds", obsIds);
+
+		try {
+			insertQuery.executeUpdate();
+			deleteQuery.executeUpdate();
+		} catch (Exception e) {
+			throw new DAOException("Error archiving voided obs for batch: " + obsIds, e);
+		}
+
+
+		session.flush();
+		session.clear();
+
 	}
 }
