@@ -62,7 +62,7 @@
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<owaspEncoderVersion>1.4.0</owaspEncoderVersion>
-		<graalJsVersion>25.0.2</graalJsVersion>
+		<graalJsVersion>25.0.3</graalJsVersion>
 		<nettyVersion>4.2.12.Final</nettyVersion>
 
 		<!-- Jakarta -->
