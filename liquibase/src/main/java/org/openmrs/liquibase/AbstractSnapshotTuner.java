@@ -225,8 +225,8 @@ public abstract class AbstractSnapshotTuner {
 		finally {
 			try {
 				if (xmlWriter != null) {
-				xmlWriter.close();
-			}
+					xmlWriter.close();
+				}
 			}
 			catch (IOException e) {
 				log.error("closing the xml writer for '{}' raised an exception", path, e);
