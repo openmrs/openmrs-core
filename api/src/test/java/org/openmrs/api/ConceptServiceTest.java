@@ -2566,7 +2566,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
-	public void saveConcept_shouldSetAuditInfoIfAnItemIsRemovedFromAnyOfItsChildCollections() {
+	public void saveConcept_shouldSetAuditInfoIfAnItemIsRemovedFromAnyOfItsChildCollections() throws InterruptedException {
 		Concept concept = conceptService.getConcept(3);
 		assertNull(concept.getDateChanged());
 		assertNull(concept.getChangedBy());
@@ -2577,6 +2577,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptService.saveConcept(concept);
 		assertNotNull(concept.getDateChanged());
 		Date date=concept.getDateChanged();
+
+		// dateChanged has millisecond resolution; guarantee the clock advances so the
+		// second save produces a strictly later timestamp than the first.
+		Thread.sleep(10);
 
 		assertTrue(concept.removeAnswer(conceptanswer));
 		conceptService.saveConcept(concept);
