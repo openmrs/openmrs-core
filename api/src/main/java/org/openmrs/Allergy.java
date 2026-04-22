@@ -106,9 +106,10 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
     public void setAllergyId(Integer allergyId) {
     	this.allergyId = allergyId;
     }
-
+	
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
+	 * @deprecated as of 2.3.0, use {@link #getAllergyId()} instead
 	 */
 	@Override
 	@Deprecated(since = "2.3.0", forRemoval = false)
@@ -118,6 +119,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 * @deprecated as of 2.3.0, use {@link #setAllergyId(Integer)} instead
 	 */
 	@Override
 	@Deprecated(since = "2.3.0", forRemoval = false)
