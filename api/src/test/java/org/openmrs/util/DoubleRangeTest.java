@@ -281,8 +281,7 @@ public class DoubleRangeTest {
 	}
 
 	/**
-	 * Verifies that contains() returns true when the upper bound is unbounded
-	 * (null).
+	 * Verifies that contains() returns true when the upper bound is unbounded (null).
 	 */
 	@Test
 	void contains_shouldReturnTrueWhenUpperBoundIsUnbounded() {
