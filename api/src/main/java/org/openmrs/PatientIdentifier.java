@@ -122,6 +122,31 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	}
 
 	/**
+	 * Creates a shallow copy of the given PatientIdentifier. This copies the identifier id and uuid,
+	 * and does not deep-copy referenced objects.
+	 *
+	 * @param template the PatientIdentifier to copy
+	 */
+	public PatientIdentifier(PatientIdentifier template) {
+		this.patientIdentifierId = template.getPatientIdentifierId();
+		this.patient = template.getPatient();
+		this.identifier = template.getIdentifier();
+		this.identifierType = template.getIdentifierType();
+		this.location = template.getLocation();
+		this.patientProgram = template.getPatientProgram();
+		this.preferred = template.getPreferred();
+		setUuid(template.getUuid());
+		setCreator(template.getCreator());
+		setDateCreated(template.getDateCreated());
+		setChangedBy(template.getChangedBy());
+		setDateChanged(template.getDateChanged());
+		setVoided(template.getVoided());
+		setDateVoided(template.getDateVoided());
+		setVoidedBy(template.getVoidedBy());
+		setVoidReason(template.getVoidReason());
+	}
+
+	/**
 	 * Compares this PatientIdentifier object to the given otherIdentifier. This method differs from
 	 * {@link #equals(Object)} in that this method compares the inner fields of each identifier for
 	 * equality. Note: Null/empty fields on <code>otherIdentifier</code> /will not/ cause a false value
