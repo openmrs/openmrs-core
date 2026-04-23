@@ -1433,6 +1433,9 @@ public class ModuleFactory {
 
 		// copy content to a temporary file
 		InputStream inputStream = ModuleUtil.getURLStream(url);
+		if (inputStream == null) {
+			throw new ModuleException("Unable to download module update from " + url);
+		}
 		log.warn("url pathname: " + url.getPath());
 		String filename = url.getPath().substring(url.getPath().lastIndexOf("/"));
 		File moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);

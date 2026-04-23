@@ -575,6 +575,12 @@ public final class OpenmrsConstants {
 	public static final String GP_UNLOCK_ACCOUNT_WAITING_TIME = "security.unlockAccountWaitingTime";
 
 	/**
+	 * Comma-separated list of allowed outbound URL hosts for server-side requests. Supports exact hosts
+	 * (e.g. example.com) and subdomain wildcards via leading dot (e.g. .example.com).
+	 */
+	public static final String GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS = "security.allowedOutboundUrlHosts";
+
+	/**
 	 * @since 1.9.9, 1.10.2, 1.11
 	 */
 	public static final String GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON = "search.caseSensitiveDatabaseStringComparison";
@@ -917,6 +923,10 @@ public final class OpenmrsConstants {
 
 		props.add(new GlobalProperty(GP_UNLOCK_ACCOUNT_WAITING_TIME, "5",
 		        "Waiting time for account to get automatically unlocked after getting locked due to multiple invalid login tries"));
+
+		props.add(new GlobalProperty(GP_SECURITY_ALLOWED_OUTBOUND_URL_HOSTS, "",
+		        "Comma-separated list of allowed outbound URL hosts for server-side requests. Supports exact hosts "
+		                + "(e.g. example.com) and subdomain wildcards via leading dot (e.g. .example.com)."));
 
 		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "NARROWER-THAN",
 		        "Default concept map type which is used when no other is set"));
