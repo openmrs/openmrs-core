@@ -550,6 +550,8 @@ public final class OpenmrsConstants {
 	 */
 	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/CBC/PKCS5Padding";
 
+	public static final String ENCRYPTION_CIPHER_CONFIGURATION_GCM = "AES/GCM/NoPadding";
+
 	public static final String ENCRYPTION_KEY_SPEC = "AES";
 
 	public static final String ENCRYPTION_VECTOR_RUNTIME_PROPERTY = "encryption.vector";
@@ -742,6 +744,8 @@ public final class OpenmrsConstants {
 		        "XML description of address formats"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, PERSON_NAME_FORMAT_SHORT,
 		        "Format in which to display the person names.  Valid values are short, long"));
+
+		// TODO should be changed to text defaults and constants should be removed
 
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_CONCEPTS_LOCKED, "false", "if true, do not allow editing concepts",
 		        BooleanDatatype.class, null));
