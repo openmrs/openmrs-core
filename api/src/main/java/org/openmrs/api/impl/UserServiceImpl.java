@@ -31,12 +31,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
-import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.CannotDeleteRoleWithChildrenException;
-import org.openmrs.api.InvalidActivationKeyException;
-import org.openmrs.api.RefByUuid;
-import org.openmrs.api.UserService;
+import org.openmrs.api.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
@@ -78,6 +73,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	private static final int MIN_VALID_TIME = 60 * 1000; //Period of 1 minute
 
 	private static final int DEFAULT_VALID_TIME = 10 * 60 * 1000; //Default time of 10 minute
+	
+    private Collection<PasswordValidator> passwordValidators;
 
 	public UserServiceImpl() {
 	}
@@ -121,7 +118,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		}
 
 		// TODO Check required fields for user!!
-		OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
+		validatePassword(user, password);
 
 		return dao.saveUser(user, password);
 	}
@@ -683,7 +680,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	private void updatePassword(User user, String newPassword) {
-		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
+		validatePassword(user, newPassword);
 		dao.changePassword(user, newPassword);
 	}
 
@@ -822,6 +819,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	@Override
+	public void setPasswordValidator(Collection<PasswordValidator> passwordValidators) {
+		this.passwordValidators = passwordValidators;
+	}
+
+	@Override
+	public Collection<PasswordValidator> getPasswordValidators() {
+		return passwordValidators;
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getRefByUuid(Class<T> type, String uuid) {
 		if (Role.class.equals(type)) {
@@ -839,6 +846,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	public List<Class<?>> getRefTypes() {
 		return Arrays.asList(Role.class, Privilege.class, User.class);
+	}
+	
+	private void validatePassword(User user, String password) throws PasswordException{
+		 if (passwordValidators != null) {
+			 for (PasswordValidator validator : passwordValidators) {
+				 validator.validate(user, password);
+			 }
+             } else {
+                 OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
+             }
 	}
 
 }

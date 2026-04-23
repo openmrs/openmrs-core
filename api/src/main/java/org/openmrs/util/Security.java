@@ -27,6 +27,7 @@ import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import  org.mindrot.jbcrypt.BCrypt;
 
 /**
  * OpenMRS's security class deals with the hashing of passwords.
@@ -41,6 +42,16 @@ public class Security {
 	private static final Random RANDOM = new SecureRandom();
 
 	private Security() {
+	}
+	
+	//Added a check for bcrypt format
+	public static boolean isBCrypt(String hash){
+		return hash != null && hash.startsWith("$2a$");
+	}
+	
+	//Add bcrypt hashing
+	public static String encodeBcrypt(String plainTextPassword){
+		return BCrypt.hashpw(plainTextPassword, BCrypt.gensalt());
 	}
 
 	/**
@@ -57,11 +68,16 @@ public class Security {
 	 * @param hashedPassword a stored password that has been hashed previously
 	 * @param passwordToHash a string to encode/hash and compare to hashedPassword
 	 * @return true/false whether the two are equal
+	 * @return true/false if hashed password and passwordtoHash are same
 	 * @since 1.5
 	 */
 	public static boolean hashMatches(String hashedPassword, String passwordToHash) {
 		if (hashedPassword == null || passwordToHash == null) {
 			throw new APIException("password.cannot.be.null", (Object[]) null);
+		}
+		
+		if(isBCrypt(hashedPassword)){
+			return BCrypt.checkpw(passwordToHash , hashedPassword);
 		}
 
 		return hashedPassword.equals(encodeString(passwordToHash)) || hashedPassword.equals(encodeStringSHA1(passwordToHash))

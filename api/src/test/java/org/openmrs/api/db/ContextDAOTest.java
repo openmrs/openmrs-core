@@ -15,7 +15,9 @@ import java.util.Set;
 
 import jakarta.annotation.Resource;
 
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
@@ -26,6 +28,7 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.Security;
 import org.springframework.stereotype.Component;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -313,6 +316,39 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 	}
+	
+	 /**
+	  * @see ContextDAO#authenticate(String,String)
+	  */
+	 
+	 @Test
+	 public void authenticate_shouldMigrateOldHashBCryptOnSuccessfulLogin(){
+		 String oldPasswordHash = (String) applicationContext.getBean(SessionFactory.class)
+			 .getCurrentSession()
+			 .createNativeQuery("select password from users where username = 'correct'")
+			 .uniqueResult();
+
+		 Assertions.assertFalse(Security.isBCrypt(oldPasswordHash),  "Initially, password should not be BCrypt");
+		 
+		 dao.authenticate("correct", "test");
+		 
+		 String newPasswordHash = (String) applicationContext.getBean(SessionFactory.class)
+			 .getCurrentSession()
+			 .createNativeQuery("select password from users where username = 'correct'")
+			 .uniqueResult();
+		 
+		 Assertions.assertTrue(Security.isBCrypt(newPasswordHash),  "After login, password should be migrated to BCrypt");
+		 
+		 String salt = (String) applicationContext.getBean(SessionFactory.class)
+			 .getCurrentSession()
+			 .createNativeQuery("select salt from users where username = 'correct'")
+			 .uniqueResult();
+		 
+		 Assertions.assertTrue(salt == null || salt.isEmpty(),  "Salt should be cleared for BCrypt hashes");
+		 
+		 User u = dao.authenticate("correct", "test");
+		 assertNotNull(u, "Should still be able to authenticate after migration");
+	 }
 
 	@Test
 	public void authenticate_shouldThrowAContextAuthenticationExceptionIfUsernameIsAnEmptyString() {
