@@ -1176,6 +1176,117 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		    () -> conceptService.getConceptReferenceRange((ConceptReferenceRangeContext) null));
 	}
 
+	/**
+	 * TRUNK-6510: when multiple matching ranges carry explicit priorities, the one with the highest
+	 * priority value should win (descending order — higher number = higher precedence). Concept 4090
+	 * already has two null-priority ranges in the dataset; the priority=2 range must win over the
+	 * priority=1 range and the existing null-priority ranges.
+	 *
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldReturnHighestPriorityRangeWhenPrioritiesAreSet() {
+		// Concept 4090 is numeric and has existing null-priority ranges in the test dataset
+		Concept concept = conceptService.getConcept(4090);
+		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
+
+		ConceptReferenceRange lowPriorityRange = new ConceptReferenceRange();
+		lowPriorityRange.setConceptNumeric(conceptNumeric);
+		lowPriorityRange.setCriteria(TEST_CRITERIA);
+		lowPriorityRange.setHiNormal(120.0);
+		lowPriorityRange.setPriority(1);
+		conceptService.saveConceptReferenceRange(lowPriorityRange);
+
+		ConceptReferenceRange highPriorityRange = new ConceptReferenceRange();
+		highPriorityRange.setConceptNumeric(conceptNumeric);
+		highPriorityRange.setCriteria(TEST_CRITERIA);
+		highPriorityRange.setHiNormal(159.0);
+		highPriorityRange.setPriority(2);
+		conceptService.saveConceptReferenceRange(highPriorityRange);
+
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+		ConceptReferenceRange range = conceptService.getConceptReferenceRange(context);
+
+		assertNotNull(range);
+		// priority=2 range wins; its hiNormal of 159 is returned, not the stricter 120
+		assertEquals(159.0, range.getHiNormal());
+	}
+
+	/**
+	 * TRUNK-6510: when matching ranges have mixed priorities (some set, some null), the explicitly
+	 * prioritized ranges should take precedence and null-priority ranges are ignored. Concept 4090
+	 * already has two null-priority ranges in the dataset; adding a priority=1 range should make it win
+	 * over those existing null-priority ranges.
+	 *
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldPreferPrioritizedRangeOverNullPriorityRange() {
+		// Concept 4090 is numeric and already has existing null-priority ranges in the test dataset
+		Concept concept = conceptService.getConcept(4090);
+		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
+
+		ConceptReferenceRange prioritizedRange = new ConceptReferenceRange();
+		prioritizedRange.setConceptNumeric(conceptNumeric);
+		prioritizedRange.setCriteria(TEST_CRITERIA);
+		prioritizedRange.setHiNormal(159.0);
+		prioritizedRange.setPriority(1);
+		conceptService.saveConceptReferenceRange(prioritizedRange);
+
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+		ConceptReferenceRange range = conceptService.getConceptReferenceRange(context);
+
+		assertNotNull(range);
+		// prioritized range (priority=1) wins over the existing null-priority dataset ranges
+		assertEquals(159.0, range.getHiNormal());
+	}
+
+	/**
+	 * TRUNK-6510: when multiple matching ranges share the same highest priority, the strictest bounds
+	 * are applied among them (same tie-breaking behaviour as the legacy algorithm).
+	 *
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldApplyStrictestBoundsAmongRangesWithSamePriority() {
+		// Concept 4090 is numeric and already has existing null-priority ranges in the test dataset
+		Concept concept = conceptService.getConcept(4090);
+		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
+
+		ConceptReferenceRange range1 = new ConceptReferenceRange();
+		range1.setConceptNumeric(conceptNumeric);
+		range1.setCriteria(TEST_CRITERIA);
+		range1.setHiNormal(150.0);
+		range1.setLowNormal(70.0);
+		range1.setPriority(2);
+		conceptService.saveConceptReferenceRange(range1);
+
+		ConceptReferenceRange range2 = new ConceptReferenceRange();
+		range2.setConceptNumeric(conceptNumeric);
+		range2.setCriteria(TEST_CRITERIA);
+		range2.setHiNormal(140.0);
+		range2.setLowNormal(80.0);
+		range2.setPriority(2);
+		conceptService.saveConceptReferenceRange(range2);
+
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+		ConceptReferenceRange range = conceptService.getConceptReferenceRange(context);
+
+		assertNotNull(range);
+		// priority=2 beats the existing null-priority ranges; strictest among the two priority=2 ranges
+		assertEquals(140.0, range.getHiNormal());
+		assertEquals(80.0, range.getLowNormal());
+	}
+
 	private ConceptNumeric createConceptNumeric() {
 		ConceptNumeric conceptNumeric = new ConceptNumeric();
 		ConceptName fullySpecifiedName = new ConceptName("concept name", new Locale("fr", "CA"));

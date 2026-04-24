@@ -141,6 +141,18 @@
 			<column name="description" type="varchar(255)"/>
 		</addColumn>
 	</changeSet>
-	
+
+	<changeSet id="TRUNK-6510-2026-04-14" author="Binayak490-cyber">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_reference_range" columnName="priority"/>
+			</not>
+		</preConditions>
+		<comment>Add priority column to concept_reference_range for TRUNK-6510: higher value wins when multiple ranges match a patient</comment>
+		<addColumn tableName="concept_reference_range">
+			<column name="priority" type="INT"/>
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
 
