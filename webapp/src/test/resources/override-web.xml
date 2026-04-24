@@ -26,6 +26,15 @@
        <!--enable reloading static resources in windows-->
       <param-value>false</param-value>
     </init-param>
+    <init-param>
+      <!-- Allow welcome file dispatch to servlets (e.g. index.htm -> DispatcherServlet) -->
+      <param-name>welcomeServlets</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>dirAllowed</param-name>
+      <param-value>false</param-value>
+    </init-param>
   </servlet>
 
 </web-app>
