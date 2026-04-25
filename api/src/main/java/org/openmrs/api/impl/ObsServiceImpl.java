@@ -687,4 +687,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		return Arrays.asList(Obs.class);
 	}
 
+	@Override
+	@Transactional
+	public void archiveVoidedObs(int batchSize) {
+		dao.archiveVoidedObs(batchSize);
+	}
+
 }
