@@ -89,9 +89,17 @@ public class PersonAddressValidator implements Validator {
 			    "The Start Date for address '" + addressString + "' shouldn't be in the future");
 		}
 
-		if (OpenmrsUtil.compareWithNullAsEarliest(personAddress.getEndDate(), new Date()) > 0) {
-			errors.rejectValue("endDate", "PersonAddress.error.endDateInFuture", new Object[] { "'" + addressString + "'" },
-			    "The End Date for address '" + addressString + "' shouldn't be in the future");
+		boolean allowFutureEndDate = Boolean.parseBoolean(
+    		Context.getAdministrationService()
+           .getGlobalProperty("personAddress.allowFutureEndDate", "false")
+		);
+
+		if (!allowFutureEndDate &&
+		    OpenmrsUtil.compareWithNullAsEarliest(personAddress.getEndDate(), new Date()) > 0) {
+		    
+		    errors.rejectValue("endDate", "PersonAddress.error.endDateInFuture",
+		        new Object[] { "" + addressString + "" },
+		        "The End Date for address " + addressString + " shouldn't be in the future");
 		}
 
 		if (personAddress.getStartDate() != null
