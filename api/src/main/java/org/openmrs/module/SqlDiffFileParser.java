@@ -71,7 +71,7 @@ public class SqlDiffFileParser {
 				// Try the old way. Loading from the root of the omod
 				ZipEntry diffEntry = jarfile.getEntry(SQLDIFF_CHANGELOG_FILENAME);
 				if (diffEntry == null) {
-					log.debug("No sqldiff.xml found for module: " + module.getName());
+					log.debug("No sqldiff.xml found for module: {}", module.getName());
 					return map;
 				} else {
 					try {
