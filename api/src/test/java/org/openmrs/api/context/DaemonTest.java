@@ -25,10 +25,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
-import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.tasks.AbstractTask;
-import org.openmrs.scheduler.tasks.HelloWorldTask;
-import org.openmrs.scheduler.timer.TimerSchedulerTask;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,29 +44,17 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 public class DaemonTest extends BaseContextSensitiveTest {
 
 	/**
-	 * @see Daemon#executeScheduledTask(Task)
+	 * @see Daemon#executeScheduledTaskAsUser(String, Daemon.DaemonTask)
 	 */
 	@Test
 	public void executeScheduledTask_shouldNotBeCalledFromOtherMethodsOtherThanTimerSchedulerTask() throws Throwable {
 		try {
-			Daemon.executeScheduledTask(new HelloWorldTask());
+			Daemon.executeScheduledTaskAsUser("", () -> {});
 			fail("Should not be here, an exception should have been thrown in the line above");
 		} catch (APIException e) {
-			assertThat(e.getMessage(), startsWith(Context.getMessageSourceService().getMessage("Scheduler.timer.task.only",
-			    new Object[] { this.getClass().getName() }, Locale.ENGLISH)));
+			assertThat(e.getMessage(),
+			    startsWith("executeScheduledTaskAsUser can only be called from " + "JobRequestHandlerAdapter"));
 		}
-	}
-
-	/**
-	 * This uses a task that just marks itself as run when its "execute" method is called. This verifies
-	 * that the Daemon class is getting past the class check and on to the task running step
-	 *
-	 * @see Daemon#executeScheduledTask(Task)
-	 */
-	@Test
-	public void executeScheduledTask_shouldNotThrowErrorIfCalledFromATimerSchedulerTaskClass() throws Throwable {
-		Task task = new PrivateTask();
-		assertThat(new PrivateSchedulerTask(task).runTheTest(), is(true));
 	}
 
 	@Test
@@ -153,67 +138,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see Daemon#runInNewDaemonThread(Runnable)
-	 */
-	@Test
-	public void runInNewDaemonThread_shouldNotThrowErrorIfCalledFromADaemonThread() throws Throwable {
-		Task taskThatStartsAnotherThread = new TaskThatStartsAnotherThread();
-		assertThat(new PrivateSchedulerTask(taskThatStartsAnotherThread).runTheTest(), is(true));
-	}
-
-	/**
-	 * @see Daemon#runInNewDaemonThread(Runnable)
-	 */
-	@Test
-	public void runInNewDaemonThreadCallable_shouldNotThrowErrorIfCalledFromADaemonThread() throws Throwable {
-		Task taskThatStartsAnotherFuture = new TaskThatStartsAnotherFuture();
-		assertThat(new PrivateSchedulerTask(taskThatStartsAnotherFuture).runTheTest(), is(true));
-	}
-
-	/**
-	 * @see Daemon#executeScheduledTask(Task)
-	 */
-	@Test
-	public void daemonUser_shouldHaveAssociatedPerson() throws Throwable {
-		try {
-			TestTask task = new TestTask();
-			new PrivateSchedulerTask(task).runTask();
-		} catch (NullPointerException e) {
-			fail("Daemon user should have an associated person");
-		}
-	}
-
-	/**
-	 * A TimerSchedulerTask that can call the daemon thread
-	 *
-	 * @see DaemonTest#executeScheduledTask_shouldNotThrowErrorIfCalledFromATimerSchedulerTaskClass()
-	 */
-	private static class PrivateSchedulerTask extends TimerSchedulerTask {
-
-		private final Task task;
-
-		public PrivateSchedulerTask(Task task) {
-			super(task);
-			this.task = task;
-		}
-
-		/**
-		 * Returns true/false whether the task was successfully run by the Daemon user
-		 */
-		public boolean runTheTest() throws Throwable {
-			Daemon.executeScheduledTask(this.task);
-			return ((PrivateTask) task).wasRun;
-		}
-
-		public void runTask() throws Throwable {
-			Daemon.executeScheduledTask(this.task);
-		}
-	}
-
-	/**
 	 * Small task that just marks itself when it gets run
-	 *
-	 * @see DaemonTest#executeScheduledTask_shouldNotThrowErrorIfCalledFromATimerSchedulerTaskClass()
 	 */
 	private static class PrivateTask extends AbstractTask {
 

@@ -11,6 +11,10 @@ package org.openmrs.scheduler;
 
 import java.util.concurrent.ExecutionException;
 
+/**
+ * @deprecated since 2.9.x use {@link TaskHandler} instead.
+ */
+@Deprecated
 public interface Task {
 
 	/**
