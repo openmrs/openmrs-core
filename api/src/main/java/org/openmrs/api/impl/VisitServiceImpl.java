@@ -221,7 +221,10 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public void purgeVisit(Visit visit) throws APIException {
-		if (visit.getVisitId() == null) {
+    if (visit == null) {
+        throw new IllegalArgumentException("visit must not be null");
+    }
+    if (visit.getVisitId() == null) {
 			return;
 		}
 		if (!Context.getEncounterService().getEncountersByVisit(visit, true).isEmpty()) {
