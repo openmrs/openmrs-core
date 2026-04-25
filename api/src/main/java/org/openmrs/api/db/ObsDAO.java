@@ -45,7 +45,9 @@ public interface ObsDAO {
 	public void deleteObs(Obs obs) throws DAOException;
 
 	/**
-	 * Archives voided observations by deleting them in batches. This is used by the ObsArchiver scheduled task.
+	 * Archives voided observations by deleting them in batches. This is used by the ObsArchiver
+	 * scheduled task.
+	 *
 	 * @param batchSize the number of observations to process in each batch
 	 */
 	public void archiveVoidedObs(int batchSize);

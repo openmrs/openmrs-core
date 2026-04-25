@@ -353,9 +353,10 @@ public class HibernateObsDAO implements ObsDAO {
 			session.setHibernateFlushMode(flushMode);
 		}
 	}
+
 	/**
-	 * Archives voided observations in batches using bulk database operations.
-	 * Avoids N+1 query problem by using INSERT...SELECT and DELETE.
+	 * Archives voided observations in batches using bulk database operations. Avoids N+1 query problem
+	 * by using INSERT...SELECT and DELETE.
 	 *
 	 * @param batchSize maximum number of records to process in one batch
 	 */
@@ -364,12 +365,8 @@ public class HibernateObsDAO implements ObsDAO {
 
 		Session session = sessionFactory.getCurrentSession();
 		//Fetch voided observation IDs (batch-limited)
-		List<Integer> obsIds = session.createQuery(
-			"select o.obsId from Obs o where o.voided = true",
-			Integer.class
-		)
-		.setMaxResults(batchSize)
-		.getResultList();
+		List<Integer> obsIds = session.createQuery("select o.obsId from Obs o where o.voided = true", Integer.class)
+		        .setMaxResults(batchSize).getResultList();
 
 		if (obsIds.isEmpty()) {
 			return; // No more voided obs to archive
@@ -377,25 +374,15 @@ public class HibernateObsDAO implements ObsDAO {
 
 		//Insert into archive table using IDs
 		NativeQuery<?> insertQuery = session.createNativeQuery(
-			"INSERT INTO obs_archive (obs_id, person_id, encounter_id, concept_id, value_text, value_numeric, voided, date_voided, date_created, creator, uuid) " +
-			"SELECT o.obs_id, o.person_id, o.encounter_id, o.concept_id, o.value_text, o.value_numeric, o.voided, o.date_voided, o.date_created, o.creator, o.uuid " +
-			"FROM obs o " +
-			"WHERE o.obs_id IN (:obsIds) " +
-			"AND o.voided = true " +
-			"AND NOT EXISTS ( " +
-			"   SELECT 1 FROM obs_archive a WHERE a.obs_id = o.obs_id " +
-			")"
-		);
+		    "INSERT INTO obs_archive (obs_id, person_id, encounter_id, concept_id, value_text, value_numeric, voided, date_voided, date_created, creator, uuid) "
+		            + "SELECT o.obs_id, o.person_id, o.encounter_id, o.concept_id, o.value_text, o.value_numeric, o.voided, o.date_voided, o.date_created, o.creator, o.uuid "
+		            + "FROM obs o " + "WHERE o.obs_id IN (:obsIds) " + "AND o.voided = true " + "AND NOT EXISTS ( "
+		            + "   SELECT 1 FROM obs_archive a WHERE a.obs_id = o.obs_id " + ")");
 		insertQuery.setParameterList("obsIds", obsIds);
 
 		//Safe DELETE (only delete successfully archived records)
-		NativeQuery<?> deleteQuery = session.createNativeQuery(
-			"DELETE FROM obs " +
-			"WHERE voided = true " +
-			"AND obs_id IN ( " +
-			"   SELECT a.obs_id FROM obs_archive a WHERE a.obs_id IN (:obsIds) " +
-			")"
-		);
+		NativeQuery<?> deleteQuery = session.createNativeQuery("DELETE FROM obs " + "WHERE voided = true "
+		        + "AND obs_id IN ( " + "   SELECT a.obs_id FROM obs_archive a WHERE a.obs_id IN (:obsIds) " + ")");
 		deleteQuery.setParameterList("obsIds", obsIds);
 
 		try {
@@ -404,7 +391,6 @@ public class HibernateObsDAO implements ObsDAO {
 		} catch (Exception e) {
 			throw new DAOException("Error archiving voided obs for batch: " + obsIds, e);
 		}
-
 
 		session.flush();
 		session.clear();
