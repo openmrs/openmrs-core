@@ -44,15 +44,12 @@ public interface ObsService extends OpenmrsService {
 	 * Returns the complete version history of the given Obs, including the Obs itself and all previous
 	 * versions it was revised from. Results are ordered from the most recently created version to the
 	 * oldest.
-	 * <p>
-	 * Voided obs are intentionally included because previous versions are always voided when a new
-	 * revision is saved via {@link #saveObs(Obs, String)}.
 	 *
 	 * @param obs the Obs whose version history is to be retrieved; must not be null and must have a
 	 *            non-null obsId. The traversal walks backwards from this Obs via the
 	 *            {@code previousVersion} association.
 	 * @return a List of Obs representing the full version history up to and including the supplied obs
-	 * @since 3.0.0
+	 * @since 3.0.0, 2.9.0, and the next 2.8.x release
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
 	List<Obs> getObsVersionHistory(Obs obs);

@@ -2144,21 +2144,60 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * @see ObsService#getObsVersionHistory(Obs)
 	 */
 	@Test
-	public void getObsVersionHistory_shouldReturnFullVersionHistoryOrderedNewestFirst() {
+	public void getObsVersionHistory_shouldHandleMultipleScenarios() {
 		executeDataSet(PREVIOUS_VERSIONS_OBS_XML);
 
 		// 3-version chain: obs 90102 (current) -> 90101 (voided) -> 90100 (voided, original)
 		Obs latestObs = obsService.getObs(90102);
 		assertNotNull(latestObs);
-
 		List<Obs> versions = obsService.getObsVersionHistory(latestObs);
-
 		assertNotNull(versions);
 		assertEquals(3, versions.size());
-		// Ordered newest (by date_created) first
 		assertEquals(Integer.valueOf(90102), versions.get(0).getObsId());
 		assertEquals(Integer.valueOf(90101), versions.get(1).getObsId());
 		assertEquals(Integer.valueOf(90100), versions.get(2).getObsId());
+
+		// Unrelated observation (not in the chain)
+		Obs unrelatedObs = new Obs();
+		unrelatedObs.setConcept(latestObs.getConcept());
+		unrelatedObs.setPerson(latestObs.getPerson());
+		unrelatedObs.setObsDatetime(new java.util.Date());
+		unrelatedObs = Context.getObsService().saveObs(unrelatedObs, "testing unrelated");
+		List<Obs> unrelatedVersions = obsService.getObsVersionHistory(unrelatedObs);
+		assertNotNull(unrelatedVersions);
+		assertEquals(1, unrelatedVersions.size());
+		assertEquals(unrelatedObs.getObsId(), unrelatedVersions.get(0).getObsId());
+
+		// 15-obs chain
+		Obs prev = null;
+		Obs first = null;
+		for (int i = 0; i < 15; i++) {
+			Obs o = new Obs();
+			o.setConcept(latestObs.getConcept());
+			o.setPerson(latestObs.getPerson());
+			o.setObsDatetime(new java.util.Date());
+			if (prev != null) {
+				o.setPreviousVersion(prev);
+			} else {
+				first = o;
+			}
+			prev = Context.getObsService().saveObs(o, "chain test");
+		}
+		List<Obs> longChain = obsService.getObsVersionHistory(prev);
+		assertNotNull(longChain);
+		assertEquals(15, longChain.size());
+		assertEquals(prev.getObsId(), longChain.get(0).getObsId());
+		assertEquals(first.getObsId(), longChain.get(14).getObsId());
+
+		// Obs with no previous members (new unsaved obs)
+		Obs unsaved = new Obs();
+		unsaved.setConcept(latestObs.getConcept());
+		unsaved.setPerson(latestObs.getPerson());
+		unsaved.setObsDatetime(new java.util.Date());
+		List<Obs> unsavedVersions = obsService.getObsVersionHistory(unsaved);
+		assertNotNull(unsavedVersions);
+		assertEquals(1, unsavedVersions.size());
+		assertNull(unsavedVersions.get(0).getObsId());
 	}
 
 	/**
