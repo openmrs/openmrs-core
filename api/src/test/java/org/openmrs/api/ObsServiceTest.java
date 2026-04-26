@@ -83,6 +83,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String REVISION_OBS_XML = "org/openmrs/api/include/ObsServiceTest-RevisionObs.xml";
 
+	protected static final String PREVIOUS_VERSIONS_OBS_XML = "org/openmrs/api/include/ObsServiceTest-PreviousVersions.xml";
+
 	@Autowired
 	private ObsService obsService;
 
@@ -2136,6 +2138,114 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertEquals(originalRange.getLowAbsolute(), newRange.getLowAbsolute());
 		assertEquals(originalRange.getLowCritical(), newRange.getLowCritical());
 		assertEquals(originalRange.getLowNormal(), newRange.getLowNormal());
+	}
+
+	/**
+	 * @see ObsService#getObsVersionHistory(Obs)
+	 */
+	@Test
+	public void getObsVersionHistory_shouldHandleMultipleScenarios() {
+		executeDataSet(PREVIOUS_VERSIONS_OBS_XML);
+
+		// 3-version chain: obs 90102 (current) -> 90101 (voided) -> 90100 (voided, original)
+		Obs latestObs = obsService.getObs(90102);
+		assertNotNull(latestObs);
+		List<Obs> versions = obsService.getObsVersionHistory(latestObs);
+		assertNotNull(versions);
+		assertEquals(3, versions.size());
+		assertEquals(Integer.valueOf(90102), versions.get(0).getObsId());
+		assertEquals(Integer.valueOf(90101), versions.get(1).getObsId());
+		assertEquals(Integer.valueOf(90100), versions.get(2).getObsId());
+
+		// Unrelated observation (not in the chain)
+		Obs unrelatedObs = new Obs();
+		unrelatedObs.setConcept(latestObs.getConcept());
+		unrelatedObs.setPerson(latestObs.getPerson());
+		unrelatedObs.setObsDatetime(new java.util.Date());
+		unrelatedObs = Context.getObsService().saveObs(unrelatedObs, "testing unrelated");
+		List<Obs> unrelatedVersions = obsService.getObsVersionHistory(unrelatedObs);
+		assertNotNull(unrelatedVersions);
+		assertEquals(1, unrelatedVersions.size());
+		assertEquals(unrelatedObs.getObsId(), unrelatedVersions.get(0).getObsId());
+
+		// 15-obs chain
+		Obs prev = null;
+		Obs first = null;
+		for (int i = 0; i < 15; i++) {
+			Obs o = new Obs();
+			o.setConcept(latestObs.getConcept());
+			o.setPerson(latestObs.getPerson());
+			o.setObsDatetime(new java.util.Date());
+			if (prev != null) {
+				o.setPreviousVersion(prev);
+			} else {
+				first = o;
+			}
+			prev = Context.getObsService().saveObs(o, "chain test");
+		}
+		List<Obs> longChain = obsService.getObsVersionHistory(prev);
+		assertNotNull(longChain);
+		assertEquals(15, longChain.size());
+		assertEquals(prev.getObsId(), longChain.get(0).getObsId());
+		assertEquals(first.getObsId(), longChain.get(14).getObsId());
+
+		// Obs with no previous members (new unsaved obs)
+		Obs unsaved = new Obs();
+		unsaved.setConcept(latestObs.getConcept());
+		unsaved.setPerson(latestObs.getPerson());
+		unsaved.setObsDatetime(new java.util.Date());
+		List<Obs> unsavedVersions = obsService.getObsVersionHistory(unsaved);
+		assertNotNull(unsavedVersions);
+		assertEquals(1, unsavedVersions.size());
+		assertNull(unsavedVersions.get(0).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObsVersionHistory(Obs)
+	 */
+	@Test
+	public void getObsVersionHistory_shouldReturnOnlyTheObsItselfWhenNoPreviousVersionExists() {
+		executeDataSet(PREVIOUS_VERSIONS_OBS_XML);
+
+		// obs 90100 has no previous_version — it is the original
+		Obs originalObs = obsService.getObs(90100);
+		assertNotNull(originalObs);
+
+		List<Obs> versions = obsService.getObsVersionHistory(originalObs);
+
+		assertNotNull(versions);
+		assertEquals(1, versions.size());
+		assertEquals(Integer.valueOf(90100), versions.get(0).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObsVersionHistory(Obs)
+	 */
+	@Test
+	public void getObsVersionHistory_shouldThrowIllegalArgumentExceptionForNullObs() {
+		assertThrows(IllegalArgumentException.class, () -> obsService.getObsVersionHistory(null));
+	}
+
+	/**
+	 * @see ObsService#getObsVersionHistory(Obs)
+	 */
+	@Test
+	public void getObsVersionHistory_shouldThrowIllegalArgumentExceptionForObsWithoutId() {
+		Obs unsavedObs = new Obs();
+		assertThrows(IllegalArgumentException.class, () -> obsService.getObsVersionHistory(unsavedObs));
+	}
+
+	/**
+	 * @see ObsService#getObsVersionHistory(Obs)
+	 */
+	@Test
+	public void getObsVersionHistory_shouldReturnPartialHistoryForIntermediateVersion() {
+		executeDataSet(PREVIOUS_VERSIONS_OBS_XML);
+		Obs intermediateObs = obsService.getObs(90101); // middle of the chain
+		List<Obs> versions = obsService.getObsVersionHistory(intermediateObs);
+		assertEquals(2, versions.size()); // only 90101 and 90100, not 90102
+		assertEquals(Integer.valueOf(90101), versions.get(0).getObsId());
+		assertEquals(Integer.valueOf(90100), versions.get(1).getObsId());
 	}
 
 	private Obs buildObservation() {
