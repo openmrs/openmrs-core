@@ -46,9 +46,9 @@
 		     of Hibernate Search. Similarly, our version of Hibernate Search must be
 		     compatible with the version of Hibernate and Hibernate must be compatible
 		     with our version of Spring. -->
-		<springVersion>7.0.6</springVersion>
+		<springVersion>7.0.7</springVersion>
 		<springTestVersion>${springVersion}</springTestVersion>
-		<hibernateVersion>7.3.1.Final</hibernateVersion>
+		<hibernateVersion>7.3.2.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.0.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.0.Final</hibernateValidatorVersion>
@@ -62,7 +62,7 @@
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<owaspEncoderVersion>1.4.0</owaspEncoderVersion>
-		<graalJsVersion>25.0.2</graalJsVersion>
+		<graalJsVersion>25.0.3</graalJsVersion>
 		<nettyVersion>4.2.12.Final</nettyVersion>
 
 		<!-- Jakarta -->
@@ -77,7 +77,7 @@
 
 		<!-- Apache Commons -->
 		<commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
-		<commonsIoVersion>2.21.0</commonsIoVersion>
+		<commonsIoVersion>2.22.0</commonsIoVersion>
 		<commonsLang3Version>3.20.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
 		<commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
@@ -93,7 +93,7 @@
 
 		<!-- XML/Serialization -->
 		<dom4jVersion>2.1.4</dom4jVersion>
-		<jaxenVersion>2.0.0</jaxenVersion>
+		<jaxenVersion>2.0.1</jaxenVersion>
 		<xercesVersion>2.12.2</xercesVersion>
 		<xstreamVersion>1.4.21</xstreamVersion>
 		<jaxbRuntimeVersion>4.0.7</jaxbRuntimeVersion>
@@ -103,14 +103,14 @@
 		<angusMailVersion>2.0.5</angusMailVersion>
 
 		<!-- Database -->
-		<mysqlConnectorVersion>9.6.0</mysqlConnectorVersion>
+		<mysqlConnectorVersion>9.7.0</mysqlConnectorVersion>
 		<mariadbClientVersion>3.5.8</mariadbClientVersion>
 		<postgresqlVersion>42.7.10</postgresqlVersion>
 		<liquibaseVersion>4.32.0</liquibaseVersion>
 		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
 
 		<!-- Other Runtime -->
-		<javassistVersion>3.30.2-GA</javassistVersion>
+		<javassistVersion>3.31.0-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
 		<tomcatVersion>11.0.21</tomcatVersion>
@@ -127,7 +127,7 @@
 		<h2Version>2.3.232</h2Version>
 		<dbunitVersion>3.0.0</dbunitVersion>
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
-		<testcontainersVersion>2.0.4</testcontainersVersion>
+		<testcontainersVersion>2.0.5</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
 		<s3mockVersion>5.0.0</s3mockVersion>
 	</properties>
