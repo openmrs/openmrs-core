@@ -10,10 +10,15 @@
 package org.openmrs.validator;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.PatientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +33,15 @@ public class PatientValidator extends PersonValidator {
 
 	private static final Logger log = LoggerFactory.getLogger(PersonNameValidator.class);
 
+	private final PatientIdentifierValidator patientIdentifierValidator;
+
+	private final PatientService patientService;
+
 	@Autowired
-	private PatientIdentifierValidator patientIdentifierValidator;
+	public PatientValidator(PatientIdentifierValidator patientIdentifierValidator, PatientService patientService) {
+		this.patientIdentifierValidator = patientIdentifierValidator;
+		this.patientService = patientService;
+	}
 
 	/**
 	 * Returns whether or not this validator supports validating a given class.
@@ -57,7 +69,14 @@ public class PatientValidator extends PersonValidator {
 	 * voided patients<br/>
 	 * <strong>Should</strong> not fail when patient has only one identifier and its not preferred<br/>
 	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
-	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct<br/>
+	 * <strong>Should</strong> fail validation if a required patient identifier is missing<br/>
+	 * <strong>Should</strong> pass validation if a required patient identifier is present<br/>
+	 * <strong>Should</strong> fail validation if the only identifier for a required type is voided<br/>
+	 * <strong>Should</strong> pass validation if a voided required identifier is replaced by an active
+	 * one<br/>
+	 * <strong>Should</strong> ignore retired identifier types when checking required identifiers<br/>
+	 * <strong>Should</strong> not fail validation for voided patients missing required identifiers
 	 *
 	 * @param obj The patient to validate.
 	 * @param errors Errors
@@ -78,30 +97,60 @@ public class PatientValidator extends PersonValidator {
 
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "Person.gender.required");
 
-		// Make sure they chose a preferred ID
-		Boolean preferredIdentifierChosen = false;
-		//Voided patients have only voided identifiers since they were voided with the patient,
-		//so get all otherwise get the active ones
-		Collection<PatientIdentifier> identifiers = patient.getVoided() ? patient.getIdentifiers()
+		validatePreferredAndRequiredIdentifiers(patient, errors);
+
+		validatePatientIdentifiers(patient, errors);
+
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
+	}
+
+	private void validatePreferredAndRequiredIdentifiers(Patient patient, Errors errors) {
+		boolean isVoidedPatient = Boolean.TRUE.equals(patient.getVoided());
+		Collection<PatientIdentifier> identifiers = isVoidedPatient ? patient.getIdentifiers()
 		        : patient.getActiveIdentifiers();
-		for (PatientIdentifier pi : identifiers) {
-			if (pi.getPreferred()) {
-				preferredIdentifierChosen = true;
+
+		Set<PatientIdentifierType> requiredTypes = new HashSet<>();
+		if (!isVoidedPatient) {
+			for (PatientIdentifierType type : patientService.getAllPatientIdentifierTypes(false)) {
+				if (Boolean.TRUE.equals(type.getRequired())) {
+					requiredTypes.add(type);
+				}
 			}
 		}
+
+		boolean preferredIdentifierChosen = false;
+		for (PatientIdentifier pi : identifiers) {
+			if (Boolean.TRUE.equals(pi.getPreferred())) {
+				preferredIdentifierChosen = true;
+			}
+			if (pi.getIdentifierType() != null) {
+				requiredTypes.remove(pi.getIdentifierType());
+			}
+		}
+
 		if (!preferredIdentifierChosen && identifiers.size() != 1) {
 			errors.reject("error.preferredIdentifier");
 		}
-		int index = 0;
-		if (!errors.hasErrors() && patient.getIdentifiers() != null) {
-			// Validate PatientIdentifers
-			for (PatientIdentifier identifier : patient.getIdentifiers()) {
-				errors.pushNestedPath("identifiers[" + index + "]");
-				patientIdentifierValidator.validate(identifier, errors);
-				errors.popNestedPath();
-				index++;
-			}
+
+		if (!requiredTypes.isEmpty()) {
+			List<String> missingRequiredIdentifiers = requiredTypes.stream().map(PatientIdentifierType::getName).toList();
+			errors.rejectValue("identifiers", "Patient.missingRequiredIdentifier",
+			    new Object[] { String.join(", ", missingRequiredIdentifiers) }, null);
 		}
-		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
+	}
+
+	private void validatePatientIdentifiers(Patient patient, Errors errors) {
+		if (errors.hasErrors() || patient.getIdentifiers() == null) {
+			return;
+		}
+
+		int index = 0;
+
+		for (PatientIdentifier identifier : patient.getIdentifiers()) {
+			errors.pushNestedPath("identifiers[" + index + "]");
+			patientIdentifierValidator.validate(identifier, errors);
+			errors.popNestedPath();
+			index++;
+		}
 	}
 }
