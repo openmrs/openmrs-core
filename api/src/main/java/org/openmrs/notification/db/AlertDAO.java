@@ -48,4 +48,9 @@ public interface AlertDAO {
 	 */
 	public List<Alert> getAllAlerts(boolean includeExpired);
 
+	/**
+	 * @see org.openmrs.notification.AlertService#getAllAlerts(boolean, boolean)
+	 */
+	public List<Alert> getAllAlerts(boolean includeRead, boolean includeExpired) throws DAOException;
+
 }
