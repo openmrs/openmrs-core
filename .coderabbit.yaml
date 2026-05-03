@@ -15,13 +15,7 @@ reviews:
       - "2\\.x"
   path_filters:
     - "!**/target/**"
-    - "!**/*.min.js"
-    - "!**/*.min.css"
-    - "!**/generated/**"
-    - "!**/node_modules/**"
-    - "!**/.mvn/**"
     - "!initial_test_db.sql"
-    - "!**/*.lock"
   path_instructions:
     - path: "**/*.java"
       instructions: |
