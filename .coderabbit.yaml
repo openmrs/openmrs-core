@@ -1,0 +1,47 @@
+language: en-US
+early_access: false
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: true
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - master
+      - "2\\.x"
+  path_filters:
+    - "!**/target/**"
+    - "!**/*.min.js"
+    - "!**/*.min.css"
+    - "!**/generated/**"
+    - "!**/node_modules/**"
+    - "!**/.mvn/**"
+    - "!initial_test_db.sql"
+    - "!**/*.lock"
+  path_instructions:
+    - path: "**/*.java"
+      instructions: |
+        Follow OpenMRS Java conventions: tabs for indentation, the project's checkstyle.xml rules,
+        and the license header from license-header.txt. Flag missing @since tags on new public API,
+        Hibernate/JPA misuse, missing transaction boundaries on service methods, and any change to
+        public API in the api/ module that could break downstream modules.
+    - path: "**/src/test/**/*.java"
+      instructions: |
+        Tests should use JUnit 5 (org.junit.jupiter) and AssertJ/Hamcrest as already present in the
+        codebase. Flag use of deprecated JUnit 4 imports in new tests. Prefer BaseContextSensitiveTest
+        for integration tests that need a Spring context.
+    - path: "liquibase/**/*.xml"
+      instructions: |
+        Liquibase changesets must be append-only — never edit an existing changeSet id/author.
+        Flag any modification to historical changesets. New changesets need a unique id and author,
+        and should include a rollback block where feasible.
+    - path: "**/pom.xml"
+      instructions: |
+        Flag dependency version changes that bypass the BOM, additions of non-Apache-2.0-compatible
+        licenses, and any new <repository> entries pointing outside Maven Central or OpenMRS infra.
+chat:
+  auto_reply: true
