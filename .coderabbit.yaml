@@ -1,5 +1,9 @@
 language: en-US
 early_access: false
+tone_instructions: |
+  Be encouraging to first-time and student contributors — OpenMRS has many. Explain *why*
+  a change matters, not just *what* to change. Suggest concrete code rather than abstract
+  principles. Skip nits that checkstyle/SpotBugs already enforce.
 reviews:
   profile: chill
   request_changes_workflow: false
@@ -12,27 +16,36 @@ reviews:
     drafts: false
     base_branches:
       - master
-      - "2\\.x"
+      - "^\\d+\\.\\d+\\.x$"
   path_filters:
     - "!**/target/**"
     - "!initial_test_db.sql"
+    - "!**/messages_*.properties"
   path_instructions:
     - path: "**/*.java"
       instructions: |
-        Follow OpenMRS Java conventions: tabs for indentation, the project's checkstyle.xml rules,
-        and the license header from license-header.txt. Flag missing @since tags on new public API,
-        Hibernate/JPA misuse, missing transaction boundaries on service methods, and any change to
-        public API in the api/ module that could break downstream modules.
+        Include the license header from license-header.txt on new files. Style is enforced
+        by checkstyle.xml — focus on semantic issues, not formatting nits.
+    - path: "**/src/main/**/*.java"
+      instructions: |
+        Flag missing @since tags on new public API in the api/ module, Hibernate/JPA misuse,
+        missing @Transactional on data-modifying service methods, and any change to public
+        API that could break downstream modules.
     - path: "**/src/test/**/*.java"
       instructions: |
-        Tests should use JUnit 5 (org.junit.jupiter) and AssertJ/Hamcrest as already present in the
-        codebase. Flag use of deprecated JUnit 4 imports in new tests. Prefer BaseContextSensitiveTest
+        Tests should use JUnit 5 (org.junit.jupiter) and AssertJ/Hamcrest as already present
+        in the codebase. Flag JUnit 4 imports in new tests. Prefer BaseContextSensitiveTest
         for integration tests that need a Spring context.
-    - path: "**/liquibase/**/*.xml"
+    - path: "**/{liquibase/**/*.xml,liquibase-*.xml}"
       instructions: |
         Liquibase changesets must be append-only — never edit an existing changeSet id/author.
-        Flag any modification to historical changesets. New changesets need a unique id and author,
-        and should include a rollback block where feasible.
+        Flag any modification to historical changesets. New changesets need a unique id and
+        author, and should include a rollback block where feasible.
+    - path: "**/*.hbm.xml"
+      instructions: |
+        OpenMRS is migrating Hibernate XML mappings to JPA annotations. New entities or
+        fields should be added to the @Entity class, not these files. Flag new mapping
+        additions and suggest annotation-based equivalents.
     - path: "**/pom.xml"
       instructions: |
         Flag dependency version changes that bypass the BOM, additions of non-Apache-2.0-compatible
