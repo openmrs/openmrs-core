@@ -34,7 +34,7 @@ reviews:
         Tests should use JUnit 5 (org.junit.jupiter) and AssertJ/Hamcrest as already present in the
         codebase. Flag use of deprecated JUnit 4 imports in new tests. Prefer BaseContextSensitiveTest
         for integration tests that need a Spring context.
-    - path: "liquibase/**/*.xml"
+    - path: "**/liquibase/**/*.xml"
       instructions: |
         Liquibase changesets must be append-only — never edit an existing changeSet id/author.
         Flag any modification to historical changesets. New changesets need a unique id and author,
