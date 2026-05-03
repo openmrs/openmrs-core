@@ -36,11 +36,13 @@ reviews:
         Tests should use JUnit 5 (org.junit.jupiter) and AssertJ/Hamcrest as already present
         in the codebase. Flag JUnit 4 imports in new tests. Prefer BaseContextSensitiveTest
         for integration tests that need a Spring context.
-    - path: "**/{liquibase/**/*.xml,liquibase-*.xml}"
-      instructions: |
+    - path: "**/liquibase/**/*.xml"
+      instructions: &liquibase-instructions |
         Liquibase changesets must be append-only — never edit an existing changeSet id/author.
         Flag any modification to historical changesets. New changesets need a unique id and
         author, and should include a rollback block where feasible.
+    - path: "**/liquibase-*.xml"
+      instructions: *liquibase-instructions
     - path: "**/*.hbm.xml"
       instructions: |
         OpenMRS is migrating Hibernate XML mappings to JPA annotations. New entities or
@@ -50,5 +52,3 @@ reviews:
       instructions: |
         Flag dependency version changes that bypass the BOM, additions of non-Apache-2.0-compatible
         licenses, and any new <repository> entries pointing outside Maven Central or OpenMRS infra.
-chat:
-  auto_reply: true
