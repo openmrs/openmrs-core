@@ -1,0 +1,21 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
+
+jobs:
+  review:
+    uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/claude-pr-review.yml@main
+    secrets:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    with:
+      extra_instructions: |
+        This is a Java/Maven OpenMRS repository. Pay particular attention to:
+
+        - New Java files must include the license header from license-header.txt.
+        - For changes under src/main/**: flag missing @since tags on new public API, Hibernate/JPA misuse, missing @Transactional on data-modifying service methods, and any change to public API that could break downstream OpenMRS modules.
+        - For changes under src/test/**: tests must use JUnit 5 (org.junit.jupiter) and AssertJ/Hamcrest. Flag JUnit 4 imports in new tests. Prefer BaseContextSensitiveTest for integration tests needing a Spring context.
+        - For Liquibase changesets (**/liquibase/**/*.xml, **/liquibase-*.xml): changesets must be append-only — never edit an existing changeSet id/author. Flag any modification to historical changesets. New changesets need a unique id and author, and should include a rollback block where feasible.
+        - For Hibernate XML mappings (**/*.hbm.xml): OpenMRS is migrating to JPA annotations. Flag new mapping additions and suggest annotation-based equivalents on the @Entity class instead.
+        - For pom.xml: flag dependency version changes that bypass the BOM, additions of non-Apache-2.0-compatible licenses, and any new <repository> entries pointing outside Maven Central or OpenMRS infra.
