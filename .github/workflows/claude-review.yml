@@ -1,11 +1,15 @@
 name: Claude PR Review
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, ready_for_review, reopened]
 
 jobs:
   review:
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
     uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/claude-pr-review.yml@main
     secrets:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
