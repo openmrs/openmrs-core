@@ -70,6 +70,7 @@ import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.parameter.ConceptSearchCriteria;
 import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -1065,6 +1066,15 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public Concept getConceptByUuid(String uuid) {
 		return dao.getConceptByUuid(uuid);
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Concept> getConcepts(ConceptSearchCriteria conceptSearchCriteria) {
+		return dao.getConcepts(conceptSearchCriteria);
 	}
 
 	/**

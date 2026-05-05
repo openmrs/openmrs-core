@@ -30,6 +30,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
@@ -75,6 +76,7 @@ import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.search.SearchQueryUnique;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
+import org.openmrs.parameter.ConceptSearchCriteria;
 import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
@@ -1141,6 +1143,65 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public Concept getConceptByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, Concept.class, uuid);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConcepts(ConceptSearchCriteria)
+	 */
+	@Override
+	public List<Concept> getConcepts(ConceptSearchCriteria criteria) {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Concept> cq = cb.createQuery(Concept.class);
+		Root<Concept> root = cq.from(Concept.class);
+
+		List<Predicate> orPredicates = new ArrayList<>();
+
+		if (criteria.getUuids() != null && !criteria.getUuids().isEmpty()) {
+			orPredicates.add(root.get("uuid").in(criteria.getUuids()));
+		}
+
+		if (criteria.getConceptIds() != null && !criteria.getConceptIds().isEmpty()) {
+			orPredicates.add(root.get("conceptId").in(criteria.getConceptIds()));
+		}
+
+		if (criteria.getMappingCode() != null && criteria.getMappingSourceName() != null) {
+			Subquery<ConceptMap> sub = cq.subquery(ConceptMap.class);
+			Root<ConceptMap> mapRoot = sub.from(ConceptMap.class);
+			Join<ConceptMap, ConceptReferenceTerm> termJoin = mapRoot.join("conceptReferenceTerm");
+			Join<ConceptReferenceTerm, ConceptSource> sourceJoin = termJoin.join("conceptSource");
+
+			List<Predicate> mappingPredicates = new ArrayList<>();
+			mappingPredicates.add(cb.equal(mapRoot.get("concept"), root));
+
+			String code = criteria.getMappingCode();
+			String sourceName = criteria.getMappingSourceName();
+			if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
+				mappingPredicates.add(cb.equal(cb.lower(termJoin.get("code")), code.toLowerCase()));
+				Predicate namePred = cb.equal(cb.lower(sourceJoin.get("name")), sourceName.toLowerCase());
+				Predicate hl7Pred = cb.equal(cb.lower(sourceJoin.get("hl7Code")), sourceName.toLowerCase());
+				mappingPredicates.add(cb.or(namePred, hl7Pred));
+			} else {
+				mappingPredicates.add(cb.equal(termJoin.get("code"), code));
+				mappingPredicates.add(
+				    cb.or(cb.equal(sourceJoin.get("name"), sourceName), cb.equal(sourceJoin.get("hl7Code"), sourceName)));
+			}
+
+			sub.select(mapRoot).where(mappingPredicates.toArray(new Predicate[0]));
+			orPredicates.add(cb.exists(sub));
+		}
+
+		if (orPredicates.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		Predicate combined = cb.or(orPredicates.toArray(new Predicate[0]));
+		if (!criteria.isIncludeRetired()) {
+			combined = cb.and(combined, cb.isFalse(root.get("retired")));
+		}
+		cq.where(combined);
+
+		return session.createQuery(cq).getResultList().stream().distinct().collect(toList());
 	}
 
 	/**
