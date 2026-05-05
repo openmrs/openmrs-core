@@ -97,6 +97,26 @@ public interface ConceptService extends OpenmrsService {
 	public Concept getConceptByUuid(String uuid);
 
 	/**
+	 * Get concepts by their UUIDs in a single query.
+	 *
+	 * @param uuids collection of UUIDs to look up
+	 * @return list of matching concepts (may be smaller than uuids if some are not found)
+	 * @since 2.8.0
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public List<Concept> getConceptsByUuids(Collection<String> uuids);
+
+	/**
+	 * Get concepts by their integer IDs in a single query.
+	 *
+	 * @param conceptIds collection of concept IDs to look up
+	 * @return list of matching concepts (may be smaller than conceptIds if some are not found)
+	 * @since 2.8.0
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public List<Concept> getConceptsByIds(Collection<Integer> conceptIds);
+
+	/**
 	 * Save or update the given <code>Concept</code> or <code>ConceptNumeric</code> in the database
 	 * <p>
 	 * If this is a new concept, the returned concept will have a new {@link Concept#getConceptId()}

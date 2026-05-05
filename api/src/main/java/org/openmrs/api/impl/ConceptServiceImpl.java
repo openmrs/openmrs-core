@@ -1068,6 +1068,24 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 
 	/**
+	 * @see org.openmrs.api.ConceptService#getConceptsByUuids(java.util.Collection)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Concept> getConceptsByUuids(Collection<String> uuids) {
+		return dao.getConceptsByUuids(uuids);
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptsByIds(java.util.Collection)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Concept> getConceptsByIds(Collection<Integer> conceptIds) {
+		return dao.getConceptsByIds(conceptIds);
+	}
+
+	/**
 	 * @see org.openmrs.api.ConceptService#getConceptClassByUuid(java.lang.String)
 	 */
 	@Override

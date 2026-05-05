@@ -1144,6 +1144,38 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 
 	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByUuids(java.util.Collection)
+	 */
+	@Override
+	public List<Concept> getConceptsByUuids(Collection<String> uuids) {
+		if (uuids == null || uuids.isEmpty()) {
+			return new ArrayList<>();
+		}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Concept> cq = cb.createQuery(Concept.class);
+		Root<Concept> root = cq.from(Concept.class);
+		cq.where(root.get("uuid").in(uuids));
+		return session.createQuery(cq).getResultList();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByIds(java.util.Collection)
+	 */
+	@Override
+	public List<Concept> getConceptsByIds(Collection<Integer> conceptIds) {
+		if (conceptIds == null || conceptIds.isEmpty()) {
+			return new ArrayList<>();
+		}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Concept> cq = cb.createQuery(Concept.class);
+		Root<Concept> root = cq.from(Concept.class);
+		cq.where(root.get("conceptId").in(conceptIds));
+		return session.createQuery(cq).getResultList();
+	}
+
+	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptClassByUuid(java.lang.String)
 	 */
 	@Override

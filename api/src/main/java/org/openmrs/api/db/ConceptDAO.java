@@ -350,6 +350,18 @@ public interface ConceptDAO {
 	public Concept getConceptByUuid(String uuid);
 
 	/**
+	 * @param uuids collection of UUIDs to look up
+	 * @return list of matching concepts
+	 */
+	public List<Concept> getConceptsByUuids(Collection<String> uuids);
+
+	/**
+	 * @param conceptIds collection of concept IDs to look up
+	 * @return list of matching concepts
+	 */
+	public List<Concept> getConceptsByIds(Collection<Integer> conceptIds);
+
+	/**
 	 * @param uuid
 	 * @return concept class or null
 	 */

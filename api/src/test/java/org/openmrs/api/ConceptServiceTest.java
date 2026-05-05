@@ -1066,6 +1066,72 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ConceptService#getConceptsByUuids(Collection)
+	 */
+	@Test
+	public void getConceptsByUuids_shouldReturnConceptsForGivenUuids() {
+		List<String> uuids = Arrays.asList("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "0f97e14e-cdc2-49ac-9255-b5126f8a5147");
+		List<Concept> concepts = Context.getConceptService().getConceptsByUuids(uuids);
+		assertEquals(2, concepts.size());
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).collect(Collectors.toList());
+		assertThat(ids, containsInAnyOrder(3, 23));
+	}
+
+	/**
+	 * @see ConceptService#getConceptsByUuids(Collection)
+	 */
+	@Test
+	public void getConceptsByUuids_shouldReturnEmptyListForEmptyInput() {
+		List<Concept> concepts = Context.getConceptService().getConceptsByUuids(Collections.emptyList());
+		assertNotNull(concepts);
+		assertTrue(concepts.isEmpty());
+	}
+
+	/**
+	 * @see ConceptService#getConceptsByUuids(Collection)
+	 */
+	@Test
+	public void getConceptsByUuids_shouldIgnoreUnknownUuids() {
+		List<String> uuids = Arrays.asList("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "does-not-exist");
+		List<Concept> concepts = Context.getConceptService().getConceptsByUuids(uuids);
+		assertEquals(1, concepts.size());
+		assertEquals(3, (int) concepts.get(0).getConceptId());
+	}
+
+	/**
+	 * @see ConceptService#getConceptsByIds(Collection)
+	 */
+	@Test
+	public void getConceptsByIds_shouldReturnConceptsForGivenIds() {
+		List<Integer> ids = Arrays.asList(3, 23);
+		List<Concept> concepts = Context.getConceptService().getConceptsByIds(ids);
+		assertEquals(2, concepts.size());
+		List<Integer> resultIds = concepts.stream().map(Concept::getConceptId).collect(Collectors.toList());
+		assertThat(resultIds, containsInAnyOrder(3, 23));
+	}
+
+	/**
+	 * @see ConceptService#getConceptsByIds(Collection)
+	 */
+	@Test
+	public void getConceptsByIds_shouldReturnEmptyListForEmptyInput() {
+		List<Concept> concepts = Context.getConceptService().getConceptsByIds(Collections.emptyList());
+		assertNotNull(concepts);
+		assertTrue(concepts.isEmpty());
+	}
+
+	/**
+	 * @see ConceptService#getConceptsByIds(Collection)
+	 */
+	@Test
+	public void getConceptsByIds_shouldIgnoreUnknownIds() {
+		List<Integer> ids = Arrays.asList(3, 999999);
+		List<Concept> concepts = Context.getConceptService().getConceptsByIds(ids);
+		assertEquals(1, concepts.size());
+		assertEquals(3, (int) concepts.get(0).getConceptId());
+	}
+
+	/**
 	 * @see ConceptService#getConceptClassByUuid(String)
 	 */
 	@Test
