@@ -31,6 +31,9 @@ public interface TaskHandler<T extends TaskData> {
 	 * with exponential backoff by default.
 	 * <p>
 	 * In order to prevent retries, the task must throw <code>throw new TaskException("message", true)</code>
+	 * <p>
+	 * If you schedule a recurring task that runs often enough that a new execution may be queued up before another one is done,
+	 * you may consider annotating the execute method with {@link Mutex} to skip other executions if one is running.
 	 * 
 	 * @param taskData task data
 	 * @param taskContext task context

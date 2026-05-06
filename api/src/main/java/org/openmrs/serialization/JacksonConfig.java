@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
 public class JacksonConfig {
 	
 	@Bean
-	public ObjectMapper schedulerObjectMapper() {
+	public ObjectMapper objectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new Hibernate5Module());
 		mapper.registerModule(new OpenmrsJacksonLocaleModule());

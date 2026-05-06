@@ -40,7 +40,7 @@ public class JobRunrConfig {
 	}
 
 	@Bean
-	public JobRunrConfiguration.JobRunrConfigurationResult jobRunrConfiguration(@Qualifier("schedulerObjectMapper") ObjectMapper objectMapper, StorageProvider storageProvider, ApplicationContext applicationContext,
+	public JobRunrConfiguration.JobRunrConfigurationResult jobRunrConfiguration(ObjectMapper objectMapper, StorageProvider storageProvider, ApplicationContext applicationContext,
 																				@Value("${jobrunr.dashboard.username:admin}") String user,
 																				@Value("${jobrunr.dashboard.password:}") String password,
 																				@Value("${jobrunr.dashboard.port:9000}") int port,
