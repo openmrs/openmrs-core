@@ -63,7 +63,7 @@
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<owaspEncoderVersion>1.4.0</owaspEncoderVersion>
 		<graalJsVersion>25.0.3</graalJsVersion>
-		<nettyVersion>4.2.12.Final</nettyVersion>
+		<nettyVersion>4.2.13.Final</nettyVersion>
 
 		<!-- Jakarta -->
 		<jakartaServletVersion>6.1.0</jakartaServletVersion>
@@ -96,7 +96,7 @@
 		<jaxenVersion>2.0.1</jaxenVersion>
 		<xercesVersion>2.12.2</xercesVersion>
 		<xstreamVersion>1.4.21</xstreamVersion>
-		<jaxbRuntimeVersion>4.0.7</jaxbRuntimeVersion>
+		<jaxbRuntimeVersion>4.0.8</jaxbRuntimeVersion>
 
 		<!-- Mail -->
 		<jakartaMailVersion>2.1.5</jakartaMailVersion>
@@ -113,7 +113,7 @@
 		<javassistVersion>3.31.0-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
-		<tomcatVersion>11.0.21</tomcatVersion>
+		<tomcatVersion>11.0.22</tomcatVersion>
 		<jodaTimeVersion>2.14.2</jodaTimeVersion>
 		<guavaVersion>33.6.0-jre</guavaVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
