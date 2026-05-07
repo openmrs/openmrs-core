@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +27,6 @@ import java.util.UUID;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.hibernate.Hibernate;
 import org.openmrs.Concept;
@@ -71,6 +69,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.parameter.ConceptSearchCriteria;
+import org.openmrs.parameter.ConceptSearchCriteriaBuilder;
 import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -361,47 +360,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (StringUtils.isBlank(conceptRef)) {
 			return null;
 		}
-		Concept cpt = null;
-		//check if input is a valid Uuid
-		if (isValidUuidFormat(conceptRef)) {
-			cpt = Context.getConceptService().getConceptByUuid(conceptRef);
-			if (cpt != null) {
-				return cpt;
-			}
-		}
-		//handle mapping
-		int idx = conceptRef.indexOf(":");
-		if (idx >= 0 && idx < conceptRef.length() - 1) {
-			String conceptSource = conceptRef.substring(0, idx);
-			String conceptCode = conceptRef.substring(idx + 1);
-			cpt = Context.getConceptService().getConceptByMapping(conceptCode, conceptSource);
-			if (cpt != null) {
-				return cpt;
-			}
-		}
-		//handle id
-		int conceptId = NumberUtils.toInt(conceptRef, -1);
-		if (conceptId >= 0) {
-			cpt = Context.getConceptService().getConcept(conceptId);
-			if (cpt != null) {
-				return cpt;
-			}
-		} else {
-			//handle name
-			cpt = Context.getConceptService().getConceptByName(conceptRef);
-			if (cpt != null) {
-				return cpt;
-			}
-		}
-		//handle static constant
-		if (conceptRef.contains(".")) {
-			try {
-				return getConceptByReference(evaluateStaticConstant(conceptRef));
-			} catch (APIException e) {
-				log.warn("Unable to translate '{}' into a concept", conceptRef, e);
-			}
-		}
-		return cpt == null ? null : cpt;
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptReference(conceptRef).build();
+		List<Concept> concepts = getConcepts(criteria);
+		return concepts.isEmpty() ? null : concepts.get(0);
 	}
 
 	/**
@@ -2220,42 +2181,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 
 		return strictestRange;
-	}
-
-	/***
-	 * Determines if the passed string is in valid uuid format By OpenMRS standards, a uuid must be 36
-	 * characters in length and not contain whitespace, but we do not enforce that a uuid be in the
-	 * "canonical" form, with alphanumerics seperated by dashes, since the MVP dictionary does not use
-	 * this format (We also are being slightly lenient and accepting uuids that are 37 or 38 characters
-	 * in length, since the uuid data field is 38 characters long)
-	 */
-	public static boolean isValidUuidFormat(String uuid) {
-		if (uuid.length() < 36 || uuid.length() > 38 || uuid.contains(" ") || uuid.contains(".")) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Evaluates the specified Java constant using reflection: if input is
-	 * org.openmrs.CLASS_NAME.CONSTANT_NAME then, output will be CONSTANT_NAME
-	 *
-	 * @param fqn the fully qualified name of the constant
-	 * @return the constant value or null
-	 */
-	private static String evaluateStaticConstant(String fqn) {
-		int lastPeriod = fqn.lastIndexOf(".");
-		String clazzName = fqn.substring(0, lastPeriod);
-		String constantName = fqn.substring(lastPeriod + 1);
-		try {
-			Class<?> clazz = Context.loadClass(clazzName);
-			Field constantField = clazz.getDeclaredField(constantName);
-			constantField.setAccessible(true);
-			Object val = constantField.get(null);
-			return val != null ? String.valueOf(val) : null;
-		} catch (Exception ex) {
-			throw new APIException("Error while evaluating " + fqn + " as a constant", ex);
-		}
 	}
 
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {

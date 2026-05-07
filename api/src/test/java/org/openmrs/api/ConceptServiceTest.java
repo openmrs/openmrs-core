@@ -4070,7 +4070,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldReturnConceptsMatchingUuids() {
 		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
-		        .uuids(Arrays.asList("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "0f97e14e-cdc2-49ac-9255-b5126f8a5147"))
+		        .addUuids(Arrays.asList("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "0f97e14e-cdc2-49ac-9255-b5126f8a5147"))
 		        .includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(2, concepts.size());
@@ -4082,20 +4082,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
 	 */
 	@Test
-	public void getConcepts_shouldReturnEmptyListForEmptyUuids() {
-		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().uuids(Collections.emptyList()).build();
-		List<Concept> concepts = conceptService.getConcepts(criteria);
-		assertNotNull(concepts);
-		assertTrue(concepts.isEmpty());
-	}
-
-	/**
-	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
-	 */
-	@Test
 	public void getConcepts_shouldIgnoreUnknownUuids() {
 		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
-		        .uuids(Arrays.asList("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "does-not-exist")).includeRetired(true).build();
+		        .addUuids(Arrays.asList("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "does-not-exist")).includeRetired(true)
+		        .build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(1, concepts.size());
 		assertEquals(3, (int) concepts.get(0).getConceptId());
@@ -4106,7 +4096,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcepts_shouldReturnConceptsMatchingIds() {
-		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().conceptIds(Arrays.asList(3, 23))
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptIds(Arrays.asList(3, 23))
 		        .includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(2, concepts.size());
@@ -4118,19 +4108,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
 	 */
 	@Test
-	public void getConcepts_shouldReturnEmptyListForEmptyIds() {
-		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().conceptIds(Collections.emptyList()).build();
-		List<Concept> concepts = conceptService.getConcepts(criteria);
-		assertNotNull(concepts);
-		assertTrue(concepts.isEmpty());
-	}
-
-	/**
-	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
-	 */
-	@Test
 	public void getConcepts_shouldIgnoreUnknownIds() {
-		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().conceptIds(Arrays.asList(3, 999999))
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptIds(Arrays.asList(3, 999999))
 		        .includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(1, concepts.size());
@@ -4142,8 +4121,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcepts_shouldReturnConceptsMatchingMapping() {
-		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().mappingCode("WGT234")
-		        .mappingSourceName("Some Standardized Terminology").includeRetired(true).build();
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
+		        .addMapping("Some Standardized Terminology:WGT234").includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertFalse(concepts.isEmpty());
 		assertTrue(concepts.stream().anyMatch(c -> c.getConceptId() == 5089));
@@ -4155,8 +4134,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldNotReturnRetiredConceptWhenIncludeRetiredIsFalse() {
 		// concept 24 is retired and mapped to "454545" in SSTRM (per existing mapping tests)
-		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().mappingCode("454545").mappingSourceName("SSTRM")
-		        .includeRetired(false).build();
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addMapping("SSTRM:454545").includeRetired(false)
+		        .build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertTrue(concepts.stream().noneMatch(c -> c.getConceptId() == 24));
 	}
@@ -4166,11 +4145,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcepts_shouldReturnUnionWhenBothUuidsAndIdsAreSet() {
-		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
-		        // UUID for concept 3
-		        .uuids(Collections.singletonList("0cbe2ed3-cd5f-4f46-9459-26127c9265ab"))
-		        // ID for concept 23
-		        .conceptIds(Collections.singletonList(23)).includeRetired(true).build();
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addUuid("0cbe2ed3-cd5f-4f46-9459-26127c9265ab")
+		        .addConceptId(23).includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(2, concepts.size());
 		List<Integer> ids = concepts.stream().map(Concept::getConceptId).collect(Collectors.toList());
@@ -4186,5 +4162,34 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertNotNull(concepts);
 		assertTrue(concepts.isEmpty());
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnUnionWhenMultipleMappingsAreSet() {
+		// concept 5089 maps to "Some Standardized Terminology:WGT234"
+		// concept 24 maps to "SSTRM:454545" (retired)
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
+		        .addMapping("Some Standardized Terminology:WGT234").addMapping("SSTRM:454545").includeRetired(true).build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).collect(Collectors.toList());
+		assertTrue(ids.contains(5089));
+		assertTrue(ids.contains(24));
+	}
+
+	/**
+	 * @see ConceptSearchCriteriaBuilder#addConceptReference(String)
+	 */
+	@Test
+	public void addConceptReference_shouldResolveStaticConstantAndClassify() {
+		// OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_WEEK_START_DAY_DEFAULT_VALUE == "0"
+		// "0" is a valid non-negative integer, so it should be classified as a concept ID
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptReference(
+		    "org.openmrs.util.OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_WEEK_START_DAY_DEFAULT_VALUE").build();
+		assertTrue(criteria.getConceptIds().contains(0));
+		assertTrue(criteria.getUuids().isEmpty());
+		assertTrue(criteria.getMappings().isEmpty());
 	}
 }

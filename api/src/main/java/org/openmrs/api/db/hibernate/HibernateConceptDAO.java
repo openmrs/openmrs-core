@@ -1165,30 +1165,36 @@ public class HibernateConceptDAO implements ConceptDAO {
 			orPredicates.add(root.get("conceptId").in(criteria.getConceptIds()));
 		}
 
-		if (criteria.getMappingCode() != null && criteria.getMappingSourceName() != null) {
-			Subquery<ConceptMap> sub = cq.subquery(ConceptMap.class);
-			Root<ConceptMap> mapRoot = sub.from(ConceptMap.class);
-			Join<ConceptMap, ConceptReferenceTerm> termJoin = mapRoot.join("conceptReferenceTerm");
-			Join<ConceptReferenceTerm, ConceptSource> sourceJoin = termJoin.join("conceptSource");
+		if (criteria.getMappings() != null && !criteria.getMappings().isEmpty()) {
+			boolean caseSensitive = Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive();
+			for (String mapping : criteria.getMappings()) {
+				// mapping is assumed to be in the form "source:code"
+				int idx = mapping.indexOf(":");
+				if (idx < 0 || idx >= mapping.length() - 1) {
+					continue;
+				}
+				String sourceName = mapping.substring(0, idx);
+				String code = mapping.substring(idx + 1);
 
-			List<Predicate> mappingPredicates = new ArrayList<>();
-			mappingPredicates.add(cb.equal(mapRoot.get("concept"), root));
+				Subquery<ConceptMap> sub = cq.subquery(ConceptMap.class);
+				Root<ConceptMap> mapRoot = sub.from(ConceptMap.class);
+				Join<ConceptMap, ConceptReferenceTerm> termJoin = mapRoot.join("conceptReferenceTerm");
+				Join<ConceptReferenceTerm, ConceptSource> sourceJoin = termJoin.join("conceptSource");
 
-			String code = criteria.getMappingCode();
-			String sourceName = criteria.getMappingSourceName();
-			if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
-				mappingPredicates.add(cb.equal(cb.lower(termJoin.get("code")), code.toLowerCase()));
-				Predicate namePred = cb.equal(cb.lower(sourceJoin.get("name")), sourceName.toLowerCase());
-				Predicate hl7Pred = cb.equal(cb.lower(sourceJoin.get("hl7Code")), sourceName.toLowerCase());
-				mappingPredicates.add(cb.or(namePred, hl7Pred));
-			} else {
-				mappingPredicates.add(cb.equal(termJoin.get("code"), code));
-				mappingPredicates.add(
-				    cb.or(cb.equal(sourceJoin.get("name"), sourceName), cb.equal(sourceJoin.get("hl7Code"), sourceName)));
+				List<Predicate> mappingPredicates = new ArrayList<>();
+				mappingPredicates.add(cb.equal(mapRoot.get("concept"), root));
+				if (caseSensitive) {
+					mappingPredicates.add(cb.equal(cb.lower(termJoin.get("code")), code.toLowerCase()));
+					mappingPredicates.add(cb.or(cb.equal(cb.lower(sourceJoin.get("name")), sourceName.toLowerCase()),
+					    cb.equal(cb.lower(sourceJoin.get("hl7Code")), sourceName.toLowerCase())));
+				} else {
+					mappingPredicates.add(cb.equal(termJoin.get("code"), code));
+					mappingPredicates.add(cb.or(cb.equal(sourceJoin.get("name"), sourceName),
+					    cb.equal(sourceJoin.get("hl7Code"), sourceName)));
+				}
+				sub.select(mapRoot).where(mappingPredicates.toArray(new Predicate[0]));
+				orPredicates.add(cb.exists(sub));
 			}
-
-			sub.select(mapRoot).where(mappingPredicates.toArray(new Predicate[0]));
-			orPredicates.add(cb.exists(sub));
 		}
 
 		if (orPredicates.isEmpty()) {
@@ -1196,7 +1202,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 
 		Predicate combined = cb.or(orPredicates.toArray(new Predicate[0]));
-		if (!criteria.isIncludeRetired()) {
+		if (!criteria.getIncludeRetired()) {
 			combined = cb.and(combined, cb.isFalse(root.get("retired")));
 		}
 		cq.where(combined);

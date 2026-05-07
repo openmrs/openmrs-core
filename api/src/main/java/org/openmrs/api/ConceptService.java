@@ -99,13 +99,13 @@ public interface ConceptService extends OpenmrsService {
 
 	/**
 	 * Search for concepts matching the given criteria. The identifier fields ({@code uuids},
-	 * {@code conceptIds}, and {@code mappingCode}/{@code mappingSourceName}) are combined with OR
-	 * semantics — a concept matching any one of them is included. Global filter fields such as
-	 * {@code includeRetired} are then applied with AND semantics on top of those results.
+	 * {@code conceptIds}, and {@code mappings}) are combined with OR semantics — a concept matching any
+	 * one of them is included. Global filter fields such as {@code includeRetired} are then applied
+	 * with AND semantics on top of those results.
 	 *
 	 * @param conceptSearchCriteria the search criteria
 	 * @return list of matching concepts
-	 * @since 2.8.0
+	 * @since 2.9.0
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getConcepts(ConceptSearchCriteria conceptSearchCriteria);
