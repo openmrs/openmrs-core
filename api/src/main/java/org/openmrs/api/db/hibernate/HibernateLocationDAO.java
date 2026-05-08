@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -32,6 +33,7 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LocationDAO;
+import org.openmrs.parameter.LocationSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -428,5 +430,75 @@ public class HibernateLocationDAO implements LocationDAO {
 			locationTagIds.add(tag.getLocationTagId());
 		}
 		return locationTagIds;
+	}
+
+	/**
+	 * @see LocationDAO#getLocations(LocationSearchCriteria)
+	 */
+	@Override
+	public List<Location> getLocations(LocationSearchCriteria criteria) {
+		Session session = sessionFactory.getCurrentSession();
+
+		List<Integer> descendantIds = null;
+		if (StringUtils.isNotBlank(criteria.getDescendantOfLocationUuid())) {
+			Integer rootId = session.createNativeQuery("SELECT location_id FROM location WHERE uuid = :uuid", Integer.class)
+			        .setParameter("uuid", criteria.getDescendantOfLocationUuid()).uniqueResult();
+			if (rootId == null) {
+				return Collections.emptyList();
+			}
+			String retiredFilter = criteria.getIncludeRetired() ? "" : " AND retired = false";
+			String cteSql = "WITH RECURSIVE descendants (location_id) AS ("
+			        + " SELECT location_id FROM location WHERE parent_location = :rootId" + retiredFilter + " UNION ALL"
+			        + " SELECT l.location_id FROM location l"
+			        + " INNER JOIN descendants d ON l.parent_location = d.location_id" + retiredFilter
+			        + ") SELECT location_id FROM descendants";
+			descendantIds = session.createNativeQuery(cteSql, Integer.class).setParameter("rootId", rootId).list();
+			if (descendantIds.isEmpty()) {
+				return Collections.emptyList();
+			}
+		}
+
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Location> cq = cb.createQuery(Location.class);
+		Root<Location> root = cq.from(Location.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (!criteria.getIncludeRetired()) {
+			predicates.add(cb.isFalse(root.get("retired")));
+		}
+
+		if (descendantIds != null) {
+			predicates.add(root.get("locationId").in(descendantIds));
+		}
+
+		if (StringUtils.isNotBlank(criteria.getNameFragment())) {
+			predicates.add(
+			    cb.like(cb.lower(root.get("name")), MatchMode.START.toLowerCasePattern(criteria.getNameFragment())));
+		}
+
+		if (criteria.getLocationTagUuids() != null && !criteria.getLocationTagUuids().isEmpty()) {
+			List<String> tagUuids = criteria.getLocationTagUuids().stream().filter(StringUtils::isNotBlank)
+			        .collect(Collectors.toList());
+			if (!tagUuids.isEmpty()) {
+				if (criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL) {
+					Subquery<Long> tagCountSubquery = cq.subquery(Long.class);
+					Root<Location> subRoot = tagCountSubquery.from(Location.class);
+					Join<Location, LocationTag> tagsJoin = subRoot.join("tags");
+					tagCountSubquery.select(cb.count(subRoot)).where(cb.and(tagsJoin.get("uuid").in(tagUuids),
+					    cb.equal(subRoot.get("locationId"), root.get("locationId"))));
+					predicates.add(cb.equal(cb.literal((long) tagUuids.size()), tagCountSubquery));
+				} else {
+					Join<Location, LocationTag> tagsJoin = root.join("tags");
+					predicates.add(tagsJoin.get("uuid").in(tagUuids));
+					cq.distinct(true);
+				}
+			}
+		}
+
+		cq.where(cb.and(predicates.toArray(new Predicate[0])));
+		cq.orderBy(cb.asc(root.get("name")));
+
+		return session.createQuery(cq).getResultList();
 	}
 }
