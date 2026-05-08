@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -31,6 +33,9 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LocationDAO;
+import org.openmrs.parameter.LocationSearchCriteria;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate location-related database functions
@@ -435,5 +440,65 @@ public class HibernateLocationDAO implements LocationDAO {
 			locationTagIds.add(tag.getLocationTagId());
 		}
 		return locationTagIds;
+	}
+
+	/**
+	 * @see LocationDAO#getLocations(LocationSearchCriteria)
+	 */
+	@Override
+	public List<Location> getLocations(LocationSearchCriteria criteria) {
+		List<String> tagUuids = criteria.getLocationTagUuids() == null ? null
+		        : criteria.getLocationTagUuids().stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
+
+		List<Location> result = getAllLocations(true).stream().filter(loc -> matchesCriteria(loc, criteria, tagUuids))
+		        .collect(Collectors.toList());
+
+		return result;
+	}
+
+	private boolean matchesCriteria(Location loc, LocationSearchCriteria criteria, List<String> tagUuids) {
+		if (!criteria.getIncludeRetired() && loc.getRetired()) {
+			return false;
+		}
+
+		if (StringUtils.isNotBlank(criteria.getDescendantOfLocationUuid())
+		        && !isDescendantOf(loc, criteria.getDescendantOfLocationUuid(), criteria.getIncludeRetired())) {
+			return false;
+		}
+
+		if (StringUtils.isNotBlank(criteria.getNameFragment())
+		        && (loc.getName() == null
+		                || !loc.getName().toLowerCase().startsWith(criteria.getNameFragment().toLowerCase()))) {
+			return false;
+		}
+
+		if (tagUuids != null && !tagUuids.isEmpty()) {
+			Set<String> locTagUuids = loc.getTags().stream().map(LocationTag::getUuid).collect(Collectors.toSet());
+			if (criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL) {
+				if (!locTagUuids.containsAll(tagUuids)) {
+					return false;
+				}
+			} else {
+				if (tagUuids.stream().noneMatch(locTagUuids::contains)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private boolean isDescendantOf(Location loc, String ancestorUuid, boolean includeRetired) {
+		Location current = loc.getParentLocation();
+		while (current != null) {
+			if (!includeRetired && current.getRetired()) {
+				return false;
+			}
+			if (ancestorUuid.equals(current.getUuid())) {
+				return true;
+			}
+			current = current.getParentLocation();
+		}
+		return false;
 	}
 }

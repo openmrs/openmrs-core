@@ -25,6 +25,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LocationDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.parameter.LocationSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
@@ -398,6 +399,15 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		return dao.getRootLocations(includeRetired);
 	}
 	
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Location> getLocations(LocationSearchCriteria criteria) {
+		return dao.getLocations(criteria);
+	}
+
 	/**
 	 * @see org.openmrs.api.LocationService#getPossibleAddressValues(Address, String)
 	 */

@@ -33,6 +33,8 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
+import org.openmrs.parameter.LocationSearchCriteria;
+import org.openmrs.parameter.LocationSearchCriteriaBuilder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -1197,5 +1199,194 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		locationService.retireLocation(location, "test retire reason");
 		assertFalse(tag.getRetired());
 	}
-	
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_withDescendantOf_shouldReturnAllDescendantsWhenIncludeRetiredIsTrue() {
+		LocationService ls = Context.getLocationService();
+
+		// Location 1 → {2, 3}, Location 3 → {4, 7}
+		Location root = ls.getLocation(1);
+		List<Location> result = ls.getLocations(
+		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(root.getUuid()).includeRetired(true).build());
+
+		assertEquals(4, result.size());
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+		assertTrue(result.contains(ls.getLocation(4)));
+		assertTrue(result.contains(ls.getLocation(7)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_withDescendantOf_shouldExcludeRetiredSubtreesWhenIncludeRetiredIsFalse() {
+		LocationService ls = Context.getLocationService();
+
+		// Build: root → childA (active) → childB (retired) → grandchild (active)
+		Location root = new Location();
+		root.setName("Descendant Test Root");
+		ls.saveLocation(root);
+
+		Location childA = new Location();
+		childA.setName("Active Child");
+		childA.setParentLocation(root);
+		ls.saveLocation(childA);
+
+		Location childB = new Location();
+		childB.setName("Retired Child");
+		childB.setParentLocation(childA);
+		ls.saveLocation(childB);
+		ls.retireLocation(childB, "test");
+
+		Location grandchild = new Location();
+		grandchild.setName("Child of Retired");
+		grandchild.setParentLocation(childB);
+		ls.saveLocation(grandchild);
+
+		List<Location> withRetired = ls.getLocations(
+		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(root.getUuid()).includeRetired(true).build());
+		assertEquals(3, withRetired.size());
+		assertTrue(withRetired.contains(childA));
+		assertTrue(withRetired.contains(childB));
+		assertTrue(withRetired.contains(grandchild));
+
+		List<Location> withoutRetired = ls.getLocations(
+		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(root.getUuid()).includeRetired(false).build());
+		assertEquals(1, withoutRetired.size());
+		assertTrue(withoutRetired.contains(childA));
+		assertFalse(withoutRetired.contains(childB));
+		assertFalse(withoutRetired.contains(grandchild));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_withDescendantOf_shouldReturnEmptyListForLeafLocation() {
+		LocationService ls = Context.getLocationService();
+
+		// Location 2 has no children in the fixture
+		Location leaf = ls.getLocation(2);
+		List<Location> result = ls.getLocations(
+		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(leaf.getUuid()).includeRetired(true).build());
+
+		assertTrue(result.isEmpty());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldReturnAllNonRetiredLocationsForEmptyCriteria() {
+		LocationService ls = Context.getLocationService();
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().build();
+		// Fixture has 7 locations total; location 5 is retired → 6 non-retired
+		assertEquals(6, ls.getLocations(criteria).size());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldIncludeRetiredLocationsWhenFlagIsSet() {
+		LocationService ls = Context.getLocationService();
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().includeRetired(true).build();
+		assertEquals(7, ls.getLocations(criteria).size());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldFilterByNameFragment() {
+		LocationService ls = Context.getLocationService();
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().setNameFragment("Test Level A").build();
+		List<Location> result = ls.getLocations(criteria);
+		assertEquals(2, result.size());
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldFilterByDescendantOf() {
+		LocationService ls = Context.getLocationService();
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().setDescendantOfLocation(ls.getLocation(1).getUuid()).build();
+		List<Location> result = ls.getLocations(criteria);
+		// Descendants of location 1: 2, 3, 4, 7
+		assertEquals(4, result.size());
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+		assertTrue(result.contains(ls.getLocation(4)));
+		assertTrue(result.contains(ls.getLocation(7)));
+		assertFalse(result.contains(ls.getLocation(1)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldFilterByAllTags() {
+		LocationService ls = Context.getLocationService();
+		// Tags 3 and 4 are both on locations 2 and 3 only
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().addTag(ls.getLocationTag(3).getUuid())
+		        .addTag(ls.getLocationTag(4).getUuid()).build();
+		List<Location> result = ls.getLocations(criteria);
+		assertEquals(2, result.size());
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldFilterByAnyTag() {
+		LocationService ls = Context.getLocationService();
+		// Tag 1 is on location 1; tag 3 is on locations 2 and 3
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().addTag(ls.getLocationTag(1).getUuid())
+		        .addTag(ls.getLocationTag(3).getUuid()).setTagMatchMode(LocationSearchCriteria.TagMatchMode.ANY).build();
+		List<Location> result = ls.getLocations(criteria);
+		assertEquals(3, result.size());
+		assertTrue(result.contains(ls.getLocation(1)));
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldCombineDescendantOfAndTags() {
+		LocationService ls = Context.getLocationService();
+		// Descendants of location 1 that also have tag 3: locations 2 and 3
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().setDescendantOfLocation(ls.getLocation(1).getUuid())
+		        .addTag(ls.getLocationTag(3).getUuid()).build();
+		List<Location> result = ls.getLocations(criteria);
+		assertEquals(2, result.size());
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldCombineDescendantOfAndNameFragment() {
+		LocationService ls = Context.getLocationService();
+		// Descendants of location 1 whose name starts with "Test Level B": locations 4 and 7
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().setDescendantOfLocation(ls.getLocation(1).getUuid())
+		        .setNameFragment("Test Level B").build();
+		List<Location> result = ls.getLocations(criteria);
+		assertEquals(2, result.size());
+		assertTrue(result.contains(ls.getLocation(4)));
+		assertTrue(result.contains(ls.getLocation(7)));
+	}
+
 }

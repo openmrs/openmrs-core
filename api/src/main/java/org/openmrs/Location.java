@@ -16,6 +16,7 @@ import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.parameter.LocationSearchCriteriaBuilder;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Cacheable;
@@ -463,15 +464,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.10
 	 */
 	public Set<Location> getDescendantLocations(boolean includeRetired) {
-		Set<Location> result = new HashSet<>();
-		
-		for (Location childLocation : getChildLocations()) {
-			if (!childLocation.getRetired() || includeRetired) {
-				result.add(childLocation);
-				result.addAll(childLocation.getDescendantLocations(includeRetired));
-			}
-		}
-		return result;
+		return new HashSet<>(Context.getLocationService().getLocations(
+		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(getUuid()).includeRetired(includeRetired).build()));
 	}
 	
 	/**
