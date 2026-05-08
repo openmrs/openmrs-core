@@ -1197,6 +1197,29 @@ public class HibernateConceptDAO implements ConceptDAO {
 			}
 		}
 
+		if (criteria.getNames() != null && !criteria.getNames().isEmpty()) {
+			boolean caseSensitive = Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive();
+			Locale locale = Context.getLocale();
+			Locale language = new Locale(locale.getLanguage() + "%");
+			for (String name : criteria.getNames()) {
+				Subquery<ConceptName> sub = cq.subquery(ConceptName.class);
+				Root<ConceptName> nameRoot = sub.from(ConceptName.class);
+
+				List<Predicate> namePredicates = new ArrayList<>();
+				namePredicates.add(cb.equal(nameRoot.get("concept"), root));
+				namePredicates.add(cb.or(cb.equal(nameRoot.get("locale"), locale),
+				    cb.like(nameRoot.get("locale").as(String.class), language.toString())));
+				if (caseSensitive) {
+					namePredicates.add(cb.like(cb.lower(nameRoot.get("name")), name.toLowerCase()));
+				} else {
+					namePredicates.add(cb.equal(nameRoot.get("name"), name));
+				}
+				namePredicates.add(cb.isFalse(nameRoot.get("voided")));
+				sub.select(nameRoot).where(namePredicates.toArray(new Predicate[0]));
+				orPredicates.add(cb.exists(sub));
+			}
+		}
+
 		if (orPredicates.isEmpty()) {
 			return new ArrayList<>();
 		}

@@ -27,6 +27,8 @@ public class ConceptSearchCriteria {
 
 	private Collection<String> mappings;
 
+	private Collection<String> names;
+
 	private boolean includeRetired = false;
 
 	/**
@@ -36,13 +38,15 @@ public class ConceptSearchCriteria {
 	 * @param uuids collection of concept UUIDs to search for
 	 * @param conceptIds collection of concept integer IDs to search for
 	 * @param mappings collection of concept mappings in {@code "source:term"} format to search for
+	 * @param names collection of concept names to search for
 	 * @param includeRetired whether to include retired concepts in the results
 	 */
 	public ConceptSearchCriteria(Collection<String> uuids, Collection<Integer> conceptIds, Collection<String> mappings,
-	    boolean includeRetired) {
+	    Collection<String> names, boolean includeRetired) {
 		this.uuids = uuids;
 		this.conceptIds = conceptIds;
 		this.mappings = mappings;
+		this.names = names;
 		this.includeRetired = includeRetired;
 	}
 
@@ -66,6 +70,13 @@ public class ConceptSearchCriteria {
 	 */
 	public Collection<String> getMappings() {
 		return mappings;
+	}
+
+	/**
+	 * @return the collection of concept names included in the search criteria.
+	 */
+	public Collection<String> getNames() {
+		return names;
 	}
 
 	/**

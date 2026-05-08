@@ -33,6 +33,8 @@ public class ConceptSearchCriteriaBuilder {
 
 	private Collection<String> mappings;
 
+	private Collection<String> names;
+
 	private boolean includeRetired = false;
 
 	/**
@@ -42,6 +44,7 @@ public class ConceptSearchCriteriaBuilder {
 		uuids = new ArrayList<>();
 		conceptIds = new ArrayList<>();
 		mappings = new ArrayList<>();
+		names = new ArrayList<>();
 	}
 
 	/**
@@ -89,6 +92,28 @@ public class ConceptSearchCriteriaBuilder {
 	}
 
 	/**
+	 * Adds a concept name to the search criteria.
+	 *
+	 * @param name the name of the concept to include.
+	 * @return the current builder instance for method chaining.
+	 */
+	public ConceptSearchCriteriaBuilder addName(String name) {
+		this.names.add(name);
+		return this;
+	}
+
+	/**
+	 * Adds multiple concept names to the search criteria.
+	 *
+	 * @param names the collection of names to include.
+	 * @return the current builder instance for method chaining.
+	 */
+	public ConceptSearchCriteriaBuilder addNames(Collection<String> names) {
+		this.names.addAll(names);
+		return this;
+	}
+
+	/**
 	 * Adds a concept mapping to the search criteria. The mapping must be in {@code "source:term"}
 	 * format, where {@code source} is the concept source name or HL7 code and {@code term} is the
 	 * concept code.
@@ -124,8 +149,9 @@ public class ConceptSearchCriteriaBuilder {
 	 * <li>Static constant — if the value is a fully qualified Java constant name (e.g.
 	 * {@code "org.openmrs.module.emrapi.EmrApiConstants.CONCEPT_SOURCE_NAME"}), its value is resolved
 	 * via reflection and the result is classified recursively</li>
+	 * <li>Concept name — any other non-blank string is treated as a concept name</li>
 	 * </ol>
-	 * Blank or unrecognised references are silently ignored.
+	 * Blank references are silently ignored.
 	 *
 	 * @param ref the concept reference string.
 	 * @return the current builder instance for method chaining.
@@ -154,8 +180,9 @@ public class ConceptSearchCriteriaBuilder {
 			} catch (APIException e) {
 				// unresolvable constant — skip silently
 			}
+			return this;
 		}
-		return this;
+		return addName(ref);
 	}
 
 	/**
@@ -209,6 +236,6 @@ public class ConceptSearchCriteriaBuilder {
 	 * @return a new instance of {@link ConceptSearchCriteria}.
 	 */
 	public ConceptSearchCriteria build() {
-		return new ConceptSearchCriteria(uuids, conceptIds, mappings, includeRetired);
+		return new ConceptSearchCriteria(uuids, conceptIds, mappings, names, includeRetired);
 	}
 }

@@ -360,7 +360,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (StringUtils.isBlank(conceptRef)) {
 			return null;
 		}
-		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptReference(conceptRef).build();
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptReference(conceptRef)
+		        .includeRetired(true).build();
 		List<Concept> concepts = getConcepts(criteria);
 		return concepts.isEmpty() ? null : concepts.get(0);
 	}
