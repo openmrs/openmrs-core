@@ -147,7 +147,7 @@ public class Person extends BaseChangeableOpenmrsData {
 
 		gender = person.getGender();
 		birthdate = person.getBirthdate();
-		birthtime = person.getBirthDateTime();
+		setBirthtime(person.getBirthDateTime());
 		birthdateEstimated = person.getBirthdateEstimated();
 		deathdateEstimated = person.getDeathdateEstimated();
 		dead = person.getDead();
@@ -267,7 +267,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @param birthtime person's time of birth
 	 */
 	public void setBirthtime(Date birthtime) {
-		this.birthtime = birthtime;
+		this.birthtime = birthtime != null ? new java.sql.Time(birthtime.getTime()) : null;
 	}
 
 	/**

@@ -28,6 +28,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.util.DateUtil;
 import org.openmrs.util.Format;
 import org.openmrs.util.Format.FORMAT_TYPE;
 import org.openmrs.util.OpenmrsUtil;
@@ -96,8 +97,6 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		FINAL,
 		AMENDED
 	}
-
-	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
 
 	private static final String TIME_PATTERN = "HH:mm";
 
@@ -1138,8 +1137,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
 					setValueDatetime(timeFormat.parse(s));
 				} else if ("TS".equals(abbrev)) {
-					DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
-					setValueDatetime(datetimeFormat.parse(s));
+					setValueDatetime(DateUtil.parseDatetimeString(s));
 				} else {
 					throw new RuntimeException(
 					        "Don't know how to handle " + abbrev + " for concept: " + getConcept().getDisplayString());

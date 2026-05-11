@@ -15,10 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.openmrs.Location;
+import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientIdentifierType.UniquenessBehavior;
 import org.openmrs.api.BlankIdentifierException;
+import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.InvalidIdentifierFormatException;
@@ -83,6 +85,67 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		PatientIdentifier pi = Context.getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
 		pi.setIdentifier("101-6");
 		assertThrows(IdentifierNotUniqueException.class, () -> PatientIdentifierValidator.validateIdentifier(pi));
+	}
+
+	/**
+	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
+	 */
+	@Test
+	public void validateIdentifier_shouldFailValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeAndLocation() {
+		Patient patient = Context.getPatientService().getPatient(2);
+		PatientIdentifierType type = Context.getPatientService().getPatientIdentifierType(2);
+		Location location = Context.getLocationService().getLocation(1);
+
+		// this exact same identifier exists for this patient in the database
+		PatientIdentifier pi = new PatientIdentifier();
+		pi.setIdentifier("101");
+		pi.setPatient(patient);
+		pi.setIdentifierType(type);
+		pi.setLocation(location);
+
+		assertThrows(DuplicateIdentifierException.class, () -> PatientIdentifierValidator.validateIdentifier(pi));
+	}
+
+	/**
+	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
+	 */
+	@Test
+	public void validateIdentifier_shouldPassValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeButDifferentLocation() {
+		Patient patient = Context.getPatientService().getPatient(2);
+		PatientIdentifierType type = Context.getPatientService().getPatientIdentifierType(2);
+		Location location = Context.getLocationService().getLocation(2);
+
+		// this exact same identifier exists for this patient in the database
+		PatientIdentifier pi = new PatientIdentifier();
+		pi.setIdentifier("101");
+		pi.setPatient(patient);
+		pi.setIdentifierType(type);
+		pi.setLocation(location); // different location, location 2
+
+		PatientIdentifierValidator.validateIdentifier(pi);
+	}
+
+	/**
+	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
+	 */
+	@Test
+	public void validateIdentifier_shouldFallValidationIfSamePatientHasAMatchingIdentifierOfTheSameTypeButDifferentLocationAndUniquenessBehaviorIsUnique() {
+		Patient patient = Context.getPatientService().getPatient(2);
+		PatientIdentifierType type = Context.getPatientService().getPatientIdentifierType(2);
+		Location location = Context.getLocationService().getLocation(2);
+
+		// update this identifier type to be unique
+		type.setUniquenessBehavior(UniquenessBehavior.UNIQUE);
+		Context.getPatientService().savePatientIdentifierType(type);
+
+		// this exact same identifier exists for this patient in the database
+		PatientIdentifier pi = new PatientIdentifier();
+		pi.setIdentifier("101");
+		pi.setPatient(patient);
+		pi.setIdentifierType(type);
+		pi.setLocation(location); // different locaation, location 2
+
+		assertThrows(DuplicateIdentifierException.class, () -> PatientIdentifierValidator.validateIdentifier(pi));
 	}
 
 	/**
