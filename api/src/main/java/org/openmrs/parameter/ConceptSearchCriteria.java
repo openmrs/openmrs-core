@@ -13,7 +13,8 @@ import java.util.Collection;
 
 /**
  * The ConceptSearchCriteria class encapsulates the criteria used for searching concepts in the
- * system. It supports searching by UUIDs, integer IDs, concept mappings (code + source name).
+ * system. It supports searching by UUIDs, integer IDs, concept mappings (in the form "source:term")
+ * and concept names.
  * <p>
  * Instead of calling the constructor directly, use {@link ConceptSearchCriteriaBuilder}.
  *

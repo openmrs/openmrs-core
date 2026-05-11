@@ -4074,7 +4074,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		        .includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(2, concepts.size());
-		List<Integer> ids = concepts.stream().map(Concept::getConceptId).collect(Collectors.toList());
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
 		assertThat(ids, org.hamcrest.Matchers.containsInAnyOrder(3, 23));
 	}
 
@@ -4100,7 +4100,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		        .includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(2, concepts.size());
-		List<Integer> ids = concepts.stream().map(Concept::getConceptId).collect(Collectors.toList());
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
 		assertThat(ids, org.hamcrest.Matchers.containsInAnyOrder(3, 23));
 	}
 
@@ -4149,7 +4149,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		        .addConceptId(23).includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(2, concepts.size());
-		List<Integer> ids = concepts.stream().map(Concept::getConceptId).collect(Collectors.toList());
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
 		assertThat(ids, org.hamcrest.Matchers.containsInAnyOrder(3, 23));
 	}
 
@@ -4174,7 +4174,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
 		        .addMapping("Some Standardized Terminology:WGT234").addMapping("SSTRM:454545").includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
-		List<Integer> ids = concepts.stream().map(Concept::getConceptId).collect(Collectors.toList());
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
 		assertTrue(ids.contains(5089));
 		assertTrue(ids.contains(24));
 	}
