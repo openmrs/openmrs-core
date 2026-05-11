@@ -45,7 +45,6 @@ import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.BlankIdentifierException;
-import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.MissingRequiredIdentifierException;
@@ -285,21 +284,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 		final List<PatientIdentifier> patientIdentifiers = new ArrayList<>(patient.getIdentifiers());
 
-		final Set<String> uniqueIdentifiers = new HashSet<>();
-
 		patientIdentifiers.stream().filter(pi -> !pi.getVoided()).forEach(pi -> {
 			try {
 				PatientIdentifierValidator.validateIdentifier(pi);
 			} catch (BlankIdentifierException bie) {
 				patient.removeIdentifier(pi);
 				throw bie;
-			}
-
-			// check this patient for duplicate identifiers+identifierType
-			String compareString = pi.getIdentifier() + " id type #: " + pi.getIdentifierType().getPatientIdentifierTypeId();
-			if (!uniqueIdentifiers.add(compareString)) {
-				throw new DuplicateIdentifierException("This patient has two identical identifiers of type " + compareString,
-				        pi);
 			}
 		});
 
