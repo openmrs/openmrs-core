@@ -19,8 +19,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import jakarta.persistence.Query;
@@ -1224,15 +1224,15 @@ public class HibernateConceptDAO implements ConceptDAO {
 			    cb.equal(cb.lower(sourceJoin.get(HL7_CODE)), sourceName.toLowerCase())));
 		} else {
 			predicates.add(cb.equal(termJoin.get("code"), code));
-			predicates.add(cb.or(cb.equal(sourceJoin.get("name"), sourceName),
-			    cb.equal(sourceJoin.get(HL7_CODE), sourceName)));
+			predicates.add(
+			    cb.or(cb.equal(sourceJoin.get("name"), sourceName), cb.equal(sourceJoin.get(HL7_CODE), sourceName)));
 		}
 		sub.select(mapRoot).where(predicates.toArray(new Predicate[0]));
 		return Optional.of(cb.exists(sub));
 	}
 
-	private Predicate buildNameExistsPredicate(CriteriaQuery<Concept> cq, Root<Concept> root,
-	        CriteriaBuilder cb, String name, boolean caseSensitive, Locale locale, Locale language) {
+	private Predicate buildNameExistsPredicate(CriteriaQuery<Concept> cq, Root<Concept> root, CriteriaBuilder cb,
+	        String name, boolean caseSensitive, Locale locale, Locale language) {
 		Subquery<ConceptName> sub = cq.subquery(ConceptName.class);
 		Root<ConceptName> nameRoot = sub.from(ConceptName.class);
 
