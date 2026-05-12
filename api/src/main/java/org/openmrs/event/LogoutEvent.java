@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationEvent;
  * Published by {@link org.openmrs.api.context.Context#logout()} whenever an authenticated user
  * explicitly logs out of the system.
  *
- * <p>This event is NOT published on session timeout — that is handled separately by an
+ * <p>This event is NOT published on session timeout, that is handled separately by an
  * {@code HttpSessionListener} in the consuming module.
  *
  * @since 2.7.0

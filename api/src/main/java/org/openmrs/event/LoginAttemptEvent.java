@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Published by {@link org.openmrs.api.db.hibernate.HibernateContextDAO} whenever a login
- * attempt is made — successful, failed, or resulting in account lockout.
+ * attempt is made successful, failed, or resulting in account lockout.
  *
  * <p>Listeners (e.g. audit modules) can subscribe to this event to record security events
  * without coupling to openmrs-core internals.
