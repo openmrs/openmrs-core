@@ -54,7 +54,8 @@ public class LocationSearchCriteria {
 	public LocationSearchCriteria(String descendantOfLocationUuid, Collection<String> locationTagUuids,
 	    TagMatchMode tagMatchMode, String nameFragment, boolean includeRetired) {
 		this.descendantOfLocationUuid = descendantOfLocationUuid;
-		this.locationTagUuids = locationTagUuids == null ? Collections.emptyList() : Collections.unmodifiableCollection(locationTagUuids);
+		this.locationTagUuids = locationTagUuids == null ? Collections.emptyList()
+		        : Collections.unmodifiableCollection(locationTagUuids);
 		this.tagMatchMode = tagMatchMode;
 		this.nameFragment = nameFragment;
 		this.includeRetired = includeRetired;
