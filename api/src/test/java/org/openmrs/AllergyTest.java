@@ -15,6 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -23,17 +24,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AllergyTest {
 
 	@Test
-	void hasSameValues_shouldReturnTrueForSameSimpleValues() {
+	void shouldReturnTrueWhenAllValuesMatch() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
-			List.of(reaction(5, reactionConcept(6), "rash")));
+			List.of(reaction(5, 6, "rash")));
 		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
-			List.of(reaction(5, reactionConcept(6), "rash")));
+			List.of(reaction(5, 6, "rash")));
 
 		assertTrue(left.hasSameValues(right));
 	}
 
 	@Test
-	void hasSameValues_shouldReturnFalseWhenAllergyIdDiffers() {
+	void shouldReturnFalseWhenAllergyIdDiffers() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 		Allergy right = allergy(99, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 
@@ -41,7 +42,7 @@ class AllergyTest {
 	}
 
 	@Test
-	void hasSameValues_shouldTreatDifferentPatientInstancesWithSamePatientIdAsSame() {
+	void shouldReturnTrueWhenPatientsAreDifferentInstancesWithSamePatientId() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 
@@ -50,7 +51,7 @@ class AllergyTest {
 	}
 
 	@Test
-	void hasSameValues_shouldReturnFalseWhenPatientIdsDiffer() {
+	void shouldReturnFalseWhenPatientIdsDiffer() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 		Allergy right = allergy(1, patient(99), codedAllergen(3), severity(4), "comment", List.of());
 
@@ -58,7 +59,7 @@ class AllergyTest {
 	}
 
 	@Test
-	void hasSameValues_shouldTreatDifferentCodedAllergenInstancesWithSameConceptIdAsSame() {
+	void shouldReturnTrueWhenCodedAllergensAreDifferentInstancesWithSameConceptId() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 
@@ -67,7 +68,7 @@ class AllergyTest {
 	}
 
 	@Test
-	void hasSameValues_shouldReturnFalseWhenCodedAllergenConceptIdsDiffer() {
+	void shouldReturnFalseWhenCodedAllergenConceptIdsDiffer() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 		Allergy right = allergy(1, patient(2), codedAllergen(99), severity(4), "comment", List.of());
 
@@ -75,15 +76,17 @@ class AllergyTest {
 	}
 
 	@Test
-	void hasSameValues_shouldReturnFalseWhenNonCodedAllergenDiffers() {
-		Allergy left = allergy(1, patient(2), nonCodedAllergen("Peanuts"), severity(4), "comment", List.of());
-		Allergy right = allergy(1, patient(2), nonCodedAllergen("Shellfish"), severity(4), "comment", List.of());
+	void shouldReturnFalseWhenNonCodedAllergenDiffers() {
+		Allergy left = allergy(1, patient(2), nonCodedAllergen("Peanuts"), severity(4),
+			"comment", List.of());
+		Allergy right = allergy(1, patient(2), nonCodedAllergen("Shellfish"), severity(4),
+			"comment", List.of());
 
 		assertFalse(left.hasSameValues(right));
 	}
 
 	@Test
-	void hasSameValues_shouldTreatDifferentSeverityInstancesWithSameConceptIdAsSame() {
+	void shouldReturnTrueWhenSeveritiesAreDifferentInstancesWithSameConceptId() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 
@@ -92,7 +95,7 @@ class AllergyTest {
 	}
 
 	@Test
-	void hasSameValues_shouldReturnFalseWhenSeverityConceptIdsDiffer() {
+	void shouldReturnFalseWhenSeverityConceptIdsDiffer() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(99), "comment", List.of());
 
@@ -100,35 +103,48 @@ class AllergyTest {
 	}
 
 	@Test
-	void hasSameValues_shouldReturnFalseWhenCommentDiffers() {
+	void shouldReturnFalseWhenCommentDiffers() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
-		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "different", List.of());
+		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "different",
+			List.of());
 
 		assertFalse(left.hasSameValues(right));
 	}
 
 	@Test
-	void hasSameValues_shouldReturnFalseWhenReactionCountDiffers() {
+	void shouldReturnFalseWhenReactionCountDiffers() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
-			List.of(reaction(5, reactionConcept(6), "rash")));
-		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
-
-		assertFalse(left.hasSameValues(right));
-	}
-
-	@Test
-	void hasSameValues_shouldReturnFalseWhenReactionValuesDiffer() {
-		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
-			List.of(reaction(5, reactionConcept(6), "rash")));
+			List.of(reaction(5, 6, "rash")));
 		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
-			List.of(reaction(5, reactionConcept(99), "rash")));
+			List.of());
 
 		assertFalse(left.hasSameValues(right));
 	}
 
-	private Allergy allergy(Integer allergyId, Patient patient, Allergen allergen, Concept severity, String comment,
-	                        List<AllergyReaction> reactions) {
-		Allergy allergy = new Allergy(patient, allergen, severity, comment, reactions);
+	@Test
+	void shouldReturnFalseWhenReactionValuesDiffer() {
+		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
+			List.of(reaction(5, 6, "rash")));
+		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
+			List.of(reaction(5, 99, "rash")));
+
+		assertFalse(left.hasSameValues(right));
+	}
+
+	@Test
+	void shouldThrowWhenMatchingReactionIdIsMissing() {
+		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
+			List.of(reaction(5, 6, "rash")));
+		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
+			List.of(reaction(99, 6, "rash")));
+
+		assertThrows(NullPointerException.class, () -> left.hasSameValues(right));
+	}
+
+	private Allergy allergy(Integer allergyId, Patient patient, Allergen allergen,
+	                        Concept severity, String comments, List<AllergyReaction> reactions) {
+
+		Allergy allergy = new Allergy(patient, allergen, severity, comments, reactions);
 		allergy.setAllergyId(allergyId);
 		return allergy;
 	}
@@ -157,21 +173,19 @@ class AllergyTest {
 		return concept(conceptId);
 	}
 
-	private Concept reactionConcept(Integer conceptId) {
-		return concept(conceptId);
-	}
-
 	private Concept concept(Integer conceptId) {
 		Concept concept = new Concept();
 		concept.setConceptId(conceptId);
 		return concept;
 	}
 
-	private AllergyReaction reaction(Integer allergyReactionId, Concept reactionConcept, String nonCodedReaction) {
+	private AllergyReaction reaction(Integer reactionId, Integer conceptId,
+	                                 String reactionNonCoded) {
+
 		AllergyReaction reaction = new AllergyReaction();
-		reaction.setAllergyReactionId(allergyReactionId);
-		reaction.setReaction(reactionConcept);
-		reaction.setReactionNonCoded(nonCodedReaction);
+		reaction.setAllergyReactionId(reactionId);
+		reaction.setReaction(concept(conceptId));
+		reaction.setReactionNonCoded(reactionNonCoded);
 		return reaction;
 	}
 }
