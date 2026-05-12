@@ -1,23 +1,31 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
 package org.openmrs;
 
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AllergiesSameValuesTest {
+/**
+ * Tests hasSameValues method in {@link org.openmrs.Allergy}.
+ */
+class AllergyTest {
 
 	@Test
 	void hasSameValues_shouldReturnTrueForSameSimpleValues() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
 			List.of(reaction(5, reactionConcept(6), "rash")));
-
 		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
 			List.of(reaction(5, reactionConcept(6), "rash")));
 
@@ -103,7 +111,6 @@ class AllergiesSameValuesTest {
 	void hasSameValues_shouldReturnFalseWhenReactionCountDiffers() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
 			List.of(reaction(5, reactionConcept(6), "rash")));
-
 		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
 
 		assertFalse(left.hasSameValues(right));
@@ -113,7 +120,6 @@ class AllergiesSameValuesTest {
 	void hasSameValues_shouldReturnFalseWhenReactionValuesDiffer() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
 			List.of(reaction(5, reactionConcept(6), "rash")));
-
 		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment",
 			List.of(reaction(5, reactionConcept(99), "rash")));
 
