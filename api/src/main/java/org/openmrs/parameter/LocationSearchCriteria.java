@@ -10,6 +10,7 @@
 package org.openmrs.parameter;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Encapsulates the criteria used for searching locations. All provided criteria are ANDed together.
@@ -53,7 +54,7 @@ public class LocationSearchCriteria {
 	public LocationSearchCriteria(String descendantOfLocationUuid, Collection<String> locationTagUuids,
 	    TagMatchMode tagMatchMode, String nameFragment, boolean includeRetired) {
 		this.descendantOfLocationUuid = descendantOfLocationUuid;
-		this.locationTagUuids = locationTagUuids;
+		this.locationTagUuids = locationTagUuids == null ? Collections.emptyList() : Collections.unmodifiableCollection(locationTagUuids);
 		this.tagMatchMode = tagMatchMode;
 		this.nameFragment = nameFragment;
 		this.includeRetired = includeRetired;
