@@ -48,9 +48,9 @@
 		     with our version of Spring. -->
 		<springVersion>7.0.7</springVersion>
 		<springTestVersion>${springVersion}</springTestVersion>
-		<hibernateVersion>7.3.3.Final</hibernateVersion>
+		<hibernateVersion>7.3.4.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
-		<hibernateSearchVersion>8.3.0.Final</hibernateSearchVersion>
+		<hibernateSearchVersion>8.3.1.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.0.Final</hibernateValidatorVersion>
 		<luceneVersion>10.4.0</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
@@ -93,7 +93,7 @@
 
 		<!-- XML/Serialization -->
 		<dom4jVersion>2.1.4</dom4jVersion>
-		<jaxenVersion>2.0.1</jaxenVersion>
+		<jaxenVersion>2.0.2</jaxenVersion>
 		<xercesVersion>2.12.2</xercesVersion>
 		<xstreamVersion>1.4.21</xstreamVersion>
 		<jaxbRuntimeVersion>4.0.8</jaxbRuntimeVersion>
@@ -125,7 +125,7 @@
 		<mockitoVersion>5.23.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<h2Version>2.3.232</h2Version>
-		<dbunitVersion>3.0.0</dbunitVersion>
+		<dbunitVersion>3.1.0</dbunitVersion>
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.5</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
