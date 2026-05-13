@@ -1209,7 +1209,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		// Location 1 → {2, 3}, Location 3 → {4, 7}
 		Location root = ls.getLocation(1);
 		List<Location> result = ls.getLocations(
-		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(root.getUuid()).includeRetired(true).build());
+		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(root).includeRetired(true).build());
 
 		assertEquals(4, result.size());
 		assertTrue(result.contains(ls.getLocation(2)));
@@ -1247,14 +1247,14 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		ls.saveLocation(grandchild);
 
 		List<Location> withRetired = ls.getLocations(
-		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(root.getUuid()).includeRetired(true).build());
+		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(root).includeRetired(true).build());
 		assertEquals(3, withRetired.size());
 		assertTrue(withRetired.contains(childA));
 		assertTrue(withRetired.contains(childB));
 		assertTrue(withRetired.contains(grandchild));
 
 		List<Location> withoutRetired = ls.getLocations(
-		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(root.getUuid()).includeRetired(false).build());
+		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(root).includeRetired(false).build());
 		assertEquals(1, withoutRetired.size());
 		assertTrue(withoutRetired.contains(childA));
 		assertFalse(withoutRetired.contains(childB));
@@ -1271,20 +1271,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		// Location 2 has no children in the fixture
 		Location leaf = ls.getLocation(2);
 		List<Location> result = ls.getLocations(
-		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(leaf.getUuid()).includeRetired(true).build());
-
-		assertTrue(result.isEmpty());
-	}
-
-	/**
-	 * @see LocationService#getLocations(LocationSearchCriteria)
-	 */
-	@Test
-	public void getLocations_withDescendantOf_shouldReturnEmptyListForNonExistentUuid() {
-		LocationService ls = Context.getLocationService();
-
-		List<Location> result = ls.getLocations(
-		    new LocationSearchCriteriaBuilder().setDescendantOfLocation("non-existent-uuid").includeRetired(true).build());
+		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(leaf).includeRetired(true).build());
 
 		assertTrue(result.isEmpty());
 	}
@@ -1329,8 +1316,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocations_shouldFilterByDescendantOf() {
 		LocationService ls = Context.getLocationService();
-		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder()
-		        .setDescendantOfLocation(ls.getLocation(1).getUuid()).build();
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().setDescendantOfLocation(ls.getLocation(1))
+		        .build();
 		List<Location> result = ls.getLocations(criteria);
 		// Descendants of location 1: 2, 3, 4, 7
 		assertEquals(4, result.size());
@@ -1348,8 +1335,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getLocations_shouldFilterByAllTags() {
 		LocationService ls = Context.getLocationService();
 		// Tags 3 and 4 are both on locations 2 and 3 only
-		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().addTag(ls.getLocationTag(3).getUuid())
-		        .addTag(ls.getLocationTag(4).getUuid()).build();
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().addTag(ls.getLocationTag(3))
+		        .addTag(ls.getLocationTag(4)).build();
 		List<Location> result = ls.getLocations(criteria);
 		assertEquals(2, result.size());
 		assertTrue(result.contains(ls.getLocation(2)));
@@ -1363,8 +1350,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getLocations_shouldFilterByAnyTag() {
 		LocationService ls = Context.getLocationService();
 		// Tag 1 is on location 1; tag 3 is on locations 2 and 3
-		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().addTag(ls.getLocationTag(1).getUuid())
-		        .addTag(ls.getLocationTag(3).getUuid()).setTagMatchMode(LocationSearchCriteria.TagMatchMode.ANY).build();
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().addTag(ls.getLocationTag(1))
+		        .addTag(ls.getLocationTag(3)).setTagMatchMode(LocationSearchCriteria.TagMatchMode.ANY).build();
 		List<Location> result = ls.getLocations(criteria);
 		assertEquals(3, result.size());
 		assertTrue(result.contains(ls.getLocation(1)));
@@ -1379,8 +1366,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getLocations_shouldCombineDescendantOfAndTags() {
 		LocationService ls = Context.getLocationService();
 		// Descendants of location 1 that also have tag 3: locations 2 and 3
-		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder()
-		        .setDescendantOfLocation(ls.getLocation(1).getUuid()).addTag(ls.getLocationTag(3).getUuid()).build();
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().setDescendantOfLocation(ls.getLocation(1))
+		        .addTag(ls.getLocationTag(3)).build();
 		List<Location> result = ls.getLocations(criteria);
 		assertEquals(2, result.size());
 		assertTrue(result.contains(ls.getLocation(2)));
@@ -1394,8 +1381,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getLocations_shouldCombineDescendantOfAndNameFragment() {
 		LocationService ls = Context.getLocationService();
 		// Descendants of location 1 whose name starts with "Test Level B": locations 4 and 7
-		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder()
-		        .setDescendantOfLocation(ls.getLocation(1).getUuid()).setNameFragment("Test Level B").build();
+		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().setDescendantOfLocation(ls.getLocation(1))
+		        .setNameFragment("Test Level B").build();
 		List<Location> result = ls.getLocations(criteria);
 		assertEquals(2, result.size());
 		assertTrue(result.contains(ls.getLocation(4)));

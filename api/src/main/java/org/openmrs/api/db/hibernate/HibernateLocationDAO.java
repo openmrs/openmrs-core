@@ -439,16 +439,15 @@ public class HibernateLocationDAO implements LocationDAO {
 		Session session = sessionFactory.getCurrentSession();
 
 		List<Integer> descendantIds = null;
-		if (StringUtils.isNotBlank(criteria.getDescendantOfLocationUuid())) {
+		if (criteria.getDescendantOfLocation() != null) {
 			String retiredFilter = criteria.getIncludeRetired() ? "" : " AND retired = false";
 			String cteSql = "WITH RECURSIVE descendants (location_id) AS ("
-			        + " SELECT location_id FROM location WHERE parent_location ="
-			        + " (SELECT location_id FROM location WHERE uuid = :uuid)" + retiredFilter + " UNION ALL"
-			        + " SELECT l.location_id FROM location l"
+			        + " SELECT location_id FROM location WHERE parent_location = :locationId" + retiredFilter
+			        + " UNION ALL SELECT l.location_id FROM location l"
 			        + " INNER JOIN descendants d ON l.parent_location = d.location_id" + retiredFilter
 			        + ") SELECT location_id FROM descendants";
 			descendantIds = session.createNativeQuery(cteSql, Integer.class)
-			        .setParameter("uuid", criteria.getDescendantOfLocationUuid()).list();
+			        .setParameter("locationId", criteria.getDescendantOfLocation().getLocationId()).list();
 			if (descendantIds.isEmpty()) {
 				return Collections.emptyList();
 			}
@@ -473,15 +472,14 @@ public class HibernateLocationDAO implements LocationDAO {
 			    cb.like(cb.lower(root.get("name")), MatchMode.START.toLowerCasePattern(criteria.getNameFragment())));
 		}
 
-		if (criteria.getLocationTagUuids() != null && !criteria.getLocationTagUuids().isEmpty()) {
-			List<String> tagUuids = criteria.getLocationTagUuids().stream().filter(StringUtils::isNotBlank).distinct()
-			        .toList();
-			if (!tagUuids.isEmpty()) {
+		if (criteria.getLocationTags() != null && !criteria.getLocationTags().isEmpty()) {
+			List<Integer> tagIds = getLocationTagIds(new ArrayList<>(criteria.getLocationTags()));
+			if (!tagIds.isEmpty()) {
 				Join<Location, LocationTag> tagsJoin = root.join("tags");
-				predicates.add(tagsJoin.get("uuid").in(tagUuids));
+				predicates.add(tagsJoin.get("locationTagId").in(tagIds));
 				cq.groupBy(root);
 				if (criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL) {
-					cq.having(cb.equal(cb.count(tagsJoin), (long) tagUuids.size()));
+					cq.having(cb.equal(cb.count(tagsJoin), (long) tagIds.size()));
 				}
 			}
 		}
