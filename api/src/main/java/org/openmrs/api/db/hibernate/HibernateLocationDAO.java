@@ -18,6 +18,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -447,22 +448,19 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public List<Location> getLocations(LocationSearchCriteria criteria) {
-		List<String> tagUuids = criteria.getLocationTagUuids() == null ? null
-		        : criteria.getLocationTagUuids().stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
+		Collection<LocationTag> tags = criteria.getLocationTags();
 
-		List<Location> result = getAllLocations(true).stream().filter(loc -> matchesCriteria(loc, criteria, tagUuids))
+		return getAllLocations(true).stream().filter(loc -> matchesCriteria(loc, criteria, tags))
 		        .collect(Collectors.toList());
-
-		return result;
 	}
 
-	private boolean matchesCriteria(Location loc, LocationSearchCriteria criteria, List<String> tagUuids) {
+	private boolean matchesCriteria(Location loc, LocationSearchCriteria criteria, Collection<LocationTag> tags) {
 		if (!criteria.getIncludeRetired() && loc.getRetired()) {
 			return false;
 		}
 
-		if (StringUtils.isNotBlank(criteria.getDescendantOfLocationUuid())
-		        && !isDescendantOf(loc, criteria.getDescendantOfLocationUuid(), criteria.getIncludeRetired())) {
+		if (criteria.getDescendantOfLocation() != null
+		        && !isDescendantOf(loc, criteria.getDescendantOfLocation(), criteria.getIncludeRetired())) {
 			return false;
 		}
 
@@ -472,14 +470,14 @@ public class HibernateLocationDAO implements LocationDAO {
 			return false;
 		}
 
-		if (tagUuids != null && !tagUuids.isEmpty()) {
-			Set<String> locTagUuids = loc.getTags().stream().map(LocationTag::getUuid).collect(Collectors.toSet());
+		if (tags != null && !tags.isEmpty()) {
+			Set<Integer> locTagIds = loc.getTags().stream().map(LocationTag::getLocationTagId).collect(Collectors.toSet());
 			if (criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL) {
-				if (!locTagUuids.containsAll(tagUuids)) {
+				if (!tags.stream().map(LocationTag::getLocationTagId).allMatch(locTagIds::contains)) {
 					return false;
 				}
 			} else {
-				if (tagUuids.stream().noneMatch(locTagUuids::contains)) {
+				if (tags.stream().map(LocationTag::getLocationTagId).noneMatch(locTagIds::contains)) {
 					return false;
 				}
 			}
@@ -488,13 +486,13 @@ public class HibernateLocationDAO implements LocationDAO {
 		return true;
 	}
 
-	private boolean isDescendantOf(Location loc, String ancestorUuid, boolean includeRetired) {
+	private boolean isDescendantOf(Location loc, Location ancestor, boolean includeRetired) {
 		Location current = loc.getParentLocation();
 		while (current != null) {
 			if (!includeRetired && current.getRetired()) {
 				return false;
 			}
-			if (ancestorUuid.equals(current.getUuid())) {
+			if (ancestor.equals(current)) {
 				return true;
 			}
 			current = current.getParentLocation();

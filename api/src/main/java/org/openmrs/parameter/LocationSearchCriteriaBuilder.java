@@ -12,6 +12,9 @@ package org.openmrs.parameter;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.openmrs.Location;
+import org.openmrs.LocationTag;
+
 /**
  * A builder for constructing {@link LocationSearchCriteria} instances.
  *
@@ -19,9 +22,9 @@ import java.util.Collection;
  */
 public class LocationSearchCriteriaBuilder {
 
-	private String descendantOfLocationUuid;
+	private Location descendantOfLocation;
 
-	private Collection<String> locationTagUuids = new ArrayList<>();
+	private Collection<LocationTag> locationTags = new ArrayList<>();
 
 	private LocationSearchCriteria.TagMatchMode tagMatchMode = LocationSearchCriteria.TagMatchMode.ALL;
 
@@ -30,29 +33,29 @@ public class LocationSearchCriteriaBuilder {
 	private boolean includeRetired = false;
 
 	/**
-	 * @param uuid UUID of the ancestor location; only its descendants will be returned (root excluded)
+	 * @param location the ancestor location; only its descendants will be returned (root excluded)
 	 * @return this builder
 	 */
-	public LocationSearchCriteriaBuilder setDescendantOfLocation(String uuid) {
-		this.descendantOfLocationUuid = uuid;
+	public LocationSearchCriteriaBuilder setDescendantOfLocation(Location location) {
+		this.descendantOfLocation = location;
 		return this;
 	}
 
 	/**
-	 * @param uuid UUID of a tag to filter by
+	 * @param tag a tag to filter by
 	 * @return this builder
 	 */
-	public LocationSearchCriteriaBuilder addTag(String uuid) {
-		this.locationTagUuids.add(uuid);
+	public LocationSearchCriteriaBuilder addTag(LocationTag tag) {
+		this.locationTags.add(tag);
 		return this;
 	}
 
 	/**
-	 * @param uuids UUIDs of tags to filter by
+	 * @param tags tags to filter by
 	 * @return this builder
 	 */
-	public LocationSearchCriteriaBuilder addTags(Collection<String> uuids) {
-		this.locationTagUuids.addAll(uuids);
+	public LocationSearchCriteriaBuilder addTags(Collection<LocationTag> tags) {
+		this.locationTags.addAll(tags);
 		return this;
 	}
 
@@ -87,6 +90,6 @@ public class LocationSearchCriteriaBuilder {
 	 * @return a new {@link LocationSearchCriteria} from the current builder state
 	 */
 	public LocationSearchCriteria build() {
-		return new LocationSearchCriteria(descendantOfLocationUuid, locationTagUuids, tagMatchMode, nameFragment, includeRetired);
+		return new LocationSearchCriteria(descendantOfLocation, locationTags, tagMatchMode, nameFragment, includeRetired);
 	}
 }

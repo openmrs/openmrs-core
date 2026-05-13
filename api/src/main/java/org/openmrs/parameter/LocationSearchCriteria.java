@@ -12,6 +12,9 @@ package org.openmrs.parameter;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.openmrs.Location;
+import org.openmrs.LocationTag;
+
 /**
  * Encapsulates the criteria used for searching locations. All provided criteria are ANDed together.
  * <p>
@@ -31,9 +34,9 @@ public class LocationSearchCriteria {
 		ANY
 	}
 
-	private final String descendantOfLocationUuid;
+	private final Location descendantOfLocation;
 
-	private final Collection<String> locationTagUuids;
+	private final Collection<LocationTag> locationTags;
 
 	private final TagMatchMode tagMatchMode;
 
@@ -44,34 +47,34 @@ public class LocationSearchCriteria {
 	/**
 	 * Constructs a LocationSearchCriteria. Use {@link LocationSearchCriteriaBuilder} instead.
 	 *
-	 * @param descendantOfLocationUuid UUID of the ancestor location; only its descendants are returned (root excluded)
-	 * @param locationTagUuids UUIDs of tags to filter by
+	 * @param descendantOfLocation the ancestor location; only its descendants are returned (root excluded)
+	 * @param locationTags tags to filter by
 	 * @param tagMatchMode whether all or any of the tags must match
 	 * @param nameFragment only return locations whose name starts with this fragment
 	 * @param includeRetired whether to include retired locations
 	 */
-	public LocationSearchCriteria(String descendantOfLocationUuid, Collection<String> locationTagUuids, TagMatchMode tagMatchMode,
-	    String nameFragment, boolean includeRetired) {
-		this.descendantOfLocationUuid = descendantOfLocationUuid;
-		this.locationTagUuids = locationTagUuids == null ? Collections.emptyList()
-		        : Collections.unmodifiableCollection(locationTagUuids);
+	public LocationSearchCriteria(Location descendantOfLocation, Collection<LocationTag> locationTags,
+	    TagMatchMode tagMatchMode, String nameFragment, boolean includeRetired) {
+		this.descendantOfLocation = descendantOfLocation;
+		this.locationTags = locationTags == null ? Collections.emptyList()
+		        : Collections.unmodifiableCollection(locationTags);
 		this.tagMatchMode = tagMatchMode;
 		this.nameFragment = nameFragment;
 		this.includeRetired = includeRetired;
 	}
 
 	/**
-	 * @return UUID of the ancestor location; only descendants of that location are returned (root excluded)
+	 * @return the ancestor location; only descendants of that location are returned (root excluded)
 	 */
-	public String getDescendantOfLocationUuid() {
-		return descendantOfLocationUuid;
+	public Location getDescendantOfLocation() {
+		return descendantOfLocation;
 	}
 
 	/**
-	 * @return UUIDs of the location tags to filter by
+	 * @return the location tags to filter by
 	 */
-	public Collection<String> getLocationTagUuids() {
-		return locationTagUuids;
+	public Collection<LocationTag> getLocationTags() {
+		return locationTags;
 	}
 
 	/**
