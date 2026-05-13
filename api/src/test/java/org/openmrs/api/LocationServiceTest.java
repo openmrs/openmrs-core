@@ -1280,6 +1280,19 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 * @see LocationService#getLocations(LocationSearchCriteria)
 	 */
 	@Test
+	public void getLocations_withDescendantOf_shouldReturnEmptyListForNonExistentUuid() {
+		LocationService ls = Context.getLocationService();
+
+		List<Location> result = ls.getLocations(
+		    new LocationSearchCriteriaBuilder().setDescendantOfLocation("non-existent-uuid").includeRetired(true).build());
+
+		assertTrue(result.isEmpty());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
 	public void getLocations_shouldReturnAllNonRetiredLocationsForEmptyCriteria() {
 		LocationService ls = Context.getLocationService();
 		LocationSearchCriteria criteria = new LocationSearchCriteriaBuilder().build();
