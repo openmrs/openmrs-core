@@ -123,27 +123,26 @@ class AllergyTest {
 	}
 	
 	@Test
-	void shouldThrowWhenMatchingReactionIdIsMissing() {
-		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of(reaction(5, 6, "rash")));
+	void shouldThrowWhenMatchingReactionIdsDiffer() {
+		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of(reaction(99, 6, "rash")));
 		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of(reaction(99, 6, "rash")));
-		
+
 		assertThrows(NullPointerException.class, () -> left.hasSameValues(right));
 	}
-	
+
 	private Allergy allergy(Integer allergyId, Patient patient, Allergen allergen, Concept severity, String comments,
-	        List<AllergyReaction> reactions) {
-		
+            List<AllergyReaction> reactions) {
 		Allergy allergy = new Allergy(patient, allergen, severity, comments, reactions);
 		allergy.setAllergyId(allergyId);
 		return allergy;
 	}
-	
+
 	private Patient patient(Integer patientId) {
 		Patient patient = new Patient();
 		patient.setPatientId(patientId);
 		return patient;
 	}
-	
+
 	private Allergen codedAllergen(Integer conceptId) {
 		Allergen allergen = new Allergen();
 		allergen.setAllergenType(AllergenType.DRUG);
