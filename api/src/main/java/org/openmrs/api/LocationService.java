@@ -406,6 +406,19 @@ public interface LocationService extends OpenmrsService {
 	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
 	List<Location> getLocations(LocationSearchCriteria criteria);
 
+
+	/**
+	 * Returns descendant locations of a given location, i.e. its children, grandchildren, etc.
+	 * 
+	 * @param location the location whose descendants should be returned
+	 * @param includeRetired whether or not to include retired locations
+	 * @return a list of descendant locations
+	 * @throws APIException
+	 * @since 2.8.7
+	 */
+	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
+	List<Location> getDescendantLocations(Location location, boolean includeRetired);
+
 	/**
 	 * Returns descendant locations of a given location, i.e. its children, grandchildren, etc.
 	 *
