@@ -465,8 +465,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.10
 	 */
 	public Set<Location> getDescendantLocations(boolean includeRetired) {
-		return new HashSet<>(Context.getLocationService().getLocations(
-		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(this).includeRetired(includeRetired).build()));
+		return new HashSet<>(Context.getLocationService().getDescendantLocations(this, includeRetired));
 	}
 	
 	/**
