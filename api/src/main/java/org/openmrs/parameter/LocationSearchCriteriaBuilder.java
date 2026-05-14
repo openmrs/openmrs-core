@@ -18,7 +18,7 @@ import org.openmrs.LocationTag;
 /**
  * A builder for constructing {@link LocationSearchCriteria} instances.
  *
- * @since 2.9.0
+ * @since 2.8.7
  */
 public class LocationSearchCriteriaBuilder {
 

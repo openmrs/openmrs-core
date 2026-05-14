@@ -37,7 +37,6 @@ import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.parameter.LocationSearchCriteriaBuilder;
 
 /**
  * A Location is a physical place, such as a hospital, a room, a clinic, or a district. Locations
@@ -459,8 +458,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.10
 	 */
 	public Set<Location> getDescendantLocations(boolean includeRetired) {
-		return new HashSet<>(Context.getLocationService().getLocations(
-		    new LocationSearchCriteriaBuilder().setDescendantOfLocation(this).includeRetired(includeRetired).build()));
+		return new HashSet<>(Context.getLocationService().getDescendantLocations(this, includeRetired));
 	}
 
 	/**
