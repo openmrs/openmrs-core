@@ -148,6 +148,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		name = "location_tag_map",
 		joinColumns = @JoinColumn(name = "location_id"),
 		inverseJoinColumns = @JoinColumn(name = "location_tag_id"))
+	@BatchSize(size = 100)
 	@Independent
 	private Set<LocationTag> tags;
 	
