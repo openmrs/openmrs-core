@@ -15,9 +15,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.parameter.LocationSearchCriteriaBuilder;
-
 import javax.persistence.AttributeOverride;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
@@ -463,9 +462,19 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @param includeRetired specifies whether or not to include voided childLocations
 	 * @return Returns a Set&lt;Location&gt; of the descendant location.
 	 * @since 1.10
+	 * @deprecated since 2.8.7 in favor of {@link LocationService#getDescendantLocations(Location, boolean)}
 	 */
+	@Deprecated
 	public Set<Location> getDescendantLocations(boolean includeRetired) {
-		return new HashSet<>(Context.getLocationService().getDescendantLocations(this, includeRetired));
+		Set<Location> result = new HashSet<>();
+		
+		for (Location childLocation : getChildLocations()) {
+			if (!childLocation.getRetired() || includeRetired) {
+				result.add(childLocation);
+				result.addAll(childLocation.getDescendantLocations(includeRetired));
+			}
+		}
+		return result;
 	}
 	
 	/**

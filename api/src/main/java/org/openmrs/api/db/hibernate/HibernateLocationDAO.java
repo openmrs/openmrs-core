@@ -455,7 +455,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	}
 
 	private boolean matchesCriteria(Location loc, LocationSearchCriteria criteria, Collection<LocationTag> tags) {
-		if (!criteria.getIncludeRetired() && loc.getRetired()) {
+		if (!criteria.getIncludeRetired() && Boolean.TRUE.equals(loc.getRetired())) {
 			return false;
 		}
 
@@ -471,15 +471,12 @@ public class HibernateLocationDAO implements LocationDAO {
 		}
 
 		if (tags != null && !tags.isEmpty()) {
-			Set<Integer> locTagIds = loc.getTags().stream().map(LocationTag::getLocationTagId).collect(Collectors.toSet());
-			if (criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL) {
-				if (!tags.stream().map(LocationTag::getLocationTagId).allMatch(locTagIds::contains)) {
-					return false;
-				}
-			} else {
-				if (tags.stream().map(LocationTag::getLocationTagId).noneMatch(locTagIds::contains)) {
-					return false;
-				}
+			Set<LocationTag> locTags = loc.getTags();
+			boolean tagMatch = criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL
+			        ? tags.stream().allMatch(locTags::contains)
+			        : tags.stream().anyMatch(locTags::contains);
+			if (!tagMatch) {
+				return false;
 			}
 		}
 
@@ -489,7 +486,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	private boolean isDescendantOf(Location loc, Location ancestor, boolean includeRetired) {
 		Location current = loc.getParentLocation();
 		while (current != null) {
-			if (!includeRetired && current.getRetired()) {
+			if (!includeRetired && Boolean.TRUE.equals(current.getRetired())) {
 				return false;
 			}
 			if (ancestor.equals(current)) {

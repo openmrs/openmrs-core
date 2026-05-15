@@ -26,7 +26,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LocationDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.parameter.LocationSearchCriteria;
-import org.openmrs.parameter.LocationSearchCriteriaBuilder;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
@@ -415,7 +414,10 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	@Override
 	@Transactional(readOnly = true)
 	public List<Location> getDescendantLocations(Location location, boolean includeRetired) {
-		return getLocations(new LocationSearchCriteriaBuilder().setDescendantOfLocation(location).includeRetired(includeRetired).build());
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setDescendantOfLocation(location);
+		criteria.setIncludeRetired(includeRetired);
+		return getLocations(criteria);
 	}
 
 	/**
