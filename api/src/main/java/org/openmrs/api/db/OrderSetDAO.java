@@ -26,27 +26,26 @@ import org.openmrs.api.OrderSetService;
  * @see org.openmrs.api.OrderSetService
  */
 public interface OrderSetDAO {
-	
+
 	/**
 	 * @see org.openmrs.api.OrderSetService#saveOrderSet(OrderSet)
 	 */
 	OrderSet save(OrderSet orderSet) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.OrderSetService#getOrderSets(boolean)
 	 */
 	List<OrderSet> getOrderSets(boolean includeRetired) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.OrderSetService#getOrderSet(Integer)
 	 */
 	OrderSet getOrderSetById(Integer orderSetId) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.OrderSetService#getOrderSetByUuid(String)
 	 */
 	OrderSet getOrderSetByUniqueUuid(String orderSetUuid) throws DAOException;
-	
 
 	/**
 	 * @see org.openmrs.api.OrderSetService#getOrderSetMemberByUuid(String)

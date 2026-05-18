@@ -9,14 +9,15 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -36,16 +37,16 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("cohortDAO")
 public class HibernateCohortDAO implements CohortDAO {
-	
+
 	private static final String VOIDED = "voided";
-	
+
 	private final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateCohortDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#getCohort(java.lang.Integer)
 	 */
@@ -58,8 +59,8 @@ public class HibernateCohortDAO implements CohortDAO {
 	 * @see org.openmrs.api.db.CohortDAO#getCohortsContainingPatientId(Integer, boolean, Date)
 	 */
 	@Override
-	public List<Cohort> getCohortsContainingPatientId(Integer patientId, boolean includeVoided,
-													  Date asOfDate) throws DAOException {
+	public List<Cohort> getCohortsContainingPatientId(Integer patientId, boolean includeVoided, Date asOfDate)
+	        throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Cohort> cq = cb.createQuery(Cohort.class);
@@ -82,11 +83,11 @@ public class HibernateCohortDAO implements CohortDAO {
 			predicates.add(cb.equal(root.get(VOIDED), includeVoided));
 		}
 
-		cq.distinct(true).where(predicates.toArray(new Predicate[]{}));
+		cq.distinct(true).where(predicates.toArray(new Predicate[] {}));
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#getCohortByUuid(java.lang.String)
 	 */
@@ -94,7 +95,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	public Cohort getCohortByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, Cohort.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#getCohortMembershipByUuid(java.lang.String)
 	 */
@@ -122,8 +123,7 @@ public class HibernateCohortDAO implements CohortDAO {
 		CriteriaQuery<Cohort> cq = cb.createQuery(Cohort.class);
 		Root<Cohort> root = cq.from(Cohort.class);
 
-		cq.where(cb.like(cb.lower(root.get("name")), 
-			MatchMode.ANYWHERE.toLowerCasePattern(nameFragment)));
+		cq.where(cb.like(cb.lower(root.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(nameFragment)));
 		cq.orderBy(cb.asc(root.get("name")));
 
 		return session.createQuery(cq).getResultList();
@@ -162,7 +162,7 @@ public class HibernateCohortDAO implements CohortDAO {
 
 		return session.createQuery(cq).uniqueResult();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#saveCohort(org.openmrs.Cohort)
 	 */
@@ -195,11 +195,11 @@ public class HibernateCohortDAO implements CohortDAO {
 			predicates.add(cb.isFalse(root.get(VOIDED)));
 		}
 
-		cq.where(predicates.toArray(new Predicate[]{}));
+		cq.where(predicates.toArray(new Predicate[] {}));
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	@Override
 	public CohortMembership saveCohortMembership(CohortMembership cohortMembership) {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), cohortMembership);

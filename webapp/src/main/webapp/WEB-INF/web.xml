@@ -134,7 +134,7 @@
 	      hibernate filter (to help with lazy loading) -->
 	<filter>
         <filter-name>HibernateFilter</filter-name>
-        <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+        <filter-class>org.openmrs.web.filter.OpenSessionInViewFilter</filter-class>
     </filter>
     <filter-mapping>
 		<filter-name>HibernateFilter</filter-name> 
@@ -273,6 +273,18 @@
 	<servlet>
 		<servlet-name>openmrs_static_content</servlet-name>
 		<servlet-class>org.openmrs.web.StaticDispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>detectAllViewResolvers</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>detectAllHandlerMappings</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>detectAllHandlerAdapters</param-name>
+			<param-value>false</param-value>
+		</init-param>
 		<!-- Don't use "load-on-startup" in case initial setup wizard is needed -->
 	</servlet>
 	
@@ -315,6 +327,31 @@
 	<servlet-mapping>
  		<servlet-name>openmrs</servlet-name>
  		<url-pattern>/ws/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>openmrs</servlet-name>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>openmrs</servlet-name>
+		<url-pattern>*.form</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>openmrs</servlet-name>
+		<url-pattern>*.list</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>openmrs</servlet-name>
+		<url-pattern>*.portlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>openmrs</servlet-name>
+		<url-pattern>*.field</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>

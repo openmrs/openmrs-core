@@ -9,13 +9,13 @@
  */
 package org.openmrs.propertyeditor;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 public class RoleEditorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see RoleEditor#setAsText(String)
 	 */
@@ -25,7 +25,7 @@ public class RoleEditorTest extends BaseContextSensitiveTest {
 		editor.setAsText("Provider");
 		assertNotNull(editor.getValue());
 	}
-	
+
 	/**
 	 * @see RoleEditor#setAsText(String)
 	 */

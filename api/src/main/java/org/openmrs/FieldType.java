@@ -16,66 +16,66 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 public class FieldType extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final long serialVersionUID = 35467L;
-	
+
 	// Fields
-	
+
 	private Integer fieldTypeId;
-	
+
 	private Boolean isSet = false;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public FieldType() {
 	}
-	
+
 	/** constructor with id */
 	public FieldType(Integer fieldTypeId) {
 		this.fieldTypeId = fieldTypeId;
 	}
-	
+
 	// Property accessors
-	
+
 	/**
 	 * @return Returns the fieldTypeId.
 	 */
 	public Integer getFieldTypeId() {
 		return fieldTypeId;
 	}
-	
+
 	/**
 	 * @param fieldTypeId The fieldTypeId to set.
 	 */
 	public void setFieldTypeId(Integer fieldTypeId) {
 		this.fieldTypeId = fieldTypeId;
 	}
-	
+
 	/**
 	 * @return Returns the isSet.
 	 */
 	public Boolean getIsSet() {
 		return isSet;
 	}
-	
+
 	/**
 	 * @param isSet The isSet to set.
 	 */
 	public void setIsSet(Boolean isSet) {
 		this.isSet = isSet;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override
 	public Integer getId() {
-		
+
 		return getFieldTypeId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -83,7 +83,7 @@ public class FieldType extends BaseChangeableOpenmrsMetadata {
 	@Override
 	public void setId(Integer id) {
 		setFieldTypeId(id);
-		
+
 	}
-	
+
 }

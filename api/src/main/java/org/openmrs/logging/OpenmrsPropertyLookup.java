@@ -20,20 +20,20 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * This class exposes a subset of OpenMRS properties to the log4j context configuration. This is intended to allow the
- * logger to make use of certain OpenMRS properties.
+ * This class exposes a subset of OpenMRS properties to the log4j context configuration. This is
+ * intended to allow the logger to make use of certain OpenMRS properties.
  * <p/>
- * To use these properties in your logger configuration, reference them like <tt>${openmrs:&lt;property&gt;}</tt>, e.g.
- * <tt>${openmrs:applicationDirectory}</tt>.
+ * To use these properties in your logger configuration, reference them like
+ * <tt>${openmrs:&lt;property&gt;}</tt>, e.g. <tt>${openmrs:applicationDirectory}</tt>.
  * <p/>
  * Supported properties:
  * <dl>
- *     <dt>applicationDirectory</dt>
- *     <dd>The OpenMRS application directory as a string</dd>
- *     <dt>logLocation</dt>
- *     <dd>The current value for the <tt>log.location</tt> setting</dd>
- *     <dt>logLayout</dt>
- *     <dd>The current value for the <tt>log.layout</tt> setting</dd>
+ * <dt>applicationDirectory</dt>
+ * <dd>The OpenMRS application directory as a string</dd>
+ * <dt>logLocation</dt>
+ * <dd>The current value for the <tt>log.location</tt> setting</dd>
+ * <dt>logLayout</dt>
+ * <dd>The current value for the <tt>log.layout</tt> setting</dd>
  * </dl>
  * <p/>
  * Care should be taken in exposing information through this class to ensure that no
@@ -41,53 +41,50 @@ import org.openmrs.util.OpenmrsUtil;
 @Plugin(name = OpenmrsPropertyLookup.NAME, category = StrLookup.CATEGORY)
 @SuppressWarnings("unused")
 public class OpenmrsPropertyLookup extends AbstractLookup {
-	
+
 	public static final String NAME = "openmrs";
-	
+
 	@Override
 	public String lookup(LogEvent event, String key) {
 		AdministrationService adminService = null;
-		
+
 		try {
 			adminService = Context.getAdministrationService();
+		} catch (ServiceNotFoundException ignored) {
+
 		}
-		catch (ServiceNotFoundException ignored) {
-			
-		}
-		
+
 		switch (key) {
 			case "applicationDirectory":
 				final String applicationDirectory = OpenmrsUtil.getApplicationDataDirectory();
 				return applicationDirectory == null || applicationDirectory.isEmpty() ? null : applicationDirectory;
 			case "logLocation":
 				final String logLocation = getGlobalProperty(adminService, OpenmrsConstants.GP_LOG_LOCATION);
-				return logLocation == null ?
-					null :
-						logLocation.endsWith("/") ?
-							logLocation.substring(0, logLocation.length() - 1) : logLocation;
+				return logLocation == null ? null
+				        : logLocation.endsWith("/") ? logLocation.substring(0, logLocation.length() - 1) : logLocation;
 			case "logLayout":
 				return getGlobalProperty(adminService, OpenmrsConstants.GP_LOG_LAYOUT);
 			default:
 				throw new IllegalArgumentException(key);
 		}
 	}
-	
+
 	private String getGlobalProperty(AdministrationService adminService, String globalPropertyName) {
 		if (adminService == null) {
 			return null;
 		}
-		
+
 		String value = adminService.getGlobalProperty(globalPropertyName);
 		if (value == null) {
 			return null;
 		} else {
 			value = value.trim();
 		}
-		
+
 		if (value.isEmpty()) {
 			return null;
 		}
-		
+
 		return value;
 	}
 }

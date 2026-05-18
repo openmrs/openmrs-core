@@ -19,21 +19,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing a provider to a string so that Spring knows how to pass
- * a provider back and forth through an html form or other medium. <br>
- * 
+ * Allows for serializing/deserializing a provider to a string so that Spring knows how to pass a
+ * provider back and forth through an html form or other medium. <br>
+ *
  * @see Provider
  * @since 1.10.0
  */
 public class ProviderEditor extends PropertyEditorSupport {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ProviderEditor.class);
-	
+
 	public ProviderEditor() {
 	}
-	
+
 	/**
-	 * <strong>Should</strong> set using id
+	 * <p>
+	 * <strong>Should</strong> set using id<br/>
 	 * <strong>Should</strong> set using uuid
 	 */
 	@Override
@@ -42,8 +43,7 @@ public class ProviderEditor extends PropertyEditorSupport {
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(ps.getProvider(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				Provider p = ps.getProviderByUuid(text);
 				setValue(p);
 				if (p == null) {
@@ -55,7 +55,7 @@ public class ProviderEditor extends PropertyEditorSupport {
 			setValue(null);
 		}
 	}
-	
+
 	@Override
 	public String getAsText() {
 		Provider p = (Provider) getValue();
@@ -65,5 +65,5 @@ public class ProviderEditor extends PropertyEditorSupport {
 			return p.getProviderId().toString();
 		}
 	}
-	
+
 }

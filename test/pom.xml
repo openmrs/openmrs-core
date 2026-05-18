@@ -31,20 +31,12 @@
          <artifactId>h2</artifactId>
       </dependency>
 	   <dependency>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
-      </dependency>
-	   <dependency>
 		   <groupId>org.junit.jupiter</groupId>
 		   <artifactId>junit-jupiter-api</artifactId>
 	   </dependency>
 	   <dependency>
 		   <groupId>org.junit.jupiter</groupId>
 		   <artifactId>junit-jupiter-engine</artifactId>
-	   </dependency>
-	   <dependency>
-		   <groupId>org.junit.vintage</groupId>
-		   <artifactId>junit-vintage-engine</artifactId>
 	   </dependency>
 	   <dependency>
 		   <groupId>org.junit.jupiter</groupId>
@@ -61,15 +53,6 @@
 	   <dependency>
 		   <groupId>org.mockito</groupId>
 		   <artifactId>mockito-junit-jupiter</artifactId>
-	   </dependency>
-	   <!--hamcrest-core is needed to update JUnit 4 transitive dependency on hamcrest-core as explained in
-		http://hamcrest.org/JavaHamcrest/distributables#upgrading-from-hamcrest-1x and
-		https://github.com/hamcrest/JavaHamcrest/issues/224#issuecomment-449760045
-		Once we remove JUnit 4 we will only need org.hamcrest:hamcrest
-		-->
-	   <dependency>
-		   <groupId>org.hamcrest</groupId>
-		   <artifactId>hamcrest-core</artifactId>
 	   </dependency>
 	   <dependency>
 		   <groupId>org.hamcrest</groupId>

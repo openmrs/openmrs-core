@@ -20,7 +20,6 @@ import org.openmrs.util.PrivilegeConstants;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Alerts in the system Use:<br>
- * 
  * <pre>
  *   Alert alert = new Alert();
  *   alert.set___(___);
@@ -29,49 +28,50 @@ import org.openmrs.util.PrivilegeConstants;
  * </pre>
  */
 public interface AlertService extends OpenmrsService {
-	
+
 	/**
 	 * Used by Spring to set the specific/chosen database access implementation
-	 * 
+	 *
 	 * @param dao The dao implementation to use
 	 */
 	public void setAlertDAO(AlertDAO dao);
-	
+
 	/**
 	 * Save the given <code>alert</code> in the database
-	 * 
+	 * <p>
+	 * <strong>Should</strong> save simple alert with one user<br/>
+	 * <strong>Should</strong> save alerts by role<br/>
+	 * <strong>Should</strong> assign uuid to alert
+	 *
 	 * @param alert the Alert object to save
 	 * @return The saved alert object
 	 * @throws APIException
-	 * <strong>Should</strong> save simple alert with one user
-	 * <strong>Should</strong> save alerts by role
-	 * <strong>Should</strong> assign uuid to alert
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
 	public Alert saveAlert(Alert alert) throws APIException;
-	
+
 	/**
 	 * Get alert by internal identifier
-	 * 
+	 *
 	 * @param alertId internal alert identifier
 	 * @return alert with given internal identifier
 	 * @throws APIException
 	 */
 	@Authorized
 	public Alert getAlert(Integer alertId) throws APIException;
-	
+
 	/**
 	 * Completely delete the given alert from the database
-	 * 
+	 *
 	 * @param alert the Alert to purge/delete
 	 * @throws APIException
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
 	public void purgeAlert(Alert alert) throws APIException;
-	
+
 	/**
 	 * Find all alerts for a user that have not expired
-	 * 
+	 *
 	 * @param user
 	 * @return alerts that are unread _or_ read that have not expired
 	 * @see #getAlerts(User, boolean, boolean)
@@ -79,23 +79,23 @@ public interface AlertService extends OpenmrsService {
 	 */
 	@Authorized
 	public List<Alert> getAllActiveAlerts(User user) throws APIException;
-	
+
 	/**
-	 * Find the alerts that are not read and have not expired for a user This will probably be the
-	 * most commonly called method If null is passed in for <code>user</code>, find alerts for the
-	 * currently authenticated user. If no user is authenticated, search on "new
-	 * User()" (for "Anonymous" role alert possibilities)
-	 * 
+	 * Find the alerts that are not read and have not expired for a user This will probably be the most
+	 * commonly called method If null is passed in for <code>user</code>, find alerts for the currently
+	 * authenticated user. If no user is authenticated, search on "new User()" (for "Anonymous" role
+	 * alert possibilities)
+	 *
 	 * @param user the user that is assigned to the returned alerts
 	 * @return alerts that are unread and not expired
 	 * @throws APIException
 	 */
 	@Authorized
 	public List<Alert> getAlertsByUser(User user) throws APIException;
-	
+
 	/**
 	 * Finds alerts for the given user with the given status
-	 * 
+	 *
 	 * @param user to restrict to
 	 * @param includeRead
 	 * @param includeExpired
@@ -104,35 +104,36 @@ public interface AlertService extends OpenmrsService {
 	 */
 	@Authorized
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws APIException;
-	
+
 	/**
 	 * Get all unexpired alerts for all users
-	 * 
+	 *
 	 * @return list of unexpired alerts
 	 * @throws APIException
 	 */
 	@Authorized
 	public List<Alert> getAllAlerts() throws APIException;
-	
+
 	/**
 	 * Get alerts for all users while obeying includeExpired
-	 * 
+	 *
 	 * @param includeExpired
 	 * @return list of alerts
 	 * @throws APIException
 	 */
 	@Authorized
 	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException;
-	
+
 	/**
 	 * Sends an alert to all superusers
-	 * 
+	 * <p>
+	 * <strong>Should</strong> add an alert with message of length equals Text Max Length<br/>
+	 * <strong>Should</strong> add an alert with message text if cause is null<br/>
+	 * <strong>Should</strong> add an alert to the database
+	 *
 	 * @param messageCode The alert message code from messages.properties
 	 * @param cause The exception that was thrown, method will work if cause is null
 	 * @param messageArguments The arguments for the coded message
-	 * <strong>Should</strong> add an alert with message of length equals Text Max Length
-	 * <strong>Should</strong> add an alert with message text if cause is null
-	 * <strong>Should</strong> add an alert to the database
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
 	public void notifySuperUsers(String messageCode, Exception cause, Object... messageArguments);

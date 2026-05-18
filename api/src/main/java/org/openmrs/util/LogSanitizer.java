@@ -13,20 +13,20 @@ package org.openmrs.util;
  * Utility class to sanitize untrusted data before logging, preventing log injection attacks
  * (CWE-117). Replaces carriage return (CR), line feed (LF), and tab characters with underscores so
  * that an attacker cannot forge log entries by injecting log entry separators.
- * 
+ *
  * @since 2.7.0
  * @see <a href="https://cwe.mitre.org/data/definitions/117.html">CWE-117</a>
  */
 public final class LogSanitizer {
-	
+
 	private LogSanitizer() {
 		// utility class; do not instantiate
 	}
-	
+
 	/**
 	 * Sanitizes the given string for safe inclusion in log output by replacing newline and tab
 	 * characters with underscores.
-	 * 
+	 *
 	 * @param value the untrusted string to sanitize; may be {@code null}
 	 * @return the sanitized string, or {@code "null"} if the input was {@code null}
 	 */
@@ -36,11 +36,11 @@ public final class LogSanitizer {
 		}
 		return value.replaceAll("[\\r\\n\\t]", "_");
 	}
-	
+
 	/**
-	 * Sanitizes an arbitrary object's {@link Object#toString()} representation for safe inclusion
-	 * in log output.
-	 * 
+	 * Sanitizes an arbitrary object's {@link Object#toString()} representation for safe inclusion in
+	 * log output.
+	 *
 	 * @param value the untrusted object to sanitize; may be {@code null}
 	 * @return the sanitized string representation
 	 */

@@ -19,29 +19,29 @@ import org.springframework.stereotype.Repository;
 /**
  * Hibernate-specific Datatype-related functions. This class should not be used directly. All calls
  * should go through the {@link org.openmrs.api.DatatypeService} methods.
- * 
+ *
  * @see org.openmrs.api.db.DatatypeDAO
  * @see org.openmrs.api.DatatypeService
  */
 @Repository("datatypeDAO")
 public class HibernateDatatypeDAO implements DatatypeDAO {
-	
+
 	private final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateDatatypeDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * get current Hibernate session
-	 * 
+	 *
 	 * @return current Hibernate session
 	 */
 	private Session session() {
 		return sessionFactory.getCurrentSession();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.DatatypeDAO#getClobDatatypeStorage(java.lang.Integer)
 	 */
@@ -49,7 +49,7 @@ public class HibernateDatatypeDAO implements DatatypeDAO {
 	public ClobDatatypeStorage getClobDatatypeStorage(Integer id) {
 		return session().get(ClobDatatypeStorage.class, id);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.DatatypeDAO#getClobDatatypeStorageByUuid(java.lang.String)
 	 */
@@ -57,7 +57,7 @@ public class HibernateDatatypeDAO implements DatatypeDAO {
 	public ClobDatatypeStorage getClobDatatypeStorageByUuid(String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, ClobDatatypeStorage.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.DatatypeDAO#saveClobDatatypeStorage(org.openmrs.api.db.ClobDatatypeStorage)
 	 */
@@ -65,7 +65,7 @@ public class HibernateDatatypeDAO implements DatatypeDAO {
 	public ClobDatatypeStorage saveClobDatatypeStorage(ClobDatatypeStorage storage) {
 		return HibernateUtil.saveOrUpdate(session(), storage);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.DatatypeDAO#deleteClobDatatypeStorage(org.openmrs.api.db.ClobDatatypeStorage)
 	 */
@@ -73,5 +73,5 @@ public class HibernateDatatypeDAO implements DatatypeDAO {
 	public void deleteClobDatatypeStorage(ClobDatatypeStorage storage) {
 		session().remove(storage);
 	}
-	
+
 }

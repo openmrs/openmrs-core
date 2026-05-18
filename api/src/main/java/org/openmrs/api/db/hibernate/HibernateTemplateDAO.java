@@ -22,30 +22,29 @@ import org.springframework.stereotype.Repository;
 
 @Repository("templateDAO")
 public class HibernateTemplateDAO implements TemplateDAO {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(HibernateTemplateDAO.class);
-	
+
 	private final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateTemplateDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Template> getTemplates() {
 		log.info("Getting all templates from the database");
 		return sessionFactory.getCurrentSession().createQuery("from Template").list();
 	}
-	
+
 	@Override
 	public Template getTemplate(Integer id) {
 		log.info("Get template " + id);
 		return (Template) sessionFactory.getCurrentSession().get(Template.class, id);
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Template> getTemplatesByName(String name) {
@@ -53,12 +52,12 @@ public class HibernateTemplateDAO implements TemplateDAO {
 		return sessionFactory.getCurrentSession().createQuery("from Template as template where template.name = ?")
 		        .setParameter(0, name).list();
 	}
-	
+
 	@Override
 	public void createTemplate(Template template) throws DAOException {
 		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), template);
 	}
-	
+
 	@Override
 	public void updateTemplate(Template template) throws DAOException {
 		if (template.getId() == null) {
@@ -67,10 +66,10 @@ public class HibernateTemplateDAO implements TemplateDAO {
 			HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), template);
 		}
 	}
-	
+
 	@Override
 	public void deleteTemplate(Template template) throws DAOException {
 		sessionFactory.getCurrentSession().remove(template);
 	}
-	
+
 }

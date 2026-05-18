@@ -17,23 +17,24 @@ import org.openmrs.api.APIException;
  * @see SecurityManager
  */
 public class OpenmrsSecurityManager extends SecurityManager {
-	
+
 	/**
 	 * Returns the class on the current execution stack at the given depth. 0 is the most recently
 	 * called class.
+	 * <p>
+	 * <strong>Should</strong> get the most recently called method<br/>
+	 * <strong>Should</strong> throw an error if given a subzero call stack level
 	 *
 	 * @param callStackDepth
 	 * @return the most recently called class.
 	 * @throws APIException if given a callStackDepth less than zero
 	 * @see SecurityManager#getClassContext()
-	 * <strong>Should</strong> get the most recently called method
-	 * <strong>Should</strong> throw an error if given a subzero call stack level
 	 */
 	public Class<?> getCallerClass(int callStackDepth) {
 		if (callStackDepth < 0) {
 			throw new APIException("call.stack.depth.error", (Object[]) null);
 		}
-		
+
 		//SecurityManager may appear more than once in classContext
 		int skipClasses = 1;
 		Class<?>[] classContext = getClassContext();
@@ -44,9 +45,9 @@ public class OpenmrsSecurityManager extends SecurityManager {
 				break;
 			}
 		}
-		
+
 		//Adjust the depth so that "0" is the not this "getCallerClass" method
 		return getClassContext()[callStackDepth + skipClasses];
 	}
-	
+
 }

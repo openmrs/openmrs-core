@@ -10,25 +10,22 @@
 package org.openmrs.util;
 
 import org.hamcrest.Description;
-import org.junit.internal.matchers.TypeSafeMatcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.PersonName;
-
-import java.util.Set;
 
 public class OpenmrsObjectIdMatcher extends TypeSafeMatcher<OpenmrsObject> {
-	
+
 	private Integer id;
-	
+
 	public OpenmrsObjectIdMatcher(Integer id) {
 		this.id = id;
 	}
-	
+
 	@Override
 	public boolean matchesSafely(OpenmrsObject object) {
 		return id.equals(object.getId());
 	}
-	
+
 	@Override
 	public void describeTo(Description description) {
 		description.appendText(id.toString());

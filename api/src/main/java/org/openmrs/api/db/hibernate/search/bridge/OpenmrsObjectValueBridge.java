@@ -15,13 +15,14 @@ import org.openmrs.OpenmrsObject;
 
 /**
  * Indexes {@link OpenmrsObject} as ID.
- * 
+ *
  * @since 2.8.0
-*/
+ */
 public class OpenmrsObjectValueBridge implements ValueBridge<OpenmrsObject, String> {
 
 	@Override
-	public String toIndexedValue(OpenmrsObject openmrsObject, ValueBridgeToIndexedValueContext valueBridgeToIndexedValueContext) {
+	public String toIndexedValue(OpenmrsObject openmrsObject,
+	        ValueBridgeToIndexedValueContext valueBridgeToIndexedValueContext) {
 		return openmrsObject.getId().toString();
 	}
 }

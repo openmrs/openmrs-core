@@ -16,13 +16,14 @@ import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.springframework.stereotype.Component;
 
 /**
- * Free-text datatype, represented by a plain String in Java, but stored in the 
- * database as a CLOB or similar.
+ * Free-text datatype, represented by a plain String in Java, but stored in the database as a CLOB
+ * or similar.
+ *
  * @since 1.9
  */
 @Component
 public class LongFreeTextDatatype implements CustomDatatype<String> {
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#setConfiguration(java.lang.String)
 	 */
@@ -30,32 +31,33 @@ public class LongFreeTextDatatype implements CustomDatatype<String> {
 	public void setConfiguration(String config) {
 		// no configuration options
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#save(java.lang.Object, java.lang.String)
 	 */
 	@Override
 	public String save(String typedValue, String existingValueReference) throws InvalidCustomValueException {
 		// get existing object or create a new one
-		ClobDatatypeStorage storage = existingValueReference != null ? Context.getDatatypeService()
-		        .getClobDatatypeStorageByUuid(existingValueReference) : new ClobDatatypeStorage();
-		
+		ClobDatatypeStorage storage = existingValueReference != null
+		        ? Context.getDatatypeService().getClobDatatypeStorageByUuid(existingValueReference)
+		        : new ClobDatatypeStorage();
+
 		storage.setValue(typedValue);
 		storage = Context.getDatatypeService().saveClobDatatypeStorage(storage);
-		
+
 		return storage.getUuid();
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#getReferenceStringForValue(java.lang.Object)
 	 */
 	@Override
 	public String getReferenceStringForValue(String typedValue) throws UnsupportedOperationException {
-		// this doesn't make sense in this case, because there may be multiple 
+		// this doesn't make sense in this case, because there may be multiple
 		// stored clobs with the same value
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#fromReferenceString(java.lang.String)
 	 */
@@ -63,7 +65,7 @@ public class LongFreeTextDatatype implements CustomDatatype<String> {
 	public String fromReferenceString(String referenceString) throws InvalidCustomValueException {
 		return Context.getDatatypeService().getClobDatatypeStorageByUuid(referenceString).getValue();
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#getTextSummary(java.lang.String)
 	 */
@@ -74,7 +76,7 @@ public class LongFreeTextDatatype implements CustomDatatype<String> {
 		    Context.getLocale());
 		return new CustomDatatype.Summary(ret, false);
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#validate(java.lang.Object)
 	 */
@@ -85,5 +87,5 @@ public class LongFreeTextDatatype implements CustomDatatype<String> {
 			throw new InvalidCustomValueException("Cannot be null");
 		}
 	}
-	
+
 }

@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
@@ -27,33 +28,33 @@ import org.openmrs.util.OpenmrsUtil;
 @Audited
 @Entity
 @Table(name = "allergy_reaction")
-public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serializable{
-	
+public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serializable {
+
 	public static final long serialVersionUID = 1;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "allergy_reaction_id")
 	private Integer allergyReactionId;
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "allergy_id", nullable = false)
 	private Allergy allergy;
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "reaction_concept_id", nullable = false)
 	private Concept reaction;
-	
+
 	@Column(name = "reaction_non_coded")
 	private String reactionNonCoded;
-	
+
 	/**
 	 * Default constructor
 	 */
-	public AllergyReaction(){
-		
+	public AllergyReaction() {
+
 	}
-	
+
 	/**
 	 * @param allergy the allergy to set
 	 * @param reaction the reaction to set
@@ -64,7 +65,7 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 		this.reaction = reaction;
 		this.reactionNonCoded = reactionNonCoded;
 	}
-	
+
 	public Integer getAllergyReactionId() {
 		return allergyReactionId;
 	}
@@ -88,60 +89,60 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 	public void setId(Integer allergyReactionId) {
 		this.allergyReactionId = allergyReactionId;
 	}
-	
+
 	/**
 	 * @return Returns the allergy
 	 */
 	public Allergy getAllergy() {
 		return allergy;
 	}
-	
+
 	/**
 	 * @param allergy the allergy to set
 	 */
 	public void setAllergy(Allergy allergy) {
 		this.allergy = allergy;
 	}
-	
+
 	/**
 	 * @return Returns the reaction
 	 */
 	public Concept getReaction() {
 		return reaction;
 	}
-	
+
 	/**
 	 * @param reaction the reaction to set
 	 */
 	public void setReaction(Concept reaction) {
 		this.reaction = reaction;
 	}
-	
+
 	/**
 	 * @return Returns the reactionNonCoded
 	 */
 	public String getReactionNonCoded() {
 		return reactionNonCoded;
 	}
-	
+
 	/**
 	 * @param reactionNonCoded the reactionNonCoded to set
 	 */
 	public void setReactionNonCoded(String reactionNonCoded) {
 		this.reactionNonCoded = reactionNonCoded;
 	}
-	
+
 	@Override
-    public String toString() {
-	    if (StringUtils.isNotBlank(reactionNonCoded)) {
-	    	return reactionNonCoded;
-	    }
-	    return reaction.getName().getName();
-    }
-	
+	public String toString() {
+		if (StringUtils.isNotBlank(reactionNonCoded)) {
+			return reactionNonCoded;
+		}
+		return reaction.getName().getName();
+	}
+
 	/**
 	 * Checks if this reaction has the same values as the given one
-	 * 
+	 *
 	 * @param reaction the reaction whose values to compare with
 	 * @return true if the values match, else false
 	 */
@@ -155,8 +156,7 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 				if (!OpenmrsUtil.nullSafeEquals(getReaction().getConceptId(), reaction.getReaction().getConceptId())) {
 					return false;
 				}
-			}
-			else {
+			} else {
 				return false;
 			}
 		}

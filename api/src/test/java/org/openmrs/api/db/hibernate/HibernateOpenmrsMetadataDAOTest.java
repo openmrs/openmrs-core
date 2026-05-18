@@ -9,14 +9,14 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link HibernateOpenmrsMetadataDAO}
@@ -48,6 +48,6 @@ public class HibernateOpenmrsMetadataDAOTest extends BaseContextSensitiveTest {
 		int countWithRetired = dao.getAllCount(true);
 		int countWithoutRetired = dao.getAllCount(false);
 		assertTrue(countWithRetired > countWithoutRetired,
-			"Count including retired should be greater than count excluding retired");
+		    "Count including retired should be greater than count excluding retired");
 	}
 }

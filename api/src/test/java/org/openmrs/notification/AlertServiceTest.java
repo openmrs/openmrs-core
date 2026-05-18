@@ -9,58 +9,58 @@
  */
 package org.openmrs.notification;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.impl.AlertServiceImpl;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class AlertServiceTest extends BaseContextSensitiveTest {
-	
+
 	@Test
 	public void notifySuperUsers_shouldAddAnAlertWithMessageOfLengthEqualsTextMaxLength() {
 		Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", new Exception(), "test");
-		
+
 		Alert lastAlert = Context.getAlertService().getAlertsByUser(null).iterator().next();
-		
+
 		assertEquals(Alert.TEXT_MAX_LENGTH, lastAlert.getText().length());
 	}
-	
+
 	@Test
 	public void notifySuperUsers_shouldAddAnAlertWithMessageTextIfCauseIsNull() {
-		
+
 		Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, "test");
-		
+
 		Alert lastAlert = Context.getAlertService().getAlertsByUser(null).iterator().next();
-		
+
 		String expectedText = Context.getMessageSourceService().getMessage("Module.startupError.notification.message",
 		    new Object[] { "test" }, Context.getLocale());
-		
+
 		assertEquals(expectedText, lastAlert.getText());
 	}
-	
+
 	/**
 	 * @see AlertService#notifySuperUsers(String,Exception,null)
-	 * 
 	 */
 	@Test
 	public void notifySuperUsers_shouldAddAnAlertToTheDatabase() {
 		// Check there are no alerts before the method is called
 		assertEquals(0, Context.getAlertService().getAlertsByUser(null).size());
-		
+
 		//Call the method to be tested
 		AlertServiceImpl alert = new AlertServiceImpl();
 		alert.notifySuperUsers("Module.startupError.notification.message", null, "test");
-		
+
 		// Check that there is exactly one alert after the message is called
 		assertEquals(1, Context.getAlertService().getAlertsByUser(null).size());
-		
+
 		// Set alertOne to be that one alert
 		Alert alertOne = Context.getAlertService().getAlertsByUser(null).iterator().next();
-		
+
 		//Test that alert contains the expected content
-		assertTrue(alertOne.getText().equals(Context.getMessageSourceService().getMessage("Module.startupError.notification.message", new Object[] { "test" }, null)));
+		assertTrue(alertOne.getText().equals(Context.getMessageSourceService()
+		        .getMessage("Module.startupError.notification.message", new Object[] { "test" }, null)));
 	}
 }

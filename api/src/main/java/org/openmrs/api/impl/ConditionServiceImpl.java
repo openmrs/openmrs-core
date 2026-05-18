@@ -3,14 +3,15 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- * 
+ *
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
-
 import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Condition;
@@ -26,11 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 /**
- * This class implements the {@link ConditionService} interface
- * It defines the methods to handle the condition domain object
+ * This class implements the {@link ConditionService} interface It defines the methods to handle the
+ * condition domain object
  *
  * @since 2.2
  */
@@ -110,24 +109,24 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	 */
 	@Override
 	public Condition saveCondition(Condition condition) throws APIException {
-		
+
 		// If there is no existing condition, then we are creating a condition
 		Integer existingConditionId = condition.getConditionId();
 		if (existingConditionId == null) {
 			return conditionDAO.saveCondition(condition);
 		}
-		
+
 		// If there is an existing condition, create a new condition from it and reset the existing instance state
 		Condition newCondition = Condition.newInstance(condition);
 		Context.refreshEntity(condition);
-		
+
 		// Determine how the existing state and new state have changed
 		boolean conditionHasChanged = !newCondition.matches(condition);
 		boolean existingVoided = BooleanUtils.isTrue(condition.getVoided());
 		boolean newVoided = BooleanUtils.isTrue(newCondition.getVoided());
 		boolean voidOriginal = !existingVoided && conditionHasChanged;
 		boolean saveNew = !newVoided && conditionHasChanged;
-		
+
 		// If the intention is to void or change the original Condition, then void the existing and save the new
 		if (voidOriginal) {
 			User currentUser = Context.getAuthenticatedUser();
@@ -137,12 +136,11 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 			condition.setVoidReason(newCondition.getVoidReason() == null ? reason : newCondition.getVoidReason());
 			condition = conditionDAO.saveCondition(condition);
 		}
-		
+
 		if (saveNew) {
 			newCondition.setPreviousVersion(condition);
 			return conditionDAO.saveCondition(newCondition);
-		}
-		else {
+		} else {
 			return condition;
 		}
 	}
@@ -150,7 +148,7 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	/**
 	 * Voids a condition
 	 *
-	 * @param condition  - the condition to be voided
+	 * @param condition - the condition to be voided
 	 * @param voidReason - the reason for voiding the condition
 	 * @return the voided condition
 	 */
@@ -175,10 +173,10 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	}
 
 	/**
-	 * Completely remove a condition from the database. This should typically not be called
-	 * because we don't want to ever lose data. The data really <i>should</i> be voided and then it
-	 * is not seen in interface any longer (see #voidCondition(Condition) for that one) If other things link to
-	 * this condition, an error will be thrown.
+	 * Completely remove a condition from the database. This should typically not be called because we
+	 * don't want to ever lose data. The data really <i>should</i> be voided and then it is not seen in
+	 * interface any longer (see #voidCondition(Condition) for that one) If other things link to this
+	 * condition, an error will be thrown.
 	 *
 	 * @param condition the condition to purge from the database
 	 */
@@ -186,19 +184,19 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	public void purgeCondition(Condition condition) {
 		conditionDAO.deleteCondition(condition);
 	}
-	
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getRefByUuid(Class<T> type, String uuid) {
-        if (Condition.class.equals(type)) {
-            return (T) getConditionByUuid(uuid);
-        }
-        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
-    }
 
-    @Override
-    public List<Class<?>> getRefTypes() {
-        return Arrays.asList(Condition.class);
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T getRefByUuid(Class<T> type, String uuid) {
+		if (Condition.class.equals(type)) {
+			return (T) getConditionByUuid(uuid);
+		}
+		throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+	}
+
+	@Override
+	public List<Class<?>> getRefTypes() {
+		return Arrays.asList(Condition.class);
+	}
 
 }

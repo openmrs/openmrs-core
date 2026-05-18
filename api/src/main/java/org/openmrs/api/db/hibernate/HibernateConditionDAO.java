@@ -9,9 +9,10 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import jakarta.persistence.TypedQuery;
 import java.util.Arrays;
 import java.util.List;
+
+import jakarta.persistence.TypedQuery;
 
 import org.hibernate.SessionFactory;
 import org.openmrs.Condition;
@@ -34,17 +35,17 @@ import static org.openmrs.ConditionClinicalStatus.RELAPSE;
  */
 @Repository("conditionDAO")
 public class HibernateConditionDAO implements ConditionDAO {
-	
+
 	/**
 	 * Hibernate session factory
 	 */
 	private final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateConditionDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * Gets the condition with the specified id.
 	 *
@@ -55,7 +56,7 @@ public class HibernateConditionDAO implements ConditionDAO {
 	public Condition getCondition(Integer conditionId) {
 		return sessionFactory.getCurrentSession().get(Condition.class, conditionId);
 	}
-	
+
 	/**
 	 * Gets the condition by its UUID.
 	 *
@@ -72,13 +73,14 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException {
-		TypedQuery<Condition> query = sessionFactory.getCurrentSession().createQuery(
-			"from Condition c where c.encounter.encounterId = :encounterId and c.voided = false order "
-				+ "by c.dateCreated desc", Condition.class);
+		TypedQuery<Condition> query = sessionFactory.getCurrentSession()
+		        .createQuery("from Condition c where c.encounter.encounterId = :encounterId and c.voided = false order "
+		                + "by c.dateCreated desc",
+		            Condition.class);
 		query.setParameter("encounterId", encounter.getId());
 		return query.getResultList();
 	}
-	
+
 	/**
 	 * Gets all active conditions related to the specified patient.
 	 *
@@ -87,12 +89,11 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public List<Condition> getActiveConditions(Patient patient) {
-		TypedQuery<Condition> query = sessionFactory.getCurrentSession().createQuery(
-				 "from Condition c " +
-					 "where c.patient.patientId = :patientId " +
-					"and c.clinicalStatus in :activeStatuses " +
-					"and c.voided = false " +
-					"order by c.dateCreated desc", Condition.class);
+		TypedQuery<Condition> query = sessionFactory.getCurrentSession()
+		        .createQuery("from Condition c " + "where c.patient.patientId = :patientId "
+		                + "and c.clinicalStatus in :activeStatuses " + "and c.voided = false "
+		                + "order by c.dateCreated desc",
+		            Condition.class);
 		query.setParameter("patientId", patient.getId());
 		query.setParameter("activeStatuses", Arrays.asList(ACTIVE, RECURRENCE, RELAPSE));
 		return query.getResultList();
@@ -103,18 +104,16 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public List<Condition> getAllConditions(Patient patient) {
-		TypedQuery<Condition> query = sessionFactory.getCurrentSession().createQuery(
-				"from Condition c " +
-					"where c.patient.patientId = :patientId " +
-					"and c.voided = false " +
-					"order by c.dateCreated desc", Condition.class);
+		TypedQuery<Condition> query = sessionFactory.getCurrentSession().createQuery("from Condition c "
+		        + "where c.patient.patientId = :patientId " + "and c.voided = false " + "order by c.dateCreated desc",
+		    Condition.class);
 		query.setParameter("patientId", patient.getId());
 		return query.getResultList();
 	}
-	
+
 	/**
 	 * Removes a condition from the database
-	 * 
+	 *
 	 * @param condition the condition to be deleted
 	 */
 	@Override

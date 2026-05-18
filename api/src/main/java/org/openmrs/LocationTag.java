@@ -9,9 +9,6 @@
  */
 package org.openmrs;
 
-
-import org.hibernate.envers.Audited;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,39 +17,42 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import org.hibernate.envers.Audited;
+
 /**
  * An LocationTag allows categorization of {@link Location}s
- * 
+ *
  * @see Location
  * @since 1.5
  */
 @Audited
 @Entity
 @Table(name = "location_tag")
-@AttributeOverride( name = "name", column = @Column(name = "name", nullable = false, length = 50))
+@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50))
 public class LocationTag extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final long serialVersionUID = 7654L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "location_tag_id",  nullable = false)
+	@Column(name = "location_tag_id", nullable = false)
 	private Integer locationTagId;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public LocationTag() {
 	}
-	
+
 	/** constructor with id */
 	public LocationTag(Integer locationTagId) {
 		this.locationTagId = locationTagId;
 	}
-	
+
 	/**
-	 * Required values constructor. This is the minimum number of values that must be non-null in
-	 * order to have a successful save to the database
-	 * 
+	 * Required values constructor. This is the minimum number of values that must be non-null in order
+	 * to have a successful save to the database
+	 *
 	 * @param name the name of this encounter type
 	 * @param description a short description of why this encounter type exists
 	 */
@@ -60,28 +60,28 @@ public class LocationTag extends BaseChangeableOpenmrsMetadata {
 		setName(name);
 		setDescription(description);
 	}
-	
+
 	// Property accessors
-	
+
 	/**
 	 * @return Returns the locationTagId.
 	 */
 	public Integer getLocationTagId() {
 		return locationTagId;
 	}
-	
+
 	/**
 	 * @param locationTagId The locationTagId to set.
 	 */
 	public void setLocationTagId(Integer locationTagId) {
 		this.locationTagId = locationTagId;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getName();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -89,13 +89,13 @@ public class LocationTag extends BaseChangeableOpenmrsMetadata {
 	public Integer getId() {
 		return getLocationTagId();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	@Override
 	public void setId(Integer id) {
 		setLocationTagId(id);
-		
+
 	}
 }

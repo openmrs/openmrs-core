@@ -19,26 +19,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
- * an object back and forth through an html form or other medium. <br>
- * If string value starts with "concept.", then the text after the dot is treated as a concept_id or uuid
- * The name of the concept associated with that id is treated as the name of the program to fetch.
- * <br>
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass an
+ * object back and forth through an html form or other medium. <br>
+ * If string value starts with "concept.", then the text after the dot is treated as a concept_id or
+ * uuid The name of the concept associated with that id is treated as the name of the program to
+ * fetch. <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
  *
  * @see Program
  */
 public class ProgramEditor extends PropertyEditorSupport {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ProgramEditor.class);
-	
+
 	public ProgramEditor() {
 	}
-	
+
 	/**
-	 * <strong>Should</strong> set using concept id
-	 * <strong>Should</strong> set using concept uuid
-	 * <strong>Should</strong> set using program id
+	 * <p>
+	 * <strong>Should</strong> set using concept id<br/>
+	 * <strong>Should</strong> set using concept uuid<br/>
+	 * <strong>Should</strong> set using program id<br/>
 	 * <strong>Should</strong> set using program uuid
 	 */
 	@Override
@@ -53,8 +54,7 @@ public class ProgramEditor extends PropertyEditorSupport {
 					Integer programId = Integer.valueOf(text);
 					setValue(Context.getProgramWorkflowService().getProgram(programId));
 				}
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				Program p;
 				if (text.startsWith("concept.")) {
 					Concept c = Context.getConceptService().getConceptByUuid(text.substring(text.indexOf('.') + 1));
@@ -62,7 +62,7 @@ public class ProgramEditor extends PropertyEditorSupport {
 				} else {
 					p = Context.getProgramWorkflowService().getProgramByUuid(text);
 				}
-				
+
 				setValue(p);
 				if (p == null) {
 					log.error("Error setting text: " + text, ex);
@@ -73,7 +73,7 @@ public class ProgramEditor extends PropertyEditorSupport {
 			setValue(null);
 		}
 	}
-	
+
 	@Override
 	public String getAsText() {
 		Program p = (Program) getValue();
@@ -83,5 +83,5 @@ public class ProgramEditor extends PropertyEditorSupport {
 			return p.getProgramId().toString();
 		}
 	}
-	
+
 }

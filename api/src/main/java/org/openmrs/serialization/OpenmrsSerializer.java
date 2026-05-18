@@ -13,18 +13,18 @@ package org.openmrs.serialization;
  * Implementations of this interface provide serialization implementations for OpenMRS.
  */
 public interface OpenmrsSerializer {
-	
+
 	/**
 	 * Turn the current object into an identifying string that can be retrieved later
-	 * 
+	 *
 	 * @param o - the object to serialize
 	 * @return String representing this object
 	 */
 	public String serialize(Object o) throws SerializationException;
-	
+
 	/**
 	 * Deserialize the given string into a full object
-	 * 
+	 *
 	 * @param serializedObject - String to deserialize
 	 * @param clazz - The class to deserialize the Object into
 	 * @return hydrated object of the appropriate type

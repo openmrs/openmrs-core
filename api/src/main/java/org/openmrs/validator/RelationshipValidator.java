@@ -18,12 +18,13 @@ import org.springframework.validation.Validator;
 
 /**
  * Validator for the Relationship class
+ *
  * @since 1.11.0
  */
 
 @Handler(supports = { Relationship.class }, order = 50)
 public class RelationshipValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 *
@@ -33,26 +34,22 @@ public class RelationshipValidator implements Validator {
 	public boolean supports(Class<?> c) {
 		return Relationship.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * Checks that a given Relationship object is valid.
 	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
-	 *      org.springframework.validation.Errors)
-	 *
-	 * <strong>Should</strong> fail if end date is prior to the start date
-	 * <strong>Should</strong> fail if start date is a future date
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *      org.springframework.validation.Errors) <strong>Should</strong> fail if end date is prior to
+	 *      the start date <strong>Should</strong> fail if start date is a future date
+	 *      <strong>Should</strong> pass validation if field lengths are correct <strong>Should</strong>
+	 *      fail validation if field lengths are not correct
 	 * @param target Relationship object to be validate
 	 * @param errors Error object to hold any errors encounter in the test
-	 *
-	 *
 	 **/
 	@Override
 	public void validate(Object target, Errors errors) {
 		Relationship relationship = (Relationship) target;
-		
+
 		if (relationship != null) {
 			Date startDate = relationship.getStartDate();
 			Date endDate = relationship.getEndDate();
@@ -67,7 +64,7 @@ public class RelationshipValidator implements Validator {
 				}
 			}
 		}
-		
+
 	}
-	
+
 }

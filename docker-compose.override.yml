@@ -27,6 +27,7 @@ services:
         ports:
             - "8080:8080"
             - "8000:8000"
+            - "9000:9000"
         environment:
             OMRS_DEV_DEBUG_PORT: ${OMRS_DEV_DEBUG_PORT:-8000}
             OMRS_CREATE_TABLES: ${OMRS_CREATE_TABLES:-true}
@@ -34,6 +35,10 @@ services:
             OMRS_BUILD: ${OMRS_BUILD:-true}
             OMRS_BUILD_GOALS: ${OMRS_BUILD_GOALS:-}
             OMRS_BUILD_ARGS: ${OMRS_BUILD_ARGS:-}
+            
+            OMRS_EXTRA_JOBRUNR_DASHBOARD_ENABLED: ${OMRS_EXTRA_JOBRUNR_DASHBOARD_ENABLED:-true}
+            OMRS_EXTRA_JOBRUNR_DASHBOARD_PASSWORD: ${OMRS_EXTRA_JOBRUNR_DASHBOARD_PASSWORD:-Admin123}
+            OMRS_EXTRA_JOBRUNR_DASHBOARD_PORT: ${OMRS_EXTRA_JOBRUNR_DASHBOARD_PORT:-9000}
         volumes:
             - ./:/openmrs_core
             - ./target/data:/openmrs/data/

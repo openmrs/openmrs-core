@@ -339,7 +339,7 @@
   <encounter_provider encounter_provider_id="2" encounter_id="4" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="1609ac3f-090c-4b1c-a497-4c307e24c5dd" />
   <encounter encounter_id="5" encounter_type="1" patient_id="7" location_id="2" form_id="1" encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" uuid="e403fafb-e5e4-42d0-9d11-4f52e89d148c"/>
   <encounter_provider encounter_provider_id="3" encounter_id="5" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="2417c6c5-77a4-41b0-b7eb-564e163e55e4" />
-  <encounter encounter_id="6" encounter_type="1" patient_id="2" location_id="2" form_id="1" visit_id="6" encounter_datetime="2008-08-19 00:00:00.1" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e89d123r"/>
+  <encounter encounter_id="6" encounter_type="1" patient_id="2" location_id="2" form_id="1" visit_id="6" encounter_datetime="2007-12-01 00:00:00.1" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e89d123r"/>
   <encounter_provider encounter_provider_id="4" encounter_id="6" provider_id="1" encounter_role_id="1" creator="1" date_created="2008-08-19 00:00:00.0" voided="false" uuid="4527c6c5-77a4-41b0-b7eb-564e163e55e5" />
   <concept_proposal concept_proposal_id="1" original_text="I want this concept but I can't have it" state="REJECT" encounter_id="3" obs_concept_id="4" creator="1" date_created="2009-06-03 13:55:12.0" uuid="57a68666-5067-11de-80cb-001e378eb67e"/>
   <concept_proposal concept_proposal_id="2" original_text="unmapped concept proposal" state="UNMAPPED" encounter_id="3" creator="1" date_created="2010-12-21 08:41:10.0" uuid="af4ae460-0e2b-11e0-a94b-469c3c5a0c2f"/>
@@ -398,7 +398,7 @@
   <drug_order order_id="111" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
   <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
   <drug_order order_id="22" drug_inventory_id="2" as_needed="0" brand_name="some brand name" dispense_as_written="1" />
-  <drug_order order_id="222" drug_inventory_id="2" as_needed="0" dispense_as_written="0" />
+  <drug_order order_id="222" drug_inventory_id="2" as_needed="0" dispense_as_written="0" dosing_type="org.openmrs.FreeTextDosingInstructions" dosing_instructions="As directed" />
   <drug_order order_id="3" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
   <drug_order order_id="4" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
   <drug_order order_id="44" drug_inventory_id="3" as_needed="0" dispense_as_written="0" />

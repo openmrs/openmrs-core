@@ -21,10 +21,12 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ProgramDatatype extends BaseMetadataDatatype<Program> {
-	
+
 	/**
-	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
+	 * <p>
 	 * <strong>Should</strong> return the object by given uuid string
+	 *
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
 	 * @override
 	 */
 	@Override

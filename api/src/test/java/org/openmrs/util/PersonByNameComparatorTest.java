@@ -9,18 +9,18 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * This test class (should) contain tests for all of the {@link PersonByNameComparator} methods.
  */
 public class PersonByNameComparatorTest {
-	
+
 	/**
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
@@ -33,7 +33,7 @@ public class PersonByNameComparatorTest {
 		int actualValue = PersonByNameComparator.comparePersonsByName(person1, person2);
 		assertTrue(actualValue < 0, "Expected a negative value but it was: " + actualValue);
 	}
-	
+
 	/**
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
@@ -46,7 +46,7 @@ public class PersonByNameComparatorTest {
 		int actualValue = PersonByNameComparator.comparePersonsByName(person1, person2);
 		assertTrue(actualValue > 0, "Expected a positive value but it was: " + actualValue);
 	}
-	
+
 	/**
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
@@ -59,7 +59,7 @@ public class PersonByNameComparatorTest {
 		int actualValue = PersonByNameComparator.comparePersonsByName(person1, person2);
 		assertEquals(0, actualValue);
 	}
-	
+
 	@Test
 	public void comparePersonsByName_shouldNotBeCaseSensitive() {
 		Person person1 = new Person();

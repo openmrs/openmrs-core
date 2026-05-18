@@ -19,15 +19,15 @@ import jakarta.servlet.ServletContext;
  * This class is an implementation of FilterConfig for use in instantiating Filters from Modules
  */
 public class ModuleFilterConfig implements FilterConfig {
-	
+
 	// Properties
 	private ModuleFilterDefinition filterDefinition;
-	
+
 	private ServletContext servletContext;
-	
+
 	/**
 	 * Private constructor which sets all required properties
-	 * 
+	 *
 	 * @param filterDefinition The ModuleFilterDefinition to store in this ModuleFilterConfig
 	 * @param servletContext The {@link ServletContext} to store in this ModuleFilterConfig
 	 */
@@ -35,10 +35,10 @@ public class ModuleFilterConfig implements FilterConfig {
 		this.filterDefinition = filterDefinition;
 		this.servletContext = servletContext;
 	}
-	
+
 	/**
 	 * Factory method to construct and return a ModuleFilterConfig
-	 * 
+	 *
 	 * @param filterDefinition The ModuleFilterDefinition to store in this ModuleFilterConfig
 	 * @param servletContext The {@link ServletContext} to store in this ModuleFilterConfig
 	 * @return The ModuleFilterConfig that is fully initialized with the passed parameters
@@ -46,7 +46,7 @@ public class ModuleFilterConfig implements FilterConfig {
 	public static ModuleFilterConfig getInstance(ModuleFilterDefinition filterDefinition, ServletContext servletContext) {
 		return new ModuleFilterConfig(filterDefinition, servletContext);
 	}
-	
+
 	/**
 	 * @see jakarta.servlet.FilterConfig#getFilterName()
 	 */
@@ -54,7 +54,7 @@ public class ModuleFilterConfig implements FilterConfig {
 	public String getFilterName() {
 		return filterDefinition.getFilterName();
 	}
-	
+
 	/**
 	 * @see jakarta.servlet.FilterConfig#getInitParameter(java.lang.String)
 	 */
@@ -62,7 +62,7 @@ public class ModuleFilterConfig implements FilterConfig {
 	public String getInitParameter(String paramName) {
 		return filterDefinition.getInitParameters().get(paramName);
 	}
-	
+
 	/**
 	 * @see jakarta.servlet.FilterConfig#getInitParameterNames()
 	 */
@@ -70,24 +70,24 @@ public class ModuleFilterConfig implements FilterConfig {
 	public Enumeration<String> getInitParameterNames() {
 		return Collections.enumeration(filterDefinition.getInitParameters().keySet());
 	}
-	
+
 	//******************
 	// Property access
 	//******************
-	
+
 	public ModuleFilterDefinition getFilterDefinition() {
 		return filterDefinition;
 	}
-	
+
 	public void setFilterDefinition(ModuleFilterDefinition filterDefinition) {
 		this.filterDefinition = filterDefinition;
 	}
-	
+
 	@Override
 	public ServletContext getServletContext() {
 		return servletContext;
 	}
-	
+
 	public void setServletContext(ServletContext servletContext) {
 		this.servletContext = servletContext;
 	}

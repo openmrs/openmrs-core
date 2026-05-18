@@ -46,19 +46,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.jpa.hibernate.LocalSessionFactoryBean;
 
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean implements Integrator {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(HibernateSessionFactoryBean.class);
-	
+
 	protected Set<String> mappingResources = new HashSet<>();
-	
+
 	/**
 	 * @since 1.9.2, 1.10
 	 */
 	protected Set<String> packagesToScan = new HashSet<>();
-	
+
 	// @since 1.6.3, 1.7.2, 1.8.0, 1.9
 	protected ChainingInterceptor chainingInterceptor = new ChainingInterceptor();
-	
+
 	// @since 1.6.3, 1.7.2, 1.8.0, 1.9
 	// This will be sorted on keys before being used
 	@Autowired(required = false)
@@ -66,45 +66,45 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 
 	@Value("${cache.type:local}")
 	private String cacheType;
-	
+
 	@Value(("${cache.stack:}"))
 	private String cacheStack;
-	
+
 	private Metadata metadata;
-	
+
 	@Autowired
 	private CacheConfig cacheConfig;
 
 	/**
-	 * Collect the mapping resources for future use because the mappingResources object is defined
-	 * as 'private' instead of 'protected'
+	 * Collect the mapping resources for future use because the mappingResources object is defined as
+	 * 'private' instead of 'protected'
 	 */
 	@Override
-	public void setMappingResources(String @NonNull ... mappingResources) {
+	public void setMappingResources(String @NonNull... mappingResources) {
 		Collections.addAll(this.mappingResources, mappingResources);
-		
+
 		super.setMappingResources(this.mappingResources.toArray(new String[] {}));
 	}
-	
+
 	/**
 	 * Collect packages to scan that are set in core and for tests in modules.
 	 * <p>
 	 * It adds to the set instead of overwriting it with each call.
 	 */
 	@Override
-	public void setPackagesToScan(String @NonNull ... packagesToScan) {
+	public void setPackagesToScan(String @NonNull... packagesToScan) {
 		this.packagesToScan.addAll(Arrays.asList(packagesToScan));
-		
+
 		super.setPackagesToScan(this.packagesToScan.toArray(new String[0]));
 	}
-	
+
 	public Set<String> getModuleMappingResources() {
 		for (Module mod : ModuleFactory.getStartedModules()) {
 			mappingResources.addAll(mod.getMappingFiles());
 		}
 		return mappingResources;
 	}
-	
+
 	/**
 	 * Gets packages with mapped classes from all modules.
 	 *
@@ -118,7 +118,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 		}
 		return packages;
 	}
-	
+
 	/**
 	 * Overridden to populate mappings from modules.
 	 */
@@ -126,9 +126,9 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	public void afterPropertiesSet() throws IOException {
 		log.debug("Configuring hibernate sessionFactory properties");
 		Properties config = getHibernateProperties();
-		
+
 		Properties moduleProperties = Context.getConfigProperties();
-		
+
 		// override or initialize config properties with module-provided ones
 		for (Map.Entry<Object, Object> entry : moduleProperties.entrySet()) {
 			Object key = entry.getKey();
@@ -140,9 +140,9 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 				config.setProperty("hibernate." + prop, value);
 			}
 		}
-		
+
 		Properties properties = Context.getRuntimeProperties();
-		
+
 		// loop over runtime properties and override each in the configuration
 		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
 			Object key = entry.getKey();
@@ -154,66 +154,65 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 				config.setProperty("hibernate." + prop, value);
 			}
 		}
-		
+
 		// load in the default hibernate properties
 		try {
 			InputStream propertyStream = getClass().getResourceAsStream("/hibernate.default.properties");
 			Properties props = new Properties();
-			
+
 			OpenmrsUtil.loadProperties(props, propertyStream);
 			propertyStream.close();
-			
-			String jChannelConfig=cacheConfig.getJChannelConfig(cacheStack);
-			props.put("hibernate.cache.infinispan.jgroups_cfg",jChannelConfig);
-			
+
+			String jChannelConfig = cacheConfig.getJChannelConfig(cacheStack);
+			props.put("hibernate.cache.infinispan.jgroups_cfg", jChannelConfig);
+
 			// Load infinispan config based on selected cache type
 			String local = "local".equalsIgnoreCase(cacheType.trim()) ? "-local" : "";
-			props.put("hibernate.cache.infinispan.cfg", 
-				"org/infinispan/hibernate/cache/commons/builder/infinispan-configs" + local + ".xml");
-			
+			props.put("hibernate.cache.infinispan.cfg",
+			    "org/infinispan/hibernate/cache/commons/builder/infinispan-configs" + local + ".xml");
+
 			// Only load in the default properties if they don't exist
 			for (Entry<Object, Object> prop : props.entrySet()) {
 				if (!config.containsKey(prop.getKey())) {
 					config.put(prop.getKey(), prop.getValue());
 				}
 			}
-			
-		}
-		catch (IOException e) {
+
+		} catch (IOException e) {
 			log.error(MarkerFactory.getMarker("FATAL"), "Unable to load default hibernate properties", e);
 		}
-		
+
 		log.debug("Replacing variables in hibernate properties");
 		final String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
 		for (Entry<Object, Object> entry : config.entrySet()) {
 			String value = (String) entry.getValue();
-			
+
 			value = value.replace("%APPLICATION_DATA_DIRECTORY%", applicationDataDirectory);
 			entry.setValue(value);
 		}
 
 		log.debug("Setting global Hibernate Session Interceptor for SessionFactory, Interceptor: {}", chainingInterceptor);
-		
+
 		// make sure all autowired interceptors are put onto our chaining interceptor
-		// sort on the keys so that the devs/modules have some sort of control over the order of the interceptors 
+		// sort on the keys so that the devs/modules have some sort of control over the order of the interceptors
 		List<String> keys = new ArrayList<>(interceptors.keySet());
 		Collections.sort(keys);
 		for (String key : keys) {
 			chainingInterceptor.addInterceptor(interceptors.get(key));
 		}
-		
+
 		setEntityInterceptor(chainingInterceptor);
-		
+
 		//Adding each module's mapping file to the list of mapping resources
 		setMappingResources(getModuleMappingResources().toArray(new String[0]));
-		
+
 		setPackagesToScan(getModulePackagesWithMappedClasses().toArray(new String[0]));
-		
+
 		setHibernateIntegrators(this);
-		
+
 		super.afterPropertiesSet();
 	}
-	
+
 	/**
 	 * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#destroy()
 	 */
@@ -223,15 +222,14 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	}
 
 	@Override
-	public void integrate(Metadata metadata, BootstrapContext bootstrapContext,
-			SessionFactoryImplementor sessionFactory) {
+	public void integrate(Metadata metadata, BootstrapContext bootstrapContext, SessionFactoryImplementor sessionFactory) {
 		this.metadata = metadata;
 		generateEnversAuditTables(metadata, bootstrapContext.getServiceRegistry());
 	}
 
 	@Override
 	public void disintegrate(SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry) {
-		
+
 	}
 
 	/**

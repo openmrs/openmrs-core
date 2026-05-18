@@ -16,20 +16,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Place it on classes which you want to be beans created conditionally based on
- * OpenMRS version and/or started modules.
- * 
+ * Place it on classes which you want to be beans created conditionally based on OpenMRS version
+ * and/or started modules.
+ *
  * @since 1.10, 1.9.8, 1.8.5, 1.7.5
  */
-@Target( { ElementType.TYPE })
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface OpenmrsProfile {
-	
+
 	/**
 	 * @since 1.11.3, 1.10.2, 1.9.9
 	 */
 	public String openmrsPlatformVersion() default "";
-	
+
 	public String[] modules() default {};
 }

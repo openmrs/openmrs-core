@@ -9,12 +9,6 @@
  */
 package org.openmrs.module.testmodule.api;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,20 +16,22 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.springframework.aop.framework.Advised;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Tests {@link org.openmrs.module.testmodule.api.TestModuleAOPService}.
  */
 public class TestModuleAOPServiceTest extends BaseModuleContextSensitiveTest {
-	
+
 	@Autowired
 	@Qualifier("testModuleAOPService")
 	private TestModuleAOPService aopService;
-
 
 	/**
 	 * @see org.openmrs.module.testmodule.api.TestModuleAOPService#aopHello()
@@ -48,13 +44,13 @@ public class TestModuleAOPServiceTest extends BaseModuleContextSensitiveTest {
 	@Test
 	public void xmlServiceDefined_shouldHaveInterceptorsAppliedInTheCorrectOrder() {
 		assertNotNull(aopService);
-		
+
 		Advised advised = (Advised) aopService;
 
-		List<String> actualAdvices = Arrays.stream(advised.getAdvisors()).map(advisor -> advisor.getAdvice().getClass()
-			.getSimpleName()).collect(Collectors.toList());
+		List<String> actualAdvices = Arrays.stream(advised.getAdvisors())
+		        .map(advisor -> advisor.getAdvice().getClass().getSimpleName()).collect(Collectors.toList());
 
-		assertThat(actualAdvices, contains(
-			"AuthorizationAdvice", "LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor", "TransactionInterceptor"));
+		assertThat(actualAdvices, contains("AuthorizationAdvice", "LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor",
+		    "TransactionInterceptor"));
 	}
 }

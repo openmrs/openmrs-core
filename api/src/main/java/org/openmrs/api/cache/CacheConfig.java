@@ -46,34 +46,36 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * CacheConfig provides a cache manager for the @Cacheable annotation and uses Infinispan under the hood.
- * The config of Infinispan is loaded from infinispan-api-local.xml/infinispan-api.xml and can be customized by 
- * providing a different file through the cache_config property. It is expected for the config to contain a template 
- * named "entity" to be used to create caches.
+ * CacheConfig provides a cache manager for the @Cacheable annotation and uses Infinispan under the
+ * hood. The config of Infinispan is loaded from infinispan-api-local.xml/infinispan-api.xml and can
+ * be customized by providing a different file through the cache_config property. It is expected for
+ * the config to contain a template named "entity" to be used to create caches.
  * <p>
- * Caches can be added by modules through a cache-api.yaml file in the classpath.
- * The file shall contain only the <b>caches</b> element as defined in Infinispan docs at 
- * <a href="https://infinispan.org/docs/13.0.x/titles/configuring/configuring.html#multiple_caches">multiple caches</a> 
+ * Caches can be added by modules through a cache-api.yaml file in the classpath. The file shall
+ * contain only the <b>caches</b> element as defined in Infinispan docs at <a href=
+ * "https://infinispan.org/docs/13.0.x/titles/configuring/configuring.html#multiple_caches">multiple
+ * caches</a>
  * <p>
- * Please note the underlying implementation changed from ehcache to Infinispan since 2.8.x 
- * to support replicated/distributed caches.
+ * Please note the underlying implementation changed from ehcache to Infinispan since 2.8.x to
+ * support replicated/distributed caches.
  */
 @Configuration
 public class CacheConfig {
+
 	private final static Logger log = LoggerFactory.getLogger(CacheConfig.class);
-	
+
 	@Value("${cache.type:local}")
 	private String cacheType;
-	
+
 	@Value("${cache.config:}")
 	private String cacheConfig;
-	
+
 	@Value("${cache.stack:}")
 	private String cacheStack;
-	
+
 	@Value("${cache.api.bind.port:}")
 	private String apiCacheBindPort;
-	
+
 	private String jChannelConfig;
 
 	@Bean(name = "apiCacheManager", destroyMethod = "stop")
@@ -85,13 +87,13 @@ public class CacheConfig {
 
 		ParserRegistry parser = new ParserRegistry();
 		ConfigurationBuilderHolder baseConfigBuilder = parser.parseFile(cacheConfig);
-		if(cacheType.trim().equals("cluster")) {
+		if (cacheType.trim().equals("cluster")) {
 			jChannelConfig = getJChannelConfig(cacheStack);
 			JChannel jchannel = new JChannel(jChannelConfig);
 			Class<? extends TP> protocolClass = TCP.class;
 			if (cacheStack.trim().isEmpty() || cacheStack.trim().equals("udp")) {
 				protocolClass = UDP.class;
-			} else if(cacheStack.trim().equals("tunnel")) {
+			} else if (cacheStack.trim().equals("tunnel")) {
 				protocolClass = TUNNEL.class;
 			}
 			TP protocol = jchannel.getProtocolStack().findProtocol(protocolClass);
@@ -104,7 +106,8 @@ public class CacheConfig {
 			}
 			protocol.setBindPort(Integer.parseInt(apiCacheBindPort));
 			JGroupsTransport transport = new JGroupsTransport(jchannel);
-			baseConfigBuilder.getGlobalConfigurationBuilder().transport().clusterName("infinispan-api-cluster").transport(transport);
+			baseConfigBuilder.getGlobalConfigurationBuilder().transport().clusterName("infinispan-api-cluster")
+			        .transport(transport);
 		}
 		// Determine cache type based on loaded template for "entity"
 		String cacheType = baseConfigBuilder.getNamedConfigurationBuilders().get("entity").build().elementName();
@@ -117,20 +120,20 @@ public class CacheConfig {
 		Yaml yaml = new Yaml(options);
 
 		for (URL configFile : getCacheConfigurations()) {
-			// Apply cache type for caches using the 'entity' template 
+			// Apply cache type for caches using the 'entity' template
 			// and add the 'infinispan.cacheContainer.caches' parent.
 			// Skip already defined caches.
 			InputStream fullConfig = buildFullConfig(yaml, configFile,
-				baseConfigBuilder.getNamedConfigurationBuilders().keySet(), cacheType);
-			parser.parse(fullConfig, baseConfigBuilder, ConfigurationResourceResolver.DEFAULT,
-				MediaType.APPLICATION_YAML);
+			    baseConfigBuilder.getNamedConfigurationBuilders().keySet(), cacheType);
+			parser.parse(fullConfig, baseConfigBuilder, ConfigurationResourceResolver.DEFAULT, MediaType.APPLICATION_YAML);
 		}
 
 		DefaultCacheManager cacheManager = new DefaultCacheManager(baseConfigBuilder, true);
 		return new SpringEmbeddedCacheManager(cacheManager);
 	}
 
-	private static InputStream buildFullConfig(Yaml yaml, URL configFile, Set<String> skipCaches, String cacheType) throws IOException {
+	private static InputStream buildFullConfig(Yaml yaml, URL configFile, Set<String> skipCaches, String cacheType)
+	        throws IOException {
 		Map<String, Object> loadedConfig = yaml.load(configFile.openStream());
 
 		Map<String, Object> config = new LinkedHashMap<>();
@@ -186,7 +189,7 @@ public class CacheConfig {
 
 		return files;
 	}
-	
+
 	public String getJChannelConfig(String cacheStack) {
 		String jChannelConfig;
 		switch (cacheStack.trim()) {

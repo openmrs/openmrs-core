@@ -17,22 +17,23 @@ import org.springframework.validation.Errors;
 
 /**
  * Validator for {@link org.openmrs.EncounterRole} class
- * 
+ *
  * @since 1.9
  */
 @Handler(supports = { EncounterRole.class }, order = 50)
 public class EncounterRoleValidator extends RequireNameValidator {
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fail validation if name is null or empty or whitespace<br/>
+	 * <strong>Should</strong> fail validation if name is duplicate<br/>
+	 * <strong>Should</strong> pass validation if all required fields have proper values<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if name is null or empty or whitespace
-	 * <strong>Should</strong> fail validation if name is duplicate
-	 * <strong>Should</strong> pass validation if all required fields have proper values
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {

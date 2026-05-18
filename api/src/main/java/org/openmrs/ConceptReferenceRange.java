@@ -9,9 +9,6 @@
  */
 package org.openmrs;
 
-import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,13 +19,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+
 /**
- * A concept reference range defines the acceptable numeric values/ranges of a {@link ConceptNumeric} for specific factors
- * such as age, gender, e.t.c.
- * 
+ * A concept reference range defines the acceptable numeric values/ranges of a
+ * {@link ConceptNumeric} for specific factors such as age, gender, e.t.c.
  * <p>
- * The criteria is used to evaluate if certain attributes of a patient meet a certain factor range. 
- * For example, if criteria is of factor age(say age between 1-5), then the ranges only apply for this age group. 
+ * The criteria is used to evaluate if certain attributes of a patient meet a certain factor range.
+ * For example, if criteria is of factor age(say age between 1-5), then the ranges only apply for
+ * this age group.
  * </p>
  *
  * @since 2.7.0
@@ -37,7 +37,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "concept_reference_range")
 public class ConceptReferenceRange extends BaseReferenceRange implements OpenmrsObject {
-	
+
 	private static final long serialVersionUID = 47329L;
 
 	@DocumentId
@@ -52,7 +52,7 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private ConceptNumeric conceptNumeric;
-	
+
 	public ConceptReferenceRange() {
 	}
 

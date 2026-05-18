@@ -15,21 +15,21 @@ import org.hibernate.SessionFactory;
  * It should be used instead of SessionFactory for modules, which need to support OpenMRS 1.12 and
  * before. Please do not use it, if you only need to support OpenMRS 1.12 and later. See
  * {@link DbSession} for more details.
- * 
+ *
  * @since 1.12, 1.11.3, 1.10.2, 1.9.9
  */
 public class DbSessionFactory {
-	
+
 	private SessionFactory sessionFactory;
-	
+
 	public DbSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	public DbSession getCurrentSession() {
 		return new DbSession(sessionFactory);
 	}
-	
+
 	public SessionFactory getHibernateSessionFactory() {
 		return sessionFactory;
 	}

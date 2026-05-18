@@ -9,9 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
@@ -19,8 +16,11 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class VisitAttributeTypeValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see VisitAttributeTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -33,34 +33,34 @@ public class VisitAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		visitAttributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());
 		visitAttributeType.setDescription("some text");
 		visitAttributeType.setRetireReason("some text");
-		
+
 		Errors errors = new BindException(visitAttributeType, "visitAttributeType");
 		new VisitAttributeTypeValidator().validate(visitAttributeType, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see VisitAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		VisitAttributeType visitAttributeType = new VisitAttributeType();
-		visitAttributeType
-		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		visitAttributeType.setName(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		visitAttributeType.setMinOccurs(1);
 		visitAttributeType.setDatatypeConfig("[a-z]+");
-		visitAttributeType
-		        .setDatatypeClassname("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		visitAttributeType.setDatatypeClassname(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		visitAttributeType.setDescription(new String(new char[66000]));
-		visitAttributeType
-		        .setPreferredHandlerClassname("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		visitAttributeType
-		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+		visitAttributeType.setPreferredHandlerClassname(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		visitAttributeType.setRetireReason(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+
 		Errors errors = new BindException(visitAttributeType, "visitAttributeType");
 		new VisitAttributeTypeValidator().validate(visitAttributeType, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 		assertTrue(errors.hasFieldErrors("description"));
 		assertTrue(errors.hasFieldErrors("datatypeClassname"));

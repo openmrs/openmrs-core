@@ -9,13 +9,12 @@
  */
 package org.openmrs.layout.name;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
 import org.openmrs.api.GlobalPropertyListener;
@@ -31,15 +30,17 @@ import org.slf4j.LoggerFactory;
 public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPropertyListener {
 
 	private static final Logger log = LoggerFactory.getLogger(NameSupport.class);
+
 	private static NameSupport singleton;
+
 	private boolean initialized = false;
-	
+
 	public NameSupport() {
 		if (singleton == null) {
 			singleton = this;
 		}
 	}
-	
+
 	public static NameSupport getInstance() {
 		if (singleton == null) {
 			throw new APIException("Not Yet Instantiated");
@@ -50,8 +51,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	}
 
 	/**
-	 * Initializes layout templates with a custom template configured
-	 * via the "layout.name.template" GP.
+	 * Initializes layout templates with a custom template configured via the "layout.name.template" GP.
 	 */
 	private void init() {
 		if (initialized) {
@@ -59,17 +59,17 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 		}
 		Context.getAdministrationService().addGlobalPropertyListener(singleton);
 		// Get configured name template to override the existing one if any
-		String layoutTemplateXml = Context.getAdministrationService().getGlobalProperty(
-			OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
+		String layoutTemplateXml = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
 		NameTemplate nameTemplate = deserializeXmlTemplate(layoutTemplateXml);
-		
+
 		if (nameTemplate != null) {
 			updateLayoutTemplates(nameTemplate);
 		}
 
 		initialized = true;
 	}
-	
+
 	/**
 	 * Update existing layout templates if present with the provided template
 	 */
@@ -79,11 +79,13 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 		}
 		List<NameTemplate> list = new ArrayList<>();
 		// filter out unaffected templates to keep
-		list.addAll(getLayoutTemplates().stream().filter(existingTemplate -> existingTemplate.getCodeName() != nameTemplate.getCodeName()).collect(Collectors.toList()));
+		list.addAll(getLayoutTemplates().stream()
+		        .filter(existingTemplate -> existingTemplate.getCodeName() != nameTemplate.getCodeName())
+		        .collect(Collectors.toList()));
 		list.add(nameTemplate);
 		setLayoutTemplates(list);
 	}
-	
+
 	/**
 	 * @return Returns the defaultLayoutFormat
 	 */
@@ -93,8 +95,8 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 			return null;
 		}
 		try {
-			nameTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(StringEscapeUtils.unescapeXml(xml),
-				NameTemplate.class);
+			nameTemplate = Context.getSerializationService().getDefaultSerializer()
+			        .deserialize(StringEscapeUtils.unescapeXml(xml), NameTemplate.class);
 		} catch (Exception e) {
 			log.error("Error in deserializing provided name template", e);
 		}
@@ -106,7 +108,8 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 */
 	@Override
 	public String getDefaultLayoutFormat() {
-		String ret = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT);
+		String ret = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT);
 		return (ret != null && ret.length() > 0) ? ret : defaultLayoutFormat;
 	}
 
@@ -126,7 +129,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 		NameTemplate nameTemplate = deserializeXmlTemplate(newValue.getPropertyValue());
 		if (nameTemplate != null) {
 			updateLayoutTemplates(nameTemplate);
-		}	
+		}
 	}
 
 	/**

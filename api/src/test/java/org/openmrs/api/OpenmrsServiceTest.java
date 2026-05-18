@@ -9,9 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -25,18 +22,21 @@ import org.openmrs.api.context.Context;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Contains methods to test behavior of OpenmrsService methods
  */
 public class OpenmrsServiceTest extends BaseContextSensitiveTest {
-	
+
 	/**
-	 * Tests that if two service methods are called (one from inside the other) the first one will
-	 * be rolled back if an exception is thrown inside the second one. <pre>
-	 * We are testing with the merge patient method since it is transactional and calls multiple other 
+	 * Tests that if two service methods are called (one from inside the other) the first one will be
+	 * rolled back if an exception is thrown inside the second one. <pre>
+	 * We are testing with the merge patient method since it is transactional and calls multiple other
 	 * transactional methods
 	 * </pre>
-	 * 
+	 *
 	 * @throws SerializationException
 	 */
 	@Test
@@ -50,28 +50,27 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 		Patient prefPatient = patientService.getPatient(6);
 		Patient notPrefPatient = patientService.getPatient(7);
 		Collection<Program> programs = programService.getAllPrograms(false);
-		
+
 		int originalPrefEncounterCount = encounterService.getEncountersByPatient(prefPatient).size();
 		int originalNotPrefEncounterCount = encounterService.getEncountersByPatient(notPrefPatient).size();
 		assertTrue(originalNotPrefEncounterCount > 0);
-		
+
 		Cohort notPreferredCohort = new Cohort(notPrefPatient.getPatientId().toString());
 		List<PatientProgram> notPrefPrograms = programService.getPatientPrograms(notPreferredCohort, programs);
 		assertTrue(notPrefPrograms.size() > 0);
-		
+
 		//Set the program to null so that the patient program is rejected on validation with
 		//an APIException, since it is a RuntimeException, all transactions should be rolled back
 		notPrefPrograms.get(0).setProgram(null);
-		
+
 		boolean failed = false;
 		try {
 			patientService.mergePatients(prefPatient, notPrefPatient);
-		}
-		catch (APIException e) {
+		} catch (APIException e) {
 			failed = true;//should have failed to force a rollback
 		}
 		assertTrue(failed);
-		
+
 		//Since the encounters are moved first, that logic should have been rolled back
 		assertEquals(originalPrefEncounterCount, encounterService.getEncountersByPatient(prefPatient).size());
 	}

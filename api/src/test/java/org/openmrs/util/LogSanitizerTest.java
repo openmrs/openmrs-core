@@ -9,10 +9,11 @@
  */
 package org.openmrs.util;
 
+import org.junit.jupiter.api.Test;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import org.junit.jupiter.api.Test;
 
 class LogSanitizerTest {
 
@@ -73,6 +74,7 @@ class LogSanitizerTest {
 	@Test
 	void sanitize_shouldSanitizeObjectToString() {
 		Object obj = new Object() {
+
 			@Override
 			public String toString() {
 				return "value\ninjected";

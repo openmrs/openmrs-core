@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.db;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Date;
 import java.util.List;
 
@@ -24,10 +20,14 @@ import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
-	
+
 	private ProgramWorkflowDAO dao = null;
-	
+
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
@@ -40,13 +40,13 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 		// this bean name matches the name in /metadata/spring/applicationContext-service.xml
 		dao = (ProgramWorkflowDAO) applicationContext.getBean("programWorkflowDAO");
 	}
-	
+
 	@Test
 	public void saveProgram_shouldSaveProgram() {
 		Program program = createProgram();
 		dao.saveProgram(program);
 	}
-	
+
 	private Program createProgram() {
 		Program program = new Program();
 		program.setName("OpenMRS");
@@ -55,19 +55,19 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 		program.setConcept(new Concept(3));
 		return program;
 	}
-	
+
 	@Test
 	public void saveProgram_shouldAlsoSaveOutcomesConcept() {
 		Concept outcomesConcept = Context.getConceptService().getConcept(3);
 		Program program = createProgram();
 		program.setOutcomesConcept(outcomesConcept);
 		int id = dao.saveProgram(program).getId();
-		
+
 		clearHibernateCache();
 		Program savedProgram = dao.getProgram(id);
 		assertEquals(3, savedProgram.getOutcomesConcept().getId().intValue());
 	}
-	
+
 	@Test
 	public void getProgramsByName_whenThereAreNoProgramsWithTheGivenName_shouldReturnAnEmptyList() {
 		Program program = createProgram();
@@ -78,7 +78,7 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 		assertNotNull(programs);
 		assertEquals(0, programs.size());
 	}
-	
+
 	@Test
 	public void getProgramsByName_whenThereAreProgramsWithTheGivenName_shouldReturnAllProgramsWithTheGivenName() {
 		Program program1 = createProgram();

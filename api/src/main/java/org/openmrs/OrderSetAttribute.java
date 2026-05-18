@@ -16,16 +16,16 @@ import org.openmrs.attribute.BaseAttribute;
 
 /**
  * A value for a user-defined {@link OrderSetAttributeType} that is stored on a {@link OrderSet}.
+ *
  * @see Attribute
  * @since 2.4.0
  */
 @Audited
-public class OrderSetAttribute extends BaseAttribute<OrderSetAttributeType, OrderSet> implements Attribute<OrderSetAttributeType, OrderSet>{
-	
-	private static final long serialVersionUID = 1L;
-		
-	private Integer orderSetAttributeId;
+public class OrderSetAttribute extends BaseAttribute<OrderSetAttributeType, OrderSet> implements Attribute<OrderSetAttributeType, OrderSet> {
 
+	private static final long serialVersionUID = 1L;
+
+	private Integer orderSetAttributeId;
 
 	/**
 	 * @return the orderSetAttributeId

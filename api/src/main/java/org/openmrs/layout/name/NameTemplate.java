@@ -24,23 +24,23 @@ import org.openmrs.layout.LayoutTemplate;
  * @since 1.12
  */
 public class NameTemplate extends LayoutTemplate {
-	
+
 	@Override
 	public String getLayoutToken() {
 		return "IS_NAME_TOKEN";
 	}
-	
+
 	@Override
 	public String getNonLayoutToken() {
 		return "IS_NOT_NAME_TOKEN";
 	}
-	
+
 	public String format(PersonName personName) {
-		
+
 		List<String> personNameLines = new ArrayList<>();
 		List<List<Map<String, String>>> lines = getLines();
 		String layoutToken = getLayoutToken();
-		
+
 		try {
 			for (List<Map<String, String>> line : lines) {
 				StringBuilder nameLine = new StringBuilder();
@@ -64,15 +64,14 @@ public class NameTemplate extends LayoutTemplate {
 			}
 			// bit of hack, but we ignore the "line-by-line" format and just delimit a "line" with blank space
 			return StringUtils.join(personNameLines, " ");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new APIException("Unable to format personName " + personName.getId() + " using name template", e);
 		}
 	}
-	
+
 	@Override
 	public LayoutSupport<?> getLayoutSupportInstance() {
 		return NameSupport.getInstance();
 	}
-	
+
 }

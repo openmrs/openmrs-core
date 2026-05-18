@@ -11,30 +11,30 @@ package org.openmrs.logic.op;
 
 /**
  * Marker interface to keep track of the ComparisonOperator sub type
- * 
+ *
  * @see Operator
  */
 public interface ComparisonOperator extends Operator {
-	
+
 	// comparison operators
 	public static final ComparisonOperator CONTAINS = new Contains();
-	
+
 	public static final ComparisonOperator EQUALS = new Equals();
-	
+
 	public static final ComparisonOperator WITHIN = new Within();
-	
+
 	public static final ComparisonOperator GT = new GreaterThan();
-	
+
 	public static final ComparisonOperator GTE = new GreaterThanEquals();
-	
+
 	public static final ComparisonOperator LT = new LessThan();
-	
+
 	public static final ComparisonOperator LTE = new LessThanEquals();
-	
+
 	public static final ComparisonOperator BEFORE = new Before();
-	
+
 	public static final ComparisonOperator AFTER = new After();
-	
+
 	public static final ComparisonOperator IN = new In();
-	
+
 }

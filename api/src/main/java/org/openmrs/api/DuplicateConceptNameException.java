@@ -14,13 +14,13 @@ package org.openmrs.api;
  * create a new one with the same preferred name in the same locale
  */
 public class DuplicateConceptNameException extends APIException {
-	
+
 	private static final long serialVersionUID = -1488550917363129782L;
-	
+
 	public DuplicateConceptNameException() {
 		super("Duplicate concept name found");
 	}
-	
+
 	public DuplicateConceptNameException(String message) {
 		super(message);
 	}

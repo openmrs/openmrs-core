@@ -19,63 +19,61 @@ import org.openmrs.patient.UnallowedIdentifierException;
  * digit. A character is used by default.
  */
 public abstract class BaseHyphenatedIdentifierValidator implements IdentifierValidator {
-	
+
 	protected abstract int getCheckDigit(String undecoratedIdentifier);
-	
+
 	/**
 	 * @see org.openmrs.patient.IdentifierValidator#getAllowedCharacters()
 	 */
 	@Override
 	public abstract String getAllowedCharacters();
-	
+
 	/**
 	 * @see org.openmrs.patient.IdentifierValidator#getName()
 	 */
 	@Override
 	public abstract String getName();
-	
+
 	/**
 	 * @see org.openmrs.patient.IdentifierValidator#getValidIdentifier(java.lang.String)
 	 */
 	@Override
 	public String getValidIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException {
-		
+
 		checkAllowedIdentifier(undecoratedIdentifier);
-		
+
 		char checkLetter = convertCheckDigitToChar(getCheckDigit(undecoratedIdentifier));
 
 		return undecoratedIdentifier + "-" + checkLetter;
 	}
-	
+
 	/**
 	 * @see org.openmrs.patient.IdentifierValidator#isValid(java.lang.String)
 	 */
 	@Override
 	public boolean isValid(String identifier) throws UnallowedIdentifierException {
-		
+
 		if (identifier.indexOf("-") < 1) {
 			throw new UnallowedIdentifierException(
-					"Identifier \"" + identifier + "\" must contain a hyphen followed by a check digit character (A-J).");
+			        "Identifier \"" + identifier + "\" must contain a hyphen followed by a check digit character (A-J).");
 		}
 		if (identifier.endsWith("-")) {
-			throw new UnallowedIdentifierException(
-					"Identifier \""
-							+ identifier
-							+ "\" must not end with a hyphen - a check digit character (A-J) must follow.");
+			throw new UnallowedIdentifierException("Identifier \"" + identifier
+			        + "\" must not end with a hyphen - a check digit character (A-J) must follow.");
 		}
-		
+
 		String idWithoutCheckDigit = identifier.substring(0, identifier.indexOf("-"));
-		
+
 		checkAllowedIdentifier(idWithoutCheckDigit);
-		
+
 		int computedCheckDigit = getCheckDigit(idWithoutCheckDigit);
-		
+
 		String checkDigit = identifier.substring(identifier.indexOf("-") + 1);
-		
+
 		if (checkDigit.length() != 1) {
 			throw new UnallowedIdentifierException("Identifier must have a check digit of length 1.");
 		}
-		
+
 		if ("A".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "0";
 		}
@@ -106,24 +104,23 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 		if ("J".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "9";
 		}
-		
+
 		int givenCheckDigit;
-		
+
 		try {
 			givenCheckDigit = Integer.valueOf(checkDigit);
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			throw new UnallowedIdentifierException(
 			        "Check digit must either be a character from A to J or a single digit integer.");
 		}
-		
+
 		return (computedCheckDigit == givenCheckDigit);
 	}
-	
+
 	/**
 	 * @param undecoratedIdentifier
-	 * @throws UnallowedIdentifierException if identifier contains unallowed characters or is
-	 *             otherwise invalid.
+	 * @throws UnallowedIdentifierException if identifier contains unallowed characters or is otherwise
+	 *             invalid.
 	 */
 	protected void checkAllowedIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException {
 		if (undecoratedIdentifier == null) {
@@ -137,12 +134,12 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 		}
 		for (int i = 0; i < undecoratedIdentifier.length(); i++) {
 			if (getAllowedCharacters().indexOf(undecoratedIdentifier.charAt(i)) == -1) {
-				throw new UnallowedIdentifierException("\"" + undecoratedIdentifier.charAt(i)
-				        + "\" is an invalid character.");
+				throw new UnallowedIdentifierException(
+				        "\"" + undecoratedIdentifier.charAt(i) + "\" is an invalid character.");
 			}
 		}
 	}
-	
+
 	/**
 	 * Not doing this with ASCII math to be extra careful.
 	 *

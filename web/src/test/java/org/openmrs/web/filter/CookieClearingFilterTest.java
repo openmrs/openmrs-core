@@ -9,13 +9,14 @@
  */
 package org.openmrs.web.filter;
 
+import java.util.Properties;
+import java.util.UUID;
+
 import jakarta.servlet.GenericServlet;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Properties;
-import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,25 +32,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CookieClearingFilterTest {
-	
+
 	Properties runtimeProperties;
-	
+
 	CookieClearingFilter filter;
-	
+
 	MockHttpServletRequest request;
-	
+
 	MockHttpServletResponse response;
-	
+
 	MockHttpSession session;
-	
+
 	MockFilterChain chain;
-	
+
 	@BeforeEach
 	void setupRuntimeProperties() {
 		runtimeProperties = TestUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
 		Context.setRuntimeProperties(runtimeProperties);
 	}
-	
+
 	@BeforeEach
 	public void setup() {
 		filter = new CookieClearingFilter();
@@ -58,69 +59,67 @@ class CookieClearingFilterTest {
 		response = new MockHttpServletResponse();
 		chain = new MockFilterChain();
 	}
-	
+
 	@Test
 	void shouldClearCookiesIfSessionEnded() throws Exception {
 		// arrange
 		createChainThatInvalidatesSession();
 		clearJSessionIdOnLogout();
 		createSessionWithId("1234");
-		
-		
+
 		// act
 		filter.doFilter(request, response, chain);
-		
+
 		// assert
 		Cookie[] cookies = response.getCookies();
 		assertEquals(1, cookies.length, "Expected only a single cookie");
 		assertTrue(cookies[0].getMaxAge() <= 0, "Expected Max-Age to be zero or a negative number");
 	}
-	
+
 	@Test
 	void shouldNotClearCookiesIfSessionNotInvalidated() throws Exception {
 		// arrange
 		clearJSessionIdOnLogout();
 		createSessionWithId("1234");
-		
+
 		// act
 		filter.doFilter(request, response, chain);
-		
+
 		// assert
 		Cookie[] cookies = response.getCookies();
 		assertEquals(0, cookies.length, "Expected no cookies in response");
 	}
-	
+
 	@Test
 	void shouldNotClearCookiesIfNewSessionCreatedButNotInvalidated() throws Exception {
 		// arrange
 		createChainThatInvalidatesSession();
 		clearJSessionIdOnLogout();
 		createSessionWithId("1234", true);
-		
+
 		// act
 		filter.doFilter(request, response, chain);
-		
+
 		// assert
 		Cookie[] cookies = response.getCookies();
 		assertEquals(1, cookies.length, "Expected no cookies in response");
 	}
-	
+
 	@Test
 	void shouldNotClearCookiesIfNewSessionCreatedAndInvalidatedInOneRequest() throws Exception {
 		// arrange
 		clearJSessionIdOnLogout();
 		createSessionWithId("1234", true);
-		
-		
+
 		// act
 		filter.doFilter(request, response, chain);
-		
+
 		// assert
 		Cookie[] cookies = response.getCookies();
 		assertEquals(1, cookies.length, "Expected the new session cookie in response");
 		assertTrue(cookies[0].getMaxAge() > 0, "Expected Max-Age to be set to some future value");
 	}
-	
+
 	@Test
 	void shouldClearAllConfiguredCookies() throws Exception {
 		// arrange
@@ -136,18 +135,19 @@ class CookieClearingFilterTest {
 			cookies[requestCookies.length] = myOtherCookie;
 			request.setCookies(cookies);
 		}
-		
+
 		// act
 		filter.doFilter(request, response, chain);
-		
+
 		// assert
 		Cookie[] cookies = response.getCookies();
 		assertEquals(2, cookies.length, "Expected two cookies");
 		for (Cookie cookie : cookies) {
-			assertTrue(cookie.getMaxAge() <= 0, "Expected Max-Age to be less than or equal to 0 for cookie " + cookie.getName());
+			assertTrue(cookie.getMaxAge() <= 0,
+			    "Expected Max-Age to be less than or equal to 0 for cookie " + cookie.getName());
 		}
 	}
-	
+
 	@Test
 	void shouldClearAllConfiguredCookiesIgnoringWhitespace() throws Exception {
 		// arrange
@@ -163,35 +163,36 @@ class CookieClearingFilterTest {
 			cookies[requestCookies.length] = myOtherCookie;
 			request.setCookies(cookies);
 		}
-		
+
 		// act
 		filter.doFilter(request, response, chain);
-		
+
 		// assert
 		Cookie[] cookies = response.getCookies();
 		assertEquals(2, cookies.length, "Expected two cookies");
 		for (Cookie cookie : cookies) {
-			assertTrue(cookie.getMaxAge() <= 0, "Expected Max-Age to be less than or equal to 0 for cookie " + cookie.getName());
+			assertTrue(cookie.getMaxAge() <= 0,
+			    "Expected Max-Age to be less than or equal to 0 for cookie " + cookie.getName());
 		}
 	}
-	
+
 	void clearJSessionIdOnLogout() {
 		runtimeProperties.setProperty("authentication.cookies.toClear", "JSESSIONID");
 	}
-	
+
 	void createChainThatInvalidatesSession() {
 		chain = new MockFilterChain(new SessionInvalidationServlet());
 	}
-	
+
 	void createSessionWithId(String id) {
 		createSessionWithId(id, false);
 	}
-	
+
 	void createSessionWithId(String id, boolean isNew) {
 		session = new MockHttpSession(null, id);
 		session.setNew(isNew);
 		request.setSession(session);
-		
+
 		if (!isNew) {
 			request.setRequestedSessionId(id);
 			Cookie sessionCookie = new Cookie("JSESSIONID", "1234");
@@ -203,9 +204,9 @@ class CookieClearingFilterTest {
 			response.addCookie(sessionCookie);
 		}
 	}
-	
+
 	private static final class SessionInvalidationServlet extends GenericServlet {
-		
+
 		@Override
 		public void service(ServletRequest req, ServletResponse res) {
 			if (req instanceof HttpServletRequest) {
@@ -213,5 +214,5 @@ class CookieClearingFilterTest {
 			}
 		}
 	}
-	
+
 }

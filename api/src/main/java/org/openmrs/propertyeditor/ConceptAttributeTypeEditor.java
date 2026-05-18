@@ -13,12 +13,12 @@ import org.openmrs.ConceptAttributeType;
 import org.openmrs.api.context.Context;
 
 public class ConceptAttributeTypeEditor extends OpenmrsPropertyEditor<ConceptAttributeType> {
-	
+
 	@Override
 	protected ConceptAttributeType getObjectById(Integer id) {
 		return Context.getConceptService().getConceptAttributeType(id);
 	}
-	
+
 	@Override
 	protected ConceptAttributeType getObjectByUuid(String uuid) {
 		return Context.getConceptService().getConceptAttributeTypeByUuid(uuid);

@@ -9,35 +9,35 @@
  */
 package org.openmrs;
 
+import java.util.Locale;
+
 import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-
-import java.util.Locale;
 
 /**
  * @since 1.10
  */
 public class SimpleDosingInstructions extends BaseDosingInstructions {
-	
+
 	private Double dose;
-	
+
 	private Concept doseUnits;
-	
+
 	private Concept route;
-	
+
 	private OrderFrequency frequency;
-	
+
 	private Integer duration;
-	
+
 	private Concept durationUnits;
-	
+
 	private Boolean asNeeded;
-	
+
 	private String asNeededCondition;
-	
+
 	private String administrationInstructions;
-	
+
 	/**
 	 * @see DosingInstructions#getDosingInstructionsAsString(java.util.Locale)
 	 */
@@ -71,7 +71,7 @@ public class SimpleDosingInstructions extends BaseDosingInstructions {
 		}
 		return dosingInstructions.toString();
 	}
-	
+
 	/**
 	 * @see DosingInstructions#setDosingInstructions(DrugOrder)
 	 */
@@ -88,15 +88,15 @@ public class SimpleDosingInstructions extends BaseDosingInstructions {
 		order.setAsNeededCondition(this.asNeededCondition);
 		order.setDosingInstructions(this.administrationInstructions);
 	}
-	
+
 	/**
 	 * @see DosingInstructions#getDosingInstructions(DrugOrder)
 	 */
 	@Override
 	public DosingInstructions getDosingInstructions(DrugOrder order) {
 		if (!order.getDosingType().equals(this.getClass())) {
-			throw new APIException("DrugOrder.error.dosingTypeIsMismatched", new Object[] { this.getClass().getName(),
-			        order.getDosingType() });
+			throw new APIException("DrugOrder.error.dosingTypeIsMismatched",
+			        new Object[] { this.getClass().getName(), order.getDosingType() });
 		}
 		SimpleDosingInstructions simpleDosingInstructions = new SimpleDosingInstructions();
 		simpleDosingInstructions.setDose(order.getDose());
@@ -110,12 +110,14 @@ public class SimpleDosingInstructions extends BaseDosingInstructions {
 		simpleDosingInstructions.setAdministrationInstructions(order.getDosingInstructions());
 		return simpleDosingInstructions;
 	}
-	
+
 	/**
+	 * <p>
+	 * <strong>Should</strong> reject a duration unit with a mapping of an invalid type
+	 *
 	 * @see DosingInstructions#validate(DrugOrder, org.springframework.validation.Errors)
 	 * @param order
 	 * @param errors
-	 * <strong>Should</strong> reject a duration unit with a mapping of an invalid type
 	 */
 	@Override
 	public void validate(DrugOrder order, Errors errors) {
@@ -128,75 +130,75 @@ public class SimpleDosingInstructions extends BaseDosingInstructions {
 			errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode");
 		}
 	}
-	
+
 	public Double getDose() {
 		return dose;
 	}
-	
+
 	public void setDose(Double dose) {
 		this.dose = dose;
 	}
-	
+
 	public Concept getDoseUnits() {
 		return doseUnits;
 	}
-	
+
 	public void setDoseUnits(Concept doseUnits) {
 		this.doseUnits = doseUnits;
 	}
-	
+
 	public Concept getRoute() {
 		return route;
 	}
-	
+
 	public void setRoute(Concept route) {
 		this.route = route;
 	}
-	
+
 	public OrderFrequency getFrequency() {
 		return frequency;
 	}
-	
+
 	public void setFrequency(OrderFrequency frequency) {
 		this.frequency = frequency;
 	}
-	
+
 	public Integer getDuration() {
 		return duration;
 	}
-	
+
 	public void setDuration(Integer duration) {
 		this.duration = duration;
 	}
-	
+
 	public Concept getDurationUnits() {
 		return durationUnits;
 	}
-	
+
 	public void setDurationUnits(Concept durationUnits) {
 		this.durationUnits = durationUnits;
 	}
-	
+
 	public Boolean getAsNeeded() {
 		return asNeeded;
 	}
-	
+
 	public void setAsNeeded(Boolean asNeeded) {
 		this.asNeeded = asNeeded;
 	}
-	
+
 	public String getAsNeededCondition() {
 		return asNeededCondition;
 	}
-	
+
 	public void setAsNeededCondition(String asNeededCondition) {
 		this.asNeededCondition = asNeededCondition;
 	}
-	
+
 	public String getAdministrationInstructions() {
 		return administrationInstructions;
 	}
-	
+
 	public void setAdministrationInstructions(String administrationInstructions) {
 		this.administrationInstructions = administrationInstructions;
 	}

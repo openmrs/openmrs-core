@@ -9,14 +9,14 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link HibernateOpenmrsDataDAO}
@@ -48,6 +48,6 @@ public class HibernateOpenmrsDataDAOTest extends BaseContextSensitiveTest {
 		int countWithVoided = dao.getAllCount(true);
 		int countWithoutVoided = dao.getAllCount(false);
 		assertTrue(countWithVoided > countWithoutVoided,
-			"Count including voided should be greater than count excluding voided");
+		    "Count including voided should be greater than count excluding voided");
 	}
 }

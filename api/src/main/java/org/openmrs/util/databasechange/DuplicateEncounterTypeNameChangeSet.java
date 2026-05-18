@@ -42,30 +42,30 @@ import liquibase.resource.ResourceAccessor;
  */
 
 public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DuplicateEncounterTypeNameChangeSet.class);
-	
+
 	@Override
 	public String getConfirmationMessage() {
 		return "Completed updating duplicate EncounterType names";
 	}
-	
+
 	@Override
 	public void setFileOpener(ResourceAccessor arg0) {
-		
+
 	}
-	
+
 	@Override
 	public void setUp() throws SetupException {
 		// No setup actions
-		
+
 	}
-	
+
 	@Override
 	public ValidationErrors validate(Database arg0) {
 		return null;
 	}
-	
+
 	/**
 	 * Method to perform validation and resolution of duplicate EncounterType names
 	 */
@@ -77,24 +77,24 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 		PreparedStatement pStmt = null;
 		ResultSet rs = null;
 		Boolean initialAutoCommit = null;
-		
+
 		try {
 			initialAutoCommit = connection.getAutoCommit();
-			
+
 			// set auto commit mode to false for UPDATE action
 			connection.setAutoCommit(false);
-			
+
 			stmt = connection.createStatement();
-			rs = stmt
-			        .executeQuery("SELECT * FROM encounter_type INNER JOIN (SELECT name FROM encounter_type GROUP BY name HAVING count(name) > 1) dup ON encounter_type.name = dup.name");
-			
+			rs = stmt.executeQuery(
+			    "SELECT * FROM encounter_type INNER JOIN (SELECT name FROM encounter_type GROUP BY name HAVING count(name) > 1) dup ON encounter_type.name = dup.name");
+
 			Integer id;
 			String name;
-			
+
 			while (rs.next()) {
 				id = rs.getInt("encounter_type_id");
 				name = rs.getString("name");
-				
+
 				if (duplicates.get(name) == null) {
 					HashSet<Integer> results = new HashSet<>();
 					results.add(id);
@@ -141,62 +141,54 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 					pStmt.executeUpdate();
 				}
 			}
-		}
-		catch (BatchUpdateException e) {
+		} catch (BatchUpdateException e) {
 			log.warn("Error generated while processing batch insert", e);
-			
+
 			try {
 				log.debug("Rolling back batch", e);
 				connection.rollback();
-			}
-			catch (Exception rbe) {
+			} catch (Exception rbe) {
 				log.warn("Error generated while rolling back batch insert", e);
 			}
-			
+
 			// marks the changeset as a failed one
 			throw new CustomChangeException("Failed to update one or more duplicate EncounterType names", e);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomChangeException(e);
-		}
-		finally {
+		} finally {
 			// set auto commit to its initial state
 			try {
 				if (initialAutoCommit != null) {
 					connection.setAutoCommit(initialAutoCommit);
 				}
-			}
-			catch (DatabaseException e) {
+			} catch (DatabaseException e) {
 				log.warn("Failed to set auto commit to ids initial state", e);
 			}
 			if (rs != null) {
 				try {
 					rs.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the resultset object");
 				}
 			}
-			
+
 			if (stmt != null) {
 				try {
 					stmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the select statement used to identify duplicate EncounterType object names");
 				}
 			}
-			
+
 			if (pStmt != null) {
 				try {
 					pStmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the prepared statement used to update duplicate EncounterType object names");
 				}
 			}
 		}
-		
+
 	}
-	
+
 }

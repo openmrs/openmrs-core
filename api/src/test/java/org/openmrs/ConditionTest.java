@@ -9,32 +9,40 @@
  */
 package org.openmrs;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests of methods within the Condition class
+ *
  * @see Condition
  */
 public class ConditionTest {
-	
+
 	Condition baseCondition = new Condition();
+
 	Concept concept1 = new Concept(1);
+
 	Concept concept2 = new Concept(2);
+
 	ConceptName conceptName1 = new ConceptName(1);
+
 	ConceptName conceptName2 = new ConceptName(2);
+
 	String text1 = "Text 1";
+
 	String text2 = "Text 2";
+
 	DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-	
+
 	@BeforeEach
 	public void before() throws Exception {
 		baseCondition.setConditionId(1234);
@@ -55,7 +63,7 @@ public class ConditionTest {
 		baseCondition.setDateVoided(null);
 		baseCondition.setVoidedBy(null);
 	}
-	
+
 	@Test
 	public void matches_shouldReturnFalseIfNoFieldsHaveChanged() {
 		Condition condition = Condition.newInstance(baseCondition);
@@ -78,7 +86,7 @@ public class ConditionTest {
 	public void matches_shouldReturnTrueIfNonIdentityFieldsHaveChanged() {
 		Condition condition = Condition.newInstance(baseCondition);
 		assertTrue(condition.matches(baseCondition));
-		
+
 		// Condition Coded
 		condition.setCondition(new CodedOrFreeText(concept2, conceptName1, text1));
 		assertFalse(condition.matches(baseCondition));

@@ -9,18 +9,18 @@
  */
 package org.openmrs.web.filter.initialization;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Value;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
 public class InitializationFilterTest extends BaseWebContextSensitiveTest {
-	
+
 	private InitializationFilter filter;
 
 	@Value("${hibernate.connection.url}")
@@ -87,7 +87,7 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Test
 	public void initializeWizardFromResolvedPropertiesIfPresent_shouldKeepSpecialEnvironmentKeysWithoutNormalization() {
@@ -110,7 +110,7 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		Properties installScriptProps = new Properties();
 		installScriptProps.setProperty("database_name", "openmrs_file");
 		doReturn(installScriptProps).when(spyFilter).getInstallationScript();
-		
+
 		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
 
 		assertEquals("openmrs_file", spyFilter.wizardModel.databaseName);
@@ -128,7 +128,8 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 	}
 
 	@Test
-	public void initializeWizardFromResolvedPropertiesIfPresent_shouldMergePropertiesFromSystemEnvAndInstallScript() throws IOException {
+	public void initializeWizardFromResolvedPropertiesIfPresent_shouldMergePropertiesFromSystemEnvAndInstallScript()
+	        throws IOException {
 		InitializationFilter spyFilter = spy(filter);
 		System.setProperty("connection.url", "jdbc:mysql://system:3306/openmrs");
 
@@ -158,7 +159,6 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		}
 	}
 
-
 	@Test
 	public void initializeWizardFromResolvedPropertiesIfPresent_shouldInitializeWizardModelCorrectlyFromProperties() {
 		Properties installScript = getInstallScript();
@@ -168,7 +168,8 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		InitializationWizardModel model = spyFilter.wizardModel;
 
 		assertEquals("auto", model.installMethod);
-		assertEquals("jdbc:h2:@APPLICATIONDATADIR@/database/@DBNAME@;AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1", model.databaseConnection);
+		assertEquals("jdbc:h2:@APPLICATIONDATADIR@/database/@DBNAME@;AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1",
+		    model.databaseConnection);
 		assertEquals("org.h2.Driver", model.databaseDriver);
 		assertEquals("sa", model.currentDatabaseUsername);
 		assertEquals("sa", model.currentDatabasePassword);
@@ -183,7 +184,8 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 	private static Properties getInstallScript() {
 		Properties installScript = new Properties();
 		installScript.setProperty("install_method", "auto");
-		installScript.setProperty("connection.url", "jdbc:h2:@APPLICATIONDATADIR@/database/@DBNAME@;AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1");
+		installScript.setProperty("connection.url",
+		    "jdbc:h2:@APPLICATIONDATADIR@/database/@DBNAME@;AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1");
 		installScript.setProperty("connection.driver_class", "org.h2.Driver");
 		installScript.setProperty("connection.username", "sa");
 		installScript.setProperty("connection.password", "sa");

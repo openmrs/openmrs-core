@@ -9,10 +9,10 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Cacheable;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Cacheable;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
@@ -20,6 +20,8 @@ import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.SingleCustomValue;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Global properties are simple key-value pairs persisted in the database GPs can be thought of as
@@ -29,45 +31,44 @@ import org.openmrs.customdatatype.SingleCustomValue;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<GlobalProperty> {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private String property = "";
-	
+
 	private String propertyValue = "";
-	
+
 	private transient Object typedValue;
-	
+
 	// if true, indicates that setValue has been called, and we need to invoke CustomDatatype's save
 	private boolean dirty = false;
-	
+
 	private String description = "";
-	
+
 	private String datatypeClassname;
-	
+
 	private String datatypeConfig;
-	
+
 	private String preferredHandlerClassname;
-	
+
 	private String handlerConfig;
-	
+
 	private User changedBy;
-	
+
 	private Date dateChanged;
-	
+
 	private Privilege viewPrivilege;
-	
+
 	private Privilege editPrivilege;
-	
+
 	private Privilege deletePrivilege;
-	
-	
+
 	/**
 	 * Default empty constructor
 	 */
 	public GlobalProperty() {
 	}
-	
+
 	/**
 	 * Constructor defining the key for this GP
 	 *
@@ -76,7 +77,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public GlobalProperty(String property) {
 		this.property = property;
 	}
-	
+
 	/**
 	 * Constructor defining the key and value of this GP
 	 *
@@ -87,7 +88,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 		this(property);
 		this.propertyValue = value;
 	}
-	
+
 	/**
 	 * Constructor defining key/value/description for this GP
 	 *
@@ -99,7 +100,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 		this(property, value);
 		this.description = description;
 	}
-	
+
 	/**
 	 * Constructor defining key/value/description/customDatatype/datatypeConfig
 	 *
@@ -108,7 +109,6 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	 * @param description
 	 * @param datatypeClass
 	 * @param datatypeConfig
-	 *
 	 * @since 1.9
 	 */
 	public GlobalProperty(String property, String value, String description,
@@ -117,49 +117,49 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 		this.datatypeClassname = datatypeClass.getName();
 		this.datatypeConfig = datatypeConfig;
 	}
-	
+
 	/**
 	 * @return Returns the property.
 	 */
 	public String getProperty() {
 		return property;
 	}
-	
+
 	/**
 	 * @param property The property to set.
 	 */
 	public void setProperty(String property) {
 		this.property = property;
 	}
-	
+
 	/**
 	 * @return Returns the propertyValue.
 	 */
 	public String getPropertyValue() {
 		return propertyValue;
 	}
-	
+
 	/**
 	 * @param propertyValue The propertyValue to set.
 	 */
 	public void setPropertyValue(String propertyValue) {
 		this.propertyValue = propertyValue;
 	}
-	
+
 	/**
 	 * @return the description
 	 */
 	public String getDescription() {
 		return description;
 	}
-	
+
 	/**
 	 * @param description the description to set
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -168,7 +168,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public Integer getId() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -177,7 +177,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public void setId(Integer id) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getDatatypeClassname()
 	 * @since 1.9
@@ -186,7 +186,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public String getDatatypeClassname() {
 		return datatypeClassname;
 	}
-	
+
 	/**
 	 * @param datatypeClassname the datatypeClassname to set
 	 * @since 1.9
@@ -194,7 +194,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public void setDatatypeClassname(String datatypeClassname) {
 		this.datatypeClassname = datatypeClassname;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getDatatypeConfig()
 	 * @since 1.9
@@ -203,7 +203,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public String getDatatypeConfig() {
 		return datatypeConfig;
 	}
-	
+
 	/**
 	 * @param datatypeConfig the datatypeConfig to set
 	 * @since 1.9
@@ -211,7 +211,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public void setDatatypeConfig(String datatypeConfig) {
 		this.datatypeConfig = datatypeConfig;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getPreferredHandlerClassname()
 	 * @since 1.9
@@ -220,7 +220,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public String getPreferredHandlerClassname() {
 		return preferredHandlerClassname;
 	}
-	
+
 	/**
 	 * @param preferredHandlerClassname the preferredHandlerClassname to set
 	 * @since 1.9
@@ -228,7 +228,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public void setPreferredHandlerClassname(String preferredHandlerClassname) {
 		this.preferredHandlerClassname = preferredHandlerClassname;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.CustomValueDescriptor#getHandlerConfig()
 	 * @since 1.9
@@ -237,7 +237,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public String getHandlerConfig() {
 		return handlerConfig;
 	}
-	
+
 	/**
 	 * @param handlerConfig the handlerConfig to set
 	 * @since 1.9
@@ -245,7 +245,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public void setHandlerConfig(String handlerConfig) {
 		this.handlerConfig = handlerConfig;
 	}
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -253,40 +253,36 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public String toString() {
 		return "property: " + getProperty() + " value: " + getPropertyValue();
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getDescriptor()
-	 *
 	 * @since 1.9
 	 */
 	@Override
 	public GlobalProperty getDescriptor() {
 		return this;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getValueReference()
-	 *
 	 * @since 1.9
 	 */
 	@Override
 	public String getValueReference() {
 		return getPropertyValue();
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReferenceInternal(java.lang.String)
-	 *
 	 * @since 1.9
 	 */
 	@Override
 	public void setValueReferenceInternal(String valueToPersist) {
 		setPropertyValue(valueToPersist);
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getValue()
-	 *
 	 * @since 1.9
 	 */
 	@Override
@@ -296,21 +292,19 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 		}
 		return typedValue;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#setValue(java.lang.Object)
-	 *
 	 * @since 1.9
 	 */
 	@Override
-	public <T> void setValue(T typedValue){
+	public <T> void setValue(T typedValue) {
 		this.typedValue = typedValue;
 		dirty = true;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#isDirty()
-	 *
 	 * @deprecated as of 2.0, use {@link #getDirty()}
 	 */
 	@Deprecated
@@ -319,32 +313,32 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	public boolean isDirty() {
 		return getDirty();
 	}
-	
+
 	public boolean getDirty() {
 		return dirty;
 	}
-	
+
 	/**
 	 * @return Returns the changedBy.
 	 */
 	public User getChangedBy() {
 		return changedBy;
 	}
-	
+
 	/**
 	 * @param changedBy The user that changed this object
 	 */
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-	
+
 	/**
 	 * @return Returns the date this object was changed
 	 */
 	public Date getDateChanged() {
 		return dateChanged;
 	}
-	
+
 	/**
 	 * @param dateChanged The date this object was changed
 	 */
@@ -354,8 +348,8 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 
 	/**
 	 * Gets privilege which can view this globalProperty
+	 *
 	 * @return the viewPrivilege the privilege instance
-	 * 
 	 * @since 2.7.0
 	 */
 	public Privilege getViewPrivilege() {
@@ -364,8 +358,8 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 
 	/**
 	 * Sets privilege which can view this globalProperty
+	 *
 	 * @param viewPrivilege the viewPrivilege to set
-	 *                      
 	 * @since 2.7.0
 	 */
 	public void setViewPrivilege(Privilege viewPrivilege) {
@@ -374,8 +368,8 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 
 	/**
 	 * Gets privilege which can edit this globalProperty
+	 *
 	 * @return the editPrivilege the privilege instance
-	 * 
 	 * @since 2.7.0
 	 */
 	public Privilege getEditPrivilege() {
@@ -384,8 +378,8 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 
 	/**
 	 * Sets privilege which can edit this globalProperty
+	 *
 	 * @param editPrivilege the editPrivilege to set
-	 *                      
 	 * @since 2.7.0
 	 */
 	public void setEditPrivilege(Privilege editPrivilege) {
@@ -394,8 +388,8 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 
 	/**
 	 * Get privilege which can delete this globalProperty
-	 * @return the deletePrivilege the privilege instance
 	 *
+	 * @return the deletePrivilege the privilege instance
 	 * @since 2.7.0
 	 */
 	public Privilege getDeletePrivilege() {
@@ -404,8 +398,8 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 
 	/**
 	 * Sets privilege which can delete this globalProperty
-	 * @param deletePrivilege the deletePrivilege to set
 	 *
+	 * @param deletePrivilege the deletePrivilege to set
 	 * @since 2.7.0
 	 */
 	public void setDeletePrivilege(Privilege deletePrivilege) {

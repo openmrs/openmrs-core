@@ -14,6 +14,7 @@ import java.sql.Connection;
 
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaQuery;
+
 import org.hibernate.CacheMode;
 import org.hibernate.Filter;
 import org.hibernate.FlushMode;
@@ -44,21 +45,21 @@ import org.hibernate.stat.SessionStatistics;
  * Hibernate 4 (used in OpenMRS 1.12) and sessionFactory.getCurrentSession() has been changed to
  * return org.hibernate.Session. It wraps SessionFactory so that any calls to getCurrentSession()
  * are directed to the correct Session class.
- * 
+ *
  * @since 1.12, 1.11.3, 1.10.2, 1.9.9
  */
 public class DbSession {
-	
+
 	private SessionFactory sessionFactory;
-	
+
 	public DbSession(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	private Session getSession() {
 		return sessionFactory.getCurrentSession();
 	}
-	
+
 	/**
 	 * Obtain the tenant identifier associated with this session.
 	 *
@@ -67,11 +68,11 @@ public class DbSession {
 	public String getTenantIdentifier() {
 		return getSession().getTenantIdentifier();
 	}
-	
+
 	/**
-	 * Begin a unit of work and return the associated {@link Transaction} object. If a new
-	 * underlying transaction is required, begin the transaction. Otherwise continue the new work in
-	 * the context of the existing underlying transaction.
+	 * Begin a unit of work and return the associated {@link Transaction} object. If a new underlying
+	 * transaction is required, begin the transaction. Otherwise continue the new work in the context of
+	 * the existing underlying transaction.
 	 *
 	 * @return a Transaction instance
 	 * @see #getTransaction
@@ -79,18 +80,18 @@ public class DbSession {
 	public Transaction beginTransaction() {
 		return getSession().beginTransaction();
 	}
-	
+
 	/**
 	 * Get the {@link Transaction} instance associated with this session. The concrete type of the
-	 * returned {@link Transaction} object is determined by the
-	 * {@code hibernate.transaction_factory} property.
+	 * returned {@link Transaction} object is determined by the {@code hibernate.transaction_factory}
+	 * property.
 	 *
 	 * @return a Transaction instance
 	 */
 	public Transaction getTransaction() {
 		return getSession().getTransaction();
 	}
-	
+
 	/**
 	 * Create a {@link Query} instance for the named query string defined in the metadata.
 	 *
@@ -100,7 +101,7 @@ public class DbSession {
 	public Query getNamedQuery(String queryName) {
 		return getSession().getNamedQuery(queryName);
 	}
-	
+
 	/**
 	 * Create a {@link Query} instance for the given HQL query string.
 	 *
@@ -110,7 +111,7 @@ public class DbSession {
 	public Query createQuery(String queryString) {
 		return getSession().createQuery(queryString);
 	}
-	
+
 	/**
 	 * Create a {@link NativeQuery} instance for the given SQL query string.
 	 *
@@ -120,7 +121,7 @@ public class DbSession {
 	public <T> NativeQuery<T> createSQLQuery(String queryString, Class<T> type) {
 		return getSession().createNativeQuery(queryString, type);
 	}
-	
+
 	/**
 	 * Gets a ProcedureCall based on a named template
 	 *
@@ -131,7 +132,7 @@ public class DbSession {
 	public ProcedureCall getNamedProcedureCall(String name) {
 		return getSession().getNamedProcedureCall(name);
 	}
-	
+
 	/**
 	 * Creates a call to a stored procedure.
 	 *
@@ -141,10 +142,10 @@ public class DbSession {
 	public ProcedureCall createStoredProcedureCall(String procedureName) {
 		return getSession().createStoredProcedureCall(procedureName);
 	}
-	
+
 	/**
-	 * Creates a call to a stored procedure with specific result set entity mappings. Each class
-	 * named is considered a "root return".
+	 * Creates a call to a stored procedure with specific result set entity mappings. Each class named
+	 * is considered a "root return".
 	 *
 	 * @param procedureName The name of the procedure.
 	 * @param resultClasses The entity(s) to map the result on to.
@@ -153,7 +154,7 @@ public class DbSession {
 	public ProcedureCall createStoredProcedureCall(String procedureName, Class... resultClasses) {
 		return getSession().createStoredProcedureCall(procedureName, resultClasses);
 	}
-	
+
 	/**
 	 * Creates a call to a stored procedure with specific result set entity mappings.
 	 *
@@ -164,7 +165,7 @@ public class DbSession {
 	public ProcedureCall createStoredProcedureCall(String procedureName, String... resultSetMappings) {
 		return getSession().createStoredProcedureCall(procedureName, resultSetMappings);
 	}
-	
+
 	/**
 	 * Create {@link CriteriaQuery} instance for the given class (entity or subclasses/implementors).
 	 *
@@ -174,38 +175,35 @@ public class DbSession {
 	public <T> CriteriaQuery<T> createCriteria(Class<T> persistentClass) {
 		return getSession().getCriteriaBuilder().createQuery(persistentClass);
 	}
-	
+
 	/**
-	 * Obtain a {@link Session} builder with the ability to grab certain information from this
-	 * session.
+	 * Obtain a {@link Session} builder with the ability to grab certain information from this session.
 	 *
 	 * @return The session builder
 	 */
 	public SharedSessionBuilder sessionWithOptions() {
 		return getSession().sessionWithOptions();
 	}
-	
+
 	/**
-	 * Force this session to flush. Must be called at the end of a unit of work, before committing
-	 * the transaction and closing the session (depending on {@link #setFlushMode(FlushMode)},
+	 * Force this session to flush. Must be called at the end of a unit of work, before committing the
+	 * transaction and closing the session (depending on {@link #setFlushMode(FlushMode)},
 	 * {@link Transaction#commit()} calls this method).
 	 * <p>
-	 * <i>Flushing</i> is the process of synchronizing the underlying persistent store with
-	 * persistable state held in memory.
+	 * <i>Flushing</i> is the process of synchronizing the underlying persistent store with persistable
+	 * state held in memory.
 	 *
-	 * @throws HibernateException Indicates problems flushing the session or talking to the
-	 *             database.
+	 * @throws HibernateException Indicates problems flushing the session or talking to the database.
 	 */
 	public void flush() throws HibernateException {
 		getSession().flush();
 	}
-	
+
 	/**
 	 * Set the flush mode for this session.
 	 * <p>
 	 * The flush mode determines the points at which the session is flushed. <i>Flushing</i> is the
-	 * process of synchronizing the underlying persistent store with persistable state held in
-	 * memory.
+	 * process of synchronizing the underlying persistent store with persistable state held in memory.
 	 * <p>
 	 * For a logically "read only" session, it is reasonable to set the session's flush mode to
 	 * {@link FlushMode#MANUAL} at the start of the session (in order to achieve some extra
@@ -217,7 +215,7 @@ public class DbSession {
 	public void setFlushMode(FlushMode flushMode) {
 		getSession().setHibernateFlushMode(flushMode);
 	}
-	
+
 	/**
 	 * Get the current flush mode for this session.
 	 *
@@ -226,19 +224,18 @@ public class DbSession {
 	public FlushMode getFlushMode() {
 		return getSession().getHibernateFlushMode();
 	}
-	
+
 	/**
 	 * Set the cache mode.
 	 * <p>
-	 * Cache mode determines the manner in which this session can interact with the second level
-	 * cache.
+	 * Cache mode determines the manner in which this session can interact with the second level cache.
 	 *
 	 * @param cacheMode The new cache mode.
 	 */
 	public void setCacheMode(CacheMode cacheMode) {
 		getSession().setCacheMode(cacheMode);
 	}
-	
+
 	/**
 	 * Get the current cache mode.
 	 *
@@ -247,7 +244,7 @@ public class DbSession {
 	public CacheMode getCacheMode() {
 		return getSession().getCacheMode();
 	}
-	
+
 	/**
 	 * Get the session factory which created this session.
 	 *
@@ -257,12 +254,12 @@ public class DbSession {
 	public SessionFactory getSessionFactory() {
 		return getSession().getSessionFactory();
 	}
-	
+
 	/**
-	 * End the session by releasing the JDBC connection and cleaning up. It is not strictly
-	 * necessary to close the session. If you’re running inside a Spring‐managed
-	 * transaction, Spring will automatically close the session and return the Connection
-	 * to the pool when the transaction commits.
+	 * End the session by releasing the JDBC connection and cleaning up. It is not strictly necessary to
+	 * close the session. If you’re running inside a Spring‐managed transaction, Spring will
+	 * automatically close the session and return the Connection to the pool when the transaction
+	 * commits.
 	 *
 	 * @return the connection provided by the application or null.
 	 * @throws HibernateException Indicates problems cleaning up.
@@ -271,7 +268,7 @@ public class DbSession {
 		getSession().close();
 		return null;
 	}
-	
+
 	/**
 	 * Cancel the execution of the current query.
 	 * <p>
@@ -282,7 +279,7 @@ public class DbSession {
 	public void cancelQuery() throws HibernateException {
 		getSession().cancelQuery();
 	}
-	
+
 	/**
 	 * Check if the session is still open.
 	 *
@@ -291,7 +288,7 @@ public class DbSession {
 	public boolean isOpen() {
 		return getSession().isOpen();
 	}
-	
+
 	/**
 	 * Check if the session is currently connected.
 	 *
@@ -300,7 +297,7 @@ public class DbSession {
 	public boolean isConnected() {
 		return getSession().isConnected();
 	}
-	
+
 	/**
 	 * Does this session contain any changes which must be synchronized with the database? In other
 	 * words, would any DML operations be executed if we flushed this session?
@@ -311,11 +308,11 @@ public class DbSession {
 	public boolean isDirty() throws HibernateException {
 		return getSession().isDirty();
 	}
-	
+
 	/**
 	 * Will entities and proxies that are loaded into this session be made read-only by default? To
 	 * determine the read-only/modifiable setting for a particular entity or proxy:
-	 * 
+	 *
 	 * @see Session#isReadOnly(Object)
 	 * @return true, loaded entities/proxies will be made read-only by default; false, loaded
 	 *         entities/proxies will be made modifiable by default.
@@ -323,28 +320,28 @@ public class DbSession {
 	public boolean isDefaultReadOnly() {
 		return getSession().isDefaultReadOnly();
 	}
-	
+
 	/**
-	 * Change the default for entities and proxies loaded into this session from modifiable to
-	 * read-only mode, or from modifiable to read-only mode. Read-only entities are not
-	 * dirty-checked and snapshots of persistent state are not maintained. Read-only entities can be
-	 * modified, but changes are not persisted. When a proxy is initialized, the loaded entity will
-	 * have the same read-only/modifiable setting as the uninitialized proxy has, regardless of the
-	 * session's current setting. To change the read-only/modifiable setting for a particular entity
-	 * or proxy that is already in this session:
-	 * 
-	 * @see Session#setReadOnly(Object,boolean) To override this session's read-only/modifiable
-	 *      setting for entities and proxies loaded by a Query:
-	 * @param readOnly true, the default for loaded entities/proxies is read-only; false, the
-	 *            default for loaded entities/proxies is modifiable
+	 * Change the default for entities and proxies loaded into this session from modifiable to read-only
+	 * mode, or from modifiable to read-only mode. Read-only entities are not dirty-checked and
+	 * snapshots of persistent state are not maintained. Read-only entities can be modified, but changes
+	 * are not persisted. When a proxy is initialized, the loaded entity will have the same
+	 * read-only/modifiable setting as the uninitialized proxy has, regardless of the session's current
+	 * setting. To change the read-only/modifiable setting for a particular entity or proxy that is
+	 * already in this session:
+	 *
+	 * @see Session#setReadOnly(Object,boolean) To override this session's read-only/modifiable setting
+	 *      for entities and proxies loaded by a Query:
+	 * @param readOnly true, the default for loaded entities/proxies is read-only; false, the default
+	 *            for loaded entities/proxies is modifiable
 	 */
 	public void setDefaultReadOnly(boolean readOnly) {
 		getSession().setDefaultReadOnly(readOnly);
 	}
-	
+
 	/**
-	 * Return the identifier value of the given entity as associated with this session. An exception
-	 * is thrown if the given entity instance is transient or detached in relation to this session.
+	 * Return the identifier value of the given entity as associated with this session. An exception is
+	 * thrown if the given entity instance is transient or detached in relation to this session.
 	 *
 	 * @param object a persistent instance
 	 * @return the identifier
@@ -354,7 +351,7 @@ public class DbSession {
 	public Object getIdentifier(Object object) {
 		return getSession().getIdentifier(object);
 	}
-	
+
 	/**
 	 * Check if this instance is associated with this <tt>Session</tt>.
 	 *
@@ -364,11 +361,11 @@ public class DbSession {
 	public boolean contains(Object object) {
 		return getSession().contains(object);
 	}
-	
+
 	/**
 	 * Remove this instance from the session cache. Changes to the instance will not be synchronized
-	 * with the database. This operation cascades to associated instances if the association is
-	 * mapped with <tt>cascade="evict"</tt>.
+	 * with the database. This operation cascades to associated instances if the association is mapped
+	 * with <tt>cascade="evict"</tt>.
 	 *
 	 * @param object The entity to evict
 	 * @throws NullPointerException if the passed object is {@code null}
@@ -377,10 +374,10 @@ public class DbSession {
 	public void evict(Object object) {
 		getSession().evict(object);
 	}
-	
+
 	/**
-	 * Return the persistent instance of the given entity class with the given identifier, obtaining
-	 * the specified lock mode, assuming the instance exists.
+	 * Return the persistent instance of the given entity class with the given identifier, obtaining the
+	 * specified lock mode, assuming the instance exists.
 	 *
 	 * @param theClass a persistent class
 	 * @param id a valid identifier of an existing persistent instance of the class
@@ -390,10 +387,10 @@ public class DbSession {
 	public Object load(Class theClass, Serializable id, LockOptions lockOptions) {
 		return getSession().get(theClass, id, lockOptions);
 	}
-	
+
 	/**
-	 * Return the persistent instance of the given entity class with the given identifier, obtaining
-	 * the specified lock mode, assuming the instance exists.
+	 * Return the persistent instance of the given entity class with the given identifier, obtaining the
+	 * specified lock mode, assuming the instance exists.
 	 *
 	 * @param entityName a persistent class
 	 * @param id a valid identifier of an existing persistent instance of the class
@@ -403,15 +400,15 @@ public class DbSession {
 	public Object load(String entityName, Serializable id, LockOptions lockOptions) {
 		return getSession().get(entityName, id, lockOptions);
 	}
-	
+
 	/**
-	 * Return the persistent instance of the given entity class with the given identifier, assuming
-	 * that the instance exists. This method might return a proxied instance that is initialized
-	 * on-demand, when a non-identifier method is accessed. <br>
+	 * Return the persistent instance of the given entity class with the given identifier, assuming that
+	 * the instance exists. This method might return a proxied instance that is initialized on-demand,
+	 * when a non-identifier method is accessed. <br>
 	 * <br>
-	 * You should not use this method to determine if an instance exists (use <tt>get()</tt>
-	 * instead). Use this only to retrieve an instance that you assume exists, where non-existence
-	 * would be an actual error.
+	 * You should not use this method to determine if an instance exists (use <tt>get()</tt> instead).
+	 * Use this only to retrieve an instance that you assume exists, where non-existence would be an
+	 * actual error.
 	 *
 	 * @param theClass a persistent class
 	 * @param id a valid identifier of an existing persistent instance of the class
@@ -420,15 +417,15 @@ public class DbSession {
 	public Object load(Class theClass, Serializable id) {
 		return getSession().getReference(theClass, id);
 	}
-	
+
 	/**
-	 * Return the persistent instance of the given entity class with the given identifier, assuming
-	 * that the instance exists. This method might return a proxied instance that is initialized
-	 * on-demand, when a non-identifier method is accessed. <br>
+	 * Return the persistent instance of the given entity class with the given identifier, assuming that
+	 * the instance exists. This method might return a proxied instance that is initialized on-demand,
+	 * when a non-identifier method is accessed. <br>
 	 * <br>
-	 * You should not use this method to determine if an instance exists (use <tt>get()</tt>
-	 * instead). Use this only to retrieve an instance that you assume exists, where non-existence
-	 * would be an actual error.
+	 * You should not use this method to determine if an instance exists (use <tt>get()</tt> instead).
+	 * Use this only to retrieve an instance that you assume exists, where non-existence would be an
+	 * actual error.
 	 *
 	 * @param entityName a persistent class
 	 * @param id a valid identifier of an existing persistent instance of the class
@@ -437,10 +434,9 @@ public class DbSession {
 	public Object load(String entityName, Serializable id) {
 		return getSession().getReference(entityName, id);
 	}
-	
+
 	/**
-	 * Read the persistent state associated with the given identifier into the given transient
-	 * instance.
+	 * Read the persistent state associated with the given identifier into the given transient instance.
 	 *
 	 * @param object an "empty" instance of the persistent class
 	 * @param id a valid identifier of an existing persistent instance of the class
@@ -448,7 +444,7 @@ public class DbSession {
 	public void load(Object object, Serializable id) {
 		getSession().load(object, id);
 	}
-	
+
 	/**
 	 * Persist the state of the given detached instance, reusing the current identifier value. This
 	 * operation cascades to associated instances if the association is mapped with
@@ -460,7 +456,7 @@ public class DbSession {
 	public void replicate(Object object, ReplicationMode replicationMode) {
 		getSession().replicate(object, replicationMode);
 	}
-	
+
 	/**
 	 * Persist the state of the given detached instance, reusing the current identifier value. This
 	 * operation cascades to associated instances if the association is mapped with
@@ -473,7 +469,7 @@ public class DbSession {
 	public void replicate(String entityName, Object object, ReplicationMode replicationMode) {
 		getSession().replicate(entityName, object, replicationMode);
 	}
-	
+
 	/**
 	 * Persist the given transient instance, first assigning a generated identifier. (Or using the
 	 * current value of the identifier property if the <tt>assigned</tt> generator is used.) This
@@ -487,7 +483,7 @@ public class DbSession {
 		getSession().persist(object);
 		return getSession().getIdentifier(object);
 	}
-	
+
 	/**
 	 * Persist the given transient instance, first assigning a generated identifier. (Or using the
 	 * current value of the identifier property if the <tt>assigned</tt> generator is used.) This
@@ -502,11 +498,10 @@ public class DbSession {
 		getSession().persist(entityName, object);
 		return getSession().getIdentifier(object);
 	}
-	
+
 	/**
 	 * Either {@link #save(Object)} or {@link #update(Object)} the given instance, depending upon
-	 * resolution of the unsaved-value checks (see the manual for discussion of unsaved-value
-	 * checking).
+	 * resolution of the unsaved-value checks (see the manual for discussion of unsaved-value checking).
 	 * <p>
 	 * This operation cascades to associated instances if the association is mapped with
 	 * {@code cascade="save-update"}
@@ -518,7 +513,7 @@ public class DbSession {
 	public void saveOrUpdate(Object object) {
 		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
-	
+
 	/**
 	 * Either {@link #save(String, Object)} or {@link #update(String, Object)} the given instance,
 	 * depending upon resolution of the unsaved-value checks (see the manual for discussion of
@@ -535,24 +530,22 @@ public class DbSession {
 	public void saveOrUpdate(String entityName, Object object) {
 		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
-	
+
 	/**
-	 * Update the persistent instance with the identifier of the given detached instance. If there
-	 * is a persistent instance with the same identifier, an exception is thrown. This operation
-	 * cascades to associated instances if the association is mapped with
-	 * {@code cascade="save-update"}
+	 * Update the persistent instance with the identifier of the given detached instance. If there is a
+	 * persistent instance with the same identifier, an exception is thrown. This operation cascades to
+	 * associated instances if the association is mapped with {@code cascade="save-update"}
 	 *
 	 * @param object a detached instance containing updated state
 	 */
 	public void update(Object object) {
 		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
-	
+
 	/**
-	 * Update the persistent instance with the identifier of the given detached instance. If there
-	 * is a persistent instance with the same identifier, an exception is thrown. This operation
-	 * cascades to associated instances if the association is mapped with
-	 * {@code cascade="save-update"}
+	 * Update the persistent instance with the identifier of the given detached instance. If there is a
+	 * persistent instance with the same identifier, an exception is thrown. This operation cascades to
+	 * associated instances if the association is mapped with {@code cascade="save-update"}
 	 *
 	 * @param entityName The entity name
 	 * @param object a detached instance containing updated state
@@ -560,13 +553,13 @@ public class DbSession {
 	public void update(String entityName, Object object) {
 		HibernateUtil.saveOrUpdate(getSession(), object);
 	}
-	
+
 	/**
-	 * Copy the state of the given object onto the persistent object with the same identifier. If
-	 * there is no persistent instance currently associated with the session, it will be loaded.
-	 * Return the persistent instance. If the given instance is unsaved, save a copy of and return
-	 * it as a newly persistent instance. The given instance does not become associated with the
-	 * session. This operation cascades to associated instances if the association is mapped with
+	 * Copy the state of the given object onto the persistent object with the same identifier. If there
+	 * is no persistent instance currently associated with the session, it will be loaded. Return the
+	 * persistent instance. If the given instance is unsaved, save a copy of and return it as a newly
+	 * persistent instance. The given instance does not become associated with the session. This
+	 * operation cascades to associated instances if the association is mapped with
 	 * {@code cascade="merge"}
 	 * <p>
 	 * The semantics of this method are defined by JSR-220.
@@ -577,13 +570,13 @@ public class DbSession {
 	public Object merge(Object object) {
 		return getSession().merge(object);
 	}
-	
+
 	/**
-	 * Copy the state of the given object onto the persistent object with the same identifier. If
-	 * there is no persistent instance currently associated with the session, it will be loaded.
-	 * Return the persistent instance. If the given instance is unsaved, save a copy of and return
-	 * it as a newly persistent instance. The given instance does not become associated with the
-	 * session. This operation cascades to associated instances if the association is mapped with
+	 * Copy the state of the given object onto the persistent object with the same identifier. If there
+	 * is no persistent instance currently associated with the session, it will be loaded. Return the
+	 * persistent instance. If the given instance is unsaved, save a copy of and return it as a newly
+	 * persistent instance. The given instance does not become associated with the session. This
+	 * operation cascades to associated instances if the association is mapped with
 	 * {@code cascade="merge"}
 	 * <p>
 	 * The semantics of this method are defined by JSR-220.
@@ -595,7 +588,7 @@ public class DbSession {
 	public Object merge(String entityName, Object object) {
 		return getSession().merge(entityName, object);
 	}
-	
+
 	/**
 	 * Make a transient instance persistent. This operation cascades to associated instances if the
 	 * association is mapped with {@code cascade="persist"}
@@ -607,7 +600,7 @@ public class DbSession {
 	public void persist(Object object) {
 		getSession().persist(object);
 	}
-	
+
 	/**
 	 * Make a transient instance persistent. This operation cascades to associated instances if the
 	 * association is mapped with {@code cascade="persist"}
@@ -620,24 +613,24 @@ public class DbSession {
 	public void persist(String entityName, Object object) {
 		getSession().persist(entityName, object);
 	}
-	
+
 	/**
-	 * Remove a persistent instance from the datastore. The argument may be an instance associated
-	 * with the receiving <tt>Session</tt> or a transient instance with an identifier associated
-	 * with existing persistent state. This operation cascades to associated instances if the
-	 * association is mapped with {@code cascade="delete"}
+	 * Remove a persistent instance from the datastore. The argument may be an instance associated with
+	 * the receiving <tt>Session</tt> or a transient instance with an identifier associated with
+	 * existing persistent state. This operation cascades to associated instances if the association is
+	 * mapped with {@code cascade="delete"}
 	 *
 	 * @param object the instance to be removed
 	 */
 	public void delete(Object object) {
 		getSession().remove(object);
 	}
-	
+
 	/**
-	 * Remove a persistent instance from the datastore. The <b>object</b> argument may be an
-	 * instance associated with the receiving <tt>Session</tt> or a transient instance with an
-	 * identifier associated with existing persistent state. This operation cascades to associated
-	 * instances if the association is mapped with {@code cascade="delete"}
+	 * Remove a persistent instance from the datastore. The <b>object</b> argument may be an instance
+	 * associated with the receiving <tt>Session</tt> or a transient instance with an identifier
+	 * associated with existing persistent state. This operation cascades to associated instances if the
+	 * association is mapped with {@code cascade="delete"}
 	 *
 	 * @param entityName The entity name for the instance to be removed.
 	 * @param object the instance to be removed
@@ -645,7 +638,7 @@ public class DbSession {
 	public void delete(String entityName, Object object) {
 		getSession().remove(object);
 	}
-	
+
 	/**
 	 * Obtain a lock on the given entity, with the given {@link LockMode lock mode}.
 	 * <p>
@@ -657,11 +650,11 @@ public class DbSession {
 	public void lock(Object object, LockMode lockMode) {
 		getSession().lock(object, lockMode);
 	}
-	
+
 	/**
-	 * Re-read the state of the given instance from the underlying database. It is inadvisable to
-	 * use this to implement long-running sessions that span many business tasks. This method is,
-	 * however, useful in certain special circumstances. For example
+	 * Re-read the state of the given instance from the underlying database. It is inadvisable to use
+	 * this to implement long-running sessions that span many business tasks. This method is, however,
+	 * useful in certain special circumstances. For example
 	 * <ul>
 	 * <li>where a database trigger alters the object state upon insert or update
 	 * <li>after executing direct SQL (eg. a mass update) in the same session
@@ -673,11 +666,11 @@ public class DbSession {
 	public void refresh(Object object) {
 		getSession().refresh(object);
 	}
-	
+
 	/**
-	 * Re-read the state of the given instance from the underlying database. It is inadvisable to
-	 * use this to implement long-running sessions that span many business tasks. This method is,
-	 * however, useful in certain special circumstances. For example
+	 * Re-read the state of the given instance from the underlying database. It is inadvisable to use
+	 * this to implement long-running sessions that span many business tasks. This method is, however,
+	 * useful in certain special circumstances. For example
 	 * <ul>
 	 * <li>where a database trigger alters the object state upon insert or update
 	 * <li>after executing direct SQL (eg. a mass update) in the same session
@@ -690,7 +683,7 @@ public class DbSession {
 	public void refresh(String entityName, Object object) {
 		getSession().refresh(object);
 	}
-	
+
 	/**
 	 * Re-read the state of the given instance from the underlying database, with the given
 	 * <tt>LockMode</tt>. It is inadvisable to use this to implement long-running sessions that span
@@ -702,7 +695,7 @@ public class DbSession {
 	public void refresh(Object object, LockOptions lockOptions) {
 		getSession().refresh(object, lockOptions);
 	}
-	
+
 	/**
 	 * Re-read the state of the given instance from the underlying database, with the given
 	 * <tt>LockMode</tt>. It is inadvisable to use this to implement long-running sessions that span
@@ -715,7 +708,7 @@ public class DbSession {
 	public void refresh(String entityName, Object object, LockOptions lockOptions) {
 		getSession().refresh(object, lockOptions);
 	}
-	
+
 	/**
 	 * Determine the current lock mode of the given object.
 	 *
@@ -725,20 +718,19 @@ public class DbSession {
 	public LockMode getCurrentLockMode(Object object) {
 		return getSession().getCurrentLockMode(object);
 	}
-	
+
 	/**
-	 * Completely clear the session. Evict all loaded instances and cancel all pending saves,
-	 * updates and deletions. Do not close open iterators or instances of <tt>ScrollableResults</tt>
-	 * .
+	 * Completely clear the session. Evict all loaded instances and cancel all pending saves, updates
+	 * and deletions. Do not close open iterators or instances of <tt>ScrollableResults</tt> .
 	 */
 	public void clear() {
 		getSession().clear();
 	}
-	
+
 	/**
-	 * Return the persistent instance of the given entity class with the given identifier, or null
-	 * if there is no such persistent instance. (If the instance is already associated with the
-	 * session, return that instance. This method never returns an uninitialized instance.)
+	 * Return the persistent instance of the given entity class with the given identifier, or null if
+	 * there is no such persistent instance. (If the instance is already associated with the session,
+	 * return that instance. This method never returns an uninitialized instance.)
 	 *
 	 * @param clazz a persistent class
 	 * @param id an identifier
@@ -747,12 +739,12 @@ public class DbSession {
 	public Object get(Class clazz, Serializable id) {
 		return getSession().get(clazz, id);
 	}
-	
+
 	/**
-	 * Return the persistent instance of the given entity class with the given identifier, or null
-	 * if there is no such persistent instance. (If the instance is already associated with the
-	 * session, return that instance. This method never returns an uninitialized instance.) Obtain
-	 * the specified lock mode if the instance exists.
+	 * Return the persistent instance of the given entity class with the given identifier, or null if
+	 * there is no such persistent instance. (If the instance is already associated with the session,
+	 * return that instance. This method never returns an uninitialized instance.) Obtain the specified
+	 * lock mode if the instance exists.
 	 *
 	 * @param clazz a persistent class
 	 * @param id an identifier
@@ -762,11 +754,11 @@ public class DbSession {
 	public Object get(Class clazz, Serializable id, LockOptions lockOptions) {
 		return getSession().get(clazz, id, lockOptions);
 	}
-	
+
 	/**
-	 * Return the persistent instance of the given named entity with the given identifier, or null
-	 * if there is no such persistent instance. (If the instance is already associated with the
-	 * session, return that instance. This method never returns an uninitialized instance.)
+	 * Return the persistent instance of the given named entity with the given identifier, or null if
+	 * there is no such persistent instance. (If the instance is already associated with the session,
+	 * return that instance. This method never returns an uninitialized instance.)
 	 *
 	 * @param entityName the entity name
 	 * @param id an identifier
@@ -775,12 +767,12 @@ public class DbSession {
 	public Object get(String entityName, Serializable id) {
 		return getSession().get(entityName, id);
 	}
-	
+
 	/**
-	 * Return the persistent instance of the given entity class with the given identifier, or null
-	 * if there is no such persistent instance. (If the instance is already associated with the
-	 * session, return that instance. This method never returns an uninitialized instance.) Obtain
-	 * the specified lock mode if the instance exists.
+	 * Return the persistent instance of the given entity class with the given identifier, or null if
+	 * there is no such persistent instance. (If the instance is already associated with the session,
+	 * return that instance. This method never returns an uninitialized instance.) Obtain the specified
+	 * lock mode if the instance exists.
 	 *
 	 * @param entityName the entity name
 	 * @param id an identifier
@@ -790,21 +782,21 @@ public class DbSession {
 	public Object get(String entityName, Serializable id, LockOptions lockOptions) {
 		return getSession().get(entityName, id, lockOptions);
 	}
-	
+
 	/**
 	 * Return the entity name for a persistent entity.
-	 * 
+	 *
 	 * @param object a persistent entity
 	 * @return the entity name
 	 */
 	public String getEntityName(Object object) {
 		return getSession().getEntityName(object);
 	}
-	
+
 	/**
-	 * Create an {@link IdentifierLoadAccess} instance to retrieve the specified entity type by
-	 * primary key.
-	 * 
+	 * Create an {@link IdentifierLoadAccess} instance to retrieve the specified entity type by primary
+	 * key.
+	 *
 	 * @param entityName The entity name of the entity type to be retrieved
 	 * @return load delegate for loading the specified entity type by primary key
 	 * @throws HibernateException If the specified entity name cannot be resolved as an entity name
@@ -812,10 +804,9 @@ public class DbSession {
 	public IdentifierLoadAccess byId(String entityName) {
 		return getSession().byId(entityName);
 	}
-	
+
 	/**
-	 * Create an {@link IdentifierLoadAccess} instance to retrieve the specified entity by primary
-	 * key.
+	 * Create an {@link IdentifierLoadAccess} instance to retrieve the specified entity by primary key.
 	 *
 	 * @param entityClass The entity type to be retrieved
 	 * @return load delegate for loading the specified entity type by primary key
@@ -824,11 +815,11 @@ public class DbSession {
 	public IdentifierLoadAccess byId(Class entityClass) {
 		return getSession().byId(entityClass);
 	}
-	
+
 	/**
-	 * Create an {@link NaturalIdLoadAccess} instance to retrieve the specified entity by its
-	 * natural id.
-	 * 
+	 * Create an {@link NaturalIdLoadAccess} instance to retrieve the specified entity by its natural
+	 * id.
+	 *
 	 * @param entityName The entity name of the entity type to be retrieved
 	 * @return load delegate for loading the specified entity type by natural id
 	 * @throws HibernateException If the specified entity name cannot be resolved as an entity name
@@ -836,11 +827,11 @@ public class DbSession {
 	public NaturalIdLoadAccess byNaturalId(String entityName) {
 		return getSession().byNaturalId(entityName);
 	}
-	
+
 	/**
-	 * Create an {@link NaturalIdLoadAccess} instance to retrieve the specified entity by its
-	 * natural id.
-	 * 
+	 * Create an {@link NaturalIdLoadAccess} instance to retrieve the specified entity by its natural
+	 * id.
+	 *
 	 * @param entityClass The entity type to be retrieved
 	 * @return load delegate for loading the specified entity type by natural id
 	 * @throws HibernateException If the specified Class cannot be resolved as a mapped entity
@@ -848,35 +839,35 @@ public class DbSession {
 	public NaturalIdLoadAccess byNaturalId(Class entityClass) {
 		return getSession().byNaturalId(entityClass);
 	}
-	
+
 	/**
 	 * Create an {@link SimpleNaturalIdLoadAccess} instance to retrieve the specified entity by its
 	 * natural id.
 	 *
 	 * @param entityName The entity name of the entity type to be retrieved
 	 * @return load delegate for loading the specified entity type by natural id
-	 * @throws HibernateException If the specified entityClass cannot be resolved as a mapped
-	 *             entity, or if the entity does not define a natural-id or if its natural-id is
-	 *             made up of multiple attributes.
+	 * @throws HibernateException If the specified entityClass cannot be resolved as a mapped entity, or
+	 *             if the entity does not define a natural-id or if its natural-id is made up of
+	 *             multiple attributes.
 	 */
 	public SimpleNaturalIdLoadAccess bySimpleNaturalId(String entityName) {
 		return getSession().bySimpleNaturalId(entityName);
 	}
-	
+
 	/**
 	 * Create an {@link SimpleNaturalIdLoadAccess} instance to retrieve the specified entity by its
 	 * simple (single attribute) natural id.
 	 *
 	 * @param entityClass The entity type to be retrieved
 	 * @return load delegate for loading the specified entity type by natural id
-	 * @throws HibernateException If the specified entityClass cannot be resolved as a mapped
-	 *             entity, or if the entity does not define a natural-id or if its natural-id is
-	 *             made up of multiple attributes.
+	 * @throws HibernateException If the specified entityClass cannot be resolved as a mapped entity, or
+	 *             if the entity does not define a natural-id or if its natural-id is made up of
+	 *             multiple attributes.
 	 */
 	public SimpleNaturalIdLoadAccess bySimpleNaturalId(Class entityClass) {
 		return getSession().bySimpleNaturalId(entityClass);
 	}
-	
+
 	/**
 	 * Enable the named filter for this current session.
 	 *
@@ -886,7 +877,7 @@ public class DbSession {
 	public Filter enableFilter(String filterName) {
 		return getSession().enableFilter(filterName);
 	}
-	
+
 	/**
 	 * Retrieve a currently enabled filter by name.
 	 *
@@ -896,7 +887,7 @@ public class DbSession {
 	public Filter getEnabledFilter(String filterName) {
 		return getSession().getEnabledFilter(filterName);
 	}
-	
+
 	/**
 	 * Disable the named filter for the current session.
 	 *
@@ -905,7 +896,7 @@ public class DbSession {
 	public void disableFilter(String filterName) {
 		getSession().disableFilter(filterName);
 	}
-	
+
 	/**
 	 * Get the statistics for this session.
 	 *
@@ -914,40 +905,40 @@ public class DbSession {
 	public SessionStatistics getStatistics() {
 		return getSession().getStatistics();
 	}
-	
+
 	/**
-	 * Is the specified entity or proxy read-only? To get the default read-only/modifiable setting
-	 * used for entities and proxies that are loaded into the session:
-	 * 
+	 * Is the specified entity or proxy read-only? To get the default read-only/modifiable setting used
+	 * for entities and proxies that are loaded into the session:
+	 *
 	 * @see org.hibernate.Session#isDefaultReadOnly()
 	 * @param entityOrProxy an entity or HibernateProxy
-	 * @return {@code true} if the entity or proxy is read-only, {@code false} if the entity or
-	 *         proxy is modifiable.
+	 * @return {@code true} if the entity or proxy is read-only, {@code false} if the entity or proxy is
+	 *         modifiable.
 	 */
 	public boolean isReadOnly(Object entityOrProxy) {
 		return getSession().isReadOnly(entityOrProxy);
 	}
-	
+
 	/**
-	 * Set an unmodified persistent object to read-only mode, or a read-only object to modifiable
-	 * mode. In read-only mode, no snapshot is maintained, the instance is never dirty checked, and
-	 * changes are not persisted. If the entity or proxy already has the specified
-	 * read-only/modifiable setting, then this method does nothing. To set the default
-	 * read-only/modifiable setting used for entities and proxies that are loaded into the session:
-	 * 
+	 * Set an unmodified persistent object to read-only mode, or a read-only object to modifiable mode.
+	 * In read-only mode, no snapshot is maintained, the instance is never dirty checked, and changes
+	 * are not persisted. If the entity or proxy already has the specified read-only/modifiable setting,
+	 * then this method does nothing. To set the default read-only/modifiable setting used for entities
+	 * and proxies that are loaded into the session:
+	 *
 	 * @see org.hibernate.Session#setDefaultReadOnly(boolean) To override this session's
 	 *      read-only/modifiable setting for entities and proxies loaded by a Query:
 	 * @param entityOrProxy an entity or HibernateProxy
-	 * @param readOnly {@code true} if the entity or proxy should be made read-only; {@code false}
-	 *            if the entity or proxy should be made modifiable
+	 * @param readOnly {@code true} if the entity or proxy should be made read-only; {@code false} if
+	 *            the entity or proxy should be made modifiable
 	 */
 	public void setReadOnly(Object entityOrProxy, boolean readOnly) {
 		getSession().setReadOnly(entityOrProxy, readOnly);
 	}
-	
+
 	/**
-	 * Controller for allowing users to perform JDBC related work using the Connection managed by
-	 * this Session.
+	 * Controller for allowing users to perform JDBC related work using the Connection managed by this
+	 * Session.
 	 *
 	 * @param work The work to be performed.
 	 * @throws HibernateException Generally indicates wrapped {@link java.sql.SQLException}
@@ -955,10 +946,10 @@ public class DbSession {
 	public void doWork(Work work) throws HibernateException {
 		getSession().doWork(work);
 	}
-	
+
 	/**
-	 * Controller for allowing users to perform JDBC related work using the Connection managed by
-	 * this Session. After execution returns the result of the {@link ReturningWork#execute} call.
+	 * Controller for allowing users to perform JDBC related work using the Connection managed by this
+	 * Session. After execution returns the result of the {@link ReturningWork#execute} call.
 	 *
 	 * @param work The work to be performed.
 	 * @param <T> The type of the result returned from the work
@@ -968,46 +959,45 @@ public class DbSession {
 	public <T> T doReturningWork(ReturningWork<T> work) throws HibernateException {
 		return getSession().doReturningWork(work);
 	}
-	
+
 	/**
 	 * Is a particular fetch profile enabled on this session?
 	 *
 	 * @param name The name of the profile to be checked.
 	 * @return True if fetch profile is enabled; false if not.
-	 * @throws UnknownProfileException Indicates that the given name does not match any known
-	 *             profile names
+	 * @throws UnknownProfileException Indicates that the given name does not match any known profile
+	 *             names
 	 * @see org.hibernate.engine.profile.FetchProfile for discussion of this feature
 	 */
 	public boolean isFetchProfileEnabled(String name) throws UnknownProfileException {
 		return getSession().isFetchProfileEnabled(name);
 	}
-	
+
 	/**
-	 * Enable a particular fetch profile on this session. No-op if requested profile is already
-	 * enabled.
+	 * Enable a particular fetch profile on this session. No-op if requested profile is already enabled.
 	 *
 	 * @param name The name of the fetch profile to be enabled.
-	 * @throws UnknownProfileException Indicates that the given name does not match any known
-	 *             profile names
+	 * @throws UnknownProfileException Indicates that the given name does not match any known profile
+	 *             names
 	 * @see org.hibernate.engine.profile.FetchProfile for discussion of this feature
 	 */
 	public void enableFetchProfile(String name) throws UnknownProfileException {
 		getSession().enableFetchProfile(name);
 	}
-	
+
 	/**
 	 * Disable a particular fetch profile on this session. No-op if requested profile is already
 	 * disabled.
 	 *
 	 * @param name The name of the fetch profile to be disabled.
-	 * @throws UnknownProfileException Indicates that the given name does not match any known
-	 *             profile names
+	 * @throws UnknownProfileException Indicates that the given name does not match any known profile
+	 *             names
 	 * @see org.hibernate.engine.profile.FetchProfile for discussion of this feature
 	 */
 	public void disableFetchProfile(String name) throws UnknownProfileException {
 		getSession().disableFetchProfile(name);
 	}
-	
+
 	/**
 	 * Retrieve this session's helper/delegate for creating LOB instances.
 	 *
@@ -1016,7 +1006,7 @@ public class DbSession {
 	public LobHelper getLobHelper() {
 		return getSession().getLobHelper();
 	}
-	
+
 	/**
 	 * Add one or more listeners to the Session
 	 *

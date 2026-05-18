@@ -18,7 +18,7 @@ import org.hibernate.search.mapper.pojo.bridge.runtime.ValueBridgeToIndexedValue
 
 /**
  * Indexes {@link java.util.Locale} as string.
- * 
+ *
  * @since 2.8.0
  */
 public class LocaleValueBridge implements ValueBridge<Locale, String> {

@@ -27,7 +27,7 @@ import org.openmrs.api.context.Context;
  * This class deals with {@link Concept} objects when they are saved via a save* method in an
  * Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
  * class. <br>
- * 
+ *
  * @see RequiredDataHandler
  * @see SaveHandler
  * @see Concept
@@ -35,7 +35,7 @@ import org.openmrs.api.context.Context;
  */
 @Handler(supports = Concept.class)
 public class ConceptSaveHandler implements SaveHandler<Concept> {
-	
+
 	/**
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)

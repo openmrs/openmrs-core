@@ -9,21 +9,21 @@
  */
 package org.openmrs.propertyeditor;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 public class PrivilegeEditorTest extends BaseContextSensitiveTest {
-	
+
 	protected static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
-	
+
 	@BeforeEach
 	public void prepareData() {
 		executeDataSet(XML_FILENAME);
 	}
-	
+
 	/**
 	 * @see PrivilegeEditor#setAsText(String)
 	 */
@@ -33,7 +33,7 @@ public class PrivilegeEditorTest extends BaseContextSensitiveTest {
 		editor.setAsText("Some Privilege");
 		assertNotNull(editor.getValue());
 	}
-	
+
 	/**
 	 * @see PrivilegeEditor#setAsText(String)
 	 */

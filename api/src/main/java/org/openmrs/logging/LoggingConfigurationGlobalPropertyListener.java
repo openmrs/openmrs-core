@@ -14,34 +14,34 @@ import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * This is a GlobalPropertyListener that updates logging levels whenever any of the log-related settings supported by core
- * are updated.
+ * This is a GlobalPropertyListener that updates logging levels whenever any of the log-related
+ * settings supported by core are updated.
  * <p/>
- * Note that changing <tt>log.level</tt> will result in an in-memory change to the logger (which should be preserved across
- * reloads of logging configuration). Modifying other settings will result in the logging configuration being fully reloaded,
- * which may result in log-file rollovers, etc.
- * 
+ * Note that changing <tt>log.level</tt> will result in an in-memory change to the logger (which
+ * should be preserved across reloads of logging configuration). Modifying other settings will
+ * result in the logging configuration being fully reloaded, which may result in log-file rollovers,
+ * etc.
+ *
  * @since 2.4
  */
 public class LoggingConfigurationGlobalPropertyListener implements GlobalPropertyListener {
-	
+
 	private volatile String logLayout = null;
-	
+
 	private volatile String logLocation = null;
 
 	/**
-	 * @see GlobalPropertyListener#supportsPropertyName(String) 
+	 * @see GlobalPropertyListener#supportsPropertyName(String)
 	 */
 	@Override
 	public boolean supportsPropertyName(String propertyName) {
-		return
-			OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL.equals(propertyName) ||
-			OpenmrsConstants.GP_LOG_LAYOUT.equals(propertyName) ||
-			OpenmrsConstants.GP_LOG_LOCATION.equals(propertyName);
+		return OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL.equals(propertyName)
+		        || OpenmrsConstants.GP_LOG_LAYOUT.equals(propertyName)
+		        || OpenmrsConstants.GP_LOG_LOCATION.equals(propertyName);
 	}
 
 	/**
-	 * @see GlobalPropertyListener#globalPropertyChanged(GlobalProperty) 
+	 * @see GlobalPropertyListener#globalPropertyChanged(GlobalProperty)
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
@@ -53,7 +53,7 @@ public class LoggingConfigurationGlobalPropertyListener implements GlobalPropert
 				if (logLayout != null && logLayout.equals(newValue.getPropertyValue())) {
 					return;
 				}
-				
+
 				logLayout = newValue.getPropertyValue();
 				OpenmrsLoggingUtil.reloadLoggingConfiguration();
 				return;
@@ -61,14 +61,14 @@ public class LoggingConfigurationGlobalPropertyListener implements GlobalPropert
 				if (logLocation != null && logLocation.equals(newValue.getPropertyValue())) {
 					return;
 				}
-				
+
 				logLocation = newValue.getPropertyValue();
 				OpenmrsLoggingUtil.reloadLoggingConfiguration();
 		}
 	}
 
 	/**
-	 * @see GlobalPropertyListener#globalPropertyDeleted(String) 
+	 * @see GlobalPropertyListener#globalPropertyDeleted(String)
 	 */
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
@@ -79,7 +79,7 @@ public class LoggingConfigurationGlobalPropertyListener implements GlobalPropert
 			case OpenmrsConstants.GP_LOG_LOCATION:
 				logLocation = null;
 		}
-		
+
 		OpenmrsLoggingUtil.reloadLoggingConfiguration();
 	}
 }

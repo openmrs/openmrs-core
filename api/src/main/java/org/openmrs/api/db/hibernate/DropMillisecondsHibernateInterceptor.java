@@ -18,34 +18,38 @@ import org.openmrs.util.DateUtil;
 import org.springframework.stereotype.Component;
 
 /**
- * Prior to MySQL version 5.6 the DATETIME datatype is only precise to the second, and in version 5.6, a column datatype
- * of DATETIME is precise to the second. (To get millisecond precision you'd need to say DATETIME(3).) Thus all the
- * DATETIME fields in all existing OpenMRS installations running on MySQL are precise to the second.
+ * Prior to MySQL version 5.6 the DATETIME datatype is only precise to the second, and in version
+ * 5.6, a column datatype of DATETIME is precise to the second. (To get millisecond precision you'd
+ * need to say DATETIME(3).) Thus all the DATETIME fields in all existing OpenMRS installations
+ * running on MySQL are precise to the second.
  * <p/>
- * We use java.util.Date in OpenMRS, which has millisecond precision, so when saving an OpenMRS object to the database,
- * date conversion happens. Prior to version 5.6, MySQL used to drop the millisecond component from a DATETIME when
- * saving it. Starting in version 5.6, MySQL <em>rounds</em> a datetime, e.g. if you save a visit with startDatetime of
- * 2014-02-05 14:35:17.641 it will be stored in the database rounded up to the next second: 2014-02-05 14:35:18.
+ * We use java.util.Date in OpenMRS, which has millisecond precision, so when saving an OpenMRS
+ * object to the database, date conversion happens. Prior to version 5.6, MySQL used to drop the
+ * millisecond component from a DATETIME when saving it. Starting in version 5.6, MySQL
+ * <em>rounds</em> a datetime, e.g. if you save a visit with startDatetime of 2014-02-05
+ * 14:35:17.641 it will be stored in the database rounded up to the next second: 2014-02-05
+ * 14:35:18.
  * <p/>
- * This can have several undesired effects. Take the following code snippet:
- * <code>
+ * This can have several undesired effects. Take the following code snippet: <code>
  * Visit v = new Visit();
  * // set Patient, VisitType, etc
  * v.setStartDatetime(new Date());
  * return "redirect:patient.page?ptId=" + v.getPatient().getId()
- * </code>
- * In the 50% of cases where v.startDatetime was rounded up to the next second, the redirect takes us to the page for
- * a patient who does not have an "active" visit, though they have a future one that will start in less than a second.
+ * </code> In the 50% of cases where v.startDatetime was rounded up to the next second, the redirect
+ * takes us to the page for a patient who does not have an "active" visit, though they have a future
+ * one that will start in less than a second.
  * <p/>
- * To achieve the MySQL 5.5 behavior while running on version 5.6+, we use a hibernate interceptor to drop the
- * millisecond component of dates before writing them to the database.
+ * To achieve the MySQL 5.5 behavior while running on version 5.6+, we use a hibernate interceptor
+ * to drop the millisecond component of dates before writing them to the database.
+ *
  * @since 2.0
  */
 @Component
 public class DropMillisecondsHibernateInterceptor implements Interceptor {
 
 	@Override
-	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
+	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState,
+	        String[] propertyNames, Type[] types) {
 		return removeMillisecondsFromDateFields(currentState);
 	}
 
@@ -55,8 +59,8 @@ public class DropMillisecondsHibernateInterceptor implements Interceptor {
 	}
 
 	/**
-	 * If any item in fieldValues is a Date with non-zero milliseconds, it is replaced with the Date corresponding to
-	 * the same second, with no milliseconds.
+	 * If any item in fieldValues is a Date with non-zero milliseconds, it is replaced with the Date
+	 * corresponding to the same second, with no milliseconds.
 	 *
 	 * @param fieldValues
 	 * @return whether anything was modified
