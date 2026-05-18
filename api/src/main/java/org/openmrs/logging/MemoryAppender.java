@@ -11,7 +11,6 @@ package org.openmrs.logging;
 
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -102,10 +101,6 @@ public class MemoryAppender extends AbstractAppender {
 	}
 
 	public List<String> getLogLines() {
-		if (buffer == null) {
-			return new ArrayList<>(0);
-		}
-
 		LogEvent[] events = buffer.toArray(new LogEvent[0]);
 		if (events.length == 0) {
 			return Collections.emptyList();
@@ -162,15 +157,22 @@ public class MemoryAppender extends AbstractAppender {
 	}
 
 	private static synchronized ThreadSafeCircularFifoQueue<LogEvent> getBuffer(String name, int bufferSize) {
-		ThreadSafeCircularFifoQueue<LogEvent> buffer = BUFFERS.get(name) != null ? BUFFERS.get(name).get() : null;
+		ThreadSafeCircularFifoQueue<LogEvent> buffer = null;
+		SoftReference<ThreadSafeCircularFifoQueue<LogEvent>> ref = BUFFERS.get(name);
+		if (ref != null) {
+			buffer = ref.get();
+		}
+
 		if (buffer == null) {
 			buffer = new ThreadSafeCircularFifoQueue<>(bufferSize);
 			BUFFERS.put(name, new SoftReference<>(buffer));
 		} else if (buffer.capacity() != bufferSize) {
 			ThreadSafeCircularFifoQueue<LogEvent> newBuffer = new ThreadSafeCircularFifoQueue<>(bufferSize);
 			int messagesToMove = Math.min(buffer.size(), bufferSize);
-			for (int i = 0; i < messagesToMove; i++) {
-				newBuffer.add(buffer.poll());
+			LogEvent[] snapshot = buffer.toArray(new LogEvent[0]);
+			int start = Math.max(0, snapshot.length - messagesToMove);
+			for (int i = start; i < snapshot.length; i++) {
+				newBuffer.add(snapshot[i]);
 			}
 			buffer = newBuffer;
 			BUFFERS.put(name, new SoftReference<>(buffer));

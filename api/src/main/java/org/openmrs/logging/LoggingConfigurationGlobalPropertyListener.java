@@ -80,6 +80,7 @@ public class LoggingConfigurationGlobalPropertyListener implements GlobalPropert
 				logLocation = null;
 				break;
 			case OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL:
+				break;
 			default:
 				return;
 		}

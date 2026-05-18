@@ -277,6 +277,53 @@ class OpenmrsLoggingUtilTest {
 		}
 	}
 
+	// --- stringToLevel ---
+
+	@Test
+	void stringToLevel_shouldReturnWarnForNullLogLevel() {
+		assertThat(OpenmrsLoggingUtil.stringToLevel((String) null), equalTo(Level.WARN));
+	}
+
+	@Test
+	void stringToLevel_shouldReturnWarnForNullLogLevelWithNullLogClass() {
+		assertThat(OpenmrsLoggingUtil.stringToLevel(null, null), equalTo(Level.WARN));
+	}
+
+	@Test
+	void stringToLevel_shouldReturnWarnForInvalidLevelWithNullLogClass() {
+		assertThat(OpenmrsLoggingUtil.stringToLevel("invalid", null), equalTo(Level.WARN));
+	}
+
+	@Test
+	void stringToLevel_shouldReturnInfoForInvalidLevelWithDefaultLogClass() {
+		assertThat(OpenmrsLoggingUtil.stringToLevel("invalid", OpenmrsConstants.LOG_CLASS_DEFAULT), equalTo(Level.INFO));
+	}
+
+	@Test
+	void stringToLevel_shouldReturnTraceForTraceLevel() {
+		assertThat(OpenmrsLoggingUtil.stringToLevel("trace"), equalTo(Level.TRACE));
+	}
+
+	@Test
+	void stringToLevel_shouldReturnDebugForDebugLevel() {
+		assertThat(OpenmrsLoggingUtil.stringToLevel("DEBUG"), equalTo(Level.DEBUG));
+	}
+
+	@Test
+	void stringToLevel_shouldReturnInfoForInfoLevel() {
+		assertThat(OpenmrsLoggingUtil.stringToLevel("Info"), equalTo(Level.INFO));
+	}
+
+	@Test
+	void stringToLevel_shouldReturnErrorForErrorLevel() {
+		assertThat(OpenmrsLoggingUtil.stringToLevel("error"), equalTo(Level.ERROR));
+	}
+
+	@Test
+	void stringToLevel_shouldReturnFatalForFatalLevel() {
+		assertThat(OpenmrsLoggingUtil.stringToLevel("fatal"), equalTo(Level.FATAL));
+	}
+
 	// --- getOpenmrsLogLocation ---
 
 	@Test

@@ -175,12 +175,24 @@ class MemoryAppenderTest {
 
 	@Test
 	void memoryAppender_shouldMaintainInsertionOrder() {
-		logger.warn("First");
-		logger.warn("Second");
-		logger.warn("Third");
+		// Use a uniquely-named appender to avoid stale buffer data from other tests
+		logger.removeAppender(memoryAppender);
+		MemoryAppender orderAppender = MemoryAppender.newBuilder().setName("test-insertion-order-" + System.nanoTime())
+		        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).build();
+		orderAppender.start();
 
-		List<String> logLines = memoryAppender.getLogLines();
-		assertThat(logLines, contains("First", "Second", "Third"));
+		logger.addAppender(orderAppender);
+		try {
+			logger.warn("First");
+			logger.warn("Second");
+			logger.warn("Third");
+
+			List<String> logLines = orderAppender.getLogLines();
+			assertThat(logLines, contains("First", "Second", "Third"));
+		} finally {
+			logger.removeAppender(orderAppender);
+			orderAppender.stop();
+		}
 	}
 
 	@Test
@@ -260,6 +272,78 @@ class MemoryAppenderTest {
 		logger.setAdditive(false);
 		logger.setLevel(Level.ALL);
 		logger.addAppender(memoryAppender);
+	}
+
+	@Test
+	void getBuffer_shouldMigrateEventsWhenBufferSizeDecreases() {
+		String appenderName = "test-migration-buffer-" + System.nanoTime();
+
+		// Create appender with buffer size 5
+		MemoryAppender appender1 = MemoryAppender.newBuilder().setName(appenderName)
+		        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).setBufferSize(5).build();
+		appender1.start();
+
+		Logger migrationLogger = (Logger) LogManager.getLogger(appenderName);
+		migrationLogger.setAdditive(false);
+		migrationLogger.setLevel(Level.ALL);
+		migrationLogger.addAppender(appender1);
+
+		try {
+			migrationLogger.warn("A");
+			migrationLogger.warn("B");
+			migrationLogger.warn("C");
+			migrationLogger.warn("D");
+			migrationLogger.warn("E");
+
+			// Create new appender with same name but smaller buffer size
+			MemoryAppender appender2 = MemoryAppender.newBuilder().setName(appenderName)
+			        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).setBufferSize(3).build();
+			appender2.start();
+
+			// The new appender should have migrated the 3 most recent events
+			List<String> logLines = appender2.getLogLines();
+			assertThat(logLines, contains("C", "D", "E"));
+			assertThat(appender2.getBufferSize(), equalTo(3));
+		} finally {
+			migrationLogger.removeAppender(appender1);
+			migrationLogger.setLevel(null);
+			((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
+		}
+	}
+
+	@Test
+	void getBuffer_shouldPreserveAllEventsWhenBufferSizeIncreases() {
+		String appenderName = "test-migration-grow-" + System.nanoTime();
+
+		// Create appender with buffer size 3
+		MemoryAppender appender1 = MemoryAppender.newBuilder().setName(appenderName)
+		        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).setBufferSize(3).build();
+		appender1.start();
+
+		Logger migrationLogger = (Logger) LogManager.getLogger(appenderName);
+		migrationLogger.setAdditive(false);
+		migrationLogger.setLevel(Level.ALL);
+		migrationLogger.addAppender(appender1);
+
+		try {
+			migrationLogger.warn("A");
+			migrationLogger.warn("B");
+			migrationLogger.warn("C");
+
+			// Create new appender with same name but larger buffer size
+			MemoryAppender appender2 = MemoryAppender.newBuilder().setName(appenderName)
+			        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).setBufferSize(10).build();
+			appender2.start();
+
+			// All events should be preserved
+			List<String> logLines = appender2.getLogLines();
+			assertThat(logLines, contains("A", "B", "C"));
+			assertThat(appender2.getBufferSize(), equalTo(10));
+		} finally {
+			migrationLogger.removeAppender(appender1);
+			migrationLogger.setLevel(null);
+			((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
+		}
 	}
 
 }

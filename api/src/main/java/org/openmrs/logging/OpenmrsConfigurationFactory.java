@@ -44,6 +44,8 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.LoggerFactory;
 
+import static org.openmrs.logging.OpenmrsLoggingUtil.stringToLevel;
+
 /**
  * {@link ConfigurationFactory} to handle OpenMRS's logging configuration.
  * <p/>
@@ -158,8 +160,8 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 			AdministrationService adminService = Context.getAdministrationService();
 			applyLogLevels(configuration, adminService);
 		} catch (ServiceNotFoundException e) {
-			// if AdministrativeService is not available, we'll assume we're starting up and everything is ok
-			if (!e.getServiceClass().isAssignableFrom(AdministrationService.class)) {
+			// if AdministrationService is not available, we'll assume we're starting up and everything is ok
+			if (!AdministrationService.class.isAssignableFrom(e.getServiceClass())) {
 				throw e;
 			}
 		}
@@ -196,39 +198,9 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 		}
 
 		LoggerConfig loggerConfig = configuration.getLogger(loggerName);
-		Level level;
-		loggerLevel = loggerLevel.toLowerCase();
-		switch (loggerLevel) {
-			case OpenmrsConstants.LOG_LEVEL_TRACE:
-				level = Level.TRACE;
-				break;
-			case OpenmrsConstants.LOG_LEVEL_DEBUG:
-				level = Level.DEBUG;
-				break;
-			case OpenmrsConstants.LOG_LEVEL_INFO:
-				level = Level.INFO;
-				break;
-			case OpenmrsConstants.LOG_LEVEL_WARN:
-				level = Level.WARN;
-				break;
-			case OpenmrsConstants.LOG_LEVEL_ERROR:
-				level = Level.ERROR;
-				break;
-			case OpenmrsConstants.LOG_LEVEL_FATAL:
-				level = Level.FATAL;
-				break;
-			default:
-				log.warn("Log level {} is invalid. " + "Valid values are trace, debug, info, warn, error or fatal",
-				    loggerLevel);
-				if (loggerName.equals(OpenmrsConstants.LOG_CLASS_DEFAULT)) {
-					level = Level.INFO;
-				} else {
-					level = Level.WARN;
-				}
-				break;
-		}
+		Level level = stringToLevel(loggerLevel, loggerName);
 
-		if (!loggerConfig.getName().equals(loggerName)) {
+		if (loggerConfig == null || !loggerConfig.getName().equals(loggerName)) {
 			loggerConfig = new LoggerConfig(loggerName, level, true);
 			configuration.addLogger(loggerName, loggerConfig);
 		} else {

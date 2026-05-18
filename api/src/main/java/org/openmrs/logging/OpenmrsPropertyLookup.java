@@ -52,8 +52,11 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 
 		try {
 			adminService = Context.getAdministrationService();
-		} catch (ServiceNotFoundException ignored) {
-
+		} catch (ServiceNotFoundException e) {
+			// if AdministrationService is not available, we'll assume we're starting up and everything is ok
+			if (!AdministrationService.class.isAssignableFrom(e.getServiceClass())) {
+				throw e;
+			}
 		}
 
 		switch (key) {
@@ -67,7 +70,8 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 			case "logLayout":
 				return getGlobalProperty(adminService, OpenmrsConstants.GP_LOG_LAYOUT);
 			default:
-				throw new IllegalArgumentException(key);
+				throw new IllegalArgumentException(key
+				        + " is not a supported property. We support openmrs:applicationDirectory, openmrs:logLocation, and openmrs:logLayout");
 		}
 	}
 

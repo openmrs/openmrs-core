@@ -34,15 +34,14 @@ public class MemoryAppender extends org.openmrs.logging.MemoryAppender {
 
 	MemoryAppender(org.openmrs.logging.MemoryAppender implementation) {
 		super(implementation.getName(), implementation.getFilter(), (StringLayout) implementation.getLayout(),
-		        implementation.ignoreExceptions(), implementation.getPropertyArray(),
-		        new ThreadSafeCircularFifoQueue<>(implementation.getBufferSize()));
+		        implementation.ignoreExceptions(), implementation.getPropertyArray(), implementation.getBufferSize());
 
 		this.implementation = implementation;
 	}
 
 	protected MemoryAppender(String name, Filter filter, StringLayout layout, boolean ignoreExceptions,
 	    Property[] properties, int bufferSize) {
-		super(name, filter, layout, ignoreExceptions, properties, new ThreadSafeCircularFifoQueue<>(bufferSize));
+		super(name, filter, layout, ignoreExceptions, properties, bufferSize);
 
 		implementation = null;
 	}

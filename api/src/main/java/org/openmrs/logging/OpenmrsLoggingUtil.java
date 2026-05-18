@@ -25,6 +25,8 @@ import org.apache.logging.log4j.core.appender.RandomAccessFileAppender;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.RollingRandomAccessFileAppender;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -167,39 +169,9 @@ public final class OpenmrsLoggingUtil {
 			// DO NOT USE LogManager#getContext() here as this will reset the logger context
 			LoggerContext context = ((Logger) LogManager.getRootLogger()).getContext();
 			LoggerConfig configuration = context.getConfiguration().getLoggerConfig(logClass);
-			Level level;
-			logLevel = logLevel.toLowerCase();
-			switch (logLevel) {
-				case OpenmrsConstants.LOG_LEVEL_TRACE:
-					level = Level.TRACE;
-					break;
-				case OpenmrsConstants.LOG_LEVEL_DEBUG:
-					level = Level.DEBUG;
-					break;
-				case OpenmrsConstants.LOG_LEVEL_INFO:
-					level = Level.INFO;
-					break;
-				case OpenmrsConstants.LOG_LEVEL_WARN:
-					level = Level.WARN;
-					break;
-				case OpenmrsConstants.LOG_LEVEL_ERROR:
-					level = Level.ERROR;
-					break;
-				case OpenmrsConstants.LOG_LEVEL_FATAL:
-					level = Level.FATAL;
-					break;
-				default:
-					log.warn("Log level {} is invalid. " + "Valid values are trace, debug, info, warn, error or fatal",
-					    logLevel);
-					if (logClass.equals(OpenmrsConstants.LOG_CLASS_DEFAULT)) {
-						level = Level.INFO;
-					} else {
-						level = Level.WARN;
-					}
-					break;
-			}
+			Level level = stringToLevel(logLevel, logClass);
 
-			if (!configuration.getName().equals(logClass)) {
+			if (configuration == null || !configuration.getName().equals(logClass)) {
 				configuration = new LoggerConfig(logClass, level, true);
 				context.getConfiguration().addLogger(logClass, configuration);
 			} else {
@@ -212,8 +184,71 @@ public final class OpenmrsLoggingUtil {
 	 * Reloads the logging configuration
 	 */
 	public static void reloadLoggingConfiguration() {
-		// Works, but it might be necessary to verify this in the future
+		// This assumes that the context is an instance of org.apache.logging.log4j.core.LoggerContext
+		// The general interface does not guarantee that reconfigure() exists
 		((LoggerContext) LogManager.getContext(true)).reconfigure();
+	}
+
+	/**
+	 * Takes a string representing a log level and returns the corresponding {@code Level} object.
+	 * <p/>
+	 * Used to support user-supplied log-levels and backwards compatibility with the Log4J1 API.
+	 *
+	 * @param logLevel The string level to convert
+	 * @return The corresponding {@code Level} or {@code Level#WARN} if unknown
+	 */
+	public static Level stringToLevel(@NonNull String logLevel) {
+		return stringToLevel(logLevel, null);
+	}
+
+	/**
+	 * Takes a string representing a log level and returns the corresponding {@code Level} object.
+	 * <p/>
+	 * Used to support user-supplied log-levels and backwards compatibility with the Log4J1 API.
+	 *
+	 * @param logLevel The string level to convert
+	 * @param logClass The class for this logger. Used to vary the default for the default logger.
+	 * @return The corresponding {@code Level} or {@code Level#WARN} if unknown
+	 * @see OpenmrsConstants#LOG_CLASS_DEFAULT
+	 */
+	public static Level stringToLevel(@NonNull String logLevel, @Nullable String logClass) {
+		Level level;
+		if (logLevel == null) {
+			return Level.WARN;
+		}
+
+		logLevel = logLevel.toLowerCase();
+		switch (logLevel) {
+			case OpenmrsConstants.LOG_LEVEL_TRACE:
+				level = Level.TRACE;
+				break;
+			case OpenmrsConstants.LOG_LEVEL_DEBUG:
+				level = Level.DEBUG;
+				break;
+			case OpenmrsConstants.LOG_LEVEL_INFO:
+				level = Level.INFO;
+				break;
+			case OpenmrsConstants.LOG_LEVEL_WARN:
+				level = Level.WARN;
+				break;
+			case OpenmrsConstants.LOG_LEVEL_ERROR:
+				level = Level.ERROR;
+				break;
+			case OpenmrsConstants.LOG_LEVEL_FATAL:
+				level = Level.FATAL;
+				break;
+			default:
+				log.warn("Log level {} is invalid. " + "Valid values are trace, debug, info, warn, error or fatal",
+				    logLevel);
+				if (logClass != null && logClass.equals(OpenmrsConstants.LOG_CLASS_DEFAULT)) {
+					level = Level.INFO;
+				} else {
+					level = Level.WARN;
+				}
+				break;
+		}
+
+		return level;
 	}
 
 }
