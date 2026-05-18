@@ -10,6 +10,7 @@
 package org.openmrs.logging;
 
 import java.nio.file.Paths;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -217,7 +218,7 @@ public final class OpenmrsLoggingUtil {
 			return Level.WARN;
 		}
 
-		logLevel = logLevel.toLowerCase();
+		logLevel = logLevel.toLowerCase(Locale.ROOT);
 		switch (logLevel) {
 			case OpenmrsConstants.LOG_LEVEL_TRACE:
 				level = Level.TRACE;

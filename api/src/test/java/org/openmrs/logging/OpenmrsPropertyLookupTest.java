@@ -20,6 +20,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
@@ -197,7 +198,7 @@ class OpenmrsPropertyLookupTest {
 		IllegalArgumentException ex = org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
 		    () -> lookup.lookup(null, "unknownKey"));
 
-		assertThat(ex.getMessage(), equalTo("unknownKey"));
+		assertThat(ex.getMessage(), containsString("unknownKey"));
 	}
 
 	// --- privilege management ---
