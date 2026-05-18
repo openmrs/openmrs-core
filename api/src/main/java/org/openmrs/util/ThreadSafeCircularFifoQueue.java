@@ -114,6 +114,10 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		return true;
 	}
 
+	public int capacity() {
+		return this.maxElements;
+	}
+
 	@Override
 	public void clear() {
 		final E[] elements = this.elements;

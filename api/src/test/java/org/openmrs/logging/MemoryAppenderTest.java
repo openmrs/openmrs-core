@@ -18,13 +18,17 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.util.OpenmrsConstants;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.mock;
 
 class MemoryAppenderTest {
 
@@ -93,6 +97,161 @@ class MemoryAppenderTest {
 		List<String> logLines = memoryAppender.getLogLines();
 		assertThat(logLines, notNullValue());
 		assertThat(logLines.size(), equalTo(4));
+	}
+
+	@Test
+	void memoryAppender_shouldUseDefaultBufferSizeWhenNotSet() {
+		MemoryAppender appender = MemoryAppender.newBuilder().setLayout(PatternLayout.newBuilder().withPattern("%m").build())
+		        .build();
+
+		assertThat(appender.getBufferSize(), equalTo(100));
+	}
+
+	@Test
+	void memoryAppender_builderShouldUseDefaultName() {
+		MemoryAppender appender = MemoryAppender.newBuilder().setLayout(PatternLayout.newBuilder().withPattern("%m").build())
+		        .build();
+
+		assertThat(appender.getName(), equalTo(OpenmrsConstants.MEMORY_APPENDER_NAME));
+	}
+
+	@Test
+	void memoryAppender_builderShouldSetCustomBufferSize() {
+		MemoryAppender appender = MemoryAppender.newBuilder().setLayout(PatternLayout.newBuilder().withPattern("%m").build())
+		        .setBufferSize(50).build();
+
+		assertThat(appender.getBufferSize(), equalTo(50));
+	}
+
+	@Test
+	void memoryAppender_builderShouldUseDefaultBufferSizeWhenSetToZero() {
+		MemoryAppender appender = MemoryAppender.newBuilder().setLayout(PatternLayout.newBuilder().withPattern("%m").build())
+		        .setBufferSize(0).build();
+
+		assertThat(appender.getBufferSize(), equalTo(100));
+	}
+
+	@Test
+	void memoryAppender_builderShouldThrowForNegativeBufferSize() {
+		org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
+		    () -> MemoryAppender.newBuilder().setBufferSize(-1));
+	}
+
+	@Test
+	void memoryAppender_builderShouldThrowForNonStringLayout() {
+		@SuppressWarnings("unchecked")
+		org.apache.logging.log4j.core.Layout<java.io.Serializable> nonStringLayout = mock(
+		    org.apache.logging.log4j.core.Layout.class);
+		org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
+		    () -> MemoryAppender.newBuilder().setLayout(nonStringLayout));
+	}
+
+	@Test
+	void getLogLines_shouldReturnEmptyListWhenNoMessages() {
+		// Use a uniquely-named appender to avoid stale buffer data from other tests
+		logger.removeAppender(memoryAppender);
+		MemoryAppender freshAppender = MemoryAppender.newBuilder().setName("test-empty-buffer")
+		        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).build();
+		freshAppender.start();
+
+		logger.addAppender(freshAppender);
+		try {
+			List<String> logLines = freshAppender.getLogLines();
+			assertThat(logLines, notNullValue());
+			assertThat(logLines, empty());
+		} finally {
+			logger.removeAppender(freshAppender);
+			freshAppender.stop();
+		}
+	}
+
+	@Test
+	void getLogLines_shouldFormatLogMessagesWithLayout() {
+		logger.warn("Test message");
+
+		List<String> logLines = memoryAppender.getLogLines();
+		assertThat(logLines, hasItem(equalTo("Test message")));
+	}
+
+	@Test
+	void memoryAppender_shouldMaintainInsertionOrder() {
+		logger.warn("First");
+		logger.warn("Second");
+		logger.warn("Third");
+
+		List<String> logLines = memoryAppender.getLogLines();
+		assertThat(logLines, contains("First", "Second", "Third"));
+	}
+
+	@Test
+	void memoryAppender_shouldOverwriteOldestMessagesWhenFull() {
+		logger.removeAppender(memoryAppender);
+
+		memoryAppender = MemoryAppender.newBuilder().setLayout(PatternLayout.newBuilder().withPattern("%m").build())
+		        .setBufferSize(3).build();
+		memoryAppender.start();
+		setupLogger();
+
+		logger.warn("A");
+		logger.warn("B");
+		logger.warn("C");
+		logger.warn("D");
+
+		List<String> logLines = memoryAppender.getLogLines();
+		assertThat(logLines, contains("B", "C", "D"));
+	}
+
+	@Test
+	void memoryAppender_shouldStartAutomaticallyWhenCreatedViaPluginFactory() {
+		// The builder's build() doesn't auto-start, but the @PluginFactory does
+		MemoryAppender appender = MemoryAppender.createAppender("test-plugin-appender", 10, true, null,
+		    PatternLayout.newBuilder().withPattern("%m").build());
+
+		assertThat(appender.isStarted(), equalTo(true));
+		assertThat(appender.getBufferSize(), equalTo(10));
+	}
+
+	@Test
+	void memoryAppender_pluginFactoryShouldUseDefaultBufferSizeForZero() {
+		MemoryAppender appender = MemoryAppender.createAppender("test-plugin-zero", 0, true, null,
+		    PatternLayout.newBuilder().withPattern("%m").build());
+
+		assertThat(appender.getBufferSize(), equalTo(100));
+	}
+
+	@Test
+	void memoryAppender_pluginFactoryShouldUseDefaultBufferSizeForNegative() {
+		MemoryAppender appender = MemoryAppender.createAppender("test-plugin-neg", -5, true, null,
+		    PatternLayout.newBuilder().withPattern("%m").build());
+
+		assertThat(appender.getBufferSize(), equalTo(100));
+	}
+
+	@Test
+	void memoryAppender_shouldNotFilterByDefault() {
+		// Use a uniquely-named appender to avoid stale buffer data from other tests
+		logger.removeAppender(memoryAppender);
+		MemoryAppender filterAppender = MemoryAppender.newBuilder().setName("test-filter-levels")
+		        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).build();
+		filterAppender.start();
+
+		logger.addAppender(filterAppender);
+		logger.setLevel(Level.ALL);
+
+		try {
+			logger.trace("trace");
+			logger.debug("debug");
+			logger.info("info");
+			logger.warn("warn");
+			logger.error("error");
+			logger.fatal("fatal");
+
+			List<String> logLines = filterAppender.getLogLines();
+			assertThat(logLines, contains("trace", "debug", "info", "warn", "error", "fatal"));
+		} finally {
+			logger.removeAppender(filterAppender);
+			filterAppender.stop();
+		}
 	}
 
 	private void setupLogger() {

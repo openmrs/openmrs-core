@@ -28,6 +28,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -73,7 +74,7 @@ public final class OpenmrsLoggingUtil {
 	 * @return the path to the OpenMRS log file
 	 */
 	public static String getOpenmrsLogLocation() {
-		Appender fileAppender = ((LoggerContext) LogManager.getRootLogger()).getConfiguration()
+		Appender fileAppender = ((Logger) LogManager.getRootLogger()).getContext().getConfiguration()
 		        .getAppender(OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER);
 
 		String fileName = null;
@@ -105,8 +106,13 @@ public final class OpenmrsLoggingUtil {
 	 */
 	@Logging(ignore = true)
 	public static void applyLogLevels() {
-		String logLevel = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL,
-		    "");
+		String logLevel;
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			logLevel = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "");
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
 
 		synchronized (OpenmrsLoggingUtil.class) {
 			for (String level : logLevel.split(",")) {
@@ -161,31 +167,43 @@ public final class OpenmrsLoggingUtil {
 			// DO NOT USE LogManager#getContext() here as this will reset the logger context
 			LoggerContext context = ((Logger) LogManager.getRootLogger()).getContext();
 			LoggerConfig configuration = context.getConfiguration().getLoggerConfig(logClass);
-
+			Level level;
 			logLevel = logLevel.toLowerCase();
 			switch (logLevel) {
 				case OpenmrsConstants.LOG_LEVEL_TRACE:
-					configuration.setLevel(Level.TRACE);
+					level = Level.TRACE;
 					break;
 				case OpenmrsConstants.LOG_LEVEL_DEBUG:
-					configuration.setLevel(Level.DEBUG);
+					level = Level.DEBUG;
 					break;
 				case OpenmrsConstants.LOG_LEVEL_INFO:
-					configuration.setLevel(Level.INFO);
+					level = Level.INFO;
 					break;
 				case OpenmrsConstants.LOG_LEVEL_WARN:
-					configuration.setLevel(Level.WARN);
+					level = Level.WARN;
 					break;
 				case OpenmrsConstants.LOG_LEVEL_ERROR:
-					configuration.setLevel(Level.ERROR);
+					level = Level.ERROR;
 					break;
 				case OpenmrsConstants.LOG_LEVEL_FATAL:
-					configuration.setLevel(Level.FATAL);
+					level = Level.FATAL;
 					break;
 				default:
 					log.warn("Log level {} is invalid. " + "Valid values are trace, debug, info, warn, error or fatal",
 					    logLevel);
+					if (logClass.equals(OpenmrsConstants.LOG_CLASS_DEFAULT)) {
+						level = Level.INFO;
+					} else {
+						level = Level.WARN;
+					}
 					break;
+			}
+
+			if (!configuration.getName().equals(logClass)) {
+				configuration = new LoggerConfig(logClass, level, true);
+				context.getConfiguration().addLogger(logClass, configuration);
+			} else {
+				configuration.setLevel(level);
 			}
 		}
 	}

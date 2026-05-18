@@ -47,18 +47,27 @@ public class MemoryAppender extends AbstractAppender {
 	// we store the MemoryAppenders by name, using SoftReferences to allow them to be garbage collected
 	// as an implementation detail, we expect this class to only have a single instance, so our map
 	// is only allocated an initial capacity of 1
-	private static final Map<String, SoftReference<MemoryAppender>> APPENDERS = new HashMap<>(1);
+	// this is a HashMap as it is only accessed from a synchronized method
+	private static final Map<String, SoftReference<ThreadSafeCircularFifoQueue<LogEvent>>> BUFFERS = new HashMap<>(1);
 
-	private ThreadSafeCircularFifoQueue<LogEvent> buffer;
+	private final ThreadSafeCircularFifoQueue<LogEvent> buffer;
 
-	private int bufferSize;
+	private final int bufferSize;
+
+	protected MemoryAppender(String name, Filter filter, StringLayout layout, boolean ignoreExceptions,
+	    Property[] properties, ThreadSafeCircularFifoQueue<LogEvent> buffer) {
+		super(name, filter, layout, ignoreExceptions, properties);
+
+		this.buffer = buffer;
+		this.bufferSize = buffer.capacity();
+	}
 
 	protected MemoryAppender(String name, Filter filter, StringLayout layout, boolean ignoreExceptions,
 	    Property[] properties, int bufferSize) {
 		super(name, filter, layout, ignoreExceptions, properties);
 
-		this.buffer = new ThreadSafeCircularFifoQueue<>(bufferSize);
-		this.bufferSize = bufferSize;
+		this.buffer = getBuffer(name, bufferSize);
+		this.bufferSize = buffer.capacity();
 	}
 
 	public static MemoryAppenderBuilder newBuilder() {
@@ -72,22 +81,9 @@ public class MemoryAppender extends AbstractAppender {
 	        @PluginAttribute(value = "ignoreExceptions", defaultBoolean = true) final boolean ignoreExceptions,
 	        @PluginElement("Filter") final Filter filter, @PluginElement("Layout") final StringLayout layout) {
 		final int theBufferSize = bufferSize <= 0 ? 100 : bufferSize;
-		MemoryAppender appender = null;
-		if (APPENDERS.containsKey(name)) {
-			appender = APPENDERS.get(name).get();
+		ThreadSafeCircularFifoQueue<LogEvent> buffer = getBuffer(name, theBufferSize);
 
-			if (appender != null && appender.bufferSize != theBufferSize) {
-				LogEvent[] oldBuffer = appender.buffer.toArray(new LogEvent[0]);
-				appender.buffer = new ThreadSafeCircularFifoQueue<>(theBufferSize);
-				appender.bufferSize = theBufferSize;
-				appender.buffer.addAll(Arrays.asList(oldBuffer));
-			}
-		}
-
-		if (appender == null) {
-			appender = new MemoryAppender(name, filter, layout, ignoreExceptions, null, theBufferSize);
-			APPENDERS.put(name, new SoftReference<>(appender));
-		}
+		MemoryAppender appender = new MemoryAppender(name, filter, layout, ignoreExceptions, null, buffer);
 
 		if (!appender.isStarted()) {
 			appender.start();
@@ -135,7 +131,7 @@ public class MemoryAppender extends AbstractAppender {
 				throw new IllegalArgumentException("bufferSize must be a positive number or 0");
 			}
 
-			this.bufferSize = bufferSize;
+			this.bufferSize = bufferSize == 0 ? 100 : bufferSize;
 			return asBuilder();
 		}
 
@@ -159,8 +155,28 @@ public class MemoryAppender extends AbstractAppender {
 		}
 
 		public MemoryAppender build() {
-			return new MemoryAppender(getName(), getFilter(), layout, isIgnoreExceptions(), getPropertyArray(), bufferSize);
+			String name = getName();
+			ThreadSafeCircularFifoQueue<LogEvent> buffer = getBuffer(name, bufferSize);
+			return new MemoryAppender(name, getFilter(), layout, isIgnoreExceptions(), getPropertyArray(), buffer);
 		}
+	}
+
+	private static synchronized ThreadSafeCircularFifoQueue<LogEvent> getBuffer(String name, int bufferSize) {
+		ThreadSafeCircularFifoQueue<LogEvent> buffer = BUFFERS.get(name) != null ? BUFFERS.get(name).get() : null;
+		if (buffer == null) {
+			buffer = new ThreadSafeCircularFifoQueue<>(bufferSize);
+			BUFFERS.put(name, new SoftReference<>(buffer));
+		} else if (buffer.capacity() != bufferSize) {
+			ThreadSafeCircularFifoQueue<LogEvent> newBuffer = new ThreadSafeCircularFifoQueue<>(bufferSize);
+			int messagesToMove = Math.min(buffer.size(), bufferSize);
+			for (int i = 0; i < messagesToMove; i++) {
+				newBuffer.add(buffer.poll());
+			}
+			buffer = newBuffer;
+			BUFFERS.put(name, new SoftReference<>(buffer));
+		}
+
+		return buffer;
 	}
 
 }

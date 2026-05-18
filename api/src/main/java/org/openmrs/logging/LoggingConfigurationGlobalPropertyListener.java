@@ -78,6 +78,10 @@ public class LoggingConfigurationGlobalPropertyListener implements GlobalPropert
 				break;
 			case OpenmrsConstants.GP_LOG_LOCATION:
 				logLocation = null;
+				break;
+			case OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL:
+			default:
+				return;
 		}
 
 		OpenmrsLoggingUtil.reloadLoggingConfiguration();

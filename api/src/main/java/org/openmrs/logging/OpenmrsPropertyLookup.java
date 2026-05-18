@@ -18,6 +18,7 @@ import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * This class exposes a subset of OpenMRS properties to the log4j context configuration. This is
@@ -36,7 +37,8 @@ import org.openmrs.util.OpenmrsUtil;
  * <dd>The current value for the <tt>log.layout</tt> setting</dd>
  * </dl>
  * <p/>
- * Care should be taken in exposing information through this class to ensure that no
+ * Care should be taken in exposing information through this class to ensure that no secrets are
+ * leaked or properties that expose potentially unsafe operations based on user input.
  */
 @Plugin(name = OpenmrsPropertyLookup.NAME, category = StrLookup.CATEGORY)
 @SuppressWarnings("unused")
@@ -71,20 +73,38 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 
 	private String getGlobalProperty(AdministrationService adminService, String globalPropertyName) {
 		if (adminService == null) {
-			return null;
+			return getPropertyDefault(globalPropertyName);
 		}
 
-		String value = adminService.getGlobalProperty(globalPropertyName);
+		String value;
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			value = adminService.getGlobalProperty(globalPropertyName);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+
 		if (value == null) {
-			return null;
+			return getPropertyDefault(globalPropertyName);
 		} else {
 			value = value.trim();
 		}
 
 		if (value.isEmpty()) {
-			return null;
+			return getPropertyDefault(globalPropertyName);
 		}
 
 		return value;
+	}
+
+	private static String getPropertyDefault(String propertyName) {
+		switch (propertyName) {
+			case OpenmrsConstants.GP_LOG_LOCATION:
+				return "";
+			case OpenmrsConstants.GP_LOG_LAYOUT:
+				return "%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n";
+			default:
+				return null;
+		}
 	}
 }
