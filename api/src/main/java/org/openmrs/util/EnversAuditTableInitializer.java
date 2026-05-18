@@ -178,7 +178,7 @@ public class EnversAuditTableInitializer {
 			public ExceptionHandler getExceptionHandler() {
 				return throwable -> {
 					hasErrors.set(true);
-					log.warn("Schema migration encountered an issue: {}", throwable.getMessage());
+					log.warn("Schema migration encountered an issue", throwable);
 				};
 			}
 		};

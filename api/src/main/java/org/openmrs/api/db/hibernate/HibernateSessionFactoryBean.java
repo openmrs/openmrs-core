@@ -133,7 +133,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 			Object key = entry.getKey();
 			String prop = (String) key;
 			String value = (String) entry.getValue();
-			log.trace("Setting module property: {}:{}", prop, value);
+			log.trace("Setting module property: {}", prop);
 			config.setProperty(prop, value);
 			if (!prop.startsWith("hibernate")) {
 				config.setProperty("hibernate." + prop, value);
@@ -147,7 +147,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 			Object key = entry.getKey();
 			String prop = (String) key;
 			String value = (String) entry.getValue();
-			log.trace("Setting property: {}:{}", prop, value);
+			log.trace("Setting property: {}", prop);
 			config.setProperty(prop, value);
 			if (!prop.startsWith("hibernate")) {
 				config.setProperty("hibernate." + prop, value);
