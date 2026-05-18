@@ -18,9 +18,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -31,6 +34,9 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LocationDAO;
+import org.openmrs.parameter.LocationSearchCriteria;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate location-related database functions
@@ -435,5 +441,59 @@ public class HibernateLocationDAO implements LocationDAO {
 			locationTagIds.add(tag.getLocationTagId());
 		}
 		return locationTagIds;
+	}
+
+	/**
+	 * @see LocationDAO#getLocations(LocationSearchCriteria)
+	 */
+	@Override
+	public List<Location> getLocations(LocationSearchCriteria criteria) {
+		Collection<LocationTag> tags = criteria.getLocationTags();
+
+		return getAllLocations(true).stream().filter(loc -> matchesCriteria(loc, criteria, tags))
+		        .collect(Collectors.toList());
+	}
+
+	private boolean matchesCriteria(Location loc, LocationSearchCriteria criteria, Collection<LocationTag> tags) {
+		if (!criteria.getIncludeRetired() && Boolean.TRUE.equals(loc.getRetired())) {
+			return false;
+		}
+
+		if (criteria.getDescendantOfLocation() != null
+		        && !isDescendantOf(loc, criteria.getDescendantOfLocation(), criteria.getIncludeRetired())) {
+			return false;
+		}
+
+		if (StringUtils.isNotBlank(criteria.getNameFragment())
+		        && (loc.getName() == null
+		                || !loc.getName().toLowerCase().startsWith(criteria.getNameFragment().toLowerCase()))) {
+			return false;
+		}
+
+		if (tags != null && !tags.isEmpty()) {
+			Set<LocationTag> locTags = loc.getTags();
+			boolean tagMatch = criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL
+			        ? tags.stream().allMatch(locTags::contains)
+			        : tags.stream().anyMatch(locTags::contains);
+			if (!tagMatch) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private boolean isDescendantOf(Location loc, Location ancestor, boolean includeRetired) {
+		Location current = loc.getParentLocation();
+		while (current != null) {
+			if (!includeRetired && Boolean.TRUE.equals(current.getRetired())) {
+				return false;
+			}
+			if (ancestor.equals(current)) {
+				return true;
+			}
+			current = current.getParentLocation();
+		}
+		return false;
 	}
 }

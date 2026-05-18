@@ -19,6 +19,7 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.LocationDAO;
+import org.openmrs.parameter.LocationSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -367,6 +368,30 @@ public interface LocationService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getRootLocations(boolean includeRetired);
 	
+	/**
+	 * Returns locations matching all criteria in the given {@link LocationSearchCriteria}. All provided
+	 * criteria are ANDed together. Results are ordered by name.
+	 *
+	 * @param criteria the search criteria
+	 * @return locations matching all criteria; never null
+	 * @since 2.8.7
+	 */
+	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	List<Location> getLocations(LocationSearchCriteria criteria);
+
+
+	/**
+	 * Returns descendant locations of a given location, i.e. its children, grandchildren, etc.
+	 * 
+	 * @param location the location whose descendants should be returned
+	 * @param includeRetired whether or not to include retired locations
+	 * @return a list of descendant locations
+	 * @throws APIException
+	 * @since 2.8.7
+	 */
+	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
+	List<Location> getDescendantLocations(Location location, boolean includeRetired);
+
 	/**
 	 * Given an Address object, returns all the possible values for the specified AddressField. This
 	 * method is not implemented in core, but is meant to overridden by implementing modules such as

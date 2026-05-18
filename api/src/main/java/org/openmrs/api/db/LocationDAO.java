@@ -18,6 +18,7 @@ import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.LocationService;
+import org.openmrs.parameter.LocationSearchCriteria;
 
 /**
  * Location-related database functions
@@ -156,6 +157,11 @@ public interface LocationDAO {
 	 */
 	public List<Location> getRootLocations(boolean includeRetired);
 	
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	List<Location> getLocations(LocationSearchCriteria criteria);
+
 	/**
 	 * @see LocationService#getAllLocationAttributeTypes()
 	 */
