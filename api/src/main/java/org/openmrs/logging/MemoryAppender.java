@@ -31,6 +31,8 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
+import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.ThreadSafeCircularFifoQueue;
 
@@ -105,8 +107,14 @@ public class MemoryAppender extends AbstractAppender {
 		if (events.length == 0) {
 			return Collections.emptyList();
 		}
+		
+		Layout<? extends Serializable> layout = getLayout();
+		if (!(layout instanceof StringLayout)) {
+			StatusLogger.getLogger().warn("MemoryAppender {} is not configured with a StringLayout and so no LogLines are available", this);
+			return Collections.emptyList();
+		}
 
-		return Arrays.stream(events).filter(Objects::nonNull).map(((StringLayout) getLayout())::toSerializable)
+		return Arrays.stream(events).filter(Objects::nonNull).map(((StringLayout) layout)::toSerializable)
 		        .collect(Collectors.toList());
 	}
 
@@ -114,7 +122,7 @@ public class MemoryAppender extends AbstractAppender {
 
 		private int bufferSize = 100;
 
-		private StringLayout layout;
+		private StringLayout layout = PatternLayout.newBuilder().setPattern("%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n").build();
 
 		public MemoryAppenderBuilder() {
 			super();
