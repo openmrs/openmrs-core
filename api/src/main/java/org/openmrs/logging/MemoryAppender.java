@@ -177,8 +177,8 @@ public class MemoryAppender extends AbstractAppender {
 			BUFFERS.put(name, new SoftReference<>(buffer));
 		} else if (buffer.capacity() != bufferSize) {
 			ThreadSafeCircularFifoQueue<LogEvent> newBuffer = new ThreadSafeCircularFifoQueue<>(bufferSize);
-			int messagesToMove = Math.min(buffer.size(), bufferSize);
 			LogEvent[] snapshot = buffer.toArray(new LogEvent[0]);
+			int messagesToMove = Math.min(snapshot.length, bufferSize);
 			int start = Math.max(0, snapshot.length - messagesToMove);
 			for (int i = start; i < snapshot.length; i++) {
 				newBuffer.add(snapshot[i]);

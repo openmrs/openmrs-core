@@ -298,16 +298,21 @@ class MemoryAppenderTest {
 			// Create new appender with same name but smaller buffer size
 			MemoryAppender appender2 = MemoryAppender.newBuilder().setName(appenderName)
 			        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).setBufferSize(3).build();
-			appender2.start();
+			try {
+				appender2.start();
 
-			// The new appender should have migrated the 3 most recent events
-			List<String> logLines = appender2.getLogLines();
-			assertThat(logLines, contains("C", "D", "E"));
-			assertThat(appender2.getBufferSize(), equalTo(3));
+				// The new appender should have migrated the 3 most recent events
+				List<String> logLines = appender2.getLogLines();
+				assertThat(logLines, contains("C", "D", "E"));
+				assertThat(appender2.getBufferSize(), equalTo(3));
+			} finally {
+				appender2.stop();
+			}
 		} finally {
 			migrationLogger.removeAppender(appender1);
 			migrationLogger.setLevel(null);
 			((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
+			appender1.stop();
 		}
 	}
 
@@ -333,16 +338,21 @@ class MemoryAppenderTest {
 			// Create new appender with same name but larger buffer size
 			MemoryAppender appender2 = MemoryAppender.newBuilder().setName(appenderName)
 			        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).setBufferSize(10).build();
-			appender2.start();
+			try {
+				appender2.start();
 
-			// All events should be preserved
-			List<String> logLines = appender2.getLogLines();
-			assertThat(logLines, contains("A", "B", "C"));
-			assertThat(appender2.getBufferSize(), equalTo(10));
+				// All events should be preserved
+				List<String> logLines = appender2.getLogLines();
+				assertThat(logLines, contains("A", "B", "C"));
+				assertThat(appender2.getBufferSize(), equalTo(10));
+			} finally {
+				appender2.stop();
+			}
 		} finally {
 			migrationLogger.removeAppender(appender1);
 			migrationLogger.setLevel(null);
 			((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
+			appender1.stop();
 		}
 	}
 

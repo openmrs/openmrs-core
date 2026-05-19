@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -145,15 +146,15 @@ class OpenmrsConfigurationFactoryTest {
 		Files.createDirectories(configDir);
 		Path unreadable = configDir.resolve("log4j2.xml");
 		Files.writeString(unreadable, "<Configuration/>");
-		unreadable.toFile().setReadable(false);
-
-		openmrsUtilMock.when(OpenmrsUtil::getApplicationDataDirectoryAsFile).thenReturn(tempDir.toFile());
-		openmrsUtilMock.when(() -> OpenmrsUtil.getDirectoryInApplicationDataDirectory("configuration"))
-		        .thenReturn(configDir.toFile());
-
-		OpenmrsConfigurationFactory factory = new OpenmrsConfigurationFactory();
+		Assumptions.assumeTrue(unreadable.toFile().setReadable(false),
+		    "Cannot make file unreadable on this platform; skipping test");
 
 		try {
+			openmrsUtilMock.when(OpenmrsUtil::getApplicationDataDirectoryAsFile).thenReturn(tempDir.toFile());
+			openmrsUtilMock.when(() -> OpenmrsUtil.getDirectoryInApplicationDataDirectory("configuration"))
+			        .thenReturn(configDir.toFile());
+
+			OpenmrsConfigurationFactory factory = new OpenmrsConfigurationFactory();
 			assertThat(factory.getConfigurationFiles(), empty());
 		} finally {
 			unreadable.toFile().setReadable(true);
