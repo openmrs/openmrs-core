@@ -107,10 +107,11 @@ public class MemoryAppender extends AbstractAppender {
 		if (events.length == 0) {
 			return Collections.emptyList();
 		}
-		
+
 		Layout<? extends Serializable> layout = getLayout();
 		if (!(layout instanceof StringLayout)) {
-			StatusLogger.getLogger().warn("MemoryAppender {} is not configured with a StringLayout and so no LogLines are available", this);
+			StatusLogger.getLogger()
+			        .warn("MemoryAppender {} is not configured with a StringLayout and so no LogLines are available", this);
 			return Collections.emptyList();
 		}
 
