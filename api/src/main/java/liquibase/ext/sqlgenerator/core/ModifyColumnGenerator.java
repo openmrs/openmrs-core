@@ -23,6 +23,7 @@ import liquibase.database.core.DerbyDatabase;
 import liquibase.database.core.H2Database;
 import liquibase.database.core.HsqlDatabase;
 import liquibase.database.core.MSSQLDatabase;
+import liquibase.database.core.MariaDBDatabase;
 import liquibase.database.core.MySQLDatabase;
 import liquibase.database.core.OracleDatabase;
 import liquibase.database.core.SQLiteDatabase;
@@ -128,7 +129,7 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 	 * @return true/false whether extra information can be included
 	 */
 	boolean supportsExtraMetaData(Database database) {
-		return database instanceof MSSQLDatabase || database instanceof MySQLDatabase;
+		return database instanceof MSSQLDatabase || database instanceof MySQLDatabase || database instanceof MariaDBDatabase;
 	}
 
 	/**
@@ -139,7 +140,7 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 		        || database instanceof DB2Database || database instanceof MSSQLDatabase) {
 			return "ALTER COLUMN";
 		} else if (database instanceof SybaseASADatabase || database instanceof SybaseDatabase
-		        || database instanceof MySQLDatabase) {
+		        || database instanceof MySQLDatabase || database instanceof MariaDBDatabase) {
 			return "MODIFY";
 		} else if (database instanceof OracleDatabase) {
 			return "MODIFY (";
@@ -156,8 +157,9 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 		if (database instanceof DerbyDatabase || database instanceof DB2Database) {
 			return " SET DATA TYPE ";
 		} else if (database instanceof SybaseASADatabase || database instanceof SybaseDatabase
-		        || database instanceof MSSQLDatabase || database instanceof MySQLDatabase || database instanceof HsqlDatabase
-		        || database instanceof H2Database || database instanceof OracleDatabase) {
+		        || database instanceof MSSQLDatabase || database instanceof MySQLDatabase
+		        || database instanceof MariaDBDatabase || database instanceof HsqlDatabase || database instanceof H2Database
+		        || database instanceof OracleDatabase) {
 			return " ";
 		} else {
 			return " TYPE ";
@@ -179,7 +181,7 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 	String getDefaultClause(ColumnConfig column, Database database) {
 		String clause = "";
 		String defaultValue = column.getDefaultValue();
-		if (defaultValue != null && database instanceof MySQLDatabase) {
+		if (defaultValue != null && (database instanceof MySQLDatabase || database instanceof MariaDBDatabase)) {
 			clause += " DEFAULT "
 			        + DataTypeFactory.getInstance().fromObject(defaultValue, database).objectToSql(defaultValue, database);
 		}
