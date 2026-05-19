@@ -156,12 +156,12 @@ class LoggingConfigurationGlobalPropertyListenerTest {
 	// --- globalPropertyDeleted ---
 
 	@Test
-	void globalPropertyDeleted_shouldReturnEarlyForLogLevelProperty() {
+	void globalPropertyDeleted_shouldReloadConfigurationForLogLevelProperty() {
 		try (MockedStatic<OpenmrsLoggingUtil> utilMock = mockStatic(OpenmrsLoggingUtil.class)) {
 			listener.globalPropertyDeleted(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
 
-			// log.level deletion should not trigger reload
-			utilMock.verify(OpenmrsLoggingUtil::reloadLoggingConfiguration, never());
+			// log.level deletion should trigger reload
+			utilMock.verify(OpenmrsLoggingUtil::reloadLoggingConfiguration);
 		}
 	}
 
