@@ -45,6 +45,16 @@ class InitializationFilterE2ETest {
 	private MockHttpServletResponse response;
 
 	/**
+	 * Snapshot of {@link Context#getRuntimeProperties()} taken before each test so it can be restored
+	 * in {@link #cleanup()}. Without this restore step the empty {@code Properties} instance left
+	 * behind by {@code setup()} leaks into the next test class that triggers a Spring
+	 * {@code ApplicationContext} load, causing {@code SchedulerConfig} / {@code JobRunrConfig} to build
+	 * a {@code DataSource} with no URL or credentials and H2 to reject the connection with "Wrong user
+	 * name or password [28000-232]" (TRUNK-6637).
+	 */
+	private Properties savedRuntimeProperties;
+
+	/**
 	 * Testable subclass that overrides renderTemplate to capture which template was rendered instead of
 	 * actually invoking Velocity.
 	 */
@@ -65,16 +75,23 @@ class InitializationFilterE2ETest {
 		filter.wizardModel = new InitializationWizardModel();
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
-		// Clear runtime properties to avoid state leaking from other test classes
+		// Save existing runtime properties, then install an empty Properties so
+		// this test can assert behaviour when runtime properties are absent.
+		// The saved value is restored in cleanup() to prevent the empty instance
+		// from leaking into subsequent tests (TRUNK-6637).
+		savedRuntimeProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(new Properties());
 	}
 
 	@AfterEach
 	void cleanup() {
 		InitializationFilter.setInstallationStarted(false);
+		// Restore the runtime properties that were in place before this test ran.
+		// This is essential: an empty Properties leaks into any subsequent test
+		// that loads a Spring ApplicationContext, breaking SchedulerConfig /
+		// JobRunrConfig DataSource construction (TRUNK-6637).
+		Context.setRuntimeProperties(savedRuntimeProperties);
 	}
-
-	// ========== Language Selection (chooselang.vm) ==========
 
 	@Test
 	void chooseLangPage_shouldRenderInstallMethodPageOnPost() throws Exception {
@@ -95,8 +112,6 @@ class InitializationFilterE2ETest {
 
 		assertEquals("fr", request.getSession().getAttribute("locale"));
 	}
-
-	// ========== Install Method Selection (installmethod.vm) ==========
 
 	@Test
 	void installMethodPage_shouldNavigateToSimpleSetupWhenSimpleSelected() throws Exception {
@@ -143,8 +158,6 @@ class InitializationFilterE2ETest {
 
 		assertEquals("chooselang.vm", filter.lastRenderedTemplate);
 	}
-
-	// ========== Simple Setup (simplesetup.vm) ==========
 
 	@Test
 	void simpleSetup_shouldGoBackToInstallMethodWhenBackClicked() throws Exception {
@@ -196,8 +209,6 @@ class InitializationFilterE2ETest {
 		assertEquals("postgresql", filter.wizardModel.databaseType);
 		assertEquals(InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION, filter.wizardModel.databaseConnection);
 	}
-
-	// ========== Database Setup - Advanced (databasesetup.vm) ==========
 
 	@ParameterizedTest
 	@CsvSource({ "advanced, databasesetup.vm, installmethod.vm", "testing, databasesetup.vm, remotedetails.vm",
@@ -301,8 +312,6 @@ class InitializationFilterE2ETest {
 		assertEquals(3, filter.wizardModel.currentStepNumber);
 	}
 
-	// ========== Database Tables and User (databasetablesanduser.vm) ==========
-
 	@Test
 	void databaseTablesAndUser_shouldGoBackToDatabaseSetup() throws Exception {
 		request.setParameter("page", "databasetablesanduser.vm");
@@ -402,8 +411,6 @@ class InitializationFilterE2ETest {
 		assertEquals("wizardcomplete.vm", filter.lastRenderedTemplate);
 	}
 
-	// ========== Other Runtime Properties (otherruntimeproperties.vm) ==========
-
 	@Test
 	void otherRuntimeProps_shouldGoBackToDatabaseTablesAndUser() throws Exception {
 		request.setParameter("page", "otherruntimeproperties.vm");
@@ -464,8 +471,6 @@ class InitializationFilterE2ETest {
 		assertEquals("implementationidsetup.vm", filter.lastRenderedTemplate);
 	}
 
-	// ========== Admin User Setup (adminusersetup.vm) ==========
-
 	@Test
 	void adminUserSetup_shouldGoBackToOtherRuntimeProps() throws Exception {
 		request.setParameter("page", "adminusersetup.vm");
@@ -502,8 +507,6 @@ class InitializationFilterE2ETest {
 		assertEquals("Admin123", filter.wizardModel.adminUserPassword);
 		assertEquals("implementationidsetup.vm", filter.lastRenderedTemplate);
 	}
-
-	// ========== Implementation ID Setup (implementationidsetup.vm) ==========
 
 	@Test
 	void implementationIdSetup_shouldGoBackToAdminUserSetupWhenCreatingTables() throws Exception {
@@ -584,8 +587,6 @@ class InitializationFilterE2ETest {
 		assertEquals("wizardcomplete.vm", filter.lastRenderedTemplate);
 	}
 
-	// ========== Wizard Complete (wizardcomplete.vm) ==========
-
 	@Test
 	void wizardComplete_shouldBuildCorrectTaskListForAdvancedWithNewDatabase() throws Exception {
 		filter.wizardModel.installMethod = "advanced";
@@ -651,8 +652,6 @@ class InitializationFilterE2ETest {
 		assertEquals("progress.vm", filter.lastRenderedTemplate);
 	}
 
-	// ========== Installation Already Started ==========
-
 	@Test
 	void doPost_shouldRenderProgressWhenInstallationAlreadyStarted() throws Exception {
 		InitializationFilter.setInstallationStarted(true);
@@ -664,17 +663,13 @@ class InitializationFilterE2ETest {
 		assertEquals("progress.vm", filter.lastRenderedTemplate);
 	}
 
-	// ========== Full Flow: Advanced Installation Path ==========
-
 	@Test
 	void fullAdvancedFlow_shouldNavigateCorrectlyThroughAllSteps() throws Exception {
-		// Step 1: Choose Language -> Install Method
 		request.setParameter("page", "chooselang.vm");
 		request.setParameter("locale", "en");
 		filter.doPost(request, response);
 		assertEquals("installmethod.vm", filter.lastRenderedTemplate);
 
-		// Step 2: Install Method (advanced) -> Database Setup
 		resetRequest();
 		request.setParameter("page", "installmethod.vm");
 		request.setParameter("install_method", "advanced");
@@ -684,7 +679,6 @@ class InitializationFilterE2ETest {
 		assertEquals(1, filter.wizardModel.currentStepNumber);
 		assertEquals(5, filter.wizardModel.numberOfSteps);
 
-		// Step 3: Database Setup -> Database Tables and User
 		resetRequest();
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "jdbc:h2:mem:test");
@@ -695,7 +689,6 @@ class InitializationFilterE2ETest {
 		filter.doPost(request, response);
 		assertEquals("databasetablesanduser.vm", filter.lastRenderedTemplate);
 
-		// Step 4: Database Tables and User -> Other Runtime Props
 		resetRequest();
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("current_database_user", "yes");
@@ -705,7 +698,6 @@ class InitializationFilterE2ETest {
 		filter.doPost(request, response);
 		assertEquals("otherruntimeproperties.vm", filter.lastRenderedTemplate);
 
-		// Step 5: Other Runtime Props -> Admin User Setup
 		resetRequest();
 		filter.wizardModel.createTables = true;
 		request.setParameter("page", "otherruntimeproperties.vm");
@@ -715,7 +707,6 @@ class InitializationFilterE2ETest {
 		filter.doPost(request, response);
 		assertEquals("adminusersetup.vm", filter.lastRenderedTemplate);
 
-		// Step 6: Admin User Setup -> Implementation ID
 		resetRequest();
 		request.setParameter("page", "adminusersetup.vm");
 		request.setParameter("new_admin_password", "Admin123");
@@ -724,7 +715,6 @@ class InitializationFilterE2ETest {
 		filter.doPost(request, response);
 		assertEquals("implementationidsetup.vm", filter.lastRenderedTemplate);
 
-		// Step 7: Implementation ID -> Wizard Complete
 		resetRequest();
 		request.setParameter("page", "implementationidsetup.vm");
 		request.setParameter("implementation_name", "");
@@ -735,7 +725,6 @@ class InitializationFilterE2ETest {
 		filter.doPost(request, response);
 		assertEquals("wizardcomplete.vm", filter.lastRenderedTemplate);
 
-		// Step 8: Wizard Complete -> Progress (starts installation)
 		resetRequest();
 		request.setParameter("page", "wizardcomplete.vm");
 		clearErrors();
@@ -743,11 +732,8 @@ class InitializationFilterE2ETest {
 		assertEquals("progress.vm", filter.lastRenderedTemplate);
 	}
 
-	// ========== Full Flow: Advanced with Back Navigation ==========
-
 	@Test
 	void fullAdvancedFlow_shouldSupportBackNavigationThroughSteps() throws Exception {
-		// Navigate forward: chooselang -> installmethod -> databasesetup
 		request.setParameter("page", "chooselang.vm");
 		filter.doPost(request, response);
 
@@ -757,7 +743,6 @@ class InitializationFilterE2ETest {
 		clearErrors();
 		filter.doPost(request, response);
 
-		// Now go back from databasesetup -> installmethod
 		resetRequest();
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("back", "Back");
@@ -765,7 +750,6 @@ class InitializationFilterE2ETest {
 		filter.doPost(request, response);
 		assertEquals("installmethod.vm", filter.lastRenderedTemplate);
 
-		// Go back from installmethod -> chooselang
 		resetRequest();
 		request.setParameter("page", "installmethod.vm");
 		request.setParameter("back", "Back");
@@ -773,8 +757,6 @@ class InitializationFilterE2ETest {
 		filter.doPost(request, response);
 		assertEquals("chooselang.vm", filter.lastRenderedTemplate);
 	}
-
-	// ========== Full Flow: Advanced with Existing DB (no table creation) ==========
 
 	@Test
 	void advancedExistingDb_shouldSkipAdminSetupWhenNotCreatingTables() throws Exception {
@@ -791,17 +773,13 @@ class InitializationFilterE2ETest {
 		assertEquals("implementationidsetup.vm", filter.lastRenderedTemplate);
 	}
 
-	// ========== Wizard Model State Preservation ==========
-
 	@Test
 	void wizardModel_shouldPreserveStateAcrossSteps() throws Exception {
-		// Step 1: Install method
 		request.setParameter("page", "installmethod.vm");
 		request.setParameter("install_method", "advanced");
 		filter.doPost(request, response);
 		assertEquals("advanced", filter.wizardModel.installMethod);
 
-		// Step 2: Database setup
 		resetRequest();
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "jdbc:h2:mem:test");
@@ -811,14 +789,11 @@ class InitializationFilterE2ETest {
 		clearErrors();
 		filter.doPost(request, response);
 
-		// Verify state from both steps
 		assertEquals("advanced", filter.wizardModel.installMethod);
 		assertEquals("jdbc:h2:mem:test", filter.wizardModel.databaseConnection);
 		assertEquals("my_openmrs", filter.wizardModel.databaseName);
 		assertTrue(filter.wizardModel.hasCurrentOpenmrsDatabase);
 	}
-
-	// ========== goBack via image click (back.x / back.y) ==========
 
 	@Test
 	void backNavigation_shouldWorkWithImageClickCoordinates() throws Exception {
@@ -830,8 +805,6 @@ class InitializationFilterE2ETest {
 
 		assertEquals("chooselang.vm", filter.lastRenderedTemplate);
 	}
-
-	// ========== Database Tables and User - Create User Validation ==========
 
 	@Test
 	void databaseTablesAndUser_shouldRequireCreateUserUsernameWhenCreatingNewUser() throws Exception {
@@ -858,8 +831,6 @@ class InitializationFilterE2ETest {
 
 		assertTrue(getErrors().containsKey("install.error.dbUserPswd"));
 	}
-
-	// ========== Database Setup - Validation for Existing DB ==========
 
 	@Test
 	void databaseSetup_shouldRequireCurrentDatabaseNameWhenExistingSelected() throws Exception {
@@ -904,9 +875,6 @@ class InitializationFilterE2ETest {
 		assertTrue(getErrors().containsKey("install.error.dbUserPswd"));
 	}
 
-	/**
-	 * Access the errors map from the filter via reflection since it is protected in StartupFilter.
-	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, Object[]> getErrors() throws Exception {
 		Field errorsField = StartupFilter.class.getDeclaredField("errors");
@@ -914,16 +882,10 @@ class InitializationFilterE2ETest {
 		return (Map<String, Object[]>) errorsField.get(filter);
 	}
 
-	/**
-	 * Clear the errors map between steps in multi-step flow tests.
-	 */
 	private void clearErrors() throws Exception {
 		getErrors().clear();
 	}
 
-	/**
-	 * Reset request and response objects for the next step in a multi-step test.
-	 */
 	private void resetRequest() {
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
