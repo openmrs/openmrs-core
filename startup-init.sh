@@ -195,7 +195,7 @@ else
   	  [[ -n "$line" ]] && echo -e "property.$line" >> openmrs-extra.properties.tmp
 	done < openmrs-extra.properties
 	
-	echo >> openmrs-exta.properties.tmp
+	echo >> openmrs-extra.properties.tmp
 	
 	if [ -f openmrs-extra.properties.tmp ]; then
 	  mv openmrs-extra.properties.tmp openmrs-extra.properties
