@@ -175,7 +175,6 @@ if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
     echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Merging with extra properties."
     awk -F= '!a[$1]++' "openmrs-extra.properties" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
     mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
-    cat "$OMRS_RUNTIME_PROPERTIES_FILE"
   fi
 
   # Ensure admin.password.locked is set in runtime properties
@@ -195,14 +194,13 @@ else
   	  [[ -n "$line" ]] && echo -e "property.$line" >> openmrs-extra.properties.tmp
 	done < openmrs-extra.properties
 	
-	echo >> openmrs-exta.properties.tmp
+	echo >> openmrs-extra.properties.tmp
 	
 	if [ -f openmrs-extra.properties.tmp ]; then
 	  mv openmrs-extra.properties.tmp openmrs-extra.properties
 	  cat "openmrs-extra.properties" >> "$OMRS_SERVER_PROPERTIES_FILE"
 	fi
   fi
-  cat "$OMRS_SERVER_PROPERTIES_FILE"
 fi
 
 if [ -f openmrs-extra.properties ]; then
