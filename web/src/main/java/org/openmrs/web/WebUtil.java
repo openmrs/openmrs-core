@@ -363,6 +363,16 @@ public class WebUtil implements GlobalPropertyListener {
 	}
 
 	/**
+	 * Replaces carriage return and line feed characters in values that may be written to logs.
+	 *
+	 * @param value the value to sanitize
+	 * @return the sanitized value or null if the input is null
+	 */
+	public static String sanitizeForLogging(String value) {
+		return value == null ? null : value.replace('\n', '_').replace('\r', '_');
+	}
+
+	/**
 	 * Method that returns WebConstants.WEBAPP_NAME or an empty string if WebConstants.WEBAPP_NAME is
 	 * empty.
 	 * <p>

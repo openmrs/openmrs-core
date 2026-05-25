@@ -22,6 +22,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.WebUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -61,11 +62,13 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 
 		// used by htmlInclude tag
 		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(System.currentTimeMillis()));
-
-		log.debug("requestURI {}", httpRequest.getRequestURI());
-		log.debug("requestURL {}", httpRequest.getRequestURL());
-		log.debug("request path info {}", httpRequest.getPathInfo());
-
+		String requestUri = WebUtil.sanitizeForLogging(httpRequest.getRequestURI());
+		String requestUrl = WebUtil.sanitizeForLogging(httpRequest.getRequestURL() == null ? null : httpRequest.getRequestURL()
+		        .toString());
+		String requestPathInfo = WebUtil.sanitizeForLogging(httpRequest.getPathInfo());
+		log.debug("requestURI {}", requestUri);
+		log.debug("requestURL {}", requestUrl);
+		log.debug("request path info {}", requestPathInfo);
 		// User context is created if it doesn't already exist and added to the session
 		// note: this usercontext storage logic is copied to webinf/view/uncaughtexception.jsp to
 		// 		 prevent stack traces being shown to non-authenticated users
