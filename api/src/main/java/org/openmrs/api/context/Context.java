@@ -9,8 +9,6 @@
  */
 package org.openmrs.api.context;
 
-import org.openmrs.event.LogoutEvent;
-import org.springframework.context.ApplicationContext;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang3.StringUtils;
@@ -708,19 +706,12 @@ public class Context {
 			return; // fail early if there isn't even a session open
 		}
 		log.debug("Logging out : {}", getAuthenticatedUser());
-
-		// Capture user before context is cleared, then publish LogoutEvent for audit listeners
-		User loggedOutUser = getAuthenticatedUser();
+		
 		getUserContext().logout();
 
 		// reset the UserContext object (usually cleared out by closeSession()
 		// soon after this)
 		setUserContext(new UserContext(getAuthenticationScheme()));
-
-		ApplicationContext appCtx = getServiceContext().getApplicationContext();
-		if (appCtx != null) {
-			appCtx.publishEvent(new LogoutEvent(Context.class, loggedOutUser));
-		}
 	}
 
 	/**
