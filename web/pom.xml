@@ -139,6 +139,11 @@
                <systemPropertyVariables>
                   <java.awt.headless>true</java.awt.headless>
                </systemPropertyVariables>
+               <!-- AltAuthSchemeContextTest must initialize the shared Spring context (and H2
+                    in-memory DB) before other BaseWebContextSensitiveTest classes run. Without
+                    alphabetical order, filesystem order differs by OS and InitializationFilterTest
+                    can be selected first on Linux CI, failing JobRunr H2 auth. -->
+               <runOrder>alphabetical</runOrder>
             </configuration>
          </plugin>
 		 <plugin>
