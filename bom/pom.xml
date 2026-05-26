@@ -48,22 +48,22 @@
 		     with our version of Spring. -->
 		<springVersion>7.0.7</springVersion>
 		<springTestVersion>${springVersion}</springTestVersion>
-		<hibernateVersion>7.3.2.Final</hibernateVersion>
+		<hibernateVersion>7.3.6.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
-		<hibernateSearchVersion>8.3.0.Final</hibernateSearchVersion>
+		<hibernateSearchVersion>8.3.1.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.0.Final</hibernateValidatorVersion>
 		<luceneVersion>10.4.0</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.6.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
-		<jacksonVersion>2.21.2</jacksonVersion>
+		<jacksonVersion>2.21.3</jacksonVersion>
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.25.4</log4jVersion>
+		<log4jVersion>2.26.0</log4jVersion>
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<owaspEncoderVersion>1.4.0</owaspEncoderVersion>
 		<graalJsVersion>25.0.3</graalJsVersion>
-		<nettyVersion>4.2.12.Final</nettyVersion>
+		<nettyVersion>4.2.14.Final</nettyVersion>
 
 		<!-- Jakarta -->
 		<jakartaServletVersion>6.1.0</jakartaServletVersion>
@@ -93,10 +93,10 @@
 
 		<!-- XML/Serialization -->
 		<dom4jVersion>2.1.4</dom4jVersion>
-		<jaxenVersion>2.0.1</jaxenVersion>
+		<jaxenVersion>2.0.2</jaxenVersion>
 		<xercesVersion>2.12.2</xercesVersion>
 		<xstreamVersion>1.4.21</xstreamVersion>
-		<jaxbRuntimeVersion>4.0.7</jaxbRuntimeVersion>
+		<jaxbRuntimeVersion>4.0.8</jaxbRuntimeVersion>
 
 		<!-- Mail -->
 		<jakartaMailVersion>2.1.5</jakartaMailVersion>
@@ -113,19 +113,19 @@
 		<javassistVersion>3.31.0-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
-		<tomcatVersion>11.0.21</tomcatVersion>
-		<jodaTimeVersion>2.14.1</jodaTimeVersion>
+		<tomcatVersion>11.0.22</tomcatVersion>
+		<jodaTimeVersion>2.14.2</jodaTimeVersion>
 		<guavaVersion>33.6.0-jre</guavaVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 		<jobrunrVersion>8.5.2</jobrunrVersion>
 		<shedlockVersion>7.7.0</shedlockVersion>
 
 		<!-- Testing -->
-		<junitVersion>6.0.3</junitVersion>
+		<junitVersion>6.1.0</junitVersion>
 		<mockitoVersion>5.23.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<h2Version>2.3.232</h2Version>
-		<dbunitVersion>3.0.0</dbunitVersion>
+		<dbunitVersion>3.1.0</dbunitVersion>
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.5</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
@@ -150,7 +150,7 @@
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>3.4.0</version>
+				<version>3.5.1</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>

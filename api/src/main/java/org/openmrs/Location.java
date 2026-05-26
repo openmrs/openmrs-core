@@ -36,6 +36,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 
 /**
@@ -143,6 +144,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "location_tag_map", joinColumns = @JoinColumn(name = "location_id"), inverseJoinColumns = @JoinColumn(name = "location_tag_id"))
+	@BatchSize(size = 100)
 	@Independent
 	private Set<LocationTag> tags;
 
@@ -455,7 +457,10 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @param includeRetired specifies whether or not to include voided childLocations
 	 * @return Returns a Set&lt;Location&gt; of the descendant location.
 	 * @since 1.10
+	 * @deprecated since 2.8.7 in favor of
+	 *             {@link LocationService#getDescendantLocations(Location, boolean)}
 	 */
+	@Deprecated
 	public Set<Location> getDescendantLocations(boolean includeRetired) {
 		Set<Location> result = new HashSet<>();
 
