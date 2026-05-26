@@ -48,7 +48,9 @@ class InitializationFilterE2ETest {
 
 	/**
 	 * Testable subclass that overrides renderTemplate to capture which template was rendered instead of
-	 * actually invoking Velocity.
+	 * actually invoking Velocity, and stubs startInstallation so the real InitializationCompletion
+	 * background thread (which performs the real setup and overwrites Context.runtimeProperties with
+	 * wizard-defaulted values) doesn't race with subsequent tests in the same JVM.
 	 */
 	static class TestableInitializationFilter extends InitializationFilter {
 
@@ -58,6 +60,11 @@ class InitializationFilterE2ETest {
 		protected void renderTemplate(String templateName, Map<String, Object> referenceMap,
 		        HttpServletResponse httpResponse) throws IOException {
 			this.lastRenderedTemplate = templateName;
+		}
+
+		@Override
+		protected void startInstallation() {
+			setInstallationStarted(true);
 		}
 	}
 
