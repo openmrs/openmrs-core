@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import jakarta.servlet.ServletContext;
+
 import org.openmrs.util.OpenmrsJacksonLocaleModule;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -43,6 +45,7 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -123,6 +126,22 @@ public class WebConfig implements WebMvcConfigurer {
 		MarshallingView view = new MarshallingView();
 		view.setMarshaller(xStreamMarshaller());
 		return view;
+	}
+
+	/**
+	 * Forwards {@code /index.htm} to the servlet container's default servlet so the static welcome page
+	 * is served when no UI module is installed. The {@code *.htm} servlet mapping otherwise routes
+	 * {@code /index.htm} to the openmrs DispatcherServlet, which has no core handler for it and would
+	 * return 404 on {@code /openmrs/}. The mapping is registered with the lowest precedence so
+	 * legacyui's {@code /**\/*.htm} handler (order 100) still wins when legacyui is installed, and
+	 * other unmatched URLs (e.g. REST API paths) still flow through Spring's NoHandlerFoundException
+	 * handlers rather than being silently forwarded.
+	 */
+	@Bean
+	public SimpleUrlHandlerMapping indexHtmFallbackMapping(ServletContext servletContext) {
+		DefaultServletHttpRequestHandler handler = new DefaultServletHttpRequestHandler();
+		handler.setServletContext(servletContext);
+		return new SimpleUrlHandlerMapping(Map.of("/index.htm", handler), Integer.MAX_VALUE - 1);
 	}
 
 	@Override
