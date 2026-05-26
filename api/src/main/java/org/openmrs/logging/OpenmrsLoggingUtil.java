@@ -30,6 +30,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.LoggerFactory;
@@ -109,12 +110,24 @@ public final class OpenmrsLoggingUtil {
 	 */
 	@Logging(ignore = true)
 	public static void applyLogLevels() {
-		String logLevel;
-		try {
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			logLevel = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "");
-		} finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		// Check system and runtime properties first — these do not require a session
+		String logLevel = ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+		if (logLevel == null) {
+			logLevel = ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+		}
+
+		// Fall back to global property only if a session is open
+		if (logLevel == null && Context.isSessionOpen()) {
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				logLevel = ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			}
+		}
+
+		if (logLevel == null) {
+			return;
 		}
 
 		synchronized (OpenmrsLoggingUtil.class) {

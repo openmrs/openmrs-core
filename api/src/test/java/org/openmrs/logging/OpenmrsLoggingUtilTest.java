@@ -10,6 +10,7 @@
 package org.openmrs.logging;
 
 import java.lang.reflect.Constructor;
+import java.util.Properties;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -207,10 +209,10 @@ class OpenmrsLoggingUtilTest {
 
 	@Test
 	void applyLogLevels_shouldApplySingleLogLevel() {
-		try (MockedStatic<Context> contextMock = mockStatic(Context.class)) {
-			AdministrationService adminService = mock(AdministrationService.class);
-			contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-			when(adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, ""))
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
 			        .thenReturn("org.openmrs.logging.test.applylevels:debug");
 
 			OpenmrsLoggingUtil.applyLogLevels();
@@ -222,10 +224,11 @@ class OpenmrsLoggingUtilTest {
 
 	@Test
 	void applyLogLevels_shouldApplyDefaultLogLevelWhenNoClassSpecified() {
-		try (MockedStatic<Context> contextMock = mockStatic(Context.class)) {
-			AdministrationService adminService = mock(AdministrationService.class);
-			contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-			when(adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "")).thenReturn("warn");
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn("warn");
 
 			OpenmrsLoggingUtil.applyLogLevels();
 
@@ -236,10 +239,10 @@ class OpenmrsLoggingUtilTest {
 
 	@Test
 	void applyLogLevels_shouldApplyMultipleLogLevels() {
-		try (MockedStatic<Context> contextMock = mockStatic(Context.class)) {
-			AdministrationService adminService = mock(AdministrationService.class);
-			contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-			when(adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, ""))
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
 			        .thenReturn("org.openmrs.logging.test.multi1:debug,org.openmrs.logging.test.multi2:error");
 
 			OpenmrsLoggingUtil.applyLogLevels();
@@ -255,8 +258,10 @@ class OpenmrsLoggingUtilTest {
 	void applyLogLevels_shouldHandleEmptyLogLevelProperty() {
 		try (MockedStatic<Context> contextMock = mockStatic(Context.class)) {
 			AdministrationService adminService = mock(AdministrationService.class);
+			contextMock.when(Context::getRuntimeProperties).thenReturn(new Properties());
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
 			contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-			when(adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "")).thenReturn("");
+			when(adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL)).thenReturn("");
 
 			// Should not throw
 			OpenmrsLoggingUtil.applyLogLevels();
@@ -267,8 +272,10 @@ class OpenmrsLoggingUtilTest {
 	void applyLogLevels_shouldAddAndRemoveProxyPrivilege() {
 		try (MockedStatic<Context> contextMock = mockStatic(Context.class)) {
 			AdministrationService adminService = mock(AdministrationService.class);
+			contextMock.when(Context::getRuntimeProperties).thenReturn(new Properties());
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
 			contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-			when(adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "")).thenReturn("");
+			when(adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL)).thenReturn("");
 
 			OpenmrsLoggingUtil.applyLogLevels();
 

@@ -39,6 +39,7 @@ import org.apache.logging.log4j.status.StatusLogger;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -156,26 +157,41 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 			rootLogger.addAppender(memoryAppender, null, memoryAppender.getFilter());
 		}
 
-		try {
-			AdministrationService adminService = Context.getAdministrationService();
-			applyLogLevels(configuration, adminService);
-		} catch (ServiceNotFoundException e) {
-			// if AdministrationService is not available, we'll assume we're starting up and everything is ok
-			if (!AdministrationService.class.isAssignableFrom(e.getServiceClass())) {
-				throw e;
+		// Check system and runtime properties first — these do not require a session
+		String logLevel = ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+		if (logLevel == null) {
+			logLevel = ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+		}
+
+		if (logLevel != null) {
+			applyLogLevels(configuration, logLevel);
+		} else if (Context.isSessionOpen()) {
+			try {
+				applyLogLevels(configuration);
+			} catch (ServiceNotFoundException e) {
+				// if AdministrationService is not available, we'll assume we're starting up and everything is ok
+				if (!AdministrationService.class.isAssignableFrom(e.getServiceClass())) {
+					throw e;
+				}
 			}
 		}
 	}
 
-	private static void applyLogLevels(AbstractConfiguration configuration, AdministrationService adminService) {
+	private static void applyLogLevels(AbstractConfiguration configuration) {
 		String logLevel;
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			logLevel = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "");
+			logLevel = ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 
+		if (logLevel != null) {
+			applyLogLevels(configuration, logLevel);
+		}
+	}
+
+	private static void applyLogLevels(AbstractConfiguration configuration, String logLevel) {
 		for (String level : logLevel.split(",")) {
 			String[] classAndLevel = level.split(":");
 			if (classAndLevel.length == 0) {
