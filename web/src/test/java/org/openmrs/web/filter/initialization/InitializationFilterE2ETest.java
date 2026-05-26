@@ -44,6 +44,8 @@ class InitializationFilterE2ETest {
 
 	private MockHttpServletResponse response;
 
+	private Properties originalRuntimeProperties;
+
 	/**
 	 * Testable subclass that overrides renderTemplate to capture which template was rendered instead of
 	 * actually invoking Velocity.
@@ -65,13 +67,17 @@ class InitializationFilterE2ETest {
 		filter.wizardModel = new InitializationWizardModel();
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
-		// Clear runtime properties to avoid state leaking from other test classes
+		// Save and clear runtime properties to avoid state leaking from other test classes.
+		// Subsequent context-loading tests in the same JVM rely on these being restored,
+		// since SchedulerConfig.dataSource() reads them at bean-creation time.
+		originalRuntimeProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(new Properties());
 	}
 
 	@AfterEach
 	void cleanup() {
 		InitializationFilter.setInstallationStarted(false);
+		Context.setRuntimeProperties(originalRuntimeProperties);
 	}
 
 	// ========== Language Selection (chooselang.vm) ==========
