@@ -63,6 +63,7 @@ import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.InputRequiredException;
+import org.openmrs.util.LogSanitizer;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.openmrs.util.OpenmrsUtil;
@@ -481,8 +482,8 @@ public class InitializationFilter extends StartupFilter {
 			checkLocaleAttributes(httpRequest);
 			referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE,
 			    httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
-			log.info("Locale stored in session is " + httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
-
+			log.info("Locale stored in session is {}",
+			    LogSanitizer.sanitize(httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE)));
 			httpResponse.setContentType("text/html");
 			// otherwise do step one of the wizard
 			renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
@@ -976,7 +977,9 @@ public class InitializationFilter extends StartupFilter {
 			// if user has changed locale parameter to new one
 			// or chooses it parameter at first page loading
 			if (storedLocale == null || !storedLocale.equals(localeParameter)) {
-				log.info("Stored locale parameter to session " + localeParameter);
+				if (log.isInfoEnabled()) {
+					log.info("Stored locale parameter to session {}", LogSanitizer.sanitize(localeParameter));
+				}
 				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
 			}
 			if (rememberLocale) {
