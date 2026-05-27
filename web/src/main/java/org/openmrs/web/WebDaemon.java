@@ -45,7 +45,9 @@ public final class WebDaemon {
 					throw new ModuleException("Unable to start OpenMRS. Error thrown was: " + e.getMessage(), e);
 				}
 			}).get();
-		} catch (InterruptedException ignored) {} catch (ExecutionException e) {
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		} catch (ExecutionException e) {
 			Throwable cause = e.getCause();
 			if (cause instanceof DatabaseUpdateException) {
 				throw (DatabaseUpdateException) cause;

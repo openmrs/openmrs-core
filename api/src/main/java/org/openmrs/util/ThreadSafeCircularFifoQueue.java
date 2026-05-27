@@ -852,7 +852,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		private void updateIndices() {
 			final int cycles = ThreadSafeCircularFifoQueue.this.iterators.cycles;
 			if (cycles != prevCycles || read != prevRead) {
-				long dequeues = (cycles - prevCycles) * maxElements + (read - prevRead);
+				long dequeues = (long) (cycles - prevCycles) * maxElements + (read - prevRead);
 
 				if (indexInvalidated(prevIndex, dequeues)) {
 					prevIndex = NONE;

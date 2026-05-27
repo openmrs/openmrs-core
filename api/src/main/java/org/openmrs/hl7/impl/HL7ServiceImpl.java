@@ -1113,7 +1113,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service, Re
 			}
 
 			//resolve the appropriate month folder
-			File monthDir = new File(yearDir, df.format(calendar.get(Calendar.MONTH) + 1));
+			File monthDir = new File(yearDir, df.format((long) calendar.get(Calendar.MONTH) + 1));
 			if (!monthDir.isDirectory()) {
 				monthDir.mkdirs();
 			}

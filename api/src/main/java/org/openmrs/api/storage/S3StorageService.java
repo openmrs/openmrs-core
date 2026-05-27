@@ -137,6 +137,7 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		try {
 			result = object.get();
 		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			throw new InterruptedIOException(e.getMessage());
 		} catch (ExecutionException e) {
 			throw new IOException(e);
@@ -190,6 +191,7 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 			request.get();
 			return true;
 		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			throw new InterruptedIOException(e.getMessage());
 		} catch (ExecutionException e) {
 			if (e.getCause() instanceof S3Exception) {

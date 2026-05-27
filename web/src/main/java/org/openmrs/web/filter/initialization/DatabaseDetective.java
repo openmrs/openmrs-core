@@ -76,8 +76,7 @@ public class DatabaseDetective {
 					connection.close();
 				}
 			} catch (Exception e) {
-				// consider the database to be empty
-				return true;
+				// ignore failure to close the connection
 			}
 		}
 	}

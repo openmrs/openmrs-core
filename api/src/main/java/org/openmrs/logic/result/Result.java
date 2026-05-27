@@ -83,7 +83,15 @@ public class Result extends ArrayList<Result> {
 
 	private Object resultObject;
 
-	private static final Result emptyResult = new EmptyResult();
+	/**
+	 * Lazily-initialized holder for the shared empty result. Using a holder class avoids the parent
+	 * {@link Result} class referencing its {@link EmptyResult} subclass during its own static
+	 * initialization.
+	 */
+	private static final class EmptyResultHolder {
+
+		private static final Result INSTANCE = new EmptyResult();
+	}
 
 	public Result() {
 	}
@@ -300,7 +308,7 @@ public class Result extends ArrayList<Result> {
 	 * @return null/empty result
 	 */
 	public static final Result emptyResult() {
-		return emptyResult;
+		return EmptyResultHolder.INSTANCE;
 	}
 
 	/**
@@ -589,7 +597,7 @@ public class Result extends ArrayList<Result> {
 				case CODED:
 					return 0D;
 				case DATETIME:
-					return (valueDatetime == null ? 0 : Long.valueOf(valueDatetime.getTime()).doubleValue());
+					return (valueDatetime == null ? 0D : (double) valueDatetime.getTime());
 				case NUMERIC:
 					return (valueNumeric == null ? 0D : valueNumeric);
 				case TEXT:
@@ -696,7 +704,7 @@ public class Result extends ArrayList<Result> {
 	public Result gt(Integer value) {
 		if (isSingleResult()) {
 			if (valueNumeric == null || valueNumeric <= value) {
-				return emptyResult;
+				return emptyResult();
 			}
 			return this;
 		}
@@ -707,7 +715,7 @@ public class Result extends ArrayList<Result> {
 			}
 		}
 		if (matches.size() < 1) {
-			return emptyResult;
+			return emptyResult();
 		}
 		return new Result(matches);
 	}
@@ -838,11 +846,11 @@ public class Result extends ArrayList<Result> {
 	@Override
 	public Result get(int index) {
 		if (isSingleResult()) {
-			return (index == 0 ? this : emptyResult);
+			return (index == 0 ? this : emptyResult());
 		}
 
 		if (index >= this.size()) {
-			return emptyResult;
+			return emptyResult();
 		}
 		return super.get(index);
 	}

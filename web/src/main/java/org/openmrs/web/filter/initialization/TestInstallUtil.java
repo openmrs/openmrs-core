@@ -118,6 +118,7 @@ public class TestInstallUtil {
 		} catch (IOException e) {
 			log.error("Failed to create the sql dump", e);
 		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			log.error("The back up was interrupted while adding test data", e);
 		}
 
@@ -207,8 +208,8 @@ public class TestInstallUtil {
 					log.error("Failed to close zip file: ", e);
 				}
 			}
-			if (tempFile != null) {
-				tempFile.delete();
+			if (tempFile != null && !tempFile.delete()) {
+				log.warn("Unable to delete temporary file at {}", tempFile.getAbsolutePath());
 			}
 		}
 

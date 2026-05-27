@@ -682,6 +682,7 @@ public class ServiceContext implements ApplicationContextAware {
 				}
 
 			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
 				log.warn("Refresh lock was interrupted", e);
 			}
 		}
@@ -952,6 +953,7 @@ public class ServiceContext implements ApplicationContextAware {
 
 				Daemon.runStartupForService(openmrsService);
 			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
 				log.warn("Refresh lock was interrupted while waiting to run OpenmrsService.onStartup() for " + classString,
 				    e);
 			}
