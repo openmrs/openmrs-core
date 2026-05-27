@@ -1157,6 +1157,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public List<Concept> getConcepts(ConceptSearchCriteria criteria) {
+		if (criteria == null) {
+			return Collections.emptyList();
+		}
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Concept> cq = cb.createQuery(Concept.class);
@@ -1208,8 +1211,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (idx < 0 || idx >= mapping.length() - 1) {
 			return Optional.empty();
 		}
-		String sourceName = mapping.substring(0, idx);
-		String code = mapping.substring(idx + 1);
+		String sourceName = mapping.substring(0, idx).trim();
+		String code = mapping.substring(idx + 1).trim();
+		if (sourceName.isEmpty() || code.isEmpty()) {
+			return Optional.empty();
+		}
 
 		Subquery<ConceptMap> sub = cq.subquery(ConceptMap.class);
 		Root<ConceptMap> mapRoot = sub.from(ConceptMap.class);

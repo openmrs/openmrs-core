@@ -105,7 +105,7 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptSearchCriteria the search criteria
 	 * @return list of matching concepts
-	 * @since 2.9.0
+	 * @since 2.8.7
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getConcepts(ConceptSearchCriteria conceptSearchCriteria);

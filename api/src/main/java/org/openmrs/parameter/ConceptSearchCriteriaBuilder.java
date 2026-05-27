@@ -23,7 +23,7 @@ import org.openmrs.api.context.Context;
  * for the flexible creation of {@link ConceptSearchCriteria} objects by providing a simple
  * interface to set various fields.
  *
- * @since 2.9.0
+ * @since 2.8.7
  */
 public class ConceptSearchCriteriaBuilder {
 

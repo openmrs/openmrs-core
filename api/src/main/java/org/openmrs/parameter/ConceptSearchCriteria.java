@@ -18,7 +18,7 @@ import java.util.Collection;
  * <p>
  * Instead of calling the constructor directly, use {@link ConceptSearchCriteriaBuilder}.
  *
- * @since 2.9.0
+ * @since 2.8.7
  */
 public class ConceptSearchCriteria {
 
