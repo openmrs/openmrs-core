@@ -13,9 +13,8 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.lookup.AbstractLookup;
 import org.apache.logging.log4j.core.lookup.StrLookup;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -48,67 +47,48 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 
 	@Override
 	public String lookup(LogEvent event, String key) {
-		AdministrationService adminService = null;
-
-		try {
-			adminService = Context.getAdministrationService();
-		} catch (ServiceNotFoundException e) {
-			// if AdministrationService is not available, we'll assume we're starting up and everything is ok
-			if (!AdministrationService.class.isAssignableFrom(e.getServiceClass())) {
-				throw e;
-			}
-		}
-
 		switch (key) {
 			case "applicationDirectory":
 				final String applicationDirectory = OpenmrsUtil.getApplicationDataDirectory();
 				return applicationDirectory == null || applicationDirectory.isEmpty() ? null : applicationDirectory;
 			case "logLocation":
-				final String logLocation = getGlobalProperty(adminService, OpenmrsConstants.GP_LOG_LOCATION);
+				final String logLocation = getProperty(OpenmrsConstants.GP_LOG_LOCATION);
 				return logLocation == null ? null
 				        : logLocation.endsWith("/") ? logLocation.substring(0, logLocation.length() - 1) : logLocation;
 			case "logLayout":
-				return getGlobalProperty(adminService, OpenmrsConstants.GP_LOG_LAYOUT);
+				return getProperty(OpenmrsConstants.GP_LOG_LAYOUT);
 			default:
 				throw new IllegalArgumentException(key
 				        + " is not a supported property. We support openmrs:applicationDirectory, openmrs:logLocation, and openmrs:logLayout");
 		}
 	}
 
-	private String getGlobalProperty(AdministrationService adminService, String globalPropertyName) {
-		if (adminService == null) {
-			return getPropertyDefault(globalPropertyName);
-		}
-
-		String value;
-		try {
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			value = adminService.getGlobalProperty(globalPropertyName);
-		} finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		}
-
+	private String getProperty(String propertyName) {
+		String value = ConfigUtil.getSystemProperty(propertyName);
 		if (value == null) {
-			return getPropertyDefault(globalPropertyName);
-		} else {
-			value = value.trim();
+			value = ConfigUtil.getRuntimeProperty(propertyName);
 		}
 
-		if (value.isEmpty()) {
-			return getPropertyDefault(globalPropertyName);
+		if (value == null && Context.isSessionOpen()) {
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				value = ConfigUtil.getGlobalProperty(propertyName);
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			}
 		}
 
-		return value;
+		if (value == null || value.trim().isEmpty()) {
+			return getPropertyDefault(propertyName);
+		}
+
+		return value.trim();
 	}
 
 	private static String getPropertyDefault(String propertyName) {
-		switch (propertyName) {
-			case OpenmrsConstants.GP_LOG_LOCATION:
-				return "";
-			case OpenmrsConstants.GP_LOG_LAYOUT:
-				return "%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n";
-			default:
-				return null;
+		if (OpenmrsConstants.GP_LOG_LAYOUT.equals(propertyName)) {
+			return "%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n";
 		}
+		return null;
 	}
 }

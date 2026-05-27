@@ -13,8 +13,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -23,17 +23,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link OpenmrsPropertyLookup}.
  * <p/>
  * This class handles two distinct operational phases:
  * <ul>
- * <li>Normal operations: Context and AdministrationService are available</li>
- * <li>Startup / initialization: Context is not yet available, returns hardcoded defaults</li>
+ * <li>Normal operations: a session is open and ConfigUtil can reach the AdministrationService</li>
+ * <li>Startup / initialization: no session is open, returns hardcoded defaults</li>
  * </ul>
  */
 class OpenmrsPropertyLookupTest {
@@ -44,15 +42,19 @@ class OpenmrsPropertyLookupTest {
 
 	private MockedStatic<OpenmrsUtil> openmrsUtilMock;
 
+	private MockedStatic<ConfigUtil> configUtilMock;
+
 	@BeforeEach
 	void setUp() {
 		lookup = new OpenmrsPropertyLookup();
 		contextMock = mockStatic(Context.class);
 		openmrsUtilMock = mockStatic(OpenmrsUtil.class);
+		configUtilMock = mockStatic(ConfigUtil.class);
 	}
 
 	@AfterEach
 	void tearDown() {
+		configUtilMock.close();
 		contextMock.close();
 		openmrsUtilMock.close();
 	}
@@ -86,25 +88,23 @@ class OpenmrsPropertyLookupTest {
 		assertThat(result, nullValue());
 	}
 
-	// --- logLocation during startup (no AdministrationService) ---
+	// --- logLocation during startup (no session open) ---
 
 	@Test
-	void lookup_shouldReturnEmptyForLogLocationDuringStartup() {
-		contextMock.when(Context::getAdministrationService)
-		        .thenThrow(new org.openmrs.api.ServiceNotFoundException(AdministrationService.class));
-
+	void lookup_shouldReturnNullForLogLocationDuringStartup() {
+		// isSessionOpen() defaults to false; system/runtime properties default to null
 		String result = lookup.lookup(null, "logLocation");
 
-		assertThat(result, equalTo(""));
+		assertThat(result, nullValue());
 	}
 
 	// --- logLocation during normal operations ---
 
 	@Test
 	void lookup_shouldReturnLogLocationFromGlobalProperty() {
-		AdministrationService adminService = mock(AdministrationService.class);
-		contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-		when(adminService.getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION)).thenReturn("/var/log/openmrs");
+		contextMock.when(Context::isSessionOpen).thenReturn(true);
+		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION))
+		        .thenReturn("/var/log/openmrs");
 
 		String result = lookup.lookup(null, "logLocation");
 
@@ -113,9 +113,9 @@ class OpenmrsPropertyLookupTest {
 
 	@Test
 	void lookup_shouldStripTrailingSlashFromLogLocation() {
-		AdministrationService adminService = mock(AdministrationService.class);
-		contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-		when(adminService.getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION)).thenReturn("/var/log/openmrs/");
+		contextMock.when(Context::isSessionOpen).thenReturn(true);
+		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION))
+		        .thenReturn("/var/log/openmrs/");
 
 		String result = lookup.lookup(null, "logLocation");
 
@@ -123,34 +123,30 @@ class OpenmrsPropertyLookupTest {
 	}
 
 	@Test
-	void lookup_shouldReturnEmptyForNullLogLocation() {
-		AdministrationService adminService = mock(AdministrationService.class);
-		contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-		when(adminService.getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION)).thenReturn(null);
+	void lookup_shouldReturnNullForNullLogLocation() {
+		contextMock.when(Context::isSessionOpen).thenReturn(true);
+		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION)).thenReturn(null);
 
 		String result = lookup.lookup(null, "logLocation");
 
-		assertThat(result, equalTo(""));
+		assertThat(result, nullValue());
 	}
 
 	@Test
-	void lookup_shouldReturnEmptyForBlankLogLocation() {
-		AdministrationService adminService = mock(AdministrationService.class);
-		contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-		when(adminService.getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION)).thenReturn("   ");
+	void lookup_shouldReturnNullForBlankLogLocation() {
+		contextMock.when(Context::isSessionOpen).thenReturn(true);
+		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION)).thenReturn("   ");
 
 		String result = lookup.lookup(null, "logLocation");
 
-		assertThat(result, equalTo(""));
+		assertThat(result, nullValue());
 	}
 
-	// --- logLayout during startup (no AdministrationService) ---
+	// --- logLayout during startup (no session open) ---
 
 	@Test
 	void lookup_shouldReturnDefaultLayoutDuringStartup() {
-		contextMock.when(Context::getAdministrationService)
-		        .thenThrow(new org.openmrs.api.ServiceNotFoundException(AdministrationService.class));
-
+		// isSessionOpen() defaults to false; system/runtime properties default to null
 		String result = lookup.lookup(null, "logLayout");
 
 		assertThat(result, equalTo("%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n"));
@@ -160,9 +156,8 @@ class OpenmrsPropertyLookupTest {
 
 	@Test
 	void lookup_shouldReturnLogLayoutFromGlobalProperty() {
-		AdministrationService adminService = mock(AdministrationService.class);
-		contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-		when(adminService.getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT)).thenReturn("%d %m%n");
+		contextMock.when(Context::isSessionOpen).thenReturn(true);
+		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT)).thenReturn("%d %m%n");
 
 		String result = lookup.lookup(null, "logLayout");
 
@@ -171,9 +166,8 @@ class OpenmrsPropertyLookupTest {
 
 	@Test
 	void lookup_shouldReturnDefaultLayoutWhenGlobalPropertyIsNull() {
-		AdministrationService adminService = mock(AdministrationService.class);
-		contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-		when(adminService.getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT)).thenReturn(null);
+		contextMock.when(Context::isSessionOpen).thenReturn(true);
+		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT)).thenReturn(null);
 
 		String result = lookup.lookup(null, "logLayout");
 
@@ -182,9 +176,8 @@ class OpenmrsPropertyLookupTest {
 
 	@Test
 	void lookup_shouldReturnDefaultLayoutWhenGlobalPropertyIsBlank() {
-		AdministrationService adminService = mock(AdministrationService.class);
-		contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-		when(adminService.getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT)).thenReturn("   ");
+		contextMock.when(Context::isSessionOpen).thenReturn(true);
+		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT)).thenReturn("   ");
 
 		String result = lookup.lookup(null, "logLayout");
 
@@ -205,9 +198,8 @@ class OpenmrsPropertyLookupTest {
 
 	@Test
 	void lookup_shouldAddAndRemoveProxyPrivilegeWhenFetchingGlobalProperty() {
-		AdministrationService adminService = mock(AdministrationService.class);
-		contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-		when(adminService.getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT)).thenReturn("%m%n");
+		contextMock.when(Context::isSessionOpen).thenReturn(true);
+		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT)).thenReturn("%m%n");
 
 		lookup.lookup(null, "logLayout");
 
