@@ -37,7 +37,7 @@ import java.util.List;
  * <b>It is not supported to use <i>@TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)</i> 
  * to listen for an aggregated event, use <i>@EventListener</i> instead.</b>
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 public abstract class TransactionalEventAggregator {
 

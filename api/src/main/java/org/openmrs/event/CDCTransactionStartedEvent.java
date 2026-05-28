@@ -9,32 +9,29 @@
  */
 package org.openmrs.event;
 
-import org.openmrs.event.outbox.OutboxableEvent;
-
-import java.util.HashSet;
-import java.util.Set;
-
 /**
- * <b>For internal use only.</b>
- * <p>
- * Extend {@link EntityEvent} or {@link AggregatedEntityEvent} instead.
+ * Issued by the CDC engine upon started transaction.
  * 
  * @since 2.9.0
  */
-class BaseEvent implements OutboxableEvent {
+public class CDCTransactionStartedEvent extends BaseEvent {
+	
 	private static final long serialVersionUID = 1L;
 	
-	protected final Set<String> tags;
+	private String transactionId;
 	
-	public BaseEvent() {
-		this.tags = new HashSet<>();
+	public CDCTransactionStartedEvent() {
 	}
 	
-	public BaseEvent(Set<String> tags) {
-		this.tags = tags;
+	public CDCTransactionStartedEvent(String transactionId) {
+		this.transactionId = transactionId;
 	}
 	
-	public Set<String> getTags() {
-		return tags;
+	public String getTransactionId() {
+		return transactionId;
+	}
+	
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
 	}
 }

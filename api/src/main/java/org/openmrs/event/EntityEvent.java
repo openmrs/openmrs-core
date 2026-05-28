@@ -9,6 +9,7 @@
  */
 package org.openmrs.event;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.ResolvableTypeProvider;
@@ -31,9 +32,9 @@ import java.util.Set;
  * 
  * @param <T> the related entity
  *     
- * @since 2.9.x
+ * @since 2.9.0
  */
-	public abstract class EntityEvent<T> extends BaseEvent implements ResolvableTypeProvider {
+	public abstract class EntityEvent<T> extends BaseSessionEvent implements ResolvableTypeProvider {
 
 	protected T entity;
 	
@@ -45,7 +46,7 @@ import java.util.Set;
 	}
  	
 	public EntityEvent(T entity, Set<String> tags) {
-		super(entity, tags);
+		super(tags);
 		this.entity = entity;
 	}
 
@@ -55,9 +56,9 @@ import java.util.Set;
 	
 	public void setEntity(T entity) {
 		this.entity = entity;
-		this.source = entity;
 	}
 
+	@JsonIgnore
 	@Override
 	public @Nullable ResolvableType getResolvableType() {
 		if (entity != null && getClass().getTypeParameters().length == 1) {
