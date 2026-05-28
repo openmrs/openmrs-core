@@ -868,7 +868,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 
-	private void startInstallation() {
+	protected void startInstallation() {
 		//if no one has run any installation
 		if (!isInstallationStarted()) {
 			initJob = new InitializationCompletion();

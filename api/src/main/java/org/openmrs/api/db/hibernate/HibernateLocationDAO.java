@@ -32,6 +32,7 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LocationDAO;
+import org.openmrs.parameter.LocationSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -428,5 +429,64 @@ public class HibernateLocationDAO implements LocationDAO {
 			locationTagIds.add(tag.getLocationTagId());
 		}
 		return locationTagIds;
+	}
+
+	/**
+	 * @see LocationDAO#getLocations(LocationSearchCriteria)
+	 */
+	@Override
+	public List<Location> getLocations(LocationSearchCriteria criteria) {
+		Session session = sessionFactory.getCurrentSession();
+
+		List<Integer> descendantIds = null;
+		if (criteria.getDescendantOfLocation() != null) {
+			String retiredFilter = criteria.getIncludeRetired() ? "" : " AND retired = false";
+			String cteSql = "WITH RECURSIVE descendants (location_id) AS ("
+			        + " SELECT location_id FROM location WHERE parent_location = :locationId" + retiredFilter
+			        + " UNION ALL SELECT l.location_id FROM location l"
+			        + " INNER JOIN descendants d ON l.parent_location = d.location_id" + retiredFilter
+			        + ") SELECT location_id FROM descendants";
+			descendantIds = session.createNativeQuery(cteSql, Integer.class)
+			        .setParameter("locationId", criteria.getDescendantOfLocation().getLocationId()).list();
+			if (descendantIds.isEmpty()) {
+				return Collections.emptyList();
+			}
+		}
+
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Location> cq = cb.createQuery(Location.class);
+		Root<Location> root = cq.from(Location.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (!criteria.getIncludeRetired()) {
+			predicates.add(cb.isFalse(root.get("retired")));
+		}
+
+		if (descendantIds != null) {
+			predicates.add(root.get("locationId").in(descendantIds));
+		}
+
+		if (StringUtils.isNotBlank(criteria.getNameFragment())) {
+			predicates.add(
+			    cb.like(cb.lower(root.get("name")), MatchMode.START.toLowerCasePattern(criteria.getNameFragment())));
+		}
+
+		if (criteria.getLocationTags() != null && !criteria.getLocationTags().isEmpty()) {
+			List<Integer> tagIds = getLocationTagIds(new ArrayList<>(criteria.getLocationTags()));
+			if (!tagIds.isEmpty()) {
+				Join<Location, LocationTag> tagsJoin = root.join("tags");
+				predicates.add(tagsJoin.get("locationTagId").in(tagIds));
+				cq.groupBy(root);
+				if (criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL) {
+					cq.having(cb.equal(cb.count(tagsJoin), (long) tagIds.size()));
+				}
+			}
+		}
+
+		cq.where(cb.and(predicates.toArray(new Predicate[0])));
+		cq.orderBy(cb.asc(root.get("name")));
+
+		return session.createQuery(cq).getResultList();
 	}
 }
