@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class AllergyTest {
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnTrueWhenAllValuesMatch() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of(reaction(5, 6, "rash")));
@@ -35,9 +35,9 @@ class AllergyTest {
 		assertTrue(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnFalseWhenAllergyIdDiffers() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
@@ -46,9 +46,9 @@ class AllergyTest {
 		assertFalse(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnTrueWhenPatientsAreDifferentInstancesWithSamePatientId() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
@@ -58,9 +58,9 @@ class AllergyTest {
 		assertTrue(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnFalseWhenPatientIdsDiffer() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
@@ -69,9 +69,9 @@ class AllergyTest {
 		assertFalse(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnTrueWhenCodedAllergensAreDifferentInstancesWithSameConceptId() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
@@ -81,9 +81,9 @@ class AllergyTest {
 		assertTrue(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnFalseWhenCodedAllergenConceptIdsDiffer() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
@@ -92,9 +92,9 @@ class AllergyTest {
 		assertFalse(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnFalseWhenNonCodedAllergenDiffers() {
 		Allergy left = allergy(1, patient(2), nonCodedAllergen("Peanuts"), severity(4), "comment", List.of());
@@ -103,9 +103,9 @@ class AllergyTest {
 		assertFalse(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnTrueWhenSeveritiesAreDifferentInstancesWithSameConceptId() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
@@ -115,9 +115,9 @@ class AllergyTest {
 		assertTrue(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnFalseWhenSeverityConceptIdsDiffer() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
@@ -126,9 +126,9 @@ class AllergyTest {
 		assertFalse(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnFalseWhenCommentDiffers() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
@@ -137,9 +137,9 @@ class AllergyTest {
 		assertFalse(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnFalseWhenReactionCountDiffers() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of(reaction(5, 6, "rash")));
@@ -148,9 +148,9 @@ class AllergyTest {
 		assertFalse(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnFalseWhenReactionValuesDiffer() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of(reaction(5, 6, "rash")));
@@ -159,18 +159,17 @@ class AllergyTest {
 		assertFalse(left.hasSameValues(right));
 	}
 
-
 	@Test
 	void hasSameValues_shouldThrowWhenOtherAllergyDoesNotContainReactionWithSameId() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of(reaction(5, 6, "rash")));
 		Allergy right = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of(reaction(99, 6, "rash")));
 
-        assertThrows(NullPointerException.class, () -> left.hasSameValues(right));
+		assertThrows(NullPointerException.class, () -> left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldThrowWhenComparedAllergyIsNull() {
 		Allergy allergy = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
@@ -178,9 +177,9 @@ class AllergyTest {
 		assertThrows(NullPointerException.class, () -> allergy.hasSameValues(null));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldThrowWhenThisAllergenIsNull() {
 		Allergy left = allergy(1, patient(2), null, severity(4), "comment", List.of());
@@ -189,9 +188,9 @@ class AllergyTest {
 		assertThrows(NullPointerException.class, () -> left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldThrowWhenComparedAllergenIsNull() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), "comment", List.of());
@@ -200,9 +199,9 @@ class AllergyTest {
 		assertThrows(NullPointerException.class, () -> left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnTrueWhenBothPatientsAreNull() {
 		Allergy left = allergy(1, null, codedAllergen(3), severity(4), "comment", List.of());
@@ -211,9 +210,9 @@ class AllergyTest {
 		assertTrue(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnTrueWhenBothSeveritiesAreNull() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), null, "comment", List.of());
@@ -222,9 +221,9 @@ class AllergyTest {
 		assertTrue(left.hasSameValues(right));
 	}
 
-    /**
-     * @see Allergy#hasSameValues(Allergy)
-     */
+	/**
+	 * @see Allergy#hasSameValues(Allergy)
+	 */
 	@Test
 	void hasSameValues_shouldReturnTrueWhenBothCommentsAreNull() {
 		Allergy left = allergy(1, patient(2), codedAllergen(3), severity(4), null, List.of());
