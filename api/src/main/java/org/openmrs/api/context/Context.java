@@ -704,7 +704,8 @@ public class Context {
 		if (!isSessionOpen()) {
 			return; // fail early if there isn't even a session open
 		}
-		log.debug("Logging out : {}", getAuthenticatedUser());		
+		log.debug("Logging out : {}", getAuthenticatedUser());
+		
 		getUserContext().logout();
 
 		// reset the UserContext object (usually cleared out by closeSession()
