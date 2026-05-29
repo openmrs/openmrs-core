@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.context;
 
-
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Allergen;
@@ -705,8 +704,7 @@ public class Context {
 		if (!isSessionOpen()) {
 			return; // fail early if there isn't even a session open
 		}
-		log.debug("Logging out : {}", getAuthenticatedUser());
-		
+		log.debug("Logging out : {}", getAuthenticatedUser());		
 		getUserContext().logout();
 
 		// reset the UserContext object (usually cleared out by closeSession()

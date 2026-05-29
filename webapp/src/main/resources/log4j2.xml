@@ -58,8 +58,6 @@
 		<!-- Hide the useless MissingResourceException -->
 		<Logger name="org.springframework.context.support.ResourceBundleMessageSource" level="ERROR" />
 		<Logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory" level="ERROR" />
-		<Logger name="org.openmrs.module.auditlogweb" level="DEBUG" />
-
 		<!-- Startup monitoring
 		<Logger name="org.openmrs.module.ModuleFactory" level="DEBUG" />
 		<Logger name="org.openmrs.module.ModuleUtil" level="DEBUG" />
