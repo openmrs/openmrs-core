@@ -18,7 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -31,8 +33,10 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
+import org.openmrs.event.LoginAttemptEvent;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 /**
@@ -50,6 +54,9 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	
 	@Resource(name = "testUserSessionListener")
 	TestUserSessionListener testUserSessionListener;
+	
+	@Resource(name = "testLoginAttemptEventListener")
+	TestLoginAttemptEventListener testLoginAttemptEventListener;
   
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -353,6 +360,48 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		assertNotNull(properties.getProperty("hibernate.key"));
 	}
 	
+	@Test
+	public void authenticate_shouldPublishLoginAttemptEventForSuccessfulLogin() {
+		testLoginAttemptEventListener.clear();
+		
+		dao.authenticate("admin", "test");
+		
+		assertThat(testLoginAttemptEventListener.events, contains("admin:1:true:null:false"));
+	}
+	
+	@Test
+	public void authenticate_shouldPublishLoginAttemptEventForInvalidCredentials() {
+		testLoginAttemptEventListener.clear();
+		
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrongPassword"));
+		
+		assertThat(testLoginAttemptEventListener.events, contains("admin:1:false:INVALID_CREDENTIALS:false"));
+	}
+	
+	@Test
+	public void authenticate_shouldPublishLoginAttemptEventWhenInvalidCredentialsLockAccount() {
+		testLoginAttemptEventListener.clear();
+		
+		for (int x = 1; x <= 8; x++) {
+			assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrongPassword"));
+		}
+		
+		assertEquals("admin:1:false:INVALID_CREDENTIALS:true",
+			testLoginAttemptEventListener.events.get(testLoginAttemptEventListener.events.size() - 1));
+	}
+	
+	@Test
+	public void authenticate_shouldPublishLoginAttemptEventWhenAccountIsLocked() {
+		for (int x = 1; x <= 8; x++) {
+			assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrongPassword"));
+		}
+		testLoginAttemptEventListener.clear();
+		
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+		
+		assertThat(testLoginAttemptEventListener.events, contains("admin:1:false:ACCOUNT_LOCKED:true"));
+	}
+	
 	@Component("testUserSessionListener")
 	public static class TestUserSessionListener implements UserSessionListener {
 		public Set<String> logins = new LinkedHashSet<>();
@@ -373,6 +422,22 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		public void clear() {
 			logins.clear();
 			logouts.clear();
+		}
+	}
+	
+	@Component("testLoginAttemptEventListener")
+	public static class TestLoginAttemptEventListener implements ApplicationListener<LoginAttemptEvent> {
+		
+		public List<String> events = new ArrayList<>();
+		
+		@Override
+		public void onApplicationEvent(LoginAttemptEvent event) {
+			events.add(event.getUsername() + ":" + event.getUserId() + ":" + event.isSuccess() + ":"
+			        + event.getFailureReason() + ":" + event.isAccountLocked());
+		}
+		
+		public void clear() {
+			events.clear();
 		}
 	}
 
