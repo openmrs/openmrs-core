@@ -81,10 +81,10 @@ public class SchemaOnlyTunerTest {
 	@Test
 	public void shouldDetachChangeSetsForLiquibaseTables() {
 		// given
-		XPath xpathOne = DocumentHelper.createXPath("//dbchangelog:createTable[@tableName=\"liquibasechangelog\"]\"");
+		XPath xpathOne = DocumentHelper.createXPath("//dbchangelog:createTable[@tableName=\"liquibasechangelog\"]");
 		xpathOne.setNamespaceURIs(namespaceUris);
 
-		XPath xpathTwo = DocumentHelper.createXPath("//dbchangelog:createTable[@tableName=\"liquibasechangeloglock\"]\"");
+		XPath xpathTwo = DocumentHelper.createXPath("//dbchangelog:createTable[@tableName=\"liquibasechangeloglock\"]");
 		xpathTwo.setNamespaceURIs(namespaceUris);
 
 		assertEquals(1, xpathOne.selectNodes(document).size());
