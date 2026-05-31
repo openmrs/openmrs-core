@@ -43,6 +43,27 @@ public interface ObsDAO {
 	 * @see org.openmrs.api.ObsService#purgeObs(Obs)
 	 */
 	public void deleteObs(Obs obs) throws DAOException;
+	
+	/**
+	 * Moves an observation to the archive table and removes it from the main table.
+	 */
+	public void moveObsToArchive(Obs obs) throws DAOException;
+	
+	/**
+	 * Moves an observation and all its children from the obs_archive table back to the obs table.
+	 *
+	 * @param obs the observation to move
+	 * @throws DAOException
+	 */
+	public void moveObsFromArchive(Obs obs) throws DAOException;
+
+	/**
+	 * Checks if an observation is currently stored in the obs_archive table.
+	 *
+	 * @param obs the observation to check
+	 * @return true if the observation is in the archive
+	 */
+	public boolean isObsInArchive(Obs obs);
 
 	/**
 	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,

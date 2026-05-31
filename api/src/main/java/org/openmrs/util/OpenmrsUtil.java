@@ -548,7 +548,9 @@ public class OpenmrsUtil {
 	}
 
 	public static <Arg1, Arg2 extends Arg1> boolean nullSafeEquals(Arg1 d1, Arg2 d2) {
-		if (d1 == null) {
+		if (d1 == d2) {
+			return true;
+		} else if (d1 == null) {
 			return d2 == null;
 		} else if (d2 == null) {
 			return false;

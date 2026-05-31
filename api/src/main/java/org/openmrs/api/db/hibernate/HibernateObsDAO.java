@@ -64,6 +64,9 @@ public class HibernateObsDAO implements ObsDAO {
 	 */
 	@Override
 	public void deleteObs(Obs obs) throws DAOException {
+		if (isObsInArchive(obs)) {
+			moveObsFromArchive(obs);
+		}
 		sessionFactory.getCurrentSession().remove(obs);
 	}
 
@@ -72,7 +75,15 @@ public class HibernateObsDAO implements ObsDAO {
 	 */
 	@Override
 	public Obs getObs(Integer obsId) throws DAOException {
-		return (Obs) sessionFactory.getCurrentSession().get(Obs.class, obsId);
+		Session session = sessionFactory.getCurrentSession();
+		Obs obs = (Obs) session.get(Obs.class, obsId);
+		if (obs == null) {
+			obs = (Obs) session.createNativeQuery("SELECT * FROM obs_archive WHERE obs_id = :obsId")
+			        .addEntity(Obs.class)
+			        .setParameter("obsId", obsId)
+			        .uniqueResult();
+		}
+		return obs;
 	}
 
 	/**
@@ -317,7 +328,15 @@ public class HibernateObsDAO implements ObsDAO {
 	 */
 	@Override
 	public Obs getObsByUuid(String uuid) {
-		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, Obs.class, uuid);
+		Obs obs = HibernateUtil.getUniqueEntityByUUID(sessionFactory, Obs.class, uuid);
+		if (obs == null) {
+			Session session = sessionFactory.getCurrentSession();
+			obs = (Obs) session.createNativeQuery("SELECT * FROM obs_archive WHERE uuid = :uuid")
+			        .addEntity(Obs.class)
+			        .setParameter("uuid", uuid)
+			        .uniqueResult();
+		}
+		return obs;
 	}
 
 	/**
@@ -351,6 +370,62 @@ public class HibernateObsDAO implements ObsDAO {
 			return Obs.Status.valueOf(sql.uniqueResult());
 		} finally {
 			session.setHibernateFlushMode(flushMode);
+		}
+	}
+
+	@Override
+	public void moveObsToArchive(Obs obs) throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
+		session.flush();
+		moveObsToArchiveRecursively(obs.getObsId(), session);
+		session.evict(obs);
+	}
+
+	private void moveObsToArchiveRecursively(Integer obsId, Session session) {
+		List<Integer> childIds = session.createNativeQuery("SELECT obs_id FROM obs WHERE obs_group_id = :id", Integer.class)
+		        .setParameter("id", obsId).getResultList();
+		for (Integer childId : childIds) {
+			moveObsToArchiveRecursively(childId, session);
+		}
+		session.createNativeQuery("INSERT INTO obs_archive SELECT * FROM obs WHERE obs_id = :id")
+		        .setParameter("id", obsId).executeUpdate();
+		session.createNativeQuery("DELETE FROM obs WHERE obs_id = :id")
+		        .setParameter("id", obsId).executeUpdate();
+	}
+
+	@Override
+	public void moveObsFromArchive(Obs obs) throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			moveObsFromArchiveRecursively(obs.getObsId(), session);
+		} finally {
+			session.setHibernateFlushMode(flushMode);
+		}
+	}
+
+	@Override
+	public boolean isObsInArchive(Obs obs) {
+		if (obs == null || obs.getObsId() == null) {
+			return false;
+		}
+		Number count = (Number) sessionFactory.getCurrentSession()
+		        .createNativeQuery("SELECT count(*) FROM obs_archive WHERE obs_id = :id")
+		        .setParameter("id", obs.getObsId()).uniqueResult();
+		return count.intValue() > 0;
+	}
+
+	private void moveObsFromArchiveRecursively(Integer obsId, Session session) {
+		session.createNativeQuery("INSERT INTO obs SELECT * FROM obs_archive WHERE obs_id = :id")
+		        .setParameter("id", obsId).executeUpdate();
+		session.createNativeQuery("DELETE FROM obs_archive WHERE obs_id = :id")
+		        .setParameter("id", obsId).executeUpdate();
+
+		List<Integer> childIds = session.createNativeQuery("SELECT obs_id FROM obs_archive WHERE obs_group_id = :id", Integer.class)
+		        .setParameter("id", obsId).getResultList();
+		for (Integer childId : childIds) {
+			moveObsFromArchiveRecursively(childId, session);
 		}
 	}
 }

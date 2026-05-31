@@ -111,17 +111,26 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 
 		ensureRequirePrivilege(obs);
 
-		//Should allow updating a voided Obs, it seems to be pointless to restrict it,
-		//otherwise operations like merge patients won't be possible when to moving voided obs
+		if (obs.getObsId() != null && dao.isObsInArchive(obs)) {
+			dao.moveObsFromArchive(obs);
+		}
+
+		Obs savedObs = null;
 		if (obs.getObsId() == null || obs.getVoided()) {
-			return saveNewOrVoidedObs(obs, changeMessage);
+			savedObs = saveNewOrVoidedObs(obs, changeMessage);
 		} else if (!obs.isDirty()) {
 			setPersonFromEncounter(obs);
-			return saveObsNotDirty(obs, changeMessage);
+			savedObs = saveObsNotDirty(obs, changeMessage);
 		} else {
 			setPersonFromEncounter(obs);
-			return saveExistingObs(obs, changeMessage);
+			savedObs = saveExistingObs(obs, changeMessage);
 		}
+
+		if (savedObs != null && savedObs.getObsId() != null && savedObs.getVoided() && !dao.isObsInArchive(savedObs)) {
+			dao.moveObsToArchive(savedObs);
+		}
+
+		return savedObs;
 	}
 
 	private void setPersonFromEncounter(Obs obs) {
@@ -290,7 +299,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 */
 	@Override
 	public Obs voidObs(Obs obs, String reason) throws APIException {
-		return dao.saveObs(obs);
+		obs = dao.saveObs(obs);
+		dao.moveObsToArchive(obs);
+		return obs;
 	}
 
 	/**
@@ -306,6 +317,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 */
 	@Override
 	public Obs unvoidObs(Obs obs) throws APIException {
+		dao.moveObsFromArchive(obs);
 		return Context.getObsService().saveObs(obs, "unvoid obs");
 	}
 

@@ -16,6 +16,9 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
+	<changeSet id="TRUNK-XXXX-DROP-OBS-GROUP-FK" author="shivvani-r">
+		<dropForeignKeyConstraint baseTableName="obs" constraintName="obs_grouping_id" />
+	</changeSet>
 
 	<changeSet id="20200604-soundex_extension" author="aman" dbms="postgresql">
 		<comment> Soundex extension for PostgreSQL</comment>
@@ -140,7 +143,72 @@
 		<addColumn tableName="provider">
 			<column name="description" type="varchar(255)"/>
 		</addColumn>
+	<changeSet id="TRUNK-XXXX-2026-05-31" author="shivvani-r">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<tableExists tableName="obs_archive"/>
+			</not>
+		</preConditions>
+		<comment>Create obs_archive table for TRUNK-XXXX</comment>
+		<createTable tableName="obs_archive">
+			<column name="obs_id" type="INT">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="person_id" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueComputed="NULL" name="encounter_id" type="INT"/>
+			<column defaultValueComputed="NULL" name="order_id" type="INT"/>
+			<column name="obs_datetime" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueComputed="NULL" name="location_id" type="INT"/>
+			<column defaultValueComputed="NULL" name="obs_group_id" type="INT"/>
+			<column name="accession_number" type="VARCHAR(255)"/>
+			<column defaultValueComputed="NULL" name="value_group_id" type="INT"/>
+			<column defaultValueComputed="NULL" name="value_coded" type="INT"/>
+			<column defaultValueComputed="NULL" name="value_coded_name_id" type="INT"/>
+			<column defaultValueComputed="NULL" name="value_drug" type="INT"/>
+			<column defaultValueComputed="NULL" name="value_datetime" type="datetime"/>
+			<column defaultValueComputed="NULL" name="value_numeric" type="DOUBLE"/>
+			<column name="value_modifier" type="VARCHAR(2)"/>
+			<column name="value_text" type="TEXT"/>
+			<column name="value_complex" type="VARCHAR(1000)"/>
+			<column name="comments" type="VARCHAR(255)"/>
+			<column defaultValueNumeric="0" name="creator" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueComputed="NULL" name="voided_by" type="INT"/>
+			<column defaultValueComputed="NULL" name="date_voided" type="datetime"/>
+			<column name="void_reason" type="VARCHAR(255)"/>
+			<column name="uuid" type="CHAR(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column defaultValueComputed="NULL" name="previous_version" type="INT"/>
+			<column name="form_namespace_and_path" type="VARCHAR(255)"/>
+			<column defaultValue="FINAL" name="status" type="VARCHAR(16)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="interpretation" type="VARCHAR(32)"/>
+		</createTable>
 	</changeSet>
 	
+	<changeSet id="TRUNK-XXXX-2026-06-01-drop-fk" author="shivvani-r">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<foreignKeyConstraintExists foreignKeyName="previous_version" foreignKeyTableName="obs"/>
+		</preConditions>
+		<comment>Drop previous_version foreign key to support archiving of old versions</comment>
+		<dropForeignKeyConstraint baseTableName="obs" constraintName="previous_version"/>
+	</changeSet>
+
 </databaseChangeLog>
 

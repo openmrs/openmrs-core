@@ -99,6 +99,13 @@
 		<many-to-one name="previousVersion" class="Obs" column="previous_version" unique="true" />
 
 		<one-to-one name="referenceRange" class="org.openmrs.ObsReferenceRange" cascade="all"  />
+		
+		<loader query-ref="obsLoader"/>
 	</class>
 	
+	<sql-query name="obsLoader">
+		<return alias="o" class="Obs"/>
+		SELECT * FROM (SELECT * FROM obs UNION ALL SELECT * FROM obs_archive) as o WHERE o.obs_id = ?
+	</sql-query>
+
 </hibernate-mapping>
