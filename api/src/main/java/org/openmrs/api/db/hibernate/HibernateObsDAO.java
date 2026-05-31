@@ -78,10 +78,8 @@ public class HibernateObsDAO implements ObsDAO {
 		Session session = sessionFactory.getCurrentSession();
 		Obs obs = (Obs) session.get(Obs.class, obsId);
 		if (obs == null) {
-			obs = (Obs) session.createNativeQuery("SELECT * FROM obs_archive WHERE obs_id = :obsId")
-			        .addEntity(Obs.class)
-			        .setParameter("obsId", obsId)
-			        .uniqueResult();
+			obs = (Obs) session.createNativeQuery("SELECT * FROM obs_archive WHERE obs_id = :obsId").addEntity(Obs.class)
+			        .setParameter("obsId", obsId).uniqueResult();
 		}
 		return obs;
 	}
@@ -331,10 +329,8 @@ public class HibernateObsDAO implements ObsDAO {
 		Obs obs = HibernateUtil.getUniqueEntityByUUID(sessionFactory, Obs.class, uuid);
 		if (obs == null) {
 			Session session = sessionFactory.getCurrentSession();
-			obs = (Obs) session.createNativeQuery("SELECT * FROM obs_archive WHERE uuid = :uuid")
-			        .addEntity(Obs.class)
-			        .setParameter("uuid", uuid)
-			        .uniqueResult();
+			obs = (Obs) session.createNativeQuery("SELECT * FROM obs_archive WHERE uuid = :uuid").addEntity(Obs.class)
+			        .setParameter("uuid", uuid).uniqueResult();
 		}
 		return obs;
 	}
@@ -387,10 +383,9 @@ public class HibernateObsDAO implements ObsDAO {
 		for (Integer childId : childIds) {
 			moveObsToArchiveRecursively(childId, session);
 		}
-		session.createNativeQuery("INSERT INTO obs_archive SELECT * FROM obs WHERE obs_id = :id")
-		        .setParameter("id", obsId).executeUpdate();
-		session.createNativeQuery("DELETE FROM obs WHERE obs_id = :id")
-		        .setParameter("id", obsId).executeUpdate();
+		session.createNativeQuery("INSERT INTO obs_archive SELECT * FROM obs WHERE obs_id = :id").setParameter("id", obsId)
+		        .executeUpdate();
+		session.createNativeQuery("DELETE FROM obs WHERE obs_id = :id").setParameter("id", obsId).executeUpdate();
 	}
 
 	@Override
@@ -411,18 +406,18 @@ public class HibernateObsDAO implements ObsDAO {
 			return false;
 		}
 		Number count = (Number) sessionFactory.getCurrentSession()
-		        .createNativeQuery("SELECT count(*) FROM obs_archive WHERE obs_id = :id")
-		        .setParameter("id", obs.getObsId()).uniqueResult();
+		        .createNativeQuery("SELECT count(*) FROM obs_archive WHERE obs_id = :id").setParameter("id", obs.getObsId())
+		        .uniqueResult();
 		return count.intValue() > 0;
 	}
 
 	private void moveObsFromArchiveRecursively(Integer obsId, Session session) {
-		session.createNativeQuery("INSERT INTO obs SELECT * FROM obs_archive WHERE obs_id = :id")
-		        .setParameter("id", obsId).executeUpdate();
-		session.createNativeQuery("DELETE FROM obs_archive WHERE obs_id = :id")
-		        .setParameter("id", obsId).executeUpdate();
+		session.createNativeQuery("INSERT INTO obs SELECT * FROM obs_archive WHERE obs_id = :id").setParameter("id", obsId)
+		        .executeUpdate();
+		session.createNativeQuery("DELETE FROM obs_archive WHERE obs_id = :id").setParameter("id", obsId).executeUpdate();
 
-		List<Integer> childIds = session.createNativeQuery("SELECT obs_id FROM obs_archive WHERE obs_group_id = :id", Integer.class)
+		List<Integer> childIds = session
+		        .createNativeQuery("SELECT obs_id FROM obs_archive WHERE obs_group_id = :id", Integer.class)
 		        .setParameter("id", obsId).getResultList();
 		for (Integer childId : childIds) {
 			moveObsFromArchiveRecursively(childId, session);

@@ -1580,15 +1580,16 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(obs);
 
 		obsService.voidObs(obs, "testing void move to archive");
-		
+
 		// The original ID should now be absent from the normal getObs (since it filters by voided by default or it's in archive)
 		// Wait, getObs checks obs_archive too, so getObs(7) will still return the object!
 		Obs fetched = obsService.getObs(7);
 		assertNotNull(fetched);
 		assertTrue(fetched.getVoided());
-		
+
 		// To truly test it, we can verify via raw SQL that it moved
-		Integer obsCount = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7", true).size();
+		Integer obsCount = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7", true)
+		        .size();
 		assertEquals(0, obsCount.intValue()); // Should no longer be in obs table
 	}
 
@@ -1597,43 +1598,44 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService obsService = Context.getObsService();
 		Obs obs = obsService.getObs(7);
 		obsService.voidObs(obs, "testing void move to archive");
-		
+
 		// Unvoid it
 		Obs voidedObs = obsService.getObs(7);
 		obsService.unvoidObs(voidedObs);
-		
+
 		Obs restored = obsService.getObs(7);
 		assertFalse(restored.getVoided());
-		
+
 		// Verify via raw SQL that it's back in obs table
 		// executeSQL returns List<List<Object>>
-		List<List<Object>> res = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7", true);
+		List<List<Object>> res = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7",
+		    true);
 		Object count = res.get(0).get(0);
 		assertEquals("1", count.toString());
 	}
-	
+
 	@Test
 	public void unvoidObs_shouldAllowUnvoidingChildWhenParentIsVoided() {
 		executeDataSet(INITIAL_OBS_XML);
 		ObsService obsService = Context.getObsService();
-		
+
 		// ID 2 is a parent, ID 9 and 10 are children
 		Obs parentObs = obsService.getObs(2);
 		obsService.voidObs(parentObs, "voiding parent and children");
-		
+
 		// Verify they are voided
 		assertTrue(obsService.getObs(9).getVoided());
-		
+
 		// Unvoid just one child
 		Obs child = obsService.getObs(9);
 		obsService.unvoidObs(child);
-		
+
 		// Verify child is unvoided
 		assertFalse(obsService.getObs(9).getVoided());
-		
+
 		// Verify parent is still voided
 		assertTrue(obsService.getObs(2).getVoided());
-		
+
 		// Verify child can still access parent (custom loader test)
 		assertNotNull(obsService.getObs(9).getObsGroup());
 	}
@@ -2228,21 +2230,25 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		return obs;
 	}
+
 	@Test
 	public void saveObs_shouldMoveToArchiveIfNewAndVoided() {
 		ObsService obsService = Context.getObsService();
-		Obs obs = new Obs(Context.getPersonService().getPerson(1), Context.getConceptService().getConcept(3), new java.util.Date(), Context.getLocationService().getLocation(1));
+		Obs obs = new Obs(Context.getPersonService().getPerson(1), Context.getConceptService().getConcept(3),
+		        new java.util.Date(), Context.getLocationService().getLocation(1));
 		obs.setVoided(true);
 		obs.setVoidReason("Testing new voided");
-		
+
 		Obs savedObs = obsService.saveObs(obs, "creating voided obs");
 		assertNotNull(savedObs.getObsId());
-		
+
 		// Verify via raw SQL that it's in obs_archive, not obs
-		List<List<Object>> resObs = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs WHERE obs_id = " + savedObs.getObsId(), true);
+		List<List<Object>> resObs = Context.getAdministrationService()
+		        .executeSQL("SELECT count(*) FROM obs WHERE obs_id = " + savedObs.getObsId(), true);
 		assertEquals("0", resObs.get(0).get(0).toString());
-		
-		List<List<Object>> resArchive = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs_archive WHERE obs_id = " + savedObs.getObsId(), true);
+
+		List<List<Object>> resArchive = Context.getAdministrationService()
+		        .executeSQL("SELECT count(*) FROM obs_archive WHERE obs_id = " + savedObs.getObsId(), true);
 		assertEquals("1", resArchive.get(0).get(0).toString());
 	}
 
@@ -2251,23 +2257,25 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService obsService = Context.getObsService();
 		Obs obs = obsService.getObs(7);
 		obsService.voidObs(obs, "testing void move to archive");
-		
+
 		// It is now in obs_archive
 		Obs voidedObs = obsService.getObs(7);
 		voidedObs.setValueText("Updated value while voided");
-		
+
 		// Save it
 		obsService.saveObs(voidedObs, "updating voided obs");
-		
+
 		// It should still be voided and in obs_archive
 		Obs updatedObs = obsService.getObs(7);
 		assertTrue(updatedObs.getVoided());
 		assertEquals("Updated value while voided", updatedObs.getValueText());
-		
-		List<List<Object>> resObs = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7", true);
+
+		List<List<Object>> resObs = Context.getAdministrationService()
+		        .executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7", true);
 		assertEquals("0", resObs.get(0).get(0).toString());
-		
-		List<List<Object>> resArchive = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs_archive WHERE obs_id = 7", true);
+
+		List<List<Object>> resArchive = Context.getAdministrationService()
+		        .executeSQL("SELECT count(*) FROM obs_archive WHERE obs_id = 7", true);
 		assertEquals("1", resArchive.get(0).get(0).toString());
 	}
 
@@ -2276,25 +2284,27 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService obsService = Context.getObsService();
 		Obs obs = obsService.getObs(7);
 		obsService.voidObs(obs, "testing void move to archive");
-		
+
 		// Emulate REST API unvoiding
 		Obs voidedObs = obsService.getObs(7);
 		voidedObs.setVoided(false);
 		voidedObs.setDateVoided(null);
 		voidedObs.setVoidedBy(null);
 		voidedObs.setVoidReason(null);
-		
+
 		// Save it
 		obsService.saveObs(voidedObs, "unvoiding via save");
-		
+
 		// It should be unvoided and in obs
 		Obs unvoidedObs = obsService.getObs(7);
 		assertFalse(unvoidedObs.getVoided());
-		
-		List<List<Object>> resObs = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7", true);
+
+		List<List<Object>> resObs = Context.getAdministrationService()
+		        .executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7", true);
 		assertEquals("1", resObs.get(0).get(0).toString());
-		
-		List<List<Object>> resArchive = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs_archive WHERE obs_id = 7", true);
+
+		List<List<Object>> resArchive = Context.getAdministrationService()
+		        .executeSQL("SELECT count(*) FROM obs_archive WHERE obs_id = 7", true);
 		assertEquals("0", resArchive.get(0).get(0).toString());
 	}
 
@@ -2302,25 +2312,28 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void saveObs_shouldUpdateExistingObsAndArchivePreviousVersion() {
 		ObsService obsService = Context.getObsService();
 		Obs obs = obsService.getObs(7);
-		
+
 		// Modify it, which triggers creating a new version and voiding the old one
 		obs.setValueNumeric(50.0);
-		
+
 		Obs newVersion = obsService.saveObs(obs, "modifying existing obs");
-		
+
 		// The new version should be in obs
 		assertNotEquals(Integer.valueOf(7), newVersion.getObsId());
-		List<List<Object>> resObsNew = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs WHERE obs_id = " + newVersion.getObsId(), true);
+		List<List<Object>> resObsNew = Context.getAdministrationService()
+		        .executeSQL("SELECT count(*) FROM obs WHERE obs_id = " + newVersion.getObsId(), true);
 		assertEquals("1", resObsNew.get(0).get(0).toString());
-		
+
 		// The old version (7) should be voided and in obs_archive
 		Obs oldVersion = obsService.getObs(7);
 		assertTrue(oldVersion.getVoided());
-		
-		List<List<Object>> resObsOld = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7", true);
+
+		List<List<Object>> resObsOld = Context.getAdministrationService()
+		        .executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7", true);
 		assertEquals("0", resObsOld.get(0).get(0).toString());
-		
-		List<List<Object>> resArchiveOld = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs_archive WHERE obs_id = 7", true);
+
+		List<List<Object>> resArchiveOld = Context.getAdministrationService()
+		        .executeSQL("SELECT count(*) FROM obs_archive WHERE obs_id = 7", true);
 		assertEquals("1", resArchiveOld.get(0).get(0).toString());
 	}
 }
