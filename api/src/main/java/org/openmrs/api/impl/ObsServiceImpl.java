@@ -111,14 +111,18 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 
 		ensureRequirePrivilege(obs);
 
+		boolean isUnvoiding = false;
 		if (obs.getObsId() != null && dao.isObsInArchive(obs)) {
 			dao.moveObsFromArchive(obs);
+			if (!obs.getVoided()) {
+				isUnvoiding = true;
+			}
 		}
 
 		Obs savedObs = null;
 		if (obs.getObsId() == null || obs.getVoided()) {
 			savedObs = saveNewOrVoidedObs(obs, changeMessage);
-		} else if (!obs.isDirty()) {
+		} else if (!obs.isDirty() || isUnvoiding) {
 			setPersonFromEncounter(obs);
 			savedObs = saveObsNotDirty(obs, changeMessage);
 		} else {
@@ -126,7 +130,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 			savedObs = saveExistingObs(obs, changeMessage);
 		}
 
-		if (savedObs != null && savedObs.getObsId() != null && savedObs.getVoided() && !dao.isObsInArchive(savedObs)) {
+		if (savedObs != null && savedObs.getObsId() != null && savedObs.getVoided()) {
 			dao.moveObsToArchive(savedObs);
 		}
 
@@ -135,8 +139,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 
 	private void setPersonFromEncounter(Obs obs) {
 		Encounter encounter = obs.getEncounter();
-		if (encounter != null) {
-			obs.setPerson(encounter.getPatient());
+		if (encounter != null && encounter.getPatient() != null) {
+			if (obs.getPerson() == null || !obs.getPerson().getPersonId().equals(encounter.getPatient().getPatientId())) {
+				obs.setPerson(encounter.getPatient());
+			}
 		}
 	}
 
@@ -149,6 +155,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 			// fetch a clean copy of this obs from the database so that
 			// we don't write the changes to the database when we save
 			// the fact that the obs is now voided
+			if (obs.getEncounter() != null) {
+				obs.getEncounter().removeObs(obs);
+			}
 			evictObsAndChildren(obs);
 			obs = Context.getObsService().getObs(obs.getObsId());
 			//delete the previous file from the appdata/complex_obs folder
@@ -206,6 +215,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	}
 
 	private Obs saveObsNotDirty(Obs obs, String changeMessage) {
+		dao.saveObs(obs);
 		if (!obs.isObsGrouping()) {
 			return obs;
 		}
@@ -222,7 +232,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		}
 
 		if (refreshNeeded) {
-			Context.flushSession();
 			Context.refreshEntity(obs);
 		}
 		return obs;
@@ -318,7 +327,20 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	@Override
 	public Obs unvoidObs(Obs obs) throws APIException {
 		dao.moveObsFromArchive(obs);
-		return Context.getObsService().saveObs(obs, "unvoid obs");
+
+		String previousVoidReason = obs.getVoidReason();
+		obs.setVoided(false);
+		obs.setVoidedBy(null);
+		obs.setDateVoided(null);
+		obs.setVoidReason(null);
+
+		for (Obs groupMember : obs.getGroupMembers(true)) {
+			if (groupMember.getVoided()) {
+				Context.getObsService().unvoidObs(groupMember);
+			}
+		}
+
+		return Context.getObsService().saveObs(obs, previousVoidReason != null ? previousVoidReason : "unvoided");
 	}
 
 	/**

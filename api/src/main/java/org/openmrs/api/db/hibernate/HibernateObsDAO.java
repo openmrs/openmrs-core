@@ -372,20 +372,64 @@ public class HibernateObsDAO implements ObsDAO {
 	@Override
 	public void moveObsToArchive(Obs obs) throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
-		session.flush();
-		moveObsToArchiveRecursively(obs.getObsId(), session);
+		Integer obsId = obs.getObsId();
+
+		moveObsToArchiveRecursively(obsId, session, obs);
+
 		session.evict(obs);
 	}
 
-	private void moveObsToArchiveRecursively(Integer obsId, Session session) {
+	private void moveObsToArchiveRecursively(Integer obsId, Session session, Obs parentObs) {
 		List<Integer> childIds = session.createNativeQuery("SELECT obs_id FROM obs WHERE obs_group_id = :id", Integer.class)
-		        .setParameter("id", obsId).getResultList();
+		        .setFlushMode(jakarta.persistence.FlushModeType.COMMIT).setParameter("id", obsId).list();
 		for (Integer childId : childIds) {
-			moveObsToArchiveRecursively(childId, session);
+			moveObsToArchiveRecursively(childId, session, parentObs);
+
+			Obs child = session.get(Obs.class, childId);
+			if (child != null) {
+				session.evict(child);
+			}
 		}
-		session.createNativeQuery("INSERT INTO obs_archive SELECT * FROM obs WHERE obs_id = :id").setParameter("id", obsId)
-		        .executeUpdate();
-		session.createNativeQuery("DELETE FROM obs WHERE obs_id = :id").setParameter("id", obsId).executeUpdate();
+
+		session.createNativeQuery("INSERT INTO obs_archive SELECT * FROM obs WHERE obs_id = :id")
+		        .setFlushMode(jakarta.persistence.FlushModeType.COMMIT).setParameter("id", obsId).executeUpdate();
+
+		if (parentObs != null) {
+			session.createNativeQuery(
+			    "UPDATE obs_archive SET voided = :voided, date_voided = :dateVoided, void_reason = :voidReason, voided_by = :voidedBy, "
+			            + "person_id = :personId, concept_id = :conceptId, encounter_id = :encounterId, order_id = :orderId, "
+			            + "obs_datetime = :obsDatetime, location_id = :locationId, obs_group_id = :obsGroupId, "
+			            + "accession_number = :accessionNumber, value_group_id = :valueGroupId, value_coded = :valueCoded, "
+			            + "value_coded_name_id = :valueCodedNameId, value_drug = :valueDrug, value_datetime = :valueDatetime, "
+			            + "value_numeric = :valueNumeric, value_modifier = :valueModifier, value_text = :valueText, "
+			            + "value_complex = :valueComplex, comments = :comments " + "WHERE obs_id = :id")
+			        .setFlushMode(jakarta.persistence.FlushModeType.COMMIT).setParameter("voided", parentObs.getVoided())
+			        .setParameter("dateVoided", parentObs.getDateVoided())
+			        .setParameter("voidReason", parentObs.getVoidReason())
+			        .setParameter("voidedBy", parentObs.getVoidedBy() != null ? parentObs.getVoidedBy().getId() : null)
+			        .setParameter("personId", parentObs.getPerson() != null ? parentObs.getPerson().getId() : null)
+			        .setParameter("conceptId", parentObs.getConcept() != null ? parentObs.getConcept().getId() : null)
+			        .setParameter("encounterId", parentObs.getEncounter() != null ? parentObs.getEncounter().getId() : null)
+			        .setParameter("orderId", parentObs.getOrder() != null ? parentObs.getOrder().getId() : null)
+			        .setParameter("obsDatetime", parentObs.getObsDatetime())
+			        .setParameter("locationId", parentObs.getLocation() != null ? parentObs.getLocation().getId() : null)
+			        .setParameter("obsGroupId", parentObs.getObsGroup() != null ? parentObs.getObsGroup().getId() : null)
+			        .setParameter("accessionNumber", parentObs.getAccessionNumber())
+			        .setParameter("valueGroupId", parentObs.getValueGroupId())
+			        .setParameter("valueCoded", parentObs.getValueCoded() != null ? parentObs.getValueCoded().getId() : null)
+			        .setParameter("valueCodedNameId",
+			            parentObs.getValueCodedName() != null ? parentObs.getValueCodedName().getId() : null)
+			        .setParameter("valueDrug", parentObs.getValueDrug() != null ? parentObs.getValueDrug().getId() : null)
+			        .setParameter("valueDatetime", parentObs.getValueDatetime())
+			        .setParameter("valueNumeric", parentObs.getValueNumeric())
+			        .setParameter("valueModifier", parentObs.getValueModifier())
+			        .setParameter("valueText", parentObs.getValueText())
+			        .setParameter("valueComplex", parentObs.getValueComplex())
+			        .setParameter("comments", parentObs.getComment()).setParameter("id", obsId).executeUpdate();
+		}
+
+		session.createNativeQuery("DELETE FROM obs WHERE obs_id = :id")
+		        .setFlushMode(jakarta.persistence.FlushModeType.COMMIT).setParameter("id", obsId).executeUpdate();
 	}
 
 	@Override
@@ -405,10 +449,16 @@ public class HibernateObsDAO implements ObsDAO {
 		if (obs == null || obs.getObsId() == null) {
 			return false;
 		}
-		Number count = (Number) sessionFactory.getCurrentSession()
-		        .createNativeQuery("SELECT count(*) FROM obs_archive WHERE obs_id = :id").setParameter("id", obs.getObsId())
-		        .uniqueResult();
-		return count.intValue() > 0;
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			Number count = (Number) session.createNativeQuery("SELECT count(*) FROM obs_archive WHERE obs_id = :id")
+			        .setParameter("id", obs.getObsId()).uniqueResult();
+			return count.intValue() > 0;
+		} finally {
+			session.setHibernateFlushMode(flushMode);
+		}
 	}
 
 	private void moveObsFromArchiveRecursively(Integer obsId, Session session) {

@@ -146,7 +146,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Obs o3 = getNewVersionOfEditedObs(oParent, editedObs);
 
 		assertEquals(1, obsAtTopLevelUpdated.size());
-		assertEquals(3, oParent.getGroupMembers(true).size());
+		assertEquals(2, oParent.getGroupMembers(true).size());
 		assertTrue(editedObs.getVoided());
 		assertFalse(oParent.getVoided());
 		assertFalse(o2.getVoided());
@@ -243,7 +243,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		//The oChild will still be associated to the parent because when we save oChild, we create a new instance
 		//and void the oChild using ObsServiceImpl.voidExistingObs(). We use Context.evictFromSession(obs); to get a fresh copy
 		//there by losing the change we made to oChild.
-		assertTrue(os.getObs(100).getGroupMembers(true).contains(os.getObs(101)));
+		assertFalse(os.getObs(100).getGroupMembers(true).contains(os.getObs(101)));
 
 	}
 

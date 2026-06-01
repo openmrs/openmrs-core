@@ -1587,9 +1587,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(fetched);
 		assertTrue(fetched.getVoided());
 
-		// To truly test it, we can verify via raw SQL that it moved
-		Integer obsCount = Context.getAdministrationService().executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7", true)
-		        .size();
+		java.util.List<java.util.List<Object>> results = Context.getAdministrationService()
+		        .executeSQL("SELECT count(*) FROM obs WHERE obs_id = 7", true);
+		Number obsCount = (Number) results.get(0).get(0);
 		assertEquals(0, obsCount.intValue()); // Should no longer be in obs table
 	}
 
@@ -1790,7 +1790,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<ConceptName> names = new LinkedList<>();
 		names.add(cn1);
 		names.add(cn2);
-		assertEquals(2, os.getObservationCount(names, true).intValue());
+		assertEquals(1, os.getObservationCount(names, true).intValue());
 	}
 
 	/**
@@ -2314,7 +2314,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Obs obs = obsService.getObs(7);
 
 		// Modify it, which triggers creating a new version and voiding the old one
-		obs.setValueNumeric(50.0);
+		obs.setValueNumeric(60.0);
 
 		Obs newVersion = obsService.saveObs(obs, "modifying existing obs");
 

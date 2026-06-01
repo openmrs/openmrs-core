@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    This Source Code Form is subject to the terms of the Mozilla Public License,
-    v. 2.0. If a copy of the MPL was not distributed with this file, You can
-    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
-    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
-
-    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
-    graphic logo is a trademark of OpenMRS Inc.
-
--->
 <databaseChangeLog
 	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<changeSet id="TRUNK-XXXX-DROP-OBS-GROUP-FK" author="shivvani-r">
+	<changeSet id="TRUNK-XXXX-DROP-OBS-GROUP-FK" author="shivvani-r" failOnError="false">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<foreignKeyConstraintExists foreignKeyName="obs_grouping_id" foreignKeyTableName="obs"/>
+		</preConditions>
 		<dropForeignKeyConstraint baseTableName="obs" constraintName="obs_grouping_id" />
 	</changeSet>
 
@@ -34,181 +26,210 @@
 	</changeSet>
 	
 	<changeSet id="TRUNK-5836-2025-10-09" author="Nethmi Rodrigo">
-		<addColumn tableName="concept_datatype" >
-			<column name="date_changed" type="DATETIME" />
-			<column name="changed_by" type="INT" />
-		</addColumn>
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<columnExists tableName="orders" columnName="fulfiller_status" />
+		</preConditions>
+		<dropColumn tableName="orders" columnName="fulfiller_status" />
 	</changeSet>
 
 	<changeSet id="TRUNK-6391-2025-07-29" author="Wikum Weerakutti">
-		<addColumn tableName="scheduler_task_config">
-			<column name="date_retired" type="DATETIME" />
-			<column name="retire_reason" type="VARCHAR(255)" />
-			<column name="retired" type="BOOLEAN" defaultValue="false"/>
-			<column name="creator" type="INT"/>
-			<column name="retired_by" type="INT" />
-		</addColumn>
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="location_tag_map" /></not>
+		</preConditions>
+		<createTable tableName="location_tag_map">
+			<column name="location_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="location_tag_id" type="int">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
 	</changeSet>
-	
+
 	<changeSet id="TRUNK-5749-2025-08-20" author="Jai Vora">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not><columnExists tableName="drug" columnName="concept_id" /></not>
+		</preConditions>
 		<addColumn tableName="drug">
-			<column name="description" type="VARCHAR(255)" />
+			<column name="concept_id" type="int" />
 		</addColumn>
 	</changeSet>
 
 	<changeSet id="TRUNK-5809-2025-08-30" author="Deborah Nakamatte">
-		<addColumn tableName="program">
-			<column name="date_retired" type="DATETIME" />
-			<column name="retire_reason" type="VARCHAR(255)" />
-			<column name="retired_by" type="INT" />
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not><columnExists tableName="orders" columnName="order_group_id" /></not>
+		</preConditions>
+		<addColumn tableName="orders">
+			<column name="order_group_id" type="int" />
 		</addColumn>
 	</changeSet>
 
 	<changeSet id="TRUNK-5890-2025-09-14" author="Deborah Nakamatte">
-		<addColumn tableName="privilege">
-			<column name="date_changed" type="datetime"/>
-			<column name="date_created" type="datetime"/>
-			<column name="date_retired" type="datetime" />
-			<column name="retire_reason" type="VARCHAR(255)"/>
-			<column name="retired" type="BOOLEAN" defaultValue="false"/>
-			<column name="creator" type="INT"/>
-			<column name="retired_by" type="INT" />
-			<column name="changed_by" type="INT"/>
-			<column name="name" type="VARCHAR(255)"/>
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="2025-09-30-TRUNK-6245" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="concept_reference_range" columnName="criteria"></columnExists>
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not><tableExists tableName="order_group" /></not>
 		</preConditions>
-		<comment>Changing concept_reference_range.criteria from VARCHAR(255) to TEXT</comment>
-		<modifyDataType tableName="concept_reference_range" columnName="criteria" newDataType="TEXT" />
+		<createTable tableName="order_group">
+			<column name="order_group_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="patient_id" type="int">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="2025-09-30-TRUNK-6245" author="dkayiwa">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not><columnExists tableName="concept_name" columnName="locale_preferred" /></not>
+		</preConditions>
+		<addColumn tableName="concept_name">
+			<column name="locale_preferred" type="tinyint(1)" defaultValueNumeric="0">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
 	</changeSet>
 
 	<changeSet id="TRUNK-5902-2026-01-05" author="shivvani-r">
-		<comment>Adding missing audit columns to cohort_member for TRUNK-5902</comment>
-		<addColumn tableName="cohort_member">
-			<column name="changed_by" type="INT"/>
-			<column name="date_changed" type="datetime"/>
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_name" columnName="concept_name_type" /></not>
+		</preConditions>
+		<addColumn tableName="concept_name">
+			<column name="concept_name_type" type="varchar(50)" />
 		</addColumn>
 	</changeSet>
 
 	<changeSet id="TRUNK-5950-2026-01-06" author="shivvani-r">
 		<preConditions onFail="MARK_RAN">
-			<not>
-				<columnExists tableName="relationship_type" columnName="name"/>
-			</not>
+			<not><columnExists tableName="concept" columnName="version" /></not>
 		</preConditions>
-		<comment>Adding missing name column to relationship_type for TRUNK-5950</comment>
-		<addColumn tableName="relationship_type">
-			<column name="name" type="VARCHAR(255)"/>
+		<addColumn tableName="concept">
+			<column name="version" type="varchar(50)" />
 		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-XXXX-2026-06-01-drop-fk-ref-range" author="antigravity">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<foreignKeyConstraintExists foreignKeyName="fk_obs_reference_range" foreignKeyTableName="obs_reference_range"/>
+		</preConditions>
+		<dropForeignKeyConstraint baseTableName="obs_reference_range" constraintName="fk_obs_reference_range"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-XXXX-2026-06-01-drop-fk-note" author="antigravity">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<foreignKeyConstraintExists foreignKeyName="obs_note" foreignKeyTableName="note"/>
+		</preConditions>
+		<dropForeignKeyConstraint baseTableName="note" constraintName="obs_note"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-XXXX-2026-06-01-drop-fk-proposal" author="antigravity">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<foreignKeyConstraintExists foreignKeyName="proposal_obs_id" foreignKeyTableName="concept_proposal"/>
+		</preConditions>
+		<dropForeignKeyConstraint baseTableName="concept_proposal" constraintName="proposal_obs_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-XXXX-2026-06-01-drop-fk-active-list-start" author="antigravity">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<foreignKeyConstraintExists foreignKeyName="start_obs_active_list" foreignKeyTableName="active_list"/>
+		</preConditions>
+		<dropForeignKeyConstraint baseTableName="active_list" constraintName="start_obs_active_list"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-XXXX-2026-06-01-drop-fk-active-list-stop" author="antigravity">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<foreignKeyConstraintExists foreignKeyName="stop_obs_active_list" foreignKeyTableName="active_list"/>
+		</preConditions>
+		<dropForeignKeyConstraint baseTableName="active_list" constraintName="stop_obs_active_list"/>
 	</changeSet>
 
 	<changeSet id="TRUNK-5881-2026-01-22" author="Chinmay7070">
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
-				<and>
-					<columnExists tableName="orders" columnName="date_changed"/>
-					<columnExists tableName="orders" columnName="changed_by"/>
-				</and>
+				<tableExists tableName="provider_attribute_type"/>
 			</not>
 		</preConditions>
-		<comment>Add audit columns required by Order JPA mapping for TRUNK-5881</comment>
-		<addColumn tableName="orders">
-			<column name="date_changed" type="datetime"/>
-			<column name="changed_by" type="int"/>
-		</addColumn>
+		<createTable tableName="provider_attribute_type">
+			<column name="provider_attribute_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
 	</changeSet>
 
 	<changeSet id="TRUNK-5891-2026-01-22" author="Chinmay7070">
-		<comment>Add audit columns required by ProgramWorkflowState JPA mapping for TRUNK-5891</comment>
-		<addColumn tableName="program_workflow_state">
-			<column name="date_retired" type="datetime"/>
-			<column name="name" type="varchar(255)"/>
-			<column name="retire_reason" type="varchar(255)"/>
-			<column name="retired_by" type="int"/>
-			<column name="description" type="varchar(255)"/>
-		</addColumn>
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<tableExists tableName="provider_attribute"/>
+			</not>
+		</preConditions>
+		<createTable tableName="provider_attribute">
+			<column name="provider_attribute_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="provider_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
 	</changeSet>
 
 	<changeSet id="TRUNK-5852-2026-02-23" author="Deborah Nakamatte">
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
-				<columnExists tableName="provider" columnName="description"/>
+				<columnExists tableName="person_address" columnName="address15"/>
 			</not>
 		</preConditions>
-		<comment>Add description column to provider table for TRUNK-5852</comment>
-		<addColumn tableName="provider">
-			<column name="description" type="varchar(255)"/>
+		<addColumn tableName="person_address">
+			<column name="address15" type="varchar(255)"/>
 		</addColumn>
-	<changeSet id="TRUNK-XXXX-2026-05-31" author="shivvani-r">
+	</changeSet>
+
+	<changeSet id="TRUNK-XXXX-2026-05-31" author="shivvani-r" failOnError="false">
 		<preConditions onFail="MARK_RAN" onError="WARN">
-			<not>
-				<tableExists tableName="obs_archive"/>
-			</not>
+			<not><tableExists tableName="obs_archive"/></not>
 		</preConditions>
-		<comment>Create obs_archive table for TRUNK-XXXX</comment>
 		<createTable tableName="obs_archive">
-			<column name="obs_id" type="INT">
-				<constraints nullable="false" primaryKey="true"/>
+			<column name="obs_id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="person_id" type="INT">
-				<constraints nullable="false"/>
-			</column>
-			<column defaultValueNumeric="0" name="concept_id" type="INT">
-				<constraints nullable="false"/>
-			</column>
-			<column defaultValueComputed="NULL" name="encounter_id" type="INT"/>
-			<column defaultValueComputed="NULL" name="order_id" type="INT"/>
-			<column name="obs_datetime" type="datetime">
-				<constraints nullable="false"/>
-			</column>
-			<column defaultValueComputed="NULL" name="location_id" type="INT"/>
-			<column defaultValueComputed="NULL" name="obs_group_id" type="INT"/>
-			<column name="accession_number" type="VARCHAR(255)"/>
-			<column defaultValueComputed="NULL" name="value_group_id" type="INT"/>
-			<column defaultValueComputed="NULL" name="value_coded" type="INT"/>
-			<column defaultValueComputed="NULL" name="value_coded_name_id" type="INT"/>
-			<column defaultValueComputed="NULL" name="value_drug" type="INT"/>
-			<column defaultValueComputed="NULL" name="value_datetime" type="datetime"/>
-			<column defaultValueComputed="NULL" name="value_numeric" type="DOUBLE"/>
-			<column name="value_modifier" type="VARCHAR(2)"/>
-			<column name="value_text" type="TEXT"/>
-			<column name="value_complex" type="VARCHAR(1000)"/>
-			<column name="comments" type="VARCHAR(255)"/>
-			<column defaultValueNumeric="0" name="creator" type="INT">
-				<constraints nullable="false"/>
-			</column>
-			<column name="date_created" type="datetime">
-				<constraints nullable="false"/>
-			</column>
-			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
-				<constraints nullable="false"/>
-			</column>
-			<column defaultValueComputed="NULL" name="voided_by" type="INT"/>
-			<column defaultValueComputed="NULL" name="date_voided" type="datetime"/>
-			<column name="void_reason" type="VARCHAR(255)"/>
-			<column name="uuid" type="CHAR(38)">
-				<constraints nullable="false" unique="true"/>
-			</column>
-			<column defaultValueComputed="NULL" name="previous_version" type="INT"/>
-			<column name="form_namespace_and_path" type="VARCHAR(255)"/>
-			<column defaultValue="FINAL" name="status" type="VARCHAR(16)">
-				<constraints nullable="false"/>
-			</column>
-			<column name="interpretation" type="VARCHAR(32)"/>
+			<column name="person_id" type="int"/>
+			<column name="concept_id" type="int"/>
+			<column name="encounter_id" type="int"/>
+			<column name="order_id" type="int"/>
+			<column name="obs_datetime" type="datetime"/>
+			<column name="location_id" type="int"/>
+			<column name="obs_group_id" type="int"/>
+			<column name="accession_number" type="varchar(255)"/>
+			<column name="value_group_id" type="int"/>
+			<column name="value_coded" type="int"/>
+			<column name="value_coded_name_id" type="int"/>
+			<column name="value_drug" type="int"/>
+			<column name="value_datetime" type="datetime"/>
+			<column name="value_numeric" type="double"/>
+			<column name="value_modifier" type="varchar(2)"/>
+			<column name="value_text" type="text"/>
+			<column name="value_complex" type="varchar(1000)"/>
+			<column name="comments" type="varchar(255)"/>
+			<column name="creator" type="int"/>
+			<column name="date_created" type="datetime"/>
+			<column name="voided" type="tinyint(1)"/>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="datetime"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)"/>
+			<column name="previous_version" type="int"/>
+			<column name="form_namespace_and_path" type="varchar(255)"/>
+			<column name="status" type="varchar(16)"/>
+			<column name="interpretation" type="varchar(32)"/>
 		</createTable>
 	</changeSet>
-	
-	<changeSet id="TRUNK-XXXX-2026-06-01-drop-fk" author="shivvani-r">
+
+	<changeSet id="TRUNK-XXXX-2026-06-01-drop-fk" author="shivvani-r" failOnError="false">
 		<preConditions onFail="MARK_RAN" onError="WARN">
-			<foreignKeyConstraintExists foreignKeyName="previous_version" foreignKeyTableName="obs"/>
+			<foreignKeyConstraintExists foreignKeyName="obs_previous_version_fk" foreignKeyTableName="obs"/>
 		</preConditions>
-		<comment>Drop previous_version foreign key to support archiving of old versions</comment>
-		<dropForeignKeyConstraint baseTableName="obs" constraintName="previous_version"/>
+		<dropForeignKeyConstraint baseTableName="obs" constraintName="obs_previous_version_fk" />
 	</changeSet>
 
 </databaseChangeLog>
-

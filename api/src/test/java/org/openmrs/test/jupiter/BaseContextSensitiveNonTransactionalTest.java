@@ -589,6 +589,13 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		            + "locked_at TIMESTAMP NOT NULL, " + "locked_by VARCHAR(255) NOT NULL, " + "PRIMARY KEY (name))")
 		        .execute();
 
+		//Create obs_archive table for tests since it's not mapped via Hibernate auto ddl
+		getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS obs_archive AS SELECT * FROM obs WHERE 1=0").execute();
+		getConnection().prepareStatement("ALTER TABLE obs_archive ALTER COLUMN obs_id SET NOT NULL").execute();
+		try {
+			getConnection().prepareStatement("ALTER TABLE obs_archive ADD PRIMARY KEY (obs_id)").execute();
+		} catch (Exception e) {}
+
 		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the
 		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from
 		//person.creator column, historically this was to allow inserting the very first row. Ideally, this should not

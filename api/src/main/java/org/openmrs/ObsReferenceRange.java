@@ -43,7 +43,7 @@ public class ObsReferenceRange extends BaseReferenceRange {
 
 	@OneToOne
 	@MapsId
-	@JoinColumn(name = "obs_id", referencedColumnName = "obs_id", unique = true)
+	@JoinColumn(name = "obs_id", referencedColumnName = "obs_id", unique = true, foreignKey = @jakarta.persistence.ForeignKey(jakarta.persistence.ConstraintMode.NO_CONSTRAINT))
 	private Obs obs;
 
 	public ObsReferenceRange() {

@@ -88,24 +88,17 @@
 		<many-to-one name="voidedBy" class="User" column="voided_by" />
 		
 		<!-- many-to-one association from this obs to its parent grouping obs -->
-		<many-to-one name="obsGroup" class="Obs" column="obs_group_id" />
+		<many-to-one name="obsGroup" class="Obs" column="obs_group_id" foreign-key="none" />
 		
 		<!-- one-to-many association to all obs in this grouping -->
 		<set name="groupMembers" inverse="true" cascade="delete" order-by="obs_id"
 		access = "field" batch-size="25">
-			<key column="obs_group_id" />
+			<key column="obs_group_id" foreign-key="none" />
 			<one-to-many class="Obs" />
 		</set> 
-		<many-to-one name="previousVersion" class="Obs" column="previous_version" unique="true" />
+		<many-to-one name="previousVersion" class="Obs" column="previous_version" unique="true" foreign-key="none" />
 
 		<one-to-one name="referenceRange" class="org.openmrs.ObsReferenceRange" cascade="all"  />
 		
-		<loader query-ref="obsLoader"/>
 	</class>
-	
-	<sql-query name="obsLoader">
-		<return alias="o" class="Obs"/>
-		SELECT * FROM (SELECT * FROM obs UNION ALL SELECT * FROM obs_archive) as o WHERE o.obs_id = ?
-	</sql-query>
-
 </hibernate-mapping>
