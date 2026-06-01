@@ -48,46 +48,28 @@ public class ConceptSearchCriteriaBuilder {
 	}
 
 	/**
-	 * Adds a concept UUID to the search criteria.
+	 * Adds one or more concept UUIDs to the search criteria.
 	 *
-	 * @param uuid the UUID of the concept to include.
+	 * @param uuids the UUIDs of the concepts to include.
 	 * @return the current builder instance for method chaining.
 	 */
-	public ConceptSearchCriteriaBuilder addUuid(String uuid) {
-		this.uuids.add(uuid);
+	public ConceptSearchCriteriaBuilder addUuids(String... uuids) {
+		for (String uuid : uuids) {
+			this.uuids.add(uuid);
+		}
 		return this;
 	}
 
 	/**
-	 * Adds multiple concept UUIDs to the search criteria.
+	 * Adds one or more concept integer IDs to the search criteria.
 	 *
-	 * @param uuids the collection of UUIDs to include.
+	 * @param conceptIds the integer IDs of the concepts to include.
 	 * @return the current builder instance for method chaining.
 	 */
-	public ConceptSearchCriteriaBuilder addUuids(Collection<String> uuids) {
-		this.uuids.addAll(uuids);
-		return this;
-	}
-
-	/**
-	 * Adds a concept integer ID to the search criteria.
-	 *
-	 * @param conceptId the integer ID of the concept to include.
-	 * @return the current builder instance for method chaining.
-	 */
-	public ConceptSearchCriteriaBuilder addConceptId(Integer conceptId) {
-		this.conceptIds.add(conceptId);
-		return this;
-	}
-
-	/**
-	 * Adds multiple concept integer IDs to the search criteria.
-	 *
-	 * @param conceptIds the collection of concept IDs to include.
-	 * @return the current builder instance for method chaining.
-	 */
-	public ConceptSearchCriteriaBuilder addConceptIds(Collection<Integer> conceptIds) {
-		this.conceptIds.addAll(conceptIds);
+	public ConceptSearchCriteriaBuilder addConceptIds(Integer... conceptIds) {
+		for (Integer conceptId : conceptIds) {
+			this.conceptIds.add(conceptId);
+		}
 		return this;
 	}
 
@@ -161,7 +143,7 @@ public class ConceptSearchCriteriaBuilder {
 			return this;
 		}
 		if (isValidUuidFormat(ref)) {
-			return addUuid(ref);
+			return addUuids(ref);
 		}
 		int idx = ref.indexOf(":");
 		if (idx >= 0 && idx < ref.length() - 1) {
@@ -169,7 +151,7 @@ public class ConceptSearchCriteriaBuilder {
 		}
 		int conceptId = NumberUtils.toInt(ref, -1);
 		if (conceptId >= 0) {
-			return addConceptId(conceptId);
+			return addConceptIds(conceptId);
 		}
 		if (ref.contains(".")) {
 			try {

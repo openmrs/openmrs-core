@@ -4070,7 +4070,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldReturnConceptsMatchingUuids() {
 		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
-		        .addUuids(Arrays.asList("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "0f97e14e-cdc2-49ac-9255-b5126f8a5147"))
+		        .addUuids("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "0f97e14e-cdc2-49ac-9255-b5126f8a5147")
 		        .includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(2, concepts.size());
@@ -4084,8 +4084,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldIgnoreUnknownUuids() {
 		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
-		        .addUuids(Arrays.asList("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "does-not-exist")).includeRetired(true)
-		        .build();
+		        .addUuids("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "does-not-exist").includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(1, concepts.size());
 		assertEquals(3, (int) concepts.get(0).getConceptId());
@@ -4096,8 +4095,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcepts_shouldReturnConceptsMatchingIds() {
-		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptIds(Arrays.asList(3, 23))
-		        .includeRetired(true).build();
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptIds(3, 23).includeRetired(true)
+		        .build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(2, concepts.size());
 		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
@@ -4109,8 +4108,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcepts_shouldIgnoreUnknownIds() {
-		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptIds(Arrays.asList(3, 999999))
-		        .includeRetired(true).build();
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptIds(3, 999999).includeRetired(true)
+		        .build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(1, concepts.size());
 		assertEquals(3, (int) concepts.get(0).getConceptId());
@@ -4145,8 +4144,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcepts_shouldReturnUnionWhenBothUuidsAndIdsAreSet() {
-		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addUuid("0cbe2ed3-cd5f-4f46-9459-26127c9265ab")
-		        .addConceptId(23).includeRetired(true).build();
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addUuids("0cbe2ed3-cd5f-4f46-9459-26127c9265ab")
+		        .addConceptIds(23).includeRetired(true).build();
 		List<Concept> concepts = conceptService.getConcepts(criteria);
 		assertEquals(2, concepts.size());
 		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
