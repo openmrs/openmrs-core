@@ -58,6 +58,7 @@ import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.db.ContextDAO;
+import org.openmrs.event.outbox.tasks.OutboxTaskSchedulerInitializer;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -688,6 +689,18 @@ public class Context {
 				return false;
 			}
 		}
+	}
+
+	/**
+	 * Used by {@link org.openmrs.aop.AuthorizationAdvice} to give access for unauthenticated users when
+	 * running initialization code with proxy privileges. See e.g.
+	 * {@link OutboxTaskSchedulerInitializer#afterSingletonsInstantiated()}.
+	 *
+	 * @return true if there are any proxy privileges
+	 * @since 2.9.x
+	 */
+	public static boolean hasProxyPrivileges() {
+		return getUserContext().hasProxyPrivileges();
 	}
 
 	/**

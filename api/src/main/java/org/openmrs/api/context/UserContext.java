@@ -311,6 +311,14 @@ public class UserContext implements Serializable {
 	}
 
 	/**
+	 * @return true if there are any proxy privileges
+	 * @since 2.9.x
+	 */
+	public boolean hasProxyPrivileges() {
+		return !proxies.isEmpty();
+	}
+
+	/**
 	 * @param locale new locale for this context
 	 */
 	public void setLocale(Locale locale) {

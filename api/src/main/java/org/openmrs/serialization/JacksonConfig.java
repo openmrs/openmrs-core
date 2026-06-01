@@ -12,6 +12,7 @@ package org.openmrs.serialization;
 import org.openmrs.util.OpenmrsJacksonLocaleModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate7.Hibernate7Module;
@@ -27,7 +28,8 @@ import com.fasterxml.jackson.datatype.hibernate7.Hibernate7Module;
 public class JacksonConfig {
 
 	@Bean
-	public ObjectMapper schedulerObjectMapper() {
+	@Primary
+	public ObjectMapper objectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new Hibernate7Module());
 		mapper.registerModule(new OpenmrsJacksonLocaleModule());
