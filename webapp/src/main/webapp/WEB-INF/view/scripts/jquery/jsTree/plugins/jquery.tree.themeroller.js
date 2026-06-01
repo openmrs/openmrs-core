@@ -9,8 +9,8 @@
 					if(this.settings.ui.theme_name != "themeroller") return;
 					var opts = $.extend(true, {}, $.tree.plugins.themeroller.defaults, this.settings.plugins.themeroller);
 					this.container.addClass("ui-widget ui-widget-content");
-					$("#" + this.container.attr("id") + " li a").live("mouseover", function () { $(this).addClass("ui-state-hover"); });
-					$("#" + this.container.attr("id") + " li a").live("mouseout",  function () { $(this).removeClass("ui-state-hover"); });
+					this.container.on("mouseover", "li a", function () { $(this).addClass("ui-state-hover"); });
+					this.container.on("mouseout", "li a", function () { $(this).removeClass("ui-state-hover"); });
 				},
 				onparse : function (s, t) {
 					if(this.settings.ui.theme_name != "themeroller") return;
