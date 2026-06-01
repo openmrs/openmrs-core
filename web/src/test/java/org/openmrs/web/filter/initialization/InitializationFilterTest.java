@@ -206,6 +206,38 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 	}
 
 	@Test
+	public void initializeWizardFromResolvedPropertiesIfPresent_shouldHandleCustomPropertiesAndAliases() {
+		InitializationFilter spyFilter = spy(filter);
+		Map<String, String> fakeEnv = new HashMap<>();
+		fakeEnv.put("ADD_DEMO_DATA", "true");
+		fakeEnv.put("PROPERTY_CUSTOM_RUNTIME_PROP", "custom_value");
+		fakeEnv.put("PROPERTY_ANOTHER_PROP", "another_value");
+
+		doReturn(fakeEnv).when(spyFilter).getEnvironmentVariables();
+		doReturn(new Properties()).when(spyFilter).getInstallationScript();
+
+		// System properties to test admin.password.locked and whitelisted/normalized keys
+		System.setProperty("admin.password.locked", "true");
+		System.setProperty("connection_driver_class", "org.postgresql.Driver");
+
+		try {
+			spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+
+			assertTrue(spyFilter.wizardModel.importTestData, "ADD_DEMO_DATA env var should set importTestData");
+			assertEquals("custom_value",
+			    spyFilter.wizardModel.additionalPropertiesFromInstallationScript.getProperty("custom.runtime.prop"));
+			assertEquals("another_value",
+			    spyFilter.wizardModel.additionalPropertiesFromInstallationScript.getProperty("another.prop"));
+			assertEquals("true",
+			    spyFilter.wizardModel.additionalPropertiesFromInstallationScript.getProperty("admin.password.locked"));
+			assertEquals("org.postgresql.Driver", spyFilter.wizardModel.databaseDriver);
+		} finally {
+			System.clearProperty("admin.password.locked");
+			System.clearProperty("connection_driver_class");
+		}
+	}
+
+	@Test
 	public void initializeWizardFromResolvedPropertiesIfPresent_shouldInitializeWizardModelCorrectlyFromProperties() {
 		Properties installScript = getInstallScript();
 		InitializationFilter spyFilter = spy(filter);

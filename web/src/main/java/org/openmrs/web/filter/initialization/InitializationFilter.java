@@ -397,7 +397,7 @@ public class InitializationFilter extends StartupFilter {
 
 			wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
 
-			String importTestData = script.getProperty("import_test_data");
+			String importTestData = script.getProperty("import_test_data", script.getProperty("add_demo_data"));
 			if (importTestData != null) {
 				wizardModel.importTestData = Boolean.parseBoolean(importTestData);
 			}
@@ -406,14 +406,15 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.remoteUsername = script.getProperty("remote_username", wizardModel.remoteUsername);
 			wizardModel.remotePassword = script.getProperty("remote_password", wizardModel.remotePassword);
 
-			for (Map.Entry<Object, Object> entry : installScript.entrySet()) {
+			for (Map.Entry<Object, Object> entry : script.entrySet()) {
 				if (entry.getKey() instanceof String && ((String) entry.getKey()).startsWith("property.")) {
 					wizardModel.additionalPropertiesFromInstallationScript.put(((String) entry.getKey()).substring(9),
 					    entry.getValue());
 				}
 			}
 
-			String adminPasswordLocked = script.getProperty("admin_password_locked");
+			String adminPasswordLocked = script.getProperty("admin_password_locked",
+			    script.getProperty("admin.password.locked"));
 			if (adminPasswordLocked != null) {
 				wizardModel.additionalPropertiesFromInstallationScript.put("admin.password.locked", adminPasswordLocked);
 			}
