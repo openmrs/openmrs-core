@@ -20,7 +20,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mockStatic;
@@ -186,12 +185,14 @@ class OpenmrsPropertyLookupTest {
 
 	// --- unknown key ---
 
+	/**
+	 * Unknown lookup keys must not throw — Log4J2's {@code StrLookup} contract is to return null when
+	 * no value can be resolved, so a typo in a layout pattern degrades gracefully (the literal
+	 * {@code ${openmrs:typo}} surfaces in output) rather than crashing the substitutor.
+	 */
 	@Test
-	void lookup_shouldThrowForUnknownKey() {
-		IllegalArgumentException ex = org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
-		    () -> lookup.lookup(null, "unknownKey"));
-
-		assertThat(ex.getMessage(), containsString("unknownKey"));
+	void lookup_shouldReturnNullForUnknownKey() {
+		assertThat(lookup.lookup(null, "unknownKey"), nullValue());
 	}
 
 	// --- privilege management ---

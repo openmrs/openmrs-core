@@ -13,6 +13,8 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.lookup.AbstractLookup;
 import org.apache.logging.log4j.core.lookup.StrLookup;
+import org.apache.logging.log4j.status.StatusLogger;
+import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -58,8 +60,10 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 			case "logLayout":
 				return getProperty(OpenmrsConstants.GP_LOG_LAYOUT);
 			default:
-				throw new IllegalArgumentException(key
-				        + " is not a supported property. We support openmrs:applicationDirectory, openmrs:logLocation, and openmrs:logLayout");
+				StatusLogger.getLogger().error(
+				    "{} is not a supported property. We support openmrs:applicationDirectory, openmrs:logLocation, and openmrs:logLayout",
+				    key);
+				return null;
 		}
 	}
 
@@ -70,9 +74,13 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 		}
 
 		if (value == null && Context.isSessionOpen()) {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			try {
-				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 				value = ConfigUtil.getGlobalProperty(propertyName);
+			} catch (ServiceNotFoundException e) {
+				StatusLogger.getLogger().error("An exception was thrown while trying to get the \"{}\" global property",
+				    propertyName, e);
+				return null;
 			} finally {
 				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			}
@@ -87,7 +95,7 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 
 	private static String getPropertyDefault(String propertyName) {
 		if (OpenmrsConstants.GP_LOG_LAYOUT.equals(propertyName)) {
-			return "%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n";
+			return OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN;
 		}
 		return null;
 	}

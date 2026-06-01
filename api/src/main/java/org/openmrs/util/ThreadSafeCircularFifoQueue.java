@@ -114,6 +114,12 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		return true;
 	}
 
+	/**
+	 * Returns the capacity (i.e., the maximum number of elements stored) of this
+	 * ThreadSafeCircularFifoQueue
+	 *
+	 * @return the capacity of the current queue
+	 */
 	public int capacity() {
 		return this.maxElements;
 	}

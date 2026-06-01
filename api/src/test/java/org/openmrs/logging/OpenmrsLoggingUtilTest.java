@@ -10,7 +10,6 @@
 package org.openmrs.logging;
 
 import java.lang.reflect.Constructor;
-import java.util.Properties;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -20,8 +19,9 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.mockito.MockedStatic;
-import org.openmrs.api.AdministrationService;
+import org.mockito.Mockito;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -31,9 +31,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link OpenmrsLoggingUtil}.
@@ -205,6 +204,53 @@ class OpenmrsLoggingUtilTest {
 		assertThat(logger.getLevel(), equalTo(Level.ERROR));
 	}
 
+	/**
+	 * Regression test for the bug where {@code applyLogLevel} would mutate an ancestor logger's level
+	 * when the targeted child logger had no exact match. The fix in {@code applyLogLevelInternal} (see
+	 * the {@code !configuration.getName().equals(logClass)} branch) creates a fresh
+	 * {@code LoggerConfig} for the child rather than calling {@code setLevel} on the inherited
+	 * ancestor.
+	 */
+	@Test
+	void applyLogLevel_shouldNotMutateAncestorLoggerLevel() {
+		String parent = "org.openmrs.logging.test.isolation";
+		String child = parent + ".child";
+
+		OpenmrsLoggingUtil.applyLogLevel(parent, "warn");
+		assertThat(((Logger) LogManager.getLogger(parent)).getLevel(), equalTo(Level.WARN));
+
+		// Setting the child must not touch the parent
+		OpenmrsLoggingUtil.applyLogLevel(child, "trace");
+
+		assertThat("Child logger should be at TRACE", ((Logger) LogManager.getLogger(child)).getLevel(),
+		    equalTo(Level.TRACE));
+		assertThat("Parent logger must remain at WARN, not be downgraded to TRACE",
+		    ((Logger) LogManager.getLogger(parent)).getLevel(), equalTo(Level.WARN));
+	}
+
+	/**
+	 * Regression test that mirrors {@link #applyLogLevel_shouldNotMutateAncestorLoggerLevel()} but
+	 * exercises the multi-entry {@code applyLogLevels()} parsing path. Setting a child via the
+	 * global-property syntax must not change a parent that was set in the same call.
+	 */
+	@Test
+	void applyLogLevels_shouldNotMutateAncestorLoggerLevel() {
+		String parent = "org.openmrs.logging.test.isolation2";
+		String child = parent + ".child";
+
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(parent + ":warn," + child + ":trace");
+
+			OpenmrsLoggingUtil.applyLogLevels();
+
+			assertThat(((Logger) LogManager.getLogger(parent)).getLevel(), equalTo(Level.WARN));
+			assertThat(((Logger) LogManager.getLogger(child)).getLevel(), equalTo(Level.TRACE));
+		}
+	}
+
 	// --- applyLogLevels ---
 
 	@Test
@@ -256,12 +302,15 @@ class OpenmrsLoggingUtilTest {
 
 	@Test
 	void applyLogLevels_shouldHandleEmptyLogLevelProperty() {
-		try (MockedStatic<Context> contextMock = mockStatic(Context.class)) {
-			AdministrationService adminService = mock(AdministrationService.class);
-			contextMock.when(Context::getRuntimeProperties).thenReturn(new Properties());
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
 			contextMock.when(Context::isSessionOpen).thenReturn(true);
-			contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-			when(adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL)).thenReturn("");
+			configUtilMock.when(() -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn("");
 
 			// Should not throw
 			OpenmrsLoggingUtil.applyLogLevels();
@@ -269,18 +318,91 @@ class OpenmrsLoggingUtilTest {
 	}
 
 	@Test
-	void applyLogLevels_shouldAddAndRemoveProxyPrivilege() {
-		try (MockedStatic<Context> contextMock = mockStatic(Context.class)) {
-			AdministrationService adminService = mock(AdministrationService.class);
-			contextMock.when(Context::getRuntimeProperties).thenReturn(new Properties());
+	void applyLogLevels_shouldUseSystemPropertyWhenSet() {
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
 			contextMock.when(Context::isSessionOpen).thenReturn(true);
-			contextMock.when(Context::getAdministrationService).thenReturn(adminService);
-			when(adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL)).thenReturn("");
+			configUtilMock.when(() -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn("org.openmrs.logging.test.sysprop:debug");
 
 			OpenmrsLoggingUtil.applyLogLevels();
 
-			contextMock.verify(() -> Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
-			contextMock.verify(() -> Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
+			Logger logger = (Logger) LogManager.getLogger("org.openmrs.logging.test.sysprop");
+			assertThat(logger.getLevel(), equalTo(Level.DEBUG));
+
+			// System property wins — runtime and global must not be consulted, and no privilege bracket
+			configUtilMock.verify(() -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL), never());
+			configUtilMock.verify(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL), never());
+			contextMock.verify(() -> Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES), never());
+		}
+	}
+
+	@Test
+	void applyLogLevels_shouldFallBackToRuntimePropertyWhenSystemPropertyMissing() {
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			configUtilMock.when(() -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn("org.openmrs.logging.test.runtimeprop:error");
+
+			OpenmrsLoggingUtil.applyLogLevels();
+
+			Logger logger = (Logger) LogManager.getLogger("org.openmrs.logging.test.runtimeprop");
+			assertThat(logger.getLevel(), equalTo(Level.ERROR));
+
+			// Verify the precedence ORDER, not just that calls happened: system must be consulted
+			// before runtime. A future re-ordering of ConfigUtil calls would fail this test.
+			InOrder inOrder = Mockito.inOrder(ConfigUtil.class);
+			inOrder.verify(configUtilMock, () -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL));
+			inOrder.verify(configUtilMock, () -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL));
+
+			// Runtime property wins over the global property
+			configUtilMock.verify(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL), never());
+			contextMock.verify(() -> Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES), never());
+		}
+	}
+
+	@Test
+	void applyLogLevels_shouldNotReadGlobalPropertyWhenSessionClosed() {
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(false);
+			configUtilMock.when(() -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+
+			OpenmrsLoggingUtil.applyLogLevels();
+
+			// With no session, the global-property branch must not run
+			configUtilMock.verify(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL), never());
+			contextMock.verify(() -> Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES), never());
+		}
+	}
+
+	@Test
+	void applyLogLevels_shouldAddAndRemoveProxyPrivilege() {
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			configUtilMock.when(() -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn("");
+
+			OpenmrsLoggingUtil.applyLogLevels();
+
+			// The privilege must be acquired BEFORE the global-property read and released AFTER it,
+			// not just present somewhere. Order matters: missing-privilege errors only surface in the
+			// (add → read → remove) sequence.
+			InOrder inOrder = Mockito.inOrder(Context.class, ConfigUtil.class);
+			inOrder.verify(contextMock, () -> Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
+			inOrder.verify(configUtilMock, () -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL));
+			inOrder.verify(contextMock, () -> Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
 		}
 	}
 

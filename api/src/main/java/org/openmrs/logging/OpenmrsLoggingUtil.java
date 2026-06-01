@@ -26,9 +26,11 @@ import org.apache.logging.log4j.core.appender.RandomAccessFileAppender;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.RollingRandomAccessFileAppender;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.openmrs.annotation.Logging;
+import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -58,8 +60,12 @@ public final class OpenmrsLoggingUtil {
 	 */
 	@Logging(ignore = true)
 	public static MemoryAppender getMemoryAppender() {
-		MemoryAppender memoryAppender = ((LoggerContext) LogManager.getContext(true)).getConfiguration()
-		        .getAppender(OpenmrsConstants.MEMORY_APPENDER_NAME);
+		LoggerContext context = getLog4j2Context();
+		if (context == null) {
+			return null;
+		}
+
+		MemoryAppender memoryAppender = context.getConfiguration().getAppender(OpenmrsConstants.MEMORY_APPENDER_NAME);
 
 		if (memoryAppender != null && !memoryAppender.isStarted()) {
 			memoryAppender.start();
@@ -78,8 +84,12 @@ public final class OpenmrsLoggingUtil {
 	 * @return the path to the OpenMRS log file
 	 */
 	public static String getOpenmrsLogLocation() {
-		Appender fileAppender = ((Logger) LogManager.getRootLogger()).getContext().getConfiguration()
-		        .getAppender(OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER);
+		LoggerContext context = getLog4j2Context();
+		if (context == null) {
+			return null;
+		}
+
+		Appender fileAppender = context.getConfiguration().getAppender(OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER);
 
 		String fileName = null;
 		if (fileAppender instanceof AbstractOutputStreamAppender) {
@@ -110,17 +120,31 @@ public final class OpenmrsLoggingUtil {
 	 */
 	@Logging(ignore = true)
 	public static void applyLogLevels() {
+		applyLogLevels(null);
+	}
+
+	@Logging(ignore = true)
+	public static void applyLogLevels(String logLevelGp) {
 		// Check system and runtime properties first — these do not require a session
 		String logLevel = ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
 		if (logLevel == null) {
 			logLevel = ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
 		}
 
-		// Fall back to global property only if a session is open
-		if (logLevel == null && Context.isSessionOpen()) {
+		if (logLevel == null && logLevelGp != null) {
+			logLevel = logLevelGp;
+			// Fall back to global property only if a session is open
+		} else if (logLevel != null && logLevelGp != null) {
+			StatusLogger.getLogger().info("Ignoring GP value \"{}\" as a system or runtime property is already set",
+			    logLevelGp);
+		} else if (logLevel == null && Context.isSessionOpen()) {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			try {
-				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 				logLevel = ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+			} catch (ServiceNotFoundException e) {
+				StatusLogger.getLogger().error("An exception was thrown while trying to get the {} global property",
+				    OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, e);
+				return;
 			} finally {
 				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			}
@@ -132,18 +156,26 @@ public final class OpenmrsLoggingUtil {
 
 		synchronized (OpenmrsLoggingUtil.class) {
 			for (String level : logLevel.split(",")) {
-				String[] classAndLevel = level.split(":");
+				String[] classAndLevel = level.split(":", 3);
 				if (classAndLevel.length == 0) {
 					break;
 				} else if (classAndLevel.length == 1) {
 					applyLogLevelInternal(OpenmrsConstants.LOG_CLASS_DEFAULT, classAndLevel[0].trim());
 				} else {
+					if (classAndLevel.length > 2) {
+						StatusLogger.getLogger().warn(
+						    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO",
+						    level);
+					}
 					applyLogLevelInternal(classAndLevel[0].trim(), classAndLevel[1].trim());
 				}
 			}
 
 			// DO NOT USE LogManager#getContext() here as this might reset the logger context
-			((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
+			LoggerContext context = getLog4j2Context();
+			if (context != null) {
+				context.updateLoggers();
+			}
 		}
 	}
 
@@ -158,8 +190,11 @@ public final class OpenmrsLoggingUtil {
 		if (StringUtils.isNotBlank(logLevel)) {
 			synchronized (OpenmrsLoggingUtil.class) {
 				applyLogLevelInternal(logClass, logLevel);
-				// DO NOT USE LogManager#getContext() here as this might reset the logger context
-				((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
+
+				LoggerContext context = getLog4j2Context();
+				if (context != null) {
+					context.updateLoggers();
+				}
 			}
 		}
 	}
@@ -181,7 +216,11 @@ public final class OpenmrsLoggingUtil {
 			}
 
 			// DO NOT USE LogManager#getContext() here as this will reset the logger context
-			LoggerContext context = ((Logger) LogManager.getRootLogger()).getContext();
+			LoggerContext context = getLog4j2Context();
+			if (context == null) {
+				return;
+			}
+
 			LoggerConfig configuration = context.getConfiguration().getLoggerConfig(logClass);
 			Level level = stringToLevel(logLevel, logClass);
 
@@ -198,9 +237,14 @@ public final class OpenmrsLoggingUtil {
 	 * Reloads the logging configuration
 	 */
 	public static void reloadLoggingConfiguration() {
-		// This assumes that the context is an instance of org.apache.logging.log4j.core.LoggerContext
-		// The general interface does not guarantee that reconfigure() exists
-		((LoggerContext) LogManager.getContext(true)).reconfigure();
+		org.apache.logging.log4j.spi.LoggerContext context = LogManager.getContext(true);
+		if (context instanceof LoggerContext) {
+			// The general interface does not guarantee that reconfigure() exists
+			((LoggerContext) context).reconfigure();
+		} else {
+			StatusLogger.getLogger()
+			        .warn("Unable to reload logging configuration as we are not using the Log4J2 LoggerContext");
+		}
 	}
 
 	/**
@@ -265,4 +309,15 @@ public final class OpenmrsLoggingUtil {
 		return level;
 	}
 
+	private static LoggerContext getLog4j2Context() {
+		// DO NOT USE LogManager#getContext() here as this will reset the logger context
+		org.apache.logging.log4j.Logger rootLogger = LogManager.getRootLogger();
+		if (!(rootLogger instanceof Logger)) {
+			StatusLogger.getLogger()
+			        .error("Could not get the LoggerContext as this configuration is not using the standard Log4J2 context");
+			return null;
+		}
+
+		return ((Logger) rootLogger).getContext();
+	}
 }

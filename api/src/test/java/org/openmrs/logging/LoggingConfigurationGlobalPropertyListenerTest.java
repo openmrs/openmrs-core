@@ -73,7 +73,10 @@ class LoggingConfigurationGlobalPropertyListenerTest {
 			GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "debug");
 			listener.globalPropertyChanged(gp);
 
-			utilMock.verify(OpenmrsLoggingUtil::applyLogLevels);
+			// The listener passes the new GP value straight through to the String overload — this avoids
+			// a round-trip through ConfigUtil's cache, which is not guaranteed to be up-to-date when our
+			// listener fires (ConfigUtil is itself a GlobalPropertyListener and ordering is not defined).
+			utilMock.verify(() -> OpenmrsLoggingUtil.applyLogLevels("debug"));
 		}
 	}
 

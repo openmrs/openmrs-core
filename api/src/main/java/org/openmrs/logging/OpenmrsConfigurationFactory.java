@@ -147,8 +147,6 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 		MemoryAppender memoryAppender = configuration.getAppender(OpenmrsConstants.MEMORY_APPENDER_NAME);
 		if (memoryAppender == null) {
 			memoryAppender = MemoryAppender.newBuilder().build();
-			memoryAppender.start();
-
 			configuration.addAppender(memoryAppender);
 		}
 
@@ -172,6 +170,9 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 				// if AdministrationService is not available, we'll assume we're starting up and everything is ok
 				if (!AdministrationService.class.isAssignableFrom(e.getServiceClass())) {
 					throw e;
+				} else {
+					StatusLogger.getLogger()
+					        .debug("AdministrationService is not yet available; skipping log-level overrides");
 				}
 			}
 		}
@@ -179,8 +180,8 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 
 	private static void applyLogLevels(AbstractConfiguration configuration) {
 		String logLevel;
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		try {
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			logLevel = ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
@@ -193,12 +194,17 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 
 	private static void applyLogLevels(AbstractConfiguration configuration, String logLevel) {
 		for (String level : logLevel.split(",")) {
-			String[] classAndLevel = level.split(":");
+			String[] classAndLevel = level.split(":", 3);
 			if (classAndLevel.length == 0) {
 				break;
 			} else if (classAndLevel.length == 1) {
 				applyLogLevel(configuration, OpenmrsConstants.LOG_CLASS_DEFAULT, classAndLevel[0].trim());
 			} else {
+				if (classAndLevel.length > 2) {
+					StatusLogger.getLogger().warn(
+					    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO",
+					    level);
+				}
 				applyLogLevel(configuration, classAndLevel[0].trim(), classAndLevel[1].trim());
 			}
 		}
@@ -213,7 +219,7 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 			loggerName = OpenmrsConstants.LOG_CLASS_DEFAULT;
 		}
 
-		LoggerConfig loggerConfig = configuration.getLogger(loggerName);
+		LoggerConfig loggerConfig = configuration.getLoggerConfig(loggerName);
 		Level level = stringToLevel(loggerLevel, loggerName);
 
 		if (loggerConfig == null || !loggerConfig.getName().equals(loggerName)) {

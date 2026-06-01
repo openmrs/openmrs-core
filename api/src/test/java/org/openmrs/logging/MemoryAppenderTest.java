@@ -10,6 +10,9 @@
 package org.openmrs.logging;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -311,6 +314,81 @@ class MemoryAppenderTest {
 		} finally {
 			migrationLogger.removeAppender(appender1);
 			migrationLogger.setLevel(null);
+			((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
+			appender1.stop();
+		}
+	}
+
+	/**
+	 * Regression test for "message loss between reconfigurations": with the buffer-per-name model,
+	 * reconfiguring the appender to the same size should preserve every event a concurrent producer
+	 * emits, including events emitted in the window where the new appender is being built. The shared
+	 * buffer in the {@code BUFFERS} map is the mechanism that prevents the loss.
+	 */
+	@Test
+	void getBuffer_shouldNotLoseEventsDuringConcurrentReconfigurationOfSameSize() throws InterruptedException {
+		String appenderName = "test-concurrent-reconfig-" + System.nanoTime();
+		int bufferSize = 2000;
+		int messageCount = 1000; // < bufferSize so no FIFO eviction confuses the count
+
+		MemoryAppender appender1 = MemoryAppender.newBuilder().setName(appenderName)
+		        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).setBufferSize(bufferSize).build();
+		appender1.start();
+
+		Logger concurrentLogger = (Logger) LogManager.getLogger(appenderName);
+		concurrentLogger.setAdditive(false);
+		concurrentLogger.setLevel(Level.ALL);
+		concurrentLogger.addAppender(appender1);
+
+		try {
+			AtomicInteger sent = new AtomicInteger(0);
+			CountDownLatch producerStarted = new CountDownLatch(1);
+			CountDownLatch reconfigSignal = new CountDownLatch(1);
+
+			Thread producer = new Thread(() -> {
+				producerStarted.countDown();
+				for (int i = 0; i < messageCount; i++) {
+					concurrentLogger.warn(Integer.toString(i));
+					sent.incrementAndGet();
+					// Hand off after a small burst so the reconfiguration races against an active producer
+					if (i == 50) {
+						reconfigSignal.countDown();
+					}
+				}
+			});
+			producer.start();
+
+			assertThat("Producer should start", producerStarted.await(5, TimeUnit.SECONDS), equalTo(true));
+			assertThat("Producer should reach the reconfig signal", reconfigSignal.await(5, TimeUnit.SECONDS),
+			    equalTo(true));
+
+			// Build a new appender with the same name and size *while* the producer is still writing.
+			// This is the scenario the fix targets: the new appender must see the same underlying
+			// buffer so no events written through the producer's logger reference are lost.
+			MemoryAppender appender2 = MemoryAppender.newBuilder().setName(appenderName)
+			        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).setBufferSize(bufferSize).build();
+			appender2.start();
+
+			producer.join(10_000);
+			assertThat("Producer should have finished", producer.isAlive(), equalTo(false));
+			assertThat(sent.get(), equalTo(messageCount));
+
+			try {
+				List<String> linesFromNew = appender2.getLogLines();
+				assertThat("All produced events must be visible to the reconfigured appender", linesFromNew,
+				    hasSize(messageCount));
+
+				// Both appender instances share the same underlying buffer, so reading from either
+				// must return the same view.
+				List<String> linesFromOld = appender1.getLogLines();
+				assertThat(linesFromOld, hasSize(messageCount));
+				assertThat(linesFromOld, equalTo(linesFromNew));
+			} finally {
+				appender2.stop();
+			}
+		} finally {
+			concurrentLogger.removeAppender(appender1);
+			concurrentLogger.setLevel(null);
 			((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
 			appender1.stop();
 		}
