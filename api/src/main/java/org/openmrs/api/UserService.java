@@ -9,6 +9,7 @@
  */
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
+import org.openmrs.api.context.Context;
 import org.openmrs.notification.MessageException;
 import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
@@ -31,7 +33,7 @@ import org.openmrs.util.PrivilegeConstants;
  * List&lt;User&gt; users = Context.getUserService().getAllUsers();
  * </pre>
  *
- * @see org.openmrs.api.context.Context
+ * @see Context
  */
 public interface UserService extends OpenmrsService {
 
@@ -644,4 +646,16 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Authorized
 	String getLastLoginTime(User user);
+	
+	/**
+    * Sets the password validators for the system.
+    * @param passwordValidators
+    */
+	void setPasswordValidator(Collection<PasswordValidator> passwordValidators);
+
+	/**
+	* Gets all registered password validators.
+	* @return collection of validators
+	*/
+   	Collection<PasswordValidator> getPasswordValidators();
 }
