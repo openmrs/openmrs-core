@@ -276,9 +276,12 @@ public class InitializationFilter extends StartupFilter {
 		} else if (page == null) {
 			httpResponse.setContentType("text/html");// if any body has already started installation
 
-			//If someone came straight here without setting the hidden page input,
-			// then we need to clear out all the passwords
-			clearPasswords();
+			// Only clear passwords if the user hasn't entered any yet.
+			// Clearing mid-flow wipes the shared singleton's credentials before
+			// the background install thread reads them, causing "using password: NO".
+			if (!wizardModel.isPasswordsEntered()) {
+				clearPasswords();
+			}
 
 			renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 		} else if (INSTALL_METHOD.equals(page)) {
@@ -427,6 +430,7 @@ public class InitializationFilter extends StartupFilter {
 		wizardModel.createUserPassword = "";
 		wizardModel.currentDatabasePassword = "";
 		wizardModel.remotePassword = "";
+		wizardModel.setPasswordsEntered(false);
 	}
 
 	/**
@@ -542,6 +546,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 
 			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
+			wizardModel.setPasswordsEntered(true);
 			checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
 			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
 			wizardModel.hasCurrentOpenmrsDatabase = false;
@@ -622,6 +627,7 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.createDatabaseUsername = httpRequest.getParameter("create_database_username");
 				checkForEmptyValue(wizardModel.createDatabaseUsername, errors, ErrorMessageConstants.ERROR_DB_USER_NAME_REQ);
 				wizardModel.createDatabasePassword = httpRequest.getParameter("create_database_password");
+				wizardModel.setPasswordsEntered(true);
 				checkForEmptyValue(wizardModel.createDatabasePassword, errors, ErrorMessageConstants.ERROR_DB_USER_PSWD_REQ);
 			}
 
@@ -879,14 +885,13 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 
-	protected void startInstallation() {
-		//if no one has run any installation
-		if (!isInstallationStarted()) {
-			initJob = new InitializationCompletion();
-			setInstallationStarted(true);
-			initJob.start();
-		}
-	}
+	private void startInstallation() {
+                if (!isInstallationStarted()) {
+                        initJob = new InitializationCompletion();
+                        setInstallationStarted(true);
+                        initJob.start();
+                }
+        }
 
 	private void createTablesTask() {
 		if (wizardModel.createTables) {
