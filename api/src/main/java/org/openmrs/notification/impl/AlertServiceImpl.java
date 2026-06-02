@@ -168,6 +168,16 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	}
 
 	/**
+	 * @see org.openmrs.notification.AlertService#getAllAlerts(boolean, boolean)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Alert> getAllAlerts(boolean includeRead, boolean includeExpired) throws APIException {
+		log.debug("Getting alerts for all users read? {} expired? {}", includeRead, includeExpired);
+		return dao.getAllAlerts(includeRead, includeExpired);
+	}
+
+	/**
 	 * @see org.openmrs.notification.AlertService#notifySuperUsers(String, Exception, Object...)
 	 */
 	@Override

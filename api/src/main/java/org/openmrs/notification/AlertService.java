@@ -124,6 +124,9 @@ public interface AlertService extends OpenmrsService {
 	@Authorized
 	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException;
 
+	@Authorized
+	public List<Alert> getAllAlerts(boolean includeRead, boolean includeExpired) throws APIException;
+
 	/**
 	 * Sends an alert to all superusers
 	 * <p>

@@ -39,6 +39,8 @@ public class HibernateAlertDAO implements AlertDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(HibernateAlertDAO.class);
 
+	private static final String ALERT_READ = "alertRead";
+
 	private final SessionFactory sessionFactory;
 
 	@Autowired
@@ -89,6 +91,35 @@ public class HibernateAlertDAO implements AlertDAO {
 	}
 
 	/**
+	 * @see org.openmrs.notification.AlertService#getAllAlerts(boolean, boolean)
+	 */
+	@Override
+	public List<Alert> getAllAlerts(boolean includeRead, boolean includeExpired) throws DAOException {
+		log.debug("Getting alerts for all users read? {} expired? {}", includeRead, includeExpired);
+
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Alert> cq = cb.createQuery(Alert.class);
+		Root<Alert> root = cq.from(Alert.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		// exclude expired alerts unless requested
+		if (!includeExpired) {
+			predicates.add(cb.or(cb.isNull(root.get("dateToExpire")), cb.greaterThan(root.get("dateToExpire"), new Date())));
+		}
+
+		// exclude read alerts unless requested
+		if (!includeRead) {
+			predicates.add(cb.isFalse(root.get(ALERT_READ)));
+		}
+
+		cq.where(predicates.toArray(new Predicate[] {})).orderBy(cb.desc(root.get("dateChanged")));
+
+		return session.createQuery(cq).getResultList();
+	}
+
+	/**
 	 * @see org.openmrs.notification.db.AlertDAO#getAlerts(org.openmrs.User, boolean, boolean)
 	 */
 	@Override
@@ -122,8 +153,8 @@ public class HibernateAlertDAO implements AlertDAO {
 
 		// exclude the read alerts unless requested
 		if (!includeRead && user.getUserId() != null) {
-			predicates.add(cb.isFalse(root.get("alertRead")));
-			predicates.add(cb.isFalse(root.join("recipients").get("alertRead")));
+			predicates.add(cb.isFalse(root.get(ALERT_READ)));
+			predicates.add(cb.isFalse(root.join("recipients").get(ALERT_READ)));
 		}
 
 		cq.where(predicates.toArray(new Predicate[] {})).orderBy(cb.desc(root.get("dateChanged")));
