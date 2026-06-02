@@ -203,6 +203,18 @@ public class HibernateOrderDAO implements OrderDAO {
 			cal.setTime(searchCriteria.getActivatedOnOrAfterDate());
 			predicates.add(cb.greaterThanOrEqualTo(root.get("dateActivated"), OpenmrsUtil.firstSecondOfDay(cal.getTime())));
 		}
+		if (searchCriteria.getScheduledOnOrBeforeDate() != null) {
+			// set the date's time to the last millisecond of the date
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(searchCriteria.getScheduledOnOrBeforeDate());
+			predicates.add(cb.lessThanOrEqualTo(root.get("scheduledDate"), OpenmrsUtil.getLastMomentOfDay(cal.getTime())));
+		}
+		if (searchCriteria.getScheduledOnOrAfterDate() != null) {
+			// set the date's time to 00:00:00.000
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(searchCriteria.getScheduledOnOrAfterDate());
+			predicates.add(cb.greaterThanOrEqualTo(root.get("scheduledDate"), OpenmrsUtil.firstSecondOfDay(cal.getTime())));
+		}
 		if (searchCriteria.isStopped()) {
 			// an order is considered Canceled regardless of the time when the dateStopped was set
 			predicates.add(cb.isNotNull(root.get("dateStopped")));

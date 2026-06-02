@@ -2495,6 +2495,43 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#(OrderSearchCriteria)
 	 */
 	@Test
+	public void getOrders_shouldGetOrdersByScheduledOnOrBeforeDate() {
+		// should get orders scheduled any time on this day or before
+		Date scheduledOnOrBeforeDate = new GregorianCalendar(2008, 7, 19).getTime();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setScheduledOnOrBeforeDate(scheduledOnOrBeforeDate).build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		
+		assertEquals(0, orders.size()); 
+		
+		for (Order order : orders) {
+			assertNotNull(order.getScheduledDate());
+			assertTrue(order.getScheduledDate().getTime() <= org.openmrs.util.OpenmrsUtil.getLastMomentOfDay(scheduledOnOrBeforeDate).getTime());
+		}
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldGetOrdersByScheduledOnOrAfterDate() {
+		// hour and minute should be ignored by search
+		Date scheduledOnOrAfterDate = new GregorianCalendar(2008, 7, 19, 12, 0).getTime();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setScheduledOnOrAfterDate(scheduledOnOrAfterDate).build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		
+		assertEquals(0, orders.size()); 
+		
+		for (Order order : orders) {
+			assertNotNull(order.getScheduledDate());
+			assertTrue(order.getScheduledDate().getTime() >= org.openmrs.util.OpenmrsUtil.firstSecondOfDay(scheduledOnOrAfterDate).getTime());
+		}
+	}
+
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
 	public void getOrders_shouldGetOrdersByIncludeVoided() {
 		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setIncludeVoided(true).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
