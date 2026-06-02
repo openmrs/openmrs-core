@@ -277,7 +277,7 @@ public class InitializationFilter extends StartupFilter {
 			// Only clear passwords if the user hasn't entered any yet.
 			// Clearing mid-flow wipes the shared singleton's credentials before
 			// the background install thread reads them, causing "using password: NO".
-			if (!wizardModel.passwordsEntered) {
+			if (!wizardModel.isPasswordsEntered()) {
 				clearPasswords();
     }
 
@@ -419,7 +419,7 @@ public class InitializationFilter extends StartupFilter {
         wizardModel.createUserPassword = "";
         wizardModel.currentDatabasePassword = "";
         wizardModel.remotePassword = "";
-        wizardModel.passwordsEntered = false;
+        wizardModel.setPasswordsEntered(false);
     }
 
 	/**
@@ -535,7 +535,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 
 			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
-			wizardModel.passwordsEntered = true;
+			wizardModel.setPasswordsEntered(true);
 			checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
 			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
 			wizardModel.hasCurrentOpenmrsDatabase = false;
@@ -616,7 +616,7 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.createDatabaseUsername = httpRequest.getParameter("create_database_username");
 				checkForEmptyValue(wizardModel.createDatabaseUsername, errors, ErrorMessageConstants.ERROR_DB_USER_NAME_REQ);
 				wizardModel.createDatabasePassword = httpRequest.getParameter("create_database_password");
-				wizardModel.passwordsEntered = true;
+				wizardModel.setPasswordsEntered(true);
 				checkForEmptyValue(wizardModel.createDatabasePassword, errors, ErrorMessageConstants.ERROR_DB_USER_PSWD_REQ);
 			}
 

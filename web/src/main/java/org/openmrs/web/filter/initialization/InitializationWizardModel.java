@@ -262,4 +262,12 @@ public class InitializationWizardModel {
          * before the background install thread has read them.
          */
         public boolean passwordsEntered = false;
+
+		public boolean isPasswordsEntered() {
+            return passwordsEntered;
+        }
+
+        public void setPasswordsEntered(boolean passwordsEntered) {
+            this.passwordsEntered = passwordsEntered;
+        }
 }
