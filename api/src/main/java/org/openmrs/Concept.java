@@ -931,35 +931,83 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			log.debug("Getting shortest conceptName for locale: " + locale);
 		}
 
+		// Early return if explicit short name exists
 		ConceptName shortNameInLocale = getShortNameInLocale(locale);
 		if (shortNameInLocale != null) {
 			return shortNameInLocale;
 		}
 
-		ConceptName shortestNameForLocale = null;
-		ConceptName shortestNameForConcept = null;
+		// Extract Method — logic moved to dedicated private method
+		ConceptName shortestNameForLocale = findShortestNameForLocale(locale);
+		ConceptName shortestNameForConcept = findShortestNameForConcept();
 
-		if (locale != null) {
-			for (ConceptName possibleName : getNames()) {
-				if (possibleName.getLocale().equals(locale) && ((shortestNameForLocale == null)
-				        || (possibleName.getName().length() < shortestNameForLocale.getName().length()))) {
-					shortestNameForLocale = possibleName;
-				}
-				if ((shortestNameForConcept == null)
-				        || (possibleName.getName().length() < shortestNameForConcept.getName().length())) {
-					shortestNameForConcept = possibleName;
-				}
+		// Decompose Conditional — exact match handling
+		return resolveShortestName(exact, shortestNameForLocale,
+			shortestNameForConcept, locale);
+	}
+
+	/**
+	 * Finds the shortest name matching the given locale exactly.
+	 * Extracted from getShortestName() to reduce cognitive complexity.
+	 *
+	 * @param locale the locale to match
+	 * @return the shortest ConceptName in the given locale, or null
+	 */
+	private ConceptName findShortestNameForLocale(Locale locale) {
+		if (locale == null) {
+			return null;
+		}
+		ConceptName shortestNameForLocale = null;
+		for (ConceptName possibleName : getNames()) {
+			// Introduce Explaining Variable — complex condition broken into readable parts
+			boolean isSameLocale = possibleName.getLocale().equals(locale);
+			boolean isShorterThanCurrent = shortestNameForLocale == null
+				|| possibleName.getName().length() < shortestNameForLocale.getName().length();
+			if (isSameLocale && isShorterThanCurrent) {
+				shortestNameForLocale = possibleName;
 			}
 		}
+		return shortestNameForLocale;
+	}
 
+	/**
+	 * Finds the shortest name across all locales.
+	 * Extracted from getShortestName() to reduce cognitive complexity.
+	 *
+	 * @return the shortest ConceptName across all locales, or null
+	 */
+	private ConceptName findShortestNameForConcept() {
+		ConceptName shortestNameForConcept = null;
+		for (ConceptName possibleName : getNames()) {
+			// Introduce Explaining Variable — complex condition broken into readable parts
+			boolean isShorterThanCurrent = shortestNameForConcept == null
+				|| possibleName.getName().length() < shortestNameForConcept.getName().length();
+			if (isShorterThanCurrent) {
+				shortestNameForConcept = possibleName;
+			}
+		}
+		return shortestNameForConcept;
+	}
+
+	/**
+	 * Resolves which name to return based on exact flag.
+	 * Extracted from getShortestName() to decompose conditional logic.
+	 *
+	 * @param exact whether to return exact locale match only
+	 * @param shortestNameForLocale shortest name in the locale
+	 * @param shortestNameForConcept shortest name across all locales
+	 * @param locale the locale used for warning message
+	 * @return the appropriate ConceptName
+	 */
+	private ConceptName resolveShortestName(Boolean exact, ConceptName shortestNameForLocale,
+											ConceptName shortestNameForConcept, Locale locale) {
 		if (exact) {
 			if (shortestNameForLocale == null) {
-				log.warn(
-				    "No short concept name found for concept id " + conceptId + " for locale " + locale.getDisplayName());
+				log.warn("No short concept name found for concept id "
+					+ conceptId + " for locale " + locale.getDisplayName());
 			}
 			return shortestNameForLocale;
 		}
-
 		return shortestNameForConcept;
 	}
 

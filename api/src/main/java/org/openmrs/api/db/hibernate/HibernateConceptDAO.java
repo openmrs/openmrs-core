@@ -98,6 +98,8 @@ import static java.util.stream.Collectors.toList;
 @Repository("conceptDAO")
 public class HibernateConceptDAO implements ConceptDAO {
 
+	private static final String CONCEPT_ID ="conceptId" ;
+
 	private static final Logger log = LoggerFactory.getLogger(HibernateConceptDAO.class);
 
 	private static final String CONCEPT_REFERENCE_TERM = "conceptReferenceTerm";
@@ -136,7 +138,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			CriteriaQuery<ConceptComplex> cq = cb.createQuery(ConceptComplex.class);
 			Root<ConceptComplex> root = cq.from(ConceptComplex.class);
 
-			cq.where(cb.equal(root.get("conceptId"), conceptId));
+			cq.where(cb.equal(root.get(CONCEPT_ID), conceptId));
 
 			obj = session.createQuery(cq).uniqueResult();
 		}
@@ -183,7 +185,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 			String select = "SELECT 1 from concept_numeric WHERE concept_id = :conceptId";
 			NativeQuery<Integer> selectQuery = sessionFactory.getCurrentSession().createNativeQuery(select, Integer.class);
-			selectQuery.setParameter("conceptId", concept.getConceptId());
+			selectQuery.setParameter(CONCEPT_ID, concept.getConceptId());
 
 			// Converting to concept numeric:  A single concept row exists, but concept numeric has not been populated yet.
 			if (JpaUtils.getSingleResultOrNull(selectQuery) == null) {
@@ -199,7 +201,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 				String insert = "INSERT INTO concept_numeric (concept_id, allow_decimal) VALUES (:conceptId, false)";
 				MutationQuery insertQuery = sessionFactory.getCurrentSession().createNativeMutationQuery(insert);
-				insertQuery.setParameter("conceptId", concept.getConceptId());
+				insertQuery.setParameter(CONCEPT_ID, concept.getConceptId());
 				insertQuery.executeUpdate();
 
 			} else {
@@ -217,7 +219,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 			String select = "SELECT 1 FROM concept_complex WHERE concept_id = :conceptId";
 			NativeQuery<Integer> selectQuery = sessionFactory.getCurrentSession().createNativeQuery(select, Integer.class);
-			selectQuery.setParameter("conceptId", concept.getConceptId());
+			selectQuery.setParameter(CONCEPT_ID, concept.getConceptId());
 
 			// Converting to concept complex:  A single concept row exists, but concept complex has not been populated yet.
 			if (JpaUtils.getSingleResultOrNull(selectQuery) == null) {
@@ -234,7 +236,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				// Add an empty row into the concept_complex table
 				String insert = "INSERT INTO concept_complex (concept_id) VALUES (:conceptId)";
 				MutationQuery insertQuery = sessionFactory.getCurrentSession().createNativeQuery(insert);
-				insertQuery.setParameter("conceptId", concept.getConceptId());
+				insertQuery.setParameter(CONCEPT_ID, concept.getConceptId());
 				insertQuery.executeUpdate();
 
 			} else {
@@ -263,7 +265,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	private void deleteSubclassConcept(String tableName, Integer conceptId) {
 		String delete = "DELETE FROM " + tableName + " WHERE concept_id = :conceptId";
 		MutationQuery query = sessionFactory.getCurrentSession().createNativeMutationQuery(delete);
-		query.setParameter("conceptId", conceptId);
+		query.setParameter(CONCEPT_ID, conceptId);
 		query.executeUpdate();
 	}
 
@@ -314,7 +316,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				ConceptName.class.getDeclaredField(sortBy);
 				isNameField = true;
 			} catch (NoSuchFieldException e2) {
-				sortBy = "conceptId";
+				sortBy = CONCEPT_ID;
 			}
 		}
 
@@ -584,7 +586,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			sessionFactory.getCurrentSession().evict(obj);
 			// session.get() did not work here, we need to perform a query to get a ConceptNumeric
 			Query query = sessionFactory.getCurrentSession().createQuery("from ConceptNumeric where conceptId = :conceptId")
-			        .setParameter("conceptId", i);
+			        .setParameter(CONCEPT_ID, i);
 			obj = JpaUtils.getSingleResultOrNull(query);
 		}
 		cn = (ConceptNumeric) obj;
@@ -723,8 +725,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		Integer i = c.getConceptId();
 
-		cq.where(cb.lessThan(root.get("conceptId"), i));
-		cq.orderBy(cb.desc(root.get("conceptId")));
+		cq.where(cb.lessThan(root.get(CONCEPT_ID), i));
+		cq.orderBy(cb.desc(root.get(CONCEPT_ID)));
 
 		List<Concept> concepts = session.createQuery(cq).setMaxResults(1).getResultList();
 
@@ -747,8 +749,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		Integer i = c.getConceptId();
 
-		cq.where(cb.greaterThan(root.get("conceptId"), i));
-		cq.orderBy(cb.asc(root.get("conceptId")));
+		cq.where(cb.greaterThan(root.get(CONCEPT_ID), i));
+		cq.orderBy(cb.asc(root.get(CONCEPT_ID)));
 
 		List<Concept> concepts = session.createQuery(cq).setMaxResults(1).getResultList();
 
@@ -1134,7 +1136,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		cq.where(predicates.toArray(new Predicate[] {}));
 
-		cq.select(root.get("concept").get("conceptId"));
+		cq.select(root.get("concept").get(CONCEPT_ID));
 
 		Join<ConceptMap, Concept> conceptJoin = root.join("concept");
 		if (includeRetired) {
@@ -1434,7 +1436,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		    "select datatype.* from concept_datatype datatype, concept concept where "
 		            + "datatype.concept_datatype_id = concept.datatype_id and concept.concept_id=:conceptId",
 		    ConceptDatatype.class);
-		sql.setParameter("conceptId", concept.getConceptId());
+		sql.setParameter(CONCEPT_ID, concept.getConceptId());
 
 		return JpaUtils.getSingleResultOrNull(sql);
 	}
@@ -2488,7 +2490,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		CriteriaQuery<ConceptReferenceRange> cq = cb.createQuery(ConceptReferenceRange.class);
 		Root<ConceptReferenceRange> root = cq.from(ConceptReferenceRange.class);
 
-		cq.where(cb.equal(root.get("conceptNumeric").get("conceptId"), conceptId));
+		cq.where(cb.equal(root.get("conceptNumeric").get(CONCEPT_ID), conceptId));
 
 		return session.createQuery(cq).getResultList();
 	}

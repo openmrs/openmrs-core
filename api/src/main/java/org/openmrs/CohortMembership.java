@@ -197,7 +197,7 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	 */
 	@Override
 	public boolean equals(Object otherCohortMembershipObject) {
-		if (otherCohortMembershipObject == null || !(otherCohortMembershipObject instanceof CohortMembership)) {
+		if (!(otherCohortMembershipObject instanceof CohortMembership)) {
 			return false;
 		}
 		CohortMembership otherCohortMembership = (CohortMembership) otherCohortMembershipObject;

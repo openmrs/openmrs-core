@@ -111,7 +111,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 	 */
 	@Override
 	public Integer getId() {
-		return allergyId;
+		return getAllergyId();
 	}
 
 	/**

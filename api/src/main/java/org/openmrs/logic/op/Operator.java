@@ -9,55 +9,135 @@
  */
 package org.openmrs.logic.op;
 
-/**
- * An operator used within a logical expression.
- */
 public interface Operator {
 
-	// comparison operators
-	public static final Operator CONTAINS = ComparisonOperator.CONTAINS;
+	/**
+	 * @deprecated Use {@link OperatorConstants#CONTAINS} instead.
+	 */
+	@Deprecated
+	public static final Operator CONTAINS = OperatorConstants.CONTAINS;
 
-	public static final Operator EQUALS = ComparisonOperator.EQUALS;
+	/**
+	 * @deprecated Use {@link OperatorConstants#EQUALS} instead.
+	 */
+	@Deprecated
+	public static final Operator EQUALS = OperatorConstants.EQUALS;
 
-	public static final Operator WITHIN = ComparisonOperator.WITHIN;
+	/**
+	 * @deprecated Use {@link OperatorConstants#WITHIN} instead.
+	 */
+	@Deprecated
+	public static final Operator WITHIN = OperatorConstants.WITHIN;
 
-	public static final Operator GT = ComparisonOperator.GT;
+	/**
+	 * @deprecated Use {@link OperatorConstants#GT} instead.
+	 */
+	@Deprecated
+	public static final Operator GT = OperatorConstants.GT;
 
-	public static final Operator GTE = ComparisonOperator.GTE;
+	/**
+	 * @deprecated Use {@link OperatorConstants#GTE} instead.
+	 */
+	@Deprecated
+	public static final Operator GTE = OperatorConstants.GTE;
 
-	public static final Operator LT = ComparisonOperator.LT;
+	/**
+	 * @deprecated Use {@link OperatorConstants#LT} instead.
+	 */
+	@Deprecated
+	public static final Operator LT = OperatorConstants.LT;
 
-	public static final Operator LTE = ComparisonOperator.LTE;
+	/**
+	 * @deprecated Use {@link OperatorConstants#LTE} instead.
+	 */
+	@Deprecated
+	public static final Operator LTE = OperatorConstants.LTE;
 
-	public static final Operator BEFORE = ComparisonOperator.BEFORE;
+	/**
+	 * @deprecated Use {@link OperatorConstants#BEFORE} instead.
+	 */
+	@Deprecated
+	public static final Operator BEFORE = OperatorConstants.BEFORE;
 
-	public static final Operator AFTER = ComparisonOperator.AFTER;
+	/**
+	 * @deprecated Use {@link OperatorConstants#AFTER} instead.
+	 */
+	@Deprecated
+	public static final Operator AFTER = OperatorConstants.AFTER;
 
-	public static final Operator IN = ComparisonOperator.IN;
+	/**
+	 * @deprecated Use {@link OperatorConstants#IN} instead.
+	 */
+	@Deprecated
+	public static final Operator IN = OperatorConstants.IN;
 
-	// weird operator
-	public static final Operator ASOF = new AsOf();
+	/**
+	 * @deprecated Use {@link OperatorConstants#ASOF} instead.
+	 */
+	@Deprecated
+	public static final Operator ASOF = OperatorConstants.ASOF;
 
-	// logical operators
-	public static final Operator AND = LogicalOperator.AND;
+	/**
+	 * @deprecated Use {@link OperatorConstants#AND} instead.
+	 */
+	@Deprecated
+	public static final Operator AND = OperatorConstants.AND;
 
-	public static final Operator OR = LogicalOperator.OR;
+	/**
+	 * @deprecated Use {@link OperatorConstants#OR} instead.
+	 */
+	@Deprecated
+	public static final Operator OR = OperatorConstants.OR;
 
-	public static final Operator NOT = LogicalOperator.NOT;
+	/**
+	 * @deprecated Use {@link OperatorConstants#NOT} instead.
+	 */
+	@Deprecated
+	public static final Operator NOT = OperatorConstants.NOT;
 
-	// transform operators
-	public static final Operator LAST = TransformOperator.LAST;
+	/**
+	 * @deprecated Use {@link OperatorConstants#LAST} instead.
+	 */
+	@Deprecated
+	public static final Operator LAST = OperatorConstants.LAST;
 
-	public static final Operator FIRST = TransformOperator.FIRST;
+	/**
+	 * @deprecated Use {@link OperatorConstants#FIRST} instead.
+	 */
+	@Deprecated
+	public static final Operator FIRST = OperatorConstants.FIRST;
 
-	public static final Operator DISTINCT = TransformOperator.DISTINCT;
+	/**
+	 * @deprecated Use {@link OperatorConstants#DISTINCT} instead.
+	 */
+	@Deprecated
+	public static final Operator DISTINCT = OperatorConstants.DISTINCT;
 
-	public static final Operator EXISTS = TransformOperator.EXISTS;
+	/**
+	 * @deprecated Use {@link OperatorConstants#EXISTS} instead.
+	 */
+	@Deprecated
+	public static final Operator EXISTS = OperatorConstants.EXISTS;
 
-	public static final Operator NOT_EXISTS = TransformOperator.NOT_EXISTS;
+	/**
+	 * @deprecated Use {@link OperatorConstants#NOT_EXISTS} instead.
+	 */
+	@Deprecated
+	public static final Operator NOT_EXISTS = OperatorConstants.NOT_EXISTS;
 
-	public static final Operator COUNT = TransformOperator.COUNT;
+	/**
+	 * @deprecated Use {@link OperatorConstants#COUNT} instead.
+	 */
+	@Deprecated
+	public static final Operator COUNT = OperatorConstants.COUNT;
 
-	public static final Operator AVERAGE = TransformOperator.AVERAGE;
+	/**
+	 * @deprecated Use {@link OperatorConstants#AVERAGE} instead.
+	 */
+	@Deprecated
+	public static final Operator AVERAGE = OperatorConstants.AVERAGE;
+
+}
+public interface Operator {
 
 }

@@ -9,6 +9,8 @@
  */
 package org.openmrs.logging;
 
+import java.util.Arrays;
+import java.util.List;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,14 +19,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.AbstractFileAppender;
 import org.apache.logging.log4j.core.appender.AbstractOutputStreamAppender;
-import org.apache.logging.log4j.core.appender.FileAppender;
-import org.apache.logging.log4j.core.appender.MemoryMappedFileAppender;
-import org.apache.logging.log4j.core.appender.RandomAccessFileAppender;
-import org.apache.logging.log4j.core.appender.RollingFileAppender;
-import org.apache.logging.log4j.core.appender.RollingRandomAccessFileAppender;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.openmrs.logging.FileLocationResolver;
+import org.openmrs.logging.resolver.AbstractFileAppenderResolver;
+import org.openmrs.logging.resolver.FileAppenderResolver;
+import org.openmrs.logging.resolver.MemoryMappedFileAppenderResolver;
+import org.openmrs.logging.resolver.RandomAccessFileAppenderResolver;
+import org.openmrs.logging.resolver.RollingFileAppenderResolver;
+import org.openmrs.logging.resolver.RollingRandomAccessFileAppenderResolver;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -40,6 +43,15 @@ import org.slf4j.LoggerFactory;
 public final class OpenmrsLoggingUtil {
 
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsLoggingUtil.class);
+
+	private static final List<FileLocationResolver> FILE_LOCATION_RESOLVERS = Arrays.asList(
+		new RollingFileAppenderResolver(),
+		new FileAppenderResolver(),
+		new MemoryMappedFileAppenderResolver(),
+		new RollingRandomAccessFileAppenderResolver(),
+		new RandomAccessFileAppenderResolver(),
+		new AbstractFileAppenderResolver()
+	);
 
 	private OpenmrsLoggingUtil() {
 	}
@@ -76,22 +88,15 @@ public final class OpenmrsLoggingUtil {
 		Appender fileAppender = ((LoggerContext) LogManager.getRootLogger()).getConfiguration()
 		        .getAppender(OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER);
 
+		if (!(fileAppender instanceof AbstractOutputStreamAppender)) {
+			return null;
+		}
+
 		String fileName = null;
-		if (fileAppender instanceof AbstractOutputStreamAppender) {
-			if (fileAppender instanceof RollingFileAppender) {
-				fileName = ((RollingFileAppender) fileAppender).getFileName();
-			} else if (fileAppender instanceof FileAppender) {
-				fileName = ((FileAppender) fileAppender).getFileName();
-			} else if (fileAppender instanceof MemoryMappedFileAppender) {
-				fileName = ((MemoryMappedFileAppender) fileAppender).getFileName();
-			} else if (fileAppender instanceof RollingRandomAccessFileAppender) {
-				fileName = ((RollingRandomAccessFileAppender) fileAppender).getFileName();
-			} else if (fileAppender instanceof RandomAccessFileAppender) {
-				fileName = ((RandomAccessFileAppender) fileAppender).getFileName();
-			} else if (fileAppender instanceof AbstractFileAppender) {
-				fileName = ((AbstractFileAppender<?>) fileAppender).getFileName();
-			} else {
-				return null;
+		for (FileLocationResolver resolver : FILE_LOCATION_RESOLVERS) {
+			if (resolver.supports(fileAppender)) {
+				fileName = resolver.getFileName(fileAppender);
+				break;
 			}
 		}
 
