@@ -40,8 +40,10 @@ public class MessageServiceImpl implements MessageService {
 	@Autowired
 	private TemplateDAO templateDAO;
 
+	@Autowired(required = false)
 	private MessageSender messageSender; // Delivers message
 
+	@Autowired(required = false)
 	private MessagePreparator messagePreparator; // Prepares message for delivery
 
 	public void setTemplateDAO(TemplateDAO dao) {
@@ -93,6 +95,9 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	public void sendMessage(Message message) throws MessageException {
+		if (messageSender == null) {
+			throw new MessageException("No MessageSender configured");
+		}
 		try {
 			messageSender.send(message);
 		} catch (Exception e) {
@@ -246,6 +251,9 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	public Message prepareMessage(Template template) throws MessageException {
+		if (messagePreparator == null) {
+			throw new MessageException("No MessagePreparator configured");
+		}
 		return messagePreparator.prepare(template);
 	}
 

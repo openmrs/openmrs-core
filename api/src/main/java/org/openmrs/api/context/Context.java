@@ -64,12 +64,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.ModuleMustStartException;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.notification.AlertService;
-import org.openmrs.notification.MessageException;
-import org.openmrs.notification.MessagePreparator;
-import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
-import org.openmrs.notification.mail.MailMessageSender;
-import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.DatabaseUpdateException;
@@ -562,21 +557,7 @@ public class Context {
 	 * @return message service
 	 */
 	public static MessageService getMessageService() {
-		MessageService ms = getServiceContext().getMessageService();
-		try {
-			// Message service dependencies
-			if (ms.getMessagePreparator() == null) {
-				ms.setMessagePreparator(getMessagePreparator());
-			}
-
-			if (ms.getMessageSender() == null) {
-				ms.setMessageSender(getMessageSender());
-			}
-
-		} catch (Exception e) {
-			log.error("Unable to create message service due", e);
-		}
-		return ms;
+		return getServiceContext().getMessageService();
 	}
 
 	/**
@@ -639,26 +620,6 @@ public class Context {
 			}
 		}
 		return mailSession;
-	}
-
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO Ideally, we would be
-	 * using Spring's method injection to set the dependencies for the message service.
-	 *
-	 * @return the ServiceContext
-	 */
-	private static MessageSender getMessageSender() {
-		return new MailMessageSender(getMailSession());
-	}
-
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO See todo for message
-	 * sender.
-	 *
-	 * @return
-	 */
-	private static MessagePreparator getMessagePreparator() throws MessageException {
-		return new VelocityMessagePreparator();
 	}
 
 	/**
