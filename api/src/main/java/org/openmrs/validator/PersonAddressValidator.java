@@ -62,7 +62,7 @@ public class PersonAddressValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object object, Errors errors) {
-		//TODO Validate other aspects of the personAddress object
+
 		log.debug("{}.validate...", this.getClass().getName());
 
 		if (object == null) {
@@ -87,6 +87,19 @@ public class PersonAddressValidator implements Validator {
 			errors.rejectValue("startDate", "PersonAddress.error.startDateInFuture",
 			    new Object[] { "'" + addressString + "'" },
 			    "The Start Date for address '" + addressString + "' shouldn't be in the future");
+		}
+
+		boolean allowFutureEndDate = Boolean.parseBoolean(
+    		Context.getAdministrationService()
+           .getGlobalProperty("personAddress.allowFutureEndDate", "false")
+		);
+
+		if (!allowFutureEndDate &&
+		    OpenmrsUtil.compareWithNullAsEarliest(personAddress.getEndDate(), new Date()) > 0) {
+		    
+		    errors.rejectValue("endDate", "PersonAddress.error.endDateInFuture",
+		        new Object[] { "" + addressString + "" },
+		        "The End Date for address " + addressString + " shouldn't be in the future");
 		}
 
 		if (personAddress.getStartDate() != null
