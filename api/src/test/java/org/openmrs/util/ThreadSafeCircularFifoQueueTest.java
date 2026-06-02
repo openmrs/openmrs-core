@@ -311,6 +311,22 @@ public class ThreadSafeCircularFifoQueueTest<E> extends AbstractQueueTest<E> {
 		assertEquals("5", array[2]);
 	}
 
+	/* Capacity tests */
+
+	void capacity_shouldReturnConfiguredCapacity() {
+		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(5);
+		assertEquals(5, queue.capacity());
+	}
+
+	void capacity_shouldReturnOriginalCapacityAfterOverflow() {
+		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(3);
+		queue.add("a");
+		queue.add("b");
+		queue.add("c");
+		queue.add("d"); // evicts "a"
+		assertEquals(3, queue.capacity());
+	}
+
 	/* Thread safety tests */
 
 	public void testConcurrentAdds_shouldMaintainConsistentState() throws InterruptedException {
