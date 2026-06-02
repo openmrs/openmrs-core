@@ -54,6 +54,7 @@ import org.openmrs.customdatatype.Customizable;
 import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.layout.LayoutSupport;
 import org.openmrs.layout.LayoutTemplate;
+import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.messagesource.PresentationMessage;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
@@ -751,7 +752,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			throw new APIException("does.not.have.string.constructor", new Object[] { defaultValue.getClass().getName() },
 			        e);
 		} catch (Exception e) {
-			log.error("Unable to turn value '" + propVal + "' into type " + defaultValue.getClass().getName(), e);
+			log.error("Unable to turn value '" + OpenmrsLoggingUtil.sanitize(propVal) + "' into type "
+			        + defaultValue.getClass().getName(),
+			    e);
 			return defaultValue;
 		}
 	}
