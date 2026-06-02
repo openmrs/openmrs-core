@@ -26,7 +26,7 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for {@link org.openmrs.api.db.hibernate.HibernateObsDAO}
@@ -99,5 +99,18 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 		obsListActual = dao.getObservations(null, null, null, null, null, null, Arrays.asList("personId asc", "obsId asc"),
 		    null, null, null, null, false, null);
 		assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
+	}
+
+	@Test
+	public void archiveVoidedObs_shouldRunWithoutErrors_multipleTimes() {
+		assertDoesNotThrow(() -> {
+			dao.archiveVoidedObs(10);
+			dao.archiveVoidedObs(10);
+		});
+	}
+
+	@Test
+	public void archiveVoidedObs_shouldNotFailWhenNoVoidedObsExist() {
+		assertDoesNotThrow(() -> dao.archiveVoidedObs(10));
 	}
 }
