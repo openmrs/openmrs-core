@@ -4445,7 +4445,20 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	private Date truncateToSeconds(Date date) {
 		return DateUtils.truncate(date, Calendar.SECOND);
 	}
+	
+	@Test
+	public void order_shouldGetAndSetDiscontinueReasonFields() {
+		Order order = new Order();
 
+		// Test discontinueReasonNonCoded
+		order.setDiscontinueReasonNonCoded("Patient requested stop");
+		assertEquals("Patient requested stop", order.getDiscontinueReasonNonCoded());
+
+		// Test discontinueReason (Concept)
+		Concept reason = new Concept();
+		order.setDiscontinueReason(reason);
+		assertEquals(reason, order.getDiscontinueReason());
+	}
 	// Test-only subclass
 	public static class MyTestOrder extends TestOrder {}
 }
