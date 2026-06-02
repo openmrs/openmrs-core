@@ -26,6 +26,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -62,6 +63,17 @@ public class Security {
 	public static boolean hashMatches(String hashedPassword, String passwordToHash) {
 		if (hashedPassword == null || passwordToHash == null) {
 			throw new APIException("password.cannot.be.null", (Object[]) null);
+		}
+
+		if (hashedPassword.startsWith("{")) {
+			try {
+				PasswordEncoder passwordEncoder = Context.getRegisteredComponent("passwordEncoder", PasswordEncoder.class);
+				if (passwordEncoder != null && passwordEncoder.matches(passwordToHash, hashedPassword)) {
+					return true;
+				}
+			} catch (Exception e) {
+				log.debug("Unable to evaluate delegated password hash. Falling back to legacy matchers.", e);
+			}
 		}
 
 		return hashedPassword.equals(encodeString(passwordToHash)) || hashedPassword.equals(encodeStringSHA1(passwordToHash))

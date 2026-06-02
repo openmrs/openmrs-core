@@ -54,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,13 +74,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Autowired
 	protected UserDAO dao;
 
+	private final PasswordEncoder passwordEncoder;
+
 	private static final int MAX_VALID_TIME = 12 * 60 * 60 * 1000; //Period of 12 hours
 
 	private static final int MIN_VALID_TIME = 60 * 1000; //Period of 1 minute
 
 	private static final int DEFAULT_VALID_TIME = 10 * 60 * 1000; //Default time of 10 minute
 
-	public UserServiceImpl() {
+	@Autowired
+	public UserServiceImpl(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	public void setUserDAO(UserDAO dao) {
@@ -443,7 +448,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	public User removeUserProperty(User user, String key) {
 		if (user != null) {
-
 			// if the current user isn't allowed to edit users and
 			// the user being edited is not the current user, throw an
 			// exception
@@ -684,7 +688,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 	private void updatePassword(User user, String newPassword) {
 		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
-		dao.changePassword(user, newPassword);
+		LoginCredential credentials = dao.getLoginCredential(user);
+		String salt = credentials.getSalt();
+		if (StringUtils.isBlank(salt)) {
+			salt = Security.getRandomToken();
+		}
+		String hashedPassword = passwordEncoder.encode(newPassword + salt);
+		dao.changeHashedPassword(user, hashedPassword, salt);
 	}
 
 	@Override
