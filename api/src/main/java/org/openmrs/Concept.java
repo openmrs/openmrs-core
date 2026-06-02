@@ -25,6 +25,13 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.Cacheable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
@@ -76,6 +83,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @see ConceptMap
  * @see ConceptService
  */
+
+@Entity
+@Table(name = "concept")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Audited
@@ -89,8 +99,12 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 	// Fields
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "concept_id", nullable = false)
 	private Integer conceptId;
-
+	
+	
 	@GenericField
 	private Boolean retired = false;
 
