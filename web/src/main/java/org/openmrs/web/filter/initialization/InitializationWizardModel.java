@@ -261,7 +261,7 @@ public class InitializationWizardModel {
          * (e.g. on a parameterless GET caused by a favicon request or redirect)
          * before the background install thread has read them.
          */
-        public boolean passwordsEntered = false;
+        private boolean passwordsEntered = false;
 
 		public boolean isPasswordsEntered() {
             return passwordsEntered;
