@@ -34,7 +34,7 @@ public class MemoryAppender extends org.openmrs.logging.MemoryAppender {
 
 	MemoryAppender(org.openmrs.logging.MemoryAppender implementation) {
 		super(implementation.getName(), implementation.getFilter(), (StringLayout) implementation.getLayout(),
-		        implementation.ignoreExceptions(), implementation.getPropertyArray(), 1);
+		        implementation.ignoreExceptions(), implementation.getPropertyArray(), implementation.getBufferSize());
 
 		this.implementation = implementation;
 	}

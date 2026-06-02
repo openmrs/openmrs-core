@@ -35,12 +35,17 @@ import org.apache.logging.log4j.core.config.json.JsonConfiguration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
 import org.apache.logging.log4j.core.config.yaml.YamlConfiguration;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.LoggerFactory;
+
+import static org.openmrs.logging.OpenmrsLoggingUtil.stringToLevel;
 
 /**
  * {@link ConfigurationFactory} to handle OpenMRS's logging configuration.
@@ -76,20 +81,22 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 			List<File> configurationFiles = getConfigurationFiles();
 			if (!configurationFiles.isEmpty()) {
 				if (configurationFiles.size() == 1) {
-					System.out.println("Adding log4j2 configuration file: " + configurationFiles.get(0).getPath());
+					StatusLogger.getLogger().info("Adding log4j2 configuration file: {}",
+					    configurationFiles.get(0).getPath());
 					return super.getConfiguration(loggerContext, name, configurationFiles.get(0).toURI());
 				} else {
 					List<AbstractConfiguration> abstractConfigurations = new ArrayList<>();
 					for (File configFile : configurationFiles) {
 						Configuration configuration = super.getConfiguration(loggerContext, name, configFile.toURI());
 						if (configuration instanceof AbstractConfiguration) {
-							System.out.println("Adding log4j2 configuration file: " + configFile.getPath());
+							StatusLogger.getLogger().info("Adding log4j2 configuration file: {}", configFile.getPath());
 							abstractConfigurations.add((AbstractConfiguration) configuration);
 						} else {
-							System.err.println("Unable to add log4j2 configuration file: " + configFile.getPath());
+							StatusLogger.getLogger().error("Unable to add log4j2 configuration file: {}",
+							    configFile.getPath());
 						}
 					}
-					return new CompositeConfiguration(abstractConfigurations);
+					return new OpenmrsCompositeConfiguration(abstractConfigurations);
 				}
 			}
 		}
@@ -140,8 +147,6 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 		MemoryAppender memoryAppender = configuration.getAppender(OpenmrsConstants.MEMORY_APPENDER_NAME);
 		if (memoryAppender == null) {
 			memoryAppender = MemoryAppender.newBuilder().build();
-			memoryAppender.start();
-
 			configuration.addAppender(memoryAppender);
 		}
 
@@ -150,27 +155,56 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 			rootLogger.addAppender(memoryAppender, null, memoryAppender.getFilter());
 		}
 
-		try {
-			AdministrationService adminService = Context.getAdministrationService();
-			applyLogLevels(configuration, adminService);
-		} catch (ServiceNotFoundException e) {
-			// if AdministrativeService is not available, we'll assume we're starting up and everything is ok
-			if (!e.getServiceClass().isAssignableFrom(AdministrationService.class)) {
-				throw e;
+		// Check system and runtime properties first — these do not require a session
+		String logLevel = ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+		if (logLevel == null) {
+			logLevel = ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+		}
+
+		if (logLevel != null) {
+			applyLogLevels(configuration, logLevel);
+		} else if (Context.isSessionOpen()) {
+			try {
+				applyLogLevels(configuration);
+			} catch (ServiceNotFoundException e) {
+				// if AdministrationService is not available, we'll assume we're starting up and everything is ok
+				if (!AdministrationService.class.isAssignableFrom(e.getServiceClass())) {
+					throw e;
+				} else {
+					StatusLogger.getLogger()
+					        .debug("AdministrationService is not yet available; skipping log-level overrides");
+				}
 			}
 		}
 	}
 
-	private static void applyLogLevels(AbstractConfiguration configuration, AdministrationService adminService) {
-		String logLevel = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "");
+	private static void applyLogLevels(AbstractConfiguration configuration) {
+		String logLevel;
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			logLevel = ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
 
+		if (logLevel != null) {
+			applyLogLevels(configuration, logLevel);
+		}
+	}
+
+	private static void applyLogLevels(AbstractConfiguration configuration, String logLevel) {
 		for (String level : logLevel.split(",")) {
-			String[] classAndLevel = level.split(":");
+			String[] classAndLevel = level.split(":", 3);
 			if (classAndLevel.length == 0) {
 				break;
 			} else if (classAndLevel.length == 1) {
 				applyLogLevel(configuration, OpenmrsConstants.LOG_CLASS_DEFAULT, classAndLevel[0].trim());
 			} else {
+				if (classAndLevel.length > 2) {
+					StatusLogger.getLogger().warn(
+					    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO",
+					    level);
+				}
 				applyLogLevel(configuration, classAndLevel[0].trim(), classAndLevel[1].trim());
 			}
 		}
@@ -185,32 +219,27 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 			loggerName = OpenmrsConstants.LOG_CLASS_DEFAULT;
 		}
 
-		LoggerConfig loggerConfig = configuration.getLogger(loggerName);
-		if (loggerConfig != null) {
-			switch (loggerLevel.toLowerCase(Locale.ROOT)) {
-				case OpenmrsConstants.LOG_LEVEL_TRACE:
-					loggerConfig.setLevel(Level.TRACE);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_DEBUG:
-					loggerConfig.setLevel(Level.DEBUG);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_INFO:
-					loggerConfig.setLevel(Level.INFO);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_WARN:
-					loggerConfig.setLevel(Level.WARN);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_ERROR:
-					loggerConfig.setLevel(Level.ERROR);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_FATAL:
-					loggerConfig.setLevel(Level.FATAL);
-					break;
-				default:
-					log.warn("Log level {} is invalid. " + "Valid values are trace, debug, info, warn, error or fatal",
-					    loggerLevel);
-					break;
-			}
+		LoggerConfig loggerConfig = configuration.getLoggerConfig(loggerName);
+		Level level = stringToLevel(loggerLevel, loggerName);
+
+		if (loggerConfig == null || !loggerConfig.getName().equals(loggerName)) {
+			loggerConfig = new LoggerConfig(loggerName, level, true);
+			configuration.addLogger(loggerName, loggerConfig);
+		} else {
+			loggerConfig.setLevel(level);
+		}
+	}
+
+	private static class OpenmrsCompositeConfiguration extends CompositeConfiguration {
+
+		public OpenmrsCompositeConfiguration(final List<? extends AbstractConfiguration> configurations) {
+			super(configurations);
+		}
+
+		@Override
+		protected void doConfigure() {
+			super.doConfigure();
+			doOpenmrsCustomisations(this);
 		}
 	}
 
