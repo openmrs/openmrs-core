@@ -831,6 +831,20 @@ class InitializationFilterE2ETest {
 		assertTrue(filter.wizardModel.hasCurrentOpenmrsDatabase);
 	}
 
+	@Test
+	void isCurrentDatabase_shouldReturnTrueForMariaDBUrl() {
+		filter.wizardModel.databaseConnection = "jdbc:mariadb://localhost:3306/openmrs";
+		assertTrue(filter.isCurrentDatabase("mariadb"));
+		assertFalse(filter.isCurrentDatabase("mysql"));
+	}
+
+	@Test
+	void isCurrentDatabase_shouldReturnTrueForMySQLUrl() {
+		filter.wizardModel.databaseConnection = "jdbc:mysql://localhost:3306/openmrs";
+		assertTrue(filter.isCurrentDatabase("mysql"));
+		assertFalse(filter.isCurrentDatabase("mariadb"));
+	}
+
 	// ========== goBack via image click (back.x / back.y) ==========
 
 	@Test
