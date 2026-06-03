@@ -1181,7 +1181,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 
-	private boolean isCurrentDatabase(String database) {
+	protected boolean isCurrentDatabase(String database) {
 		return wizardModel.databaseConnection.contains(database);
 	}
 
@@ -1430,7 +1430,7 @@ public class InitializationFilter extends StartupFilter {
 							setExecutingTask(WizardTask.CREATE_SCHEMA);
 							// connect via jdbc and create a database
 							String sql;
-							if (isCurrentDatabase(DATABASE_MYSQL)) {
+							if (isCurrentDatabase(DATABASE_MYSQL) || isCurrentDatabase(DATABASE_MARIADB)) {
 								sql = "create database if not exists `?` default character set utf8";
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 								sql = "create database `?` encoding 'utf8'";
@@ -1485,7 +1485,7 @@ public class InitializationFilter extends StartupFilter {
 							}
 
 							String sql = "";
-							if (isCurrentDatabase(DATABASE_MYSQL)) {
+							if (isCurrentDatabase(DATABASE_MYSQL) || isCurrentDatabase(DATABASE_MARIADB)) {
 								sql = "drop user '?'@" + host;
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 								sql = "drop user `?`";
@@ -1494,7 +1494,7 @@ public class InitializationFilter extends StartupFilter {
 							executeStatement(true, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 							    connectionUsername);
 
-							if (isCurrentDatabase(DATABASE_MYSQL)) {
+							if (isCurrentDatabase(DATABASE_MYSQL) || isCurrentDatabase(DATABASE_MARIADB)) {
 								sql = "create user '?'@" + host + " identified by '?'";
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 								sql = "create user `?` with password '?'";
@@ -1511,7 +1511,7 @@ public class InitializationFilter extends StartupFilter {
 
 							// grant the roles
 							int result = 1;
-							if (isCurrentDatabase(DATABASE_MYSQL)) {
+							if (isCurrentDatabase(DATABASE_MYSQL) || isCurrentDatabase(DATABASE_MARIADB)) {
 								sql = "GRANT ALL ON `?`.* TO '?'@" + host;
 								result = executeStatement(false, wizardModel.createUserUsername,
 								    wizardModel.createUserPassword, sql, wizardModel.databaseName, connectionUsername);

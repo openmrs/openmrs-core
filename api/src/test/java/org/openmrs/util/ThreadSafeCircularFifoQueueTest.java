@@ -576,6 +576,24 @@ class ThreadSafeCircularFifoQueueTest {
 		assertEquals("5", array[2]);
 	}
 
+	/* Capacity tests */
+
+	@Test
+	void capacity_shouldReturnConfiguredCapacity() {
+		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(5);
+		assertEquals(5, queue.capacity());
+	}
+
+	@Test
+	void capacity_shouldReturnOriginalCapacityAfterOverflow() {
+		ThreadSafeCircularFifoQueue<String> queue = new ThreadSafeCircularFifoQueue<>(3);
+		queue.add("a");
+		queue.add("b");
+		queue.add("c");
+		queue.add("d"); // evicts "a"
+		assertEquals(3, queue.capacity());
+	}
+
 	/* Thread safety tests */
 
 	@Test
