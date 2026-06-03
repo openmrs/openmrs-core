@@ -316,7 +316,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		return StreamSupport.stream(
 		    new Spliterators.AbstractSpliterator<TaskDetails>(Long.MAX_VALUE, Spliterator.ORDERED | Spliterator.NONNULL) {
 
-			    private int offset = 0;
+			    private long offset = 0;
 
 			    private Iterator<Job> currentBatch;
 

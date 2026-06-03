@@ -58,6 +58,8 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
+import org.openmrs.parameter.ConceptSearchCriteria;
+import org.openmrs.parameter.ConceptSearchCriteriaBuilder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.DateUtil;
@@ -4060,5 +4062,133 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertThat(ingredient.getStrength(), equalTo(500.0));
 		assertThat(ingredient.getUnits(), notNullValue());
 		assertThat(ingredient.getUnits(), equalTo(mg));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnConceptsMatchingUuids() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
+		        .addUuids("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "0f97e14e-cdc2-49ac-9255-b5126f8a5147")
+		        .includeRetired(true).build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertEquals(2, concepts.size());
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
+		assertThat(ids, org.hamcrest.Matchers.containsInAnyOrder(3, 23));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldIgnoreUnknownUuids() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
+		        .addUuids("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "does-not-exist").includeRetired(true).build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertEquals(1, concepts.size());
+		assertEquals(3, (int) concepts.get(0).getConceptId());
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnConceptsMatchingIds() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptIds(3, 23).includeRetired(true)
+		        .build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertEquals(2, concepts.size());
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
+		assertThat(ids, org.hamcrest.Matchers.containsInAnyOrder(3, 23));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldIgnoreUnknownIds() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptIds(3, 999999).includeRetired(true)
+		        .build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertEquals(1, concepts.size());
+		assertEquals(3, (int) concepts.get(0).getConceptId());
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnConceptsMatchingMapping() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
+		        .addMapping("Some Standardized Terminology:WGT234").includeRetired(true).build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertFalse(concepts.isEmpty());
+		assertTrue(concepts.stream().anyMatch(c -> c.getConceptId() == 5089));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldNotReturnRetiredConceptWhenIncludeRetiredIsFalse() {
+		// concept 24 is retired and mapped to "454545" in SSTRM (per existing mapping tests)
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addMapping("SSTRM:454545").includeRetired(false)
+		        .build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertTrue(concepts.stream().noneMatch(c -> c.getConceptId() == 24));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnUnionWhenBothUuidsAndIdsAreSet() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addUuids("0cbe2ed3-cd5f-4f46-9459-26127c9265ab")
+		        .addConceptIds(23).includeRetired(true).build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertEquals(2, concepts.size());
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
+		assertThat(ids, org.hamcrest.Matchers.containsInAnyOrder(3, 23));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnEmptyListWhenNoCriteriaSet() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertNotNull(concepts);
+		assertTrue(concepts.isEmpty());
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnUnionWhenMultipleMappingsAreSet() {
+		// concept 5089 maps to "Some Standardized Terminology:WGT234"
+		// concept 24 maps to "SSTRM:454545" (retired)
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
+		        .addMapping("Some Standardized Terminology:WGT234").addMapping("SSTRM:454545").includeRetired(true).build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
+		assertTrue(ids.contains(5089));
+		assertTrue(ids.contains(24));
+	}
+
+	/**
+	 * @see ConceptSearchCriteriaBuilder#addConceptReference(String)
+	 */
+	@Test
+	public void addConceptReference_shouldResolveStaticConstantAndClassify() {
+		// OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_WEEK_START_DAY_DEFAULT_VALUE == "0"
+		// "0" is a valid non-negative integer, so it should be classified as a concept ID
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptReference(
+		    "org.openmrs.util.OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_WEEK_START_DAY_DEFAULT_VALUE").build();
+		assertTrue(criteria.getConceptIds().contains(0));
+		assertTrue(criteria.getUuids().isEmpty());
+		assertTrue(criteria.getMappings().isEmpty());
 	}
 }
