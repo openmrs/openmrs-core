@@ -57,7 +57,7 @@
 		<infinispanVersion>15.2.6.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
 		<jacksonVersion>2.22.0</jacksonVersion>
-		<slf4jVersion>1.7.36</slf4jVersion>
+		<slf4jVersion>2.0.18</slf4jVersion>
 		<log4jVersion>2.26.0</log4jVersion>
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
