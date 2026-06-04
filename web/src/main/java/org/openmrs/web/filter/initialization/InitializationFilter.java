@@ -279,7 +279,7 @@ public class InitializationFilter extends StartupFilter {
 			// the background install thread reads them, causing "using password: NO".
 			if (!wizardModel.isPasswordsEntered()) {
 				clearPasswords();
-    }
+			}
 
 			renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 		} else if (INSTALL_METHOD.equals(page)) {
@@ -414,13 +414,13 @@ public class InitializationFilter extends StartupFilter {
 	}
 
 	private void clearPasswords() {
-        wizardModel.databaseRootPassword = "";
-        wizardModel.createDatabasePassword = "";
-        wizardModel.createUserPassword = "";
-        wizardModel.currentDatabasePassword = "";
-        wizardModel.remotePassword = "";
-        wizardModel.setPasswordsEntered(false);
-    }
+		wizardModel.databaseRootPassword = "";
+		wizardModel.createDatabasePassword = "";
+		wizardModel.createUserPassword = "";
+		wizardModel.currentDatabasePassword = "";
+		wizardModel.remotePassword = "";
+		wizardModel.setPasswordsEntered(false);
+	}
 
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests
@@ -875,13 +875,12 @@ public class InitializationFilter extends StartupFilter {
 	}
 
 	private void startInstallation() {
-		//if no one has run any installation
-		if (!isInstallationStarted()) {
-			initJob = new InitializationCompletion();
-			setInstallationStarted(true);
-			initJob.start();
-		}
-	}
+                if (!isInstallationStarted()) {
+                        initJob = new InitializationCompletion();
+                        setInstallationStarted(true);
+                        initJob.start();
+                }
+        }
 
 	private void createTablesTask() {
 		if (wizardModel.createTables) {
