@@ -136,8 +136,24 @@ jobs:
             echo "is_snapshot=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Project version $VERSION is not a SNAPSHOT; skipping deploy."
           fi
-      - name: Verify deploy credentials are available
+      # The concurrency group serializes deploys but does not order them: a rerun of an
+      # older commit (e.g. after a hung matrix leg) could deploy AFTER a newer push and
+      # leave the older build resolvable as the latest snapshot. Skip the deploy when the
+      # branch tip has moved past the commit this run is building.
+      - name: Check this commit is still the branch tip
+        id: freshness
         if: ${{ steps.snapshot.outputs.is_snapshot == 'true' }}
+        run: |
+          set -e
+          git fetch --quiet --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping deploy: $GITHUB_REF_NAME has moved past $(git rev-parse --short HEAD); the run for the newer commit deploys instead."
+          fi
+      - name: Verify deploy credentials are available
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' && steps.freshness.outputs.current == 'true' }}
         env:
           MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
           MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
@@ -147,7 +163,7 @@ jobs:
             exit 1
           fi
       - name: Deploy SNAPSHOT to Maven
-        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' }}
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' && steps.freshness.outputs.current == 'true' }}
         run: mvn deploy -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --no-transfer-progress --file pom.xml
         env:
           MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
