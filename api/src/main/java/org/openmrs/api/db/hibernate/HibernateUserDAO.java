@@ -42,6 +42,7 @@ import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.openmrs.util.UserByNameComparator;
 import org.slf4j.Logger;
@@ -154,7 +155,7 @@ public class HibernateUserDAO implements UserDAO {
 		List<User> users = query.getResultList();
 
 		if (users == null || users.isEmpty()) {
-			log.warn("request for username '" + username + "' not found");
+			log.warn("request for username '{}' not found", username);
 			return null;
 		}
 
@@ -233,7 +234,7 @@ public class HibernateUserDAO implements UserDAO {
 
 		Long count = JpaUtils.getSingleResultOrNull(query);
 
-		log.debug("# users found: " + count);
+		log.debug("# users found: {}", count);
 		return (count != null && count != 0);
 	}
 
@@ -458,7 +459,7 @@ public class HibernateUserDAO implements UserDAO {
 			throw new DAOException("Passwords don't match");
 		}
 
-		log.info("updating password for {}", u.getUsername());
+		log.info("updating password for {}", OpenmrsUtil.applyLogSanitization(u.getUsername()));
 
 		// update the user with the new password
 		String salt = credentials.getSalt();
@@ -488,7 +489,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changeQuestionAnswer(User u, String question, String answer) throws DAOException {
-		log.info("Updating secret question and answer for " + u.getUsername());
+		log.info("Updating secret question and answer for {}", OpenmrsUtil.applyLogSanitization(u.getUsername()));
 
 		LoginCredential credentials = getLoginCredential(u);
 		credentials.setSecretQuestion(question);
@@ -558,8 +559,8 @@ public class HibernateUserDAO implements UserDAO {
 		if (object instanceof Number) {
 			id = ((Number) JpaUtils.getSingleResultOrNull(query)).intValue() + 1;
 		} else {
-			log.warn("What is being returned here? Definitely nothing expected object value: '" + object + "' of class: "
-			        + (object != null ? object.getClass() : "null"));
+			log.warn("What is being returned here? Definitely nothing expected object value: '{}' of class: {}", object,
+			    (object != null ? object.getClass() : "null"));
 			id = 1;
 		}
 
@@ -712,7 +713,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	private Query createUserSearchQuery(String name, List<Role> roles, boolean includeRetired, String hqlSelectStart) {
 
-		log.debug("name: " + name);
+		log.debug("name: {}", OpenmrsUtil.applyLogSanitization(name));
 
 		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
 

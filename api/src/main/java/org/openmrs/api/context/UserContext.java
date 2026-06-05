@@ -31,6 +31,7 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.LocationService;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,8 +110,9 @@ public class UserContext implements Serializable {
 	 */
 	public Authenticated authenticate(Credentials credentials) throws ContextAuthenticationException {
 
-		log.debug("Authenticating client '{}' with scheme '{}'", credentials.getClientName(),
-		    credentials.getAuthenticationScheme());
+		log.debug("Authenticating client '{}' with scheme '{}'",
+		    OpenmrsUtil.applyLogSanitization(credentials.getClientName()),
+		    OpenmrsUtil.applyLogSanitization(credentials.getAuthenticationScheme()));
 
 		Authenticated authenticated = null;
 		try {
@@ -168,7 +170,8 @@ public class UserContext implements Serializable {
 		User userToBecome = Context.getUserService().getUserByUsername(systemId);
 
 		if (userToBecome == null) {
-			throw new ContextAuthenticationException("User not found with systemId: " + systemId);
+			throw new ContextAuthenticationException(
+			        "User not found with systemId: " + OpenmrsUtil.sanitizeForLogging(systemId));
 		}
 
 		// hydrate the user object
@@ -384,7 +387,10 @@ public class UserContext implements Serializable {
 	 * @return true if authenticated user has given privilege
 	 */
 	public boolean hasPrivilege(String privilege) {
-		log.debug("Checking '{}' against proxies: {}", privilege, proxies);
+		if (log.isDebugEnabled()) {
+			log.debug("Checking '{}' against proxies: {}", OpenmrsUtil.applyLogSanitization(privilege),
+			    OpenmrsUtil.applyLogSanitization(proxies));
+		}
 		// check proxied privileges
 		for (String s : new ArrayList<>(proxies)) {
 			if (s.equals(privilege)) {

@@ -144,7 +144,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 
 		// sanity check
 		identifiers.add(pi);
-		assertTrue(identifiers.size() == 1, "There should still be only 1 identifier in the patient object now");
+		assertEquals(1, identifiers.size(), "There should still be only 1 identifier in the patient object now");
 
 		pi.setDateCreated(null);
 		pi.setCreator(null);
@@ -530,11 +530,11 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void openmrsDateFormat_shouldAllowSingleDigitDatesAndMonths() throws ParseException {
-
-		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en"));
-		sdf.parse("1/1/2001");
-
+	public void openmrsDateFormat_shouldAllowSingleDigitDatesAndMonths() {
+		assertDoesNotThrow(() -> {
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en"));
+			sdf.parse("1/1/2001");
+		});
 	}
 
 	@Test
@@ -779,7 +779,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		OpenmrsUtil.applyLogLevels();
 
 		try {
-			assertEquals(logger.getLevel(), Level.DEBUG);
+			assertEquals(Level.DEBUG, logger.getLevel());
 			assertNotEquals(previousLevel, logger.getLevel());
 		} finally {
 			// undo the logging level
@@ -1055,5 +1055,62 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		String result = OpenmrsUtil.isValidNumericValue(120.0f, obs);
 
 		assertEquals("", result);
+	}
+
+	/**
+	 * @see OpenmrsUtil#sanitizeForLogging(Object)
+	 */
+	@Test
+	public void sanitizeForLogging_shouldReturnNullGivenNullParameter() {
+		assertNull(OpenmrsUtil.sanitizeForLogging(null));
+	}
+
+	/**
+	 * @see OpenmrsUtil#sanitizeForLogging(Object)
+	 */
+	@Test
+	public void sanitizeForLogging_shouldReplaceCarriageReturnAndLineFeedWithUnderscores() {
+		assertEquals("a_b_c", OpenmrsUtil.sanitizeForLogging("a\nb\rc"));
+	}
+
+	/**
+	 * @see OpenmrsUtil#sanitizeForLogging(Object)
+	 */
+	@Test
+	public void sanitizeForLogging_shouldReplaceControlCharactersWithUnderscores() {
+		assertEquals("a_b_c_d_e", OpenmrsUtil.sanitizeForLogging("a\u000Bb\u000Cc\u001Bd\u0008e"));
+	}
+
+	/**
+	 * @see OpenmrsUtil#sanitizeForLogging(Object)
+	 */
+	@Test
+	public void sanitizeForLogging_shouldReplaceUnicodeLineSeparatorsWithUnderscores() {
+		assertEquals("a_b_c", OpenmrsUtil.sanitizeForLogging("a\u2028b\u2029c"));
+	}
+
+	/**
+	 * @see OpenmrsUtil#sanitizeForLogging(Object)
+	 */
+	@Test
+	public void sanitizeForLogging_shouldReplaceC1ControlCharactersWithUnderscores() {
+		assertEquals("a_b_c", OpenmrsUtil.sanitizeForLogging("a\u0085b\u0099c"));
+	}
+
+	/**
+	 * @see OpenmrsUtil#sanitizeForLogging(Object)
+	 */
+	@Test
+	public void sanitizeForLogging_shouldNotReplaceTabs() {
+		assertEquals("a\tb", OpenmrsUtil.sanitizeForLogging("a\tb"));
+	}
+
+	/**
+	 * @see OpenmrsUtil#applyLogSanitization(Object)
+	 */
+	@Test
+	public void applyLogSanitization_shouldLazilySanitizeToString() {
+		Object sanitized = OpenmrsUtil.applyLogSanitization("a\nb");
+		assertEquals("a_b", sanitized.toString());
 	}
 }
