@@ -1,9 +1,11 @@
-# standard build with Maven and push coverage data
+# standard build with Maven, push coverage data, and deploy SNAPSHOT artifacts
+# to the OpenMRS maven repository on pushes to release-line branches
 name: Build with Maven
 
 # trigger build on branches that *should* support both Java 8 and Java 11
 on:
   push:
+    # Keep this list in sync with the branch allowlist in the deploy-snapshot job below.
     branches:
       - master
       - 2.9.x
@@ -84,3 +86,85 @@ jobs:
           CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
         run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+
+  deploy-snapshot:
+    name: Deploy SNAPSHOT to Maven
+    needs: build
+    # Mirrors the deploy job of openmrs-contrib-gha-workflows/build-backend-module.yml:
+    # deploy only from the canonical repo (never PRs or forks), on direct pushes or
+    # manual reruns (workflow_dispatch). The branch allowlist must be checked explicitly
+    # because on.push.branches does not constrain workflow_dispatch. Keep it in sync with
+    # on.push.branches above. Each branch runs its own copy of this file, so entries for
+    # other branches only take effect once this job is ported there - they are listed so
+    # the file can be merged across release lines verbatim.
+    if: >-
+      ${{ github.repository == 'openmrs/openmrs-core'
+      && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      && contains(fromJSON('["master", "2.9.x", "2.8.x"]'), github.ref_name) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    # Serialize deploys per branch so a fast follow-up push cannot interleave its
+    # maven-metadata.xml update with an earlier still-running deploy. Never cancel a
+    # deploy in progress (a half-uploaded snapshot is worse than a queued one).
+    concurrency:
+      group: deploy-snapshot-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          # Deploy with the oldest supported JDK on this line (javaCompilerVersion is 1.8)
+          # so published artifacts match what the Java 8 matrix leg validated.
+          java-version: 8
+          cache: 'maven'
+          server-id: openmrs-repo-snapshots
+          server-username: MAVEN_REPO_USERNAME
+          server-password: MAVEN_REPO_API_KEY
+      - name: Check project version is a SNAPSHOT
+        id: snapshot
+        run: |
+          set -e
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout --batch-mode)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [[ "$VERSION" == *-SNAPSHOT ]]; then
+            echo "is_snapshot=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_snapshot=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Project version $VERSION is not a SNAPSHOT; skipping deploy."
+          fi
+      # The concurrency group serializes deploys but does not order them: a rerun of an
+      # older commit (e.g. after a hung matrix leg) could deploy AFTER a newer push and
+      # leave the older build resolvable as the latest snapshot. Skip the deploy when the
+      # branch tip has moved past the commit this run is building.
+      - name: Check this commit is still the branch tip
+        id: freshness
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' }}
+        run: |
+          set -e
+          git fetch --quiet --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping deploy: $GITHUB_REF_NAME has moved past $(git rev-parse --short HEAD); the run for the newer commit deploys instead."
+          fi
+      - name: Verify deploy credentials are available
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' && steps.freshness.outputs.current == 'true' }}
+        env:
+          MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+          MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
+        run: |
+          if [ -z "$MAVEN_REPO_USERNAME" ] || [ -z "$MAVEN_REPO_API_KEY" ]; then
+            echo "::error::The MAVEN_REPO_USERNAME / MAVEN_REPO_API_KEY secrets are not available to this repository. Scope the org secrets to openmrs-core to enable snapshot deployment."
+            exit 1
+          fi
+      - name: Deploy SNAPSHOT to Maven
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' && steps.freshness.outputs.current == 'true' }}
+        run: mvn deploy -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --no-transfer-progress --file pom.xml
+        env:
+          MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+          MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
