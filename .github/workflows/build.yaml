@@ -84,3 +84,42 @@ jobs:
           CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
         run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+
+  deploy-snapshot:
+    name: Deploy SNAPSHOT to Maven
+    needs: build
+    # Mirrors the deploy job of openmrs-contrib-gha-workflows/build-backend-module.yml:
+    # deploy only on direct pushes to the canonical repo (never PRs or forks).
+    if: ${{ github.event_name == 'push' && github.repository == 'openmrs/openmrs-core' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 8
+          cache: 'maven'
+          server-id: openmrs-repo-snapshots
+          server-username: MAVEN_REPO_USERNAME
+          server-password: MAVEN_REPO_API_KEY
+      - name: Check project version is a SNAPSHOT
+        id: snapshot
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout --batch-mode)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [[ "$VERSION" == *-SNAPSHOT ]]; then
+            echo "is_snapshot=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_snapshot=false" >> "$GITHUB_OUTPUT"
+            echo "Project version $VERSION is not a SNAPSHOT; skipping deploy."
+          fi
+      - name: Deploy SNAPSHOT to Maven
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' }}
+        run: mvn deploy -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --file pom.xml
+        env:
+          MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+          MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
