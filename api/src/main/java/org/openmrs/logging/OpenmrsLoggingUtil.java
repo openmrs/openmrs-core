@@ -27,8 +27,6 @@ import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.RollingRandomAccessFileAppender;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.status.StatusLogger;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
@@ -255,7 +253,7 @@ public final class OpenmrsLoggingUtil {
 	 * @param logLevel The string level to convert
 	 * @return The corresponding {@code Level} or {@code Level#WARN} if unknown
 	 */
-	public static Level stringToLevel(@NonNull String logLevel) {
+	public static Level stringToLevel(String logLevel) {
 		return stringToLevel(logLevel, null);
 	}
 
@@ -269,7 +267,7 @@ public final class OpenmrsLoggingUtil {
 	 * @return The corresponding {@code Level} or {@code Level#WARN} if unknown
 	 * @see OpenmrsConstants#LOG_CLASS_DEFAULT
 	 */
-	public static Level stringToLevel(@NonNull String logLevel, @Nullable String logClass) {
+	public static Level stringToLevel(String logLevel, String logClass) {
 		Level level;
 		if (logLevel == null) {
 			return Level.WARN;
