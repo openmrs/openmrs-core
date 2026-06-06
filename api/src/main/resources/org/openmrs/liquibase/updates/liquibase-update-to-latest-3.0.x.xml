@@ -142,5 +142,121 @@
 		</addColumn>
 	</changeSet>
 	
-</databaseChangeLog>
+	<changeSet id="TRUNK-6649-2026-06-07" author="shivvani-r">
+		<comment>Add obs_archive and obs_archive_reference_range tables and global properties for Archiving Observations</comment>
 
+		<createTable tableName="obs_archive">
+			<column name="obs_id" type="INT">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="person_id" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueComputed="NULL" name="encounter_id" type="INT"/>
+			<column defaultValueComputed="NULL" name="order_id" type="INT"/>
+			<column name="obs_datetime" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueComputed="NULL" name="location_id" type="INT"/>
+			<column defaultValueComputed="NULL" name="obs_group_id" type="INT"/>
+			<column name="accession_number" type="VARCHAR(255)"/>
+			<column defaultValueComputed="NULL" name="value_group_id" type="INT"/>
+			<column defaultValueComputed="NULL" name="value_coded" type="INT"/>
+			<column defaultValueComputed="NULL" name="value_coded_name_id" type="INT"/>
+			<column defaultValueComputed="NULL" name="value_drug" type="INT"/>
+			<column defaultValueComputed="NULL" name="value_datetime" type="DATETIME"/>
+			<column defaultValueComputed="NULL" name="value_numeric" type="DOUBLE"/>
+			<column name="value_modifier" type="VARCHAR(2)"/>
+			<column name="value_text" type="TEXT"/>
+			<column name="value_complex" type="VARCHAR(1000)"/>
+			<column name="comments" type="VARCHAR(255)"/>
+			<column defaultValueNumeric="0" name="creator" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueComputed="NULL" name="voided_by" type="INT"/>
+			<column defaultValueComputed="NULL" name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="VARCHAR(255)"/>
+			<column name="uuid" type="CHAR(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column defaultValueComputed="NULL" name="previous_version" type="INT"/>
+			<column name="form_namespace_and_path" type="VARCHAR(255)"/>
+			<column defaultValue="FINAL" name="status" type="VARCHAR(16)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="interpretation" type="VARCHAR(32)"/>
+		</createTable>
+
+		<createTable tableName="obs_archive_reference_range">
+			<column name="obs_reference_range_id" type="INT">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="obs_id" type="INT">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column defaultValueComputed="NULL" name="hi_absolute" type="DOUBLE"/>
+			<column defaultValueComputed="NULL" name="hi_critical" type="DOUBLE"/>
+			<column defaultValueComputed="NULL" name="hi_normal" type="DOUBLE"/>
+			<column defaultValueComputed="NULL" name="low_absolute" type="DOUBLE"/>
+			<column defaultValueComputed="NULL" name="low_critical" type="DOUBLE"/>
+			<column defaultValueComputed="NULL" name="low_normal" type="DOUBLE"/>
+			<column name="uuid" type="CHAR(38)">
+				<constraints unique="true"/>
+			</column>
+		</createTable>
+
+		<createIndex indexName="idx_obs_archive_person_id" tableName="obs_archive">
+			<column name="person_id"/>
+		</createIndex>
+		<createIndex indexName="idx_obs_archive_concept_id" tableName="obs_archive">
+			<column name="concept_id"/>
+		</createIndex>
+		<createIndex indexName="idx_obs_archive_encounter_id" tableName="obs_archive">
+			<column name="encounter_id"/>
+		</createIndex>
+		<createIndex indexName="idx_obs_archive_uuid" tableName="obs_archive">
+			<column name="uuid"/>
+		</createIndex>
+
+		<insert tableName="global_property">
+			<column name="property" value="obs.archive.enabled"/>
+			<column name="property_value" value="false"/>
+			<column name="description" value="Controls whether the background archival process is active."/>
+			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702341"/>
+		</insert>
+		<insert tableName="global_property">
+			<column name="property" value="obs.archive.batch_size"/>
+			<column name="property_value" value="1000"/>
+			<column name="description" value="The number of rows processed in a single database transaction."/>
+			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702342"/>
+		</insert>
+		<insert tableName="global_property">
+			<column name="property" value="obs.archive.retention_days"/>
+			<column name="property_value" value="90"/>
+			<column name="description" value="The minimum age (in days) since an observation was voided before it is eligible for archival."/>
+			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702343"/>
+		</insert>
+		<insert tableName="global_property">
+			<column name="property" value="obs.archive.cron"/>
+			<column name="property_value" value="0 0 * * *"/>
+			<column name="description" value="The cron schedule for the recurring archival job (default is daily at midnight)."/>
+			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702344"/>
+		</insert>
+		<insert tableName="global_property">
+			<column name="property" value="obs.archive.last_processed_obs_id"/>
+			<column name="property_value" value="-1"/>
+			<column name="description" value="The persistent checkpoint indicating the lowest obs_id processed in the current sweep."/>
+			<column name="uuid" value="d979d066-15e6-467c-9d4b-cb575ef88888"/>
+		</insert>
+	</changeSet>
+
+</databaseChangeLog>

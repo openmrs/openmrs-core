@@ -48,6 +48,8 @@ public class LiquibaseUtil {
 				DatabaseUpdater.executeChangelog(liquibaseSchemaFileName,
 				    new PrintingChangeSetExecutorCallback("OpenMRS schema file"));
 			} catch (Exception ex) {
+				System.err.println("CRITICAL LIQUIBASE SCHEMA ERROR: " + ex.getMessage());
+				ex.printStackTrace();
 				log.error("Failed to run the liquibase schema file", ex);
 			}
 
@@ -67,6 +69,8 @@ public class LiquibaseUtil {
 					DatabaseUpdater.executeChangelog(changelog,
 					    new PrintingChangeSetExecutorCallback("executing Liquibase changelog " + changelog));
 				} catch (Exception ex) {
+					System.err.println("CRITICAL LIQUIBASE CHANGELOG ERROR for " + changelog + ": " + ex.getMessage());
+					ex.printStackTrace();
 					log.error("Failed to run the latest changesets", ex);
 				}
 			}

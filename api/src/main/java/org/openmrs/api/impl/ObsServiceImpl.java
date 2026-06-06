@@ -33,6 +33,7 @@ import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -74,6 +75,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	/**
 	 * Default empty constructor for this obs service
 	 */
+	private CustomDatatypeUtil customDatatypeUtil;
+
+	private ObsArchiveHelper archiveHelper;
+
 	public ObsServiceImpl() {
 	}
 
@@ -127,7 +132,11 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	private void setPersonFromEncounter(Obs obs) {
 		Encounter encounter = obs.getEncounter();
 		if (encounter != null) {
-			obs.setPerson(encounter.getPatient());
+			Person patient = encounter.getPatient();
+			if (patient != null
+			        && (obs.getPerson() == null || !obs.getPerson().getPersonId().equals(patient.getPersonId()))) {
+				obs.setPerson(patient);
+			}
 		}
 	}
 
@@ -274,6 +283,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	@Transactional(readOnly = true)
 	public Obs getObs(Integer obsId) throws APIException {
 		Obs obs = dao.getObs(obsId);
+		if (obs == null && getArchiveHelper().isArchived(obsId)) {
+			obs = getArchiveHelper().getObsFromArchive(obsId);
+		}
 		if (obs != null && obs.isComplex()) {
 			return getHandler(obs).getObs(obs, ComplexObsHandler.RAW_VIEW);
 		}
@@ -306,7 +318,22 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 */
 	@Override
 	public Obs unvoidObs(Obs obs) throws APIException {
-		return Context.getObsService().saveObs(obs, "unvoid obs");
+		if (getArchiveHelper().isArchived(obs.getObsId())) {
+			getArchiveHelper().restoreFromArchive(obs.getObsId());
+			Context.evictFromSession(obs);
+			Obs reloadedObs = dao.getObs(obs.getObsId());
+
+			reloadedObs.setVoided(obs.getVoided());
+			reloadedObs.setVoidedBy(obs.getVoidedBy());
+			reloadedObs.setDateVoided(obs.getDateVoided());
+			reloadedObs.setVoidReason(obs.getVoidReason());
+			obs = reloadedObs;
+		}
+		obs.setVoided(false);
+		obs.setVoidedBy(null);
+		obs.setDateVoided(null);
+		obs.setVoidReason(null);
+		return Context.getObsService().saveObs(obs, "unvoided");
 	}
 
 	/**
@@ -631,6 +658,21 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		}
 
 		return handlers;
+	}
+
+	private CustomDatatypeUtil getCustomDatatypeUtil() {
+		if (customDatatypeUtil == null) {
+			customDatatypeUtil = Context.getRegisteredComponent("customDatatypeUtil",
+			    org.openmrs.customdatatype.CustomDatatypeUtil.class);
+		}
+		return customDatatypeUtil;
+	}
+
+	private ObsArchiveHelper getArchiveHelper() {
+		if (archiveHelper == null) {
+			archiveHelper = Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class);
+		}
+		return archiveHelper;
 	}
 
 	/**
