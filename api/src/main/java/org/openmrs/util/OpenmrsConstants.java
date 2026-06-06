@@ -634,6 +634,14 @@ public final class OpenmrsConstants {
 	 */
 	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
 
+	public static final String GP_OBS_ARCHIVE_ENABLED = "obs.archive.enabled";
+
+	public static final String GP_OBS_ARCHIVE_BATCH_SIZE = "obs.archive.batch_size";
+
+	public static final String GP_OBS_ARCHIVE_RETENTION_DAYS = "obs.archive.retention_days";
+
+	public static final String GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID = "obs.archive.last_processed_obs_id";
+
 	/**
 	 * Global property that stores the base url for the application.
 	 *
@@ -1030,6 +1038,16 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "",
 		        "Specifies the uuid of the concept which represents drug other non coded"));
 		props.add(new GlobalProperty(GP_LOGIN_URL, LOGIN_URL, "Responsible for defining the Authentication URL "));
+
+		props.add(new GlobalProperty(GP_OBS_ARCHIVE_ENABLED, "false",
+		        "Set to true to enable the background observation archiving task", BooleanDatatype.class, null));
+		props.add(new GlobalProperty(GP_OBS_ARCHIVE_BATCH_SIZE, "1000",
+		        "Number of observations to archive per batch in the archiving task"));
+		props.add(new GlobalProperty(GP_OBS_ARCHIVE_RETENTION_DAYS, "90",
+		        "Number of days to keep voided observations before archiving them"));
+		props.add(new GlobalProperty(GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID, "-1",
+		        "Internal checkpoint for the archiving task. Do not modify manually unless you want to reset the sweep."));
+
 		props.addAll(ModuleFactory.getGlobalProperties());
 
 		return props;
