@@ -10,6 +10,7 @@
 package org.openmrs.api.db.hibernate.search.lucene;
 
 import org.apache.lucene.analysis.classic.ClassicFilterFactory;
+import org.apache.lucene.analysis.core.FlattenGraphFilterFactory;
 import org.apache.lucene.analysis.core.KeywordTokenizerFactory;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.WhitespaceTokenizerFactory;
@@ -18,6 +19,7 @@ import org.apache.lucene.analysis.ngram.EdgeNGramFilterFactory;
 import org.apache.lucene.analysis.ngram.NGramFilterFactory;
 import org.apache.lucene.analysis.phonetic.PhoneticFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.apache.lucene.analysis.synonym.SynonymGraphFilterFactory;
 import org.hibernate.search.backend.lucene.analysis.LuceneAnalysisConfigurationContext;
 import org.hibernate.search.backend.lucene.analysis.LuceneAnalysisConfigurer;
 import org.openmrs.api.db.hibernate.search.SearchAnalysis;
@@ -61,5 +63,15 @@ public class LuceneConfig implements LuceneAnalysisConfigurer {
 		context.analyzer(SearchAnalysis.SOUNDEX_ANALYZER).custom().tokenizer(StandardTokenizerFactory.class)
 		        .tokenFilter(ClassicFilterFactory.class).tokenFilter(LowerCaseFilterFactory.class)
 		        .tokenFilter(PhoneticFilterFactory.class).param("encoder", "Soundex");
+
+		// Same backbone as EXACT_ANALYZER, plus a SynonymGraphFilter that expands a name into its
+		// common nicknames at index time using the curated nicknames.txt dictionary. The graph the
+		// synonym filter produces must be flattened with FlattenGraphFilter before it can be indexed.
+		// Queries use the plain EXACT_ANALYZER (see PersonName), so expansion happens only at index time.
+		context.analyzer(SearchAnalysis.NICKNAME_ANALYZER).custom().tokenizer(WhitespaceTokenizerFactory.class)
+		        .tokenFilter(ClassicFilterFactory.class).tokenFilter(LowerCaseFilterFactory.class)
+		        .tokenFilter(ASCIIFoldingFilterFactory.class).tokenFilter(SynonymGraphFilterFactory.class)
+		        .param("synonyms", "org/openmrs/api/db/hibernate/search/nicknames.txt").param("expand", "true")
+		        .param("ignoreCase", "true").tokenFilter(FlattenGraphFilterFactory.class);
 	}
 }

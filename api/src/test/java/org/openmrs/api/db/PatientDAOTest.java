@@ -112,6 +112,50 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * Verifies the nickname-aware name search: with the nickname GlobalProperty enabled, searching for
+	 * a common English nickname matches a patient registered under the formal given name.
+	 *
+	 * @see PatientDAO#getPatients(String,Integer,Integer)
+	 */
+	@Test
+	public void getPatients_shouldMatchNicknameWhenNicknameSearchIsEnabled() {
+		// register an existing patient under the formal given name "Robert"
+		Patient patient = patientService.getPatient(2);
+		patient.getPersonName().setGivenName("Robert");
+		patientService.savePatient(patient);
+		updateSearchIndex();
+
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_NICKNAME, "true");
+
+		List<Patient> results = dao.getPatients("Bob", 0, null);
+
+		assertTrue(results.contains(patient),
+		    "searching the nickname 'Bob' should match the patient registered as 'Robert'");
+	}
+
+	/**
+	 * Regression guard: with the nickname GlobalProperty off (the default), name search behaves exactly
+	 * as before and a nickname does not match the formal name.
+	 *
+	 * @see PatientDAO#getPatients(String,Integer,Integer)
+	 */
+	@Test
+	public void getPatients_shouldNotMatchNicknameWhenNicknameSearchIsDisabled() {
+		Patient patient = patientService.getPatient(2);
+		patient.getPersonName().setGivenName("Robert");
+		patientService.savePatient(patient);
+		updateSearchIndex();
+
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_NICKNAME,
+		    "false");
+
+		List<Patient> results = dao.getPatients("Bob", 0, null);
+
+		assertFalse(results.contains(patient),
+		    "with nickname search disabled, 'Bob' must not match the patient registered as 'Robert'");
+	}
+
+	/**
 	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test

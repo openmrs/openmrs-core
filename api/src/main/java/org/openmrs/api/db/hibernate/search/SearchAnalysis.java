@@ -39,4 +39,6 @@ public class SearchAnalysis {
 	public static final String SOUNDEX_ANALYZER = "soundexAnalyzer";
 
 	public static final String NAME_ANALYZER = "nameAnalyzer";
+
+	public static final String NICKNAME_ANALYZER = "nicknameAnalyzer";
 }
