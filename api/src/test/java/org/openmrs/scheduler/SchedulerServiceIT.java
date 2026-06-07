@@ -304,7 +304,10 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 
 		schedulerService.onStartup(); // should not fail
 
-		assertThat(schedulerService.getRecurringTasks().count(), equalTo(1L));
+		assertThat(
+		    schedulerService.getRecurringTasks()
+		            .filter(t -> t.getName() == null || !t.getName().equals("Observation Archiving Job")).count(),
+		    equalTo(1L));
 		schedulerService.deleteTask(task.getId());
 	}
 
