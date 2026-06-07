@@ -963,4 +963,38 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		return obs;
 	}
 
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfParentObsHasValuesWhenChildrenAreArchived() {
+		Obs obs = Context.getObsService().getObs(7);
+
+		// Set a value on the obs so that it fails validation IF it's considered an obsGroup
+		obs.setValueNumeric(10.0);
+
+		Integer parentId = obs.getObsId();
+
+		try {
+			// Simulate archived child by inserting directly into obs_archive
+			org.hibernate.SessionFactory sessionFactory = Context.getRegisteredComponents(org.hibernate.SessionFactory.class)
+			        .get(0);
+			sessionFactory.getCurrentSession().createNativeQuery(
+			    "INSERT INTO obs_archive (obs_id, person_id, concept_id, obs_datetime, creator, date_created, uuid, obs_group_id) VALUES "
+			            + "(-999, 2, 5089, '2000-01-01', 1, '2000-01-01', 'dummy-archived-child-uuid', :parentId)")
+			        .setParameter("parentId", parentId).executeUpdate();
+
+			Errors errors = new org.springframework.validation.BindException(obs, "obs");
+			obsValidator.validate(obs, errors);
+
+			assertTrue(errors.hasFieldErrors("valueNumeric"),
+			    "Should fail validation because it has archived children and a valueNumeric");
+		} finally {
+			org.hibernate.SessionFactory sessionFactory = Context.getRegisteredComponents(org.hibernate.SessionFactory.class)
+			        .get(0);
+			sessionFactory.getCurrentSession()
+			        .createNativeQuery("DELETE FROM obs_archive WHERE uuid = 'dummy-archived-child-uuid'").executeUpdate();
+		}
+	}
+
 }

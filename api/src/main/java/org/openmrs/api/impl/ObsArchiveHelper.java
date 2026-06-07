@@ -56,13 +56,15 @@ public class ObsArchiveHelper {
 	public Map<String, Object> getArchivedMetadata(Integer obsId) {
 		Session session = sessionFactory.getCurrentSession();
 		Object[] result = (Object[]) session
-		        .createNativeQuery("SELECT obs_group_id, previous_version FROM obs_archive WHERE obs_id = :obsId")
+		        .createNativeQuery(
+		            "SELECT obs_group_id, previous_version, date_voided FROM obs_archive WHERE obs_id = :obsId")
 		        .setParameter("obsId", obsId).uniqueResult();
 		if (result == null)
 			return null;
 		Map<String, Object> map = new HashMap<>();
 		map.put("obs_group_id", result[0]);
 		map.put("previous_version", result[1]);
+		map.put("date_voided", result[2]);
 		return map;
 	}
 
@@ -77,12 +79,25 @@ public class ObsArchiveHelper {
 			restoreFromArchive(obsGroupId);
 		}
 
-		Integer previousVersionId = (Integer) metadata.get("previous_version");
-		if (previousVersionId != null && isArchived(previousVersionId)) {
-			restoreFromArchive(previousVersionId);
-		}
-
 		moveRecordFromArchiveToActiveTable(obsId);
+
+		Object dateVoided = metadata.get("date_voided");
+
+		Session session = sessionFactory.getCurrentSession();
+		List<Integer> childIds;
+		if (dateVoided != null) {
+			childIds = session.createNativeQuery(
+			    "SELECT obs_id FROM obs_archive WHERE obs_group_id = :obsId AND date_voided = :dateVoided", Integer.class)
+			        .setParameter("obsId", obsId).setParameter("dateVoided", dateVoided).list();
+		} else {
+			childIds = session
+			        .createNativeQuery("SELECT obs_id FROM obs_archive WHERE obs_group_id = :obsId AND date_voided IS NULL",
+			            Integer.class)
+			        .setParameter("obsId", obsId).list();
+		}
+		for (Integer childId : childIds) {
+			restoreFromArchive(childId);
+		}
 	}
 
 	private void moveRecordFromArchiveToActiveTable(Integer obsId) {

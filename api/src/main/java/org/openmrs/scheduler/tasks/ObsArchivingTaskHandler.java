@@ -11,25 +11,31 @@ package org.openmrs.scheduler.tasks;
 
 import java.sql.Timestamp;
 import java.util.List;
-import javax.sql.DataSource;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.TaskContext;
 import org.openmrs.scheduler.TaskHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Component
 public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData> {
 
 	private static final Logger log = LoggerFactory.getLogger(ObsArchivingTaskHandler.class);
 
-	private final JdbcTemplate jdbcTemplate;
+	private final SessionFactory sessionFactory;
 
-	public ObsArchivingTaskHandler(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	private final PlatformTransactionManager transactionManager;
+
+	public ObsArchivingTaskHandler(SessionFactory sessionFactory,
+	    org.springframework.transaction.TransactionManager transactionManager) {
+		this.sessionFactory = sessionFactory;
+		this.transactionManager = (PlatformTransactionManager) transactionManager;
 	}
 
 	@Override
@@ -60,7 +66,7 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 
 			List<Long> batchIds = fetchNextBatch(lastProcessedId, cutoffDate, batchSize);
 			if (batchIds.isEmpty()) {
-				Context.getAdministrationService().setGlobalProperty("obs.archive.last_processed_obs_id", "-1");
+				saveLastProcessedId(-1);
 				log.debug("Observation Archiving Job completed a full sweep.");
 				break;
 			}
@@ -68,27 +74,29 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 			try {
 				archiveAndDeleteBatch(batchIds);
 				lastProcessedId = batchIds.get(batchIds.size() - 1);
-				Context.getAdministrationService().setGlobalProperty("obs.archive.last_processed_obs_id",
-				    String.valueOf(lastProcessedId));
+				saveLastProcessedId(lastProcessedId);
 			} catch (Exception e) {
 				log.warn("Batch failed, falling back to row-by-row archiving for batch starting at {}", lastProcessedId, e);
 				handleBatchFailure(batchIds);
 				lastProcessedId = batchIds.get(batchIds.size() - 1);
-				Context.getAdministrationService().setGlobalProperty("obs.archive.last_processed_obs_id",
-				    String.valueOf(lastProcessedId));
+				saveLastProcessedId(lastProcessedId);
 			}
 		}
 	}
 
 	private List<Long> fetchNextBatch(long lastProcessedId, Timestamp cutoffDate, int batchSize) {
-		String sql;
+		Session session = sessionFactory.getCurrentSession();
+		org.hibernate.query.NativeQuery<Long> query;
 		if (lastProcessedId == -1) {
-			sql = "SELECT obs_id FROM obs WHERE voided = ? AND date_voided < ? ORDER BY obs_id DESC LIMIT ?";
-			return jdbcTemplate.queryForList(sql, Long.class, true, cutoffDate, batchSize);
+			query = session.createNativeQuery(
+			    "SELECT obs_id FROM obs WHERE voided = :voided AND date_voided < :cutoffDate ORDER BY obs_id DESC",
+			    Long.class);
 		} else {
-			sql = "SELECT obs_id FROM obs WHERE voided = ? AND date_voided < ? AND obs_id < ? ORDER BY obs_id DESC LIMIT ?";
-			return jdbcTemplate.queryForList(sql, Long.class, true, cutoffDate, lastProcessedId, batchSize);
+			query = session.createNativeQuery(
+			    "SELECT obs_id FROM obs WHERE voided = :voided AND date_voided < :cutoffDate AND obs_id < :lastProcessedId ORDER BY obs_id DESC",
+			    Long.class).setParameter("lastProcessedId", lastProcessedId);
 		}
+		return query.setParameter("voided", true).setParameter("cutoffDate", cutoffDate).setMaxResults(batchSize).list();
 	}
 
 	private void archiveAndDeleteBatch(List<Long> batchIds) {
@@ -96,35 +104,32 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 			return;
 		}
 
-		StringBuilder placeholders = new StringBuilder();
-		for (int i = 0; i < batchIds.size(); i++) {
-			placeholders.append("?");
-			if (i < batchIds.size() - 1) {
-				placeholders.append(",");
-			}
-		}
-		String inClause = placeholders.toString();
-		Object[] args = batchIds.toArray();
+		new TransactionTemplate(transactionManager).execute(status -> {
+			Session session = sessionFactory.getCurrentSession();
 
-		// 1. Archive reference ranges
-		jdbcTemplate.update(
-		    "INSERT INTO obs_archive_reference_range (obs_reference_range_id, obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, low_critical, low_normal, uuid) "
-		            + "SELECT obs_reference_range_id, obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, low_critical, low_normal, uuid "
-		            + "FROM obs_reference_range WHERE obs_id IN (" + inClause + ")",
-		    args);
+			// 1. Archive reference ranges
+			session.createNativeQuery(
+			    "INSERT INTO obs_archive_reference_range (obs_reference_range_id, obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, low_critical, low_normal, uuid) "
+			            + "SELECT obs_reference_range_id, obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, low_critical, low_normal, uuid "
+			            + "FROM obs_reference_range WHERE obs_id IN (:batchIds)")
+			        .setParameter("batchIds", batchIds).executeUpdate();
 
-		// 2. Delete reference ranges
-		jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id IN (" + inClause + ")", args);
+			// 2. Delete reference ranges
+			session.createNativeQuery("DELETE FROM obs_reference_range WHERE obs_id IN (:batchIds)")
+			        .setParameter("batchIds", batchIds).executeUpdate();
 
-		// 3. Archive obs
-		jdbcTemplate.update(
-		    "INSERT INTO obs_archive (obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, form_namespace_and_path, status, interpretation) "
-		            + "SELECT obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, form_namespace_and_path, status, interpretation "
-		            + "FROM obs WHERE obs_id IN (" + inClause + ")",
-		    args);
+			// 3. Archive obs
+			session.createNativeQuery(
+			    "INSERT INTO obs_archive (obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, form_namespace_and_path, status, interpretation) "
+			            + "SELECT obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, form_namespace_and_path, status, interpretation "
+			            + "FROM obs WHERE obs_id IN (:batchIds)")
+			        .setParameter("batchIds", batchIds).executeUpdate();
 
-		// 4. Delete obs
-		jdbcTemplate.update("DELETE FROM obs WHERE obs_id IN (" + inClause + ")", args);
+			// 4. Delete obs
+			session.createNativeQuery("DELETE FROM obs WHERE obs_id IN (:batchIds)").setParameter("batchIds", batchIds)
+			        .executeUpdate();
+			return null;
+		});
 	}
 
 	private void handleBatchFailure(List<Long> batchIds) {
@@ -134,6 +139,16 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 			} catch (Exception e) {
 				log.warn("Skipping observation {} due to constraint violation during archiving.", obsId, e);
 			}
+		}
+	}
+
+	private void saveLastProcessedId(long lastProcessedId) {
+		try {
+			Context.addProxyPrivilege(org.openmrs.util.PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+			Context.getAdministrationService().setGlobalProperty("obs.archive.last_processed_obs_id",
+			    String.valueOf(lastProcessedId));
+		} finally {
+			Context.removeProxyPrivilege(org.openmrs.util.PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 		}
 	}
 }

@@ -116,6 +116,46 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 
 		ensureRequirePrivilege(obs);
 
+		if (obs.getObsId() != null && getArchiveHelper().isArchived(obs.getObsId())) {
+			getArchiveHelper().restoreFromArchive(obs.getObsId());
+			Context.evictFromSession(obs);
+			Obs reloadedObs = dao.getObs(obs.getObsId());
+
+			java.util.Date originalDateVoided = reloadedObs.getDateVoided();
+			boolean unvoiding = reloadedObs.getVoided() && !obs.getVoided();
+
+			reloadedObs.setVoided(obs.getVoided());
+			reloadedObs.setVoidedBy(obs.getVoidedBy());
+			reloadedObs.setDateVoided(obs.getDateVoided());
+			reloadedObs.setVoidReason(obs.getVoidReason());
+
+			reloadedObs.setValueNumeric(obs.getValueNumeric());
+			reloadedObs.setValueText(obs.getValueText());
+			reloadedObs.setValueCoded(obs.getValueCoded());
+			reloadedObs.setValueCodedName(obs.getValueCodedName());
+			reloadedObs.setValueDrug(obs.getValueDrug());
+			reloadedObs.setValueDatetime(obs.getValueDatetime());
+			reloadedObs.setValueGroupId(obs.getValueGroupId());
+			reloadedObs.setValueComplex(obs.getValueComplex());
+			reloadedObs.setComment(obs.getComment());
+			reloadedObs.setObsDatetime(obs.getObsDatetime());
+			reloadedObs.setLocation(obs.getLocation());
+			reloadedObs.setEncounter(obs.getEncounter());
+			reloadedObs.setConcept(obs.getConcept());
+			reloadedObs.setPerson(obs.getPerson());
+			reloadedObs.setObsGroup(obs.getObsGroup());
+
+			obs = reloadedObs;
+
+			if (unvoiding && obs.hasGroupMembers(true)) {
+				for (Obs child : obs.getGroupMembers(true)) {
+					if (org.openmrs.util.OpenmrsUtil.nullSafeEquals(child.getDateVoided(), originalDateVoided)) {
+						Context.getObsService().unvoidObs(child);
+					}
+				}
+			}
+		}
+
 		//Should allow updating a voided Obs, it seems to be pointless to restrict it,
 		//otherwise operations like merge patients won't be possible when to moving voided obs
 		if (obs.getObsId() == null || obs.getVoided()) {
@@ -323,11 +363,21 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 			Context.evictFromSession(obs);
 			Obs reloadedObs = dao.getObs(obs.getObsId());
 
+			Date originalDateVoided = reloadedObs.getDateVoided();
+
 			reloadedObs.setVoided(obs.getVoided());
 			reloadedObs.setVoidedBy(obs.getVoidedBy());
 			reloadedObs.setDateVoided(obs.getDateVoided());
 			reloadedObs.setVoidReason(obs.getVoidReason());
 			obs = reloadedObs;
+
+			if (obs.hasGroupMembers(true)) {
+				for (Obs child : obs.getGroupMembers(true)) {
+					if (org.openmrs.util.OpenmrsUtil.nullSafeEquals(child.getDateVoided(), originalDateVoided)) {
+						Context.getObsService().unvoidObs(child);
+					}
+				}
+			}
 		}
 		obs.setVoided(false);
 		obs.setVoidedBy(null);
@@ -555,6 +605,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	@Transactional(readOnly = true)
 	public Obs getObsByUuid(String uuid) throws APIException {
 		Obs obsByUuid = dao.getObsByUuid(uuid);
+		if (obsByUuid == null) {
+			obsByUuid = getArchiveHelper().getObsFromArchiveByUuid(uuid);
+		}
 		if (obsByUuid != null && obsByUuid.isComplex()) {
 			return getHandler(obsByUuid).getObs(obsByUuid, ComplexObsHandler.RAW_VIEW);
 		}

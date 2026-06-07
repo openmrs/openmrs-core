@@ -164,6 +164,8 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 
 	private Obs previousVersion;
 
+	private Integer previousVersionId;
+
 	private Boolean dirty = Boolean.FALSE;
 
 	private Interpretation interpretation;
@@ -1193,7 +1195,17 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 * version of this Obs.
 	 */
 	public Obs getPreviousVersion() {
-		return previousVersion;
+		if (previousVersion != null) {
+			return previousVersion;
+		}
+		if (previousVersionId != null) {
+			try {
+				return org.openmrs.api.context.Context.getObsService().getObs(previousVersionId);
+			} catch (Exception e) {
+				// Ignore if context is not initialized
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -1204,6 +1216,19 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	public void setPreviousVersion(Obs previousVersion) {
 		markAsDirty(this.previousVersion, previousVersion);
 		this.previousVersion = previousVersion;
+		if (previousVersion != null) {
+			this.previousVersionId = previousVersion.getObsId();
+		} else if (this.previousVersion != null) {
+			this.previousVersionId = null;
+		}
+	}
+
+	public Integer getPreviousVersionId() {
+		return previousVersionId;
+	}
+
+	public void setPreviousVersionId(Integer previousVersionId) {
+		this.previousVersionId = previousVersionId;
 	}
 
 	public Boolean hasPreviousVersion() {
