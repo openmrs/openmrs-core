@@ -706,7 +706,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			    jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = ?", Integer.class, parentId));
 			assertEquals(0,
 			    jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = ?", Integer.class, child1Id));
-			assertEquals(0,
+			assertEquals(1,
 			    jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = ?", Integer.class, child2Id));
 
 			// 6. Verify the new child is unvoided. The old child1, parent and child2 should still be voided=true.

@@ -69,6 +69,10 @@ public class ObsArchiveHelper {
 	}
 
 	public void restoreFromArchive(Integer obsId) {
+		restoreFromArchive(obsId, true);
+	}
+
+	public void restoreFromArchive(Integer obsId, boolean restoreChildren) {
 		Map<String, Object> metadata = getArchivedMetadata(obsId);
 		if (metadata == null) {
 			return;
@@ -76,27 +80,29 @@ public class ObsArchiveHelper {
 
 		Integer obsGroupId = (Integer) metadata.get("obs_group_id");
 		if (obsGroupId != null && isArchived(obsGroupId)) {
-			restoreFromArchive(obsGroupId);
+			// Restore parent to satisfy foreign keys, but DO NOT recursively restore all of the parent's other children (siblings)
+			restoreFromArchive(obsGroupId, false);
 		}
 
 		moveRecordFromArchiveToActiveTable(obsId);
 
-		Object dateVoided = metadata.get("date_voided");
+		if (restoreChildren) {
+			Object dateVoided = metadata.get("date_voided");
 
-		Session session = sessionFactory.getCurrentSession();
-		List<Integer> childIds;
-		if (dateVoided != null) {
-			childIds = session.createNativeQuery(
-			    "SELECT obs_id FROM obs_archive WHERE obs_group_id = :obsId AND date_voided = :dateVoided", Integer.class)
-			        .setParameter("obsId", obsId).setParameter("dateVoided", dateVoided).list();
-		} else {
-			childIds = session
-			        .createNativeQuery("SELECT obs_id FROM obs_archive WHERE obs_group_id = :obsId AND date_voided IS NULL",
-			            Integer.class)
-			        .setParameter("obsId", obsId).list();
-		}
-		for (Integer childId : childIds) {
-			restoreFromArchive(childId);
+			Session session = sessionFactory.getCurrentSession();
+			List<Integer> childIds;
+			if (dateVoided != null) {
+				childIds = session.createNativeQuery(
+				    "SELECT obs_id FROM obs_archive WHERE obs_group_id = :obsId AND date_voided = :dateVoided",
+				    Integer.class).setParameter("obsId", obsId).setParameter("dateVoided", dateVoided).list();
+			} else {
+				childIds = session.createNativeQuery(
+				    "SELECT obs_id FROM obs_archive WHERE obs_group_id = :obsId AND date_voided IS NULL", Integer.class)
+				        .setParameter("obsId", obsId).list();
+			}
+			for (Integer childId : childIds) {
+				restoreFromArchive(childId, true);
+			}
 		}
 	}
 
@@ -156,7 +162,7 @@ public class ObsArchiveHelper {
 							if (!rs.wasNull())
 								obs.setOrder(Context.getOrderService().getOrder(orderId));
 
-							obs.setObsDatetime(rs.getTimestamp("obs_datetime"));
+							obs.setObsDatetime(toDate(rs.getTimestamp("obs_datetime")));
 
 							int locationId = rs.getInt("location_id");
 							if (!rs.wasNull())
@@ -187,7 +193,7 @@ public class ObsArchiveHelper {
 							if (!rs.wasNull())
 								obs.setValueDrug(Context.getConceptService().getDrug(valueDrugId));
 
-							obs.setValueDatetime(rs.getTimestamp("value_datetime"));
+							obs.setValueDatetime(toDate(rs.getTimestamp("value_datetime")));
 
 							double valueNumeric = rs.getDouble("value_numeric");
 							if (!rs.wasNull())
@@ -202,14 +208,14 @@ public class ObsArchiveHelper {
 							if (!rs.wasNull())
 								obs.setCreator(Context.getUserService().getUser(creatorId));
 
-							obs.setDateCreated(rs.getTimestamp("date_created"));
+							obs.setDateCreated(toDate(rs.getTimestamp("date_created")));
 							obs.setVoided(rs.getBoolean("voided"));
 
 							int voidedById = rs.getInt("voided_by");
 							if (!rs.wasNull())
 								obs.setVoidedBy(Context.getUserService().getUser(voidedById));
 
-							obs.setDateVoided(rs.getTimestamp("date_voided"));
+							obs.setDateVoided(toDate(rs.getTimestamp("date_voided")));
 							obs.setVoidReason(rs.getString("void_reason"));
 							obs.setUuid(rs.getString("uuid"));
 
@@ -237,5 +243,9 @@ public class ObsArchiveHelper {
 			}
 		});
 		return results;
+	}
+
+	private java.util.Date toDate(java.sql.Timestamp timestamp) {
+		return timestamp == null ? null : new java.util.Date(timestamp.getTime());
 	}
 }
