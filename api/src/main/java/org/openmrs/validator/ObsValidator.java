@@ -113,6 +113,25 @@ public class ObsValidator implements Validator {
 		}
 
 		boolean isObsGroup = obs.hasGroupMembers(true);
+		if (!isObsGroup && obs.getObsId() != null) {
+			try {
+				java.util.List<org.hibernate.SessionFactory> sessionFactories = org.openmrs.api.context.Context
+				        .getRegisteredComponents(org.hibernate.SessionFactory.class);
+				if (sessionFactories != null && !sessionFactories.isEmpty()) {
+					org.hibernate.SessionFactory sessionFactory = sessionFactories.get(0);
+					if (sessionFactory != null) {
+						Number archivedCount = (Number) sessionFactory.getCurrentSession()
+						        .createNativeQuery("SELECT COUNT(1) FROM obs_archive WHERE obs_group_id = :obsId")
+						        .setParameter("obsId", obs.getObsId()).uniqueResult();
+						if (archivedCount != null && archivedCount.intValue() > 0) {
+							isObsGroup = true;
+						}
+					}
+				}
+			} catch (Exception e) {
+				// Ignore if session is not available or query fails
+			}
+		}
 		// if this is an obs group (i.e., parent) make sure that it has no values (other than valueGroupId) set
 		if (isObsGroup) {
 			if (obs.getValueCoded() != null) {
