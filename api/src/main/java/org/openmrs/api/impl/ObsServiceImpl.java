@@ -124,26 +124,16 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 			java.util.Date originalDateVoided = reloadedObs.getDateVoided();
 			boolean unvoiding = reloadedObs.getVoided() && !obs.getVoided();
 
+			// Only copy voiding-related fields from the incoming obs.
+			// The reloadedObs already has correct data values from the database.
+			// Copying data fields (valueNumeric, person, concept, etc.) would trigger
+			// markAsDirty() due to object reference differences between the REST-constructed
+			// obs and the Hibernate-managed reloadedObs, causing false dirty flags that
+			// route through saveExistingObs() and create duplicate rows.
 			reloadedObs.setVoided(obs.getVoided());
 			reloadedObs.setVoidedBy(obs.getVoidedBy());
 			reloadedObs.setDateVoided(obs.getDateVoided());
 			reloadedObs.setVoidReason(obs.getVoidReason());
-
-			reloadedObs.setValueNumeric(obs.getValueNumeric());
-			reloadedObs.setValueText(obs.getValueText());
-			reloadedObs.setValueCoded(obs.getValueCoded());
-			reloadedObs.setValueCodedName(obs.getValueCodedName());
-			reloadedObs.setValueDrug(obs.getValueDrug());
-			reloadedObs.setValueDatetime(obs.getValueDatetime());
-			reloadedObs.setValueGroupId(obs.getValueGroupId());
-			reloadedObs.setValueComplex(obs.getValueComplex());
-			reloadedObs.setComment(obs.getComment());
-			reloadedObs.setObsDatetime(obs.getObsDatetime());
-			reloadedObs.setLocation(obs.getLocation());
-			reloadedObs.setEncounter(obs.getEncounter());
-			reloadedObs.setConcept(obs.getConcept());
-			reloadedObs.setPerson(obs.getPerson());
-			reloadedObs.setObsGroup(obs.getObsGroup());
 
 			obs = reloadedObs;
 
@@ -372,9 +362,14 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 			obs = reloadedObs;
 
 			if (obs.hasGroupMembers(true)) {
-				for (Obs child : obs.getGroupMembers(true)) {
+				java.util.Set<Obs> members = new java.util.LinkedHashSet<>(obs.getGroupMembers(true));
+				for (Obs child : members) {
 					if (org.openmrs.util.OpenmrsUtil.nullSafeEquals(child.getDateVoided(), originalDateVoided)) {
-						Context.getObsService().unvoidObs(child);
+						Obs unvoidedChild = Context.getObsService().unvoidObs(child);
+						if (unvoidedChild != child && !unvoidedChild.equals(child)) {
+							obs.removeGroupMember(child);
+							obs.addGroupMember(unvoidedChild);
+						}
 					}
 				}
 			}
