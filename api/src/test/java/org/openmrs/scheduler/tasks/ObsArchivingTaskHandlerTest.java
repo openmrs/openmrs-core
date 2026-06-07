@@ -154,4 +154,106 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		        .getGlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID);
 		assertEquals("-1", checkpoint);
 	}
+
+	@Test
+	public void execute_shouldNotExecuteIfDisabled() throws Exception {
+		adminService
+		        .saveGlobalProperty(new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "false"));
+
+		Obs obs = obsService.getObs(7);
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		handler.execute(new ObsArchivingTaskData(), null);
+
+		Integer countArchive = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 7",
+		    Integer.class);
+		assertEquals(0, countArchive);
+	}
+
+	@Test
+	public void execute_shouldNotArchiveObservationsVoidedWithinRetentionPeriod() throws Exception {
+		adminService
+		        .saveGlobalProperty(new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
+		adminService.saveGlobalProperty(
+		    new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_RETENTION_DAYS, "90"));
+
+		// Void an obs now
+		Obs obs = obsService.getObs(7);
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		handler.execute(new ObsArchivingTaskData(), null);
+
+		// Verify it was NOT archived because it was voided today (within 90 days)
+		Integer countArchive = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 7",
+		    Integer.class);
+		assertEquals(0, countArchive);
+
+		// Now backdate the void date to 100 days ago
+		java.util.Date pastDate = new java.util.Date(System.currentTimeMillis() - (100L * 24L * 3600L * 1000L));
+		jdbcTemplate.update("UPDATE obs SET date_voided = ? WHERE obs_id = 7", pastDate);
+
+		handler.execute(new ObsArchivingTaskData(), null);
+
+		// Verify it IS archived now
+		countArchive = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 7", Integer.class);
+		assertEquals(1, countArchive);
+	}
+
+	@Test
+	public void execute_shouldResumeFromCheckpoint() throws Exception {
+		adminService
+		        .saveGlobalProperty(new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
+
+		// Void obs 7 and 9
+		obsService.voidObs(obsService.getObs(7), "test voiding");
+		obsService.voidObs(obsService.getObs(9), "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		// Manually set checkpoint to 8. The handler processes in DESC order (from highest to lowest).
+		// So if checkpoint is 8, it will only process obs_id < 8.
+		// Thus, obs 9 should be ignored.
+		adminService.saveGlobalProperty(
+		    new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID, "8"));
+
+		handler.execute(new ObsArchivingTaskData(), null);
+
+		// Only 7 should be archived
+		assertEquals(1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 7", Integer.class));
+		assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 9", Integer.class));
+	}
+
+	@Test
+	public void execute_shouldFallbackToRowByRowOnBatchFailure() throws Exception {
+		adminService
+		        .saveGlobalProperty(new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
+
+		// Void multiple obs
+		obsService.voidObs(obsService.getObs(7), "test voiding");
+		obsService.voidObs(obsService.getObs(9), "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		// Deliberately cause a primary key violation for obs_id 9 by pre-inserting it into obs_archive
+		jdbcTemplate.update("INSERT INTO obs_archive (obs_id, person_id, obs_datetime, creator, date_created, uuid) VALUES "
+		        + "(9, 1, '2000-01-01', 1, '2000-01-01', 'dummy-uuid-for-9')");
+
+		// Run archiving. The batch containing 7 and 9 will fail.
+		// It should catch the exception, fall back to row-by-row, skip 9 (because it fails again), and successfully archive 7.
+		handler.execute(new ObsArchivingTaskData(), null);
+
+		// Verify 7 was successfully archived
+		assertEquals(1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 7", Integer.class));
+		assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = 7", Integer.class));
+
+		// Verify 9 was left in the active table (and the dummy row remains in archive)
+		assertEquals(1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = 9", Integer.class));
+
+		// Clean up the dummy row to avoid issues in cleanup
+		jdbcTemplate.update("DELETE FROM obs_archive WHERE uuid = 'dummy-uuid-for-9'");
+	}
 }

@@ -143,6 +143,11 @@
 	</changeSet>
 	
 	<changeSet id="TRUNK-6649-2026-06-07" author="shivvani-r">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="obs_archive"/>
+			</not>
+		</preConditions>
 		<comment>Add obs_archive and obs_archive_reference_range tables and global properties for Archiving Observations</comment>
 
 		<createTable tableName="obs_archive">
@@ -257,6 +262,11 @@
 			<column name="description" value="The persistent checkpoint indicating the lowest obs_id processed in the current sweep."/>
 			<column name="uuid" value="d979d066-15e6-467c-9d4b-cb575ef88888"/>
 		</insert>
+	</changeSet>
+
+	<changeSet id="TRUNK-6649-drop-previous-version-fk" author="shivvani-r">
+		<comment>Drop the previous_version foreign key constraint on the obs table to allow archiving old versions</comment>
+		<dropForeignKeyConstraint baseTableName="obs" constraintName="previous_version"/>
 	</changeSet>
 
 </databaseChangeLog>
