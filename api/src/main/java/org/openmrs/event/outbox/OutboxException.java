@@ -10,11 +10,14 @@
 package org.openmrs.event.outbox;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 public class OutboxException extends Exception {
 	
 	private static final long serialVersionUID = 1L;
+	
+	public OutboxException() {
+	}
 	
 	public OutboxException(String message) {
 		super(message);
@@ -24,4 +27,7 @@ public class OutboxException extends Exception {
 		super(message, cause);
 	}
 	
+	public OutboxException(Throwable cause) {
+		super(cause);
+	}
 }

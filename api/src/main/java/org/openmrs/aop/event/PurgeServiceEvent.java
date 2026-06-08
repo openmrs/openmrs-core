@@ -18,7 +18,7 @@ import java.util.Set;
  *
  * @param <T> the purged entity
  *
- * @since 2.9.x
+ * @since 2.9.0
  */
 public class PurgeServiceEvent<T> extends EntityEvent<T> {
 	private static final long serialVersionUID = 1L;

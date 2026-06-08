@@ -20,6 +20,7 @@ import org.openmrs.event.outbox.tasks.OutboxTaskSchedulerInitializer;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -76,7 +77,7 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 				.createQuery("from OutboxEvent").list();
 
 		assertThat(outboxEvents, contains(allOf(
-				hasProperty("payload", is("{\"uuid\":\"" + event.getUuid() + "\"}")),
+				hasProperty("payload", is("{\"@class\":\"org.openmrs.event.outbox.OutboxEventIT$PatientCreatedEvent\",\"uuid\":\"" + event.getUuid() + "\"}")),
 				hasProperty("status", is(OutboxEvent.Status.PENDING)),
 				hasProperty("eventType", is(PatientCreatedEvent.class.getName())),
 				hasProperty("completedListeners", is(nullValue()))),
@@ -86,11 +87,20 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 				hasProperty("completedListeners", is(nullValue())))));
 		
 		waitForCapturedEvents(10);
-		//Assert the ordering of captured events is correct
-		assertThat(testOutboxEventListener.getCapturedEvents(), contains(
-			allOf(
-				hasProperty("method", is("onAfterCommitAggregated")),
-				hasProperty("event", hasProperty("events", hasSize(2)))),
+		
+		// Check for onAfterCommitAggregated which is a TransactionalEventListener executed in a different thread than 
+		// OutboxEventListeners thus no guarantee of ordering between them
+		List<TestOutboxEventListener.TestEvent> capturedEvents = new ArrayList<>(testOutboxEventListener.getCapturedEvents());
+		TestOutboxEventListener.TestEvent afterCommitEvent = capturedEvents.stream()
+			.filter(e -> "onAfterCommitAggregated".equals(e.getMethod()))
+			.findFirst()
+			.orElseThrow(() -> new AssertionError("onAfterCommitAggregated not found"));
+		
+		assertThat(afterCommitEvent, hasProperty("event", hasProperty("events", hasSize(2))));
+		capturedEvents.remove(afterCommitEvent);
+		
+		//Assert the ordering of captured outbox events is correct
+		assertThat(capturedEvents, contains(
 			allOf(hasProperty("method", is("onPatientCreated")), hasProperty("event", hasProperty("uuid", equalTo(event.getUuid())))), 
 			hasProperty("method", is("onPatientCreatedFailingFailed")),
 			hasProperty("method", is("onPatientCreatedFailingFailed")),
@@ -108,7 +118,7 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 			.createQuery("from OutboxEvent order by id").list();
 		
 		assertThat(outboxEvents, contains(allOf(
-			hasProperty("payload", is("{\"uuid\":\"" + event.getUuid() + "\"}")), 
+			hasProperty("payload", is("{\"@class\":\"org.openmrs.event.outbox.OutboxEventIT$PatientCreatedEvent\",\"uuid\":\"" + event.getUuid() + "\"}")), 
 				hasProperty("status", is(OutboxEvent.Status.COMPLETED)),
 				hasProperty("eventType", is(PatientCreatedEvent.class.getName())),
 				hasProperty("completedListeners", 
@@ -142,7 +152,7 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 	}
 
 	@Test
-	public void interceptAndSaveToOutbox_shouldNotSaveEventWhenNoTransaction() {
+	public void interceptAndSaveToOutbox_shouldSaveEventWhenNoTransaction() {
 		// Arrange: A patient event is created, and there's no transaction
 		PatientCreatedEvent event = new PatientCreatedEvent(UUID.randomUUID().toString());
 

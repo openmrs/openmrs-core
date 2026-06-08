@@ -9,7 +9,8 @@
  */
 package org.openmrs.event;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.ResolvableTypeProvider;
@@ -34,8 +35,9 @@ import java.util.Set;
  *     
  * @since 2.9.0
  */
-	public abstract class EntityEvent<T> extends BaseSessionEvent implements ResolvableTypeProvider {
+public class EntityEvent<T> extends BaseSessionEvent implements ResolvableTypeProvider {
 
+	@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 	protected T entity;
 	
 	public EntityEvent() {
