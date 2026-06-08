@@ -9,33 +9,39 @@
  */
 package org.openmrs.event;
 
-import java.util.HashSet;
 import java.util.Set;
 
-import org.openmrs.event.outbox.OutboxableEvent;
-
 /**
- * <b>For internal use only.</b>
- * <p>
- * Extend {@link EntityEvent} or {@link AggregatedEntityEvent} instead.
+ * See {@link EntityEvent} or {@link AggregatedEntityEvent}.
  *
  * @since 2.9.0
  */
-class BaseEvent implements OutboxableEvent {
+public abstract class BaseSessionEvent extends BaseEvent {
 
 	private static final long serialVersionUID = 1L;
 
-	protected final Set<String> tags;
+	protected String sessionId;
 
-	public BaseEvent() {
-		this.tags = new HashSet<>();
+	/**
+	 * Default constructor for deserialization.
+	 */
+	public BaseSessionEvent() {
 	}
 
-	public BaseEvent(Set<String> tags) {
-		this.tags = tags;
+	public BaseSessionEvent(Set<String> tags) {
+		super(tags);
 	}
 
-	public Set<String> getTags() {
-		return tags;
+	public BaseSessionEvent(String sessionId, Set<String> tags) {
+		super(tags);
+		this.sessionId = sessionId;
+	}
+
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
 	}
 }
