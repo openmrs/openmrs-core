@@ -7,29 +7,15 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.event.outbox;
+package org.openmrs.event.broker;
 
-import org.openmrs.event.EventException;
+import org.springframework.stereotype.Component;
 
-/**
- * @since 2.9.0
- */
-public class OutboxException extends EventException {
+@Component
+public class BrokerTestListener {
 	
-	private static final long serialVersionUID = 1L;
-	
-	public OutboxException() {
-	}
-	
-	public OutboxException(String message) {
-		super(message);
-	}
-	
-	public OutboxException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	public OutboxException(Throwable cause) {
-		super(cause);
+	@BrokerEventListener("my-test-source")
+	public void listener(BrokerIncomingEvent<String> event) {
+		
 	}
 }

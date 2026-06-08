@@ -211,6 +211,16 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jms</artifactId>
+				<version>${springVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.jms</groupId>
+				<artifactId>javax.jms-api</artifactId>
+				<version>2.0.1</version>
+			</dependency>
+			<dependency>
 				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-spring5-embedded</artifactId>
 				<version>${infinispanVersion}</version>
