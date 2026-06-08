@@ -103,6 +103,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.xml.sax.InputSource;
 
 /**
@@ -199,7 +200,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		if (!useInMemoryDatabase()) {
-			Containers.ensureDatabaseRunning();
+			ensureDatabaseRunning();
 		}
 		
 		Properties props = getRuntimeProperties();
@@ -210,6 +211,16 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		Context.setRuntimeProperties(props);
 		
 		loadCount++;
+	}
+
+	/**
+	 * Note it is called from the constructor, before subclass
+	 * instance fields are initialized.
+	 * 
+	 * @since 2.9.0
+	 */
+	protected void ensureDatabaseRunning() {
+		Containers.ensureDatabaseRunning();
 	}
 	
 	/**
@@ -591,14 +602,6 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		if (!useInMemoryDatabase())
 			throw new RuntimeException(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
-
-		//Create shedlock table for tests
-		getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS shedlock(" +
-			"name VARCHAR(64) NOT NULL, " +
-			"lock_until TIMESTAMP NOT NULL, " +
-			"locked_at TIMESTAMP NOT NULL, " +
-			"locked_by VARCHAR(255) NOT NULL, " +
-			"PRIMARY KEY (name))").execute();
 		
 		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the 
 		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from 

@@ -9,7 +9,7 @@
  */
 package org.openmrs.event;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -18,21 +18,23 @@ import java.util.Set;
  * <p>
  * It needs to be used together with {@link TransactionalEventAggregator}.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
-public abstract class AggregatedEntityEvent extends BaseEvent {
+public abstract class AggregatedEntityEvent extends BaseSessionEvent {
+	private static final long serialVersionUID = 1L;
 	
 	private List<EntityEvent<?>> events;
 	
 	public AggregatedEntityEvent() {
+		this.events = new ArrayList<>();
 	}
 	
 	public AggregatedEntityEvent(List<EntityEvent<?>> events) {
-		this(events, new HashSet<>());
+		this.events = events;
 	}
 	
 	public AggregatedEntityEvent(List<EntityEvent<?>> events, Set<String> tags) {
-		super(events, tags);
+		super(tags);
 		this.events = events;
 	}
 
@@ -42,6 +44,5 @@ public abstract class AggregatedEntityEvent extends BaseEvent {
 
 	public void setEvents(List<EntityEvent<?>> events) {
 		this.events = events;
-		this.source = events;
 	}
 }
