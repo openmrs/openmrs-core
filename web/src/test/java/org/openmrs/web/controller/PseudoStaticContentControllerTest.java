@@ -103,7 +103,6 @@ class PseudoStaticContentControllerTest {
 		controller.setInterpretJstl(true);
 		long initialLastModified = controller.getLastModified(request);
 
-		// تبطئة خفيفة بالملي ثانية للتأكد من تغير الوقت
 		try {
 			Thread.sleep(2);
 		} catch (InterruptedException e) {
