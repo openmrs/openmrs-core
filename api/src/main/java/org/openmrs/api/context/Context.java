@@ -64,7 +64,6 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.ModuleMustStartException;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.notification.AlertService;
-import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
@@ -564,19 +563,37 @@ public class Context {
 	public static MessageService getMessageService() {
 		MessageService ms = getServiceContext().getMessageService();
 		try {
-			// Message service dependencies
+			// Dynamically pull from Spring, falling back to defaults if missing
 			if (ms.getMessagePreparator() == null) {
-				ms.setMessagePreparator(getMessagePreparator());
+				MessagePreparator preparator = getSingleRegisteredComponent(MessagePreparator.class);
+				ms.setMessagePreparator(preparator != null ? preparator : new VelocityMessagePreparator());
 			}
 
 			if (ms.getMessageSender() == null) {
-				ms.setMessageSender(getMessageSender());
+				MessageSender sender = getSingleRegisteredComponent(MessageSender.class);
+				ms.setMessageSender(sender != null ? sender : new MailMessageSender(getMailSession()));
 			}
 
 		} catch (Exception e) {
 			log.error("Unable to create message service due", e);
 		}
 		return ms;
+	}
+
+	/**
+	 * Helper method to fetch a single registered component of a given type from the Spring context.
+	 * Logs a warning if multiple components are found and returns the first one.
+	 */
+	private static <T> T getSingleRegisteredComponent(Class<T> type) {
+		List<T> components = getRegisteredComponents(type);
+		if (components != null && !components.isEmpty()) {
+			if (components.size() > 1) {
+				log.warn("Multiple {}s found. Using the first one: {}", type.getSimpleName(),
+				    components.get(0).getClass().getName());
+			}
+			return components.get(0);
+		}
+		return null;
 	}
 
 	/**
@@ -639,26 +656,6 @@ public class Context {
 			}
 		}
 		return mailSession;
-	}
-
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO Ideally, we would be
-	 * using Spring's method injection to set the dependencies for the message service.
-	 *
-	 * @return the ServiceContext
-	 */
-	private static MessageSender getMessageSender() {
-		return new MailMessageSender(getMailSession());
-	}
-
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO See todo for message
-	 * sender.
-	 *
-	 * @return
-	 */
-	private static MessagePreparator getMessagePreparator() throws MessageException {
-		return new VelocityMessagePreparator();
 	}
 
 	/**
