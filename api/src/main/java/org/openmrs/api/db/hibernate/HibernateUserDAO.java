@@ -155,7 +155,7 @@ public class HibernateUserDAO implements UserDAO {
 		List<User> users = query.getResultList();
 
 		if (users == null || users.isEmpty()) {
-			log.warn("request for username '{}' not found", username);
+			log.warn("request for username '{}' not found", OpenmrsUtil.applyLogSanitization(username));
 			return null;
 		}
 

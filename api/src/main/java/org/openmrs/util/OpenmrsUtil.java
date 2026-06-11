@@ -2204,13 +2204,8 @@ public class OpenmrsUtil {
 		if (c == '\t') {
 			return false;
 		}
-		if (c <= '\u001F' || (c >= '\u007F' && c <= '\u009F')) {
-			return true;
-		}
-		if (c == '\u2028' || c == '\u2029') {
-			return true;
-		}
-		return false;
+		// Matches \p{Cntrl}, \u0085 (NEL), \u2028 (LS), \u2029 (PS)
+		return (c <= '\u001F') || (c >= '\u007F' && c <= '\u009F') || (c == '\u2028') || (c == '\u2029');
 	}
 
 	/**

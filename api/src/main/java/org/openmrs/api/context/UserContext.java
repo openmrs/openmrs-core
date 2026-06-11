@@ -110,9 +110,11 @@ public class UserContext implements Serializable {
 	 */
 	public Authenticated authenticate(Credentials credentials) throws ContextAuthenticationException {
 
-		log.debug("Authenticating client '{}' with scheme '{}'",
-		    OpenmrsUtil.applyLogSanitization(credentials.getClientName()),
-		    OpenmrsUtil.applyLogSanitization(credentials.getAuthenticationScheme()));
+		if (log.isDebugEnabled()) {
+			log.debug("Authenticating client '{}' with scheme '{}'",
+			    OpenmrsUtil.applyLogSanitization(credentials.getClientName()),
+			    OpenmrsUtil.applyLogSanitization(credentials.getAuthenticationScheme()));
+		}
 
 		Authenticated authenticated = null;
 		try {
@@ -129,7 +131,9 @@ public class UserContext implements Serializable {
 		setUserLocation(true);
 		setUserLocale(true);
 
-		log.debug("Authenticated as: {}", this.user);
+		if (log.isDebugEnabled()) {
+			log.debug("Authenticated as: {}", OpenmrsUtil.applyLogSanitization(this.user));
+		}
 
 		return authenticated;
 	}
@@ -142,7 +146,9 @@ public class UserContext implements Serializable {
 	 * @since 1.5
 	 */
 	public void refreshAuthenticatedUser() {
-		log.debug("Refreshing authenticated user");
+		if (log.isDebugEnabled()) {
+			log.debug("Refreshing authenticated user");
+		}
 
 		if (user != null) {
 			user = Context.getUserService().getUser(user.getUserId());
@@ -165,7 +171,10 @@ public class UserContext implements Serializable {
 			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
 		}
 
-		log.debug("Turning the authenticated user into user with systemId: {}", systemId);
+		if (log.isDebugEnabled()) {
+			log.debug("Turning the authenticated user into user with systemId: {}",
+			    OpenmrsUtil.applyLogSanitization(systemId));
+		}
 
 		User userToBecome = Context.getUserService().getUserByUsername(systemId);
 
@@ -193,7 +202,9 @@ public class UserContext implements Serializable {
 		setUserLocation(false);
 		setUserLocale(false);
 
-		log.debug("Becoming user: {}", user);
+		if (log.isDebugEnabled()) {
+			log.debug("Becoming user: {}", OpenmrsUtil.applyLogSanitization(user));
+		}
 
 		return userToBecome;
 	}
@@ -218,7 +229,9 @@ public class UserContext implements Serializable {
 	 * @see #authenticate
 	 */
 	public void logout() {
-		log.debug("setting user to null on logout");
+		if (log.isDebugEnabled()) {
+			log.debug("setting user to null on logout");
+		}
 		notifyUserSessionListener(user, Event.LOGOUT, Status.SUCCESS);
 		user = null;
 		locationId = null;
@@ -284,7 +297,9 @@ public class UserContext implements Serializable {
 		}
 
 		for (String privilege : privileges) {
-			log.debug("Adding proxy privilege: {}", privilege);
+			if (log.isDebugEnabled()) {
+				log.debug("Adding proxy privilege: {}", OpenmrsUtil.applyLogSanitization(privilege));
+			}
 			proxies.add(privilege);
 		}
 	}
@@ -307,7 +322,9 @@ public class UserContext implements Serializable {
 
 		for (String privilege : privileges) {
 			if (privilege != null) {
-				log.debug("Removing privilege: {}", privilege);
+				if (log.isDebugEnabled()) {
+					log.debug("Removing privilege: {}", OpenmrsUtil.applyLogSanitization(privilege));
+				}
 				proxies.remove(privilege);
 			}
 		}
@@ -560,8 +577,8 @@ public class UserContext implements Serializable {
 				return possibleLocation.getId();
 			}
 
-			log.warn("The default location for user '{}' is set to '{}', which is not a valid location", user.getUsername(),
-			    defaultLocation);
+			log.warn("The default location for user '{}' is set to '{}', which is not a valid location",
+			    OpenmrsUtil.applyLogSanitization(user.getUsername()), OpenmrsUtil.applyLogSanitization(defaultLocation));
 		}
 
 		return null;

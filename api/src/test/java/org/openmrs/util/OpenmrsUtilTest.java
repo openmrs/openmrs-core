@@ -1101,6 +1101,21 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#sanitizeForLogging(Object)
 	 */
 	@Test
+	public void sanitizeForLogging_shouldSanitizeInjectionCapableCharacters() {
+		assertEquals("a_b", OpenmrsUtil.sanitizeForLogging("a\rb"));
+		assertEquals("a_b", OpenmrsUtil.sanitizeForLogging("a\nb"));
+		assertEquals("a_b", OpenmrsUtil.sanitizeForLogging("a\u000Bb")); // VT
+		assertEquals("a_b", OpenmrsUtil.sanitizeForLogging("a\u000Cb")); // FF
+		assertEquals("a_b", OpenmrsUtil.sanitizeForLogging("a\u0085b")); // NEL
+		assertEquals("a_b", OpenmrsUtil.sanitizeForLogging("a\u2028b")); // LS
+		assertEquals("a_b", OpenmrsUtil.sanitizeForLogging("a\u2029b")); // PS
+		assertEquals("a_b", OpenmrsUtil.sanitizeForLogging("a\u001Bb")); // ESC
+	}
+
+	/**
+	 * @see OpenmrsUtil#sanitizeForLogging(Object)
+	 */
+	@Test
 	public void sanitizeForLogging_shouldNotReplaceTabs() {
 		assertEquals("a\tb", OpenmrsUtil.sanitizeForLogging("a\tb"));
 	}
