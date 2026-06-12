@@ -111,7 +111,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return list of unexpired alerts
 	 * @throws APIException
 	 */
-	@Authorized
+	@Authorized(PrivilegeConstants.GET_ALERTS)
 	public List<Alert> getAllAlerts() throws APIException;
 
 	/**
@@ -121,7 +121,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return list of alerts
 	 * @throws APIException
 	 */
-	@Authorized
+	@Authorized(PrivilegeConstants.GET_ALERTS)
 	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException;
 
 	/**

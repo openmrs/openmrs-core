@@ -10,11 +10,15 @@
 package org.openmrs.notification;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.impl.AlertServiceImpl;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.PrivilegeConstants;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AlertServiceTest extends BaseContextSensitiveTest {
@@ -62,5 +66,30 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		//Test that alert contains the expected content
 		assertTrue(alertOne.getText().equals(Context.getMessageSourceService()
 		        .getMessage("Module.startupError.notification.message", new Object[] { "test" }, null)));
+	}
+
+	@Test
+	public void getAllAlerts_shouldOnlyBeAllowedForUsersWithTheGetAlertsPrivilege() {
+		// the default authenticated user is a super user and may read every user's alerts
+		assertNotNull(Context.getAlertService().getAllAlerts());
+		assertNotNull(Context.getAlertService().getAllAlerts(true));
+
+		// "butch" is a Provider with no privileges, so he must not be able to read all alerts
+		Context.becomeUser("3-4");
+		assertThrows(APIAuthenticationException.class, () -> Context.getAlertService().getAllAlerts());
+		assertThrows(APIAuthenticationException.class, () -> Context.getAlertService().getAllAlerts(true));
+	}
+
+	@Test
+	public void getAllAlerts_shouldBeAllowedForAnUnprivilegedCallerHoldingAProxyGetAlertsPrivilege() {
+		// mirrors how the AlertReminderTask scheduled job reads every user's alerts: it runs as its
+		// configured (possibly unprivileged) user and grants itself a proxy Get Alerts privilege
+		Context.becomeUser("3-4");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ALERTS);
+		try {
+			assertNotNull(Context.getAlertService().getAllAlerts(false));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_ALERTS);
+		}
 	}
 }
