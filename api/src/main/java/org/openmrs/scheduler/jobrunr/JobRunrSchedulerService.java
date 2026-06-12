@@ -54,6 +54,7 @@ import org.openmrs.scheduler.db.SchedulerDAO;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -236,7 +237,12 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	@Override
 	public TaskDefinition getTaskByName(String name) {
-		return schedulerDAO.getTaskByName(name);
+		try {
+			return schedulerDAO.getTaskByName(name);
+		} catch (ObjectRetrievalFailureException e) {
+			log.warn("getTaskByName({}) failed, because: {}", name, e.toString());
+			return null;
+		}
 	}
 
 	@Override
@@ -316,7 +322,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		return StreamSupport.stream(
 		    new Spliterators.AbstractSpliterator<TaskDetails>(Long.MAX_VALUE, Spliterator.ORDERED | Spliterator.NONNULL) {
 
-			    private int offset = 0;
+			    private long offset = 0;
 
 			    private Iterator<Job> currentBatch;
 
