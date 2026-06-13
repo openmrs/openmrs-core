@@ -10,6 +10,7 @@
 package org.openmrs.notification;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.impl.AlertServiceImpl;
@@ -88,6 +89,71 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		Context.addProxyPrivilege(PrivilegeConstants.GET_ALERTS);
 		try {
 			assertNotNull(Context.getAlertService().getAllAlerts(false));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_ALERTS);
+		}
+	}
+
+	@Test
+	public void getAlert_shouldReadOwnAlertButNotAnotherUsersAlertWithoutTheGetAlertsPrivilege() {
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+		User butch = Context.getUserService().getUserByUsername("butch");
+
+		// create one alert addressed to butch and one addressed only to the super user
+		Integer butchAlertId = as.saveAlert(new Alert("butch's alert", butch)).getAlertId();
+		Integer superUsersAlertId = as.saveAlert(new Alert("super user's alert", superUser)).getAlertId();
+
+		Context.becomeUser("3-4");
+
+		// butch is a recipient of his own alert, so he may still read it
+		assertNotNull(as.getAlert(butchAlertId));
+		// but he must not be able to read an alert addressed to someone else
+		assertThrows(APIAuthenticationException.class, () -> as.getAlert(superUsersAlertId));
+	}
+
+	@Test
+	public void getAlert_shouldReadAnotherUsersAlertForACallerHoldingAProxyGetAlertsPrivilege() {
+		AlertService as = Context.getAlertService();
+		Integer superUsersAlertId = as.saveAlert(new Alert("super user's alert", Context.getAuthenticatedUser()))
+		        .getAlertId();
+
+		Context.becomeUser("3-4");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ALERTS);
+		try {
+			assertNotNull(as.getAlert(superUsersAlertId));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_ALERTS);
+		}
+	}
+
+	@Test
+	public void getAlerts_shouldReadOwnAlertsButNotAnotherUsersAlertsWithoutTheGetAlertsPrivilege() {
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+
+		Context.becomeUser("3-4");
+		User butch = Context.getAuthenticatedUser();
+
+		// butch may list his own alerts through any of the user-scoped overloads...
+		assertNotNull(as.getAlerts(butch, true, true));
+		assertNotNull(as.getAlertsByUser(butch));
+		assertNotNull(as.getAllActiveAlerts(butch));
+		// ...but not another user's
+		assertThrows(APIAuthenticationException.class, () -> as.getAlerts(superUser, true, true));
+		assertThrows(APIAuthenticationException.class, () -> as.getAlertsByUser(superUser));
+		assertThrows(APIAuthenticationException.class, () -> as.getAllActiveAlerts(superUser));
+	}
+
+	@Test
+	public void getAlerts_shouldReadAnotherUsersAlertsForACallerHoldingAProxyGetAlertsPrivilege() {
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+
+		Context.becomeUser("3-4");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ALERTS);
+		try {
+			assertNotNull(as.getAlerts(superUser, true, true));
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_ALERTS);
 		}
