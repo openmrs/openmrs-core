@@ -256,11 +256,16 @@
 
 	<changeSet id="TRUNK-6649-register-archiving-task" author="shivvani-r">
 		<preConditions onFail="MARK_RAN">
-			<not>
+			<and>
+				<not>
+					<sqlCheck expectedResult="1">
+						SELECT COUNT(1) FROM scheduler_task_config WHERE name = 'Observation Archiving Job'
+					</sqlCheck>
+				</not>
 				<sqlCheck expectedResult="1">
-					SELECT COUNT(1) FROM scheduler_task_config WHERE name = 'Observation Archiving Job'
+					SELECT COUNT(1) FROM users WHERE user_id = 1
 				</sqlCheck>
-			</not>
+			</and>
 		</preConditions>
 		<comment>Register the Observation Archiving task in the legacy scheduler table so it is visible in the Admin UI</comment>
 		<insert tableName="scheduler_task_config">
