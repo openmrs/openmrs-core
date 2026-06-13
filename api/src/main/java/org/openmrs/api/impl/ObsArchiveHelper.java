@@ -9,22 +9,31 @@
  */
 package org.openmrs.api.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
+import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.jdbc.Work;
+import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Obs;
+import org.openmrs.ObsArchive;
+import org.openmrs.ObsReferenceRange;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Helper class for observation archiving operations using Hibernate Session and HQL.
+ */
 public class ObsArchiveHelper {
+
+	private static final Logger log = LoggerFactory.getLogger(ObsArchiveHelper.class);
 
 	private final SessionFactory sessionFactory;
 
@@ -32,40 +41,105 @@ public class ObsArchiveHelper {
 		this.sessionFactory = sessionFactory;
 	}
 
-	public boolean isArchived(Integer obsId) {
-		if (obsId == null)
+	public boolean isArchivingEnabled() {
+		try {
+			String enabled = Context.getAdministrationService().getGlobalProperty("obs.archive.enabled");
+			return Boolean.parseBoolean(enabled);
+		} catch (Exception e) {
 			return false;
+		}
+	}
 
-		Session session = sessionFactory.getCurrentSession();
-		Number count = (Number) session.createNativeQuery("SELECT COUNT(1) FROM obs_archive WHERE obs_id = :obsId")
-		        .setParameter("obsId", obsId).uniqueResult();
+	public boolean isArchived(Integer obsId) {
+		if (obsId == null) {
+			return false;
+		}
+		try {
+			return withManualFlush(() -> {
+				Session session = sessionFactory.getCurrentSession();
+				Number count = (Number) session.createQuery("SELECT count(a) FROM ObsArchive a WHERE a.obsId = :obsId")
+				        .setParameter("obsId", obsId).uniqueResult();
+				return count != null && count.intValue() > 0;
+			});
+		} catch (Exception e) {
+			log.warn("Failed to check if obs {} is archived. Assuming it is not.", obsId, e);
+			return false;
+		}
+	}
 
-		return count != null && count.intValue() > 0;
+	public boolean hasArchivedChildren(Integer obsId) {
+		if (obsId == null || !isArchivingEnabled()) {
+			return false;
+		}
+		try {
+			return withManualFlush(() -> {
+				Session session = sessionFactory.getCurrentSession();
+				Number count = (Number) session.createQuery("SELECT count(a) FROM ObsArchive a WHERE a.obsGroupId = :obsId")
+				        .setParameter("obsId", obsId).uniqueResult();
+				return count != null && count.intValue() > 0;
+			});
+		} catch (Exception e) {
+			log.warn("Failed to check if obs {} has archived children. Assuming it does not.", obsId, e);
+			return false;
+		}
 	}
 
 	public Obs getObsFromArchive(Integer obsId) {
-		List<Obs> list = getObsList("SELECT * FROM obs_archive WHERE obs_id = ?", obsId);
-		return list.isEmpty() ? null : list.get(0);
+		if (obsId == null) {
+			return null;
+		}
+		try {
+			return withManualFlush(() -> {
+				Session session = sessionFactory.getCurrentSession();
+				ObsArchive archive = session.get(ObsArchive.class, obsId);
+				return convertToObs(archive);
+			});
+		} catch (Exception e) {
+			log.debug("Failed to get obs {} from archive.", obsId, e);
+			return null;
+		}
 	}
 
 	public Obs getObsFromArchiveByUuid(String uuid) {
-		List<Obs> list = getObsList("SELECT * FROM obs_archive WHERE uuid = ?", uuid);
-		return list.isEmpty() ? null : list.get(0);
+		if (uuid == null) {
+			return null;
+		}
+		try {
+			return withManualFlush(() -> {
+				Session session = sessionFactory.getCurrentSession();
+				ObsArchive archive = (ObsArchive) session.createQuery("FROM ObsArchive WHERE uuid = :uuid")
+				        .setParameter("uuid", uuid).uniqueResult();
+				return convertToObs(archive);
+			});
+		} catch (Exception e) {
+			log.debug("Failed to get obs by uuid {} from archive.", uuid, e);
+			return null;
+		}
 	}
 
 	public Map<String, Object> getArchivedMetadata(Integer obsId) {
-		Session session = sessionFactory.getCurrentSession();
-		Object[] result = (Object[]) session
-		        .createNativeQuery(
-		            "SELECT obs_group_id, previous_version, date_voided FROM obs_archive WHERE obs_id = :obsId")
-		        .setParameter("obsId", obsId).uniqueResult();
-		if (result == null)
+		if (obsId == null) {
 			return null;
-		Map<String, Object> map = new HashMap<>();
-		map.put("obs_group_id", result[0]);
-		map.put("previous_version", result[1]);
-		map.put("date_voided", result[2]);
-		return map;
+		}
+		try {
+			return withManualFlush(() -> {
+				Session session = sessionFactory.getCurrentSession();
+				Object[] result = (Object[]) session.createQuery(
+				    "SELECT a.obsGroupId, a.previousVersionId, a.dateVoided FROM ObsArchive a WHERE a.obsId = :obsId")
+				        .setParameter("obsId", obsId).uniqueResult();
+				if (result == null) {
+					return null;
+				}
+				Map<String, Object> map = new HashMap<>();
+				map.put("obs_group_id", result[0]);
+				map.put("previous_version", result[1]);
+				map.put("date_voided", result[2]);
+				return map;
+			});
+		} catch (Exception e) {
+			log.debug("Failed to get metadata for archived obs {}.", obsId, e);
+			return null;
+		}
 	}
 
 	public void restoreFromArchive(Integer obsId) {
@@ -80,24 +154,23 @@ public class ObsArchiveHelper {
 
 		Integer obsGroupId = (Integer) metadata.get("obs_group_id");
 		if (obsGroupId != null && isArchived(obsGroupId)) {
-			// Restore parent to satisfy foreign keys, but DO NOT recursively restore all of the parent's other children (siblings)
 			restoreFromArchive(obsGroupId, false);
 		}
 
 		moveRecordFromArchiveToActiveTable(obsId);
 
 		if (restoreChildren) {
-			Object dateVoided = metadata.get("date_voided");
-
+			Date dateVoided = (Date) metadata.get("date_voided");
 			Session session = sessionFactory.getCurrentSession();
 			List<Integer> childIds;
 			if (dateVoided != null) {
-				childIds = session.createNativeQuery(
-				    "SELECT obs_id FROM obs_archive WHERE obs_group_id = :obsId AND date_voided = :dateVoided",
+				childIds = session.createQuery(
+				    "SELECT a.obsId FROM ObsArchive a WHERE a.obsGroupId = :obsId AND a.dateVoided = :dateVoided",
 				    Integer.class).setParameter("obsId", obsId).setParameter("dateVoided", dateVoided).list();
 			} else {
-				childIds = session.createNativeQuery(
-				    "SELECT obs_id FROM obs_archive WHERE obs_group_id = :obsId AND date_voided IS NULL", Integer.class)
+				childIds = session
+				        .createQuery("SELECT a.obsId FROM ObsArchive a WHERE a.obsGroupId = :obsId AND a.dateVoided IS NULL",
+				            Integer.class)
 				        .setParameter("obsId", obsId).list();
 			}
 			for (Integer childId : childIds) {
@@ -108,144 +181,155 @@ public class ObsArchiveHelper {
 
 	private void moveRecordFromArchiveToActiveTable(Integer obsId) {
 		Session session = sessionFactory.getCurrentSession();
-		// 1. Move obs
+		ObsArchive archive = session.get(ObsArchive.class, obsId);
+		if (archive == null) {
+			return;
+		}
+
+		// WARNING: This method uses native SQL. If the schema of the `obs` or `obs_archive` table
+		// changes (e.g., a column is added or removed), this SQL MUST be updated to match.
+		// 1. Move obs using native query
 		session.createNativeQuery(
-		    "INSERT INTO obs (obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, form_namespace_and_path, status, interpretation) "
-		            + "SELECT obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, form_namespace_and_path, status, interpretation "
-		            + "FROM obs_archive WHERE obs_id = :obsId")
+		    "INSERT INTO obs (obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, "
+		            + "obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, "
+		            + "value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, "
+		            + "date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, "
+		            + "form_namespace_and_path, status, interpretation) "
+		            + "SELECT obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, "
+		            + "obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, "
+		            + "value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, "
+		            + "date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, "
+		            + "form_namespace_and_path, status, interpretation FROM obs_archive WHERE obs_id = :obsId")
 		        .setParameter("obsId", obsId).executeUpdate();
 
-		session.createNativeQuery("DELETE FROM obs_archive WHERE obs_id = :obsId").setParameter("obsId", obsId)
-		        .executeUpdate();
-
-		// 2. Move reference range
-		session.createNativeQuery(
-		    "INSERT INTO obs_reference_range (obs_reference_range_id, obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, low_critical, low_normal, uuid) "
-		            + "SELECT obs_reference_range_id, obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, low_critical, low_normal, uuid "
-		            + "FROM obs_archive_reference_range WHERE obs_id = :obsId")
+		// 2. Move reference range using native query
+		session.createNativeQuery("INSERT INTO obs_reference_range (obs_id, hi_absolute, hi_critical, hi_normal, "
+		        + "low_absolute, low_critical, low_normal, uuid) "
+		        + "SELECT obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, "
+		        + "low_critical, low_normal, uuid FROM obs_archive_reference_range WHERE obs_id = :obsId")
 		        .setParameter("obsId", obsId).executeUpdate();
 
+		// 3. Delete from archive reference range
 		session.createNativeQuery("DELETE FROM obs_archive_reference_range WHERE obs_id = :obsId")
 		        .setParameter("obsId", obsId).executeUpdate();
+
+		// 4. Delete from archive obs
+		session.createNativeQuery("DELETE FROM obs_archive WHERE obs_id = :obsId").setParameter("obsId", obsId)
+		        .executeUpdate();
 	}
 
-	private List<Obs> getObsList(final String sql, final Object param) {
-		final List<Obs> results = new ArrayList<>();
-		sessionFactory.getCurrentSession().doWork(new Work() {
+	private Obs convertToObs(ObsArchive archive) {
+		if (archive == null) {
+			return null;
+		}
+		Obs obs = new Obs();
+		obs.setObsId(archive.getObsId());
+		obs.setPerson(archive.getPerson());
+		obs.setConcept(archive.getConcept());
+		obs.setEncounter(archive.getEncounter());
+		obs.setOrder(archive.getOrder());
+		obs.setObsDatetime(archive.getObsDatetime());
+		obs.setLocation(archive.getLocation());
+		if (archive.getObsGroupId() != null) {
+			Obs parent = new Obs();
+			parent.setObsId(archive.getObsGroupId());
+			obs.setObsGroup(parent);
+		}
+		obs.setAccessionNumber(archive.getAccessionNumber());
+		obs.setValueGroupId(archive.getValueGroupId());
+		obs.setValueCoded(archive.getValueCoded());
+		obs.setValueCodedName(archive.getValueCodedName());
+		obs.setValueDrug(archive.getValueDrug());
+		obs.setValueDatetime(archive.getValueDatetime());
+		obs.setValueNumeric(archive.getValueNumeric());
+		obs.setValueModifier(archive.getValueModifier());
+		obs.setValueText(archive.getValueText());
+		obs.setValueComplex(archive.getValueComplex());
+		obs.setComment(archive.getComments());
 
-			@Override
-			public void execute(Connection connection) throws SQLException {
-				try (PreparedStatement ps = connection.prepareStatement(sql)) {
-					if (param instanceof Integer) {
-						ps.setInt(1, (Integer) param);
-					} else {
-						ps.setString(1, param.toString());
-					}
-					try (ResultSet rs = ps.executeQuery()) {
-						while (rs.next()) {
-							Obs obs = new Obs();
-							obs.setObsId(rs.getInt("obs_id"));
+		obs.setCreator(archive.getCreator());
+		obs.setDateCreated(archive.getDateCreated());
+		obs.setChangedBy(archive.getChangedBy());
+		obs.setDateChanged(archive.getDateChanged());
+		obs.setVoided(archive.getVoided());
+		obs.setVoidedBy(archive.getVoidedBy());
+		obs.setDateVoided(archive.getDateVoided());
+		obs.setVoidReason(archive.getVoidReason());
+		obs.setUuid(archive.getUuid());
 
-							int personId = rs.getInt("person_id");
-							if (!rs.wasNull())
-								obs.setPerson(Context.getPersonService().getPerson(personId));
+		if (archive.getPreviousVersionId() != null) {
+			Obs prev = new Obs();
+			prev.setObsId(archive.getPreviousVersionId());
+			obs.setPreviousVersion(prev);
+		}
+		obs.setStatus(archive.getStatus());
+		obs.setInterpretation(archive.getInterpretation());
 
-							int conceptId = rs.getInt("concept_id");
-							if (!rs.wasNull())
-								obs.setConcept(Context.getConceptService().getConcept(conceptId));
+		if (archive.getReferenceRange() != null) {
+			ObsReferenceRange range = new ObsReferenceRange();
+			range.setObsReferenceRangeId(archive.getReferenceRange().getObsReferenceRangeId());
+			range.setHiAbsolute(archive.getReferenceRange().getHiAbsolute());
+			range.setHiCritical(archive.getReferenceRange().getHiCritical());
+			range.setHiNormal(archive.getReferenceRange().getHiNormal());
+			range.setLowAbsolute(archive.getReferenceRange().getLowAbsolute());
+			range.setLowCritical(archive.getReferenceRange().getLowCritical());
+			range.setLowNormal(archive.getReferenceRange().getLowNormal());
+			range.setUuid(archive.getReferenceRange().getUuid());
+			range.setObs(obs);
+			obs.setReferenceRange(range);
+		}
 
-							int encounterId = rs.getInt("encounter_id");
-							if (!rs.wasNull())
-								obs.setEncounter(Context.getEncounterService().getEncounter(encounterId));
+		return obs;
+	}
 
-							int orderId = rs.getInt("order_id");
-							if (!rs.wasNull())
-								obs.setOrder(Context.getOrderService().getOrder(orderId));
+	public <T> T withManualFlush(Supplier<T> action) {
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode originalFlushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			return action.get();
+		} finally {
+			session.setHibernateFlushMode(originalFlushMode);
+		}
+	}
 
-							obs.setObsDatetime(toDate(rs.getTimestamp("obs_datetime")));
+	public static <Arg1, Arg2 extends Arg1> boolean hibernateAwareEquals(Arg1 d1, Arg2 d2) {
+		if (d1 == null) {
+			return d2 == null;
+		} else if (d2 == null) {
+			return false;
+		}
+		if (d1 == d2) {
+			return true;
+		}
+		if (d1 instanceof OpenmrsObject && d2 instanceof OpenmrsObject) {
+			Class<?> class1 = (d1 instanceof HibernateProxy)
+			        ? ((HibernateProxy) d1).getHibernateLazyInitializer().getPersistentClass()
+			        : d1.getClass();
+			Class<?> class2 = (d2 instanceof HibernateProxy)
+			        ? ((HibernateProxy) d2).getHibernateLazyInitializer().getPersistentClass()
+			        : d2.getClass();
 
-							int locationId = rs.getInt("location_id");
-							if (!rs.wasNull())
-								obs.setLocation(Context.getLocationService().getLocation(locationId));
+			if (!(class1.isAssignableFrom(class2) || class2.isAssignableFrom(class1))) {
+				return false;
+			}
 
-							int obsGroupId = rs.getInt("obs_group_id");
-							if (!rs.wasNull()) {
-								Obs group = new Obs();
-								group.setObsId(obsGroupId);
-								obs.setObsGroup(group);
-							}
+			if (d1 instanceof HibernateProxy || d2 instanceof HibernateProxy) {
+				Object id1 = (d1 instanceof HibernateProxy)
+				        ? ((HibernateProxy) d1).getHibernateLazyInitializer().getIdentifier()
+				        : ((OpenmrsObject) d1).getId();
+				Object id2 = (d2 instanceof HibernateProxy)
+				        ? ((HibernateProxy) d2).getHibernateLazyInitializer().getIdentifier()
+				        : ((OpenmrsObject) d2).getId();
 
-							obs.setAccessionNumber(rs.getString("accession_number"));
-
-							int valueGroupId = rs.getInt("value_group_id");
-							if (!rs.wasNull())
-								obs.setValueGroupId(valueGroupId);
-
-							int valueCodedId = rs.getInt("value_coded");
-							if (!rs.wasNull())
-								obs.setValueCoded(Context.getConceptService().getConcept(valueCodedId));
-
-							int valueCodedNameId = rs.getInt("value_coded_name_id");
-							if (!rs.wasNull())
-								obs.setValueCodedName(Context.getConceptService().getConceptName(valueCodedNameId));
-
-							int valueDrugId = rs.getInt("value_drug");
-							if (!rs.wasNull())
-								obs.setValueDrug(Context.getConceptService().getDrug(valueDrugId));
-
-							obs.setValueDatetime(toDate(rs.getTimestamp("value_datetime")));
-
-							double valueNumeric = rs.getDouble("value_numeric");
-							if (!rs.wasNull())
-								obs.setValueNumeric(valueNumeric);
-
-							obs.setValueModifier(rs.getString("value_modifier"));
-							obs.setValueText(rs.getString("value_text"));
-							obs.setValueComplex(rs.getString("value_complex"));
-							obs.setComment(rs.getString("comments"));
-
-							int creatorId = rs.getInt("creator");
-							if (!rs.wasNull())
-								obs.setCreator(Context.getUserService().getUser(creatorId));
-
-							obs.setDateCreated(toDate(rs.getTimestamp("date_created")));
-							obs.setVoided(rs.getBoolean("voided"));
-
-							int voidedById = rs.getInt("voided_by");
-							if (!rs.wasNull())
-								obs.setVoidedBy(Context.getUserService().getUser(voidedById));
-
-							obs.setDateVoided(toDate(rs.getTimestamp("date_voided")));
-							obs.setVoidReason(rs.getString("void_reason"));
-							obs.setUuid(rs.getString("uuid"));
-
-							int previousVersionId = rs.getInt("previous_version");
-							if (!rs.wasNull()) {
-								Obs prev = new Obs();
-								prev.setObsId(previousVersionId);
-								obs.setPreviousVersion(prev);
-							}
-
-							String status = rs.getString("status");
-							if (status != null) {
-								obs.setStatus(Obs.Status.valueOf(status));
-							}
-
-							String interpretation = rs.getString("interpretation");
-							if (interpretation != null) {
-								obs.setInterpretation(Obs.Interpretation.valueOf(interpretation));
-							}
-
-							results.add(obs);
-						}
-					}
+				if (id1 != null && id2 != null) {
+					return id1.equals(id2);
+				}
+				if (id1 == null || id2 == null) {
+					return false;
 				}
 			}
-		});
-		return results;
-	}
-
-	private java.util.Date toDate(java.sql.Timestamp timestamp) {
-		return timestamp == null ? null : new java.util.Date(timestamp.getTime());
+		}
+		return (d1 instanceof Date && d2 instanceof Date) ? OpenmrsUtil.compare((Date) d1, (Date) d2) == 0 : d1.equals(d2);
 	}
 }
