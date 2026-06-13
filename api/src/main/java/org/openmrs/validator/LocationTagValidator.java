@@ -17,12 +17,12 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates {@link LocationTag} objects
- * 
+ *
  * @since 1.7
  */
 @Handler(supports = { LocationTag.class }, order = 50)
 public class LocationTagValidator implements Validator {
-	
+
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -30,12 +30,14 @@ public class LocationTagValidator implements Validator {
 	public boolean supports(Class<?> c) {
 		return LocationTag.class.isAssignableFrom(c);
 	}
-	
+
 	/**
+	 * <p>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -44,5 +46,5 @@ public class LocationTagValidator implements Validator {
 			ValidateUtil.validateFieldLengths(errors, target.getClass(), "name", "description", "retireReason");
 		}
 	}
-	
+
 }

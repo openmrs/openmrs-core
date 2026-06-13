@@ -9,56 +9,54 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class ProviderByPersonNameComparatorTest {
-	
+
 	/**
 	 * @see PersonByNameComparator#comparePersonsByName(org.openmrs.Person, org.openmrs.Person)
 	 */
 	@Test
-	public void compareProvidersByPersonsName_shouldReturnNegativeIfPersonNameForProvider1ComesBeforeThatOfProvider2()
-	        {
+	public void compareProvidersByPersonsName_shouldReturnNegativeIfPersonNameForProvider1ComesBeforeThatOfProvider2() {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		Provider provider1 = new Provider();
 		provider1.setPerson(person1);
-		
+
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleNamf", "familyName"));
 		Provider provider2 = new Provider();
 		provider2.setPerson(person2);
-		
+
 		int actualValue = new ProviderByPersonNameComparator().compare(provider1, provider2);
 		assertTrue(actualValue < 0, "Expected a negative value but it was: " + actualValue);
 	}
-	
+
 	/**
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
-	public void compareProvidersByPersonName_shouldReturnPositiveIfPersonNameForProvider1ComesAfterThatOfProvider2()
-	        {
+	public void compareProvidersByPersonName_shouldReturnPositiveIfPersonNameForProvider1ComesAfterThatOfProvider2() {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenNamf", "middleName", "familyName"));
 		Provider provider1 = new Provider();
 		provider1.setPerson(person1);
-		
+
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleName", "familyName"));
 		Provider provider2 = new Provider();
 		provider2.setPerson(person2);
-		
+
 		int actualValue = new ProviderByPersonNameComparator().compare(provider1, provider2);
 		assertTrue(actualValue > 0, "Expected a positive value but it was: " + actualValue);
 	}
-	
+
 	/**
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
@@ -68,48 +66,48 @@ public class ProviderByPersonNameComparatorTest {
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		Provider provider1 = new Provider();
 		provider1.setPerson(person1);
-		
+
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleName", "familyName"));
 		Provider provider2 = new Provider();
 		provider2.setPerson(person2);
-		
+
 		int actualValue = new ProviderByPersonNameComparator().compare(provider1, provider2);
 		assertEquals(0, actualValue);
 	}
-	
+
 	@Test
 	public void compareProvidersByPersonName_shouldNotFailIfProvider1HasNoAssociatedPerson() {
 		Provider provider1 = new Provider();
-		
+
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleName", "familyName"));
 		Provider provider2 = new Provider();
 		provider2.setPerson(person2);
-		
+
 		int actualValue = new ProviderByPersonNameComparator().compare(provider1, provider2);
 		assertTrue(actualValue > 0, "Expected a positive value but it was: " + actualValue);
 	}
-	
+
 	@Test
 	public void compareProvidersByPersonName_shouldNotFailIfProvider2HasNoAssociatedPerson() {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		Provider provider1 = new Provider();
 		provider1.setPerson(person1);
-		
+
 		Provider provider2 = new Provider();
-		
+
 		int actualValue = new ProviderByPersonNameComparator().compare(provider1, provider2);
 		assertTrue(actualValue < 0, "Expected a negative value but it was: " + actualValue);
 	}
-	
+
 	@Test
 	public void compareProvidersByPersonName_shouldNotFailIfNeitherProviderHasAnAssociatedPerson() {
-		
+
 		Provider provider1 = new Provider();
 		Provider provider2 = new Provider();
-		
+
 		int actualValue = new ProviderByPersonNameComparator().compare(provider1, provider2);
 		assertEquals(0, actualValue);
 	}

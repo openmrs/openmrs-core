@@ -21,38 +21,38 @@ import org.hibernate.envers.Audited;
 /**
  * Represents the assortment of visit types available to an implementation. These could include
  * items like "Initial HIV Clinic Visit", "Return TB Clinic Visit", and "Hospitalization".
- * 
+ *
  * @since 1.9
  */
 @Entity
 @Table(name = "visit_type")
 @Audited
 public class VisitType extends BaseChangeableOpenmrsMetadata {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "visit_type_id")
 	private Integer visitTypeId;
-	
+
 	/** default constructor */
 	public VisitType() {
 	}
-	
+
 	/**
 	 * Constructor with id
-	 * 
+	 * <p>
 	 * <strong>Should</strong> set visit type id with given parameter
 	 */
 	public VisitType(Integer visitTypeId) {
 		this.visitTypeId = visitTypeId;
 	}
-	
+
 	/**
-	 * Required values constructor. This is the minimum number of values that must be non-null in
-	 * order to have a successful save to the database
-	 * 
+	 * Required values constructor. This is the minimum number of values that must be non-null in order
+	 * to have a successful save to the database
+	 *
 	 * @param name the name of this visit type
 	 * @param description a short description of why this visit type exists
 	 */
@@ -60,21 +60,21 @@ public class VisitType extends BaseChangeableOpenmrsMetadata {
 		setName(name);
 		setDescription(description);
 	}
-	
+
 	/**
 	 * @return Returns the visitTypeId.
 	 */
 	public Integer getVisitTypeId() {
 		return visitTypeId;
 	}
-	
+
 	/**
 	 * @param visitTypeId the visitTypeId to set.
 	 */
 	public void setVisitTypeId(Integer visitTypeId) {
 		this.visitTypeId = visitTypeId;
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -82,7 +82,7 @@ public class VisitType extends BaseChangeableOpenmrsMetadata {
 	public Integer getId() {
 		return getVisitTypeId();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
@@ -90,5 +90,5 @@ public class VisitType extends BaseChangeableOpenmrsMetadata {
 	public void setId(Integer id) {
 		setVisitTypeId(id);
 	}
-	
+
 }

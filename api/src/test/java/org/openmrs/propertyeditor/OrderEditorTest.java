@@ -14,17 +14,17 @@ import org.openmrs.api.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class OrderEditorTest extends BasePropertyEditorTest<Order, OrderEditor> {
-	
+
 	private static final Integer EXISTING_ID = 2;
-	
+
 	@Autowired
 	private OrderService orderService;
-	
+
 	@Override
 	protected OrderEditor getNewEditor() {
 		return new OrderEditor();
 	}
-	
+
 	@Override
 	protected Order getExistingObject() {
 		return orderService.getOrder(EXISTING_ID);

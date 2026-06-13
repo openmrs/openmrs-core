@@ -22,7 +22,7 @@ import org.openmrs.annotation.Handler;
  */
 @Handler(supports = PersonName.class)
 public class PersonNameSaveHandler implements SaveHandler<PersonName> {
-	
+
 	/**
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
@@ -42,5 +42,5 @@ public class PersonNameSaveHandler implements SaveHandler<PersonName> {
 			personName.setFamilyName2(personName.getFamilyName2().trim());
 		}
 	}
-	
+
 }

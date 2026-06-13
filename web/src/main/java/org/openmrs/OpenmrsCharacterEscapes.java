@@ -3,7 +3,7 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- * 
+ *
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
@@ -18,25 +18,25 @@ import com.fasterxml.jackson.core.io.SerializedString;
  * JSON using the jackson API so as to escape html and scripts inside html tags
  */
 public class OpenmrsCharacterEscapes extends CharacterEscapes {
-	
+
 	private final int[] asciiEscapes;
-	
+
 	public OpenmrsCharacterEscapes() {
 		// start with set of characters known to require escaping (double-quote, backslash etc)
 		int[] esc = CharacterEscapes.standardAsciiEscapesForJSON();
-		
+
 		// and force escaping of a few others:
 		esc['<'] = CharacterEscapes.ESCAPE_CUSTOM;
 		esc['>'] = CharacterEscapes.ESCAPE_CUSTOM;
-		
+
 		asciiEscapes = esc;
 	}
-	
+
 	@Override
 	public int[] getEscapeCodesForAscii() {
 		return asciiEscapes;
 	}
-	
+
 	@Override
 	public SerializableString getEscapeSequence(int ch) {
 		if (ch == '<') {

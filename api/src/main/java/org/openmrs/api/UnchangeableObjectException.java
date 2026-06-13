@@ -11,27 +11,27 @@ package org.openmrs.api;
 
 /**
  * An instance of this exception is thrown if an attempt is made to update an unchangeable object
- * 
+ *
  * @since 2.1
  */
 public class UnchangeableObjectException extends InvalidOperationOnObjectException {
-	
+
 	public UnchangeableObjectException() {
 		this("Cannot update an unchangeable object");
 	}
-	
+
 	public UnchangeableObjectException(String message) {
 		super(message);
 	}
-	
+
 	public UnchangeableObjectException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 	public UnchangeableObjectException(String messageKey, Object[] parameters) {
 		super(messageKey, parameters);
 	}
-	
+
 	/**
 	 * @see InvalidOperationOnObjectException#InvalidOperationOnObjectException(Class)
 	 */

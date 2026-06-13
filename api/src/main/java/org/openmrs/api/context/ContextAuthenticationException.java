@@ -16,26 +16,26 @@ import org.openmrs.api.APIException;
  * rights to.
  */
 public class ContextAuthenticationException extends APIException {
-	
+
 	public static final long serialVersionUID = 22323L;
-	
+
 	public ContextAuthenticationException() {
 		super();
 	}
-	
+
 	/**
 	 * @since 2.3.0
 	 */
 	public ContextAuthenticationException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 	public ContextAuthenticationException(String message) {
 		super(message);
 	}
-	
+
 	public ContextAuthenticationException(Throwable cause) {
 		super(cause);
 	}
-	
+
 }

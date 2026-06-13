@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
  * Hibernate by default calls setters when initializing a persistent entity from the database
  * meaning an Obs would be marked dirty the first time it's loaded by hibernate, therefore we need
  * to use an instance of this PostLoadEventListener to mark an Obs as not dirty when it gets loaded.
- * 
  * <pre>
  * Note that in hibernate 4, event listeners are now registered via the new integrator and service
  * capabilities which leverage Java's standard java.util.ServiceLoader mechanism to discover then
@@ -38,19 +37,19 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ObsPostLoadEventListener implements PostLoadEventListener {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ObsPostLoadEventListener.class);
-	
+
 	@Autowired
 	private SessionFactory sessionFactory;
-	
+
 	@PostConstruct
 	public void registerListener() {
-		EventListenerRegistry registry = ((SessionFactoryImpl) sessionFactory).getServiceRegistry().getService(
-		    EventListenerRegistry.class);
+		EventListenerRegistry registry = ((SessionFactoryImpl) sessionFactory).getServiceRegistry()
+		        .getService(EventListenerRegistry.class);
 		registry.getEventListenerGroup(EventType.POST_LOAD).appendListener(this);
 	}
-	
+
 	@Override
 	public void onPostLoad(PostLoadEvent event) {
 		if (Obs.class.isAssignableFrom(event.getEntity().getClass())) {
@@ -59,11 +58,9 @@ public class ObsPostLoadEventListener implements PostLoadEventListener {
 				field = Obs.class.getDeclaredField("dirty");
 				field.setAccessible(true);
 				field.set(event.getEntity(), false);
-			}
-			catch (ReflectiveOperationException e) {
+			} catch (ReflectiveOperationException e) {
 				log.error("Failed to unset an Obs as dirty after being loaded from the database", e);
-			}
-			finally {
+			} finally {
 				if (field != null) {
 					field.setAccessible(false);
 				}

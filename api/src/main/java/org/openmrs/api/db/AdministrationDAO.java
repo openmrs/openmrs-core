@@ -18,69 +18,69 @@ import org.springframework.validation.Errors;
 
 /**
  * Database methods for the AdministrationService
- * 
+ *
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.AdministrationService
  */
 public interface AdministrationDAO {
-	
+
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(String)
 	 */
 	public String getGlobalProperty(String propertyName) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
 	 */
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
-	
+
 	/**
 	 * @see org.openmrs.api.AdministrationService#getAllGlobalProperties()
 	 */
 	public List<GlobalProperty> getAllGlobalProperties() throws DAOException;
-	
+
 	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertiesByPrefix(java.lang.String)
 	 */
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix);
-	
+
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertiesBySuffix(java.lang.String)
 	 */
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix);
-	
+
 	/**
 	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public void deleteGlobalProperty(GlobalProperty gp) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#executeSQL(java.lang.String, boolean)
 	 */
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.AdministrationService#getMaximumPropertyLength(Class, String)
 	 */
 	public long getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
-	
+
 	/**
 	 * @see org.openmrs.api.AdministrationService#validate(Object, Errors)
 	 */
 	public void validate(Object object, Errors errors) throws DAOException;
-	
+
 	/**
 	 * @see AdministrationService#isDatabaseStringComparisonCaseSensitive()
 	 */
 	public boolean isDatabaseStringComparisonCaseSensitive() throws DAOException;
-	
+
 	/**
 	 * @see AdministrationService#updatePostgresSequence()
 	 */

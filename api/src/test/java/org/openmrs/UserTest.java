@@ -9,62 +9,62 @@
  */
 package org.openmrs;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.util.RoleConstants;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class UserTest {
-	
+
 	private User user;
-	
+
 	private final String MATERNITY_NURSE_UPPERCASE = "Maternity Nurse";
-	
+
 	private final String MATERNITY_NURSE_LOWERCASE = "maternity nurse";
-	
+
 	private final String ROLE_WHICH_DOES_NOT_EXIT = "Role Which Does Not Exist";
-	
+
 	@BeforeEach
 	public void setUp() {
 		user = new User();
 		user.addRole(new Role("Some Role", "This is a test role"));
 	}
-	
+
 	@Test
 	public void hasRole_shouldHaveRole() {
 		assertTrue(user.hasRole("Some Role"));
 	}
-	
+
 	@Test
 	public void hasRole_shouldNotHaveRole() {
 		assertFalse(user.hasRole("Not A Role"));
 	}
-	
+
 	@Test
 	public void hasRole_shouldHaveAnyRoleWhenSuperUser() {
 		user.addRole(new Role(RoleConstants.SUPERUSER));
 		assertTrue(user.hasRole("Not A Role"));
 	}
-	
+
 	@Test
 	public void hasRole_shouldNotHaveAnyRoleWhenSuperWhenIgnoreSuperUserFlagIsTrue() {
 		user.addRole(new Role(RoleConstants.SUPERUSER));
 		assertFalse(user.hasRole("Not A Role", true));
 	}
-	
+
 	@Test
 	public void isSuperUser_shouldBeSuperUser() {
 		user.addRole(new Role(RoleConstants.SUPERUSER));
 		assertTrue(user.isSuperUser());
 	}
-	
+
 	@Test
 	public void isSuperUser_shouldNotBeSuperUser() {
 		assertFalse(user.isSuperUser());
 	}
-	
+
 	/**
 	 * @see User#containsRole(String)
 	 */
@@ -74,7 +74,7 @@ public class UserTest {
 		assertTrue(user.containsRole(MATERNITY_NURSE_UPPERCASE));
 		assertTrue(user.containsRole(MATERNITY_NURSE_LOWERCASE));
 	}
-	
+
 	/**
 	 * @see User#containsRole(String)
 	 */
@@ -83,7 +83,7 @@ public class UserTest {
 		user.addRole(new Role(MATERNITY_NURSE_UPPERCASE));
 		assertTrue(user.containsRole(MATERNITY_NURSE_UPPERCASE));
 	}
-	
+
 	/**
 	 * @see User#containsRole(String)
 	 */
@@ -91,5 +91,5 @@ public class UserTest {
 	public void containsRole_shouldReturnFalseIfTheUserDoesNotHaveTheGivenRole() {
 		assertFalse(user.containsRole(ROLE_WHICH_DOES_NOT_EXIT));
 	}
-	
+
 }

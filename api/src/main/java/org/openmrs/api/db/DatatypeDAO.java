@@ -11,40 +11,40 @@ package org.openmrs.api.db;
 
 /**
  * Data access for custom datatypes
- * 
+ *
  * @since 1.9
  */
 public interface DatatypeDAO {
-	
+
 	/**
 	 * Gets a clob storage object by its id
-	 * 
+	 *
 	 * @param id
 	 * @return clob storage object or null
 	 */
 	ClobDatatypeStorage getClobDatatypeStorage(Integer id);
-	
+
 	/**
 	 * Gets a clob storage object by its uuid
-	 * 
+	 *
 	 * @param uuid
 	 * @return clob storage object or null
 	 */
 	ClobDatatypeStorage getClobDatatypeStorageByUuid(String uuid);
-	
+
 	/**
 	 * Creates or updates a clob storage object
-	 * 
+	 *
 	 * @param storage
 	 * @return the saved object
 	 */
 	ClobDatatypeStorage saveClobDatatypeStorage(ClobDatatypeStorage storage);
-	
+
 	/**
 	 * Deletes a clob storage object from the database
-	 * 
+	 *
 	 * @param storage the object to delete
 	 */
 	void deleteClobDatatypeStorage(ClobDatatypeStorage storage);
-	
+
 }

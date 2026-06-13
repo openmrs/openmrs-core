@@ -9,10 +9,11 @@
  */
 package org.openmrs.scheduler.db.hibernate;
 
+import java.util.List;
+
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -30,14 +31,14 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("schedulerDAO")
 public class HibernateSchedulerDAO implements SchedulerDAO {
-	
+
 	/**
 	 * Logger
 	 */
 	private static final Logger log = LoggerFactory.getLogger(HibernateSchedulerDAO.class);
-	
+
 	private final SessionFactory sessionFactory;
-	
+
 	/**
 	 * Constructor with SessionFactory injection
 	 */
@@ -45,10 +46,10 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	public HibernateSchedulerDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * Creates a new task.
-	 * 
+	 *
 	 * @param task to be created
 	 * @throws DAOException
 	 */
@@ -57,10 +58,10 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 		// add all data minus the password as a new user
 		sessionFactory.getCurrentSession().persist(task);
 	}
-	
+
 	/**
 	 * Get task by internal identifier
-	 * 
+	 *
 	 * @param taskId internal task identifier
 	 * @return task with given internal identifier
 	 * @throws DAOException
@@ -68,17 +69,17 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	@Override
 	public TaskDefinition getTask(Integer taskId) throws DAOException {
 		TaskDefinition task = sessionFactory.getCurrentSession().get(TaskDefinition.class, taskId);
-		
+
 		if (task == null) {
 			log.warn("Task '" + taskId + "' not found");
 			throw new ObjectRetrievalFailureException(TaskDefinition.class, taskId);
 		}
 		return task;
 	}
-	
+
 	/**
 	 * Get task by public name.
-	 * 
+	 *
 	 * @param name public task name
 	 * @return task with given public name
 	 * @throws DAOException
@@ -103,7 +104,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 
 	/**
 	 * Update task
-	 * 
+	 *
 	 * @param task to be updated
 	 * @throws DAOException
 	 */
@@ -111,10 +112,10 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	public void updateTask(TaskDefinition task) throws DAOException {
 		sessionFactory.getCurrentSession().merge(task);
 	}
-	
+
 	/**
 	 * Find all tasks in the database
-	 * 
+	 *
 	 * @return <code>List&lt;TaskDefinition&gt;</code> of all tasks
 	 * @throws DAOException
 	 */
@@ -130,7 +131,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 
 	/**
 	 * Delete task from database.
-	 * 
+	 *
 	 * @param taskId <code>Integer</code> identifier of task to be deleted
 	 * @throws DAOException
 	 */
@@ -139,10 +140,10 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 		TaskDefinition taskConfig = getTask(taskId);
 		deleteTask(taskConfig);
 	}
-	
+
 	/**
 	 * Delete task from database.
-	 * 
+	 *
 	 * @param taskConfig <code>TaskDefinition</code> of task to be deleted
 	 * @throws DAOException
 	 */
@@ -150,9 +151,8 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	public void deleteTask(TaskDefinition taskConfig) throws DAOException {
 		sessionFactory.getCurrentSession().remove(taskConfig);
 	}
-	
+
 	/**
-	 * 
 	 * @see org.openmrs.scheduler.db.SchedulerDAO#getTaskByUuid(java.lang.String)
 	 */
 	@Override

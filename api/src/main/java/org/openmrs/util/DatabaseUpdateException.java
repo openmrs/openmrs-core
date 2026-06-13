@@ -12,46 +12,46 @@ package org.openmrs.util;
 /**
  * Used by the {@link DatabaseUpdater} to show that an error occurred while updating to the latest
  * database setup.
- * 
+ *
  * @since 1.5
  */
 public class DatabaseUpdateException extends Exception {
-	
+
 	public static final long serialVersionUID = 23413L;
-	
+
 	/**
 	 * Generic constructor
 	 */
 	public DatabaseUpdateException() {
 		super();
 	}
-	
+
 	/**
 	 * Generic exception class constructor
-	 * 
+	 *
 	 * @param message the string message to pass on
 	 * @param cause the error that occurred
 	 */
 	public DatabaseUpdateException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 	/**
 	 * Generic exception class constructor
-	 * 
+	 *
 	 * @param message the string message to pass on to the user
 	 */
 	public DatabaseUpdateException(String message) {
 		super(message);
 	}
-	
+
 	/**
 	 * Generic exception class constructor
-	 * 
+	 *
 	 * @param cause the error that occurred
 	 */
 	public DatabaseUpdateException(Throwable cause) {
 		super(cause);
 	}
-	
+
 }

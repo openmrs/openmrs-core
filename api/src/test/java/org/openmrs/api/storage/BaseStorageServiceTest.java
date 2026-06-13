@@ -9,19 +9,6 @@
  */
 package org.openmrs.api.storage;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.emptyIterable;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -45,15 +32,36 @@ import org.openmrs.api.stream.StreamDataService;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
+
 	protected final String testFileContent = "This is a test file";
+
 	protected final String testFile2Content = "This is another test file";
+
 	protected final SimpleDateFormat dirFormat = new SimpleDateFormat("yyyy/MM");
+
 	protected InputStream testFile;
+
 	protected InputStream testFile2;
+
 	protected StorageService storageService;
+
 	@Autowired
 	protected StreamDataService streamService;
+
 	@TempDir
 	protected Path tempDir;
 
@@ -90,7 +98,8 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 		saveTestData(moduleId, keySuffix, null, verify);
 	}
 
-	public void saveTestData(String moduleId, String keySuffix, InputStream testData, Consumer<String> verify) throws IOException {
+	public void saveTestData(String moduleId, String keySuffix, InputStream testData, Consumer<String> verify)
+	        throws IOException {
 		String key = null;
 		try {
 			if (testData == null) {
@@ -170,9 +179,7 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 	public void saveData_shouldFailIfModuleIdAndKeySuffixExists() throws IOException {
 		String keySuffix = BaseStorageServiceTest.newKeySuffix();
 		saveTestData("test_module", keySuffix, (key) -> {
-			assertThrows(FileAlreadyExistsException.class, () -> 
-				saveTestData("test_module", keySuffix, (newKey) -> {
-			}));
+			assertThrows(FileAlreadyExistsException.class, () -> saveTestData("test_module", keySuffix, (newKey) -> {}));
 		});
 	}
 
@@ -203,9 +210,8 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 			try {
 				saveTestData("test_module", "test/test_key_2", testFile2, (key2) -> {
 					try (Stream<String> keys = storageService.getKeys("test_module", "test/test_ke")) {
-						assertThat(keys.collect(Collectors.toList()),
-							containsInAnyOrder(equalTo("test_module/test/test_key"), 
-								equalTo("test_module/test/test_key_2")));
+						assertThat(keys.collect(Collectors.toList()), containsInAnyOrder(
+						    equalTo("test_module/test/test_key"), equalTo("test_module/test/test_key_2")));
 					} catch (IOException e) {
 						throw new UncheckedIOException(e);
 					}
@@ -223,8 +229,7 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 				saveTestData("test_module", "test_key_2", testFile2, (key2) -> {
 					try (Stream<String> keys = storageService.getKeys("test_module", "test_ke")) {
 						assertThat(keys.collect(Collectors.toList()),
-							containsInAnyOrder(equalTo("test_module/test_key"), 
-								equalTo("test_module/test_key_2")));
+						    containsInAnyOrder(equalTo("test_module/test_key"), equalTo("test_module/test_key_2")));
 					} catch (IOException e) {
 						throw new UncheckedIOException(e);
 					}
@@ -242,7 +247,7 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 				saveTestData(null, "test_key_2", testFile2, (key2) -> {
 					try (Stream<String> keys = storageService.getKeys(null, "test_ke")) {
 						assertThat(keys.collect(Collectors.toList()),
-							containsInAnyOrder(equalTo("test_key"), equalTo("test_key_2")));
+						    containsInAnyOrder(equalTo("test_key"), equalTo("test_key_2")));
 					} catch (IOException e) {
 						throw new UncheckedIOException(e);
 					}
@@ -259,8 +264,7 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 			try {
 				saveTestData(null, "test_key_2", testFile2, (key2) -> {
 					try (Stream<String> keys = storageService.getKeys("test_module", "test_ke")) {
-						assertThat(keys.collect(Collectors.toList()), 
-							containsInAnyOrder(equalTo("test_module/test_key")));
+						assertThat(keys.collect(Collectors.toList()), containsInAnyOrder(equalTo("test_module/test_key")));
 					} catch (IOException e) {
 						throw new UncheckedIOException(e);
 					}
@@ -277,8 +281,7 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 			try {
 				saveTestData(null, "test_key_2", testFile2, (key2) -> {
 					try (Stream<String> keys = storageService.getKeys(null, "test_ke")) {
-						assertThat(keys.collect(Collectors.toList()), containsInAnyOrder(
-							equalTo("test_key_2")));
+						assertThat(keys.collect(Collectors.toList()), containsInAnyOrder(equalTo("test_key_2")));
 					} catch (IOException e) {
 						throw new UncheckedIOException(e);
 					}
@@ -295,9 +298,8 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 			try {
 				saveTestData("test_module", "test_parent/test_key_2", testFile2, (key2) -> {
 					try (Stream<String> keys = storageService.getKeys("test_module", "test_parent/test")) {
-						assertThat(keys.collect(Collectors.toList()),
-							containsInAnyOrder(equalTo("test_module/test_parent/test_key_2"), 
-								equalTo("test_module/test_parent/test/")));
+						assertThat(keys.collect(Collectors.toList()), containsInAnyOrder(
+						    equalTo("test_module/test_parent/test_key_2"), equalTo("test_module/test_parent/test/")));
 					} catch (IOException e) {
 						throw new UncheckedIOException(e);
 					}
@@ -331,9 +333,8 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 			try {
 				saveTestData("test_module", "test/test_key_2", testFile2, (key2) -> {
 					try (Stream<String> keys = storageService.getKeys("test_module", "test/")) {
-						assertThat(keys.collect(Collectors.toList()),
-							containsInAnyOrder(equalTo("test_module/test/test_key_2"), 
-								equalTo("test_module/test/test_key")));
+						assertThat(keys.collect(Collectors.toList()), containsInAnyOrder(
+						    equalTo("test_module/test/test_key_2"), equalTo("test_module/test/test_key")));
 					} catch (IOException e) {
 						throw new UncheckedIOException(e);
 					}
@@ -353,8 +354,7 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 						saveTestData(null, "test", (key3) -> {
 							try (Stream<String> keys = storageService.getKeys(null, "")) {
 								assertThat(keys.collect(Collectors.toList()),
-									containsInAnyOrder(equalTo("test_module/"), 
-										equalTo("test")));
+								    containsInAnyOrder(equalTo("test_module/"), equalTo("test")));
 							} catch (IOException e) {
 								throw new UncheckedIOException(e);
 							}
@@ -376,8 +376,7 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 				saveTestData("test_module", "test/test/test_key_2", testFile2, (key2) -> {
 					try (Stream<String> keys = storageService.getKeys("test_module", "test/")) {
 						assertThat(keys.collect(Collectors.toList()),
-							containsInAnyOrder(equalTo("test_module/test/test_key"), 
-								equalTo("test_module/test/test/")));
+						    containsInAnyOrder(equalTo("test_module/test/test_key"), equalTo("test_module/test/test/")));
 					} catch (IOException e) {
 						throw new UncheckedIOException(e);
 					}
@@ -501,10 +500,9 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 	public void saveData_shouldNotCreateFileIfErrorOccursWhenCopyingData() {
 		assertThrows(IOException.class, () -> {
 			storageService.saveData((out) -> {
-					out.write(1);
-					throw new IOException("Failure during writing");
-				}, null, null,
-				"test");
+				out.write(1);
+				throw new IOException("Failure during writing");
+			}, null, null, "test");
 		});
 
 		assertThat(storageService.exists("test"), is(false));

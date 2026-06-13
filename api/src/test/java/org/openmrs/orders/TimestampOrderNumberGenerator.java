@@ -20,11 +20,11 @@ import org.springframework.stereotype.Component;
  */
 @Component("orderEntry.OrderNumberGenerator")
 public class TimestampOrderNumberGenerator implements OrderNumberGenerator {
-	
+
 	public static final String NEXT_ORDER_NUMBER = "nextOrderNumber";
-	
+
 	public static final String ORDER_NUMBER_PREFIX = "TEST-PREFIX-";
-	
+
 	@Override
 	public String getNewOrderNumber(OrderContext orderContext) {
 		String nextOrderNumber = null;

@@ -9,10 +9,6 @@
  */
 package liquibase.ext.change.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,44 +20,46 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.openmrs.util.DatabaseIT;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 public class InsertWithUuidDataChangeDatabaseIT extends DatabaseIT {
-	
+
 	@Test
 	public void shouldInsertUuids() throws Exception {
 		this.updateDatabase("org/openmrs/liquibase/liquibase-test-insert-with-uuid.xml");
-		
+
 		Map<String, String> expected = new HashMap<>();
 		expected.put("alpha", "alpha123-alph-alph-alph-alpha1234567");
 		expected.put("bravo", "bravo123-brav-brav-brav-bravo1234567");
-		
+
 		Map<String, String> actual = getNamesWithUuids();
-		
+
 		assertEquals(3, actual.size());
 		assertEquals(expected.get("alpha"), actual.get("alpha").trim());
 		assertEquals(expected.get("bravo"), actual.get("bravo").trim());
-		
+
 		String uuid = actual.get("charlie").trim();
 		assertNotNull(uuid);
 		try {
 			UUID.fromString(uuid);
-		}
-		catch (RuntimeException re) {
+		} catch (RuntimeException re) {
 			fail("uuid generated for name 'charlie' is not valid");
 		}
 	}
-	
+
 	protected Map<String, String> getNamesWithUuids() throws SQLException {
 		Map<String, String> result = new HashMap<>();
-		try (Connection connection = getConnection();
-			Statement statement = connection.createStatement()) {
+		try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
 			String query = "select * from name_with_uuid";
 			statement.execute(query);
-			
+
 			ResultSet resultSet = statement.getResultSet();
 			while (resultSet.next()) {
 				result.put(resultSet.getString(1), resultSet.getString(2));
 			}
-			
+
 			return result;
 		}
 	}

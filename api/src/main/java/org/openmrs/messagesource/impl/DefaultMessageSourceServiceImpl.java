@@ -30,11 +30,10 @@ import org.springframework.context.NoSuchMessageException;
 public class DefaultMessageSourceServiceImpl implements MessageSourceService {
 
 	private Properties props = new Properties();
-	
+
 	/**
-	 * Private class to hold the one instance. This is an alternative to
-	 * storing the instance object on {@link DefaultMessageSourceServiceImpl} itself so that garbage collection
-	 * can happen correctly.
+	 * Private class to hold the one instance. This is an alternative to storing the instance object on
+	 * {@link DefaultMessageSourceServiceImpl} itself so that garbage collection can happen correctly.
 	 */
 	private static class DefaultMessageSourceServiceImplHolder {
 
@@ -43,7 +42,7 @@ public class DefaultMessageSourceServiceImpl implements MessageSourceService {
 
 		private static DefaultMessageSourceServiceImpl INSTANCE = null;
 	}
-	
+
 	/**
 	 * Get the static/singular instance
 	 *
@@ -53,17 +52,17 @@ public class DefaultMessageSourceServiceImpl implements MessageSourceService {
 		if (DefaultMessageSourceServiceImplHolder.INSTANCE == null) {
 			DefaultMessageSourceServiceImplHolder.INSTANCE = new DefaultMessageSourceServiceImpl();
 		}
-		
+
 		return DefaultMessageSourceServiceImplHolder.INSTANCE;
 	}
-	
+
 	private DefaultMessageSourceServiceImpl() {
 		InputStream stream = OpenmrsClassLoader.getInstance().getResourceAsStream("messages.properties");
 		if (stream != null) {
 			OpenmrsUtil.loadProperties(props, stream);
 		}
 	}
-	
+
 	@Override
 	public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
 		return getMessage(code);
@@ -73,12 +72,12 @@ public class DefaultMessageSourceServiceImpl implements MessageSourceService {
 	public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
 		return getMessage(code);
 	}
-	
+
 	@Override
 	public String getMessage(String s) {
-		return (String)props.get(s);
+		return (String) props.get(s);
 	}
-	
+
 	@Override
 	public Collection<Locale> getLocales() {
 		return null;
@@ -96,7 +95,7 @@ public class DefaultMessageSourceServiceImpl implements MessageSourceService {
 
 	@Override
 	public void addPresentation(PresentationMessage message) {
-		
+
 	}
 
 	@Override
@@ -106,12 +105,12 @@ public class DefaultMessageSourceServiceImpl implements MessageSourceService {
 
 	@Override
 	public void removePresentation(PresentationMessage message) {
-		
+
 	}
 
 	@Override
 	public void merge(MutableMessageSource fromSource, boolean overwrite) {
-		
+
 	}
 
 	@Override
@@ -121,7 +120,7 @@ public class DefaultMessageSourceServiceImpl implements MessageSourceService {
 
 	@Override
 	public void setParentMessageSource(MessageSource parent) {
-		
+
 	}
 
 	@Override
@@ -136,7 +135,7 @@ public class DefaultMessageSourceServiceImpl implements MessageSourceService {
 
 	@Override
 	public void setActiveMessageSource(MutableMessageSource activeMessageSource) {
-		
+
 	}
 
 	@Override

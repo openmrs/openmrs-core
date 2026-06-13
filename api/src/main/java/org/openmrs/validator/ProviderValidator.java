@@ -27,9 +27,9 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Provider.class }, order = 50)
 public class ProviderValidator extends BaseCustomizableValidator implements Validator {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ProviderValidator.class);
-	
+
 	/**
 	 * Returns whether or not this validator supports validating a given class.
 	 *
@@ -41,51 +41,54 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 		log.debug("{}.supports: {}", this.getClass().getName(), c.getName());
 		return Provider.class.isAssignableFrom(c);
 	}
-	
+
 	/**
-	 * Validates the given Provider. checks to see if a provider is valid (Either of Person or
-	 * Provider name should be set and not both) Checks to see if there is a retired Reason in case
-	 * a provider is retired
+	 * Validates the given Provider. checks to see if a provider is valid (Either of Person or Provider
+	 * name should be set and not both) Checks to see if there is a retired Reason in case a provider is
+	 * retired
+	 * <p>
+	 * <strong>Should</strong> be valid if identifier is not set<br/>
+	 * <strong>Should</strong> be valid if identifier is set<br/>
+	 * <strong>Should</strong> be invalid if provider is retired and the retired reason is not
+	 * mentioned<br/>
+	 * <strong>Should</strong> be invalid if person is not set<br/>
+	 * <strong>Should</strong> be valid if only person is set<br/>
+	 * <strong>Should</strong> reject a provider if it has fewer than min occurs of an attribute<br/>
+	 * <strong>Should</strong> reject a provider if it has more than max occurs of an attribute<br/>
+	 * <strong>Should</strong> accept duplicate identifier if the existing provider is not retired<br/>
+	 * <strong>Should</strong> accept duplicate identifier if the existing provider is retired<br/>
+	 * <strong>Should</strong> accept a duplicate identifier for a new provider which is not
+	 * retired<br/>
+	 * <strong>Should</strong> accept a duplicate identifier for a new provider which is retired<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 *
 	 * @param obj The encounter to validate.
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> be valid if identifier is not set
-	 * <strong>Should</strong> be valid if identifier is set
-	 * <strong>Should</strong> be invalid if provider is retired and the retired reason is not mentioned
-	 * <strong>Should</strong> be invalid if person is not set
-	 * <strong>Should</strong> be valid if only person is set
-	 * <strong>Should</strong> reject a provider if it has fewer than min occurs of an attribute
-	 * <strong>Should</strong> reject a provider if it has more than max occurs of an attribute
-	 * <strong>Should</strong> accept duplicate identifier if the existing provider is not retired
-	 * <strong>Should</strong> accept duplicate identifier if the existing provider is retired
-	 * <strong>Should</strong> accept a duplicate identifier for a new provider which is not retired
-	 * <strong>Should</strong> accept a duplicate identifier for a new provider which is retired
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
 		log.debug("{}.validate...", this.getClass().getName());
-		
+
 		if (obj == null || !(obj instanceof Provider)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Provider.class);
 		}
-		
+
 		Provider provider = (Provider) obj;
-		
+
 		if (provider.getPerson() == null && StringUtils.isBlank(provider.getName())) {
 			errors.rejectValue("name", "Provider.error.personOrName.required");
 			errors.rejectValue("person", "Provider.error.personOrName.required");
 		}
-		
+
 		if (provider.getRetired() && StringUtils.isEmpty(provider.getRetireReason())) {
 			errors.rejectValue("retireReason", "Provider.error.retireReason.required");
 		}
-		
+
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "identifier", "retireReason");
 		super.validateAttributes(provider, errors, Context.getProviderService().getAllProviderAttributeTypes());
 	}
-	
+
 }

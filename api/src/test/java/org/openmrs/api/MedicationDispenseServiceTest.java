@@ -9,6 +9,9 @@
  */
 package org.openmrs.api;
 
+import java.util.Date;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.DrugOrder;
@@ -20,9 +23,6 @@ import org.openmrs.parameter.MedicationDispenseCriteriaBuilder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.util.Date;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -36,10 +36,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Unit tests for the MedicationDispenseService
  */
 public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
-	
+
 	@Autowired
 	MedicationDispenseService medicationDispenseService;
-	
+
 	@Autowired
 	PatientService patientService;
 
@@ -48,8 +48,9 @@ public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	OrderService orderService;
-	
-	@Autowired @Qualifier("adminService")
+
+	@Autowired
+	@Qualifier("adminService")
 	AdministrationService administrationService;
 
 	@BeforeEach
@@ -59,7 +60,7 @@ public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see MedicationDispenseService#getMedicationDispense(Integer) 
+	 * @see MedicationDispenseService#getMedicationDispense(Integer)
 	 */
 	@Test
 	public void getMedicationDispense_shouldGetExistingMedicationDispense() {
@@ -123,12 +124,12 @@ public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getMedicationDispenseByCriteria_shouldGetByDrugOrder() {
 		MedicationDispenseCriteriaBuilder b = new MedicationDispenseCriteriaBuilder();
-		b.setDrugOrder((DrugOrder)orderService.getOrder(2));
+		b.setDrugOrder((DrugOrder) orderService.getOrder(2));
 		List<MedicationDispense> l = medicationDispenseService.getMedicationDispenseByCriteria(b.build());
 		assertThat(l.size(), is(1));
 		HibernateMedicationDispenseDAOTest.testMedicationDispense1(l.get(0));
 
-		b.setDrugOrder((DrugOrder)orderService.getOrder(1));
+		b.setDrugOrder((DrugOrder) orderService.getOrder(1));
 		l = medicationDispenseService.getMedicationDispenseByCriteria(b.build());
 		assertThat(l.size(), is(1));
 
@@ -212,9 +213,7 @@ public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
 	public void voidMedicationDispense_shouldFailIfVoidReasonIsNull() {
 		MedicationDispense existing = medicationDispenseService.getMedicationDispense(1);
 		assertFalse(existing.getVoided());
-		assertThrows(IllegalArgumentException.class, () -> 
-			medicationDispenseService.voidMedicationDispense(existing, null)
-		);
+		assertThrows(IllegalArgumentException.class, () -> medicationDispenseService.voidMedicationDispense(existing, null));
 	}
 
 	/**
@@ -224,9 +223,7 @@ public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
 	public void voidMedicationDispense_shouldFailIfVoidReasonIsEmpty() {
 		MedicationDispense existing = medicationDispenseService.getMedicationDispense(1);
 		assertFalse(existing.getVoided());
-		assertThrows(IllegalArgumentException.class, () ->
-			medicationDispenseService.voidMedicationDispense(existing, " ")
-		);
+		assertThrows(IllegalArgumentException.class, () -> medicationDispenseService.voidMedicationDispense(existing, " "));
 	}
 
 	/**

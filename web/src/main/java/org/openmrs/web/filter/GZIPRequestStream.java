@@ -18,28 +18,27 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Wraps Request Stream for GZipFilter
- *
  */
 public class GZIPRequestStream extends ServletInputStream {
-	
+
 	//reference to the gzipped input stream
 	protected GZIPInputStream zipInput;
-	
+
 	public GZIPRequestStream(HttpServletRequest request) throws IOException {
 		super();
 		this.zipInput = new GZIPInputStream(request.getInputStream());
 	}
-	
+
 	@Override
 	public int read(byte[] buf, int off, int len) throws IOException {
 		return zipInput.read(buf, off, len);
 	}
-	
+
 	@Override
 	public int read() throws IOException {
 		return zipInput.read();
 	}
-	
+
 	@Override
 	public int read(byte[] b) throws IOException {
 		return zipInput.read(b);

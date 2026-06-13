@@ -10,6 +10,7 @@
 package org.openmrs.logging;
 
 import java.nio.file.Paths;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -25,25 +26,31 @@ import org.apache.logging.log4j.core.appender.RandomAccessFileAppender;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.RollingRandomAccessFileAppender;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.status.StatusLogger;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.openmrs.annotation.Logging;
+import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utility methods related to logging.
- * In general, module-level code should likely only call {@link #getMemoryAppender()} and
- * {@link #getOpenmrsLogLocation()}, however, the methods to update loggers are also exposed if necessary.
+ * Utility methods related to logging. In general, module-level code should likely only call
+ * {@link #getMemoryAppender()} and {@link #getOpenmrsLogLocation()}, however, the methods to update
+ * loggers are also exposed if necessary.
  *
  * @since 2.4.4, 2.5.1, 2.6.0
  */
 public final class OpenmrsLoggingUtil {
-	
+
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsLoggingUtil.class);
-	
+
 	private OpenmrsLoggingUtil() {
 	}
-	
+
 	/**
 	 * Gets the in-memory log appender. This method needed to be added as it is much more difficult to
 	 * get a specific appender in the Log4J2 architecture. This method is called in places where we need
@@ -53,29 +60,37 @@ public final class OpenmrsLoggingUtil {
 	 */
 	@Logging(ignore = true)
 	public static MemoryAppender getMemoryAppender() {
-		MemoryAppender memoryAppender = ((LoggerContext) LogManager.getContext(true)).getConfiguration()
-			.getAppender(OpenmrsConstants.MEMORY_APPENDER_NAME);
-		
+		LoggerContext context = getLog4j2Context();
+		if (context == null) {
+			return null;
+		}
+
+		MemoryAppender memoryAppender = context.getConfiguration().getAppender(OpenmrsConstants.MEMORY_APPENDER_NAME);
+
 		if (memoryAppender != null && !memoryAppender.isStarted()) {
 			memoryAppender.start();
 		}
-		
+
 		return memoryAppender;
 	}
-	
+
 	/**
 	 * Returns the location of the OpenMRS log file.
 	 * <p/>
-	 * <strong>Warning:</strong> the result of this call can return null if either the file appender uses a name other than
-	 * {@link OpenmrsConstants#LOG_OPENMRS_FILE_APPENDER} or if the appender with that name is not one of the default log4j2
-	 * file appending types.
+	 * <strong>Warning:</strong> the result of this call can return null if either the file appender
+	 * uses a name other than {@link OpenmrsConstants#LOG_OPENMRS_FILE_APPENDER} or if the appender with
+	 * that name is not one of the default log4j2 file appending types.
 	 *
 	 * @return the path to the OpenMRS log file
-	 * */
+	 */
 	public static String getOpenmrsLogLocation() {
-		Appender fileAppender = ((LoggerContext) LogManager.getRootLogger()).getConfiguration()
-			.getAppender(OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER);
-		
+		LoggerContext context = getLog4j2Context();
+		if (context == null) {
+			return null;
+		}
+
+		Appender fileAppender = context.getConfiguration().getAppender(OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER);
+
 		String fileName = null;
 		if (fileAppender instanceof AbstractOutputStreamAppender) {
 			if (fileAppender instanceof RollingFileAppender) {
@@ -94,61 +109,103 @@ public final class OpenmrsLoggingUtil {
 				return null;
 			}
 		}
-		
+
 		return fileName == null ? null : Paths.get("", fileName).toAbsolutePath().toString();
 	}
-	
+
 	/**
 	 * Sets the org.openmrs Log4J logger's level if global property log.level.openmrs (
-	 * OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL ) exists. Valid values for global property are
-	 * trace, debug, info, warn, error or fatal.
+	 * OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL ) exists. Valid values for global property are trace,
+	 * debug, info, warn, error or fatal.
 	 */
 	@Logging(ignore = true)
 	public static void applyLogLevels() {
-		String logLevel = Context.getAdministrationService()
-			.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "");
-		
+		applyLogLevels(null);
+	}
+
+	@Logging(ignore = true)
+	public static void applyLogLevels(String logLevelGp) {
+		// Check system and runtime properties first — these do not require a session
+		String logLevel = ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+		if (logLevel == null) {
+			logLevel = ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+		}
+
+		if (logLevel == null && logLevelGp != null) {
+			logLevel = logLevelGp;
+			// Fall back to global property only if a session is open
+		} else if (logLevel != null && logLevelGp != null) {
+			StatusLogger.getLogger().info("Ignoring GP value \"{}\" as a system or runtime property is already set",
+			    logLevelGp);
+		} else if (logLevel == null && Context.isSessionOpen()) {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			try {
+				logLevel = ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+			} catch (ServiceNotFoundException e) {
+				StatusLogger.getLogger().error("An exception was thrown while trying to get the {} global property",
+				    OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, e);
+				return;
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			}
+		}
+
+		if (logLevel == null) {
+			return;
+		}
+
 		synchronized (OpenmrsLoggingUtil.class) {
 			for (String level : logLevel.split(",")) {
-				String[] classAndLevel = level.split(":");
+				String[] classAndLevel = level.split(":", 3);
 				if (classAndLevel.length == 0) {
 					break;
 				} else if (classAndLevel.length == 1) {
 					applyLogLevelInternal(OpenmrsConstants.LOG_CLASS_DEFAULT, classAndLevel[0].trim());
 				} else {
+					if (classAndLevel.length > 2) {
+						StatusLogger.getLogger().warn(
+						    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO",
+						    level);
+					}
 					applyLogLevelInternal(classAndLevel[0].trim(), classAndLevel[1].trim());
 				}
 			}
-			
+
 			// DO NOT USE LogManager#getContext() here as this might reset the logger context
-			((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
+			LoggerContext context = getLog4j2Context();
+			if (context != null) {
+				context.updateLoggers();
+			}
 		}
 	}
-	
+
 	/**
 	 * Set the log4j log level for class <code>logClass</code> to <code>logLevel</code>.
 	 *
 	 * @param logClass optional string giving the class level to change. Defaults to
-	 *                 {@link OpenmrsConstants#LOG_CLASS_DEFAULT} . Should be something like org.openmrs.___
+	 *            {@link OpenmrsConstants#LOG_CLASS_DEFAULT} . Should be something like org.openmrs.___
 	 * @param logLevel one of <tt>OpenmrsConstants.LOG_LEVEL_*</tt> constants
 	 */
 	public static void applyLogLevel(String logClass, String logLevel) {
 		if (StringUtils.isNotBlank(logLevel)) {
 			synchronized (OpenmrsLoggingUtil.class) {
 				applyLogLevelInternal(logClass, logLevel);
-				// DO NOT USE LogManager#getContext() here as this might reset the logger context
-				((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
+
+				LoggerContext context = getLog4j2Context();
+				if (context != null) {
+					context.updateLoggers();
+				}
 			}
 		}
 	}
-	
+
 	/**
-	 * This method is the implementation of applying a level to a logger. It is intended to be called in an
-	 * already synchronized context. Note these changes will only be applied once a call to
+	 * This method is the implementation of applying a level to a logger. It is intended to be called in
+	 * an already synchronized context. Note these changes will only be applied once a call to
 	 * {@link LoggerContext#updateLoggers()} is made.
 	 *
-	 * @param logClass optional string giving the class level to change. Defaults to
-	 *                 *            OpenmrsConstants.LOG_CLASS_DEFAULT . Should be something like org.openmrs.___
+	 * @param logClass optional string giving the class level to change. Defaults to *
+	 *            OpenmrsConstants.LOG_CLASS_DEFAULT . Should be something like org.openmrs.___
 	 * @param logLevel one of OpenmrsConstants.LOG_LEVEL_* constants
 	 */
 	private static void applyLogLevelInternal(String logClass, String logLevel) {
@@ -157,45 +214,110 @@ public final class OpenmrsLoggingUtil {
 			if (StringUtils.isEmpty(logClass)) {
 				logClass = OpenmrsConstants.LOG_CLASS_DEFAULT;
 			}
-			
+
 			// DO NOT USE LogManager#getContext() here as this will reset the logger context
-			LoggerContext context = ((Logger) LogManager.getRootLogger()).getContext();
+			LoggerContext context = getLog4j2Context();
+			if (context == null) {
+				return;
+			}
+
 			LoggerConfig configuration = context.getConfiguration().getLoggerConfig(logClass);
-			
-			logLevel = logLevel.toLowerCase();
-			switch (logLevel) {
-				case OpenmrsConstants.LOG_LEVEL_TRACE:
-					configuration.setLevel(Level.TRACE);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_DEBUG:
-					configuration.setLevel(Level.DEBUG);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_INFO:
-					configuration.setLevel(Level.INFO);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_WARN:
-					configuration.setLevel(Level.WARN);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_ERROR:
-					configuration.setLevel(Level.ERROR);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_FATAL:
-					configuration.setLevel(Level.FATAL);
-					break;
-				default:
-					log.warn("Log level {} is invalid. " +
-						"Valid values are trace, debug, info, warn, error or fatal", logLevel);
-					break;
+			Level level = stringToLevel(logLevel, logClass);
+
+			if (configuration == null || !configuration.getName().equals(logClass)) {
+				configuration = new LoggerConfig(logClass, level, true);
+				context.getConfiguration().addLogger(logClass, configuration);
+			} else {
+				configuration.setLevel(level);
 			}
 		}
 	}
-	
+
 	/**
 	 * Reloads the logging configuration
 	 */
 	public static void reloadLoggingConfiguration() {
-		// Works, but it might be necessary to verify this in the future
-		((LoggerContext) LogManager.getContext(true)).reconfigure();
+		org.apache.logging.log4j.spi.LoggerContext context = LogManager.getContext(true);
+		if (context instanceof LoggerContext) {
+			// The general interface does not guarantee that reconfigure() exists
+			((LoggerContext) context).reconfigure();
+		} else {
+			StatusLogger.getLogger()
+			        .warn("Unable to reload logging configuration as we are not using the Log4J2 LoggerContext");
+		}
 	}
-	
+
+	/**
+	 * Takes a string representing a log level and returns the corresponding {@code Level} object.
+	 * <p/>
+	 * Used to support user-supplied log-levels and backwards compatibility with the Log4J1 API.
+	 *
+	 * @param logLevel The string level to convert
+	 * @return The corresponding {@code Level} or {@code Level#WARN} if unknown
+	 */
+	public static Level stringToLevel(@NonNull String logLevel) {
+		return stringToLevel(logLevel, null);
+	}
+
+	/**
+	 * Takes a string representing a log level and returns the corresponding {@code Level} object.
+	 * <p/>
+	 * Used to support user-supplied log-levels and backwards compatibility with the Log4J1 API.
+	 *
+	 * @param logLevel The string level to convert
+	 * @param logClass The class for this logger. Used to vary the default for the default logger.
+	 * @return The corresponding {@code Level} or {@code Level#WARN} if unknown
+	 * @see OpenmrsConstants#LOG_CLASS_DEFAULT
+	 */
+	public static Level stringToLevel(@NonNull String logLevel, @Nullable String logClass) {
+		Level level;
+		if (logLevel == null) {
+			return Level.WARN;
+		}
+
+		logLevel = logLevel.toLowerCase(Locale.ROOT);
+		switch (logLevel) {
+			case OpenmrsConstants.LOG_LEVEL_TRACE:
+				level = Level.TRACE;
+				break;
+			case OpenmrsConstants.LOG_LEVEL_DEBUG:
+				level = Level.DEBUG;
+				break;
+			case OpenmrsConstants.LOG_LEVEL_INFO:
+				level = Level.INFO;
+				break;
+			case OpenmrsConstants.LOG_LEVEL_WARN:
+				level = Level.WARN;
+				break;
+			case OpenmrsConstants.LOG_LEVEL_ERROR:
+				level = Level.ERROR;
+				break;
+			case OpenmrsConstants.LOG_LEVEL_FATAL:
+				level = Level.FATAL;
+				break;
+			default:
+				log.warn("Log level {} is invalid. " + "Valid values are trace, debug, info, warn, error or fatal",
+				    logLevel);
+				if (logClass != null && logClass.equals(OpenmrsConstants.LOG_CLASS_DEFAULT)) {
+					level = Level.INFO;
+				} else {
+					level = Level.WARN;
+				}
+				break;
+		}
+
+		return level;
+	}
+
+	private static LoggerContext getLog4j2Context() {
+		// DO NOT USE LogManager#getContext() here as this will reset the logger context
+		org.apache.logging.log4j.Logger rootLogger = LogManager.getRootLogger();
+		if (!(rootLogger instanceof Logger)) {
+			StatusLogger.getLogger()
+			        .error("Could not get the LoggerContext as this configuration is not using the standard Log4J2 context");
+			return null;
+		}
+
+		return ((Logger) rootLogger).getContext();
+	}
 }

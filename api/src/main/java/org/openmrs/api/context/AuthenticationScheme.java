@@ -11,11 +11,11 @@ package org.openmrs.api.context;
 
 /**
  * Every authentication scheme should implement its authentication method out of this API.
- * 
+ *
  * @since 2.3.0
  */
 public interface AuthenticationScheme {
-	
+
 	public Authenticated authenticate(Credentials credentials) throws ContextAuthenticationException;
-	
+
 }

@@ -44,29 +44,29 @@ import liquibase.resource.ResourceAccessor;
  */
 
 public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DuplicateEncounterRoleNameChangeSet.class);
-	
+
 	@Override
 	public String getConfirmationMessage() {
 		return "Completed updating duplicate EncounterRole names";
 	}
-	
+
 	@Override
 	public void setFileOpener(ResourceAccessor arg0) {
-		
+
 	}
-	
+
 	@Override
 	public void setUp() throws SetupException {
 		// No setup actions
 	}
-	
+
 	@Override
 	public ValidationErrors validate(Database arg0) {
 		return null;
 	}
-	
+
 	/**
 	 * Method to perform validation and resolution of duplicate EncounterRole names
 	 */
@@ -78,30 +78,30 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 		PreparedStatement pStmt = null;
 		ResultSet rs = null;
 		Boolean initialAutoCommit = null;
-		
+
 		try {
 			initialAutoCommit = connection.getAutoCommit();
-			
+
 			// set auto commit mode to false for UPDATE action
 			connection.setAutoCommit(false);
-			
+
 			stmt = connection.createStatement();
-			rs = stmt
-			        .executeQuery("SELECT * FROM encounter_role INNER JOIN (SELECT name FROM encounter_role GROUP BY name HAVING count(name) > 1) dup ON encounter_role.name = dup.name");
-			
+			rs = stmt.executeQuery(
+			    "SELECT * FROM encounter_role INNER JOIN (SELECT name FROM encounter_role GROUP BY name HAVING count(name) > 1) dup ON encounter_role.name = dup.name");
+
 			Integer id;
 			String name;
-			
+
 			while (rs.next()) {
 				id = rs.getInt("encounter_role_id");
 				name = rs.getString("name");
-				
+
 				if (duplicates.get(name) == null) {
 					HashSet<Integer> results = new HashSet<>();
 					results.add(id);
 					duplicates.put(name, results);
 				} else {
-					
+
 					HashSet<Integer> results = duplicates.get(name);
 					results.add(id);
 				}
@@ -133,9 +133,8 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 						}
 					} while (duplicateName);
 
-					pStmt = connection
-							.prepareStatement(
-									"update encounter_role set name = ?, changed_by = ?, date_changed = ? where encounter_role_id = ?");
+					pStmt = connection.prepareStatement(
+					    "update encounter_role set name = ?, changed_by = ?, date_changed = ? where encounter_role_id = ?");
 					if (!duplicateResult.isEmpty()) {
 						pStmt.setString(1, newName);
 					}
@@ -154,60 +153,53 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 				}
 			}
 		}
-		
+
 		catch (BatchUpdateException e) {
 			log.warn("Error generated while processsing batch insert", e);
-			
+
 			try {
 				log.debug("Rolling back batch", e);
 				connection.rollback();
-			}
-			catch (Exception rbe) {
+			} catch (Exception rbe) {
 				log.warn("Error generated while rolling back batch insert", e);
 			}
-			
+
 			// marks the changeset as a failed one
 			throw new CustomChangeException("Failed to update one or more duplicate EncounterRole names", e);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomChangeException(e);
-		}
-		finally {
+		} finally {
 			// set auto commit to its initial state
 			try {
 				connection.commit();
 				if (initialAutoCommit != null) {
 					connection.setAutoCommit(initialAutoCommit);
 				}
-			}
-			catch (DatabaseException e) {
+			} catch (DatabaseException e) {
 				log.warn("Failed to set auto commit to ids initial state", e);
 			}
-			
+
 			if (rs != null) {
 				try {
 					rs.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the resultset object");
 				}
 			}
-			
+
 			if (stmt != null) {
 				try {
 					stmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the select statement used to identify duplicate EncounterRole object names");
 				}
 			}
-			
+
 			if (pStmt != null) {
 				try {
 					pStmt.close();
-					
-				}
-				catch (SQLException e) {
+
+				} catch (SQLException e) {
 					log.warn("Failed to close the prepared statement used to update duplicate EncounterRole object names");
 				}
 			}

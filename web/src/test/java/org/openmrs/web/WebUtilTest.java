@@ -9,15 +9,15 @@
  */
 package org.openmrs.web;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.BaseOpenmrsObject;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Tests methods on the {@link WebUtil} class.
@@ -32,7 +32,7 @@ public class WebUtilTest {
 		WebConstants.WEBAPP_NAME = null;
 		assertEquals("", WebUtil.getContextPath());
 	}
-	
+
 	/**
 	 * @see org.openmrs.web.WebUtil#getContextPath()
 	 */
@@ -41,7 +41,7 @@ public class WebUtilTest {
 		WebConstants.WEBAPP_NAME = "";
 		assertEquals("", WebUtil.getContextPath());
 	}
-	
+
 	/**
 	 * @see org.openmrs.web.WebUtil#getContextPath()
 	 */
@@ -50,7 +50,7 @@ public class WebUtilTest {
 		WebConstants.WEBAPP_NAME = "Value";
 		assertEquals("/Value", WebUtil.getContextPath());
 	}
-	
+
 	/**
 	 * @see WebUtil#normalizeLocale(String)
 	 */
@@ -58,7 +58,7 @@ public class WebUtilTest {
 	public void normalizeLocale_shouldIgnoreLeadingSpaces() {
 		assertEquals(Locale.ITALIAN, WebUtil.normalizeLocale(" it"));
 	}
-	
+
 	/**
 	 * @see WebUtil#normalizeLocale(String)
 	 */
@@ -66,7 +66,7 @@ public class WebUtilTest {
 	public void normalizeLocale_shouldAcceptLanguageOnlyLocales() {
 		assertEquals(Locale.FRENCH, WebUtil.normalizeLocale("fr"));
 	}
-	
+
 	/**
 	 * @see WebUtil#normalizeLocale(String)
 	 */
@@ -75,7 +75,7 @@ public class WebUtilTest {
 		assertNull(WebUtil.normalizeLocale("ptrg"));
 		assertNull(WebUtil.normalizeLocale("usaa"));
 	}
-	
+
 	/**
 	 * @see WebUtil#normalizeLocale(String)
 	 */
@@ -83,7 +83,7 @@ public class WebUtilTest {
 	public void normalizeLocale_shouldNotFailWithEmptyStrings() {
 		assertNull(WebUtil.normalizeLocale(""));
 	}
-	
+
 	/**
 	 * @see WebUtil#normalizeLocale(String)
 	 */
@@ -98,7 +98,7 @@ public class WebUtilTest {
 	 */
 	@Test
 	public void normalizeLocale_shouldNotFailWithTab() throws UnsupportedEncodingException {
-		String s = new String(new byte[]{0x9}, "ASCII");
+		String s = new String(new byte[] { 0x9 }, "ASCII");
 		assertNull(WebUtil.normalizeLocale(s));
 	}
 
@@ -124,7 +124,7 @@ public class WebUtilTest {
 	 */
 	@Test
 	public void normalizeLocale_shouldNotFailWithUnderline() throws UnsupportedEncodingException {
-		String s = new String(new byte[]{0x5f}, "ASCII");
+		String s = new String(new byte[] { 0x5f }, "ASCII");
 		assertNull(WebUtil.normalizeLocale(s));
 	}
 
@@ -135,7 +135,7 @@ public class WebUtilTest {
 	public void sanitizeLocales_shouldSkipOverInvalidLocales() {
 		assertEquals("fr_RW, it, en", WebUtil.sanitizeLocales("és, qqqq, fr_RW, it, enñ"));
 	}
-	
+
 	/**
 	 * @see WebUtil#sanitizeLocales(String)
 	 */
@@ -143,9 +143,10 @@ public class WebUtilTest {
 	public void sanitizeLocales_shouldNotFailWithEmptyString() {
 		assertNull(null, WebUtil.sanitizeLocales(""));
 	}
-	
+
 	/**
 	 * Utility method to check if a list contains a BaseOpenmrsObject using the id
+	 *
 	 * @param list
 	 * @param id
 	 * @return true if list contains object with the id else false

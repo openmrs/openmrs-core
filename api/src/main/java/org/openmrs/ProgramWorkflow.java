@@ -25,51 +25,51 @@ import org.openmrs.util.NaturalStrings;
  */
 @Audited
 public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	// ******************
 	// Properties
 	// ******************
-	
+
 	private Integer programWorkflowId;
-	
+
 	private Program program;
-	
+
 	private Concept concept;
-	
+
 	private Set<ProgramWorkflowState> states = new HashSet<>();
-	
+
 	// ******************
 	// Constructors
 	// ******************
-	
+
 	/** Default Constructor */
 	public ProgramWorkflow() {
 	}
-	
+
 	/** Constructor with id */
 	public ProgramWorkflow(Integer programWorkflowId) {
 		setProgramWorkflowId(programWorkflowId);
 	}
-	
+
 	// ******************
 	// Instance methods
 	// ******************
-	
+
 	/**
 	 * Adds a new {@link ProgramWorkflowState} to this ProgramWorkflow
-	 * 
+	 *
 	 * @param state - the {@link ProgramWorkflowState} to add
 	 */
 	public void addState(ProgramWorkflowState state) {
 		state.setProgramWorkflow(this);
 		getStates().add(state);
 	}
-	
+
 	/**
 	 * Removes a {@link ProgramWorkflowState} from this ProgramWorkflow
-	 * 
+	 *
 	 * @param state - the {@link ProgramWorkflowState} to remove
 	 */
 	public void removeState(ProgramWorkflowState state) {
@@ -78,19 +78,19 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 			state.setProgramWorkflow(null);
 		}
 	}
-	
+
 	/**
 	 * Retires a {@link ProgramWorkflowState}
-	 * 
+	 *
 	 * @param state - the {@link ProgramWorkflowState} to retire
 	 */
 	public void retireState(ProgramWorkflowState state) {
 		state.setRetired(true);
 	}
-	
+
 	/**
 	 * Returns a {@link ProgramWorkflowState} whose primary key id matches the input parameter
-	 * 
+	 *
 	 * @param programWorkflowStateId the primary key {@link Integer} id to match
 	 * @return a {@link ProgramWorkflowState} whose identifier matches the passed
 	 *         <code>programWorkflowStateId</code>
@@ -103,10 +103,10 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a {@link ProgramWorkflowState} whose Concept matches the passed concept
-	 * 
+	 *
 	 * @param concept the Concept to match
 	 * @return Returns a {@link ProgramWorkflowState} whose {@link Concept} matches the passed
 	 *         <code>concept</code>
@@ -119,11 +119,11 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a {@link ProgramWorkflowState} whose Concept name matches the passed name in any
 	 * {@link Locale}
-	 * 
+	 *
 	 * @param name the Concept name to match in any {@link Locale}
 	 * @return a {@link ProgramWorkflowState} whose {@link Concept} name matches the passed
 	 *         <code>name</code>
@@ -136,11 +136,11 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a {@link ProgramWorkflowState} whose {@link Concept} has any {@link ConceptName} that
 	 * matches the given <code>name</code>
-	 * 
+	 *
 	 * @param name the {@link ProgramWorkflowState} name, in any {@link Locale}
 	 * @return a {@link ProgramWorkflowState} which has the passed <code>name</code> in any
 	 *         {@link Locale}
@@ -153,14 +153,14 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a Set&lt;{@link ProgramWorkflowState}&gt; including all non-retired ProgramWorkflowStates
-	 * and all retired ProgramWorkflowStates in this ProgramWorkflow if <code>includeRetired</code>
-	 * is true
-	 * 
-	 * @param includeRetired - if false, returns only non-retired {@link ProgramWorkflowState}
-	 *            objects in this ProgramWorkflow
+	 * and all retired ProgramWorkflowStates in this ProgramWorkflow if <code>includeRetired</code> is
+	 * true
+	 *
+	 * @param includeRetired - if false, returns only non-retired {@link ProgramWorkflowState} objects
+	 *            in this ProgramWorkflow
 	 * @return Set&lt;ProgramWorkflowState&gt; - all ProgramWorkflowStates matching input parameters
 	 */
 	public Set<ProgramWorkflowState> getStates(boolean includeRetired) {
@@ -172,33 +172,36 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Returns a Set&lt;{@link ProgramWorkflowState}&gt; including all ProgramWorkflowStates, sorted by
 	 * {@link ConceptName}
-	 * 
-	 * @return Set&lt;ProgramWorkflowState&gt; - all ProgramWorkflowStates, sorted by {@link ConceptName}
+	 * <p>
 	 * <strong>Should</strong> sort names containing numbers intelligently
+	 *
+	 * @return Set&lt;ProgramWorkflowState&gt; - all ProgramWorkflowStates, sorted by
+	 *         {@link ConceptName}
 	 */
 	public Set<ProgramWorkflowState> getSortedStates() {
 		final Comparator<String> naturalComparator = NaturalStrings.getNaturalComparator();
-		
-		Comparator<ProgramWorkflowState> stateComparator = (o1, o2) -> naturalComparator.compare(o1.getConcept().getName().getName(), o2.getConcept().getName().getName());
-		
+
+		Comparator<ProgramWorkflowState> stateComparator = (o1, o2) -> naturalComparator
+		        .compare(o1.getConcept().getName().getName(), o2.getConcept().getName().getName());
+
 		Set<ProgramWorkflowState> sorted = new TreeSet<>(stateComparator);
 		if (getStates() != null) {
 			sorted.addAll(getStates());
 		}
 		return sorted;
 	}
-	
+
 	/**
 	 * Returns a List&lt;{@link ProgramWorkflowState}&gt; including all possible next
 	 * ProgramWorkflowStates, for the passed {@link PatientProgram} ordered by {@link ConceptName}
-	 * 
+	 *
 	 * @param patientProgram - The PatientProgram to check
-	 * @return List&lt;ProgramWorkflowState&gt; - all possible next ProgramWorkflowStates, for the passed
-	 *         {@link PatientProgram} ordered by {@link ConceptName}
+	 * @return List&lt;ProgramWorkflowState&gt; - all possible next ProgramWorkflowStates, for the
+	 *         passed {@link PatientProgram} ordered by {@link ConceptName}
 	 */
 	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram) {
 		List<ProgramWorkflowState> ret = new ArrayList<>();
@@ -210,11 +213,10 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		}
 		return ret;
 	}
-	
+
 	/**
-	 * Check whether it is allowable to transition from <code>fromState</code> to
-	 * <code>toState</code>.
-	 * 
+	 * Check whether it is allowable to transition from <code>fromState</code> to <code>toState</code>.
+	 *
 	 * @param fromState {@link ProgramWorkflowState} to check transition from
 	 * @param toState {@link ProgramWorkflowState} to check transition to
 	 * @return boolean true if it is allowable to transition from <code>fromState</code> to
@@ -225,63 +227,63 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		if (fromState == null) {
 			return toState.getInitial();
 		}
-		
+
 		// Does not allow patient to move into the same state
 		return !fromState.equals(toState);
 	}
-	
+
 	/** @see Object#toString() */
 	@Override
 	public String toString() {
 		return "ProgramWorkflow(id=" + getProgramWorkflowId() + ")";
 	}
-	
+
 	// ******************
 	// Property Access
 	// ******************
-	
+
 	public Set<ProgramWorkflowState> getStates() {
 		return states;
 	}
-	
+
 	public void setStates(Set<ProgramWorkflowState> states) {
 		this.states = states;
 	}
-	
+
 	public Concept getConcept() {
 		return concept;
 	}
-	
+
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-	
+
 	public Program getProgram() {
 		return program;
 	}
-	
+
 	public void setProgram(Program program) {
 		this.program = program;
 	}
-	
+
 	public Integer getProgramWorkflowId() {
 		return programWorkflowId;
 	}
-	
+
 	public void setProgramWorkflowId(Integer programWorkflowId) {
 		this.programWorkflowId = programWorkflowId;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override
 	public Integer getId() {
-		
+
 		return getProgramWorkflowId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -289,12 +291,12 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	@Override
 	public void setId(Integer id) {
 		setProgramWorkflowId(id);
-		
+
 	}
-	
+
 	/**
 	 * Gets the number of states which are not retired
-	 * 
+	 *
 	 * @return the total number of non retired states
 	 * @since 1.9
 	 */

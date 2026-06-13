@@ -14,17 +14,17 @@ import org.openmrs.api.EncounterService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EncounterTypeEditorTest extends BasePropertyEditorTest<EncounterType, EncounterTypeEditor> {
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	@Autowired
 	private EncounterService encounterService;
-	
+
 	@Override
 	protected EncounterTypeEditor getNewEditor() {
 		return new EncounterTypeEditor();
 	}
-	
+
 	@Override
 	protected EncounterType getExistingObject() {
 		return encounterService.getEncounterType(EXISTING_ID);

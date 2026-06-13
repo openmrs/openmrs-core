@@ -29,9 +29,7 @@ import org.springframework.validation.ObjectError;
  * <br>
  * The validators are added to this class in the spring applicationContext-service.xml file. <br>
  * <br>
- * Example usage:
- *
- * <pre>
+ * Example usage: <pre>
  *  public Order saveOrder(order) {
  *  	ValidateUtil.validate(order);
  *  	dao.saveOrder(order);
@@ -49,18 +47,22 @@ public class ValidateUtil {
 	 * This is set in {@link Context#checkCoreDataset()} class
 	 */
 	private static Boolean disableValidation = false;
-	
-	/** This enables consuming code to disable validation if needed for specific operations in the current thread */
-	private static final ThreadLocal<Boolean> disableValidationForThread = new ThreadLocal<>();
-	
+
 	/**
-	 * Test the given object against all validators that are registered as compatible with the
-	 * object class
+	 * This enables consuming code to disable validation if needed for specific operations in the
+	 * current thread
+	 */
+	private static final ThreadLocal<Boolean> disableValidationForThread = new ThreadLocal<>();
+
+	/**
+	 * Test the given object against all validators that are registered as compatible with the object
+	 * class
+	 * <p>
+	 * <strong>Should</strong> throw APIException if errors occur during validation<br/>
+	 * <strong>Should</strong> return immediately if validation is disabled
 	 *
 	 * @param obj the object to validate
 	 * @throws ValidationException thrown if a binding exception occurs
-	 * <strong>Should</strong> throw APIException if errors occur during validation
-	 * <strong>Should</strong> return immediately if validation is disabled
 	 */
 	public static void validate(Object obj) throws ValidationException {
 		if (disableValidation || isValidationDisabledForThread()) {
@@ -68,16 +70,16 @@ public class ValidateUtil {
 		}
 
 		obj = HibernateUtil.getRealObjectFromProxy(obj);
-		
+
 		Errors errors = new BindException(obj, "");
-		
+
 		try {
 			Context.getAdministrationService().validate(obj, errors);
 		} catch (UnexpectedRollbackException ex) {
 			// We shouldn't be committing to the DB here, but for some reason, it's possible for a
 			// UnexpectedRollbackException to get thrown if there are errors.
 			// If that's the case, throw a more informative ValidationException instead.
-			// See: https://openmrs.atlassian.net/browse/TRUNK-6541 
+			// See: https://openmrs.atlassian.net/browse/TRUNK-6541
 			if (errors.hasErrors()) {
 				throwValidationError(errors, obj);
 			} else {
@@ -87,34 +89,36 @@ public class ValidateUtil {
 
 		if (errors.hasErrors()) {
 			throwValidationError(errors, obj);
-		} 
+		}
 	}
 
 	private static void throwValidationError(Errors errors, Object obj) {
 		Set<String> uniqueErrorMessages = new LinkedHashSet<>();
 		for (Object objerr : errors.getAllErrors()) {
 			ObjectError error = (ObjectError) objerr;
-			String message = Context.getMessageSourceService().getMessage(error.getCode(), error.getArguments(), Context.getLocale());
+			String message = Context.getMessageSourceService().getMessage(error.getCode(), error.getArguments(),
+			    Context.getLocale());
 			if (error instanceof FieldError) {
 				message = ((FieldError) error).getField() + ": " + message;
 			}
 			uniqueErrorMessages.add(message);
 		}
-		
+
 		String exceptionMessage = "'" + obj + "' failed to validate with reason: ";
 		exceptionMessage += StringUtils.join(uniqueErrorMessages, ", ");
 		throw new ValidationException(exceptionMessage, errors);
 	}
-	
+
 	/**
-	 * Test the given object against all validators that are registered as compatible with the
-	 * object class
+	 * Test the given object against all validators that are registered as compatible with the object
+	 * class
+	 * <p>
+	 * <strong>Should</strong> populate errors if object invalid<br/>
+	 * <strong>Should</strong> return immediately if validation is disabled and have no errors
 	 *
 	 * @param obj the object to validate
 	 * @param errors the validation errors found
 	 * @since 1.9
-	 * <strong>Should</strong> populate errors if object invalid
-	 * <strong>Should</strong> return immediately if validation is disabled and have no errors
 	 */
 	public static void validate(Object obj, Errors errors) {
 		if (disableValidation) {
@@ -122,20 +126,21 @@ public class ValidateUtil {
 		}
 
 		obj = HibernateUtil.getRealObjectFromProxy(obj);
-		
+
 		Context.getAdministrationService().validate(obj, errors);
 	}
-	
+
 	/**
 	 * Test the field lengths are valid
+	 * <p>
+	 * <strong>Should</strong> pass validation if regEx field length is not too long<br/>
+	 * <strong>Should</strong> fail validation if regEx field length is too long<br/>
+	 * <strong>Should</strong> fail validation if name field length is too long<br/>
+	 * <strong>Should</strong> return immediately if validation is disabled and have no errors
 	 *
 	 * @param errors
 	 * @param aClass the class of the object being tested
 	 * @param fields a var args that contains all of the fields from the model
-	 * <strong>Should</strong> pass validation if regEx field length is not too long
-	 * <strong>Should</strong> fail validation if regEx field length is too long
-	 * <strong>Should</strong> fail validation if name field length is too long
-	 * <strong>Should</strong> return immediately if validation is disabled and have no errors
 	 */
 	public static void validateFieldLengths(Errors errors, Class<?> aClass, String... fields) {
 		if (disableValidation) {
@@ -148,7 +153,8 @@ public class ValidateUtil {
 			if (value == null || !(value instanceof String)) {
 				continue;
 			}
-			long length = Context.getAdministrationService().getMaximumPropertyLength((Class<? extends OpenmrsObject>) aClass, field);
+			long length = Context.getAdministrationService()
+			        .getMaximumPropertyLength((Class<? extends OpenmrsObject>) aClass, field);
 			if (length == -1) {
 				return;
 			}
@@ -175,8 +181,9 @@ public class ValidateUtil {
 	}
 
 	/**
-	 * Used to indicate that validation should be disabled for the current thread
-	 * NOTE: This should always be used in conjunction with the resumeValidationForThread method
+	 * Used to indicate that validation should be disabled for the current thread NOTE: This should
+	 * always be used in conjunction with the resumeValidationForThread method
+	 *
 	 * @since 2.5.8
 	 */
 	public static void disableValidationForThread() {
@@ -184,8 +191,9 @@ public class ValidateUtil {
 	}
 
 	/**
-	 * Used to indicate that validation should be re-enabled for the current thread
-	 * Typically this would be placed in a `finally` block after the disableValidationForThread method is used
+	 * Used to indicate that validation should be re-enabled for the current thread Typically this would
+	 * be placed in a `finally` block after the disableValidationForThread method is used
+	 *
 	 * @since 2.5.8
 	 */
 	public static void resumeValidationForThread() {

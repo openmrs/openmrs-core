@@ -19,10 +19,10 @@ package org.openmrs.logic.op;
  * The above will give us a criteria to check if there's "CD4 COUNT" observations as of 12/04/2009
  */
 public class AsOf implements Operator {
-	
+
 	@Override
 	public String toString() {
 		return "AS OF";
 	}
-	
+
 }

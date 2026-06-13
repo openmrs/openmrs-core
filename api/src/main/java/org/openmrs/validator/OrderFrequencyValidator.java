@@ -20,36 +20,37 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates the {@link OrderFrequency} class.
- * 
+ *
  * @since 1.10
  */
 @Handler(supports = { OrderFrequency.class })
 public class OrderFrequencyValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return OrderFrequency.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * Checks the order frequency object for any inconsistencies/errors
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fail if orderFrequency is null<br/>
+	 * <strong>Should</strong> fail if concept is null<br/>
+	 * <strong>Should</strong> fail if the concept is not of class frequency<br/>
+	 * <strong>Should</strong> fail if concept is used by another frequency<br/>
+	 * <strong>Should</strong> pass for a valid new order frequency<br/>
+	 * <strong>Should</strong> pass for a valid existing order frequency<br/>
+	 * <strong>Should</strong> be invoked when an order frequency is saved<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail if orderFrequency is null
-	 * <strong>Should</strong> fail if concept is null
-	 * <strong>Should</strong> fail if the concept is not of class frequency
-	 * <strong>Should</strong> fail if concept is used by another frequency
-	 * <strong>Should</strong> pass for a valid new order frequency
-	 * <strong>Should</strong> pass for a valid existing order frequency
-	 * <strong>Should</strong> be invoked when an order frequency is saved
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -58,13 +59,13 @@ public class OrderFrequencyValidator implements Validator {
 			errors.reject("error.general");
 		} else {
 			ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
-			
+
 			Concept concept = orderFrequency.getConcept();
 			if (concept != null) {
 				if (!ConceptClass.FREQUENCY_UUID.equals(concept.getConceptClass().getUuid())) {
 					errors.rejectValue("concept", "OrderFrequency.concept.shouldBeClassFrequency");
 				}
-				
+
 				OrderFrequency of = Context.getOrderService().getOrderFrequencyByConcept(concept);
 				if (of != null && !of.equals(orderFrequency)) {
 					errors.rejectValue("concept", "OrderFrequency.concept.shouldNotBeShared");

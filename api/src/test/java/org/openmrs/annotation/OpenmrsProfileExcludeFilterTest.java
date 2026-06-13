@@ -9,80 +9,86 @@
  */
 package org.openmrs.annotation;
 
+import org.junit.jupiter.api.Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.jupiter.api.Test;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-
 public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
-	
+
 	/**
-	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
+	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader,
+	 *      org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test
 	public void match_shouldNotIncludeBeanForOpenmrsFrom1_6To1_7() {
 		assertThrows(NoSuchBeanDefinitionException.class, () -> applicationContext.getBean(OpenmrsProfile1_6To1_7.class));
 	}
-	
+
 	/**
-	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
+	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader,
+	 *      org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test
 	public void match_shouldIncludeBeanForOpenmrs1_10AndLater() {
 		OpenmrsProfile1_10 bean = applicationContext.getBean(OpenmrsProfile1_10.class);
-		
+
 		assertThat(bean, is(notNullValue()));
 	}
-	
+
 	/**
-	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
+	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader,
+	 *      org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test
 	public void match_shouldIncludeBeanForOpenmrs1_8AndLater() {
 		OpenmrsProfile1_8 bean = applicationContext.getBean(OpenmrsProfile1_8.class);
-		
+
 		assertThat(bean, is(notNullValue()));
 	}
-	
+
 	/**
-	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
+	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader,
+	 *      org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test
 	public void match_shouldNotIncludeBeanForOpenmrs1_8AndLaterIfModuleMissing() {
-		assertThrows(NoSuchBeanDefinitionException.class, () -> applicationContext.getBean(OpenmrsProfile1_8WithHtmlformentry.class));
+		assertThrows(NoSuchBeanDefinitionException.class,
+		    () -> applicationContext.getBean(OpenmrsProfile1_8WithHtmlformentry.class));
 	}
-	
+
 	@Test
 	public void shouldBeIgnoredIfOpenmrsVersionDoesNotMatch() {
 		assumeOpenmrsPlatformVersion("1.6.*");
-		
+
 		fail("It should have been ignored!");
 	}
-	
+
 	@Test
 	public void shouldBeIgnoredIfModuleDoesNotMatch() {
 		assumeOpenmrsModules("metadatasharing:1.2");
-		
+
 		fail("It should have been ignored!");
 	}
-	
+
 	@Test
 	public void shouldNotBeIgnoredIfOpenmrsVersionDoesMatch() {
 		assumeOpenmrsPlatformVersion("1.9");
 	}
-	
+
 	/**
-	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
+	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader,
+	 *      org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test
 	public void match_shouldIncludeBeanIfModuleMissing() {
 		OpenmrsProfileWithoutMissingModule bean = applicationContext.getBean(OpenmrsProfileWithoutMissingModule.class);
-		
+
 		assertThat(bean, is(notNullValue()));
 	}
 }

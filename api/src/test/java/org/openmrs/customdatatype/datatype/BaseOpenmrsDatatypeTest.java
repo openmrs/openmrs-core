@@ -9,14 +9,14 @@
  */
 package org.openmrs.customdatatype.datatype;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class BaseOpenmrsDatatypeTest {
-	
+
 	/**
 	 * @see BaseOpenmrsDatatype#serialize(org.openmrs.OpenmrsObject)
 	 */

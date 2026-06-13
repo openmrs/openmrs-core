@@ -182,6 +182,17 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-co
 ```
 Grafana will be available at http://localhost:3000. Use admin as username and see docker-compose.grafana.yml for the initial password.
 
+### Scheduler Dashboard
+
+The scheduler dashboard can be accessed at http://localhost:9000 by default (user: admin / passowrd: Admin123). It is enabled by default when running `docker compose up` command. It is configured in `docker-compose.override.yml`.
+
+If you want to enable it in other environments, you need to set the following properties in `openmrs-runtime.properties`:
+
+```bash
+jobrunr.dashboard.enabled=true
+jobrunr.dashboard.password=someStrongPassword
+```
+
 ## Navigating the repository
 
 The project tree is set up as follows:

@@ -28,8 +28,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Servlet filter that binds a Hibernate {@link Session} to the thread for the entire processing
- * of the request, enabling the "Open Session in View" pattern for lazy loading in web views.
+ * Servlet filter that binds a Hibernate {@link Session} to the thread for the entire processing of
+ * the request, enabling the "Open Session in View" pattern for lazy loading in web views.
  * <p>
  * This filter binds a {@link SessionHolder} (rather than an {@code EntityManagerHolder}) to ensure
  * compatibility with {@link org.springframework.orm.jpa.hibernate.HibernateTransactionManager},
@@ -55,7 +55,7 @@ public class OpenSessionInViewFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+	        throws ServletException, IOException {
 
 		SessionFactory sf = lookupSessionFactory();
 		boolean participate = false;

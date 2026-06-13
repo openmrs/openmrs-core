@@ -15,9 +15,9 @@ package org.openmrs;
  * to check, for example, when a patient record was created, or when a person address was last
  * updated in the system. Any object that needs to keep track of this information should implement
  * this interface.
- * 
+ *
  * @since 1.5
  */
 public interface Auditable extends Creatable, Changeable {
-	
+
 }

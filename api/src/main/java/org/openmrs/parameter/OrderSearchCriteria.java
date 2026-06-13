@@ -9,6 +9,9 @@
  */
 package org.openmrs.parameter;
 
+import java.util.Collection;
+import java.util.Date;
+
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Order;
@@ -16,12 +19,9 @@ import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
 
-import java.util.Collection;
-import java.util.Date;
-
 /**
- * The search parameter object for orders. A convenience interface for building
- * instances is provided by {@link OrderSearchCriteriaBuilder}.
+ * The search parameter object for orders. A convenience interface for building instances is
+ * provided by {@link OrderSearchCriteriaBuilder}.
  *
  * @since 2.2
  * @see OrderSearchCriteriaBuilder
@@ -37,7 +37,7 @@ public class OrderSearchCriteria {
 	private final Collection<OrderType> orderTypes;
 
 	private final Visit visit;
-	
+
 	/**
 	 * Accession Number to match on; performs an exact match, case-insensitive
 	 */
@@ -79,16 +79,15 @@ public class OrderSearchCriteria {
 	private final Order.FulfillerStatus fulfillerStatus;
 
 	/**
-	 * Matches on orders with fulfiller_status = null
-	 * This parameter could work in conjunction with fulfillerStatus.
-	 *  If fulfillerStatus is specified then includeNullFulfillerStatus=true would include
-	 *  all orders where fulfillerStatus=null OR fulfillerStatus = specified value
+	 * Matches on orders with fulfiller_status = null This parameter could work in conjunction with
+	 * fulfillerStatus. If fulfillerStatus is specified then includeNullFulfillerStatus=true would
+	 * include all orders where fulfillerStatus=null OR fulfillerStatus = specified value
 	 */
 	private final Boolean includeNullFulfillerStatus;
 
-    /**
-     * Matches on action
-     */
+	/**
+	 * Matches on action
+	 */
 	private final Order.Action action;
 
 	private final boolean includeVoided;
@@ -96,9 +95,11 @@ public class OrderSearchCriteria {
 	private final boolean excludeCanceledAndExpired;
 
 	private final boolean excludeDiscontinueOrders;
-	
+
 	/**
-	 * Instead of calling this constructor directly, it is recommended to use {@link OrderSearchCriteriaBuilder}.
+	 * Instead of calling this constructor directly, it is recommended to use
+	 * {@link OrderSearchCriteriaBuilder}.
+	 *
 	 * @param patient the patient the order is for
 	 * @param careSetting the care setting to match on
 	 * @param concepts the concepts to match on; if not specified, matches on all concepts
@@ -110,34 +111,21 @@ public class OrderSearchCriteria {
 	 * @param includeVoided whether to include the voided orders or not
 	 */
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
-			   Collection<OrderType> orderTypes, String accessionNumber, String orderNumber,
-			   Date activatedOnOrBeforeDate, Date activatedOnOrAfterDate, boolean isStopped,
-			   Date autoExpireOnOrBeforeDate,
-			   Date canceledOrExpiredOnOrBeforeDate,
-			   Order.Action action,
-			   Order.FulfillerStatus fulfillerStatus,
-			   Boolean includeNullFulfillerStatus,
-			   boolean excludeCanceledAndExpired,
-			   boolean excludeDiscontinueOrders,
-			   boolean includeVoided) {
-		
-		this(patient, careSetting, concepts, orderTypes, null, null,
-				activatedOnOrBeforeDate, activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
-				action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided, null);
+	    Collection<OrderType> orderTypes, String accessionNumber, String orderNumber, Date activatedOnOrBeforeDate,
+	    Date activatedOnOrAfterDate, boolean isStopped, Date autoExpireOnOrBeforeDate, Date canceledOrExpiredOnOrBeforeDate,
+	    Order.Action action, Order.FulfillerStatus fulfillerStatus, Boolean includeNullFulfillerStatus,
+	    boolean excludeCanceledAndExpired, boolean excludeDiscontinueOrders, boolean includeVoided) {
+
+		this(patient, careSetting, concepts, orderTypes, null, null, activatedOnOrBeforeDate, activatedOnOrAfterDate,
+		        isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate, action, fulfillerStatus,
+		        includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided, null);
 	}
 
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
-							   Collection<OrderType> orderTypes, String accessionNumber, String orderNumber,
-							   Date activatedOnOrBeforeDate, Date activatedOnOrAfterDate, boolean isStopped,
-							   Date autoExpireOnOrBeforeDate,
-							   Date canceledOrExpiredOnOrBeforeDate,
-							   Order.Action action,
-							   Order.FulfillerStatus fulfillerStatus,
-							   Boolean includeNullFulfillerStatus,
-							   boolean excludeCanceledAndExpired,
-							   boolean excludeDiscontinueOrders,
-							   boolean includeVoided,
-							   Visit visit) {
+	    Collection<OrderType> orderTypes, String accessionNumber, String orderNumber, Date activatedOnOrBeforeDate,
+	    Date activatedOnOrAfterDate, boolean isStopped, Date autoExpireOnOrBeforeDate, Date canceledOrExpiredOnOrBeforeDate,
+	    Order.Action action, Order.FulfillerStatus fulfillerStatus, Boolean includeNullFulfillerStatus,
+	    boolean excludeCanceledAndExpired, boolean excludeDiscontinueOrders, boolean includeVoided, Visit visit) {
 		this.patient = patient;
 		this.careSetting = careSetting;
 		this.concepts = concepts;
@@ -159,8 +147,9 @@ public class OrderSearchCriteria {
 	}
 
 	/**
-	 * (Legacy constructor, before addition of Order Number and Accession Number fields)
-	 * Instead of calling this constructor directly, it is recommended to use {@link OrderSearchCriteriaBuilder}.
+	 * (Legacy constructor, before addition of Order Number and Accession Number fields) Instead of
+	 * calling this constructor directly, it is recommended to use {@link OrderSearchCriteriaBuilder}.
+	 *
 	 * @param patient the patient the order is for
 	 * @param careSetting the care setting to match on
 	 * @param concepts the concepts to match on; if not specified, matches on all concepts
@@ -171,48 +160,53 @@ public class OrderSearchCriteria {
 	 */
 	@Deprecated
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
-							   Collection<OrderType> orderTypes, Date activatedOnOrBeforeDate,
-							   Date activatedOnOrAfterDate, boolean isStopped, Date autoExpireOnOrBeforeDate,
-							   Date canceledOrExpiredOnOrBeforeDate,
-							   Order.Action action,
-							   Order.FulfillerStatus fulfillerStatus,
-							   Boolean includeNullFulfillerStatus,
-							   boolean excludeCanceledAndExpired,
-							   boolean excludeDiscontinueOrders,
-							   boolean includeVoided) {
+	    Collection<OrderType> orderTypes, Date activatedOnOrBeforeDate, Date activatedOnOrAfterDate, boolean isStopped,
+	    Date autoExpireOnOrBeforeDate, Date canceledOrExpiredOnOrBeforeDate, Order.Action action,
+	    Order.FulfillerStatus fulfillerStatus, Boolean includeNullFulfillerStatus, boolean excludeCanceledAndExpired,
+	    boolean excludeDiscontinueOrders, boolean includeVoided) {
 
-		this(patient, careSetting, concepts, orderTypes, null, null,
-			activatedOnOrBeforeDate, activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
-			action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided);
+		this(patient, careSetting, concepts, orderTypes, null, null, activatedOnOrBeforeDate, activatedOnOrAfterDate,
+		        isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate, action, fulfillerStatus,
+		        includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided);
 
 	}
 
 	/**
 	 * @return the patient the order is for
 	 */
-	public Patient getPatient() { return patient; }
+	public Patient getPatient() {
+		return patient;
+	}
 
 	/**
 	 * @return the care setting to match on
 	 */
-	public CareSetting getCareSetting() { return careSetting; }
+	public CareSetting getCareSetting() {
+		return careSetting;
+	}
 
 	/**
 	 * @return the concepts defining the order must be in this collection
 	 */
-	public Collection<Concept> getConcepts() { return concepts; }
+	public Collection<Concept> getConcepts() {
+		return concepts;
+	}
 
 	/**
 	 * @return the order types to match on must be in this collection
 	 */
-	public Collection<OrderType> getOrderTypes() { return orderTypes; }
+	public Collection<OrderType> getOrderTypes() {
+		return orderTypes;
+	}
 
 	/**
 	 * @return the visit the order is for
 	 * @since 2.7.0
 	 */
-	public Visit getVisit() { return visit; }
-	
+	public Visit getVisit() {
+		return visit;
+	}
+
 	/**
 	 * @return the accession number to match on; must be case-insensitive exact-match
 	 * @since 2.3.1
@@ -232,15 +226,18 @@ public class OrderSearchCriteria {
 	/**
 	 * @return orders must have dateActivated on or before this date
 	 */
-	public Date getActivatedOnOrBeforeDate() { return activatedOnOrBeforeDate; }
+	public Date getActivatedOnOrBeforeDate() {
+		return activatedOnOrBeforeDate;
+	}
 
 	/**
 	 * @return orders must have dateActivated on or after this date
 	 */
-	public Date getActivatedOnOrAfterDate() { return activatedOnOrAfterDate; }
+	public Date getActivatedOnOrAfterDate() {
+		return activatedOnOrAfterDate;
+	}
 
 	/**
-	 *
 	 * @return orders must have dateStopped on or before this date
 	 */
 	public boolean isStopped() {
@@ -248,7 +245,6 @@ public class OrderSearchCriteria {
 	}
 
 	/**
-	 *
 	 * @return orders must have autoExpireDate on or before this date
 	 */
 	public Date getAutoExpireOnOrBeforeDate() {
@@ -256,7 +252,6 @@ public class OrderSearchCriteria {
 	}
 
 	/**
-	 *
 	 * @return orders that are canceled or have autoExpireDate on or before this date
 	 */
 	public Date getCanceledOrExpiredOnOrBeforeDate() {
@@ -264,15 +259,13 @@ public class OrderSearchCriteria {
 	}
 
 	/**
-     *
-     * @return orders must match the action
-     */
+	 * @return orders must match the action
+	 */
 	public Order.Action getAction() {
-        return action;
-    }
+		return action;
+	}
 
-    /**
-	 *
+	/**
 	 * @return orders must match the fulfillerstatus
 	 */
 	public Order.FulfillerStatus getFulfillerStatus() {
@@ -280,7 +273,6 @@ public class OrderSearchCriteria {
 	}
 
 	/**
-	 *
 	 * @return include(OR) orders with fulfiller_status = null
 	 */
 	public Boolean getIncludeNullFulfillerStatus() {
@@ -291,7 +283,6 @@ public class OrderSearchCriteria {
 		return excludeCanceledAndExpired;
 	}
 
-
 	public boolean getExcludeDiscontinueOrders() {
 		return excludeDiscontinueOrders;
 	}
@@ -299,6 +290,8 @@ public class OrderSearchCriteria {
 	/**
 	 * @return whether to include the voided orders or not
 	 */
-	public boolean getIncludeVoided() { return includeVoided; }
+	public boolean getIncludeVoided() {
+		return includeVoided;
+	}
 
 }

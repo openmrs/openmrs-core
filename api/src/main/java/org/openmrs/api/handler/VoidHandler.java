@@ -24,16 +24,16 @@ import org.openmrs.aop.RequiredDataAdvice;
  * <br>
  * Child collections on this {@link Voidable} that are themselves a {@link Voidable} are looped over
  * and also voided by the {@link RequiredDataAdvice} class.
- * 
+ *
  * @see RequiredDataAdvice
  * @see UnvoidHandler
  * @since 1.5
  */
 public interface VoidHandler<V extends Voidable> extends RequiredDataHandler<V> {
-	
+
 	/**
 	 * Implementing classes should set all void attributes to the given parameters.
-	 * 
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 */

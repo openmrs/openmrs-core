@@ -24,16 +24,15 @@ import org.openmrs.api.db.OpenmrsMetadataDAO;
  * Abstract class implementing basic data access methods for BaseOpenmrsMetadata persistents
  *
  * @since 1.10
- *
  * @param <T>
  */
 public class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends HibernateOpenmrsObjectDAO<T> implements OpenmrsMetadataDAO<T> {
-	
+
 	public HibernateOpenmrsMetadataDAO(Class<T> mappedClass) {
 		super();
 		this.mappedClass = mappedClass;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getAll(boolean)
 	 */
@@ -72,10 +71,9 @@ public class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends 
 		if (maxResults != null) {
 			query.setMaxResults(maxResults);
 		}
-		
+
 		return query.getResultList();
 	}
-
 
 	/**
 	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getAllCount(boolean)

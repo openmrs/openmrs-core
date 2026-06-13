@@ -57,170 +57,174 @@ import org.openmrs.api.handler.VoidHandler;
 @BatchSize(size = 25)
 @Audited
 public class Encounter extends BaseChangeableOpenmrsData {
-	
+
 	public static final long serialVersionUID = 2L;
-	
+
 	// Fields
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "encounter_id")
 	private Integer encounterId;
-	
+
 	@Column(name = "encounter_datetime", nullable = false, length = 19)
 	private Date encounterDatetime;
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "location_id")
 	private Location location;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "form_id")
 	private Form form;
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "encounter_type")
 	private EncounterType encounterType;
-	
+
 	@OneToMany(mappedBy = "encounter")
 	private Set<Order> orders;
-	
+
 	@OneToMany(mappedBy = "encounter")
 	private Set<Diagnosis> diagnoses;
-	
+
 	@OneToMany(mappedBy = "encounter")
 	private Set<Condition> conditions;
-	
+
 	@OneToMany(mappedBy = "encounter")
 	@Access(AccessType.FIELD)
 	@OrderBy("concept_id")
 	@BatchSize(size = 25)
 	@AllowDirectAccess
 	private Set<Obs> obs;
-	
+
 	@ManyToOne
 	@Cascade({ org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.PERSIST })
 	@JoinColumn(name = "visit_id")
 	private Visit visit;
-	
+
 	@OneToMany(mappedBy = "encounter", cascade = CascadeType.ALL)
 	@OrderBy("provider_id")
 	@DisableHandlers(handlerTypes = { VoidHandler.class })
 	private Set<EncounterProvider> encounterProviders = new LinkedHashSet<>();
-	
+
 	@OneToMany(mappedBy = "encounter")
 	private Set<Allergy> allergies;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public Encounter() {
 	}
-	
+
 	/**
-	 * @param encounterId
+	 * <p>
 	 * <strong>Should</strong> set encounter id
+	 *
+	 * @param encounterId
 	 */
 	public Encounter(Integer encounterId) {
 		this.encounterId = encounterId;
 	}
-	
+
 	// Property accessors
-	
+
 	/**
 	 * @return Returns the encounterDatetime.
 	 */
 	public Date getEncounterDatetime() {
 		return encounterDatetime;
 	}
-	
+
 	/**
 	 * @param encounterDatetime The encounterDatetime to set.
 	 */
 	public void setEncounterDatetime(Date encounterDatetime) {
 		this.encounterDatetime = encounterDatetime;
 	}
-	
+
 	/**
 	 * @return Returns the encounterId.
 	 */
 	public Integer getEncounterId() {
 		return encounterId;
 	}
-	
+
 	/**
 	 * @param encounterId The encounterId to set.
 	 */
 	public void setEncounterId(Integer encounterId) {
 		this.encounterId = encounterId;
 	}
-	
+
 	/**
 	 * @return Returns the encounterType.
 	 */
 	public EncounterType getEncounterType() {
 		return encounterType;
 	}
-	
+
 	/**
 	 * @param encounterType The encounterType to set.
 	 */
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
 	}
-	
+
 	/**
 	 * @return Returns the location.
 	 */
 	public Location getLocation() {
 		return location;
 	}
-	
+
 	/**
 	 * @param location The location to set.
 	 */
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-	
+
 	/**
-	 * @return Returns a Set&lt;Obs&gt; of all non-voided, non-obsGroup children Obs of this
-	 *         Encounter
-	 * <strong>Should</strong> not return null with null obs set
-	 * <strong>Should</strong> get obs
-	 * <strong>Should</strong> not get voided obs
-	 * <strong>Should</strong> only get child obs
-	 * <strong>Should</strong> not get child obs if child also on encounter
-	 * <strong>Should</strong> get both child and parent obs after removing child from parent grouping
-	 * <strong>Should</strong> get obs with two levels of hierarchy
-	 * <strong>Should</strong> get obs with three levels of hierarchy
+	 * <p>
+	 * <strong>Should</strong> not return null with null obs set<br/>
+	 * <strong>Should</strong> get obs<br/>
+	 * <strong>Should</strong> not get voided obs<br/>
+	 * <strong>Should</strong> only get child obs<br/>
+	 * <strong>Should</strong> not get child obs if child also on encounter<br/>
+	 * <strong>Should</strong> get both child and parent obs after removing child from parent
+	 * grouping<br/>
+	 * <strong>Should</strong> get obs with two levels of hierarchy<br/>
+	 * <strong>Should</strong> get obs with three levels of hierarchy<br/>
 	 * <strong>Should</strong> not get voided obs with three layers of hierarchy
+	 *
+	 * @return Returns a Set&lt;Obs&gt; of all non-voided, non-obsGroup children Obs of this Encounter
 	 */
 	public Set<Obs> getObs() {
 		Set<Obs> ret = new LinkedHashSet<>();
-		
+
 		if (this.obs != null) {
 			for (Obs o : this.obs) {
 				ret.addAll(getObsLeaves(o));
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
-	 * Convenience method to recursively get all leaf obs of this encounter. This method goes down
-	 * into each obs and adds all non-grouping obs to the return list
+	 * Convenience method to recursively get all leaf obs of this encounter. This method goes down into
+	 * each obs and adds all non-grouping obs to the return list
 	 *
 	 * @param obsParent current obs to loop over
 	 * @return list of leaf obs
 	 */
 	private List<Obs> getObsLeaves(Obs obsParent) {
 		List<Obs> leaves = new ArrayList<>();
-		
+
 		if (obsParent.hasGroupMembers()) {
 			for (Obs child : obsParent.getGroupMembers()) {
 				if (!child.getVoided()) {
@@ -235,12 +239,13 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		} else if (!obsParent.getVoided()) {
 			leaves.add(obsParent);
 		}
-		
+
 		return leaves;
 	}
 
 	/**
 	 * Convenience method to recursively get all leaf obs for a given parent obs.
+	 *
 	 * @param obsParent indicates the parent Obs
 	 * @param includedVoided indicates whether or not to include voided Obs
 	 * @return a Set of all leaves Obs including the parent Obs
@@ -261,35 +266,37 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Returns all Obs where Obs.encounterId = Encounter.encounterId In practice, this method should
-	 * not be used very often...
+	 * Returns all Obs where Obs.encounterId = Encounter.encounterId In practice, this method should not
+	 * be used very often...
+	 * <p>
+	 * <strong>Should</strong> not return null with null obs set<br/>
+	 * <strong>Should</strong> get obs<br/>
+	 * <strong>Should</strong> get both parent and child obs<br/>
+	 * <strong>Should</strong> get both parent and child with child directly on encounter<br/>
+	 * <strong>Should</strong> get both child and parent obs after removing child from parent grouping
 	 *
 	 * @param includeVoided specifies whether or not to include voided Obs
 	 * @return Returns the all Obs.
-	 * <strong>Should</strong> not return null with null obs set
-	 * <strong>Should</strong> get obs
-	 * <strong>Should</strong> get both parent and child obs
-	 * <strong>Should</strong> get both parent and child with child directly on encounter
-	 * <strong>Should</strong> get both child and parent obs after removing child from parent grouping
 	 */
 	public Set<Obs> getAllObs(boolean includeVoided) {
 		if (includeVoided && obs != null) {
 			return obs;
 		}
-		
+
 		Set<Obs> ret = new LinkedHashSet<>();
-		
+
 		if (this.obs != null) {
 			ret = this.obs.stream().filter(o -> includeVoided || !o.getVoided()).collect(Collectors.toSet());
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Convenience method to call {@link #getAllObs(boolean)} with a false parameter
+	 * <p>
+	 * <strong>Should</strong> not get voided obs
 	 *
 	 * @return all non-voided obs
-	 * <strong>Should</strong> not get voided obs
 	 */
 	public Set<Obs> getAllObs() {
 		return getAllObs(false);
@@ -297,6 +304,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Returns all encounter obs as a flatten list(Set) of obs.
+	 *
 	 * @param includeVoided indicates whether or not to include voided obs
 	 * @return a Set of all encounter' Obs
 	 */
@@ -313,71 +321,73 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Returns a Set&lt;Obs&gt; of all root-level Obs of an Encounter, including obsGroups
+	 * <p>
+	 * <strong>Should</strong> not return null with null obs set<br/>
+	 * <strong>Should</strong> get obs<br/>
+	 * <strong>Should</strong> not get voided obs<br/>
+	 * <strong>Should</strong> only get parents obs<br/>
+	 * <strong>Should</strong> only return the grouped top level obs<br/>
+	 * <strong>Should</strong> get both child and parent obs after removing child from parent grouping
 	 *
 	 * @param includeVoided specifies whether or not to include voided Obs
 	 * @return Returns all obs at top level -- will not be null
-	 * <strong>Should</strong> not return null with null obs set
-	 * <strong>Should</strong> get obs
-	 * <strong>Should</strong> not get voided obs
-	 * <strong>Should</strong> only get parents obs
-	 * <strong>Should</strong> only return the grouped top level obs
-	 * <strong>Should</strong> get both child and parent obs after removing child from parent grouping
 	 */
 	public Set<Obs> getObsAtTopLevel(boolean includeVoided) {
-		
+
 		return getAllObs(includeVoided).stream().filter(o -> o.getObsGroup() == null)
 		        .collect(Collectors.toCollection(LinkedHashSet::new));
 	}
-	
+
 	/**
 	 * @param obs The obs to set.
 	 */
 	public void setObs(Set<Obs> obs) {
 		this.obs = obs;
 	}
-	
+
 	/**
 	 * Add the given Obs to the list of obs for this Encounter.
+	 * <p>
+	 * <strong>Should</strong> add obs with null values<br/>
+	 * <strong>Should</strong> not fail with null obs<br/>
+	 * <strong>Should</strong> set encounter attribute on obs<br/>
+	 * <strong>Should</strong> add obs to non null initial obs set<br/>
+	 * <strong>Should</strong> add encounter attrs to obs if attributes are null<br/>
+	 * <strong>Should</strong> add encounter attrs to obs groupMembers if attributes are null
 	 *
 	 * @param observation the Obs to add to this encounter
-	 * <strong>Should</strong> add obs with null values
-	 * <strong>Should</strong> not fail with null obs
-	 * <strong>Should</strong> set encounter attribute on obs
-	 * <strong>Should</strong> add obs to non null initial obs set
-	 * <strong>Should</strong> add encounter attrs to obs if attributes are null
-	 * <strong>Should</strong> add encounter attrs to obs groupMembers if attributes are null
 	 */
 	public void addObs(Obs observation) {
 		if (obs == null) {
 			obs = new LinkedHashSet<>();
 		}
-		
+
 		if (observation != null) {
 			obs.add(observation);
-			
+
 			//Propagate some attributes to the obs and any groupMembers
-			
+
 			// a Deque is a two-ended queue, that lets us add to the end, and fetch from the beginning
 			Deque<Obs> obsToUpdate = new ArrayDeque<>();
 			obsToUpdate.add(observation);
-			
+
 			//prevent infinite recursion if an obs is its own group member
 			Set<Obs> seenIt = new LinkedHashSet<>();
-			
+
 			while (!obsToUpdate.isEmpty()) {
 				Obs o = obsToUpdate.removeFirst();
-				
+
 				//has this obs already been processed?
 				if (o == null || seenIt.contains(o)) {
 					continue;
 				}
 				seenIt.add(o);
-				
+
 				o.setEncounter(this);
-				
+
 				//if the attribute was already set, preserve it
 				//if not, inherit the values from the encounter
 				if (o.getObsDatetime() == null) {
@@ -389,30 +399,31 @@ public class Encounter extends BaseChangeableOpenmrsData {
 				if (o.getLocation() == null) {
 					o.setLocation(getLocation());
 				}
-				
+
 				//propagate attributes to  all group members as well
 				if (o.getGroupMembers(true) != null) {
 					obsToUpdate.addAll(o.getGroupMembers());
 				}
 			}
-			
+
 		}
 	}
-	
+
 	/**
 	 * Remove the given observation from the list of obs for this Encounter
+	 * <p>
+	 * <strong>Should</strong> remove obs successfully<br/>
+	 * <strong>Should</strong> not throw error when removing null obs from empty set<br/>
+	 * <strong>Should</strong> not throw error when removing null obs from non empty set
 	 *
 	 * @param observation
-	 * <strong>Should</strong> remove obs successfully
-	 * <strong>Should</strong> not throw error when removing null obs from empty set
-	 * <strong>Should</strong> not throw error when removing null obs from non empty set
 	 */
 	public void removeObs(Obs observation) {
 		if (obs != null) {
 			obs.remove(observation);
 		}
 	}
-	
+
 	/**
 	 * @return Returns the orders
 	 */
@@ -422,23 +433,24 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		}
 		return orders;
 	}
-	
+
 	/**
 	 * @param orders The orders to set.
 	 */
 	public void setOrders(Set<Order> orders) {
 		this.orders = orders;
 	}
-	
+
 	/**
 	 * Add the given Order to the list of orders for this Encounter
+	 * <p>
+	 * <strong>Should</strong> add order with null values<br/>
+	 * <strong>Should</strong> not fail with null obs passed to add order<br/>
+	 * <strong>Should</strong> set encounter attribute<br/>
+	 * <strong>Should</strong> add order to non null initial order set<br/>
+	 * <strong>Should</strong> add order to encounter when adding order to set returned from getOrders
 	 *
 	 * @param order
-	 * <strong>Should</strong> add order with null values
-	 * <strong>Should</strong> not fail with null obs passed to add order
-	 * <strong>Should</strong> set encounter attribute
-	 * <strong>Should</strong> add order to non null initial order set
-	 * <strong>Should</strong> add order to encounter when adding order to set returned from getOrders
 	 */
 	public void addOrder(Order order) {
 		if (order != null) {
@@ -446,38 +458,39 @@ public class Encounter extends BaseChangeableOpenmrsData {
 			getOrders().add(order);
 		}
 	}
-	
+
 	/**
 	 * Remove the given order from the list of orders for this Encounter
+	 * <p>
+	 * <strong>Should</strong> remove order from encounter<br/>
+	 * <strong>Should</strong> not fail when removing null order<br/>
+	 * <strong>Should</strong> not fail when removing non existent order
 	 *
 	 * @param order
-	 * <strong>Should</strong> remove order from encounter
-	 * <strong>Should</strong> not fail when removing null order
-	 * <strong>Should</strong> not fail when removing non existent order
 	 */
 	public void removeOrder(Order order) {
 		if (orders != null) {
 			orders.remove(order);
 		}
 	}
-	
+
 	/**
 	 * @return Returns the patient.
 	 */
 	public Patient getPatient() {
 		return patient;
 	}
-	
+
 	/**
 	 * @param patient The patient to set.
 	 */
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
-	
+
 	/**
 	 * Gets the set of diagnoses
-	 * 
+	 *
 	 * @return diagnoses - the set of diagnoses.
 	 * @since 2.2
 	 */
@@ -487,20 +500,20 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		}
 		return diagnoses;
 	}
-	
+
 	/**
 	 * Sets a set of diagnoses for the current Encounter
-	 * 
+	 *
 	 * @param diagnoses the set of Diagnosis to set.
 	 * @since 2.2
 	 */
 	public void setDiagnoses(Set<Diagnosis> diagnoses) {
 		this.diagnoses = diagnoses;
 	}
-	
+
 	/**
 	 * Basic property getter for the encounter's non-voided conditions.
-	 * 
+	 *
 	 * @return all non-voided conditions
 	 * @since 2.4.0, 2.3.1
 	 */
@@ -516,13 +529,13 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @since 2.3.3, 2.4.0, 2.5.0
 	 */
 	public Set<Condition> getConditions(boolean includeVoided) {
-		return Optional.ofNullable(conditions).orElse(new LinkedHashSet<>())
-			.stream().filter(c -> includeVoided || !c.getVoided()).collect(Collectors.toSet());
+		return Optional.ofNullable(conditions).orElse(new LinkedHashSet<>()).stream()
+		        .filter(c -> includeVoided || !c.getVoided()).collect(Collectors.toSet());
 	}
-		
+
 	/**
 	 * Basic property setter for conditions
-	 *  
+	 *
 	 * @param conditions - set of conditions
 	 * @since 2.4.0, 2.3.1
 	 */
@@ -547,24 +560,25 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Remove the given condition from the set of conditions for this encounter.
-	 * In practise the condition is not removed but rather voided.
+	 * Remove the given condition from the set of conditions for this encounter. In practise the
+	 * condition is not removed but rather voided.
 	 *
 	 * @param condition - the condition to remove
 	 */
 	public void removeCondition(Condition condition) {
-		Optional.ofNullable(conditions).orElse(new LinkedHashSet<>()).stream().filter(c -> !c.getVoided() && c.equals(condition)).forEach(c -> {
-			c.setVoided(true);
-			c.setDateVoided(new Date());
-			c.setVoidReason("Voided by the API");
-			c.setVoidedBy(Context.getAuthenticatedUser());
-		});
+		Optional.ofNullable(conditions).orElse(new LinkedHashSet<>()).stream()
+		        .filter(c -> !c.getVoided() && c.equals(condition)).forEach(c -> {
+			        c.setVoided(true);
+			        c.setDateVoided(new Date());
+			        c.setVoidReason("Voided by the API");
+			        c.setVoidedBy(Context.getAuthenticatedUser());
+		        });
 	}
-	
+
 	/**
-	 * Basic property accessor for encounterProviders. The convenience methods getProvidersByRoles
-	 * and getProvidersByRole are the preferred methods for getting providers. This getter is
-	 * provided as a convenience for treating this like a DTO
+	 * Basic property accessor for encounterProviders. The convenience methods getProvidersByRoles and
+	 * getProvidersByRole are the preferred methods for getting providers. This getter is provided as a
+	 * convenience for treating this like a DTO
 	 *
 	 * @return list of all existing providers on this encounter
 	 * @see #getProvidersByRole(EncounterRole)
@@ -574,14 +588,14 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	public Set<EncounterProvider> getEncounterProviders() {
 		return encounterProviders;
 	}
-	
+
 	/**
 	 * Basic property setter for encounterProviders. The convenience methods addProvider,
 	 * removeProvider, and setProvider are the preferred methods for adding/removing providers. This
 	 * setter is provided as a convenience for treating this like a DTO
 	 *
-	 * @param encounterProviders the list of EncounterProvider objects to set. Overwrites list as
-	 *            normal setter is inclined to do
+	 * @param encounterProviders the list of EncounterProvider objects to set. Overwrites list as normal
+	 *            setter is inclined to do
 	 * @see #addProvider(EncounterRole, Provider)
 	 * @see #removeProvider(EncounterRole, Provider)
 	 * @see #setProvider(EncounterRole, Provider)
@@ -590,7 +604,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	public void setEncounterProviders(Set<EncounterProvider> encounterProviders) {
 		this.encounterProviders = encounterProviders;
 	}
-	
+
 	/**
 	 * Returns only the non-voided encounter providers for this encounter. If you want <u>all</u>
 	 * encounter providers, use {@link #getEncounterProviders()}
@@ -606,24 +620,26 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		}
 		return activeProviders;
 	}
-	
+
 	/**
 	 * @return Returns the form.
 	 */
 	public Form getForm() {
 		return form;
 	}
-	
+
 	/**
 	 * @param form The form to set.
 	 */
 	public void setForm(Form form) {
 		this.form = form;
 	}
-	
+
 	/**
-	 * @see java.lang.Object#toString()
+	 * <p>
 	 * <strong>Should</strong> not fail with empty object
+	 *
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
@@ -638,17 +654,17 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		ret += "num Orders: " + this.getOrders().size() + " ";
 		return "Encounter: [" + ret + "]";
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override
 	public Integer getId() {
-		
+
 		return getEncounterId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -656,9 +672,9 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	@Override
 	public void setId(Integer id) {
 		setEncounterId(id);
-		
+
 	}
-	
+
 	/**
 	 * Gets the visit.
 	 *
@@ -668,7 +684,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	public Visit getVisit() {
 		return visit;
 	}
-	
+
 	/**
 	 * Sets the visit
 	 *
@@ -678,80 +694,81 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	public void setVisit(Visit visit) {
 		this.visit = visit;
 	}
-	
+
 	/**
 	 * Gets all unvoided providers, grouped by role.
+	 * <p>
+	 * <strong>Should</strong> return empty map if no unvoided providers<br/>
+	 * <strong>Should</strong> return all roles and unvoided providers
 	 *
 	 * @return map of unvoided providers keyed by roles
 	 * @since 1.9
-	 * <strong>Should</strong> return empty map if no unvoided providers
-	 * <strong>Should</strong> return all roles and unvoided providers
 	 */
 	public Map<EncounterRole, Set<Provider>> getProvidersByRoles() {
 		return getProvidersByRoles(false);
 	}
-	
+
 	/**
 	 * Gets all providers, grouped by role.
+	 * <p>
+	 * <strong>Should</strong> return empty map if no providers<br/>
+	 * <strong>Should</strong> return all roles and providers
 	 *
 	 * @param includeVoided set to true to include voided providers, else set to false
 	 * @return map of providers keyed by roles
 	 * @since 1.9
-	 * <strong>Should</strong> return empty map if no providers
-	 * <strong>Should</strong> return all roles and providers
 	 */
 	public Map<EncounterRole, Set<Provider>> getProvidersByRoles(boolean includeVoided) {
-		
-		return encounterProviders
-		        .stream()
-		        .filter(ep -> includeVoided || !ep.getVoided())
-		        .collect(
-		            Collectors.groupingBy(EncounterProvider::getEncounterRole,
-		                Collectors.mapping(EncounterProvider::getProvider, Collectors.toSet())));
-		
+
+		return encounterProviders.stream().filter(ep -> includeVoided || !ep.getVoided()).collect(Collectors.groupingBy(
+		    EncounterProvider::getEncounterRole, Collectors.mapping(EncounterProvider::getProvider, Collectors.toSet())));
+
 	}
-	
+
 	/**
 	 * Gets unvoided providers who had the given role in this encounter.
+	 * <p>
+	 * <strong>Should</strong> return unvoided providers for role<br/>
+	 * <strong>Should</strong> return empty set for no role<br/>
+	 * <strong>Should</strong> return empty set for null role
 	 *
 	 * @param role
 	 * @return unvoided providers or empty set if none was found
 	 * @since 1.9
-	 * <strong>Should</strong> return unvoided providers for role
-	 * <strong>Should</strong> return empty set for no role
-	 * <strong>Should</strong> return empty set for null role
 	 */
 	public Set<Provider> getProvidersByRole(EncounterRole role) {
 		return getProvidersByRole(role, false);
 	}
-	
+
 	/**
 	 * Gets providers who had the given role in this encounter.
+	 * <p>
+	 * <strong>Should</strong> return providers for role<br/>
+	 * <strong>Should</strong> return empty set for no role<br/>
+	 * <strong>Should</strong> return empty set for null role
 	 *
 	 * @param role
 	 * @param includeVoided set to true to include voided providers, else set to false
 	 * @return providers or empty set if none was found
 	 * @since 1.9
-	 * <strong>Should</strong> return providers for role
-	 * <strong>Should</strong> return empty set for no role
-	 * <strong>Should</strong> return empty set for null role
 	 */
 	public Set<Provider> getProvidersByRole(EncounterRole role, boolean includeVoided) {
-		
+
 		return encounterProviders.stream()
 		        .filter(ep -> ep.getEncounterRole().equals(role) && (includeVoided || !ep.getVoided()))
 		        .map(EncounterProvider::getProvider).collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Adds a new provider for the encounter, with the given role.
+	 * <p>
+	 * <strong>Should</strong> add provider for new role<br/>
+	 * <strong>Should</strong> add second provider for role<br/>
+	 * <strong>Should</strong> not add same provider twice for role
 	 *
 	 * @param role
 	 * @param provider
 	 * @since 1.9
-	 * <strong>Should</strong> add provider for new role
-	 * <strong>Should</strong> add second provider for role
-	 * <strong>Should</strong> not add same provider twice for role
 	 */
 	public void addProvider(EncounterRole role, Provider provider) {
 		// first, make sure the provider isn't already there
@@ -768,18 +785,19 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		encounterProvider.setCreator(Context.getAuthenticatedUser());
 		encounterProviders.add(encounterProvider);
 	}
-	
+
 	/**
 	 * Sets the provider for the given role.
 	 * <p>
 	 * If the encounter already had any providers for the given role, those are removed.
+	 * <p>
+	 * <strong>Should</strong> set provider for new role<br/>
+	 * <strong>Should</strong> clear providers and set provider for role<br/>
+	 * <strong>Should</strong> void existing EncounterProvider
 	 *
 	 * @param role
 	 * @param provider
 	 * @since 1.9
-	 * <strong>Should</strong> set provider for new role
-	 * <strong>Should</strong> clear providers and set provider for role
-	 * <strong>Should</strong> void existing EncounterProvider
 	 */
 	public void setProvider(EncounterRole role, Provider provider) {
 		boolean hasProvider = false;
@@ -794,19 +812,20 @@ public class Encounter extends BaseChangeableOpenmrsData {
 				}
 			}
 		}
-		
+
 		if (!hasProvider) {
 			addProvider(role, provider);
 		}
 	}
-	
+
 	/**
 	 * Removes the provider for a given role.
+	 * <p>
+	 * <strong>Should</strong> void existing EncounterProvider
 	 *
 	 * @param role the role.
 	 * @param provider the provider.
 	 * @since 1.9
-	 * <strong>Should</strong> void existing EncounterProvider
 	 */
 	public void removeProvider(EncounterRole role, Provider provider) {
 		for (EncounterProvider encounterProvider : encounterProviders) {
@@ -819,17 +838,19 @@ public class Encounter extends BaseChangeableOpenmrsData {
 			}
 		}
 	}
-	
+
 	/**
 	 * Copied encounter will not have visit field copied.
+	 * <p>
+	 * <strong>Should</strong> copy all Encounter data except visit and assign copied Encounter to given
+	 * Patient
 	 *
 	 * @param patient the Patient that will be assign to copied Encounter
 	 * @return copied encounter
-	 * <strong>Should</strong> copy all Encounter data except visit and assign copied Encounter to given Patient
 	 */
 	public Encounter copyAndAssignToAnotherPatient(Patient patient) {
 		Encounter target = new Encounter();
-		
+
 		target.setChangedBy(getChangedBy());
 		target.setCreator(getCreator());
 		target.setDateChanged(getDateChanged());
@@ -838,23 +859,23 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		target.setVoided(getVoided());
 		target.setVoidedBy(getVoidedBy());
 		target.setVoidReason(getVoidReason());
-		
+
 		// Encounter specific data
 		target.setEncounterDatetime(getEncounterDatetime());
 		target.setEncounterType(getEncounterType());
 		target.setForm(getForm());
 		target.setLocation(getLocation());
 		target.setPatient(patient);
-		
+
 		//encounter providers
 		for (EncounterProvider encounterProvider : getEncounterProviders()) {
 			EncounterProvider encounterProviderCopy = encounterProvider.copy();
 			encounterProviderCopy.setEncounter(target);
 			target.getEncounterProviders().add(encounterProviderCopy);
 		}
-		
+
 		Context.getEncounterService().saveEncounter(target);
-		
+
 		//obs
 		for (Obs obs : getAllObs()) {
 			Obs obsCopy = Obs.newInstance(obs);
@@ -862,10 +883,10 @@ public class Encounter extends BaseChangeableOpenmrsData {
 			obsCopy.setPerson(patient);
 			target.addObs(obsCopy);
 		}
-		
+
 		return target;
 	}
-	
+
 	/**
 	 * Takes in a list of orders and pulls out the orderGroups within them
 	 *
@@ -882,17 +903,17 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		}
 		return new ArrayList<>(orderGroups.values());
 	}
-	
+
 	/**
 	 * Takes in a list of orders and filters out the orders which have orderGroups
-	 * 
+	 *
 	 * @since 1.12
 	 * @return list of orders not having orderGroups
 	 */
 	public List<Order> getOrdersWithoutOrderGroups() {
 		return orders.stream().filter(o -> o.getOrderGroup() == null).collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Check if encounter has a particular diagnosis
 	 *
@@ -908,10 +929,10 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Basic property getter for the encounter's non-voided allergies.
-	 * 
+	 *
 	 * @return all non-voided allergies
 	 * @since 2.5.0
 	 */
@@ -927,13 +948,13 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @since 2.5.0
 	 */
 	public Set<Allergy> getAllergies(boolean includeVoided) {
-		return Optional.ofNullable(allergies).orElse(new LinkedHashSet<>())
-			.stream().filter(c -> includeVoided || !c.getVoided()).collect(Collectors.toSet());
+		return Optional.ofNullable(allergies).orElse(new LinkedHashSet<>()).stream()
+		        .filter(c -> includeVoided || !c.getVoided()).collect(Collectors.toSet());
 	}
-		
+
 	/**
 	 * Basic property setter for allergies
-	 *  
+	 *
 	 * @param allergies - set of allergies
 	 * @since 2.5.0
 	 */
@@ -958,17 +979,18 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Remove the given allergy from the set of allergies for this encounter.
-	 * In practice the allergy is not removed but rather voided.
+	 * Remove the given allergy from the set of allergies for this encounter. In practice the allergy is
+	 * not removed but rather voided.
 	 *
 	 * @param allergy - the allergy to remove
 	 */
 	public void removeAllergy(Allergy allergy) {
-		Optional.ofNullable(allergies).orElse(new LinkedHashSet<>()).stream().filter(c -> !c.getVoided() && c.equals(allergy)).forEach(c -> {
-			c.setVoided(true);
-			c.setDateVoided(new Date());
-			c.setVoidReason("Voided by the API");
-			c.setVoidedBy(Context.getAuthenticatedUser());
-		});
+		Optional.ofNullable(allergies).orElse(new LinkedHashSet<>()).stream()
+		        .filter(c -> !c.getVoided() && c.equals(allergy)).forEach(c -> {
+			        c.setVoided(true);
+			        c.setDateVoided(new Date());
+			        c.setVoidReason("Voided by the API");
+			        c.setVoidedBy(Context.getAuthenticatedUser());
+		        });
 	}
 }

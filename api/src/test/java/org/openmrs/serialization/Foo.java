@@ -13,46 +13,46 @@ import java.util.List;
 import java.util.Map;
 
 public class Foo {
-	
+
 	private String attributeString;
-	
+
 	private int attributeInt;
-	
+
 	private List<String> attributeList;
-	
+
 	private Map<Integer, String> attributeMap;
-	
+
 	public Foo() {
-		
+
 	}
-	
+
 	public Foo(String attributeString, int attributeInt) {
 		this.attributeString = attributeString;
 		this.attributeInt = attributeInt;
 	}
-	
+
 	public String getAttributeString() {
 		return attributeString;
 	}
-	
+
 	public int getAttributeInt() {
 		return attributeInt;
 	}
-	
+
 	public List<String> getAttributeList() {
 		return attributeList;
 	}
-	
+
 	public void setAttributeList(List<String> attributeList) {
 		this.attributeList = attributeList;
 	}
-	
+
 	public Map<Integer, String> getAttributeMap() {
 		return attributeMap;
 	}
-	
+
 	public void setAttributeMap(Map<Integer, String> attributeMap) {
 		this.attributeMap = attributeMap;
 	}
-	
+
 }

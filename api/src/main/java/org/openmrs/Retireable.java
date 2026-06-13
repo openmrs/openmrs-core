@@ -19,53 +19,52 @@ import java.util.Date;
  * removed because there are (and may be in perpetuity) data previously collected using these
  * metadata. Making these metadata Retirable allows them to be retired, meaning that existing
  * references remain valid but future references are not allowed.
- * 
+ *
  * @since 1.5
  * @see OpenmrsMetadata
  * @see Voidable
  */
 public interface Retireable extends OpenmrsObject {
-	
+
 	/**
 	 * @return Boolean - whether of not this object is retired
-	 *
 	 * @deprecated as of 2.0, use {@link #getRetired()}
 	 */
 	@Deprecated
 	public Boolean isRetired();
-	
+
 	public Boolean getRetired();
-	
+
 	/**
 	 * @param retired - whether of not this object is retired
 	 */
 	public void setRetired(Boolean retired);
-	
+
 	/**
 	 * @return User - the user who retired the object
 	 */
 	public User getRetiredBy();
-	
+
 	/**
 	 * @param retiredBy - the user who retired the object
 	 */
 	public void setRetiredBy(User retiredBy);
-	
+
 	/**
 	 * @return Date - the date the object was retired
 	 */
 	public Date getDateRetired();
-	
+
 	/**
 	 * @param dateRetired - the date the object was retired
 	 */
 	public void setDateRetired(Date dateRetired);
-	
+
 	/**
 	 * @return String - the reason the object was retired
 	 */
 	public String getRetireReason();
-	
+
 	/**
 	 * @param retireReason - the reason the object was retired
 	 */

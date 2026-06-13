@@ -16,12 +16,12 @@ package org.openmrs.patient;
  * should also have a name, e.g. "Luhn Algorithm."
  */
 public interface IdentifierValidator {
-	
+
 	/**
 	 * @return The name of this validator. E.g. "Luhn Algorithm"
 	 */
 	public String getName();
-	
+
 	/**
 	 * @param identifier The Identifier to check.
 	 * @return Whether this identifier is valid according to the validator.
@@ -29,16 +29,16 @@ public interface IdentifierValidator {
 	 *             otherwise not appropriate for this validator.
 	 */
 	public boolean isValid(String identifier) throws UnallowedIdentifierException;
-	
+
 	/**
-	 * @param undecoratedIdentifier The identifier prior to being given a check digit or other form
-	 *            of validation.
+	 * @param undecoratedIdentifier The identifier prior to being given a check digit or other form of
+	 *            validation.
 	 * @return The identifier after the check digit or other form of validation has been applied.
 	 * @throws UnallowedIdentifierException if the identifier contains unallowed characters or is
 	 *             otherwise not appropriate for this validator.
 	 */
 	public String getValidIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException;
-	
+
 	/**
 	 * @return A string containing all the characters allowed in this type of identifier validation.
 	 */

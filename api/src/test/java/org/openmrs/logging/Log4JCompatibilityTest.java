@@ -9,10 +9,6 @@
  */
 package org.openmrs.logging;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThan;
-
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -21,25 +17,26 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
+
 /**
- * Class to ensure that we maintain some level of compatibility with Log4J 1.X
- * At some point in the future, this compatibility guarantee should be removed.
+ * Class to ensure that we maintain some level of compatibility with Log4J 1.X At some point in the
+ * future, this compatibility guarantee should be removed.
  */
 @Disabled("Do we still need this compatibility in OpenMRS Core 3.0?")
 class Log4JCompatibilityTest {
 
 	@Test
 	void OpenmrsCore_shouldAllowUseOfLog4j1xAPI() {
-		final org.apache.logging.log4j.core.Logger compatibilityLogger = (org.apache.logging.log4j.core.Logger) org.apache.logging.log4j.LogManager.getLogger("Log4JCompatibility");
+		final org.apache.logging.log4j.core.Logger compatibilityLogger = (org.apache.logging.log4j.core.Logger) org.apache.logging.log4j.LogManager
+		        .getLogger("Log4JCompatibility");
 		final Level originalLevel = compatibilityLogger.getLevel();
 		final boolean originalAdditive = compatibilityLogger.isAdditive();
 		final org.openmrs.logging.MemoryAppender ma = MemoryAppender.newBuilder()
-			.setLayout(PatternLayout.newBuilder()
-				.withPattern("%m%n")
-				.build())
-			.setBufferSize(1)
-			.build();
-		
+		        .setLayout(PatternLayout.newBuilder().withPattern("%m%n").build()).setBufferSize(1).build();
+
 		try {
 			// start the appender
 			ma.start();
@@ -59,5 +56,5 @@ class Log4JCompatibilityTest {
 			compatibilityLogger.setAdditive(originalAdditive);
 		}
 	}
-	
+
 }

@@ -31,63 +31,66 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Person.class }, order = 50)
 public class PersonValidator implements Validator {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(PersonValidator.class);
-	
+
 	@Autowired
 	private PersonNameValidator personNameValidator;
-	
+
 	@Autowired
 	private PersonAddressValidator personAddressValidator;
-	
+
 	@Override
 	public boolean supports(Class<?> clazz) {
 		return Person.class.isAssignableFrom(clazz);
 	}
-	
+
 	/**
+	 * <p>
+	 * <strong>Should</strong> fail validation if birthdate makes patient older than 140 years old<br/>
+	 * <strong>Should</strong> fail validation if birthdate is a future date<br/>
+	 * <strong>Should</strong> fail validation if deathdate is a future date<br/>
+	 * <strong>Should</strong> fail validation if birthdate is after death date<br/>
+	 * <strong>Should</strong> fail validation if voidReason is blank when patient is voided<br/>
+	 * <strong>Should</strong> fail validation if causeOfDeath and causeOfDeathNonCoded is blank when
+	 * patient is dead<br/>
+	 * <strong>Should</strong> fail validation if causeOfDeath and causeOfDeathNonCoded is both set<br/>
+	 * <strong>Should</strong> pass validation if gender is blank for Persons<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if birthdate makes patient older than 140 years old
-	 * <strong>Should</strong> fail validation if birthdate is a future date
-	 * <strong>Should</strong> fail validation if deathdate is a future date
-	 * <strong>Should</strong> fail validation if birthdate is after death date
-	 * <strong>Should</strong> fail validation if voidReason is blank when patient is voided
-	 * <strong>Should</strong> fail validation if causeOfDeath and causeOfDeathNonCoded is blank when patient is dead
-	 * <strong>Should</strong> fail validation if causeOfDeath and causeOfDeathNonCoded is both set
-	 * <strong>Should</strong> pass validation if gender is blank for Persons
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
 		log.debug("{}.validate...", this.getClass().getName());
-		
+
 		if (target == null) {
 			return;
 		}
-		
+
 		Person person = (Person) target;
-		
+
 		validatePersonNames(person, errors);
-		
+
 		if (!person.getVoided() && !validatePersonHasAtLeastOneNonVoidedName(person)) {
 			errors.rejectValue("names", "Person.shouldHaveAtleastOneNonVoidedName");
 		}
-		
+
 		validatePersonAddresses(person, errors);
-		
+
 		validateBirthDate(errors, person.getBirthdate());
 		validateDeathDate(errors, person.getDeathDate(), person.getBirthdate());
 		if (person.getVoided()) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 		}
-		
+
 		validateDeathCause(person, errors);
-		
+
 		ValidateUtil.validateFieldLengths(errors, Person.class, "gender", "personVoidReason");
 	}
-	
+
 	/**
 	 * Checks if a person contains any non voided PersonName attribute
 	 *
@@ -95,11 +98,11 @@ public class PersonValidator implements Validator {
 	 * @return true if at leas one personName is not voided
 	 */
 	private boolean validatePersonHasAtLeastOneNonVoidedName(Person person) {
-			return person.getNames().stream().anyMatch(personName -> !personName.getVoided());
+		return person.getNames().stream().anyMatch(personName -> !personName.getVoided());
 	}
-	
+
 	/**
-	 * Checks if the names of a person fulfill the expected criteria  
+	 * Checks if the names of a person fulfill the expected criteria
 	 *
 	 * @param person The person whose names should be validated
 	 * @param errors Stores information about errors encountered during validation.
@@ -113,9 +116,9 @@ public class PersonValidator implements Validator {
 			index++;
 		}
 	}
-	
+
 	/**
-	 * Checks if the addresses of a person fulfill the expected criteria  
+	 * Checks if the addresses of a person fulfill the expected criteria
 	 *
 	 * @param person The person whose addresses should be validated
 	 * @param errors Stores information about errors encountered during validation.
@@ -126,31 +129,29 @@ public class PersonValidator implements Validator {
 			try {
 				errors.pushNestedPath("addresses[" + index + "]");
 				ValidationUtils.invokeValidator(personAddressValidator, address, errors);
-			}
-			finally {
+			} finally {
 				errors.popNestedPath();
 				index++;
 			}
 		}
 	}
-	
+
 	/**
 	 * Checks if the death cause and death cause non coded fulfill the business logic
 	 *
 	 * @param person The person whose death attributes should be validated.
 	 * @param errors Stores information about errors encountered during validation.
 	 */
-	private void validateDeathCause(Person person, Errors errors){
+	private void validateDeathCause(Person person, Errors errors) {
 		if (person.getDead()) {
-			if(person.getCauseOfDeath() != null && person.getCauseOfDeathNonCoded() != null) {
+			if (person.getCauseOfDeath() != null && person.getCauseOfDeathNonCoded() != null) {
 				errors.rejectValue("causeOfDeath", "Person.dead.shouldHaveOnlyOneCauseOfDeathOrCauseOfDeathNonCodedSet");
-			}
-			else if(person.getCauseOfDeath() == null && person.getCauseOfDeathNonCoded() == null) {
+			} else if (person.getCauseOfDeath() == null && person.getCauseOfDeathNonCoded() == null) {
 				errors.rejectValue("causeOfDeath", "Person.dead.causeOfDeathAndCauseOfDeathNonCodedNull");
 			}
 		}
 	}
-	
+
 	/**
 	 * Checks if the birth date specified is in the future or older than 140 years old..
 	 *
@@ -164,10 +165,10 @@ public class PersonValidator implements Validator {
 		rejectIfFutureDate(errors, birthDate, "birthdate");
 		rejectDateIfBefore140YearsAgo(errors, birthDate, "birthdate");
 	}
-	
+
 	/**
 	 * Checks if the death date is in the future.
-	 * 
+	 *
 	 * @param errors Stores information about errors encountered during validation
 	 * @param deathDate the deathdate to validate
 	 */
@@ -181,10 +182,10 @@ public class PersonValidator implements Validator {
 		}
 		rejectDeathDateIfBeforeBirthDate(errors, deathDate, birthDate);
 	}
-	
+
 	/**
 	 * Rejects a date if it is in the future.
-	 * 
+	 *
 	 * @param errors the error object
 	 * @param date the date to check
 	 * @param dateField the name of the field
@@ -194,10 +195,10 @@ public class PersonValidator implements Validator {
 			errors.rejectValue(dateField, "error.date.future");
 		}
 	}
-	
+
 	/**
 	 * Rejects a date if it is before 140 years ago.
-	 * 
+	 *
 	 * @param errors the error object
 	 * @param date the date to check
 	 * @param dateField the name of the field
@@ -210,10 +211,10 @@ public class PersonValidator implements Validator {
 			errors.rejectValue(dateField, "error.date.nonsensical");
 		}
 	}
-	
+
 	/**
 	 * Rejects a death date if it is before birth date
-	 * 
+	 *
 	 * @param errors the error object
 	 * @param deathdate the date to check
 	 * @param birthdate to check with
@@ -223,5 +224,5 @@ public class PersonValidator implements Validator {
 			errors.rejectValue("deathDate", "error.deathdate.before.birthdate");
 		}
 	}
-	
+
 }

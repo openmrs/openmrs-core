@@ -17,7 +17,6 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.api.db.OpenmrsDataDAO;
 
@@ -25,19 +24,18 @@ import org.openmrs.api.db.OpenmrsDataDAO;
  * Abstract class implementing basic data access methods for BaseOpenmrsData persistents
  *
  * @since 1.10
- *
  * @param <T>
  */
 public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends HibernateOpenmrsObjectDAO<T> implements OpenmrsDataDAO<T> {
-	
+
 	public HibernateOpenmrsDataDAO(Class<T> mappedClass) {
 		super();
 		this.mappedClass = mappedClass;
 	}
-	
+
 	/**
-	 * Gets the attribute name for the voided flag. Person maps it as "personVoided"
-	 * in HBM XML, while other entities use "voided" from BaseOpenmrsData.
+	 * Gets the attribute name for the voided flag. Person maps it as "personVoided" in HBM XML, while
+	 * other entities use "voided" from BaseOpenmrsData.
 	 */
 	private String getVoidedAttributeName(Root<T> root) {
 		try {
@@ -47,7 +45,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 			return "personVoided";
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAll(boolean)
 	 */
@@ -64,7 +62,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAll(boolean, java.lang.Integer, java.lang.Integer)
 	 */
@@ -88,7 +86,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 		}
 		return query.getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAllCount(boolean)
 	 */

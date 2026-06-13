@@ -14,17 +14,17 @@ import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserEditorTest extends BasePropertyEditorTest<User, UserEditor> {
-	
+
 	private static final Integer EXISTING_ID = 501;
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	@Override
 	protected UserEditor getNewEditor() {
 		return new UserEditor();
 	}
-	
+
 	@Override
 	protected User getExistingObject() {
 		return userService.getUser(EXISTING_ID);

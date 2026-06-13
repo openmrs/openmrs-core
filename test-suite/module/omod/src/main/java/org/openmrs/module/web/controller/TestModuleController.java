@@ -15,16 +15,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 @Controller
 public class TestModuleController {
-	
+
 	@Autowired
 	TestModuleService testModuleService;
-	
+
 	@GetMapping("/module/testmodule/hello")
 	@ResponseBody
 	public String hello() {
-		return testModuleService.hello();	
+		return testModuleService.hello();
 	}
 }

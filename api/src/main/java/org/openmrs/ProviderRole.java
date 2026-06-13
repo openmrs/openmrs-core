@@ -9,19 +9,21 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 
-import java.io.Serializable;
-
 /**
- * Used to store the possible provider roles.  A Provider can only have a single role (though a single person
- * could be associated with more than one Provider object).
+ * Used to store the possible provider roles. A Provider can only have a single role (though a
+ * single person could be associated with more than one Provider object).
+ *
  * @since 2.8.0
  */
 @Entity
@@ -56,9 +58,6 @@ public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ProviderRole{" +
-			"providerRoleId=" + providerRoleId +
-			", name=" + this.getName() +
-			'}';
+		return "ProviderRole{" + "providerRoleId=" + providerRoleId + ", name=" + this.getName() + '}';
 	}
 }

@@ -9,10 +9,6 @@
  */
 package org.openmrs;
 
-import org.hibernate.envers.Audited;
-import org.openmrs.attribute.AttributeType;
-import org.openmrs.attribute.BaseAttributeType;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -22,8 +18,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import org.hibernate.envers.Audited;
+import org.openmrs.attribute.AttributeType;
+import org.openmrs.attribute.BaseAttributeType;
+
 /**
  * A user-defined extension to the {@link Location} class.
+ *
  * @see AttributeType
  * @since 1.9
  */
@@ -31,15 +32,14 @@ import jakarta.persistence.Table;
 @Table(name = "location_attribute_type")
 @Audited
 @AttributeOverrides(value = {
-	@AttributeOverride(name = "description", column = @Column(name = "description", length = 1024))
-})
+        @AttributeOverride(name = "description", column = @Column(name = "description", length = 1024)) })
 public class LocationAttributeType extends BaseAttributeType<Location> implements AttributeType<Location> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "location_attribute_type_id")
 	private Integer locationAttributeTypeId;
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -47,7 +47,7 @@ public class LocationAttributeType extends BaseAttributeType<Location> implement
 	public Integer getId() {
 		return getLocationAttributeTypeId();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
@@ -55,19 +55,19 @@ public class LocationAttributeType extends BaseAttributeType<Location> implement
 	public void setId(Integer id) {
 		setLocationAttributeTypeId(id);
 	}
-	
+
 	/**
 	 * @return the locationAttributeTypeId
 	 */
 	public Integer getLocationAttributeTypeId() {
 		return locationAttributeTypeId;
 	}
-	
+
 	/**
 	 * @param locationAttributeTypeId the locationAttributeTypeId to set
 	 */
 	public void setLocationAttributeTypeId(Integer locationAttributeTypeId) {
 		this.locationAttributeTypeId = locationAttributeTypeId;
 	}
-	
+
 }

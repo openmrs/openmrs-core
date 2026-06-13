@@ -9,14 +9,6 @@
  */
 package org.openmrs.api.context;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.openMocks;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,14 +20,22 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.openMocks;
+
 public class ServiceContextTest extends BaseContextSensitiveTest {
-	
+
 	private ServiceContext serviceContext;
-	
+
 	private ServiceContext spiedServiceContext;
-	
+
 	private boolean isUseSystemClassLoader;
-	
+
 	@BeforeEach
 	public void setUp() throws InputRequiredException, DatabaseUpdateException {
 		openMocks(this);
@@ -43,56 +43,56 @@ public class ServiceContextTest extends BaseContextSensitiveTest {
 		spiedServiceContext = spy(serviceContext);
 		isUseSystemClassLoader = serviceContext.isUseSystemClassLoader();
 	}
-	
+
 	@AfterEach
 	public void tearDown() {
 		serviceContext.setUseSystemClassLoader(isUseSystemClassLoader);
 	}
-	
+
 	@Test
 	public void getModuleOpenmrsServices_shouldRaiseApiExceptionWithNonExistentClass() {
 		List<Object> params = new ArrayList<>();
 		params.add("org.openmrs.module.webservices.rest.nonexistent.InvalidClass");
 		params.add(Object.class);
-		
+
 		spiedServiceContext.setUseSystemClassLoader(false);
 		APIException thrownException = assertThrows(APIException.class, () -> spiedServiceContext.setModuleService(params));
-		
+
 		assertNotNull(thrownException.getMessage());
 		assertNotNull(thrownException.getCause());
-		
+
 		verify(spiedServiceContext, never()).getMessageService();
 		verify(spiedServiceContext, never()).getMessageSourceService();
 	}
-	
+
 	@Test
 	public void getModuleOpenmrsServices_shouldRaiseApiExceptionWithNullClass() {
 		List<Object> params = new ArrayList<>();
 		params.add(null);
 		params.add(Object.class);
-		
+
 		spiedServiceContext.setUseSystemClassLoader(false);
 		APIException thrownException = assertThrows(APIException.class, () -> spiedServiceContext.setModuleService(params));
-		
+
 		assertNotNull(thrownException.getMessage());
 		assertNull(thrownException.getCause());
-		
+
 		verify(spiedServiceContext, never()).getMessageService();
 		verify(spiedServiceContext, never()).getMessageSourceService();
 	}
-	
+
 	@Test
 	public void getModuleOpenmrsServices_shouldRaiseApiExceptionWithNullClassInstance() {
 		List<Object> params = new ArrayList<>();
 		params.add("org.openmrs.module.webservices.rest.nonexistent.InvalidClass");
 		params.add(null);
-		
+
 		spiedServiceContext.setUseSystemClassLoader(false);
 		APIException thrownException = assertThrows(APIException.class, () -> spiedServiceContext.setModuleService(params));
-		
+
 		assertNotNull(thrownException.getMessage());
 		assertNull(thrownException.getCause());
-		
+
 		verify(spiedServiceContext, never()).getMessageService();
 		verify(spiedServiceContext, never()).getMessageSourceService();
 	}

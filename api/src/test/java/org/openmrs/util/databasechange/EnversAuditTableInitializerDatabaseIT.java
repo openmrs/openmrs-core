@@ -9,11 +9,6 @@
  */
 package org.openmrs.util.databasechange;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -22,9 +17,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.checkerframework.checker.initialization.qual.Initialized;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.UnknownKeyFor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
@@ -47,37 +42,40 @@ import org.openmrs.util.OpenmrsClassScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Validates that Envers audit tables are correctly generated when auditing is enabled.
  */
 class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(EnversAuditTableInitializerDatabaseIT.class);
-	
+
 	@BeforeEach
 	void beforeEach() throws Exception {
 		this.dropAllDatabaseObjects();
-		
+
 		ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 		String latestVersion = changeLogVersionFinder.getLatestSnapshotVersion()
 		        .orElseThrow(() -> new RuntimeException("No snapshot version found"));
 		List<String> snapshotFiles = changeLogVersionFinder.getSnapshotFilenames(latestVersion);
-		
+
 		this.initializeDatabase();
 
 		log.info("Liquibase files used for creating the OpenMRS database are: {}", snapshotFiles);
-		
+
 		for (String fileName : snapshotFiles) {
 			log.info("processing {}", fileName);
 			this.updateDatabase(fileName);
 		}
 	}
-	
+
 	@Test
 	void shouldCreateEnversAuditTablesWhenEnversIsEnabled() throws Exception {
 		List<Class<?>> auditedEntities = getAuditedEntityClasses();
 		log.info("Found {} @Audited entity classes", auditedEntities.size());
-		
+
 		try (SessionFactory sessionFactory = buildSessionFactoryWithEnvers(true, null)) {
 			assertTrue(tableExists("revinfo"), "revinfo table should exist");
 			List<String> missingTables = new ArrayList<>();
@@ -89,10 +87,10 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 			}
 			assertTrue(missingTables.isEmpty(), "Missing audit tables: " + missingTables);
 		}
-		
+
 		this.dropAllDatabaseObjects();
 	}
-	
+
 	@Test
 	void shouldNotCreateAuditTablesWhenEnversIsDisabled() throws Exception {
 		try (SessionFactory sessionFactory = buildSessionFactoryWithEnvers(false, null)) {
@@ -102,7 +100,7 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 		}
 		this.dropAllDatabaseObjects();
 	}
-	
+
 	@Test
 	void shouldRespectCustomAuditTableSuffix() throws Exception {
 		try (SessionFactory sessionFactory = buildSessionFactoryWithEnvers(true, "_Aaa")) {
@@ -113,14 +111,13 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 		}
 		this.dropAllDatabaseObjects();
 	}
-	
+
 	private SessionFactory buildSessionFactoryWithEnvers(boolean enversEnabled, String customSuffix) {
 		Integrator enversIntegrator = new Integrator() {
-			
+
 			@Override
-			public void integrate(@UnknownKeyFor @NonNull @Initialized Metadata metadata,
-			        @UnknownKeyFor @NonNull @Initialized BootstrapContext bootstrapContext,
-			        @UnknownKeyFor @NonNull @Initialized SessionFactoryImplementor sessionFactory) {
+			public void integrate(Metadata metadata, BootstrapContext bootstrapContext,
+			        SessionFactoryImplementor sessionFactory) {
 				if (enversEnabled) {
 					try {
 						Properties properties = new java.util.Properties();
@@ -131,27 +128,25 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 						}
 						properties.setProperty("org.hibernate.envers.audit_table_suffix", suffix);
 						EnversAuditTableInitializer.initialize(metadata, properties, bootstrapContext.getServiceRegistry());
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						throw new RuntimeException("Failed to initialize audit tables", e);
 					}
 				}
 			}
-			
+
 			@Override
-			public void disintegrate(
-			        @UnknownKeyFor @NonNull @Initialized SessionFactoryImplementor sessionFactoryImplementor,
-			        @UnknownKeyFor @NonNull @Initialized SessionFactoryServiceRegistry sessionFactoryServiceRegistry) {
+			public void disintegrate(SessionFactoryImplementor sessionFactoryImplementor,
+			        SessionFactoryServiceRegistry sessionFactoryServiceRegistry) {
 				// No cleanup needed: the audit table initialization performed in integrate() is a one-time
 				// schema operation with no resources to release when the SessionFactory is closed.
 			}
 		};
-		
+
 		BootstrapServiceRegistry bootstrapRegistry = new BootstrapServiceRegistryBuilder().applyIntegrator(enversIntegrator)
 		        .build();
-		
+
 		Configuration configuration = new Configuration(bootstrapRegistry).configure();
-		
+
 		Set<Class<?>> entityClasses = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(Entity.class);
 		entityClasses.remove(OrderServiceTest.SomeTestOrder.class);
 		entityClasses.remove(OpenmrsRevisionEntity.class);
@@ -172,18 +167,17 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 		}
 		configuration.setProperty("org.hibernate.envers.audit_table_suffix", suffix);
 
-
 		configuration.setProperty("hibernate.search.backend.type", "lucene");
 		configuration.setProperty("hibernate.search.backend.analysis.configurer",
 		    "class:org.openmrs.api.db.hibernate.search.lucene.LuceneConfig");
 		configuration.setProperty(Environment.HBM2DDL_AUTO, "none");
 		return configuration.buildSessionFactory();
 	}
-	
+
 	private boolean tableExists(String tableName) throws Exception {
 		try (Connection connection = getConnection()) {
 			DatabaseMetaData metaData = connection.getMetaData();
-			
+
 			try (ResultSet rs = metaData.getTables(null, null, "%", new String[] { "TABLE" })) {
 				while (rs.next()) {
 					String existingTableName = rs.getString("TABLE_NAME");
@@ -195,14 +189,14 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Gets all entity classes that are annotated with @Audited.
 	 */
 	private List<Class<?>> getAuditedEntityClasses() {
 		Set<Class<?>> entityClasses = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(Entity.class);
 		List<Class<?>> auditedClasses = new ArrayList<>();
-		
+
 		for (Class<?> entityClass : entityClasses) {
 			if (entityClass.equals(OrderServiceTest.SomeTestOrder.class)) {
 				continue;
@@ -213,7 +207,7 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 		}
 		return auditedClasses;
 	}
-	
+
 	/**
 	 * Checks if a class or any of its superclasses is annotated with @Audited.
 	 */
@@ -227,7 +221,7 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Gets the expected audit table name for an entity class.
 	 */

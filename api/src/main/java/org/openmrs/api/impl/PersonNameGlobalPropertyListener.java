@@ -15,24 +15,24 @@ import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * This is a property Listener class for Person Name
- * This class is responsible for handling Person Name format
+ * This is a property Listener class for Person Name This class is responsible for handling Person
+ * Name format
  */
 public class PersonNameGlobalPropertyListener implements GlobalPropertyListener {
-	
+
 	@Override
 	public boolean supportsPropertyName(String propertyName) {
 		return OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT.equals(propertyName);
 	}
-	
+
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
 		PersonName.setFormat(newValue.getPropertyValue());
 	}
-	
+
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		
+
 	}
-	
+
 }

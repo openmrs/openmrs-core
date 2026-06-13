@@ -17,10 +17,10 @@ import org.slf4j.LoggerFactory;
  * Implementation of the stateful task that sends an email.
  */
 public class SendEmailTask extends AbstractTask {
-	
-	// Logger 
+
+	// Logger
 	private static final Logger log = LoggerFactory.getLogger(SendEmailTask.class);
-	
+
 	/**
 	 * Process the next form entry in the database and then remove the form entry from the database.
 	 */
@@ -29,13 +29,12 @@ public class SendEmailTask extends AbstractTask {
 		try {
 			Context.openSession();
 			log.info("****************************** SEND EMAIL TASK:  Executing task ...");
-		}
-		finally {
+		} finally {
 			Context.closeSession();
 		}
-		
+
 	}
-	
+
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#shutdown()
 	 */
@@ -43,5 +42,5 @@ public class SendEmailTask extends AbstractTask {
 	public void shutdown() {
 		log.info("****************************** SEND EMAIL TASK:  Shutting down task ...");
 	}
-	
+
 }

@@ -51,14 +51,14 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("obsDAO")
 public class HibernateObsDAO implements ObsDAO {
-	
+
 	protected final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateObsDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
 	 */
@@ -66,7 +66,7 @@ public class HibernateObsDAO implements ObsDAO {
 	public void deleteObs(Obs obs) throws DAOException {
 		sessionFactory.getCurrentSession().remove(obs);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
@@ -74,7 +74,7 @@ public class HibernateObsDAO implements ObsDAO {
 	public Obs getObs(Integer obsId) throws DAOException {
 		return (Obs) sessionFactory.getCurrentSession().get(Obs.class, obsId);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#saveObs(org.openmrs.Obs)
 	 */
@@ -90,77 +90,79 @@ public class HibernateObsDAO implements ObsDAO {
 				}
 			}
 		}
-		
+
 		obs = HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), obs);
-		
+
 		return obs;
 	}
-	
+
 	/**
-	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List,
-	 *      Integer, Integer, Date, Date, boolean, String)
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List, Integer,
+	 *      Integer, Date, Date, boolean, String)
 	 */
 	@Override
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
 	        String accessionNumber) throws DAOException {
-		
-		return this.getObservations(whom, encounters, questions, answers, personTypes, locations, sortList, null, mostRecentN, obsGroupId, 
-				fromDate, toDate, includeVoidedObs, accessionNumber);
+
+		return this.getObservations(whom, encounters, questions, answers, personTypes, locations, sortList, null,
+		    mostRecentN, obsGroupId, fromDate, toDate, includeVoidedObs, accessionNumber);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List, List,
 	 *      Integer, Integer, Date, Date, boolean, String)
 	 */
 	@Override
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList, List<Visit> visits,
-	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
-	        String accessionNumber) throws DAOException {
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber) throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Obs> cq = cb.createQuery(Obs.class);
 		Root<Obs> root = cq.from(Obs.class);
 
-		List<Predicate> predicates = createGetObservationsCriteria(cb, root, whom, encounters, questions, answers, personTypes, locations,
-			obsGroupId, fromDate, toDate, null, visits, includeVoidedObs, accessionNumber);
+		List<Predicate> predicates = createGetObservationsCriteria(cb, root, whom, encounters, questions, answers,
+		    personTypes, locations, obsGroupId, fromDate, toDate, null, visits, includeVoidedObs, accessionNumber);
 
-		cq.where(predicates.toArray(new Predicate[]{}));
+		cq.where(predicates.toArray(new Predicate[] {}));
 
 		cq.orderBy(createOrderList(cb, root, sortList));
 
 		TypedQuery<Obs> query = session.createQuery(cq);
-		
+
 		if (mostRecentN != null && mostRecentN > 0) {
 			query.setMaxResults(mostRecentN);
 		}
-		
+
 		return query.getResultList();
 	}
-						
+
 	/**
-	 * @see org.openmrs.api.db.ObsDAO#getObservationCount(List, List, List, List, List, List, Integer, Date, Date, List, boolean, String)
+	 * @see org.openmrs.api.db.ObsDAO#getObservationCount(List, List, List, List, List, List, Integer,
+	 *      Date, Date, List, boolean, String)
 	 */
 	@Override
 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs,
 	        String accessionNumber) throws DAOException {
-		
-		return this.getObservationCount(whom, encounters, questions, answers, personTypes, locations, obsGroupId, 
-				fromDate, toDate, valueCodedNameAnswers, null, includeVoidedObs, accessionNumber);
+
+		return this.getObservationCount(whom, encounters, questions, answers, personTypes, locations, obsGroupId, fromDate,
+		    toDate, valueCodedNameAnswers, null, includeVoidedObs, accessionNumber);
 	}
-	
+
 	/**
-	 * @see org.openmrs.api.db.ObsDAO#getObservationCount(List, List, List, List, List, List, Integer, Date, Date, List, List, boolean, String)
+	 * @see org.openmrs.api.db.ObsDAO#getObservationCount(List, List, List, List, List, List, Integer,
+	 *      Date, Date, List, List, boolean, String)
 	 */
 	@Override
 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
-	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, List<Visit> visits, boolean includeVoidedObs,
-	        String accessionNumber) throws DAOException {
+	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, List<Visit> visits,
+	        boolean includeVoidedObs, String accessionNumber) throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
@@ -169,14 +171,14 @@ public class HibernateObsDAO implements ObsDAO {
 		criteriaQuery.select(cb.count(root));
 
 		List<Predicate> predicates = createGetObservationsCriteria(cb, root, whom, encounters, questions, answers,
-			personTypes, locations, obsGroupId, fromDate, toDate,
-			valueCodedNameAnswers, visits, includeVoidedObs, accessionNumber);
+		    personTypes, locations, obsGroupId, fromDate, toDate, valueCodedNameAnswers, visits, includeVoidedObs,
+		    accessionNumber);
 
-		criteriaQuery.where(predicates.toArray(new Predicate[]{}));
+		criteriaQuery.where(predicates.toArray(new Predicate[] {}));
 
 		return session.createQuery(criteriaQuery).getSingleResult();
 	}
-	
+
 	/**
 	 * A utility method for creating a criteria based on parameters (which are optional)
 	 *
@@ -195,10 +197,11 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @param accessionNumber
 	 * @return a list of predicates that can form part of a query
 	 */
-	private List<Predicate> createGetObservationsCriteria(CriteriaBuilder cb, Root<Obs> root, List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId, Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers,
-	        List<Visit> visits, boolean includeVoidedObs, String accessionNumber) {
-		
+	private List<Predicate> createGetObservationsCriteria(CriteriaBuilder cb, Root<Obs> root, List<Person> whom,
+	        List<Encounter> encounters, List<Concept> questions, List<Concept> answers, List<PERSON_TYPE> personTypes,
+	        List<Location> locations, Integer obsGroupId, Date fromDate, Date toDate,
+	        List<ConceptName> valueCodedNameAnswers, List<Visit> visits, boolean includeVoidedObs, String accessionNumber) {
+
 		List<Predicate> predicates = new ArrayList<>();
 
 		if (CollectionUtils.isNotEmpty(whom)) {
@@ -224,7 +227,7 @@ public class HibernateObsDAO implements ObsDAO {
 		if (CollectionUtils.isNotEmpty(locations)) {
 			predicates.add(root.get("location").in(locations));
 		}
-		
+
 		if (CollectionUtils.isNotEmpty(visits)) {
 			predicates.add(root.get("encounter").get("visit").in(visits));
 		}
@@ -279,11 +282,11 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * Convenience method that adds an expression to a list of predicates according to the types of person objects
-	 * that are required.
+	 * Convenience method that adds an expression to a list of predicates according to the types of
+	 * person objects that are required.
 	 *
-	 * @param cb          instance of CriteriaBuilder
-	 * @param root        Root entity in the JPA criteria query
+	 * @param cb instance of CriteriaBuilder
+	 * @param root Root entity in the JPA criteria query
 	 * @param personTypes list of person types as filters
 	 * @return a list of jakarta.persistence.criteria.Predicate instances.
 	 */
@@ -308,7 +311,7 @@ public class HibernateObsDAO implements ObsDAO {
 
 		return predicates;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#getObsByUuid(java.lang.String)
 	 */
@@ -331,7 +334,7 @@ public class HibernateObsDAO implements ObsDAO {
 
 		return session.createQuery(cq).uniqueResult();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#getSavedStatus(org.openmrs.Obs)
 	 */
@@ -343,11 +346,10 @@ public class HibernateObsDAO implements ObsDAO {
 		session.setHibernateFlushMode(FlushMode.MANUAL);
 		try {
 			NativeQuery<String> sql = session.createNativeQuery("select status from obs where obs_id = :obsId",
-				String.class);
+			    String.class);
 			sql.setParameter("obsId", obs.getObsId());
 			return Obs.Status.valueOf(sql.uniqueResult());
-		}
-		finally {
+		} finally {
 			session.setHibernateFlushMode(flushMode);
 		}
 	}

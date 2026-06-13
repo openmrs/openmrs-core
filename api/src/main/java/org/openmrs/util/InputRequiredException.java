@@ -13,13 +13,13 @@ import java.util.Map;
 
 /**
  * Used by the {@link DatabaseUpdater} to signal that a given update requires input from the user.
- * 
+ *
  * @since 1.5
  */
 public class InputRequiredException extends Exception {
-	
+
 	public static final long serialVersionUID = 121994323413L;
-	
+
 	/**
 	 * Required input will be in one of these forms
 	 */
@@ -29,31 +29,31 @@ public class InputRequiredException extends Exception {
 		DOUBLE,
 		DATE
 	}
-	
+
 	/**
 	 * A mapping from user prompt to answer datatype
 	 */
 	private Map<String, DATATYPE> requiredInput;
-	
+
 	/**
 	 * Common constructor taking in a message to give the user some context as to where/why the
 	 * authentication failed.
-	 * 
+	 *
 	 * @param requiredInput a list of questions that need to be answered in the form question, type
 	 */
 	public InputRequiredException(Map<String, DATATYPE> requiredInput) {
 		super("Input is required before being able to update the database");
-		
+
 		this.requiredInput = requiredInput;
 	}
-	
+
 	/**
 	 * The user prompts and datatype for each question that the user has to provide input for
-	 * 
+	 *
 	 * @return the requiredInput
 	 */
 	public Map<String, DATATYPE> getRequiredInput() {
 		return requiredInput;
 	}
-	
+
 }

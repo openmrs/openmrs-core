@@ -9,13 +9,6 @@
  */
 package org.openmrs.api.handler;
 
-import static org.apache.commons.lang3.time.DateUtils.parseDate;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -35,16 +28,23 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.apache.commons.lang3.time.DateUtils.parseDate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Contains the tests for the {@link PatientDataVoidHandler}
  */
 public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
-	
+
 	private final static String COHORT_UUID = "cohort-uuid";
-	
+
 	@Autowired
 	private CohortService cohortService;
-	
+
 	/**
 	 * @see PatientDataVoidHandler#handle(Patient,User,Date,String)
 	 */
@@ -52,17 +52,17 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 	public void handle_shouldVoidTheOrdersEncountersAndObservationsAssociatedWithThePatient() {
 		Patient patient = Context.getPatientService().getPatient(7);
 		assertFalse(patient.getVoided());
-		
+
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		List<Obs> observations = Context.getObsService().getObservationsByPerson(patient);
 		List<Order> orders = Context.getOrderService().getAllOrdersByPatient(patient);
-		
+
 		//we should have some unvoided encounters, obs and orders for the test to be concrete
 		assertTrue(CollectionUtils.isNotEmpty(encounters));
 		assertTrue(CollectionUtils.isNotEmpty(observations));
 		assertTrue(CollectionUtils.isNotEmpty(orders));
-		
-		//check that fields to be set by the handler are initially null 
+
+		//check that fields to be set by the handler are initially null
 		for (Encounter encounter : encounters) {
 			assertNull(encounter.getDateVoided());
 			assertNull(encounter.getVoidedBy());
@@ -78,9 +78,9 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 			assertNull(order.getVoidedBy());
 			assertNull(order.getVoidReason());
 		}
-		
+
 		new PatientDataVoidHandler().handle(patient, new User(1), new Date(), "voidReason");
-		
+
 		//all encounters void related fields should have been set
 		for (Encounter encounter : encounters) {
 			assertTrue(encounter.getVoided());
@@ -102,15 +102,15 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 			assertNotNull(order.getVoidedBy());
 			assertNotNull(order.getVoidReason());
 		}
-		
+
 		//refresh the lists and check that all encounters, obs and orders were voided
 		encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		observations = Context.getObsService().getObservationsByPerson(patient);
-		
+
 		assertTrue(CollectionUtils.isEmpty(encounters));
 		assertTrue(CollectionUtils.isEmpty(observations));
 	}
-	
+
 	@Test
 	public void handle_shouldVoidCohortMemberships() throws Exception {
 		// test a corner case by letting the same patient belong to the cohort for two separate periods
@@ -127,10 +127,10 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		cohort.addMembership(membership2);
 		cohort.addMembership(membership3);
 		cohortService.saveCohort(cohort);
-		
+
 		PatientService patientService = Context.getPatientService();
 		patientService.voidPatient(patientService.getPatient(7), "void reason");
-		
+
 		Collection<CohortMembership> memberships = cohortService.getCohortByUuid(COHORT_UUID).getMemberships(false);
 		assertEquals(1, memberships.size());
 		assertEquals(8, (int) memberships.iterator().next().getPatientId()); // patientId 7 was voided

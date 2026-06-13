@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Defines the AOP services provided by the Test module
  */
 @Transactional
-public class TestModuleAOPServiceImpl  extends BaseOpenmrsService implements TestModuleAOPService {
-	
+public class TestModuleAOPServiceImpl extends BaseOpenmrsService implements TestModuleAOPService {
+
 	@Cacheable("testModuleCache")
 	public String aopHello() {
 		return "AOP Hello";

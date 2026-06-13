@@ -30,9 +30,9 @@ import liquibase.resource.ResourceAccessor;
  * This change set is run to update layout.address.format global property
  */
 public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(UpdateLayoutAddressFormatChangeSet.class);
-	
+
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
@@ -41,7 +41,7 @@ public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		Statement stmt = null;
 		PreparedStatement pStmt = null;
-		
+
 		try {
 			stmt = connection.createStatement();
 			ResultSet rs = stmt
@@ -49,38 +49,34 @@ public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 			if (rs.next()) {
 				String value = rs.getString("property_value");
 				value = value.replace("org.openmrs.layout.web.", "org.openmrs.layout.");
-				
-				pStmt = connection
-				        .prepareStatement("UPDATE global_property SET property_value = ? WHERE property = 'layout.address.format'");
+
+				pStmt = connection.prepareStatement(
+				    "UPDATE global_property SET property_value = ? WHERE property = 'layout.address.format'");
 				pStmt.setString(1, value);
 				pStmt.addBatch();
 				pStmt.executeBatch();
 			}
-		}
-		catch (DatabaseException | SQLException e) {
+		} catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
-		}
-		finally {
+		} finally {
 			if (stmt != null) {
 				try {
 					stmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the statement object");
 				}
 			}
-			
+
 			if (pStmt != null) {
 				try {
 					pStmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the prepared statement object");
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
@@ -88,21 +84,21 @@ public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 	public String getConfirmationMessage() {
 		return "Finished updating global property";
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
 	@Override
 	public void setUp() throws SetupException {
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.resource.ResourceAccessor)
 	 */
 	@Override
 	public void setFileOpener(ResourceAccessor resourceAccessor) {
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#validate(liquibase.database.Database)
 	 */

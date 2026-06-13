@@ -26,44 +26,47 @@ import org.springframework.validation.Validator;
 @Component("allergyValidator")
 @Handler(supports = { Allergy.class }, order = 50)
 public class AllergyValidator implements Validator {
-	
+
 	@Autowired
 	private MessageSourceService messageSourceService;
-	
+
 	@Autowired
 	private PatientService patientService;
-	
+
 	@Override
 	public boolean supports(Class<?> clazz) {
 		return Allergy.class.isAssignableFrom(clazz);
 	}
-	
+
 	/**
+	 * <p>
+	 * <strong>Should</strong> fail for a null value<br/>
+	 * <strong>Should</strong> fail if patient is null<br/>
+	 * <strong>Should</strong> fail id allergenType is null<br/>
+	 * <strong>Should</strong> fail if allergen is null<br/>
+	 * <strong>Should</strong> fail if codedAllergen is null<br/>
+	 * <strong>Should</strong> fail if nonCodedAllergen is null and allergen is set to other non
+	 * coded<br/>
+	 * <strong>Should</strong> reject a duplicate allergen<br/>
+	 * <strong>Should</strong> reject a duplicate non coded allergen<br/>
+	 * <strong>Should</strong> pass for a valid allergy<br/>
+	 * <strong>Should</strong> reject numeric values and symbols on reactionNonCoded
+	 *
 	 * @see Validator#validate(Object, org.springframework.validation.Errors)
 	 * @param target
 	 * @param errors
-	 * <strong>Should</strong> fail for a null value
-	 * <strong>Should</strong> fail if patient is null
-	 * <strong>Should</strong> fail id allergenType is null
-	 * <strong>Should</strong> fail if allergen is null
-	 * <strong>Should</strong> fail if codedAllergen is null
-	 * <strong>Should</strong> fail if nonCodedAllergen is null and allergen is set to other non coded
-	 * <strong>Should</strong> reject a duplicate allergen
-	 * <strong>Should</strong> reject a duplicate non coded allergen
-	 * <strong>Should</strong> pass for a valid allergy
-	 * <strong>Should</strong> reject numeric values and symbols on reactionNonCoded
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
-		
+
 		if (target == null) {
 			throw new IllegalArgumentException("Allergy should not be null");
 		}
-		
+
 		ValidationUtils.rejectIfEmpty(errors, "patient", "allergyapi.patient.required");
-		
+
 		Allergy allergy = (Allergy) target;
-		
+
 		if (allergy.getReactionNonCoded() != null) {
 			if (NumberUtils.isParsable(allergy.getReactionNonCoded())) {
 				errors.rejectValue("reactionNonCoded", "error.allergyapi.allergy.ReactionNonCoded.cannotBeNumeric");
@@ -76,13 +79,13 @@ public class AllergyValidator implements Validator {
 			if (allergen.getAllergenType() == null) {
 				errors.rejectValue("allergen", "allergyapi.allergenType.required");
 			}
-			
+
 			if (allergen.getCodedAllergen() == null && StringUtils.isBlank(allergen.getNonCodedAllergen())) {
 				errors.rejectValue("allergen", "allergyapi.allergen.codedOrNonCodedAllergen.required");
 			} else if (!allergen.isCoded() && StringUtils.isBlank(allergen.getNonCodedAllergen())) {
 				errors.rejectValue("allergen", "allergyapi.allergen.nonCodedAllergen.required");
 			}
-			
+
 			if (allergy.getAllergyId() == null && allergy.getPatient() != null) {
 				Allergies existingAllergies = patientService.getAllergies(allergy.getPatient());
 				if (existingAllergies.containsAllergen(allergy)) {

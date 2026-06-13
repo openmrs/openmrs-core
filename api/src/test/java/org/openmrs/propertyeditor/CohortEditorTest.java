@@ -15,24 +15,24 @@ import org.openmrs.api.CohortService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class CohortEditorTest extends BasePropertyEditorTest<Cohort, CohortEditor> {
-	
+
 	protected static final String COHORT_XML = "org/openmrs/api/include/CohortServiceTest-cohort.xml";
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	@Autowired
 	private CohortService cohortService;
-	
+
 	@BeforeEach
 	public void prepareData() {
 		executeDataSet(COHORT_XML);
 	}
-	
+
 	@Override
 	protected CohortEditor getNewEditor() {
 		return new CohortEditor();
 	}
-	
+
 	@Override
 	protected Cohort getExistingObject() {
 		return cohortService.getCohort(EXISTING_ID);

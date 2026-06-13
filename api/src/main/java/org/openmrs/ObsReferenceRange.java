@@ -9,9 +9,6 @@
  */
 package org.openmrs;
 
-import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,9 +19,12 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+
 /**
- * ObsReferenceRange is typically a reference range of a numeric Observation 
- * The reference range is created at the point of creating {@link Obs}
+ * ObsReferenceRange is typically a reference range of a numeric Observation The reference range is
+ * created at the point of creating {@link Obs}
  *
  * @since 2.7.0
  */
@@ -32,7 +32,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "obs_reference_range")
 public class ObsReferenceRange extends BaseReferenceRange {
-	
+
 	private static final long serialVersionUID = 473299L;
 
 	@DocumentId
@@ -40,7 +40,7 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	@Column(name = "obs_reference_range_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer obsReferenceRangeId;
-	
+
 	@OneToOne
 	@MapsId
 	@JoinColumn(name = "obs_id", referencedColumnName = "obs_id", unique = true)
@@ -48,10 +48,10 @@ public class ObsReferenceRange extends BaseReferenceRange {
 
 	public ObsReferenceRange() {
 	}
-	
+
 	/**
 	 * Gets the obsReferenceRangeId
-	 * 
+	 *
 	 * @return Returns the obsReferenceRangeId.
 	 */
 	public Integer getObsReferenceRangeId() {
@@ -60,7 +60,7 @@ public class ObsReferenceRange extends BaseReferenceRange {
 
 	/**
 	 * Sets the obsReferenceRangeId
-	 * 
+	 *
 	 * @param obsReferenceRangeId The obsReferenceRangeId to set.
 	 */
 	public void setObsReferenceRangeId(Integer obsReferenceRangeId) {
@@ -83,7 +83,7 @@ public class ObsReferenceRange extends BaseReferenceRange {
 
 	/**
 	 * Gets Obs
-	 * 
+	 *
 	 * @return Obs
 	 */
 	public Obs getObs() {
@@ -91,8 +91,8 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	}
 
 	/**
-	 * Sets obs 
-	 * 
+	 * Sets obs
+	 *
 	 * @param obs Obs to set
 	 */
 	public void setObs(Obs obs) {

@@ -20,25 +20,25 @@ import org.openmrs.util.OpenmrsUtil;
  * without an exception message.
  * <p>
  * For details on what is checked, see {@link OpenmrsUtil#validatePassword(String, String, String)}.
- * 
+ *
  * @since 1.5
  */
 public class PasswordException extends APIException {
-	
+
 	private static final long serialVersionUID = 31620091001L;
-	
+
 	public PasswordException() {
 		super();
 	}
-	
+
 	public PasswordException(String message, Throwable cause) {
 		super(message, null, cause);
 	}
-	
+
 	public PasswordException(String message) {
 		super(message, (Object[]) null);
 	}
-	
+
 	public PasswordException(Throwable cause) {
 		super(cause);
 	}

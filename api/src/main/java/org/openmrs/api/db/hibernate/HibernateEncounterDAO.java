@@ -9,6 +9,14 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.TypedQuery;
@@ -18,13 +26,6 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
@@ -66,12 +67,12 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * Hibernate session factory
 	 */
 	private final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateEncounterDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#saveEncounter(org.openmrs.Encounter)
 	 */
@@ -79,7 +80,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public Encounter saveEncounter(Encounter encounter) throws DAOException {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounter);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.EncounterService#deleteEncounter(org.openmrs.Encounter)
 	 */
@@ -87,7 +88,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public void deleteEncounter(Encounter encounter) throws DAOException {
 		sessionFactory.getCurrentSession().remove(encounter);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounter(java.lang.Integer)
 	 */
@@ -105,14 +106,13 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Encounter> cq = cb.createQuery(Encounter.class);
 		Root<Encounter> encounterRoot = cq.from(Encounter.class);
-		
+
 		Join<Encounter, Patient> patientJoin = encounterRoot.join("patient");
 
-		cq.select(encounterRoot).where(
-			cb.equal(patientJoin.get("patientId"), patientId), 
-			cb.isFalse(encounterRoot.get("voided"))
-		).orderBy(cb.desc(encounterRoot.get("encounterDatetime")));
-		
+		cq.select(encounterRoot)
+		        .where(cb.equal(patientJoin.get("patientId"), patientId), cb.isFalse(encounterRoot.get("voided")))
+		        .orderBy(cb.desc(encounterRoot.get("encounterDatetime")));
+
 		return session.createQuery(cq).getResultList();
 	}
 
@@ -142,12 +142,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		}
 		if (searchCriteria.getDateChanged() != null) {
 			predicates.add(cb.or(
-				cb.and(
-					cb.isNull(encounter.get("dateChanged")),
-					cb.greaterThanOrEqualTo(encounter.get("dateCreated"), searchCriteria.getDateChanged())
-				),
-				cb.greaterThanOrEqualTo(encounter.get("dateChanged"), searchCriteria.getDateChanged())
-			));
+			    cb.and(cb.isNull(encounter.get("dateChanged")),
+			        cb.greaterThanOrEqualTo(encounter.get("dateCreated"), searchCriteria.getDateChanged())),
+			    cb.greaterThanOrEqualTo(encounter.get("dateChanged"), searchCriteria.getDateChanged())));
 		}
 		if (searchCriteria.getEnteredViaForms() != null && !searchCriteria.getEnteredViaForms().isEmpty()) {
 			predicates.add(encounter.get("form").in(searchCriteria.getEnteredViaForms()));
@@ -170,12 +167,12 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			predicates.add(cb.isFalse(encounter.get("voided")));
 		}
 
-		cq.select(encounter).where(predicates.toArray(new Predicate[]{}))
-			.orderBy(cb.asc(encounter.get("encounterDatetime")));
+		cq.select(encounter).where(predicates.toArray(new Predicate[] {}))
+		        .orderBy(cb.asc(encounter.get("encounterDatetime")));
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#saveEncounterType(org.openmrs.EncounterType)
 	 */
@@ -183,7 +180,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public EncounterType saveEncounterType(EncounterType encounterType) {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounterType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#deleteEncounterType(org.openmrs.EncounterType)
 	 */
@@ -191,7 +188,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public void deleteEncounterType(EncounterType encounterType) throws DAOException {
 		sessionFactory.getCurrentSession().remove(encounterType);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterType(java.lang.Integer)
 	 */
@@ -209,7 +206,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<EncounterType> cq = cb.createQuery(EncounterType.class);
 		Root<EncounterType> root = cq.from(EncounterType.class);
-		
+
 		cq.where(cb.isFalse(root.get("retired")), cb.equal(root.get("name"), name));
 
 		return session.createQuery(cq).uniqueResult();
@@ -224,7 +221,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<EncounterType> cq = cb.createQuery(EncounterType.class);
 		Root<EncounterType> root = cq.from(EncounterType.class);
-		
+
 		cq.orderBy(cb.asc(root.get("name")));
 
 		if (!includeRetired) {
@@ -251,7 +248,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 
 		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getSavedEncounterDatetime(org.openmrs.Encounter)
 	 */
@@ -264,17 +261,15 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		FlushMode flushMode = session.getHibernateFlushMode();
 		session.setHibernateFlushMode(FlushMode.MANUAL);
 		try {
-			NativeQuery<Date> sql = session
-				.createNativeQuery(
-					"select encounter_datetime from encounter where encounter_id = :encounterId", Date.class);
+			NativeQuery<Date> sql = session.createNativeQuery(
+			    "select encounter_datetime from encounter where encounter_id = :encounterId", Date.class);
 			sql.setParameter("encounterId", encounter.getEncounterId());
 			return sql.uniqueResult();
-		}
-		finally {
+		} finally {
 			session.setHibernateFlushMode(flushMode);
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getEncounterByUuid(java.lang.String)
 	 */
@@ -282,7 +277,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public Encounter getEncounterByUuid(String uuid) {
 		return getClassByUuid(Encounter.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getEncounterTypeByUuid(java.lang.String)
 	 */
@@ -290,10 +285,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public EncounterType getEncounterTypeByUuid(String uuid) {
 		return getClassByUuid(EncounterType.class, uuid);
 	}
-	
+
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(String, Integer, Integer, Integer,
-	 *      boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(String, Integer, Integer, Integer, boolean)
 	 */
 	@Override
 	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
@@ -308,9 +302,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		Root<Encounter> root = cq.from(Encounter.class);
 
 		QueryResult queryResult = createEncounterByQueryPredicates(cb, root, query, patientId, includeVoided, true);
-		
-		cq.where(queryResult.getPredicates().toArray(new Predicate[]{}))
-			.orderBy(queryResult.getOrders());
+
+		cq.where(queryResult.getPredicates().toArray(new Predicate[] {})).orderBy(queryResult.getOrders());
 
 		TypedQuery<Encounter> typedQuery = session.createQuery(cq);
 		if (start != null) {
@@ -319,10 +312,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		if (length != null && length > 0) {
 			typedQuery.setMaxResults(length);
 		}
-		
+
 		return typedQuery.getResultList().stream().distinct().collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getSavedEncounterLocation(org.openmrs.Encounter)
 	 */
@@ -332,16 +325,15 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		FlushMode flushMode = session.getHibernateFlushMode();
 		session.setHibernateFlushMode(FlushMode.MANUAL);
 		try {
-			NativeQuery<Integer> sql = session.createNativeQuery("select location_id from encounter where encounter_id = :encounterId",
-				Integer.class);
+			NativeQuery<Integer> sql = session
+			        .createNativeQuery("select location_id from encounter where encounter_id = :encounterId", Integer.class);
 			sql.setParameter("encounterId", encounter.getEncounterId());
 			return Context.getLocationService().getLocation(sql.uniqueResult());
-		}
-		finally {
+		} finally {
 			session.setHibernateFlushMode(flushMode);
 		}
 	}
-	
+
 	/**
 	 * @see EncounterDAO#getAllEncounters(org.openmrs.Cohort)
 	 */
@@ -353,12 +345,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		Root<Encounter> root = cq.from(Encounter.class);
 
 		List<Predicate> predicates = createEncounterPredicates(cb, root, patients);
-		cq.where(predicates.toArray(new Predicate[]{}));
+		cq.where(predicates.toArray(new Predicate[] {}));
 
-		cq.orderBy(
-			cb.desc(root.get("patient").get("personId")), 
-			cb.desc(root.get("encounterDatetime"))
-		);
+		cq.orderBy(cb.desc(root.get("patient").get("personId")), cb.desc(root.get("encounterDatetime")));
 
 		TypedQuery<Encounter> query = session.createQuery(cq);
 		query.setHint("jakarta.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
@@ -382,7 +371,6 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		return encountersBypatient;
 	}
 
-
 	/**
 	 * Create the criteria for fetching all encounters based on cohort
 	 *
@@ -404,8 +392,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getCountOfEncounters(java.lang.String,
-	 *      java.lang.Integer, boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getCountOfEncounters(java.lang.String, java.lang.Integer,
+	 *      boolean)
 	 */
 	@Override
 	public Long getCountOfEncounters(String query, Integer patientId, boolean includeVoided) {
@@ -415,12 +403,11 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		Root<Encounter> root = cq.from(Encounter.class);
 
 		QueryResult queryResult = createEncounterByQueryPredicates(cb, root, query, patientId, includeVoided, false);
-		cq.select(cb.countDistinct(root.get("encounterId")))
-			.where(queryResult.getPredicates().toArray(new Predicate[]{}));
+		cq.select(cb.countDistinct(root.get("encounterId"))).where(queryResult.getPredicates().toArray(new Predicate[] {}));
 
 		return session.createQuery(cq).getSingleResult();
 	}
-	
+
 	/**
 	 * Utility method that returns a criteria for searching for patient encounters that match the
 	 * specified search phrase
@@ -454,10 +441,12 @@ public class HibernateEncounterDAO implements EncounterDAO {
 
 				String queryMatchingPattern = MatchMode.ANYWHERE.toLowerCasePattern(query);
 				Predicate locationNamePredicate = cb.like(cb.lower(locationJoin.get("name")), queryMatchingPattern);
-				Predicate encounterTypeNamePredicate = cb.like(cb.lower(encounterTypeJoin.get("name")), queryMatchingPattern);
+				Predicate encounterTypeNamePredicate = cb.like(cb.lower(encounterTypeJoin.get("name")),
+				    queryMatchingPattern);
 				Predicate formNamePredicate = cb.like(cb.lower(formJoin.get("name")), queryMatchingPattern);
 				Predicate providerNamePredicate = cb.like(cb.lower(providerJoin.get("name")), queryMatchingPattern);
-				Predicate providerIdentifierPredicate = cb.like(cb.lower(providerJoin.get("identifier")), queryMatchingPattern);
+				Predicate providerIdentifierPredicate = cb.like(cb.lower(providerJoin.get("identifier")),
+				    queryMatchingPattern);
 
 				List<Predicate> orPredicates = new ArrayList<>();
 				orPredicates.add(locationNamePredicate);
@@ -476,35 +465,35 @@ public class HibernateEncounterDAO implements EncounterDAO {
 					personNamePredicates.add(cb.like(cb.lower(personNameJoin.get("familyName2")), splitNamePattern));
 				}
 
-				//OUTPUT for provider criteria: 
+				//OUTPUT for provider criteria:
 				//prov.name like '%query%' OR prov.identifier like '%query%'
-				//OR ( personName.voided = false 
-				//		 AND (  personName.givenName like '%query%' 
-				//			OR personName.middleName like '%query%' 
+				//OR ( personName.voided = false
+				//		 AND (  personName.givenName like '%query%'
+				//			OR personName.middleName like '%query%'
 				//			OR personName.familyName like '%query%'
 				//			OR personName.familyName2 like '%query%'
 				//			)
 				//	 )
 
-				Predicate nameOr = cb.or(personNamePredicates.toArray(new Predicate[]{}));
+				Predicate nameOr = cb.or(personNamePredicates.toArray(new Predicate[] {}));
 
 				Predicate notVoided = cb.isFalse(personNameJoin.get("voided"));
 				Predicate personNameConjunction = cb.and(notVoided, nameOr);
 				orPredicates.add(personNameConjunction);
 
-				predicates.add(cb.or(orPredicates.toArray(new Predicate[]{})));
+				predicates.add(cb.or(orPredicates.toArray(new Predicate[] {})));
 			}
 			return new QueryResult(predicates, Collections.emptyList());
 		} else {
 			//As identifier could be all alpha, no heuristic here will work in determining intent of user for querying by name versus identifier
 			//So search by both!
-			QueryResult queryResult = new PatientSearchCriteria(sessionFactory).prepareCriteria(cb, patientJoin, query, query,
-				new ArrayList<>(), true, orderByNames, true);
+			QueryResult queryResult = new PatientSearchCriteria(sessionFactory).prepareCriteria(cb, patientJoin, query,
+			    query, new ArrayList<>(), true, orderByNames, true);
 			queryResult.addPredicates(predicates);
 			return queryResult;
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByVisit(Visit, boolean)
 	 */
@@ -522,8 +511,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			predicates.add(cb.isFalse(root.get("voided")));
 		}
 
-		cq.where(predicates.toArray(new Predicate[]{}))
-			.orderBy(cb.asc(root.get("encounterDatetime")));
+		cq.where(predicates.toArray(new Predicate[] {})).orderBy(cb.asc(root.get("encounterDatetime")));
 
 		return session.createQuery(cq).getResultList();
 	}
@@ -535,7 +523,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws DAOException {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), encounterRole);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#deleteEncounterRole(org.openmrs.EncounterRole)
 	 */
@@ -543,7 +531,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public void deleteEncounterRole(EncounterRole encounterRole) throws DAOException {
 		sessionFactory.getCurrentSession().remove(encounterRole);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getEncounterRole(Integer)
 	 */
@@ -551,7 +539,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public EncounterRole getEncounterRole(Integer encounterRoleId) throws DAOException {
 		return sessionFactory.getCurrentSession().get(EncounterRole.class, encounterRoleId);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getEncounterRoleByUuid(String)
 	 */
@@ -559,7 +547,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public EncounterRole getEncounterRoleByUuid(String uuid) {
 		return getClassByUuid(EncounterRole.class, uuid);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getAllEncounterRoles(boolean)
 	 */
@@ -602,7 +590,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	private <T> T getClassByUuid(Class<T> clazz, String uuid) {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, clazz, uuid);
 	}
-	
+
 	@Override
 	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) {
 		Session session = sessionFactory.getCurrentSession();
@@ -615,12 +603,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		predicates.add(cb.isNull(root.get("visit")));
 		predicates.add(cb.isFalse(root.get("voided")));
 
-		cq.where(predicates.toArray(new Predicate[]{}))
-			.orderBy(cb.desc(root.get("encounterDatetime")));
+		cq.where(predicates.toArray(new Predicate[] {})).orderBy(cb.desc(root.get("encounterDatetime")));
 
 		return session.createQuery(cq).setMaxResults(100).getResultList();
 	}
-
 
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByVisitsAndPatient(org.openmrs.Patient,
@@ -628,7 +614,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
-														   Integer start, Integer length) {
+	        Integer start, Integer length) {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 
@@ -638,23 +624,18 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		Join<Encounter, Visit> visitJoin = encounterRoot.join("visit", JoinType.LEFT);
 
 		encounterQuery.where(createEncountersByPatientPredicates(cb, encounterRoot, patient, includeVoided, query)
-			.toArray(new Predicate[]{}));
-		encounterQuery.orderBy(
-			cb.desc(visitJoin.get("startDatetime")),
-			cb.desc(visitJoin.get("visitId")),
-			cb.desc(encounterRoot.get("encounterDatetime")),
-			cb.desc(encounterRoot.get("encounterId")));
+		        .toArray(new Predicate[] {}));
+		encounterQuery.orderBy(cb.desc(visitJoin.get("startDatetime")), cb.desc(visitJoin.get("visitId")),
+		    cb.desc(encounterRoot.get("encounterDatetime")), cb.desc(encounterRoot.get("encounterId")));
 
 		List<Encounter> encounters = session.createQuery(encounterQuery).getResultList();
 
 		// Query for Empty Visits
 		CriteriaQuery<Visit> visitQuery = cb.createQuery(Visit.class);
 		Root<Visit> visitRoot = visitQuery.from(Visit.class);
-		visitQuery.where(createEmptyVisitsByPatientPredicates(cb, visitRoot, patient, includeVoided, query)
-			.toArray(new Predicate[]{}));
-		visitQuery.orderBy(
-			cb.desc(visitRoot.get("startDatetime")),
-			cb.desc(visitRoot.get("visitId")));
+		visitQuery.where(
+		    createEmptyVisitsByPatientPredicates(cb, visitRoot, patient, includeVoided, query).toArray(new Predicate[] {}));
+		visitQuery.orderBy(cb.desc(visitRoot.get("startDatetime")), cb.desc(visitRoot.get("visitId")));
 
 		List<Visit> emptyVisits = session.createQuery(visitQuery).getResultList();
 
@@ -696,11 +677,11 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Long> visitQuery = cb.createQuery(Long.class);
 		Root<Visit> visitRoot = visitQuery.from(Visit.class);
-		
+
 		visitQuery.select(cb.count(visitRoot));
 
 		List<Predicate> visitPredicates = createEmptyVisitsByPatientPredicates(cb, visitRoot, patient, includeVoided, query);
-		visitQuery.where(visitPredicates.toArray(new Predicate[]{}));
+		visitQuery.where(visitPredicates.toArray(new Predicate[] {}));
 
 		Long visitCount = session.createQuery(visitQuery).getSingleResult();
 
@@ -708,16 +689,17 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		Root<Encounter> encounterRoot = encounterQuery.from(Encounter.class);
 		encounterQuery.select(cb.count(encounterRoot));
 
-		List<Predicate> encounterPredicates = createEncountersByPatientPredicates(cb, encounterRoot, patient, includeVoided, query);
-		encounterQuery.where(encounterPredicates.toArray(new Predicate[]{}));
+		List<Predicate> encounterPredicates = createEncountersByPatientPredicates(cb, encounterRoot, patient, includeVoided,
+		    query);
+		encounterQuery.where(encounterPredicates.toArray(new Predicate[] {}));
 
 		Long encounterCount = session.createQuery(encounterQuery).getSingleResult();
 
 		return visitCount.intValue() + encounterCount.intValue();
 	}
 
-	private List<Predicate> createEmptyVisitsByPatientPredicates(CriteriaBuilder cb, Root<Visit> root,
-	        Patient patient, boolean includeVoided, String query) {
+	private List<Predicate> createEmptyVisitsByPatientPredicates(CriteriaBuilder cb, Root<Visit> root, Patient patient,
+	        boolean includeVoided, String query) {
 		List<Predicate> predicates = new ArrayList<>();
 
 		predicates.add(cb.equal(root.get("patient"), patient));
@@ -731,19 +713,15 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			Join<Visit, VisitType> visitTypeJoin = root.join("visitType", JoinType.LEFT);
 			Join<Visit, Location> locationJoin = root.join("location", JoinType.LEFT);
 
-			predicates.add(
-				cb.or(
-					cb.like(cb.lower(visitTypeJoin.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(query)),
-					cb.like(cb.lower(locationJoin.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(query))
-				)
-			);
+			predicates.add(cb.or(cb.like(cb.lower(visitTypeJoin.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(query)),
+			    cb.like(cb.lower(locationJoin.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(query))));
 		}
 
 		return predicates;
 	}
 
-	private List<Predicate> createEncountersByPatientPredicates(CriteriaBuilder cb, Root<Encounter> root,
-			Patient patient, boolean includeVoided, String query) {
+	private List<Predicate> createEncountersByPatientPredicates(CriteriaBuilder cb, Root<Encounter> root, Patient patient,
+	        boolean includeVoided, String query) {
 		List<Predicate> predicates = new ArrayList<>();
 
 		predicates.add(cb.equal(root.get("patient"), patient));
@@ -759,16 +737,12 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			Join<Visit, Location> visitLocationJoin = visitJoin.join("location", JoinType.LEFT);
 			Join<Encounter, Location> locationJoin = root.join("location", JoinType.LEFT);
 			Join<Encounter, EncounterType> encounterTypeJoin = root.join("encounterType", JoinType.LEFT);
-			
+
 			String likePattern = MatchMode.ANYWHERE.toLowerCasePattern(query);
-			predicates.add(
-				cb.or(
-					cb.like(cb.lower(visitTypeJoin.get("name")), likePattern),
-					cb.like(cb.lower(visitLocationJoin.get("name")), likePattern),
-					cb.like(cb.lower(locationJoin.get("name")), likePattern),
-					cb.like(cb.lower(encounterTypeJoin.get("name")), likePattern)
-				)
-			);
+			predicates.add(cb.or(cb.like(cb.lower(visitTypeJoin.get("name")), likePattern),
+			    cb.like(cb.lower(visitLocationJoin.get("name")), likePattern),
+			    cb.like(cb.lower(locationJoin.get("name")), likePattern),
+			    cb.like(cb.lower(encounterTypeJoin.get("name")), likePattern)));
 		}
 
 		return predicates;
