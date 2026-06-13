@@ -20,6 +20,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -60,13 +61,29 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		} catch (Exception e) {
 			// Tables may not exist yet on first run
 		}
+
+		// Drop Hibernate-created foreign key on previous_version in H2
 		try {
-			// Hibernate omits this column due to @MapsId, but archiving query expects it
-			jdbcTemplate.execute(
-			    "ALTER TABLE obs_reference_range ADD COLUMN IF NOT EXISTS obs_reference_range_id INT AUTO_INCREMENT");
+			java.util.List<String> constraints = jdbcTemplate
+			        .queryForList(
+			            "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE "
+			                    + "WHERE UPPER(TABLE_NAME) = 'OBS' AND UPPER(COLUMN_NAME) = 'PREVIOUS_VERSION'",
+			            String.class);
+			for (String constraint : constraints) {
+				try {
+					jdbcTemplate.execute("ALTER TABLE obs DROP CONSTRAINT " + constraint);
+				} catch (Exception e) {
+					// Ignore
+				}
+			}
 		} catch (Exception e) {
-			// Ignore
+			try {
+				jdbcTemplate.execute("ALTER TABLE obs DROP CONSTRAINT IF EXISTS FKRDYF6DEFJW3MNOX499SIXH4LK");
+			} catch (Exception ex) {
+				// Ignore
+			}
 		}
+
 		adminService.saveGlobalProperty(new GlobalProperty("obs.archive.enabled", "true"));
 		adminService.saveGlobalProperty(new GlobalProperty("obs.archive.retention_days", "-1"));
 		adminService.saveGlobalProperty(new GlobalProperty("obs.archive.last_processed_obs_id", "-1"));
@@ -86,9 +103,10 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 			            + "obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, "
 			            + "value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, "
 			            + "date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, "
-			            + "form_namespace_and_path, status, interpretation FROM obs_archive");
-			jdbcTemplate.execute("DELETE FROM obs_archive");
+			            + "form_namespace_and_path, status, interpretation FROM obs_archive a "
+			            + "WHERE NOT EXISTS (SELECT 1 FROM obs o WHERE o.obs_id = a.obs_id)");
 			jdbcTemplate.execute("DELETE FROM obs_archive_reference_range");
+			jdbcTemplate.execute("DELETE FROM obs_archive");
 			// Reset voided state on any obs we voided during setup
 			jdbcTemplate.execute(
 			    "UPDATE obs SET voided = false, date_voided = NULL, void_reason = NULL, voided_by = NULL WHERE obs_id IN (7, 9)");
@@ -99,8 +117,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 
 	@Test
 	public void execute_shouldArchiveVoidedObservations() throws Exception {
-		adminService
-		        .saveGlobalProperty(new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
 
 		// Void obs_id=7 via the service API (committed, visible to all connections)
 		Obs obs = obsService.getObs(7);
@@ -128,8 +145,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 
 	@Test
 	public void execute_shouldBatchProcessAndResumeFromCheckpoint() throws Exception {
-		adminService
-		        .saveGlobalProperty(new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
 
 		// Void multiple obs via the service API
 		obsService.voidObs(obsService.getObs(7), "test voiding");
@@ -138,8 +154,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		Context.clearSession();
 
 		// Set batch size to 1 so we can track checkpoint behavior
-		adminService
-		        .saveGlobalProperty(new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_BATCH_SIZE, "1"));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_BATCH_SIZE, "1"));
 
 		// Run archiving - should archive obs_id=9 first (descending order), then stop after 1 batch
 		handler.execute(new ObsArchivingTaskData(), null);
@@ -150,15 +165,13 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		assertEquals(2, countArchive);
 
 		// Verify checkpoint was reset (sweep complete)
-		String checkpoint = adminService
-		        .getGlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID);
+		String checkpoint = adminService.getGlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID);
 		assertEquals("-1", checkpoint);
 	}
 
 	@Test
 	public void execute_shouldNotExecuteIfDisabled() throws Exception {
-		adminService
-		        .saveGlobalProperty(new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "false"));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "false"));
 
 		Obs obs = obsService.getObs(7);
 		obsService.voidObs(obs, "test voiding");
@@ -174,10 +187,8 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 
 	@Test
 	public void execute_shouldNotArchiveObservationsVoidedWithinRetentionPeriod() throws Exception {
-		adminService
-		        .saveGlobalProperty(new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
-		adminService.saveGlobalProperty(
-		    new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_RETENTION_DAYS, "90"));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_RETENTION_DAYS, "90"));
 
 		// Void an obs now
 		Obs obs = obsService.getObs(7);
@@ -205,8 +216,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 
 	@Test
 	public void execute_shouldResumeFromCheckpoint() throws Exception {
-		adminService
-		        .saveGlobalProperty(new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
 
 		// Void obs 7 and 9
 		obsService.voidObs(obsService.getObs(7), "test voiding");
@@ -217,8 +227,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		// Manually set checkpoint to 8. The handler processes in DESC order (from highest to lowest).
 		// So if checkpoint is 8, it will only process obs_id < 8.
 		// Thus, obs 9 should be ignored.
-		adminService.saveGlobalProperty(
-		    new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID, "8"));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID, "8"));
 
 		handler.execute(new ObsArchivingTaskData(), null);
 
@@ -229,8 +238,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 
 	@Test
 	public void execute_shouldFallbackToRowByRowOnBatchFailure() throws Exception {
-		adminService
-		        .saveGlobalProperty(new GlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
 
 		// Void multiple obs
 		obsService.voidObs(obsService.getObs(7), "test voiding");
@@ -239,8 +247,9 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		Context.clearSession();
 
 		// Deliberately cause a primary key violation for obs_id 9 by pre-inserting it into obs_archive
-		jdbcTemplate.update("INSERT INTO obs_archive (obs_id, person_id, obs_datetime, creator, date_created, uuid) VALUES "
-		        + "(9, 1, '2000-01-01', 1, '2000-01-01', 'dummy-uuid-for-9')");
+		jdbcTemplate.update(
+		    "INSERT INTO obs_archive (obs_id, person_id, concept_id, obs_datetime, creator, date_created, voided, status, uuid) VALUES "
+		            + "(9, 1, 5089, '2000-01-01', 1, '2000-01-01', true, 'FINAL', 'dummy-uuid-for-9')");
 
 		// Run archiving. The batch containing 7 and 9 will fail.
 		// It should catch the exception, fall back to row-by-row, skip 9 (because it fails again), and successfully archive 7.

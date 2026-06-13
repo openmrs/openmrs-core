@@ -51,7 +51,6 @@ import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.scheduler.TaskDetails;
 import org.openmrs.scheduler.TaskState;
 import org.openmrs.scheduler.db.SchedulerDAO;
-import org.openmrs.scheduler.tasks.ObsArchivingTaskData;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,8 +86,10 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	public void onStartup() {
 		for (TaskDefinition taskDefinition : schedulerDAO.getTasks()) {
 			if (Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
+				String creatorSystemId = taskDefinition.getCreator() != null ? taskDefinition.getCreator().getSystemId()
+				        : "daemon";
 				JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(taskDefinition.getUuid()),
-				    new JobRequestAdapter(taskDefinition, taskDefinition.getCreator().getSystemId()));
+				    new JobRequestAdapter(taskDefinition, creatorSystemId));
 				String name = taskDefinition.getName();
 				if (name == null) {
 					name = taskDefinition.getTaskClass();
@@ -109,23 +110,6 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 						throw new APIException(e);
 					}
 				}
-			}
-		}
-		scheduleObservationArchivingTaskOnStartup();
-	}
-
-	private void scheduleObservationArchivingTaskOnStartup() {
-		String taskName = "Observation Archiving Job";
-
-		boolean isScheduled = getRecurringTasks().anyMatch(t -> t.getName() != null && t.getName().equals(taskName));
-
-		if (!isScheduled) {
-			String cron = Context.getAdministrationService().getGlobalProperty("obs.archive.cron", "0 0 * * *");
-			try {
-				scheduleRecurrently(taskName, new ObsArchivingTaskData(), cron);
-				log.info("Scheduled the Observation Archiving Job with cron: {}", cron);
-			} catch (Exception e) {
-				log.error("Failed to schedule the Observation Archiving Job", e);
 			}
 		}
 	}

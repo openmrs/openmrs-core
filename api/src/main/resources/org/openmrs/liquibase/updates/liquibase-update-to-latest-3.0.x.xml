@@ -199,10 +199,14 @@
 				<constraints nullable="false"/>
 			</column>
 			<column name="interpretation" type="VARCHAR(32)"/>
+			<column defaultValueComputed="NULL" name="changed_by" type="INT"/>
+			<column defaultValueComputed="NULL" name="date_changed" type="DATETIME"/>
+			<column defaultValueComputed="NULL" name="archived_by" type="INT"/>
+			<column defaultValueComputed="NULL" name="date_archived" type="DATETIME"/>
 		</createTable>
 
 		<createTable tableName="obs_archive_reference_range">
-			<column name="obs_reference_range_id" type="INT">
+			<column name="obs_reference_range_id" type="INT" autoIncrement="true">
 				<constraints nullable="false" primaryKey="true"/>
 			</column>
 			<column name="obs_id" type="INT">
@@ -218,19 +222,11 @@
 				<constraints unique="true"/>
 			</column>
 		</createTable>
-
-		<createIndex indexName="idx_obs_archive_person_id" tableName="obs_archive">
-			<column name="person_id"/>
-		</createIndex>
-		<createIndex indexName="idx_obs_archive_concept_id" tableName="obs_archive">
-			<column name="concept_id"/>
-		</createIndex>
-		<createIndex indexName="idx_obs_archive_encounter_id" tableName="obs_archive">
-			<column name="encounter_id"/>
-		</createIndex>
+		
 		<createIndex indexName="idx_obs_archive_uuid" tableName="obs_archive">
 			<column name="uuid"/>
 		</createIndex>
+
 
 		<insert tableName="global_property">
 			<column name="property" value="obs.archive.enabled"/>
@@ -251,12 +247,6 @@
 			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702343"/>
 		</insert>
 		<insert tableName="global_property">
-			<column name="property" value="obs.archive.cron"/>
-			<column name="property_value" value="0 0 * * *"/>
-			<column name="description" value="The cron schedule for the recurring archival job (default is daily at midnight)."/>
-			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702344"/>
-		</insert>
-		<insert tableName="global_property">
 			<column name="property" value="obs.archive.last_processed_obs_id"/>
 			<column name="property_value" value="-1"/>
 			<column name="description" value="The persistent checkpoint indicating the lowest obs_id processed in the current sweep."/>
@@ -264,7 +254,32 @@
 		</insert>
 	</changeSet>
 
+	<changeSet id="TRUNK-6649-register-archiving-task" author="shivvani-r">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="1">
+					SELECT COUNT(1) FROM scheduler_task_config WHERE name = 'Observation Archiving Job'
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Register the Observation Archiving task in the legacy scheduler table so it is visible in the Admin UI</comment>
+		<insert tableName="scheduler_task_config">
+			<column name="name" value="Observation Archiving Job"/>
+			<column name="description" value="Periodically archives voided observations to the archive tables."/>
+			<column name="schedulable_class" value="org.openmrs.scheduler.tasks.ObsArchivingTask"/>
+			<column name="repeat_interval" valueNumeric="86400"/> <!-- 24 hours -->
+			<column name="start_on_startup" valueBoolean="true"/>
+			<column name="started" valueBoolean="false"/>
+			<column name="date_created" valueDate="2026-06-07T00:00:00"/>
+			<column name="created_by" valueNumeric="1"/>
+			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702344"/>
+		</insert>
+	</changeSet>
+
 	<changeSet id="TRUNK-6649-drop-previous-version-fk" author="shivvani-r">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyTableName="obs" foreignKeyName="previous_version"/>
+		</preConditions>
 		<comment>Drop the previous_version foreign key constraint on the obs table to allow archiving old versions</comment>
 		<dropForeignKeyConstraint baseTableName="obs" constraintName="previous_version"/>
 	</changeSet>

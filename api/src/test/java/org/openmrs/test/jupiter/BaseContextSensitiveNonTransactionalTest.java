@@ -589,38 +589,6 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		            + "locked_at TIMESTAMP NOT NULL, " + "locked_by VARCHAR(255) NOT NULL, " + "PRIMARY KEY (name))")
 		        .execute();
 
-		getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS obs_archive (" + "obs_id INT NOT NULL PRIMARY KEY, "
-		        + "person_id INT NOT NULL, " + "concept_id INT NOT NULL DEFAULT 0, " + "encounter_id INT DEFAULT NULL, "
-		        + "order_id INT DEFAULT NULL, " + "obs_datetime DATETIME NOT NULL, " + "location_id INT DEFAULT NULL, "
-		        + "obs_group_id INT DEFAULT NULL, " + "accession_number VARCHAR(255), " + "value_group_id INT DEFAULT NULL, "
-		        + "value_coded INT DEFAULT NULL, " + "value_coded_name_id INT DEFAULT NULL, "
-		        + "value_drug INT DEFAULT NULL, " + "value_datetime DATETIME DEFAULT NULL, "
-		        + "value_numeric DOUBLE DEFAULT NULL, " + "value_modifier VARCHAR(2), " + "value_text TEXT, "
-		        + "value_complex VARCHAR(1000), " + "comments VARCHAR(255), " + "creator INT NOT NULL DEFAULT 0, "
-		        + "date_created DATETIME NOT NULL, " + "voided BOOLEAN NOT NULL DEFAULT false, "
-		        + "voided_by INT DEFAULT NULL, " + "date_voided DATETIME DEFAULT NULL, " + "void_reason VARCHAR(255), "
-		        + "uuid CHAR(38) NOT NULL UNIQUE, " + "previous_version INT DEFAULT NULL, "
-		        + "form_namespace_and_path VARCHAR(255), " + "status VARCHAR(16) NOT NULL DEFAULT 'FINAL', "
-		        + "interpretation VARCHAR(32)" + ")").execute();
-
-		getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS obs_archive_reference_range ("
-		        + "obs_reference_range_id INT NOT NULL PRIMARY KEY, " + "obs_id INT NOT NULL UNIQUE, "
-		        + "hi_absolute DOUBLE DEFAULT NULL, " + "hi_critical DOUBLE DEFAULT NULL, "
-		        + "hi_normal DOUBLE DEFAULT NULL, " + "low_absolute DOUBLE DEFAULT NULL, "
-		        + "low_critical DOUBLE DEFAULT NULL, " + "low_normal DOUBLE DEFAULT NULL, " + "uuid CHAR(38) UNIQUE" + ")")
-		        .execute();
-
-		// Hibernate's @MapsId on ObsReferenceRange causes it to omit obs_reference_range_id from DDL.
-		// However, it exists in Liquibase and MySQL, and our archiving SQL queries expect it.
-		try {
-			getConnection()
-			        .prepareStatement(
-			            "ALTER TABLE obs_reference_range ADD COLUMN IF NOT EXISTS obs_reference_range_id INT AUTO_INCREMENT")
-			        .execute();
-		} catch (Exception e) {
-			// Ignore if table doesn't exist yet
-		}
-
 		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the
 		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from
 		//person.creator column, historically this was to allow inserting the very first row. Ideally, this should not

@@ -38,8 +38,6 @@
 	<bean id="personNameGlobalPropertyListener" class="org.openmrs.api.impl.PersonNameGlobalPropertyListener"/>
 	<bean id="loggingConfigurationGlobalPropertyListener"
 		  class="org.openmrs.logging.LoggingConfigurationGlobalPropertyListener"/>
-	<bean id="obsArchiveCronPropertyListener"
-		  class="org.openmrs.scheduler.tasks.ObsArchiveCronPropertyListener"/>
 
 	<bean id="openmrsEventListeners" class="org.openmrs.api.EventListeners" depends-on="clearOpenmrsEventListeners">
 		<property name="globalPropertyListeners">
@@ -52,7 +50,6 @@
 				<ref bean="globalLocaleList"/>
 				<ref bean="adminService"/>
 				<ref bean="orderService"/>
-				<ref bean="obsArchiveCronPropertyListener"/>
 			</list>
 		</property>
 	</bean>
