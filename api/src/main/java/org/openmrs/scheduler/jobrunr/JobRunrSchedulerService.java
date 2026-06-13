@@ -115,23 +115,6 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 				}
 			}
 		}
-		scheduleObservationArchivingTaskOnStartup();
-	}
-
-	private void scheduleObservationArchivingTaskOnStartup() {
-		String taskName = "Observation Archiving Job";
-
-		boolean isScheduled = getRecurringTasks().anyMatch(t -> t.getName() != null && t.getName().equals(taskName));
-
-		if (!isScheduled) {
-			String cron = Context.getAdministrationService().getGlobalProperty("obs.archive.cron", "0 0 * * *");
-			try {
-				scheduleRecurrently(taskName, new ObsArchivingTaskData(), cron);
-				log.info("Scheduled the Observation Archiving Job with cron: {}", cron);
-			} catch (Exception e) {
-				log.error("Failed to schedule the Observation Archiving Job", e);
-			}
-		}
 	}
 
 	@Override

@@ -9,20 +9,30 @@
  */
 package org.openmrs.scheduler.tasks;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+import org.openmrs.Obs;
+import org.openmrs.ObsArchive;
+import org.openmrs.ObsArchiveReferenceRange;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.TaskContext;
 import org.openmrs.scheduler.TaskHandler;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+/**
+ * Task handler for observation archiving using Hibernate Session and HQL.
+ */
 @Component
 public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData> {
 
@@ -32,39 +42,38 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 
 	private final PlatformTransactionManager transactionManager;
 
-	public ObsArchivingTaskHandler(SessionFactory sessionFactory,
-	    org.springframework.transaction.TransactionManager transactionManager) {
+	public ObsArchivingTaskHandler(SessionFactory sessionFactory, TransactionManager transactionManager) {
 		this.sessionFactory = sessionFactory;
 		this.transactionManager = (PlatformTransactionManager) transactionManager;
 	}
 
 	@Override
 	public void execute(ObsArchivingTaskData taskData, TaskContext taskContext) throws Exception {
-		boolean enabled = Boolean.parseBoolean(Context.getAdministrationService()
-		        .getGlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "false"));
+		boolean enabled = Boolean.parseBoolean(
+		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "false"));
 		if (!enabled) {
 			log.debug("Observation Archiving Job is paused.");
 			return;
 		}
 
-		int batchSize = Integer.parseInt(Context.getAdministrationService()
-		        .getGlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_BATCH_SIZE, "1000"));
-		int retentionDays = Integer.parseInt(Context.getAdministrationService()
-		        .getGlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_RETENTION_DAYS, "90"));
+		int batchSize = Integer.parseInt(
+		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_BATCH_SIZE, "1000"));
+		int retentionDays = Integer.parseInt(
+		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_RETENTION_DAYS, "90"));
 		long lastProcessedId = Long.parseLong(Context.getAdministrationService()
-		        .getGlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID, "-1"));
+		        .getGlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID, "-1"));
 
-		Timestamp cutoffDate = new Timestamp(System.currentTimeMillis() - (retentionDays * 24L * 3600 * 1000));
+		Date cutoffDate = new Date(System.currentTimeMillis() - (retentionDays * 24L * 3600 * 1000));
 
 		while (true) {
 			String enabledProperty = Context.getAdministrationService()
-			        .getGlobalProperty(org.openmrs.util.OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "false");
+			        .getGlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "false");
 			if (!Boolean.parseBoolean(enabledProperty)) {
 				log.debug("Observation Archiving Job paused during execution.");
 				break;
 			}
 
-			List<Long> batchIds = fetchNextBatch(lastProcessedId, cutoffDate, batchSize);
+			List<Integer> batchIds = fetchNextBatch(lastProcessedId, cutoffDate, batchSize);
 			if (batchIds.isEmpty()) {
 				saveLastProcessedId(-1);
 				log.debug("Observation Archiving Job completed a full sweep.");
@@ -84,22 +93,22 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 		}
 	}
 
-	private List<Long> fetchNextBatch(long lastProcessedId, Timestamp cutoffDate, int batchSize) {
+	private List<Integer> fetchNextBatch(long lastProcessedId, Date cutoffDate, int batchSize) {
 		Session session = sessionFactory.getCurrentSession();
-		org.hibernate.query.NativeQuery<Long> query;
+		Query<Integer> query;
 		if (lastProcessedId == -1) {
-			query = session.createNativeQuery(
-			    "SELECT obs_id FROM obs WHERE voided = :voided AND date_voided < :cutoffDate ORDER BY obs_id DESC",
-			    Long.class);
+			query = session.createQuery(
+			    "SELECT o.obsId FROM Obs o WHERE o.voided = :voided AND o.dateVoided < :cutoffDate ORDER BY o.obsId DESC",
+			    Integer.class);
 		} else {
-			query = session.createNativeQuery(
-			    "SELECT obs_id FROM obs WHERE voided = :voided AND date_voided < :cutoffDate AND obs_id < :lastProcessedId ORDER BY obs_id DESC",
-			    Long.class).setParameter("lastProcessedId", lastProcessedId);
+			query = session.createQuery(
+			    "SELECT o.obsId FROM Obs o WHERE o.voided = :voided AND o.dateVoided < :cutoffDate AND o.obsId < :lastProcessedId ORDER BY o.obsId DESC",
+			    Integer.class).setParameter("lastProcessedId", (int) lastProcessedId);
 		}
 		return query.setParameter("voided", true).setParameter("cutoffDate", cutoffDate).setMaxResults(batchSize).list();
 	}
 
-	private void archiveAndDeleteBatch(List<Long> batchIds) {
+	private void archiveAndDeleteBatch(List<Integer> batchIds) {
 		if (batchIds.isEmpty()) {
 			return;
 		}
@@ -107,33 +116,109 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 		new TransactionTemplate(transactionManager).execute(status -> {
 			Session session = sessionFactory.getCurrentSession();
 
-			// 1. Archive reference ranges
-			session.createNativeQuery(
-			    "INSERT INTO obs_archive_reference_range (obs_reference_range_id, obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, low_critical, low_normal, uuid) "
-			            + "SELECT obs_reference_range_id, obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, low_critical, low_normal, uuid "
-			            + "FROM obs_reference_range WHERE obs_id IN (:batchIds)")
-			        .setParameter("batchIds", batchIds).executeUpdate();
+			List<Obs> obsList = session
+			        .createQuery("FROM Obs o LEFT JOIN FETCH o.referenceRange WHERE o.obsId IN (:batchIds)", Obs.class)
+			        .setParameter("batchIds", batchIds).list();
 
-			// 2. Delete reference ranges
-			session.createNativeQuery("DELETE FROM obs_reference_range WHERE obs_id IN (:batchIds)")
-			        .setParameter("batchIds", batchIds).executeUpdate();
+			List<Integer> idsToProcess = new java.util.ArrayList<>();
+			for (Obs obs : obsList) {
+				if (obs.hasGroupMembers(true)) {
+					Number activeChildrenCount = (Number) session.createQuery(
+					    "SELECT count(c) FROM Obs c WHERE c.obsGroup.obsId = :parentId AND c.obsId NOT IN (:batchIds)")
+					        .setParameter("parentId", obs.getObsId()).setParameter("batchIds", batchIds).uniqueResult();
+					if (activeChildrenCount != null && activeChildrenCount.intValue() > 0) {
+						log.debug("Skipping parent obs {} because it still has active children in the obs table",
+						    obs.getObsId());
+						continue;
+					}
+				}
+				idsToProcess.add(obs.getObsId());
+			}
 
-			// 3. Archive obs
-			session.createNativeQuery(
-			    "INSERT INTO obs_archive (obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, form_namespace_and_path, status, interpretation) "
-			            + "SELECT obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, form_namespace_and_path, status, interpretation "
-			            + "FROM obs WHERE obs_id IN (:batchIds)")
-			        .setParameter("batchIds", batchIds).executeUpdate();
+			if (idsToProcess.isEmpty()) {
+				return null;
+			}
 
-			// 4. Delete obs
-			session.createNativeQuery("DELETE FROM obs WHERE obs_id IN (:batchIds)").setParameter("batchIds", batchIds)
-			        .executeUpdate();
+			idsToProcess.sort(java.util.Comparator.reverseOrder());
+
+			for (Integer obsId : idsToProcess) {
+				Obs obs = session.get(Obs.class, obsId);
+				if (obs == null) {
+					continue;
+				}
+
+				ObsArchive archive = new ObsArchive();
+				archive.setObsId(obs.getObsId());
+				archive.setPerson(obs.getPerson());
+				archive.setConcept(obs.getConcept());
+				archive.setEncounter(obs.getEncounter());
+				archive.setOrder(obs.getOrder());
+				archive.setObsDatetime(obs.getObsDatetime());
+				archive.setLocation(obs.getLocation());
+				if (obs.getObsGroup() != null) {
+					archive.setObsGroupId(obs.getObsGroup().getObsId());
+				}
+				archive.setAccessionNumber(obs.getAccessionNumber());
+				archive.setValueGroupId(obs.getValueGroupId());
+				archive.setValueCoded(obs.getValueCoded());
+				archive.setValueCodedName(obs.getValueCodedName());
+				archive.setValueDrug(obs.getValueDrug());
+				archive.setValueDatetime(obs.getValueDatetime());
+				archive.setValueNumeric(obs.getValueNumeric());
+				archive.setValueModifier(obs.getValueModifier());
+				archive.setValueText(obs.getValueText());
+				archive.setValueComplex(obs.getValueComplex());
+				archive.setComments(obs.getComment());
+
+				archive.setCreator(obs.getCreator());
+				archive.setDateCreated(obs.getDateCreated());
+				archive.setChangedBy(obs.getChangedBy());
+				archive.setDateChanged(obs.getDateChanged());
+				archive.setVoided(obs.getVoided());
+				archive.setVoidedBy(obs.getVoidedBy());
+				archive.setDateVoided(obs.getDateVoided());
+				archive.setVoidReason(obs.getVoidReason());
+				archive.setUuid(obs.getUuid());
+
+				if (obs.getPreviousVersion() != null) {
+					archive.setPreviousVersionId(obs.getPreviousVersion().getObsId());
+				} else if (obs.getPreviousVersionId() != null) {
+					archive.setPreviousVersionId(obs.getPreviousVersionId());
+				}
+				archive.setStatus(obs.getStatus());
+				archive.setInterpretation(obs.getInterpretation());
+
+				if (obs.getReferenceRange() != null) {
+					ObsArchiveReferenceRange range = new ObsArchiveReferenceRange();
+					range.setObsReferenceRangeId(obs.getReferenceRange().getObsReferenceRangeId());
+					range.setHiAbsolute(obs.getReferenceRange().getHiAbsolute());
+					range.setHiCritical(obs.getReferenceRange().getHiCritical());
+					range.setHiNormal(obs.getReferenceRange().getHiNormal());
+					range.setLowAbsolute(obs.getReferenceRange().getLowAbsolute());
+					range.setLowCritical(obs.getReferenceRange().getLowCritical());
+					range.setLowNormal(obs.getReferenceRange().getLowNormal());
+					range.setUuid(obs.getReferenceRange().getUuid());
+					range.setObsArchive(archive);
+					archive.setReferenceRange(range);
+				}
+
+				archive.setArchivedBy(Context.getAuthenticatedUser());
+				archive.setDateArchived(new Date());
+
+				session.persist(archive);
+
+				if (obs.getReferenceRange() != null) {
+					session.remove(obs.getReferenceRange());
+				}
+				session.remove(obs);
+			}
+
 			return null;
 		});
 	}
 
-	private void handleBatchFailure(List<Long> batchIds) {
-		for (Long obsId : batchIds) {
+	private void handleBatchFailure(List<Integer> batchIds) {
+		for (Integer obsId : batchIds) {
 			try {
 				archiveAndDeleteBatch(List.of(obsId));
 			} catch (Exception e) {
@@ -144,11 +229,11 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 
 	private void saveLastProcessedId(long lastProcessedId) {
 		try {
-			Context.addProxyPrivilege(org.openmrs.util.PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			Context.getAdministrationService().setGlobalProperty("obs.archive.last_processed_obs_id",
 			    String.valueOf(lastProcessedId));
 		} finally {
-			Context.removeProxyPrivilege(org.openmrs.util.PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 		}
 	}
 }

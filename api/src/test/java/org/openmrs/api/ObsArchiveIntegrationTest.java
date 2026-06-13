@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import javax.sql.DataSource;
 
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,10 +23,12 @@ import org.openmrs.scheduler.tasks.ObsArchivingTaskHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.TransactionManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -43,10 +46,10 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 	private DataSource dataSource;
 
 	@Autowired
-	private org.springframework.transaction.TransactionManager transactionManager;
+	private TransactionManager transactionManager;
 
 	@Autowired
-	private org.hibernate.SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 
 	private JdbcTemplate jdbcTemplate;
 
@@ -61,13 +64,29 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		} catch (Exception e) {
 			// Tables may not exist yet on first run
 		}
+
+		// Drop Hibernate-created foreign key on previous_version in H2
 		try {
-			// Hibernate omits this column due to @MapsId, but archiving query expects it
-			jdbcTemplate.execute(
-			    "ALTER TABLE obs_reference_range ADD COLUMN IF NOT EXISTS obs_reference_range_id INT AUTO_INCREMENT");
+			java.util.List<String> constraints = jdbcTemplate
+			        .queryForList(
+			            "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE "
+			                    + "WHERE UPPER(TABLE_NAME) = 'OBS' AND UPPER(COLUMN_NAME) = 'PREVIOUS_VERSION'",
+			            String.class);
+			for (String constraint : constraints) {
+				try {
+					jdbcTemplate.execute("ALTER TABLE obs DROP CONSTRAINT " + constraint);
+				} catch (Exception e) {
+					// Ignore
+				}
+			}
 		} catch (Exception e) {
-			// Ignore
+			try {
+				jdbcTemplate.execute("ALTER TABLE obs DROP CONSTRAINT IF EXISTS FKRDYF6DEFJW3MNOX499SIXH4LK");
+			} catch (Exception ex) {
+				// Ignore
+			}
 		}
+
 		adminService.saveGlobalProperty(new GlobalProperty("obs.archive.enabled", "true"));
 		adminService.saveGlobalProperty(new GlobalProperty("obs.archive.retention_days", "-1"));
 		adminService.saveGlobalProperty(new GlobalProperty("obs.archive.last_processed_obs_id", "-1"));
@@ -87,9 +106,10 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			            + "obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, "
 			            + "value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, "
 			            + "date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, "
-			            + "form_namespace_and_path, status, interpretation FROM obs_archive");
-			jdbcTemplate.execute("DELETE FROM obs_archive");
+			            + "form_namespace_and_path, status, interpretation FROM obs_archive a "
+			            + "WHERE NOT EXISTS (SELECT 1 FROM obs o WHERE o.obs_id = a.obs_id)");
 			jdbcTemplate.execute("DELETE FROM obs_archive_reference_range");
+			jdbcTemplate.execute("DELETE FROM obs_archive");
 		} catch (Exception e) {
 			// Best-effort cleanup
 		}
@@ -97,7 +117,9 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		if (testObsId != null) {
 			try {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", testObsId);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", testObsId);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", testObsId);
+				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", testObsId);
 			} catch (Exception e) {
 				// Best-effort cleanup
 			}
@@ -279,14 +301,17 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class, id2));
 			assertEquals(1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class, id3));
 
-			// 3. Verify active obs3's previousVersion (obs2) is still transparently accessible and not null
+			// 3. Verify active obs3's previousVersion (obs2) proxy resolves to null since it's archived
 			Context.clearSession();
 			Obs activeObs3 = obsService.getObs(id3);
 			assertNotNull(activeObs3);
 			Obs prevOfObs3 = activeObs3.getPreviousVersion();
-			assertNotNull(prevOfObs3, "Previous version should be transparently fetched from archive");
-			assertEquals(id2, prevOfObs3.getObsId());
-			assertTrue(prevOfObs3.getVoided());
+			assertNull(prevOfObs3, "Previous version should not be transparently fetched from archive anymore");
+
+			Obs fetchedPrev = obsService.getObs(activeObs3.getPreviousVersionId());
+			assertNotNull(fetchedPrev);
+			assertEquals(id2, fetchedPrev.getObsId());
+			assertTrue(fetchedPrev.getVoided());
 
 			// 4. Unvoid obs2 (the previous version of obs3)
 			Context.clearSession();
@@ -306,33 +331,42 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			    jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = ?", Integer.class, id1));
 			assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class, id1));
 
-			// 7. Verify obs2's previousVersion (obs1) is still transparently accessible and not null
+			// 7. Verify obs2's previousVersion (obs1) proxy resolves to null since it's archived
 			Obs restoredObs2 = obsService.getObs(id2);
 			assertNotNull(restoredObs2);
 			assertFalse(restoredObs2.getVoided());
 			Obs prevOfObs2 = restoredObs2.getPreviousVersion();
-			assertNotNull(prevOfObs2, "Previous version of restored obs should be transparently fetched from archive");
-			assertEquals(id1, prevOfObs2.getObsId());
-			assertTrue(prevOfObs2.getVoided());
+			assertNull(prevOfObs2, "Previous version of restored obs should not be transparently fetched from archive");
+
+			Obs fetchedPrevOfObs2 = obsService.getObs(restoredObs2.getPreviousVersionId());
+			assertNotNull(fetchedPrevOfObs2);
+			assertEquals(id1, fetchedPrevOfObs2.getObsId());
+			assertTrue(fetchedPrevOfObs2.getVoided());
 		} finally {
 			// Clean up database rows created by this test (guaranteed to execute even on assertion failure)
-			if (id1 != null) {
-				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", id1);
-				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", id1);
-				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", id1);
-				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", id1);
+			if (id3 != null) {
+				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", id3);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", id3);
 			}
 			if (id2 != null) {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", id2);
 				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", id2);
+			}
+			if (id1 != null) {
+				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", id1);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", id1);
+			}
+			if (id3 != null) {
+				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", id3);
+				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", id3);
+			}
+			if (id2 != null) {
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", id2);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", id2);
 			}
-			if (id3 != null) {
-				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", id3);
-				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", id3);
-				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", id3);
-				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", id3);
+			if (id1 != null) {
+				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", id1);
+				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", id1);
 			}
 		}
 	}
@@ -412,11 +446,13 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		} finally {
 			if (childId != null) {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", childId);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", childId);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", childId);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", childId);
 			}
 			if (parentId != null) {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", parentId);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", parentId);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", parentId);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", parentId);
 			}
@@ -496,11 +532,13 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		} finally {
 			if (childId != null) {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", childId);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", childId);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", childId);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", childId);
 			}
 			if (parentId != null) {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", parentId);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", parentId);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", parentId);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", parentId);
 			}
@@ -614,16 +652,19 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		} finally {
 			if (child1Id != null) {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", child1Id);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", child1Id);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", child1Id);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", child1Id);
 			}
 			if (child2Id != null) {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", child2Id);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", child2Id);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", child2Id);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", child2Id);
 			}
 			if (parentId != null) {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", parentId);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", parentId);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", parentId);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", parentId);
 			}
@@ -737,19 +778,64 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 
 			if (child1Id != null) {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", child1Id);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", child1Id);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", child1Id);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", child1Id);
 			}
 			if (child2Id != null) {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", child2Id);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", child2Id);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", child2Id);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", child2Id);
 			}
 			if (parentId != null) {
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", parentId);
+				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", parentId);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", parentId);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", parentId);
 			}
 		}
+	}
+
+	@Test
+	public void archiveAndRestore_shouldExecuteWithoutErrors() throws Exception {
+		// Create a brand new observation via service API
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(7));
+		obs.setConcept(Context.getConceptService().getConcept(5089));
+		obs.setValueNumeric(50.0);
+		obs.setObsDatetime(new java.util.Date());
+		obs.setLocation(Context.getLocationService().getLocation(1));
+		obs = obsService.saveObs(obs, "initial save");
+		testObsId = obs.getObsId();
+
+		// Void the observation
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		// Run archiving
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		// Verify columns are archived in DB table
+		Integer archiveCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = ?",
+		    Integer.class, testObsId);
+		assertEquals(1, archiveCount, "Obs should be archived");
+
+		// Verify transparent retrieval via service
+		Context.clearSession();
+		Obs archivedObs = obsService.getObs(testObsId);
+		assertNotNull(archivedObs);
+
+		// Unvoid the observation to trigger restore
+		obsService.unvoidObs(archivedObs);
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify restored columns in active table and entity
+		Integer activeCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class,
+		    testObsId);
+		assertEquals(1, activeCount, "Obs should be restored");
 	}
 }

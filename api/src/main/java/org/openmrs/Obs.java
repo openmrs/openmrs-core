@@ -1196,13 +1196,12 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 */
 	public Obs getPreviousVersion() {
 		if (previousVersion != null) {
-			return previousVersion;
-		}
-		if (previousVersionId != null) {
 			try {
-				return org.openmrs.api.context.Context.getObsService().getObs(previousVersionId);
+				previousVersion.getUuid();
+				return previousVersion;
 			} catch (Exception e) {
-				// Ignore if context is not initialized
+				// Proxy refers to an archived/deleted row, clear proxy
+				this.previousVersion = null;
 			}
 		}
 		return null;
@@ -1216,11 +1215,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	public void setPreviousVersion(Obs previousVersion) {
 		markAsDirty(this.previousVersion, previousVersion);
 		this.previousVersion = previousVersion;
-		if (previousVersion != null) {
-			this.previousVersionId = previousVersion.getObsId();
-		} else if (this.previousVersion != null) {
-			this.previousVersionId = null;
-		}
+		this.previousVersionId = (previousVersion == null) ? null : previousVersion.getObsId();
 	}
 
 	public Integer getPreviousVersionId() {
