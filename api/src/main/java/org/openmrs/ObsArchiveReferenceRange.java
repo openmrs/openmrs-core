@@ -17,13 +17,9 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
-
 /**
  * Entity representing archived observation reference ranges.
  */
-@Audited
 @Entity
 @Table(name = "obs_archive_reference_range")
 public class ObsArchiveReferenceRange extends BaseReferenceRange {
@@ -37,7 +33,6 @@ public class ObsArchiveReferenceRange extends BaseReferenceRange {
 	@OneToOne
 	@MapsId
 	@JoinColumn(name = "obs_id", referencedColumnName = "obs_id", unique = true)
-	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	private ObsArchive obsArchive;
 
 	public ObsArchiveReferenceRange() {

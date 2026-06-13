@@ -226,32 +226,6 @@
 		<createIndex indexName="idx_obs_archive_uuid" tableName="obs_archive">
 			<column name="uuid"/>
 		</createIndex>
-
-
-		<insert tableName="global_property">
-			<column name="property" value="obs.archive.enabled"/>
-			<column name="property_value" value="false"/>
-			<column name="description" value="Controls whether the background archival process is active."/>
-			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702341"/>
-		</insert>
-		<insert tableName="global_property">
-			<column name="property" value="obs.archive.batch_size"/>
-			<column name="property_value" value="1000"/>
-			<column name="description" value="The number of rows processed in a single database transaction."/>
-			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702342"/>
-		</insert>
-		<insert tableName="global_property">
-			<column name="property" value="obs.archive.retention_days"/>
-			<column name="property_value" value="90"/>
-			<column name="description" value="The minimum age (in days) since an observation was voided before it is eligible for archival."/>
-			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702343"/>
-		</insert>
-		<insert tableName="global_property">
-			<column name="property" value="obs.archive.last_processed_obs_id"/>
-			<column name="property_value" value="-1"/>
-			<column name="description" value="The persistent checkpoint indicating the lowest obs_id processed in the current sweep."/>
-			<column name="uuid" value="d979d066-15e6-467c-9d4b-cb575ef88888"/>
-		</insert>
 	</changeSet>
 
 	<changeSet id="TRUNK-6649-register-archiving-task" author="shivvani-r">
