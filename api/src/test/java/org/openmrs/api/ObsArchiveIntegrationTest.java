@@ -25,6 +25,7 @@ import org.openmrs.scheduler.tasks.ObsArchivingTaskData;
 import org.openmrs.scheduler.tasks.ObsArchivingTaskHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.TransactionManager;
 
@@ -67,30 +68,8 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		try {
 			jdbcTemplate.execute("DELETE FROM obs_archive");
 			jdbcTemplate.execute("DELETE FROM obs_archive_reference_range");
-		} catch (Exception e) {
+		} catch (DataAccessException e) {
 			// Tables may not exist yet on first run
-		}
-
-		// Drop Hibernate-created foreign key on previous_version in H2
-		try {
-			java.util.List<String> constraints = jdbcTemplate
-			        .queryForList(
-			            "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE "
-			                    + "WHERE UPPER(TABLE_NAME) = 'OBS' AND UPPER(COLUMN_NAME) = 'PREVIOUS_VERSION'",
-			            String.class);
-			for (String constraint : constraints) {
-				try {
-					jdbcTemplate.execute("ALTER TABLE obs DROP CONSTRAINT " + constraint);
-				} catch (Exception e) {
-					// Ignore
-				}
-			}
-		} catch (Exception e) {
-			try {
-				jdbcTemplate.execute("ALTER TABLE obs DROP CONSTRAINT IF EXISTS FKRDYF6DEFJW3MNOX499SIXH4LK");
-			} catch (Exception ex) {
-				// Ignore
-			}
 		}
 
 		adminService.saveGlobalProperty(new GlobalProperty("obs.archive.enabled", "true"));
@@ -173,7 +152,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			            + "WHERE NOT EXISTS (SELECT 1 FROM obs o WHERE o.obs_id = a.obs_id)");
 			jdbcTemplate.execute("DELETE FROM obs_archive_reference_range");
 			jdbcTemplate.execute("DELETE FROM obs_archive");
-		} catch (Exception e) {
+		} catch (DataAccessException e) {
 			// Best-effort cleanup
 		}
 
@@ -181,7 +160,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			try {
 				jdbcTemplate.update("UPDATE obs SET obs_group_id = NULL WHERE obs_group_id = ?", id);
 				jdbcTemplate.update("UPDATE obs SET previous_version = NULL WHERE previous_version = ?", id);
-			} catch (Exception e) {
+			} catch (DataAccessException e) {
 				// Best-effort cleanup
 			}
 		}
@@ -192,7 +171,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", id);
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", id);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", id);
-			} catch (Exception e) {
+			} catch (DataAccessException e) {
 				// Best-effort cleanup
 			}
 		}

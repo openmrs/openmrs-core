@@ -69,6 +69,8 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	private static final Logger log = LoggerFactory.getLogger(JobRunrSchedulerService.class);
 
+	private static final String DAEMON_USER_SYSTEM_ID = "daemon";
+
 	private JobRequestScheduler jobRequestScheduler;
 
 	private JobScheduler jobScheduler;
@@ -146,7 +148,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 				if (name == null) {
 					name = task.getTaskClass();
 				}
-				String scheduledBy = task.getCreator() != null ? task.getCreator().getSystemId() : "daemon";
+				String scheduledBy = getValidCreatorSystemId(task);
 
 				if (task.getRepeatInterval() != null && task.getRepeatInterval() > 0) {
 					if (task.getStartTime() == null) {
@@ -195,7 +197,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	public void scheduleRecurrently(String uuid) {
 		TaskDefinition task = getTaskByUuid(uuid);
 		if (task != null) {
-			String scheduledBy = task.getCreator() != null ? task.getCreator().getSystemId() : "daemon";
+			String scheduledBy = getValidCreatorSystemId(task);
 			String jobId = jobRequestScheduler.scheduleRecurrently(task.getUuid(),
 			    Duration.ofSeconds(task.getRepeatInterval()), new JobRequestAdapter(task, scheduledBy));
 			updateRecurringJobWithName(jobId, task.getName());
@@ -591,5 +593,13 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	private String getScheduledBySystemId() {
 		User user = Context.getAuthenticatedUser();
 		return user != null ? user.getSystemId() : "daemon";
+	}
+
+	private String getValidCreatorSystemId(TaskDefinition taskDefinition) {
+		if (taskDefinition.getCreator() != null && !Boolean.TRUE.equals(taskDefinition.getCreator().isRetired())
+		        && taskDefinition.getCreator().getSystemId() != null) {
+			return taskDefinition.getCreator().getSystemId();
+		}
+		return DAEMON_USER_SYSTEM_ID;
 	}
 }
