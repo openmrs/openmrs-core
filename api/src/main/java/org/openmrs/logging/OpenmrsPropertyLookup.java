@@ -13,11 +13,13 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.lookup.AbstractLookup;
 import org.apache.logging.log4j.core.lookup.StrLookup;
-import org.openmrs.api.AdministrationService;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * This class exposes a subset of OpenMRS properties to the log4j context configuration. This is
@@ -36,7 +38,8 @@ import org.openmrs.util.OpenmrsUtil;
  * <dd>The current value for the <tt>log.layout</tt> setting</dd>
  * </dl>
  * <p/>
- * Care should be taken in exposing information through this class to ensure that no
+ * Care should be taken in exposing information through this class to ensure that no secrets are
+ * leaked or properties that expose potentially unsafe operations based on user input.
  */
 @Plugin(name = OpenmrsPropertyLookup.NAME, category = StrLookup.CATEGORY)
 @SuppressWarnings("unused")
@@ -46,45 +49,54 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 
 	@Override
 	public String lookup(LogEvent event, String key) {
-		AdministrationService adminService = null;
-
-		try {
-			adminService = Context.getAdministrationService();
-		} catch (ServiceNotFoundException ignored) {
-
-		}
-
 		switch (key) {
 			case "applicationDirectory":
 				final String applicationDirectory = OpenmrsUtil.getApplicationDataDirectory();
 				return applicationDirectory == null || applicationDirectory.isEmpty() ? null : applicationDirectory;
 			case "logLocation":
-				final String logLocation = getGlobalProperty(adminService, OpenmrsConstants.GP_LOG_LOCATION);
+				final String logLocation = getProperty(OpenmrsConstants.GP_LOG_LOCATION);
 				return logLocation == null ? null
 				        : logLocation.endsWith("/") ? logLocation.substring(0, logLocation.length() - 1) : logLocation;
 			case "logLayout":
-				return getGlobalProperty(adminService, OpenmrsConstants.GP_LOG_LAYOUT);
+				return getProperty(OpenmrsConstants.GP_LOG_LAYOUT);
 			default:
-				throw new IllegalArgumentException(key);
+				StatusLogger.getLogger().error(
+				    "{} is not a supported property. We support openmrs:applicationDirectory, openmrs:logLocation, and openmrs:logLayout",
+				    key);
+				return null;
 		}
 	}
 
-	private String getGlobalProperty(AdministrationService adminService, String globalPropertyName) {
-		if (adminService == null) {
-			return null;
-		}
-
-		String value = adminService.getGlobalProperty(globalPropertyName);
+	private String getProperty(String propertyName) {
+		String value = ConfigUtil.getSystemProperty(propertyName);
 		if (value == null) {
-			return null;
-		} else {
-			value = value.trim();
+			value = ConfigUtil.getRuntimeProperty(propertyName);
 		}
 
-		if (value.isEmpty()) {
-			return null;
+		if (value == null && Context.isSessionOpen()) {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			try {
+				value = ConfigUtil.getGlobalProperty(propertyName);
+			} catch (ServiceNotFoundException e) {
+				StatusLogger.getLogger().error("An exception was thrown while trying to get the \"{}\" global property",
+				    propertyName, e);
+				return null;
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			}
 		}
 
-		return value;
+		if (value == null || value.trim().isEmpty()) {
+			return getPropertyDefault(propertyName);
+		}
+
+		return value.trim();
+	}
+
+	private static String getPropertyDefault(String propertyName) {
+		if (OpenmrsConstants.GP_LOG_LAYOUT.equals(propertyName)) {
+			return OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN;
+		}
+		return null;
 	}
 }
