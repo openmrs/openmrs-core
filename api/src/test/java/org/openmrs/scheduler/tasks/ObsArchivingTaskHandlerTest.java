@@ -19,12 +19,14 @@ import org.openmrs.Obs;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.ObsArchiveHelper;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,6 +42,9 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 
 	@Autowired
 	private ObsArchivingTaskHandler handler;
+
+	@Autowired
+	private ObsArchiveHelper obsArchiveHelper;
 
 	@Autowired
 	private ObsService obsService;
@@ -115,6 +120,18 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		}
 	}
 
+	private void assertArchived(int obsId) {
+		assertTrue(obsArchiveHelper.isArchived(obsId), "obs " + obsId + " should be in archive");
+		assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class, obsId),
+		    "obs " + obsId + " should NOT be in active table");
+	}
+
+	private void assertActive(int obsId) {
+		assertFalse(obsArchiveHelper.isArchived(obsId), "obs " + obsId + " should NOT be in archive");
+		assertEquals(1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class, obsId),
+		    "obs " + obsId + " should be in active table");
+	}
+
 	@Test
 	public void execute_shouldArchiveVoidedObservations() throws Exception {
 		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "true"));
@@ -129,12 +146,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		handler.execute(new ObsArchivingTaskData(), null);
 
 		// Verify it was archived
-		Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 7", Integer.class);
-		assertEquals(1, count);
-
-		// Verify it was deleted from obs
-		count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = 7", Integer.class);
-		assertEquals(0, count);
+		assertArchived(7);
 
 		// Verify transparent retrieval still works
 		Context.clearSession();
@@ -180,9 +192,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 
 		handler.execute(new ObsArchivingTaskData(), null);
 
-		Integer countArchive = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 7",
-		    Integer.class);
-		assertEquals(0, countArchive);
+		assertActive(7);
 	}
 
 	@Test
@@ -199,9 +209,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		handler.execute(new ObsArchivingTaskData(), null);
 
 		// Verify it was NOT archived because it was voided today (within 90 days)
-		Integer countArchive = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 7",
-		    Integer.class);
-		assertEquals(0, countArchive);
+		assertActive(7);
 
 		// Now backdate the void date to 100 days ago
 		java.util.Date pastDate = new java.util.Date(System.currentTimeMillis() - (100L * 24L * 3600L * 1000L));
@@ -210,8 +218,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		handler.execute(new ObsArchivingTaskData(), null);
 
 		// Verify it IS archived now
-		countArchive = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 7", Integer.class);
-		assertEquals(1, countArchive);
+		assertArchived(7);
 	}
 
 	@Test
@@ -232,8 +239,8 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		handler.execute(new ObsArchivingTaskData(), null);
 
 		// Only 7 should be archived
-		assertEquals(1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 7", Integer.class));
-		assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 9", Integer.class));
+		assertArchived(7);
+		assertActive(9);
 	}
 
 	@Test
@@ -256,8 +263,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		handler.execute(new ObsArchivingTaskData(), null);
 
 		// Verify 7 was successfully archived
-		assertEquals(1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = 7", Integer.class));
-		assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = 7", Integer.class));
+		assertArchived(7);
 
 		// Verify 9 was left in the active table (and the dummy row remains in archive)
 		assertEquals(1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = 9", Integer.class));
