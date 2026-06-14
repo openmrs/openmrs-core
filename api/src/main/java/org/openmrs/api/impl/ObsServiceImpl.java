@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -139,10 +140,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	}
 
 	private Obs restoreAndUnvoidFromArchive(Obs obs, boolean isSaveOperation) {
-		java.util.Date originalDateVoided = null;
+		Date originalDateVoided = null;
 
 		if (!isSaveOperation) {
-			java.util.Map<String, Object> metadata = getArchiveHelper().getArchivedMetadata(obs.getObsId());
+			Map<String, Object> metadata = getArchiveHelper().getArchivedMetadata(obs.getObsId());
 			if (metadata != null) {
 				originalDateVoided = (Date) metadata.get("date_voided");
 			}
@@ -183,7 +184,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	}
 
 	private void unvoidArchivedChildren(Obs obs, java.util.Date originalDateVoided) {
-		java.util.Set<Obs> members = new java.util.LinkedHashSet<>(obs.getGroupMembers(true));
+		Set<Obs> members = new java.util.LinkedHashSet<>(obs.getGroupMembers(true));
 		for (Obs child : members) {
 			boolean datesMatch = (child.getDateVoided() == null && originalDateVoided == null)
 			        || (child.getDateVoided() != null && originalDateVoided != null
@@ -719,14 +720,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		}
 
 		return handlers;
-	}
-
-	private CustomDatatypeUtil getCustomDatatypeUtil() {
-		if (customDatatypeUtil == null) {
-			customDatatypeUtil = Context.getRegisteredComponent("customDatatypeUtil",
-			    org.openmrs.customdatatype.CustomDatatypeUtil.class);
-		}
-		return customDatatypeUtil;
 	}
 
 	private ObsArchiveHelper getArchiveHelper() {

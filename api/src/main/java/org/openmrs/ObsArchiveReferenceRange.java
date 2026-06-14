@@ -36,6 +36,7 @@ public class ObsArchiveReferenceRange extends BaseReferenceRange {
 	private ObsArchive obsArchive;
 
 	public ObsArchiveReferenceRange() {
+		// required by Hibernate
 	}
 
 	public Integer getObsReferenceRangeId() {

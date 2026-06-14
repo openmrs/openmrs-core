@@ -25,8 +25,10 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -84,7 +86,7 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 				archiveAndDeleteBatch(batchIds);
 				lastProcessedId = batchIds.get(batchIds.size() - 1);
 				saveLastProcessedId(lastProcessedId);
-			} catch (Exception e) {
+			} catch (DataAccessException | TransactionException e) {
 				log.warn("Batch failed, falling back to row-by-row archiving for batch starting at {}", lastProcessedId, e);
 				handleBatchFailure(batchIds);
 				lastProcessedId = batchIds.get(batchIds.size() - 1);
@@ -169,6 +171,7 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 				archive.setValueText(obs.getValueText());
 				archive.setValueComplex(obs.getValueComplex());
 				archive.setComments(obs.getComment());
+				archive.setFormNamespaceAndPath(obs.getFormNamespaceAndPath());
 
 				archive.setCreator(obs.getCreator());
 				archive.setDateCreated(obs.getDateCreated());
@@ -221,7 +224,7 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 		for (Integer obsId : batchIds) {
 			try {
 				archiveAndDeleteBatch(List.of(obsId));
-			} catch (Exception e) {
+			} catch (DataAccessException | TransactionException e) {
 				log.warn("Skipping observation {} due to constraint violation during archiving.", obsId, e);
 			}
 		}
@@ -230,7 +233,7 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 	private void saveLastProcessedId(long lastProcessedId) {
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-			Context.getAdministrationService().setGlobalProperty("obs.archive.last_processed_obs_id",
+			Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID,
 			    String.valueOf(lastProcessedId));
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
