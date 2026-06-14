@@ -101,9 +101,6 @@ public class ObsArchive extends BaseFormRecordableOpenmrsData {
 	@Column(name = "previous_version")
 	private Integer previousVersionId;
 
-	@Column(name = "form_namespace_and_path")
-	private String formNamespaceAndPath;
-
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private Obs.Status status = Obs.Status.FINAL;
@@ -123,6 +120,7 @@ public class ObsArchive extends BaseFormRecordableOpenmrsData {
 	private Date dateArchived;
 
 	public ObsArchive() {
+		// required by Hibernate
 	}
 
 	public Integer getObsId() {
@@ -293,14 +291,6 @@ public class ObsArchive extends BaseFormRecordableOpenmrsData {
 
 	public void setPreviousVersionId(Integer previousVersionId) {
 		this.previousVersionId = previousVersionId;
-	}
-
-	public String getFormNamespaceAndPath() {
-		return formNamespaceAndPath;
-	}
-
-	public void setFormNamespaceAndPath(String formNamespaceAndPath) {
-		this.formNamespaceAndPath = formNamespaceAndPath;
 	}
 
 	public Obs.Status getStatus() {

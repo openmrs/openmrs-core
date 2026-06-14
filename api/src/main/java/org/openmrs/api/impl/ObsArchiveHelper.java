@@ -9,13 +9,16 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.hibernate.FlushMode;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.proxy.HibernateProxy;
@@ -23,10 +26,13 @@ import org.openmrs.Obs;
 import org.openmrs.ObsArchive;
 import org.openmrs.ObsReferenceRange;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 
 /**
  * Helper class for observation archiving operations using Hibernate Session and HQL.
@@ -34,6 +40,8 @@ import org.slf4j.LoggerFactory;
 public class ObsArchiveHelper {
 
 	private static final Logger log = LoggerFactory.getLogger(ObsArchiveHelper.class);
+
+	private static final String PARAM_OBS_ID = "obsId";
 
 	private final SessionFactory sessionFactory;
 
@@ -43,9 +51,9 @@ public class ObsArchiveHelper {
 
 	public boolean isArchivingEnabled() {
 		try {
-			String enabled = Context.getAdministrationService().getGlobalProperty("obs.archive.enabled");
+			String enabled = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED);
 			return Boolean.parseBoolean(enabled);
-		} catch (Exception e) {
+		} catch (APIException | HibernateException | DataAccessException e) {
 			return false;
 		}
 	}
@@ -58,29 +66,47 @@ public class ObsArchiveHelper {
 			return withManualFlush(() -> {
 				Session session = sessionFactory.getCurrentSession();
 				Number count = (Number) session.createQuery("SELECT count(a) FROM ObsArchive a WHERE a.obsId = :obsId")
-				        .setParameter("obsId", obsId).uniqueResult();
+				        .setParameter(PARAM_OBS_ID, obsId).uniqueResult();
 				return count != null && count.intValue() > 0;
 			});
-		} catch (Exception e) {
+		} catch (HibernateException e) {
 			log.warn("Failed to check if obs {} is archived. Assuming it is not.", obsId, e);
 			return false;
 		}
 	}
 
 	public boolean hasArchivedChildren(Integer obsId) {
-		if (obsId == null || !isArchivingEnabled()) {
+		if (obsId == null) {
 			return false;
 		}
 		try {
 			return withManualFlush(() -> {
 				Session session = sessionFactory.getCurrentSession();
 				Number count = (Number) session.createQuery("SELECT count(a) FROM ObsArchive a WHERE a.obsGroupId = :obsId")
-				        .setParameter("obsId", obsId).uniqueResult();
+				        .setParameter(PARAM_OBS_ID, obsId).uniqueResult();
 				return count != null && count.intValue() > 0;
 			});
-		} catch (Exception e) {
+		} catch (HibernateException e) {
 			log.warn("Failed to check if obs {} has archived children. Assuming it does not.", obsId, e);
 			return false;
+		}
+	}
+
+	public List<Obs> getArchivedObsByEncounterId(Integer encounterId) {
+		if (encounterId == null) {
+			return Collections.emptyList();
+		}
+		try {
+			return withManualFlush(() -> {
+				Session session = sessionFactory.getCurrentSession();
+				List<ObsArchive> archives = session
+				        .createQuery("FROM ObsArchive a WHERE a.encounter.encounterId = :encId", ObsArchive.class)
+				        .setParameter("encId", encounterId).list();
+				return archives.stream().map(this::convertToObs).collect(Collectors.toList());
+			});
+		} catch (HibernateException e) {
+			log.debug("Failed to get archived obs for encounter {}.", encounterId, e);
+			return Collections.emptyList();
 		}
 	}
 
@@ -94,7 +120,7 @@ public class ObsArchiveHelper {
 				ObsArchive archive = session.get(ObsArchive.class, obsId);
 				return convertToObs(archive);
 			});
-		} catch (Exception e) {
+		} catch (HibernateException e) {
 			log.debug("Failed to get obs {} from archive.", obsId, e);
 			return null;
 		}
@@ -111,7 +137,7 @@ public class ObsArchiveHelper {
 				        .setParameter("uuid", uuid).uniqueResult();
 				return convertToObs(archive);
 			});
-		} catch (Exception e) {
+		} catch (HibernateException e) {
 			log.debug("Failed to get obs by uuid {} from archive.", uuid, e);
 			return null;
 		}
@@ -119,16 +145,16 @@ public class ObsArchiveHelper {
 
 	public Map<String, Object> getArchivedMetadata(Integer obsId) {
 		if (obsId == null) {
-			return null;
+			return Collections.emptyMap();
 		}
 		try {
 			return withManualFlush(() -> {
 				Session session = sessionFactory.getCurrentSession();
 				Object[] result = (Object[]) session.createQuery(
 				    "SELECT a.obsGroupId, a.previousVersionId, a.dateVoided FROM ObsArchive a WHERE a.obsId = :obsId")
-				        .setParameter("obsId", obsId).uniqueResult();
+				        .setParameter(PARAM_OBS_ID, obsId).uniqueResult();
 				if (result == null) {
-					return null;
+					return Collections.emptyMap();
 				}
 				Map<String, Object> map = new HashMap<>();
 				map.put("obs_group_id", result[0]);
@@ -136,9 +162,9 @@ public class ObsArchiveHelper {
 				map.put("date_voided", result[2]);
 				return map;
 			});
-		} catch (Exception e) {
+		} catch (HibernateException e) {
 			log.debug("Failed to get metadata for archived obs {}.", obsId, e);
-			return null;
+			return Collections.emptyMap();
 		}
 	}
 
@@ -166,12 +192,12 @@ public class ObsArchiveHelper {
 			if (dateVoided != null) {
 				childIds = session.createQuery(
 				    "SELECT a.obsId FROM ObsArchive a WHERE a.obsGroupId = :obsId AND a.dateVoided = :dateVoided",
-				    Integer.class).setParameter("obsId", obsId).setParameter("dateVoided", dateVoided).list();
+				    Integer.class).setParameter(PARAM_OBS_ID, obsId).setParameter("dateVoided", dateVoided).list();
 			} else {
 				childIds = session
 				        .createQuery("SELECT a.obsId FROM ObsArchive a WHERE a.obsGroupId = :obsId AND a.dateVoided IS NULL",
 				            Integer.class)
-				        .setParameter("obsId", obsId).list();
+				        .setParameter(PARAM_OBS_ID, obsId).list();
 			}
 			for (Integer childId : childIds) {
 				restoreFromArchive(childId, true);
@@ -200,21 +226,21 @@ public class ObsArchiveHelper {
 		            + "value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, "
 		            + "date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, "
 		            + "form_namespace_and_path, status, interpretation FROM obs_archive WHERE obs_id = :obsId")
-		        .setParameter("obsId", obsId).executeUpdate();
+		        .setParameter(PARAM_OBS_ID, obsId).executeUpdate();
 
 		// 2. Move reference range using native query
 		session.createNativeQuery("INSERT INTO obs_reference_range (obs_id, hi_absolute, hi_critical, hi_normal, "
 		        + "low_absolute, low_critical, low_normal, uuid) "
 		        + "SELECT obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, "
 		        + "low_critical, low_normal, uuid FROM obs_archive_reference_range WHERE obs_id = :obsId")
-		        .setParameter("obsId", obsId).executeUpdate();
+		        .setParameter(PARAM_OBS_ID, obsId).executeUpdate();
 
 		// 3. Delete from archive reference range
 		session.createNativeQuery("DELETE FROM obs_archive_reference_range WHERE obs_id = :obsId")
-		        .setParameter("obsId", obsId).executeUpdate();
+		        .setParameter(PARAM_OBS_ID, obsId).executeUpdate();
 
 		// 4. Delete from archive obs
-		session.createNativeQuery("DELETE FROM obs_archive WHERE obs_id = :obsId").setParameter("obsId", obsId)
+		session.createNativeQuery("DELETE FROM obs_archive WHERE obs_id = :obsId").setParameter(PARAM_OBS_ID, obsId)
 		        .executeUpdate();
 	}
 
@@ -246,6 +272,7 @@ public class ObsArchiveHelper {
 		obs.setValueText(archive.getValueText());
 		obs.setValueComplex(archive.getValueComplex());
 		obs.setComment(archive.getComments());
+		obs.setFormNamespaceAndPath(archive.getFormNamespaceAndPath());
 
 		obs.setCreator(archive.getCreator());
 		obs.setDateCreated(archive.getDateCreated());
@@ -293,7 +320,7 @@ public class ObsArchiveHelper {
 		}
 	}
 
-	public static <Arg1, Arg2 extends Arg1> boolean hibernateAwareEquals(Arg1 d1, Arg2 d2) {
+	public static <T, U extends T> boolean hibernateAwareEquals(T d1, U d2) {
 		if (d1 == null) {
 			return d2 == null;
 		} else if (d2 == null) {
@@ -330,6 +357,7 @@ public class ObsArchiveHelper {
 				}
 			}
 		}
-		return (d1 instanceof Date && d2 instanceof Date) ? OpenmrsUtil.compare((Date) d1, (Date) d2) == 0 : d1.equals(d2);
+		return (d1 instanceof Date d1Date && d2 instanceof Date d2Date) ? OpenmrsUtil.compare(d1Date, d2Date) == 0
+		        : d1.equals(d2);
 	}
 }

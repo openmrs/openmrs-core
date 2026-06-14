@@ -25,5 +25,6 @@ public class ObsArchivingTaskData implements TaskData, Serializable {
 	 * No-arg constructor required for Jackson serialization.
 	 */
 	public ObsArchivingTaskData() {
+		// required by Jackson
 	}
 }

@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
@@ -1199,8 +1200,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 			try {
 				previousVersion.getUuid();
 				return previousVersion;
-			} catch (Exception e) {
-				// Proxy refers to an archived/deleted row, clear proxy
+			} catch (ObjectNotFoundException e) {
 				this.previousVersion = null;
 			}
 		}

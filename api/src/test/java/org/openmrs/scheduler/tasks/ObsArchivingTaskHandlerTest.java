@@ -23,6 +23,7 @@ import org.openmrs.api.impl.ObsArchiveHelper;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,30 +64,8 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		try {
 			jdbcTemplate.execute("DELETE FROM obs_archive");
 			jdbcTemplate.execute("DELETE FROM obs_archive_reference_range");
-		} catch (Exception e) {
+		} catch (DataAccessException e) {
 			// Tables may not exist yet on first run
-		}
-
-		// Drop Hibernate-created foreign key on previous_version in H2
-		try {
-			java.util.List<String> constraints = jdbcTemplate
-			        .queryForList(
-			            "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE "
-			                    + "WHERE UPPER(TABLE_NAME) = 'OBS' AND UPPER(COLUMN_NAME) = 'PREVIOUS_VERSION'",
-			            String.class);
-			for (String constraint : constraints) {
-				try {
-					jdbcTemplate.execute("ALTER TABLE obs DROP CONSTRAINT " + constraint);
-				} catch (Exception e) {
-					// Ignore
-				}
-			}
-		} catch (Exception e) {
-			try {
-				jdbcTemplate.execute("ALTER TABLE obs DROP CONSTRAINT IF EXISTS FKRDYF6DEFJW3MNOX499SIXH4LK");
-			} catch (Exception ex) {
-				// Ignore
-			}
 		}
 
 		adminService.saveGlobalProperty(new GlobalProperty("obs.archive.enabled", "true"));
@@ -115,7 +94,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 			// Reset voided state on any obs we voided during setup
 			jdbcTemplate.execute(
 			    "UPDATE obs SET voided = false, date_voided = NULL, void_reason = NULL, voided_by = NULL WHERE obs_id IN (7, 9)");
-		} catch (Exception e) {
+		} catch (DataAccessException e) {
 			// Best-effort cleanup
 		}
 	}

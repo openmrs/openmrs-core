@@ -42,6 +42,7 @@ import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.VoidHandler;
+import org.openmrs.api.impl.ObsArchiveHelper;
 
 /**
  * An Encounter represents one visit or interaction of a patient with a healthcare worker. Every
@@ -280,7 +281,19 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 */
 	public Set<Obs> getAllObs(boolean includeVoided) {
 		if (includeVoided && obs != null) {
-			return obs;
+			Set<Obs> ret = new LinkedHashSet<>(obs);
+			if (this.getEncounterId() != null) {
+				try {
+					ObsArchiveHelper archiveHelper = Context.getRegisteredComponent("obsArchiveHelper",
+					    ObsArchiveHelper.class);
+					if (archiveHelper != null) {
+						ret.addAll(archiveHelper.getArchivedObsByEncounterId(this.getEncounterId()));
+					}
+				} catch (Exception e) {
+					// archive table may not exist yet or context not available, degrade gracefully
+				}
+			}
+			return ret;
 		}
 
 		Set<Obs> ret = new LinkedHashSet<>();
