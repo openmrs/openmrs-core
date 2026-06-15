@@ -51,14 +51,19 @@ public interface AlertService extends OpenmrsService {
 	public Alert saveAlert(Alert alert) throws APIException;
 
 	/**
-	 * Get alert by internal identifier. Callers may only read an alert addressed to themselves; reading
-	 * an alert addressed to another user requires the {@link PrivilegeConstants#GET_ALERTS} privilege.
+	 * Get alert by internal identifier. Callers may only read an alert addressed to themselves; an
+	 * alert addressed to another user is returned only to a caller holding the
+	 * {@link PrivilegeConstants#GET_ALERTS} privilege. Unlike the user-scoped reads such as
+	 * {@link #getAlerts(User, boolean, boolean)} - which throw
+	 * {@link org.openmrs.api.APIAuthenticationException} for another user's alerts - this id-based
+	 * lookup instead returns <code>null</code> in that case, the same as for an unknown identifier, so
+	 * it cannot be used to probe which alert ids exist.
 	 *
 	 * @param alertId internal alert identifier
-	 * @return alert with given internal identifier
+	 * @return the alert with the given internal identifier, or <code>null</code> if no such alert
+	 *         exists, or it is addressed to another user and the caller lacks the
+	 *         {@link PrivilegeConstants#GET_ALERTS} privilege
 	 * @throws APIException
-	 * @throws org.openmrs.api.APIAuthenticationException if the alert is addressed to another user and
-	 *             the caller lacks the {@link PrivilegeConstants#GET_ALERTS} privilege
 	 */
 	@Authorized
 	public Alert getAlert(Integer alertId) throws APIException;

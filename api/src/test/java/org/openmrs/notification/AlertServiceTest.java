@@ -19,6 +19,7 @@ import org.openmrs.util.PrivilegeConstants;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -95,7 +96,7 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void getAlert_shouldReadOwnAlertButNotAnotherUsersAlertWithoutTheGetAlertsPrivilege() {
+	public void getAlert_shouldReadOwnAlertButReturnNullForAnotherUsersAlertWithoutTheGetAlertsPrivilege() {
 		AlertService as = Context.getAlertService();
 		User superUser = Context.getAuthenticatedUser();
 		User butch = Context.getUserService().getUserByUsername("butch");
@@ -108,8 +109,10 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 
 		// butch is a recipient of his own alert, so he may still read it
 		assertNotNull(as.getAlert(butchAlertId));
-		// but he must not be able to read an alert addressed to someone else
-		assertThrows(APIAuthenticationException.class, () -> as.getAlert(superUsersAlertId));
+		// an alert addressed to someone else reads back as null - identical to a non-existent id - so the
+		// method cannot be used to probe which alert ids exist (no existence oracle over sequential ids)
+		assertNull(as.getAlert(superUsersAlertId));
+		assertNull(as.getAlert(112233445));
 	}
 
 	@Test

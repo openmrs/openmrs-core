@@ -103,8 +103,10 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 
 		// Alerts are personal notifications, so a caller may only read an alert addressed to them,
 		// unless they hold the Get Alerts privilege and may therefore read every user's alerts.
+		// Return null - the same as for an unknown id - rather than throwing, so this lookup cannot be
+		// used to probe which alert ids exist (an existence oracle over sequential identifiers).
 		if (alert != null && !canViewAllAlerts() && alert.getRecipient(Context.getAuthenticatedUser()) == null) {
-			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.GET_ALERTS);
+			return null;
 		}
 
 		return alert;
