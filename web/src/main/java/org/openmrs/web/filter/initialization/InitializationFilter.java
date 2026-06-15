@@ -336,7 +336,9 @@ public class InitializationFilter extends StartupFilter {
 		Properties script = new Properties();
 
 		Properties installScript = getInstallationScript();
-		script.putAll(installScript);
+		if (installScript != null) {
+			script.putAll(installScript);
+		}
 
 		getEnvironmentVariables().forEach((key, value) -> {
 			String normalizedKey = normalizeEnvVariableKey(key);
@@ -352,72 +354,72 @@ public class InitializationFilter extends StartupFilter {
 			}
 		}
 
-		if (!script.isEmpty()) {
-			wizardModel.installMethod = script.getProperty("install_method", wizardModel.installMethod);
+		if (script.isEmpty()) {
+			return;
+		}
 
-			wizardModel.databaseConnection = script.getProperty("connection.url", wizardModel.databaseConnection);
-			wizardModel.databaseDriver = script.getProperty("connection.driver_class",
-			    script.getProperty("connection_driver_class", wizardModel.databaseDriver));
-			wizardModel.databaseName = script.getProperty("database_name", wizardModel.databaseName);
-			wizardModel.currentDatabaseUsername = script.getProperty("connection.username",
-			    wizardModel.currentDatabaseUsername);
-			wizardModel.currentDatabasePassword = script.getProperty("connection.password",
-			    wizardModel.currentDatabasePassword);
+		wizardModel.installMethod = script.getProperty("install_method", wizardModel.installMethod);
 
-			String hasCurrentOpenmrsDatabase = script.getProperty("has_current_openmrs_database");
-			if (hasCurrentOpenmrsDatabase != null) {
-				wizardModel.hasCurrentOpenmrsDatabase = Boolean.parseBoolean(hasCurrentOpenmrsDatabase);
+		wizardModel.databaseConnection = script.getProperty("connection.url", wizardModel.databaseConnection);
+		wizardModel.databaseDriver = script.getProperty("connection.driver_class",
+		    script.getProperty("connection_driver_class", wizardModel.databaseDriver));
+		wizardModel.databaseName = script.getProperty("database_name", wizardModel.databaseName);
+		wizardModel.currentDatabaseUsername = script.getProperty("connection.username", wizardModel.currentDatabaseUsername);
+		wizardModel.currentDatabasePassword = script.getProperty("connection.password", wizardModel.currentDatabasePassword);
+
+		String hasCurrentOpenmrsDatabase = script.getProperty("has_current_openmrs_database");
+		if (hasCurrentOpenmrsDatabase != null) {
+			wizardModel.hasCurrentOpenmrsDatabase = Boolean.parseBoolean(hasCurrentOpenmrsDatabase);
+		}
+		wizardModel.createDatabaseUsername = script.getProperty("create_database_username",
+		    wizardModel.createDatabaseUsername);
+		wizardModel.createDatabasePassword = script.getProperty("create_database_password",
+		    wizardModel.createDatabasePassword);
+
+		String createTables = script.getProperty("create_tables");
+		if (createTables != null) {
+			wizardModel.createTables = Boolean.parseBoolean(createTables);
+		}
+
+		String createDatabaseUser = script.getProperty("create_database_user");
+		if (createDatabaseUser != null) {
+			wizardModel.createDatabaseUser = Boolean.parseBoolean(createDatabaseUser);
+		}
+		wizardModel.createUserUsername = script.getProperty("create_user_username", wizardModel.createUserUsername);
+		wizardModel.createUserPassword = script.getProperty("create_user_password", wizardModel.createUserPassword);
+
+		String moduleWebAdmin = script.getProperty("module_web_admin");
+		if (moduleWebAdmin != null) {
+			wizardModel.moduleWebAdmin = Boolean.parseBoolean(moduleWebAdmin);
+		}
+
+		String autoUpdateDatabase = script.getProperty("auto_update_database");
+		if (autoUpdateDatabase != null) {
+			wizardModel.autoUpdateDatabase = Boolean.parseBoolean(autoUpdateDatabase);
+		}
+
+		wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
+
+		String importTestData = script.getProperty("import_test_data", script.getProperty("add_demo_data"));
+		if (importTestData != null) {
+			wizardModel.importTestData = Boolean.parseBoolean(importTestData);
+		}
+
+		wizardModel.remoteUrl = script.getProperty("remote_url", wizardModel.remoteUrl);
+		wizardModel.remoteUsername = script.getProperty("remote_username", wizardModel.remoteUsername);
+		wizardModel.remotePassword = script.getProperty("remote_password", wizardModel.remotePassword);
+
+		for (Map.Entry<Object, Object> entry : script.entrySet()) {
+			if (entry.getKey() instanceof String && ((String) entry.getKey()).startsWith("property.")) {
+				wizardModel.additionalPropertiesFromInstallationScript.put(((String) entry.getKey()).substring(9),
+				    entry.getValue());
 			}
-			wizardModel.createDatabaseUsername = script.getProperty("create_database_username",
-			    wizardModel.createDatabaseUsername);
-			wizardModel.createDatabasePassword = script.getProperty("create_database_password",
-			    wizardModel.createDatabasePassword);
+		}
 
-			String createTables = script.getProperty("create_tables");
-			if (createTables != null) {
-				wizardModel.createTables = Boolean.parseBoolean(createTables);
-			}
-
-			String createDatabaseUser = script.getProperty("create_database_user");
-			if (createDatabaseUser != null) {
-				wizardModel.createDatabaseUser = Boolean.parseBoolean(createDatabaseUser);
-			}
-			wizardModel.createUserUsername = script.getProperty("create_user_username", wizardModel.createUserUsername);
-			wizardModel.createUserPassword = script.getProperty("create_user_password", wizardModel.createUserPassword);
-
-			String moduleWebAdmin = script.getProperty("module_web_admin");
-			if (moduleWebAdmin != null) {
-				wizardModel.moduleWebAdmin = Boolean.parseBoolean(moduleWebAdmin);
-			}
-
-			String autoUpdateDatabase = script.getProperty("auto_update_database");
-			if (autoUpdateDatabase != null) {
-				wizardModel.autoUpdateDatabase = Boolean.parseBoolean(autoUpdateDatabase);
-			}
-
-			wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
-
-			String importTestData = script.getProperty("import_test_data", script.getProperty("add_demo_data"));
-			if (importTestData != null) {
-				wizardModel.importTestData = Boolean.parseBoolean(importTestData);
-			}
-
-			wizardModel.remoteUrl = script.getProperty("remote_url", wizardModel.remoteUrl);
-			wizardModel.remoteUsername = script.getProperty("remote_username", wizardModel.remoteUsername);
-			wizardModel.remotePassword = script.getProperty("remote_password", wizardModel.remotePassword);
-
-			for (Map.Entry<Object, Object> entry : script.entrySet()) {
-				if (entry.getKey() instanceof String && ((String) entry.getKey()).startsWith("property.")) {
-					wizardModel.additionalPropertiesFromInstallationScript.put(((String) entry.getKey()).substring(9),
-					    entry.getValue());
-				}
-			}
-
-			String adminPasswordLocked = script.getProperty("admin_password_locked",
-			    script.getProperty("admin.password.locked"));
-			if (adminPasswordLocked != null) {
-				wizardModel.additionalPropertiesFromInstallationScript.put("admin.password.locked", adminPasswordLocked);
-			}
+		String adminPasswordLocked = script.getProperty("admin_password_locked",
+		    script.getProperty("admin.password.locked"));
+		if (adminPasswordLocked != null) {
+			wizardModel.additionalPropertiesFromInstallationScript.put("admin.password.locked", adminPasswordLocked);
 		}
 	}
 
@@ -1053,7 +1055,7 @@ public class InitializationFilter extends StartupFilter {
 	 *
 	 * @return the runtime properties file.
 	 */
-	private File getRuntimePropertiesFile() {
+	protected File getRuntimePropertiesFile() {
 		File file;
 
 		String pathName = OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME);
