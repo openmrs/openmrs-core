@@ -64,7 +64,28 @@ public class PersonMergeLogData {
 	 * preferred
 	 */
 	private List<String> movedIndependentObservations;
-	
+
+	/**
+	 * List of UUIDs of conditions moved from non-preferred to preferred
+	 *
+	 * @since 2.9.0
+	 */
+	private List<String> movedConditions;
+
+	/**
+	 * List of UUIDs of allergies moved from non-preferred to preferred
+	 *
+	 * @since 2.9.0
+	 */
+	private List<String> movedAllergies;
+
+	/**
+	 * List of UUIDs of medication dispenses moved from non-preferred to preferred
+	 *
+	 * @since 2.9.0
+	 */
+	private List<String> movedMedicationDispenses;
+
 	/**
 	 * List of UUIDs of orders copied from non-preferred to preferred
 	 */
@@ -206,7 +227,58 @@ public class PersonMergeLogData {
 		}
 		movedIndependentObservations.add(uuid);
 	}
-	
+
+	/**
+	 * @since 2.9.0
+	 */
+	public List<String> getMovedConditions() {
+		return movedConditions;
+	}
+
+	/**
+	 * @since 2.9.0
+	 */
+	public void addMovedCondition(String uuid) {
+		if (movedConditions == null) {
+			movedConditions = new ArrayList<>();
+		}
+		movedConditions.add(uuid);
+	}
+
+	/**
+	 * @since 2.9.0
+	 */
+	public List<String> getMovedAllergies() {
+		return movedAllergies;
+	}
+
+	/**
+	 * @since 2.9.0
+	 */
+	public void addMovedAllergy(String uuid) {
+		if (movedAllergies == null) {
+			movedAllergies = new ArrayList<>();
+		}
+		movedAllergies.add(uuid);
+	}
+
+	/**
+	 * @since 2.9.0
+	 */
+	public List<String> getMovedMedicationDispenses() {
+		return movedMedicationDispenses;
+	}
+
+	/**
+	 * @since 2.9.0
+	 */
+	public void addMovedMedicationDispense(String uuid) {
+		if (movedMedicationDispenses == null) {
+			movedMedicationDispenses = new ArrayList<>();
+		}
+		movedMedicationDispenses.add(uuid);
+	}
+
 	public List<String> getCreatedOrders() {
 		return createdOrders;
 	}
@@ -363,6 +435,15 @@ public class PersonMergeLogData {
 		}
 		if (getMovedIndependentObservations() != null) {
 			str += getMovedIndependentObservations().toString();
+		}
+		if (getMovedConditions() != null) {
+			str += getMovedConditions().toString();
+		}
+		if (getMovedAllergies() != null) {
+			str += getMovedAllergies().toString();
+		}
+		if (getMovedMedicationDispenses() != null) {
+			str += getMovedMedicationDispenses().toString();
 		}
 		if (getMovedUsers() != null) {
 			str += getMovedUsers().toString();

@@ -525,6 +525,15 @@ public interface PatientService extends OpenmrsService {
 	 * <strong>Should</strong> merge non voided person attributes from non preferred to preferred patient
 	 * <strong>Should</strong> merge other non voided observations from non preferred to preferred patient
 	 * <strong>Should</strong> merge other non voided orders from non preferred to preferred patient
+	 * <strong>Should</strong> move conditions from non preferred to preferred patient
+	 * <strong>Should</strong> move encounter linked condition from non preferred to preferred patient
+	 * <strong>Should</strong> not move voided conditions
+	 * <strong>Should</strong> move allergies from non preferred to preferred patient
+	 * <strong>Should</strong> not move allergy if preferred patient already has same allergen
+	 * <strong>Should</strong> move only allergens not already on preferred patient
+	 * <strong>Should</strong> not move voided allergies
+	 * <strong>Should</strong> move medication dispenses from non preferred to preferred patient
+	 * <strong>Should</strong> not move voided medication dispense
 	 * <strong>Should</strong> merge non preferred death date when preferred death date is not null or empty
 	 * <strong>Should</strong> merge non preferred death cause when preferred death cause is not null or empty
 	 * <strong>Should</strong> void non preferred person object
