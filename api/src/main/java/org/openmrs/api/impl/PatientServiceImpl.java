@@ -27,8 +27,10 @@ import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.Concept;
+import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
+import org.openmrs.MedicationDispense;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
@@ -44,9 +46,11 @@ import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.BlankIdentifierException;
+import org.openmrs.api.ConditionService;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.InsufficientIdentifiersException;
+import org.openmrs.api.MedicationDispenseService;
 import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientIdentifierException;
@@ -61,6 +65,8 @@ import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
+import org.openmrs.parameter.MedicationDispenseCriteria;
+import org.openmrs.parameter.MedicationDispenseCriteriaBuilder;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
@@ -569,6 +575,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		mergeProgramEnrolments(preferred, notPreferred, mergedData);
 		mergeRelationships(preferred, notPreferred, mergedData);
 		mergeObservationsNotContainedInEncounters(preferred, notPreferred, mergedData);
+		mergeConditions(preferred, notPreferred, mergedData);
+		mergeAllergies(preferred, notPreferred, mergedData);
+		mergeMedicationDispenses(preferred, notPreferred, mergedData);
 		mergeIdentifiers(preferred, notPreferred, mergedData);
 		
 		mergeNames(preferred, notPreferred, mergedData);
@@ -722,6 +731,54 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	private void mergeConditions(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		// move all non-voided conditions (both patient-level and encounter-linked, since moving an
+		// encounter does not reassign the patient on its conditions)
+		// TODO: this should be a copy, not a move
+		ConditionService conditionService = Context.getConditionService();
+		for (Condition condition : conditionService.getAllConditions(notPreferred)) {
+			condition.setPatient(preferred);
+			log.debug("Merging condition {} to {}", condition.getConditionId(), preferred.getPatientId());
+			Condition persisted = conditionService.saveCondition(condition);
+			mergedData.addMovedCondition(persisted.getUuid());
+		}
+	}
+
+	private void mergeAllergies(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		// move all non-voided allergies, skipping any whose allergen the preferred patient already
+		// records: a patient cannot hold two allergies for the same allergen (Allergies enforces this),
+		// so moving a duplicate would make the survivor's allergy list fail to load afterwards
+		// TODO: this should be a copy, not a move
+		PatientService patientService = Context.getPatientService();
+		Allergies preferredAllergies = patientService.getAllergies(preferred);
+		for (Allergy allergy : patientService.getAllergies(notPreferred)) {
+			if (preferredAllergies.containsAllergen(allergy)) {
+				log.debug("Skipping allergy {}; preferred patient {} already has the same allergen",
+				    allergy.getAllergyId(), preferred.getPatientId());
+				continue;
+			}
+			allergy.setPatient(preferred);
+			log.debug("Merging allergy {} to {}", allergy.getAllergyId(), preferred.getPatientId());
+			patientService.saveAllergy(allergy);
+			mergedData.addMovedAllergy(allergy.getUuid());
+		}
+	}
+
+	private void mergeMedicationDispenses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		// move all non-voided medication dispenses (encounter-linked ones are not reassigned when their
+		// encounter is moved, so they must be handled here)
+		// TODO: this should be a copy, not a move
+		MedicationDispenseService medicationDispenseService = Context.getMedicationDispenseService();
+		MedicationDispenseCriteria criteria = new MedicationDispenseCriteriaBuilder().setPatient(notPreferred).build();
+		for (MedicationDispense medicationDispense : medicationDispenseService.getMedicationDispenseByCriteria(criteria)) {
+			medicationDispense.setPatient(preferred);
+			log.debug("Merging medication dispense {} to {}", medicationDispense.getMedicationDispenseId(),
+			    preferred.getPatientId());
+			MedicationDispense persisted = medicationDispenseService.saveMedicationDispense(medicationDispense);
+			mergedData.addMovedMedicationDispense(persisted.getUuid());
+		}
+	}
+
 	private void mergeIdentifiers(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all identifiers
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
