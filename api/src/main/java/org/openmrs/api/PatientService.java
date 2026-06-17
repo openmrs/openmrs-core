@@ -210,7 +210,12 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Delete patient from database. This <b>should not be called</b> except for testing and
 	 * administration purposes. Use the void method instead.
-	 * 
+	 * <p>
+	 * This does not cascade-delete the patient's clinical data. A patient that still has dependent
+	 * clinical records - such as encounters, observations, orders, visits, conditions, allergies or
+	 * medication dispenses - cannot be purged and the delete will fail with a foreign-key constraint
+	 * violation. Such records must be removed first, or the patient voided instead.
+	 *
 	 * @param patient patient to be deleted
 	 * @throws APIException
 	 * @see #voidPatient(org.openmrs.Patient,java.lang.String)
