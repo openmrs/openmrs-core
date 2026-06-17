@@ -13,6 +13,7 @@ import javax.persistence.TypedQuery;
 import java.util.Arrays;
 import java.util.List;
 
+import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
 import org.openmrs.Condition;
 import org.openmrs.Encounter;
@@ -120,6 +121,25 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public void deleteCondition(Condition condition) throws DAOException {
+		// A newer version that references this condition through previous_version (created when an
+		// edited condition is re-saved) would block the delete on the condition_previous_version_fk,
+		// so clear that reference first. This is done on the loaded entities, rather than a bulk HQL
+		// update, so a managed referrer cannot re-flush the stale reference at commit time. The read
+		// would otherwise trigger a session-wide auto flush that could fail on unrelated transient
+		// state, so suspend automatic flushing while it runs.
+		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
+		sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			List<Condition> referrers = sessionFactory.getCurrentSession()
+			        .createQuery("from Condition where previousVersion = :condition", Condition.class)
+			        .setParameter("condition", condition).list();
+			for (Condition referrer : referrers) {
+				referrer.setPreviousVersion(null);
+			}
+		}
+		finally {
+			sessionFactory.getCurrentSession().setHibernateFlushMode(previousFlushMode);
+		}
 		sessionFactory.getCurrentSession().delete(condition);
 	}
 

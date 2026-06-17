@@ -440,8 +440,33 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertNotNull(existingCondition);
 		
 		conditionService.purgeCondition(conditionService.getCondition(conditionId));
-		
+
 		Condition purgedCondition = conditionService.getCondition(conditionId);
 		assertNull(purgedCondition);
+	}
+
+	/**
+	 * @see ConditionService#purgeCondition(Condition)
+	 */
+	@Test
+	public void purgeCondition_shouldPurgeConditionReferencedByAnotherConditionsPreviousVersion() {
+		// editing a condition voids the original and saves a new one whose previous_version points
+		// back at it
+		Condition condition = conditionService.getConditionByUuid(EXISTING_CONDITION_UUID);
+		Integer previousVersionId = condition.getConditionId();
+		condition.setClinicalStatus(ConditionClinicalStatus.INACTIVE);
+		Condition newCondition = conditionService.saveCondition(condition);
+		assertEquals(previousVersionId, newCondition.getPreviousVersion().getConditionId());
+
+		// purging the older condition must not fail on the condition_previous_version_fk
+		conditionService.purgeCondition(conditionService.getCondition(previousVersionId));
+		Context.flushSession();
+		Context.clearSession();
+
+		assertNull(conditionService.getCondition(previousVersionId));
+		// the newer condition survives with its previous_version reference cleared
+		Condition survivor = conditionService.getConditionByUuid(newCondition.getUuid());
+		assertNotNull(survivor);
+		assertNull(survivor.getPreviousVersion());
 	}
 }

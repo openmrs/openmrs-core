@@ -51,6 +51,7 @@ import org.openmrs.Allergen;
 import org.openmrs.AllergenType;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
+import org.openmrs.AllergyReaction;
 import org.openmrs.CodedOrFreeText;
 import org.openmrs.Concept;
 import org.openmrs.Condition;
@@ -2031,7 +2032,111 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// return null now
 		assertNull(patientService.getPatient(2));
 	}
-	
+
+	/**
+	 * @see PatientService#purgePatient(Patient)
+	 */
+	@Test
+	public void purgePatient_shouldDeletePatientWithConditionsAllergiesAndMedicationDispenses() throws Exception {
+		// loaded for the status concept (11112) referenced by the medication dispense created below
+		executeDataSet(MEDICATION_DISPENSE_XML);
+		ConditionService conditionService = Context.getConditionService();
+		// patient 432 has no encounters or orders, so the purge can be flushed to the database to
+		// prove the cascade actually removes the clinical rows rather than just scheduling deletes
+		Patient patientToPurge = patientService.getPatient(432);
+		assertNotNull(patientToPurge);
+
+		// an active condition for the patient
+		CodedOrFreeText activeText = new CodedOrFreeText();
+		activeText.setNonCoded("Active condition");
+		Condition activeCondition = new Condition();
+		activeCondition.setCondition(activeText);
+		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		activeCondition.setPatient(patientToPurge);
+		conditionService.saveCondition(activeCondition);
+
+		// a voided condition, to exercise the include-voided purge path
+		CodedOrFreeText voidedText = new CodedOrFreeText();
+		voidedText.setNonCoded("Voided condition");
+		Condition voidedCondition = new Condition();
+		voidedCondition.setCondition(voidedText);
+		voidedCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		voidedCondition.setPatient(patientToPurge);
+		conditionService.saveCondition(voidedCondition);
+		conditionService.voidCondition(voidedCondition, "test");
+
+		// editing a condition voids the original and creates a new one pointing back at it via
+		// previous_version, which the purge cascade must clear before deleting the conditions
+		activeCondition.setClinicalStatus(ConditionClinicalStatus.INACTIVE);
+		Condition editedCondition = conditionService.saveCondition(activeCondition);
+		assertNotNull(editedCondition.getPreviousVersion());
+
+		// an allergy with a reaction, so the cascade has to remove the allergy_reaction row first
+		Allergy allergy = new Allergy(patientToPurge, new Allergen(AllergenType.DRUG, new Concept(3), null),
+		    new Concept(4), "some comment", new ArrayList<>());
+		allergy.addReaction(new AllergyReaction(allergy, new Concept(21), null));
+		patientService.saveAllergy(allergy);
+
+		// a voided allergy (different allergen), to exercise the include-voided purge path
+		Allergy voidedAllergy = new Allergy(patientToPurge, new Allergen(AllergenType.DRUG, new Concept(24), null),
+		    new Concept(4), "voided allergy", new ArrayList<>());
+		patientService.saveAllergy(voidedAllergy);
+		patientService.voidAllergy(voidedAllergy, "test");
+
+		// a medication dispense referencing the patient
+		MedicationDispense medicationDispense = new MedicationDispense();
+		medicationDispense.setPatient(patientToPurge);
+		medicationDispense.setConcept(Context.getConceptService().getConcept(792));
+		medicationDispense.setStatus(Context.getConceptService().getConcept(11112));
+		Context.getMedicationDispenseService().saveMedicationDispense(medicationDispense);
+
+		Context.flushSession();
+
+		// without the purge cascade this fails with a foreign-key violation on the clinical tables;
+		// the flush forces the deletes, and a successful patient delete proves every dependent
+		// clinical row (conditions, allergy + reaction, medication dispense) was removed first
+		patientService.purgePatient(patientToPurge);
+		Context.flushSession();
+		Context.clearSession();
+
+		assertNull(patientService.getPatient(432));
+	}
+
+	/**
+	 * @see PatientService#purgePatient(Patient)
+	 */
+	@Test
+	public void purgePatient_shouldDeletePatientWhenModifiedClinicalDataIsHeldInTheSession() throws Exception {
+		ConditionService conditionService = Context.getConditionService();
+		Patient patientToPurge = patientService.getPatient(432);
+		assertNotNull(patientToPurge);
+
+		// persist a condition, then start fresh so it comes back as a clean managed entity
+		CodedOrFreeText text = new CodedOrFreeText();
+		text.setNonCoded("Active condition");
+		Condition condition = new Condition();
+		condition.setCondition(text);
+		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		condition.setPatient(patientToPurge);
+		conditionService.saveCondition(condition);
+		Context.flushSession();
+		Context.clearSession();
+
+		// reload and leave a pending, unflushed change on the condition
+		patientToPurge = patientService.getPatient(432);
+		Condition managed = conditionService.getAllConditions(patientToPurge).get(0);
+		managed.setAdditionalDetail("pending change");
+
+		// purge without flushing the pending change first: a bulk delete would remove the row and
+		// then re-flush the dirty managed condition against it at commit (StaleStateException),
+		// whereas deleting through the session marks the managed instance deleted instead
+		patientService.purgePatient(patientToPurge);
+		Context.flushSession();
+		Context.clearSession();
+
+		assertNull(patientService.getPatient(432));
+	}
+
 	@Test
 	public void getPatients_shouldNotReturnVoidedPatients() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);

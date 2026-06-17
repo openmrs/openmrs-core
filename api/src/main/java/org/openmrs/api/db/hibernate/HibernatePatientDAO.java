@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
@@ -34,7 +35,9 @@ import org.hibernate.search.engine.search.predicate.SearchPredicate;
 import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
+import org.openmrs.Condition;
 import org.openmrs.Location;
+import org.openmrs.MedicationDispense;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -321,7 +324,59 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public void deletePatient(Patient patient) throws DAOException {
+		deletePatientClinicalData(patient);
 		HibernatePersonDAO.deletePersonAndAttributes(sessionFactory, patient);
+	}
+
+	/**
+	 * Removes rows in the patient-scoped clinical tables that were added to core after the original
+	 * patient-lifecycle logic was written (conditions, allergies and medication dispenses). Their
+	 * foreign keys to the patient would otherwise block deleting the patient/person rows during a
+	 * purge. Unlike the void-filtered service fetch methods, this removes every row including voided
+	 * ones.
+	 *
+	 * @param patient the patient whose clinical data is being purged
+	 */
+	private void deletePatientClinicalData(Patient patient) {
+		// The reads and the bulk update below would otherwise trigger a session-wide auto flush that
+		// could fail on unrelated transient state in the session, so suspend automatic flushing while
+		// purging. Rows are removed through the session (rather than a bulk HQL delete) so that any
+		// already-managed instance is marked deleted and cannot be re-flushed against the now removed
+		// row at commit time; this also lets the allergy cascade remove its allergy_reaction rows. All
+		// of these read every row including voided ones, unlike the void-filtered service fetch methods.
+		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
+		sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			// medication dispenses reference the patient directly
+			List<MedicationDispense> dispenses = sessionFactory.getCurrentSession()
+			        .createQuery("from MedicationDispense where patient = :patient", MedicationDispense.class)
+			        .setParameter("patient", patient).list();
+			for (MedicationDispense dispense : dispenses) {
+				sessionFactory.getCurrentSession().delete(dispense);
+			}
+
+			List<Allergy> allergies = sessionFactory.getCurrentSession()
+			        .createQuery("from Allergy where patient = :patient", Allergy.class).setParameter("patient", patient)
+			        .list();
+			for (Allergy allergy : allergies) {
+				sessionFactory.getCurrentSession().delete(allergy);
+			}
+
+			// clear the previous_version self references at the database level first, so the order in
+			// which the conditions are deleted relative to each other cannot trip the self foreign key
+			sessionFactory.getCurrentSession()
+			        .createQuery("update Condition set previousVersion = null where patient = :patient")
+			        .setParameter("patient", patient).executeUpdate();
+			List<Condition> conditions = sessionFactory.getCurrentSession()
+			        .createQuery("from Condition where patient = :patient", Condition.class).setParameter("patient", patient)
+			        .list();
+			for (Condition condition : conditions) {
+				sessionFactory.getCurrentSession().delete(condition);
+			}
+		}
+		finally {
+			sessionFactory.getCurrentSession().setHibernateFlushMode(previousFlushMode);
+		}
 	}
 	
 	/**
