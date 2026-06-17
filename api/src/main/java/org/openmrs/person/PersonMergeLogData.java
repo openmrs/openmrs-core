@@ -67,22 +67,16 @@ public class PersonMergeLogData {
 
 	/**
 	 * List of UUIDs of conditions moved from non-preferred to preferred
-	 *
-	 * @since 2.9.0
 	 */
 	private List<String> movedConditions;
 
 	/**
 	 * List of UUIDs of allergies moved from non-preferred to preferred
-	 *
-	 * @since 2.9.0
 	 */
 	private List<String> movedAllergies;
 
 	/**
 	 * List of UUIDs of medication dispenses moved from non-preferred to preferred
-	 *
-	 * @since 2.9.0
 	 */
 	private List<String> movedMedicationDispenses;
 
