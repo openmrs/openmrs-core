@@ -18,6 +18,7 @@ import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +38,16 @@ public class AlertReminderTask extends AbstractTask {
 		try {
 			// Get all unread alerts
 			// TODO Change to getAllAlerts(Boolean includeRead, Boolean includeExpired);
-			Collection<Alert> alerts = Context.getAlertService().getAllAlerts(false);
-			
+			// getAllAlerts requires the Get Alerts privilege; this system task reads every
+			// user's alerts to notify them, so grant the privilege for the duration of the read.
+			Collection<Alert> alerts;
+			Context.addProxyPrivilege(PrivilegeConstants.GET_ALERTS);
+			try {
+				alerts = Context.getAlertService().getAllAlerts(false);
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_ALERTS);
+			}
+
 			// Send alert notifications to users who have unread alerts
 			sendAlertNotifications(alerts);
 			
