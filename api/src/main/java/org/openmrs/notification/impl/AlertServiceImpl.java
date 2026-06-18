@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
@@ -23,6 +24,7 @@ import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.db.AlertDAO;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +95,24 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Override
 	@Transactional(readOnly = true)
 	public Alert getAlert(Integer alertId) throws APIException {
-		return dao.getAlert(alertId);
+		Alert alert = dao.getAlert(alertId);
+
+		// Alerts are personal notifications, so a caller may only read an alert addressed to them,
+		// unless they hold the Get Alerts privilege and may therefore read every user's alerts.
+		// Return null - the same as for an unknown id - rather than throwing, so this lookup cannot be
+		// used to probe which alert ids exist (an existence oracle over sequential identifiers).
+		if (alert != null && !canViewAllAlerts() && alert.getRecipient(Context.getAuthenticatedUser()) == null) {
+			return null;
+		}
+
+		return alert;
+	}
+
+	/**
+	 * @return true if the authenticated user may read alerts addressed to any user
+	 */
+	private boolean canViewAllAlerts() {
+		return Context.hasPrivilege(PrivilegeConstants.GET_ALERTS);
 	}
 	
 	/**
@@ -140,6 +159,18 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Transactional(readOnly = true)
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws APIException {
 		log.debug("Getting alerts for user " + user + " read? " + includeRead + " expired? " + includeExpired);
+
+		// Alerts are personal notifications, so a caller may only list alerts addressed to
+		// themselves, unless they hold the Get Alerts privilege and may therefore read every user's
+		// alerts. A null/blank user resolves to the anonymous recipient set, which discloses nothing.
+		// Compare on userId, the same key the query filters on, so the check matches what is returned.
+		User authenticatedUser = Context.getAuthenticatedUser();
+		boolean targetsAnotherUser = user != null && user.getUserId() != null
+		        && (authenticatedUser == null || !user.getUserId().equals(authenticatedUser.getUserId()));
+		if (targetsAnotherUser && !canViewAllAlerts()) {
+			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.GET_ALERTS);
+		}
+
 		return dao.getAlerts(user, includeRead, includeExpired);
 	}
 	

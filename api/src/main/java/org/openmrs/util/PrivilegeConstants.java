@@ -25,6 +25,9 @@ public class PrivilegeConstants {
 	private PrivilegeConstants() {
 	}
 
+	@AddOnStartup(description = "Able to get alerts")
+	public static final String GET_ALERTS = "Get Alerts";
+
 	@AddOnStartup(description = "Able to get concept entries")
 	public static final String GET_CONCEPTS = "Get Concepts";
 	
