@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
  * If you need longer processing, you need to schedule an asynchronous task from your listener.
  * See {@link org.openmrs.scheduler.SchedulerService}.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)

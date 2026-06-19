@@ -19,12 +19,14 @@ import org.openmrs.aop.event.SaveServiceEvent;
 import org.openmrs.aop.event.UnretireServiceEvent;
 import org.openmrs.aop.event.UnvoidServiceEvent;
 import org.openmrs.aop.event.VoidServiceEvent;
+import org.openmrs.event.EntityEvent;
 import org.openmrs.event.EventPublisher;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Publishes {@link SaveServiceEvent}, {@link VoidServiceEvent}, {@link UnvoidServiceEvent},
@@ -35,7 +37,7 @@ import java.util.Optional;
  * {@link org.springframework.context.event.EventListener}
  * can run in the same transaction.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Aspect
 @Order(50) // Guarantees execution after transaction advice
@@ -53,15 +55,7 @@ public class OpenmrsServiceEventAdvice {
      */
     @Around("(execution(* *.save*(..)) || execution(* *.create*(..))) && target(org.openmrs.api.OpenmrsService)")
     public Object interceptSaveOrCreate(ProceedingJoinPoint pjp) throws Throwable {
-		// Do not apply to proxies created by TransactionProxyFactoryBean (legacy) in addition to transactional advice so
-		// that events are not emitted twice.
-		if (AopUtils.isAopProxy(pjp.getTarget())) {
-			return pjp.proceed();
-		}
-
-		getOpenmrsObjectArgument(pjp)
-			.ifPresent(object -> eventPublisher.publishEvent(new SaveServiceEvent<>(object)));
-        return pjp.proceed();
+		return intercept(pjp, SaveServiceEvent::new);
     }
 
 	/**
@@ -69,13 +63,7 @@ public class OpenmrsServiceEventAdvice {
 	 */
 	@Around("execution(* *.void*(..)) && target(org.openmrs.api.OpenmrsService)")
 	public Object interceptVoid(ProceedingJoinPoint pjp) throws Throwable {
-		if (AopUtils.isAopProxy(pjp.getTarget())) {
-			return pjp.proceed();
-		}
-
-		getOpenmrsObjectArgument(pjp)
-			.ifPresent(object -> eventPublisher.publishEvent(new VoidServiceEvent<>(object)));
-		return pjp.proceed();
+		return intercept(pjp, VoidServiceEvent::new);
 	}
 
 	/**
@@ -83,13 +71,7 @@ public class OpenmrsServiceEventAdvice {
 	 */
 	@Around("execution(* *.unvoid*(..)) && target(org.openmrs.api.OpenmrsService)")
 	public Object interceptUnvoid(ProceedingJoinPoint pjp) throws Throwable {
-		if (AopUtils.isAopProxy(pjp.getTarget())) {
-			return pjp.proceed();
-		}
-
-		getOpenmrsObjectArgument(pjp)
-			.ifPresent(object -> eventPublisher.publishEvent(new UnvoidServiceEvent<>(object)));
-		return pjp.proceed();
+		return intercept(pjp, UnvoidServiceEvent::new);
 	}
 
 	/**
@@ -97,13 +79,7 @@ public class OpenmrsServiceEventAdvice {
 	 */
 	@Around("execution(* *.retire*(..)) && target(org.openmrs.api.OpenmrsService)")
 	public Object interceptRetire(ProceedingJoinPoint pjp) throws Throwable {
-		if (AopUtils.isAopProxy(pjp.getTarget())) {
-			return pjp.proceed();
-		}
-
-		getOpenmrsObjectArgument(pjp)
-			.ifPresent(object -> eventPublisher.publishEvent(new RetireServiceEvent<>(object)));
-		return pjp.proceed();
+		return intercept(pjp, RetireServiceEvent::new);
 	}
 
 	/**
@@ -111,13 +87,7 @@ public class OpenmrsServiceEventAdvice {
 	 */
 	@Around("execution(* *.unretire*(..)) && target(org.openmrs.api.OpenmrsService)")
 	public Object interceptUnretire(ProceedingJoinPoint pjp) throws Throwable {
-		if (AopUtils.isAopProxy(pjp.getTarget())) {
-			return pjp.proceed();
-		}
-
-		getOpenmrsObjectArgument(pjp)
-			.ifPresent(object -> eventPublisher.publishEvent(new UnretireServiceEvent<>(object)));
-		return pjp.proceed();
+		return intercept(pjp, UnretireServiceEvent::new);
 	}
 
 	/**
@@ -125,12 +95,18 @@ public class OpenmrsServiceEventAdvice {
 	 */
 	@Around("execution(* *.purge*(..)) && target(org.openmrs.api.OpenmrsService)")
 	public Object interceptPurge(ProceedingJoinPoint pjp) throws Throwable {
+		return intercept(pjp, PurgeServiceEvent::new);
+	}
+	
+	private Object intercept(ProceedingJoinPoint pjp, Function<OpenmrsObject, EntityEvent<?>> eventProducer) throws Throwable {
+		// Do not apply to proxies created by TransactionProxyFactoryBean (legacy) in addition to transactional advice so
+		// that events are not emitted twice.
 		if (AopUtils.isAopProxy(pjp.getTarget())) {
 			return pjp.proceed();
 		}
 
 		getOpenmrsObjectArgument(pjp)
-			.ifPresent(object -> eventPublisher.publishEvent(new PurgeServiceEvent<>(object)));
+			.ifPresent(object -> eventPublisher.publishEvent(eventProducer.apply(object)));
 		return pjp.proceed();
 	}
 

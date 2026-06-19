@@ -9,6 +9,8 @@
  */
 package org.openmrs.event.outbox;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.MapMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,17 +26,19 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * It is used to discover any {@link OutboxEventListener} listeners and
  * dispatch events to them.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Component
 public class OutboxEventRegistry implements SmartInitializingSingleton {
@@ -43,13 +47,13 @@ public class OutboxEventRegistry implements SmartInitializingSingleton {
 
 	private final ApplicationContext applicationContext;
 	private final List<ListenerMethod> registry;
-	private final ConcurrentMap<ResolvableType, Boolean> hasOutboxListenersCache;
+	private final Cache<ResolvableType, Boolean> hasOutboxListenersCache;
 	private final boolean enabled;
 	
 	public OutboxEventRegistry(ApplicationContext applicationContext, @Value("${outboxevent.enabled:true}") boolean enabled) {
 		this.applicationContext = applicationContext;
 		this.registry = new ArrayList<>();
-		this.hasOutboxListenersCache = new MapMaker().weakKeys().weakValues().makeMap();
+		this.hasOutboxListenersCache = CacheBuilder.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
 		this.enabled = enabled;
 	}
 
@@ -93,16 +97,15 @@ public class OutboxEventRegistry implements SmartInitializingSingleton {
 		}
 		
 		ResolvableType resolvableType =  ResolvableType.forInstance(event);
-		Boolean result = hasOutboxListenersCache.get(resolvableType);
-		if (result != null) {
-			return result;
+
+		try {
+			return hasOutboxListenersCache.get(resolvableType, () -> 
+				registry.stream().anyMatch(listener -> listener.supports(resolvableType))
+			);
+		} catch (ExecutionException e) {
+			throw new RuntimeException(e);
 		}
-		
-		// Checks if the published event type (or its subclass) is registered for the outbox
-		result = registry.stream().anyMatch(listener -> listener.supports(resolvableType));
-		
-		hasOutboxListenersCache.put(resolvableType, result);
-		return result;
+
 	}
 	
 	public void dispatchOutboxEvent(Object event, Set<String> completedListeners, Runnable listenerCallback) {

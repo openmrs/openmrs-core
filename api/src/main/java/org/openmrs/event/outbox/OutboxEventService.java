@@ -23,9 +23,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * It's internal and not for use in modules.
+ * API for OutboxEvent.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Service
 public class OutboxEventService {
@@ -34,10 +34,32 @@ public class OutboxEventService {
 	
 	private final SessionFactory sessionFactory;
 	private final Duration listenerTimeout;
+	private final int retryLimit;
 	
-	public OutboxEventService(SessionFactory sessionFactory, @Value("${outboxevent.listener.timeout:120}") int listenerTimeout) {
+	public OutboxEventService(SessionFactory sessionFactory, @Value("${outboxevent.listener.timeout:120}") int listenerTimeout,
+			@Value("${outboxevent.retry.limit:16}") int retryLimit) {
 		this.sessionFactory = sessionFactory;
 		this.listenerTimeout = Duration.ofSeconds(listenerTimeout);
+		this.retryLimit = retryLimit;
+	}
+
+	/**
+	 * Reset retry count for outbox event to continue retrying.
+	 *
+	 * @param uuid
+	 */
+	@Transactional
+	public void retryFailedOutboxEvent(String uuid) {
+		org.hibernate.query.Query<OutboxEvent> query = sessionFactory.getCurrentSession().createQuery("from OutboxEvent where uuid = :uuid and status = 'FAILED'", OutboxEvent.class);
+		query.setParameter("uuid", uuid);
+		OutboxEvent event = query.uniqueResult();
+
+		if (event != null) {
+			event.setStatus(OutboxEvent.Status.PENDING);
+			event.setErrorCount(0);
+			event.setErrorMessage(null);
+			sessionFactory.getCurrentSession().save(event);
+		}
 	}
 
 	/**
@@ -47,15 +69,17 @@ public class OutboxEventService {
 	public void resetStuckEvent() throws OutboxException {
 		Date threshold = Date.from(Instant.now().minus(listenerTimeout));
 		Query resetStuckQuery = sessionFactory.getCurrentSession().createQuery(
-			"update OutboxEvent set status = 'PENDING', errorCount = coalesce(errorCount, 0) + 1, " +
-				"errorMessage = :errorMessage, dateChanged = :now where status = 'PROCESSING' and dateChanged < :threshold");
+			"update OutboxEvent set status = case when coalesce(errorCount, 0) + 1 >= :retryLimit then 'FAILED' else 'PENDING' end, " +
+				"errorCount = coalesce(errorCount, 0) + 1, errorMessage = :errorMessage, dateChanged = :now " +
+				"where status = 'PROCESSING' and dateChanged < :threshold");
 		resetStuckQuery.setParameter("now", new Date());
 		resetStuckQuery.setParameter("threshold", threshold);
+		resetStuckQuery.setParameter("retryLimit", retryLimit);
 		resetStuckQuery.setParameter("errorMessage", "Stuck in PROCESSING state for more than " + listenerTimeout.getSeconds() + " seconds");
 		int resetCount = resetStuckQuery.executeUpdate();
 		if (resetCount > 0) {
 			// Throw an error to increase visibility of the event
-			throw new OutboxException("Reset stuck outbox item from PROCESSING back to PENDING");
+			throw new OutboxException("Reset stuck outbox item(s) from PROCESSING back to PENDING or FAILED");
 		}
 	}
 
@@ -74,6 +98,15 @@ public class OutboxEventService {
 	public List<OutboxEvent> getProcessingAndPendingEvents() {
 		Query query = sessionFactory.getCurrentSession().createQuery(
 			"from OutboxEvent where status in ('PENDING', 'PROCESSING') order by id asc");
+		query.setMaxResults(100);
+
+		return query.getResultList();
+	}
+
+	@Transactional(readOnly = true)
+	public List<OutboxEvent> getFailingEvents() {
+		Query query = sessionFactory.getCurrentSession().createQuery(
+			"from OutboxEvent where status in ('FAILED') order by id asc");
 		query.setMaxResults(100);
 
 		return query.getResultList();

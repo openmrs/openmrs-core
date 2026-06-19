@@ -31,7 +31,7 @@ import java.util.Date;
 /**
  * OutboxEvent persisted in DB.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Entity
 @Table(name = "outbox_event")
@@ -40,7 +40,7 @@ public class OutboxEvent extends BaseOpenmrsObject implements Auditable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-
+	
 	@Column(name = "event_type", nullable = false)
 	private String eventType;
 
@@ -179,6 +179,6 @@ public class OutboxEvent extends BaseOpenmrsObject implements Auditable {
 	}
 	
 	public enum Status {
-		PENDING, PROCESSING, COMPLETED
+		PENDING, PROCESSING, COMPLETED, FAILED
 	}
 }

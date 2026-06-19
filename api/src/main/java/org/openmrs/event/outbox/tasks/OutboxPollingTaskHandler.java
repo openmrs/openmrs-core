@@ -23,6 +23,7 @@ import org.openmrs.scheduler.TaskContext;
 import org.openmrs.scheduler.TaskHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -31,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Component
 public class OutboxPollingTaskHandler implements TaskHandler<OutboxPollingTaskData> {
@@ -41,13 +42,16 @@ public class OutboxPollingTaskHandler implements TaskHandler<OutboxPollingTaskDa
 	private final ObjectMapper objectMapper;
 	private final EventPublisher eventPublisher;
 	private final OutboxEventService outboxEventService;
+	private final int retryLimit;
 
 	public OutboxPollingTaskHandler(OutboxEventRegistry registry, ObjectMapper objectMapper, 
-									EventPublisher eventPublisher, OutboxEventService outboxEventService) {
+									EventPublisher eventPublisher, OutboxEventService outboxEventService,
+									@Value("${outboxevent.retry.limit:16}") int retryLimit) {
 		this.registry = registry;
 		this.objectMapper = objectMapper;
 		this.eventPublisher = eventPublisher;
 		this.outboxEventService = outboxEventService;
+		this.retryLimit = retryLimit;
 	}
 
 	/**
@@ -67,7 +71,7 @@ public class OutboxPollingTaskHandler implements TaskHandler<OutboxPollingTaskDa
 	@Override
 	public void execute(OutboxPollingTaskData taskData, TaskContext taskContext) throws Exception {
 		outboxEventService.resetStuckEvent();
-
+		
 		while (true) {
 			List<OutboxEvent> pendingItems = outboxEventService.getProcessingAndPendingEvents();
 
@@ -121,9 +125,6 @@ public class OutboxPollingTaskHandler implements TaskHandler<OutboxPollingTaskDa
 					log.debug("Completed dispatching outbox event {} to {}", event.getClass(), item.getCompletedListeners());
 					outboxEventService.saveOutboxEvent(item);
 				} catch (Exception e) {
-					OutboxException outboxException = new OutboxException("Failed to process outbox item ID: " + item.getId(), e);
-					eventPublisher.publishEvent(new OutboxExceptionEvent(outboxException));
-					
 					int errorCount = item.getErrorCount() == null ? 1 : item.getErrorCount() + 1;
 
 					// Extract stacktrace
@@ -131,13 +132,27 @@ public class OutboxPollingTaskHandler implements TaskHandler<OutboxPollingTaskDa
 					if (errorMessage.length() > 1024) {
 						errorMessage = errorMessage.substring(0, 1024);
 					}
-
-					// Revert to PENDING (to retry)
-					item.setStatus(OutboxEvent.Status.PENDING);
 					item.setErrorCount(errorCount);
 					item.setErrorMessage(errorMessage);
-					outboxEventService.saveOutboxEvent(item);
 
+					OutboxException outboxException = new OutboxException("Failed " + item.getEventType() + " with UUID: " + item.getUuid(), e);
+					OutboxExceptionEvent outboxExceptionEvent = new OutboxExceptionEvent(outboxException, item.getUuid());
+					outboxExceptionEvent.setRetryCount(errorCount);
+					
+					if (errorCount < retryLimit) {
+						// Revert to PENDING to retry
+						item.setStatus(OutboxEvent.Status.PENDING);
+						outboxExceptionEvent.setPendingRetry(true);
+					} else {
+						// Stop retries to process the next item
+						item.setStatus(OutboxEvent.Status.FAILED);
+						outboxExceptionEvent.setPendingRetry(false);
+					}
+					
+					outboxEventService.saveOutboxEvent(item);
+					
+					eventPublisher.publishEvent(outboxExceptionEvent);
+					
 					// Stop processing subsequent events to ensure strict ordering
 					throw outboxException;
 				}

@@ -9,11 +9,14 @@
  */
 package org.openmrs.event.outbox;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.io.Serializable;
 
 /**
  * Marker interface for events that could be persisted in the transactional outbox.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public interface OutboxableEvent extends Serializable {}

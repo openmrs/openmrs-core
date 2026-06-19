@@ -19,13 +19,15 @@ import java.util.Set;
  * DB level event emitted upon creation or modification of an entity.
  * 
  * @param <T> type of entity
+ *           
+ * @since 2.9.0
  */
 public class SaveDbEvent<T> extends EntityEvent<T> {
 	
 	private Serializable id;
 	private Object[] state;
 	private Object[] previousState;
-	private String[] propertyNames;
+	private String[] propertyNames; 
 	private boolean modified = false;
 	
 	public SaveDbEvent() {
