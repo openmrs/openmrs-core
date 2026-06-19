@@ -178,7 +178,7 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 				// The service layer may be unavailable or mid-initialization (e.g. a re-entrant
 				// ServiceContext initialization) while logging is being configured. Logging configuration
 				// must be resilient, so skip the log-level overrides rather than aborting configuration.
-				StatusLogger.getLogger().warn("Could not apply log-level overrides; the service layer is unavailable", e);
+				StatusLogger.getLogger().warn("Could not apply log-level overrides", e);
 			}
 		}
 	}

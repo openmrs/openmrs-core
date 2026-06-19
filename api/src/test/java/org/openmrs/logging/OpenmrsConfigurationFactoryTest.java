@@ -30,6 +30,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
@@ -379,6 +380,34 @@ class OpenmrsConfigurationFactoryTest {
 
 			assertThrows(ServiceNotFoundException.class,
 			    () -> OpenmrsConfigurationFactory.doOpenmrsCustomisations(configuration));
+		}
+	}
+
+	/**
+	 * The other half of the {@code ServiceNotFoundException} branch: when {@code AdministrationService}
+	 * itself is not yet available (the expected startup case), the overrides are skipped and
+	 * configuration completes rather than aborting. Together with the two tests above this locks all
+	 * three outcomes of the catch block (other-service rethrow, AdministrationService skip, and the
+	 * re-entrant runtime-exception skip).
+	 */
+	@Test
+	void doOpenmrsCustomisations_shouldSkipOverridesWhenAdministrationServiceNotFound() {
+		AbstractConfiguration configuration = new DefaultConfiguration();
+
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			configUtilMock.when(() -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenThrow(new ServiceNotFoundException(AdministrationService.class));
+
+			// Must not throw — a missing AdministrationService during startup is expected and tolerated
+			OpenmrsConfigurationFactory.doOpenmrsCustomisations(configuration);
+
+			contextMock.verify(() -> Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
 		}
 	}
 
