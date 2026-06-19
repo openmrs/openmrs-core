@@ -19,6 +19,7 @@ import org.openmrs.event.EntityEvent;
  * DB level event emitted upon deletion of an entity.
  *
  * @param <T> type of entity
+ * @since 2.9.0
  */
 public class DeleteDbEvent<T> extends EntityEvent<T> {
 

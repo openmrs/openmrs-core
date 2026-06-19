@@ -13,7 +13,7 @@ package org.openmrs.event.outbox;
  * It can be implemented for events to provide a custom serialization to persist in the outbox. The
  * implementing class must have a no-arg constructor.
  *
- * @since 2.9.x
+ * @since 2.9.0
  */
 public interface OutboxEventPayload {
 

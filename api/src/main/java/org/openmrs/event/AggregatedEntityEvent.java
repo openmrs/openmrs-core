@@ -26,15 +26,15 @@ public abstract class AggregatedEntityEvent extends BaseSessionEvent {
 
 	private List<EntityEvent<?>> events;
 
-	public AggregatedEntityEvent() {
+	protected AggregatedEntityEvent() {
 		this.events = new ArrayList<>();
 	}
 
-	public AggregatedEntityEvent(List<EntityEvent<?>> events) {
+	protected AggregatedEntityEvent(List<EntityEvent<?>> events) {
 		this.events = events;
 	}
 
-	public AggregatedEntityEvent(List<EntityEvent<?>> events, Set<String> tags) {
+	protected AggregatedEntityEvent(List<EntityEvent<?>> events, Set<String> tags) {
 		super(tags);
 		this.events = events;
 	}

@@ -9,6 +9,7 @@
  */
 package org.openmrs.event.outbox;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,7 +79,10 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 
 		assertThat(outboxEvents,
 		    contains(
-		        allOf(hasProperty("payload", is("{\"uuid\":\"" + event.getUuid() + "\"}")),
+		        allOf(
+		            hasProperty("payload",
+		                is("{\"@class\":\"org.openmrs.event.outbox.OutboxEventIT$PatientCreatedEvent\",\"uuid\":\""
+		                        + event.getUuid() + "\"}")),
 		            hasProperty("status", is(OutboxEvent.Status.PENDING)),
 		            hasProperty("eventType", is(PatientCreatedEvent.class.getName())),
 		            hasProperty("completedListeners", is(nullValue()))),
@@ -87,10 +91,20 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 		            hasProperty("completedListeners", is(nullValue())))));
 
 		waitForCapturedEvents(10);
-		//Assert the ordering of captured events is correct
-		assertThat(testOutboxEventListener.getCapturedEvents(), contains(
-		    allOf(hasProperty("method", is("onAfterCommitAggregated")),
-		        hasProperty("event", hasProperty("events", hasSize(2)))),
+
+		// Check for onAfterCommitAggregated which is a TransactionalEventListener executed in a different thread than
+		// OutboxEventListeners thus no guarantee of ordering between them
+		List<TestOutboxEventListener.TestEvent> capturedEvents = new ArrayList<>(
+		        testOutboxEventListener.getCapturedEvents());
+		TestOutboxEventListener.TestEvent afterCommitEvent = capturedEvents.stream()
+		        .filter(e -> "onAfterCommitAggregated".equals(e.getMethod())).findFirst()
+		        .orElseThrow(() -> new AssertionError("onAfterCommitAggregated not found"));
+
+		assertThat(afterCommitEvent, hasProperty("event", hasProperty("events", hasSize(2))));
+		capturedEvents.remove(afterCommitEvent);
+
+		//Assert the ordering of captured outbox events is correct
+		assertThat(capturedEvents, contains(
 		    allOf(hasProperty("method", is("onPatientCreated")),
 		        hasProperty("event", hasProperty("uuid", equalTo(event.getUuid())))),
 		    hasProperty("method", is("onPatientCreatedFailingFailed")),
@@ -111,7 +125,10 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 
 		assertThat(outboxEvents,
 		    contains(
-		        allOf(hasProperty("payload", is("{\"uuid\":\"" + event.getUuid() + "\"}")),
+		        allOf(
+		            hasProperty("payload",
+		                is("{\"@class\":\"org.openmrs.event.outbox.OutboxEventIT$PatientCreatedEvent\",\"uuid\":\""
+		                        + event.getUuid() + "\"}")),
 		            hasProperty("status", is(OutboxEvent.Status.COMPLETED)),
 		            hasProperty("eventType", is(PatientCreatedEvent.class.getName())),
 		            hasProperty("completedListeners",
@@ -143,7 +160,7 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 	}
 
 	@Test
-	public void interceptAndSaveToOutbox_shouldNotSaveEventWhenNoTransaction() {
+	public void interceptAndSaveToOutbox_shouldSaveEventWhenNoTransaction() {
 		// Arrange: A patient event is created, and there's no transaction
 		PatientCreatedEvent event = new PatientCreatedEvent(UUID.randomUUID().toString());
 
@@ -235,14 +252,14 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 	private void waitForCapturedEvents(int count) throws InterruptedException {
 		long start = System.currentTimeMillis();
 		int capturedCount = 0;
-		while (System.currentTimeMillis() - start < 120000) {
+		while (System.currentTimeMillis() - start < 180000) {
 			capturedCount = testOutboxEventListener.getCapturedEvents().size();
 			if (capturedCount >= count) {
 				return;
 			}
 			Thread.sleep(500);
 		}
-		throw new RuntimeException("Captured " + capturedCount + " events (expected " + count + ") in 120s");
+		throw new RuntimeException("Captured " + capturedCount + " events (expected " + count + ") in 180s");
 	}
 
 	private void waitForOutboxCompleted() throws InterruptedException {

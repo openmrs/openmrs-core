@@ -25,6 +25,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.Auditable;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
@@ -32,8 +33,9 @@ import org.openmrs.User;
 /**
  * OutboxEvent persisted in DB.
  *
- * @since 2.9.x
+ * @since 2.9.0
  */
+@Audited
 @Entity
 @Table(name = "outbox_event")
 public class OutboxEvent extends BaseOpenmrsObject implements Auditable {
@@ -46,7 +48,7 @@ public class OutboxEvent extends BaseOpenmrsObject implements Auditable {
 	private String eventType;
 
 	@Lob
-	@Column(name = "payload", nullable = false)
+	@Column(name = "payload", nullable = false, columnDefinition = "LONGTEXT")
 	private String payload;
 
 	@Column(name = "date_created", nullable = false)
@@ -182,6 +184,7 @@ public class OutboxEvent extends BaseOpenmrsObject implements Auditable {
 	public enum Status {
 		PENDING,
 		PROCESSING,
-		COMPLETED
+		COMPLETED,
+		FAILED
 	}
 }

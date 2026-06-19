@@ -25,14 +25,14 @@ public abstract class BaseSessionEvent extends BaseEvent {
 	/**
 	 * Default constructor for deserialization.
 	 */
-	public BaseSessionEvent() {
+	protected BaseSessionEvent() {
 	}
 
-	public BaseSessionEvent(Set<String> tags) {
+	protected BaseSessionEvent(Set<String> tags) {
 		super(tags);
 	}
 
-	public BaseSessionEvent(String sessionId, Set<String> tags) {
+	protected BaseSessionEvent(String sessionId, Set<String> tags) {
 		super(tags);
 		this.sessionId = sessionId;
 	}

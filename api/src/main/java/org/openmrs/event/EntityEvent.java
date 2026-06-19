@@ -17,6 +17,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.ResolvableTypeProvider;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * It can be implemented to publish application events related to an entity.
@@ -34,8 +35,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @param <T> the related entity
  * @since 2.9.0
  */
-public abstract class EntityEvent<T> extends BaseSessionEvent implements ResolvableTypeProvider {
+public class EntityEvent<T> extends BaseSessionEvent implements ResolvableTypeProvider {
 
+	@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 	protected T entity;
 
 	public EntityEvent() {

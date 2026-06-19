@@ -9,20 +9,62 @@
  */
 package org.openmrs.event.outbox;
 
-import org.springframework.context.ApplicationEvent;
-
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
-public class OutboxExceptionEvent extends ApplicationEvent {
+public class OutboxExceptionEvent {
 
 	private static final long serialVersionUID = 1L;
 
-	public OutboxExceptionEvent(OutboxException item) {
-		super(item);
+	private OutboxException exception;
+
+	private String outboxItemUuid;
+
+	private boolean pendingRetry;
+
+	private int retryCount;
+
+	public OutboxExceptionEvent() {
+	}
+
+	public OutboxExceptionEvent(OutboxException exception) {
+		this.exception = exception;
+	}
+
+	public OutboxExceptionEvent(OutboxException exception, String outboxItemUuid) {
+		this.exception = exception;
+		this.outboxItemUuid = outboxItemUuid;
 	}
 
 	public OutboxException getException() {
-		return (OutboxException) getSource();
+		return exception;
+	}
+
+	public void setException(OutboxException exception) {
+		this.exception = exception;
+	}
+
+	public String getOutboxItemUuid() {
+		return outboxItemUuid;
+	}
+
+	public void setOutboxItemUuid(String outboxItemUuid) {
+		this.outboxItemUuid = outboxItemUuid;
+	}
+
+	public boolean isPendingRetry() {
+		return pendingRetry;
+	}
+
+	public void setPendingRetry(boolean pendingRetry) {
+		this.pendingRetry = pendingRetry;
+	}
+
+	public int getRetryCount() {
+		return retryCount;
+	}
+
+	public void setRetryCount(int retryCount) {
+		this.retryCount = retryCount;
 	}
 }

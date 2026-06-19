@@ -17,7 +17,7 @@ import org.openmrs.event.EntityEvent;
  * Published by {@link org.openmrs.aop.OpenmrsServiceEventAdvice}
  *
  * @param <T> the changed entity
- * @since 2.9.x
+ * @since 2.9.0
  */
 public class RetireServiceEvent<T> extends EntityEvent<T> {
 

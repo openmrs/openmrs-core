@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.hibernate.CallbackException;
 import org.hibernate.Interceptor;
 import org.hibernate.collection.spi.PersistentCollection;
 import org.hibernate.type.Type;
@@ -65,7 +64,7 @@ public class EventInterceptor implements Interceptor {
 	}
 
 	@Override
-	public void onCollectionRemove(Object collection, Object key) throws CallbackException {
+	public void onCollectionRemove(Object collection, Object key) {
 		publishCollectionEvent(collection, key, true);
 	}
 
