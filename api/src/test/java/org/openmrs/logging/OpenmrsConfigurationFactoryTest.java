@@ -30,6 +30,8 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.openmrs.api.PatientService;
+import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -42,6 +44,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 
@@ -321,6 +324,61 @@ class OpenmrsConfigurationFactoryTest {
 			assertThat(configuration.getAppender(OpenmrsConstants.MEMORY_APPENDER_NAME), notNullValue());
 			assertThat("Root logger should reference the memory appender",
 			    configuration.getRootLogger().getAppenders().get(OpenmrsConstants.MEMORY_APPENDER_NAME), notNullValue());
+		}
+	}
+
+	/**
+	 * Regression test for the re-entrant logging initialization that broke downstream modules. While
+	 * log4j2 is being configured, {@code doOpenmrsCustomisations} resolves {@code log.level} from the
+	 * service layer, which may be unavailable or mid-initialization and therefore throw an unchecked
+	 * exception (e.g. a re-entrant {@code ServiceContext} initialization NPE). That must be swallowed
+	 * so configuration completes, rather than aborting it (and, in turn, {@code ServiceContext} class
+	 * initialization). Without the broadened catch the NPE escapes and aborts log4j2 configuration.
+	 */
+	@Test
+	void doOpenmrsCustomisations_shouldNotPropagateRuntimeExceptionWhenReadingGlobalPropertyFails() {
+		AbstractConfiguration configuration = new DefaultConfiguration();
+
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			configUtilMock.when(() -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenThrow(new NullPointerException("ServiceContext not initialized"));
+
+			// Must not throw — logging configuration has to tolerate a mid-initialization service layer
+			OpenmrsConfigurationFactory.doOpenmrsCustomisations(configuration);
+
+			// The proxy-privilege bracket must still be balanced even when the read fails
+			contextMock.verify(() -> Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
+		}
+	}
+
+	/**
+	 * Guards the existing behavior that the broadened catch must not erode: a
+	 * {@link ServiceNotFoundException} for a service other than {@code AdministrationService} is
+	 * unexpected during log-level application and must still propagate, rather than being swallowed by
+	 * the catch-all that tolerates a mid-initialization service layer.
+	 */
+	@Test
+	void doOpenmrsCustomisations_shouldPropagateServiceNotFoundExceptionForOtherServices() {
+		AbstractConfiguration configuration = new DefaultConfiguration();
+
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			configUtilMock.when(() -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenThrow(new ServiceNotFoundException(PatientService.class));
+
+			assertThrows(ServiceNotFoundException.class,
+			    () -> OpenmrsConfigurationFactory.doOpenmrsCustomisations(configuration));
 		}
 	}
 
