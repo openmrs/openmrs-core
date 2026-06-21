@@ -11,9 +11,7 @@ package org.openmrs.api.impl;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -26,13 +24,9 @@ import org.openmrs.Obs;
 import org.openmrs.ObsArchive;
 import org.openmrs.ObsReferenceRange;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
 
 /**
  * Helper class for observation archiving operations using Hibernate Session and HQL.
@@ -49,26 +43,14 @@ public class ObsArchiveHelper {
 		this.sessionFactory = sessionFactory;
 	}
 
-	public boolean isArchivingEnabled() {
-		try {
-			String enabled = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED);
-			return Boolean.parseBoolean(enabled);
-		} catch (APIException | HibernateException | DataAccessException e) {
-			return false;
-		}
-	}
-
 	public boolean isArchived(Integer obsId) {
 		if (obsId == null) {
 			return false;
 		}
 		try {
-			return withManualFlush(() -> {
-				Session session = sessionFactory.getCurrentSession();
-				Number count = (Number) session.createQuery("SELECT count(a) FROM ObsArchive a WHERE a.obsId = :obsId")
-				        .setParameter(PARAM_OBS_ID, obsId).uniqueResult();
-				return count != null && count.intValue() > 0;
-			});
+			// session.get() pre-warms the Hibernate L1 cache for subsequent
+			// calls in the same transaction.
+			return withManualFlush(() -> sessionFactory.getCurrentSession().get(ObsArchive.class, obsId) != null);
 		} catch (HibernateException e) {
 			log.warn("Failed to check if obs {} is archived. Assuming it is not.", obsId, e);
 			return false;
@@ -82,9 +64,9 @@ public class ObsArchiveHelper {
 		try {
 			return withManualFlush(() -> {
 				Session session = sessionFactory.getCurrentSession();
-				Number count = (Number) session.createQuery("SELECT count(a) FROM ObsArchive a WHERE a.obsGroupId = :obsId")
-				        .setParameter(PARAM_OBS_ID, obsId).uniqueResult();
-				return count != null && count.intValue() > 0;
+				Object result = session.createQuery("SELECT 1 FROM ObsArchive a WHERE a.obsGroupId = :obsId")
+				        .setParameter(PARAM_OBS_ID, obsId).setMaxResults(1).uniqueResult();
+				return result != null;
 			});
 		} catch (HibernateException e) {
 			log.warn("Failed to check if obs {} has archived children. Assuming it does not.", obsId, e);
@@ -143,51 +125,30 @@ public class ObsArchiveHelper {
 		}
 	}
 
-	public Map<String, Object> getArchivedMetadata(Integer obsId) {
-		if (obsId == null) {
-			return Collections.emptyMap();
-		}
-		try {
-			return withManualFlush(() -> {
-				Session session = sessionFactory.getCurrentSession();
-				Object[] result = (Object[]) session.createQuery(
-				    "SELECT a.obsGroupId, a.previousVersionId, a.dateVoided FROM ObsArchive a WHERE a.obsId = :obsId")
-				        .setParameter(PARAM_OBS_ID, obsId).uniqueResult();
-				if (result == null) {
-					return Collections.emptyMap();
-				}
-				Map<String, Object> map = new HashMap<>();
-				map.put("obs_group_id", result[0]);
-				map.put("previous_version", result[1]);
-				map.put("date_voided", result[2]);
-				return map;
-			});
-		} catch (HibernateException e) {
-			log.debug("Failed to get metadata for archived obs {}.", obsId, e);
-			return Collections.emptyMap();
-		}
+	public boolean restoreFromArchive(Integer obsId) {
+		return restoreFromArchive(obsId, true);
 	}
 
-	public void restoreFromArchive(Integer obsId) {
-		restoreFromArchive(obsId, true);
-	}
-
-	public void restoreFromArchive(Integer obsId, boolean restoreChildren) {
-		Map<String, Object> metadata = getArchivedMetadata(obsId);
-		if (metadata == null) {
-			return;
+	public boolean restoreFromArchive(Integer obsId, boolean restoreChildren) {
+		Session session = sessionFactory.getCurrentSession();
+		// Load the entity to seed the L1 cache for subsequent operations
+		ObsArchive archive = session.get(ObsArchive.class, obsId);
+		if (archive == null) {
+			return false;
 		}
 
-		Integer obsGroupId = (Integer) metadata.get("obs_group_id");
-		if (obsGroupId != null && isArchived(obsGroupId)) {
+		// Restore the parent group first if it is also archived.
+		// restoreFromArchive returns early if the parent is not found.
+		Integer obsGroupId = archive.getObsGroupId();
+		if (obsGroupId != null) {
 			restoreFromArchive(obsGroupId, false);
 		}
 
 		moveRecordFromArchiveToActiveTable(obsId);
 
 		if (restoreChildren) {
-			Date dateVoided = (Date) metadata.get("date_voided");
-			Session session = sessionFactory.getCurrentSession();
+			// Read dateVoided from the already-loaded entity
+			Date dateVoided = archive.getDateVoided();
 			List<Integer> childIds;
 			if (dateVoided != null) {
 				childIds = session.createQuery(
@@ -203,10 +164,13 @@ public class ObsArchiveHelper {
 				restoreFromArchive(childId, true);
 			}
 		}
+
+		return true;
 	}
 
 	private void moveRecordFromArchiveToActiveTable(Integer obsId) {
 		Session session = sessionFactory.getCurrentSession();
+		// Retrieve the entity from the L1 cache, loaded earlier by restoreFromArchive()
 		ObsArchive archive = session.get(ObsArchive.class, obsId);
 		if (archive == null) {
 			return;
@@ -242,6 +206,9 @@ public class ObsArchiveHelper {
 		// 4. Delete from archive obs
 		session.createNativeQuery("DELETE FROM obs_archive WHERE obs_id = :obsId").setParameter(PARAM_OBS_ID, obsId)
 		        .executeUpdate();
+
+		// Evict the stale entity since native SQL bypasses Hibernate's entity lifecycle
+		session.evict(archive);
 	}
 
 	private Obs convertToObs(ObsArchive archive) {
