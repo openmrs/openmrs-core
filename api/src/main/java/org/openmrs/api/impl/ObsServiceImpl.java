@@ -117,13 +117,13 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 
 		ensureRequirePrivilege(obs);
 
-		boolean isArchived = false;
-		if (obs.getObsId() != null) {
-			isArchived = getArchiveHelper().isArchived(obs.getObsId());
-		}
-
-		if (isArchived) {
-			obs = restoreAndUnvoidFromArchive(obs, true);
+		// Only check obs_archive when the obs is absent from the main table.
+		// dao.getObs() hits the first-level cache before querying the database.
+		if (obs.getObsId() != null && dao.getObs(obs.getObsId()) == null) {
+			Obs restored = restoreAndUnvoidFromArchive(obs, true);
+			if (restored != null) {
+				obs = restored;
+			}
 		}
 
 		//Should allow updating a voided Obs, it seems to be pointless to restrict it,
@@ -140,21 +140,20 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	}
 
 	private Obs restoreAndUnvoidFromArchive(Obs obs, boolean isSaveOperation) {
-		Date originalDateVoided = null;
-
-		if (!isSaveOperation) {
-			Map<String, Object> metadata = getArchiveHelper().getArchivedMetadata(obs.getObsId());
-			if (metadata != null) {
-				originalDateVoided = (Date) metadata.get("date_voided");
-			}
+		boolean restored = getArchiveHelper().restoreFromArchive(obs.getObsId());
+		if (!restored) {
+			// Obs was not in obs_archive either, so there is nothing to restore
+			return null;
 		}
 
-		getArchiveHelper().restoreFromArchive(obs.getObsId());
 		Context.evictFromSession(obs);
 		Obs reloadedObs = dao.getObs(obs.getObsId());
 
+		// Capture dateVoided before any mutation. This is needed by unvoidArchivedChildren to
+		// identify which children were voided in the same batch as this obs.
+		Date originalDateVoided = reloadedObs.getDateVoided();
+
 		if (isSaveOperation) {
-			originalDateVoided = reloadedObs.getDateVoided();
 			boolean unvoiding = reloadedObs.getVoided() && !obs.getVoided();
 
 			reloadedObs.setVoided(obs.getVoided());
@@ -383,13 +382,13 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 */
 	@Override
 	public Obs unvoidObs(Obs obs) throws APIException {
-		boolean isArchived = false;
-		if (obs.getObsId() != null) {
-			isArchived = getArchiveHelper().isArchived(obs.getObsId());
-		}
-
-		if (isArchived) {
-			return restoreAndUnvoidFromArchive(obs, false);
+		// Only check obs_archive when the obs is absent from the main table.
+		// dao.getObs() hits the first-level cache before querying the database.
+		if (obs.getObsId() != null && dao.getObs(obs.getObsId()) == null) {
+			Obs restored = restoreAndUnvoidFromArchive(obs, false);
+			if (restored != null) {
+				return restored;
+			}
 		}
 
 		return Context.getObsService().saveObs(obs, "unvoided");

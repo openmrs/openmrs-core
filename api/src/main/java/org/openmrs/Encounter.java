@@ -40,9 +40,11 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.VoidHandler;
 import org.openmrs.api.impl.ObsArchiveHelper;
+import org.springframework.dao.DataAccessException;
 
 /**
  * An Encounter represents one visit or interaction of a patient with a healthcare worker. Every
@@ -289,7 +291,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 					if (archiveHelper != null) {
 						ret.addAll(archiveHelper.getArchivedObsByEncounterId(this.getEncounterId()));
 					}
-				} catch (Exception e) {
+				} catch (APIException | DataAccessException e) {
 					// archive table may not exist yet or context not available, degrade gracefully
 				}
 			}
