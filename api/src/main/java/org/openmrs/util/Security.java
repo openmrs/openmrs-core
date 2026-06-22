@@ -25,6 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -38,10 +39,28 @@ public class Security {
 	 * encryption settings
 	 */
 	private static final Logger log = LoggerFactory.getLogger(Security.class);
-	
+
 	private static final Random RANDOM = new SecureRandom();
 
 	private Security() {
+	}
+
+	private static PasswordEncoder getPasswordEncoder() {
+		return Context.getRegisteredComponent("passwordEncoder", PasswordEncoder.class);
+	}
+
+	/**
+	 * Encodes a password by generating a salt, hashing with SHA-512, and returning
+	 * the hash and salt as a two-element array. Uses the configured PasswordEncoder internally.
+	 *
+	 * @param rawPassword the cleartext password
+	 * @return String[] where [0] is the hashed password and [1] is the salt
+	 * @since 2.8.8
+	 */
+	public static String[] encodePassword(String rawPassword) {
+		String encoded = getPasswordEncoder().encode(rawPassword);
+		String[] parts = encoded.split(":", 2);
+		return new String[] { parts[0], parts.length > 1 ? parts[1] : "" };
 	}
 
 	/**
@@ -63,14 +82,13 @@ public class Security {
 		if (hashedPassword == null || passwordToHash == null) {
 			throw new APIException("password.cannot.be.null", (Object[]) null);
 		}
-		
+
 		return hashedPassword.equals(encodeString(passwordToHash))
 			|| hashedPassword.equals(encodeStringSHA1(passwordToHash))
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
 	}
 
 	/**
-	 /**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
 	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
 	 *
