@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +52,7 @@ public class ChangeLogDetective {
 
 	private ChangeLogVersionFinder changeLogVersionFinder;
 
-	private String initialSnapshotVersion;
+	private volatile String initialSnapshotVersion;
 
 	private List<String> unrunLiquibaseUpdates;
 
@@ -90,54 +89,58 @@ public class ChangeLogDetective {
 	 * @throws Exception
 	 */
 	public String getInitialLiquibaseSnapshotVersion(String context, LiquibaseProvider liquibaseProvider) throws Exception {
+		String cached = initialSnapshotVersion;
+		if (cached != null) {
+			return cached;
+		}
 
-		if (initialSnapshotVersion != null) {
+		synchronized (this) {
+			cached = initialSnapshotVersion;
+			if (cached != null) {
+				return cached;
+			}
+
+			log.info("identifying the Liquibase snapshot version that had been used to initialize the OpenMRS database...");
+			Map<String, List<String>> snapshotCombinations = changeLogVersionFinder.getSnapshotCombinations();
+
+			if (snapshotCombinations.isEmpty()) {
+				throw new IllegalStateException(
+				        "identifying the Liqubase snapshot version that had been used to initialize the OpenMRS database failed as no candidate change sets were found");
+			}
+
+			List<String> snapshotVersions = getSnapshotVersionsInDescendingOrder(snapshotCombinations);
+
+			for (String version : snapshotVersions) {
+				int unrunChangeSetsCount = 0;
+
+				log.info("looking for un-run change sets in snapshot version '{}'", version);
+				List<String> changeSets = snapshotCombinations.get(version);
+
+				Contexts contexts = new Contexts(context);
+				for (String filename : changeSets) {
+					List<ChangeSet> rawUnrunChangeSets = getUnrunChangeSets(filename, contexts, liquibaseProvider);
+
+					List<ChangeSet> refinedUnrunChangeSets = excludeVintageChangeSets(filename, rawUnrunChangeSets);
+
+					log.info("file '{}' contains {} un-run change sets", filename, refinedUnrunChangeSets.size());
+					logUnRunChangeSetDetails(filename, refinedUnrunChangeSets);
+
+					unrunChangeSetsCount += refinedUnrunChangeSets.size();
+				}
+
+				if (unrunChangeSetsCount == 0) {
+					log.info("the Liquibase snapshot version that had been used to initialize the OpenMRS database is '{}'", version);
+					initialSnapshotVersion = version;
+					return version;
+				}
+			}
+
+			log.info(
+			        "the snapshot version that had been used to initialize the OpenMRS database could not be identified, falling back to the default version '{}'",
+			        DEFAULT_SNAPSHOT_VERSION);
+			initialSnapshotVersion = DEFAULT_SNAPSHOT_VERSION;
 			return initialSnapshotVersion;
 		}
-
-		log.info("identifying the Liquibase snapshot version that had been used to initialize the OpenMRS database...");
-		Map<String, List<String>> snapshotCombinations = changeLogVersionFinder.getSnapshotCombinations();
-
-		if (snapshotCombinations.isEmpty()) {
-			throw new IllegalStateException(
-			        "identifying the Liqubase snapshot version that had been used to initialize the OpenMRS database failed as no candidate change sets were found");
-		}
-
-		List<String> snapshotVersions = getSnapshotVersionsInDescendingOrder(snapshotCombinations);
-
-		for (String version : snapshotVersions) {
-			int unrunChangeSetsCount = 0;
-
-			log.info("looking for un-run change sets in snapshot version '{}'", version);
-			List<String> changeSets = snapshotCombinations.get(version);
-
-			Contexts contexts = new Contexts(context);
-			for (String filename : changeSets) {
-				List<ChangeSet> rawUnrunChangeSets = getUnrunChangeSets(filename, contexts, liquibaseProvider);
-
-				List<ChangeSet> refinedUnrunChangeSets = excludeVintageChangeSets(filename, rawUnrunChangeSets);
-
-				log.info("file '{}' contains {} un-run change sets", filename, refinedUnrunChangeSets.size());
-				logUnRunChangeSetDetails(filename, refinedUnrunChangeSets);
-
-				unrunChangeSetsCount += refinedUnrunChangeSets.size();
-			}
-
-			if (unrunChangeSetsCount == 0) {
-				log.info("the Liquibase snapshot version that had been used to initialize the OpenMRS database is '{}'",
-				    version);
-
-				initialSnapshotVersion = version;
-				return initialSnapshotVersion;
-			}
-		}
-
-		log.info(
-		    "the snapshot version that had been used to initialize the OpenMRS database could not be identified, falling back to the default version '{}'",
-		    DEFAULT_SNAPSHOT_VERSION);
-
-		initialSnapshotVersion = DEFAULT_SNAPSHOT_VERSION;
-		return initialSnapshotVersion;
 	}
 
 	/**
@@ -150,7 +153,6 @@ public class ChangeLogDetective {
 	 */
 	public List<String> getUnrunLiquibaseUpdateFileNames(String snapshotVersion, String context,
 	        LiquibaseProvider liquibaseProvider) throws Exception {
-
 		if (unrunLiquibaseUpdates != null && unrunLiquibaseUpdates.isEmpty()) {
 			return unrunLiquibaseUpdates;
 		}
