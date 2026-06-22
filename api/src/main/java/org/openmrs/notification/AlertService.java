@@ -51,10 +51,18 @@ public interface AlertService extends OpenmrsService {
 	public Alert saveAlert(Alert alert) throws APIException;
 
 	/**
-	 * Get alert by internal identifier
+	 * Get alert by internal identifier. Callers may only read an alert addressed to themselves; an
+	 * alert addressed to another user is returned only to a caller holding the
+	 * {@link PrivilegeConstants#GET_ALERTS} privilege. Unlike the user-scoped reads such as
+	 * {@link #getAlerts(User, boolean, boolean)} - which throw
+	 * {@link org.openmrs.api.APIAuthenticationException} for another user's alerts - this id-based
+	 * lookup instead returns <code>null</code> in that case, the same as for an unknown identifier, so
+	 * it cannot be used to probe which alert ids exist.
 	 *
 	 * @param alertId internal alert identifier
-	 * @return alert with given internal identifier
+	 * @return the alert with the given internal identifier, or <code>null</code> if no such alert
+	 *         exists, or it is addressed to another user and the caller lacks the
+	 *         {@link PrivilegeConstants#GET_ALERTS} privilege
 	 * @throws APIException
 	 */
 	@Authorized
@@ -70,12 +78,15 @@ public interface AlertService extends OpenmrsService {
 	public void purgeAlert(Alert alert) throws APIException;
 
 	/**
-	 * Find all alerts for a user that have not expired
+	 * Find all alerts for a user that have not expired. Callers may only read their own alerts; reading
+	 * another user's alerts requires the {@link PrivilegeConstants#GET_ALERTS} privilege.
 	 *
 	 * @param user
 	 * @return alerts that are unread _or_ read that have not expired
 	 * @see #getAlerts(User, boolean, boolean)
 	 * @throws APIException
+	 * @throws org.openmrs.api.APIAuthenticationException if <code>user</code> is another user and the
+	 *             caller lacks the {@link PrivilegeConstants#GET_ALERTS} privilege
 	 */
 	@Authorized
 	public List<Alert> getAllActiveAlerts(User user) throws APIException;
@@ -84,23 +95,29 @@ public interface AlertService extends OpenmrsService {
 	 * Find the alerts that are not read and have not expired for a user This will probably be the most
 	 * commonly called method If null is passed in for <code>user</code>, find alerts for the currently
 	 * authenticated user. If no user is authenticated, search on "new User()" (for "Anonymous" role
-	 * alert possibilities)
+	 * alert possibilities). Callers may only read their own alerts; reading another user's alerts
+	 * requires the {@link PrivilegeConstants#GET_ALERTS} privilege.
 	 *
 	 * @param user the user that is assigned to the returned alerts
 	 * @return alerts that are unread and not expired
 	 * @throws APIException
+	 * @throws org.openmrs.api.APIAuthenticationException if <code>user</code> is another user and the
+	 *             caller lacks the {@link PrivilegeConstants#GET_ALERTS} privilege
 	 */
 	@Authorized
 	public List<Alert> getAlertsByUser(User user) throws APIException;
 
 	/**
-	 * Finds alerts for the given user with the given status
+	 * Finds alerts for the given user with the given status. Callers may only read their own alerts;
+	 * reading another user's alerts requires the {@link PrivilegeConstants#GET_ALERTS} privilege.
 	 *
 	 * @param user to restrict to
 	 * @param includeRead
 	 * @param includeExpired
 	 * @return alerts for this user with these options
 	 * @throws APIException
+	 * @throws org.openmrs.api.APIAuthenticationException if <code>user</code> is another user and the
+	 *             caller lacks the {@link PrivilegeConstants#GET_ALERTS} privilege
 	 */
 	@Authorized
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws APIException;
@@ -111,7 +128,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return list of unexpired alerts
 	 * @throws APIException
 	 */
-	@Authorized
+	@Authorized(PrivilegeConstants.GET_ALERTS)
 	public List<Alert> getAllAlerts() throws APIException;
 
 	/**
@@ -121,7 +138,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return list of alerts
 	 * @throws APIException
 	 */
-	@Authorized
+	@Authorized(PrivilegeConstants.GET_ALERTS)
 	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException;
 
 	/**
