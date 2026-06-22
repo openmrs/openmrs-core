@@ -112,7 +112,7 @@
 		<!-- Other Runtime -->
 		<javassistVersion>3.32.0-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
-		<groovyVersion>2.4.21</groovyVersion>
+		<groovyVersion>3.0.25</groovyVersion>
 		<tomcatVersion>11.0.22</tomcatVersion>
 		<jodaTimeVersion>2.14.2</jodaTimeVersion>
 		<guavaVersion>33.6.0-jre</guavaVersion>
