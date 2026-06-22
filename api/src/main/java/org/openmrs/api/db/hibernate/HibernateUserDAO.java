@@ -101,11 +101,8 @@ public class HibernateUserDAO implements UserDAO {
 			*/
 			sessionFactory.getCurrentSession().flush();
 			
-			//update the new user with the password
-			String salt = Security.getRandomToken();
-			String hashedPassword = Security.encodeString(password + salt);
-			
-			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user
+			String[] encoded = Security.encodePassword(password);
+			updateUserPassword(encoded[0], encoded[1], Context.getAuthenticatedUser().getUserId(), new Date(), user
 			        .getUserId());
 		}
 		
@@ -346,13 +343,8 @@ public class HibernateUserDAO implements UserDAO {
 			authUser = u;
 		}
 		
-		String salt = getLoginCredential(u).getSalt();
-		if (StringUtils.isBlank(salt)) {
-			salt = Security.getRandomToken();
-		}
-		String newHashedPassword = Security.encodeString(pw + salt);
-		
-		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
+		String[] encoded = Security.encodePassword(pw);
+		updateUserPassword(encoded[0], encoded[1], authUser.getUserId(), new Date(), u.getUserId());
 	}
 	
 	/**
@@ -432,10 +424,8 @@ public class HibernateUserDAO implements UserDAO {
 		
 		log.info("updating password for {}", u.getUsername());
 		
-		// update the user with the new password
-		String salt = credentials.getSalt();
-		String newHashedPassword = Security.encodeString(newPassword + salt);
-		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
+		String[] encoded = Security.encodePassword(newPassword);
+		updateUserPassword(encoded[0], encoded[1], u.getUserId(), new Date(), u.getUserId());
 	}
 	
 	/**
