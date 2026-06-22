@@ -41,7 +41,7 @@ public @interface OpenmrsProfile {
 	 * stereotype annotation with a non-empty value, the two names must agree; a conflict will cause a
 	 * Spring startup exception.
 	 *
-	 * @since 2.8
+	 * @since 3.0.0
 	 */
 	String value() default "";
 

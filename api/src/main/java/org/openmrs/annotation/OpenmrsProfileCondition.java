@@ -52,6 +52,6 @@ public class OpenmrsProfileCondition implements Condition {
 		profile.put("openmrsPlatformVersion", annotationAttributes.getOrDefault("openmrsPlatformVersion", ""));
 		profile.put("modules", annotationAttributes.getOrDefault("modules", new String[0]));
 
-		return new OpenmrsProfileExcludeFilter().matchOpenmrsProfileAttributes(profile);
+		return OpenmrsProfileExcludeFilter.matchOpenmrsProfileAttributes(profile);
 	}
 }
