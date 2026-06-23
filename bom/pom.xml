@@ -51,7 +51,7 @@
 		<hibernateVersion>7.3.6.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
-		<hibernateValidatorVersion>9.1.0.Final</hibernateValidatorVersion>
+		<hibernateValidatorVersion>9.1.1.Final</hibernateValidatorVersion>
 		<luceneVersion>10.4.0</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.6.Final</infinispanVersion>
@@ -110,7 +110,7 @@
 		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
 
 		<!-- Other Runtime -->
-		<javassistVersion>3.31.0-GA</javassistVersion>
+		<javassistVersion>3.32.0-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
 		<tomcatVersion>11.0.22</tomcatVersion>
