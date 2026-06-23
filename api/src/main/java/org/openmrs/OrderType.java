@@ -23,7 +23,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
@@ -60,10 +59,14 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	@JoinColumn(name = "parent")
 	private OrderType parent;
 
+	// Don't declare uniqueConstraints on this join table. As of Hibernate 7.4, an explicit unique
+	// constraint covering the join columns is emitted in place of the composite primary key, and
+	// dbUnit's REFRESH (against the integration tests' hbm2ddl-generated schema) needs that primary
+	// key to update existing rows. Leaving it off lets hbm2ddl generate the primary key; production
+	// gets its primary key from Liquibase regardless.
 	@Independent
 	@ManyToMany
-	@JoinTable(name = "order_type_class_map", joinColumns = @JoinColumn(name = "order_type_id"), inverseJoinColumns = @JoinColumn(name = "concept_class_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
-	        "order_type_id", "concept_class_id" }))
+	@JoinTable(name = "order_type_class_map", joinColumns = @JoinColumn(name = "order_type_id"), inverseJoinColumns = @JoinColumn(name = "concept_class_id"))
 	private Set<ConceptClass> conceptClasses;
 
 	/**
