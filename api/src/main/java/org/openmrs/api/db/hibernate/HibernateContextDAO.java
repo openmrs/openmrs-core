@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
@@ -157,10 +158,10 @@ public class HibernateContextDAO implements ContextDAO {
 
 			// if the username and password match, hydrate the user and return it
 			if (passwordOnRecord != null && Security.hashMatches(passwordOnRecord, password + saltOnRecord)) {
-				// hydrate the user object
-				candidateUser.getAllRoles().size();
-				candidateUser.getUserProperties().size();
-				candidateUser.getPrivileges().size();
+				// hydrate the user object by initializing its lazy collections within the session
+				Hibernate.initialize(candidateUser.getAllRoles());
+				Hibernate.initialize(candidateUser.getUserProperties());
+				Hibernate.initialize(candidateUser.getPrivileges());
 
 				// only clean up if the were some login failures, otherwise all should be clean
 				int attempts = getUsersLoginAttempts(candidateUser);
@@ -559,6 +560,7 @@ public class HibernateContextDAO implements ContextDAO {
 		try {
 			searchSessionFactory.getSearchSession().massIndexer(types).startAndWait();
 		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			throw new RuntimeException(e);
 		}
 	}

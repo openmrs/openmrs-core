@@ -112,7 +112,9 @@ public abstract class AbstractSnapshotTuner {
 		File file = Paths.get(path).toFile();
 		if (file.exists() && file.isFile()) {
 			log.info("Deleting updated file from previous run: '{}'...", path);
-			file.delete();
+			if (!file.delete()) {
+				log.warn("Unable to delete file from previous run: '{}'", path);
+			}
 		}
 	}
 

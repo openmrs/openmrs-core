@@ -201,6 +201,7 @@ public class UpdateFilter extends StartupFilter {
 					log.debug("Sleeping for 3 seconds because of a bad username/password");
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
 					log.error("Unable to sleep", e);
 					throw new ServletException("Got interrupted while trying to sleep thread", e);
 				}
@@ -553,7 +554,7 @@ public class UpdateFilter extends StartupFilter {
 	 * liquibasechangeloglock table by another user, when he also tries to run database update when
 	 * another user is currently running it
 	 */
-	public static Boolean isLockReleased() {
+	public static synchronized Boolean isLockReleased() {
 		return lockReleased;
 	}
 

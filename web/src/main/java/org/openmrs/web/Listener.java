@@ -430,7 +430,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			// got here because the dwr-modules.xml file is empty for some reason.  This might
 			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
 			log.debug("Error clearing dwr-modules.xml", e);
-			dwrFile.delete();
+			if (!dwrFile.delete()) {
+				log.warn("Unable to delete dwr-modules.xml at {}", dwrFile.getAbsolutePath());
+			}
 
 			OutputStreamWriter writer = null;
 			try {

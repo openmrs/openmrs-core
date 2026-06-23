@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -95,6 +95,8 @@ import static org.openmrs.web.filter.initialization.InitializationWizardModel.DE
 public class InitializationFilter extends StartupFilter {
 
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(InitializationFilter.class);
+
+	private static final SecureRandom RANDOM = new SecureRandom();
 
 	private static final String DATABASE_POSTGRESQL = "postgresql";
 
@@ -287,7 +289,9 @@ public class InitializationFilter extends StartupFilter {
 
 			if (!runtimeProperties.exists()) {
 				try {
-					runtimeProperties.createNewFile();
+					if (!runtimeProperties.createNewFile()) {
+						log.warn("Unable to create runtime properties file at {}", runtimeProperties.getAbsolutePath());
+					}
 					// reset the error objects in case of refresh
 					wizardModel.canCreate = true;
 					wizardModel.cannotCreateErrorMessage = "";
@@ -302,7 +306,10 @@ public class InitializationFilter extends StartupFilter {
 				// delete the file again after testing the create/write
 				// so that if the user stops the webapp before finishing
 				// this wizard, they can still get back into it
-				runtimeProperties.delete();
+				if (!runtimeProperties.delete()) {
+					log.warn("Unable to delete temporary runtime properties file at {}",
+					    runtimeProperties.getAbsolutePath());
+				}
 
 			} else {
 				wizardModel.canWrite = runtimeProperties.canWrite();
@@ -459,7 +466,9 @@ public class InitializationFilter extends StartupFilter {
 			File runtimeProperties = getRuntimePropertiesFile();
 			if (!runtimeProperties.exists()) {
 				try {
-					runtimeProperties.createNewFile();
+					if (!runtimeProperties.createNewFile()) {
+						log.warn("Unable to create runtime properties file at {}", runtimeProperties.getAbsolutePath());
+					}
 					// reset the error objects in case of refresh
 					wizardModel.canCreate = true;
 					wizardModel.cannotCreateErrorMessage = "";
@@ -473,7 +482,10 @@ public class InitializationFilter extends StartupFilter {
 				// delete the file again after testing the create/write
 				// so that if the user stops the webapp before finishing
 				// this wizard, they can still get back into it
-				runtimeProperties.delete();
+				if (!runtimeProperties.delete()) {
+					log.warn("Unable to delete temporary runtime properties file at {}",
+					    runtimeProperties.getAbsolutePath());
+				}
 			} else {
 				wizardModel.canWrite = runtimeProperties.canWrite();
 
@@ -1122,7 +1134,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * @return true if installation has been started
 	 */
-	public static boolean isInstallationStarted() {
+	public static synchronized boolean isInstallationStarted() {
 		return isInstallationStarted;
 	}
 
@@ -1175,8 +1187,8 @@ public class InitializationFilter extends StartupFilter {
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(fileOut);
 
-			if (tempFile != null) {
-				tempFile.delete();
+			if (tempFile != null && !tempFile.delete()) {
+				log.warn("Unable to delete temporary test data file at {}", tempFile.getAbsolutePath());
 			}
 		}
 	}
@@ -1339,7 +1351,10 @@ public class InitializationFilter extends StartupFilter {
 		public void waitForCompletion() {
 			try {
 				future.get();
-			} catch (InterruptedException | ExecutionException e) {
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new RuntimeException(e);
+			} catch (ExecutionException e) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -1470,10 +1485,9 @@ public class InitializationFilter extends StartupFilter {
 							// generate random password from this subset of alphabet
 							// intentionally left out these characters: ufsb$() to prevent certain words forming randomly
 							String chars = "acdeghijklmnopqrtvwxyzACDEGHIJKLMNOPQRTVWXYZ0123456789.|~@#^&";
-							Random r = new Random();
 							StringBuilder randomStr = new StringBuilder("");
 							for (int x = 0; x < 12; x++) {
-								randomStr.append(chars.charAt(r.nextInt(chars.length())));
+								randomStr.append(chars.charAt(RANDOM.nextInt(chars.length())));
 							}
 							connectionPassword.append(randomStr);
 
