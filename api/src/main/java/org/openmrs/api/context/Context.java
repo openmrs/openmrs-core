@@ -1006,14 +1006,16 @@ public class Context {
 		// do any context database specific startup
 		getContextDAO().startup(props);
 
+		// this should be first in the startup routines so that the application
+		// data directory can be set from the runtime properties
+		OpenmrsUtil.startup(props);
+
+		getContextDAO().setupSearchIndex();
+
 		if (getAdministrationService().isCoreSetupOnVersionChangeNeeded()) {
 			log.info("Detected core version change. Running core setup hooks and Liquibase.");
 			getAdministrationService().runCoreSetupOnVersionChange();
 		}
-
-		// this should be first in the startup routines so that the application
-		// data directory can be set from the runtime properties
-		OpenmrsUtil.startup(props);
 
 		openSession();
 		clearSession();
@@ -1021,8 +1023,6 @@ public class Context {
 		// add any privileges/roles that /must/ exist for openmrs to work
 		// correctly.
 		checkCoreDataset();
-
-		getContextDAO().setupSearchIndex();
 
 		// Loop over each module and startup each with these custom properties
 		ModuleUtil.startup(props);
