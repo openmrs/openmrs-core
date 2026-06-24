@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.notification.Message;
+import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.Template;
 
@@ -28,10 +29,9 @@ public class VelocityMessagePreparatorTest {
 
 	/**
 	 * The engine must be configured with the SecureUberspector so that a template cannot use reflection
-	 * to obtain {@link Runtime} (the classic Velocity SSTI -&gt; RCE primitive). With the default
-	 * introspector {@code $foo.class.forName('java.lang.Runtime').getRuntime()} resolves to a live
-	 * Runtime instance; the secure introspector blocks the reflective method calls so the reference
-	 * cannot resolve.
+	 * to obtain {@link Runtime} (the classic Velocity SSTI -&gt; RCE primitive). Both the
+	 * {@code $foo.class} property form and the {@code $foo.getClass()} method form must be neutralised;
+	 * with the default introspector either resolves to a live Runtime instance.
 	 *
 	 * @see VelocityMessagePreparator#prepare(Template)
 	 */
@@ -42,14 +42,12 @@ public class VelocityMessagePreparatorTest {
 		Map<String, Object> data = new HashMap<>();
 		data.put("foo", "bar");
 
-		Template template = new Template();
-		template.setData(data);
-		template.setTemplate("#set($r=$foo.class.forName('java.lang.Runtime').getRuntime())[$r]");
+		// property form: $foo.class.forName(...)
+		assertRuntimeIsNotReachable(preparator, data, "#set($r=$foo.class.forName('java.lang.Runtime').getRuntime())[$r]");
 
-		Message message = preparator.prepare(template);
-
-		assertFalse(message.getContent().contains("java.lang.Runtime"),
-		    "SecureUberspector must block reflective access to java.lang.Runtime, but rendered: " + message.getContent());
+		// method form: $foo.getClass().forName(...)
+		assertRuntimeIsNotReachable(preparator, data,
+		    "#set($r=$foo.getClass().forName('java.lang.Runtime').getRuntime())[$r]");
 	}
 
 	/**
@@ -71,5 +69,17 @@ public class VelocityMessagePreparatorTest {
 		Message message = preparator.prepare(template);
 
 		assertEquals("Hello World!", message.getContent());
+	}
+
+	private void assertRuntimeIsNotReachable(MessagePreparator preparator, Map<String, Object> data, String templateBody)
+	        throws MessageException {
+		Template template = new Template();
+		template.setData(data);
+		template.setTemplate(templateBody);
+
+		Message message = preparator.prepare(template);
+
+		assertFalse(message.getContent().contains("java.lang.Runtime"),
+		    "SecureUberspector must block reflective access to java.lang.Runtime, but rendered: " + message.getContent());
 	}
 }
