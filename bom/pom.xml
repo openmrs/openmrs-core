@@ -52,7 +52,7 @@
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.1.Final</hibernateValidatorVersion>
-		<luceneVersion>10.4.0</luceneVersion>
+		<luceneVersion>10.5.0</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.6.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
