@@ -57,7 +57,7 @@ RUN mvn $MVN_SETTINGS $MVN_ARGS
 ### Development Stage
 FROM maven:3.9-$DEV_JDK AS dev
 
-RUN yum -y update && yum -y install tar gzip git curl && yum clean all
+RUN yum -y update && yum -y install tar gzip git curl mariadb && yum clean all
 
 # Setup Tini
 ARG TARGETARCH
@@ -106,7 +106,7 @@ CMD ["/openmrs/startup-dev.sh"]
 ### Production Stage
 FROM tomcat:9-$RUNTIME_JDK
 
-RUN yum -y update && yum -y install curl && yum clean all && rm -rf /usr/local/tomcat/webapps/*
+RUN yum -y update && yum -y install curl mariadb && yum clean all && rm -rf /usr/local/tomcat/webapps/*
 
 # Setup Tini
 ARG TARGETARCH
