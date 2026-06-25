@@ -14,7 +14,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.event.EventPublisher;
 import org.openmrs.event.outbox.OutboxEvent;
-import org.openmrs.event.outbox.OutboxEventPayload;
+import org.openmrs.event.EventPayload;
 import org.openmrs.event.outbox.OutboxEventRegistry;
 import org.openmrs.event.outbox.OutboxEventService;
 import org.openmrs.event.outbox.OutboxException;
@@ -100,9 +100,9 @@ public class OutboxPollingTaskHandler implements TaskHandler<OutboxPollingTaskDa
 				try {
 					Class<?> eventClass = Class.forName(item.getEventType());
 					Object event;
-					if (OutboxEventPayload.class.isAssignableFrom(eventClass)) {
+					if (EventPayload.class.isAssignableFrom(eventClass)) {
 						event = eventClass.getDeclaredConstructor().newInstance();
-						((OutboxEventPayload) event).fromPayload(item.getPayload());
+						((EventPayload) event).fromPayload(item.getPayload());
 					} else {
 						event = objectMapper.readValue(item.getPayload(), eventClass);
 					}
