@@ -28,9 +28,10 @@
             http://www.springframework.org/schema/util/spring-util-3.0.xsd
 			http://www.springframework.org/schema/cache
 			http://www.springframework.org/schema/cache/spring-cache.xsd">
-	
+
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
+	<bean id="passwordEncoder" class="org.openmrs.util.OpenmrsPasswordEncoder" factory-method="create"/>
 	<!--  **************************  EVENT LISTENERS ***************************** -->
 
 	<!--  Clear out the global property listeners list first -->
@@ -186,9 +187,9 @@
 	</bean>
 
 	<!--  **************************  SCHEDULER SERVICE  *************************  -->
-	<!-- 
+	<!--
 		Note that we have circular dependency between service and context object.
-		There's nothing we could do about this.  
+		There's nothing we could do about this.
 	-->
 	<bean id="patientServiceTarget" class="org.openmrs.api.impl.PatientServiceImpl">
 		<property name="patientDAO" ref="patientDAO"/>
@@ -500,7 +501,7 @@
 		<!-- Caching handled by cache:annotation-driven -->
 		<!-- Transactions handled by tx:annotation-driven -->
 	</util:list>
-	
+
 	<!--  **************************  SESSION FACTORY  *************************  -->
 
 	<util:list id="moduleTestingMappingJarLocations">
@@ -557,7 +558,7 @@
 
         <property name="messagePreparator">
 			<bean id="mailMessagePreparator" class="org.openmrs.notification.mail.velocity.VelocityMessagePreparator"/>
-		</property>        
+		</property>
 
         <property name="messageSender">
 			<bean id="mailMessageSender" class="org.openmrs.notification.mail.MailMessageSender">
@@ -566,9 +567,9 @@
 					    <property name="jndiName"><value>java:comp/env/mail/OpenmrsMailSession</value></property>
 					</bean>
 				</property>
-			</bean> 		
+			</bean>
 		</property>
-    </bean>   
+    </bean>
 	-->
 
 	<!--  **************************  VALIDATOR CONFIGURATION  *************************  -->
