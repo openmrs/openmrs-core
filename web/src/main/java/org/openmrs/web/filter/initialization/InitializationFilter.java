@@ -885,13 +885,13 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 
-	private void startInstallation() {
-                if (!isInstallationStarted()) {
-                        initJob = new InitializationCompletion();
-                        setInstallationStarted(true);
-                        initJob.start();
-                }
-        }
+	protected void startInstallation() {
+		if (!isInstallationStarted()) {
+			initJob = new InitializationCompletion();
+			setInstallationStarted(true);
+			initJob.start();
+		}
+	}
 
 	private void createTablesTask() {
 		if (wizardModel.createTables) {
