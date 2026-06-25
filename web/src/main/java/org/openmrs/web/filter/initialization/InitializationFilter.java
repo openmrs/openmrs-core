@@ -496,7 +496,7 @@ public class InitializationFilter extends StartupFilter {
 			checkLocaleAttributes(httpRequest);
 			referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE,
 			    httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
-			log.info("Locale stored in session is " + httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+			log.info("Locale stored in session is {}", httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 
 			httpResponse.setContentType("text/html");
 			// otherwise do step one of the wizard
@@ -996,7 +996,7 @@ public class InitializationFilter extends StartupFilter {
 			// if user has changed locale parameter to new one
 			// or chooses it parameter at first page loading
 			if (storedLocale == null || !storedLocale.equals(localeParameter)) {
-				log.info("Stored locale parameter to session " + localeParameter);
+				log.info("Stored locale parameter to session {}", localeParameter.replaceAll("[\r\n]", ""));
 				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
 			}
 			if (rememberLocale) {
@@ -1068,7 +1068,7 @@ public class InitializationFilter extends StartupFilter {
 			file = new File(OpenmrsUtil.getApplicationDataDirectory(), getRuntimePropertiesFileName());
 		}
 
-		log.debug("Using file: " + file.getAbsolutePath());
+		log.debug("Using file: {}", file.getAbsolutePath());
 
 		return file;
 	}
@@ -1912,7 +1912,7 @@ public class InitializationFilter extends StartupFilter {
 		String loadedDriverString = null;
 		try {
 			loadedDriverString = DatabaseUtil.loadDatabaseDriver(connection, databaseDriver);
-			log.info("using database driver :" + loadedDriverString);
+			log.info("using database driver :{}", loadedDriverString != null ? loadedDriverString.replaceAll("[\r\n]", "") : "null");
 		} catch (ClassNotFoundException e) {
 			log.error("The given database driver class was not found. "
 			        + "Please ensure that the database driver jar file is on the class path "
