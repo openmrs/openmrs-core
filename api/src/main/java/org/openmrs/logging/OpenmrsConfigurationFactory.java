@@ -174,6 +174,11 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 					StatusLogger.getLogger()
 					        .debug("AdministrationService is not yet available; skipping log-level overrides");
 				}
+			} catch (RuntimeException e) {
+				// The service layer may be unavailable or mid-initialization (e.g. a re-entrant
+				// ServiceContext initialization) while logging is being configured. Logging configuration
+				// must be resilient, so skip the log-level overrides rather than aborting configuration.
+				StatusLogger.getLogger().warn("Could not apply log-level overrides", e);
 			}
 		}
 	}
