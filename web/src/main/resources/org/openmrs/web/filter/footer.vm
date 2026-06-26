@@ -90,7 +90,7 @@
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         margin-bottom: 20px;
         overflow-y: auto;
-        max-height: calc(100vh - 180px);
+        max-height: calc(100vh - 200px);
     }
 
     @media (max-width: 768px) {
@@ -110,6 +110,16 @@
         .content-container {
             margin: 1rem;
             max-height: calc(100vh - 200px);
+        }
+    }
+
+    @media (max-height: 850px) {
+        body {
+            padding-bottom: 140px;
+        }
+        .content-container {
+            max-height: calc(100vh - 220px);
+            overflow-y: auto;
         }
     }
 </style>
