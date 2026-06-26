@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -2193,6 +2194,9 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept);
+
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept, Date date);
 
 	/**
 	 * Get the appropriate concept reference range for a given context. The context specifies the
