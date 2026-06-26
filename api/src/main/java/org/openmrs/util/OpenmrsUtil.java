@@ -128,6 +128,8 @@ public class OpenmrsUtil {
 
 	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<>();
 
+	private static final Pattern LOG_SANITIZATION_PATTERN = Pattern.compile("[\\p{Cntrl}\\u0085\\u2028\\u2029&&[^\\t]]");
+
 	/**
 	 * Compares origList to newList returning map of differences
 	 *
@@ -856,7 +858,7 @@ public class OpenmrsUtil {
 			boolean success = f.delete();
 
 			if (log.isDebugEnabled()) {
-				log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
+				log.debug("   deleting {} : {}", f.getName(), (success ? "ok" : "failed"));
 			}
 
 			if (!success) {
@@ -867,7 +869,7 @@ public class OpenmrsUtil {
 		boolean success = dir.delete();
 
 		if (!success) {
-			log.warn("   ...could not remove directory: " + dir.getAbsolutePath());
+			log.warn("   ...could not remove directory: {}", dir.getAbsolutePath());
 			dir.deleteOnExit();
 		}
 
@@ -1594,11 +1596,11 @@ public class OpenmrsUtil {
 			Charset utf8 = StandardCharsets.UTF_8;
 			properties.store(new OutputStreamWriter(outStream, utf8), comment);
 		} catch (FileNotFoundException fnfe) {
-			log.error("target file not found" + fnfe);
+			log.error("target file not found", fnfe);
 		} catch (UnsupportedEncodingException ex) { // pass
-			log.error("unsupported encoding error hit" + ex);
+			log.error("unsupported encoding error hit", ex);
 		} catch (IOException ioex) {
-			log.error("IO exception encountered trying to append to properties file" + ioex);
+			log.error("IO exception encountered trying to append to properties file", ioex);
 		}
 
 	}
@@ -2006,39 +2008,39 @@ public class OpenmrsUtil {
 
 		// first look in the current directory (that java was started from)
 		String pathName = fileNameInTestMode != null ? fileNameInTestMode : defaultFileName;
-		log.debug("Attempting to look for properties file in current directory: " + pathName);
+		log.debug("Attempting to look for properties file in current directory: {}", pathName);
 		if (new File(pathName).exists()) {
 			return pathName;
 		} else {
-			log.warn("Unable to find a runtime properties file at " + new File(pathName).getAbsolutePath());
+			log.warn("Unable to find a runtime properties file at {}", new File(pathName).getAbsolutePath());
 		}
 
 		// next look from environment variable
 		String envVarName = applicationName.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
 		String envFileName = System.getenv(envVarName);
 		if (envFileName != null) {
-			log.debug("Atempting to look for runtime properties from: " + pathName);
+			log.debug("Atempting to look for runtime properties from: {}", pathName);
 			if (new File(envFileName).exists()) {
 				return envFileName;
 			} else {
-				log.warn("Unable to find properties file with path: " + pathName + ". (derived from environment variable "
-				        + envVarName + ")");
+				log.warn("Unable to find properties file with path: {}. (derived from environment variable {})", pathName,
+				    envVarName);
 			}
 		} else {
-			log.info("Couldn't find an environment variable named " + envVarName);
+			log.info("Couldn't find an environment variable named {}", envVarName);
 			if (log.isDebugEnabled()) {
-				log.debug("Available environment variables are named: " + System.getenv().keySet());
+				log.debug("Available environment variables are named: {}", System.getenv().keySet());
 			}
 		}
 
 		// next look in the OpenMRS application data directory
 		File file = new File(getApplicationDataDirectory(), pathName);
 		pathName = file.getAbsolutePath();
-		log.debug("Attempting to look for property file from: " + pathName);
+		log.debug("Attempting to look for property file from: {}", pathName);
 		if (file.exists()) {
 			return pathName;
 		} else {
-			log.warn("Unable to find properties file: " + pathName);
+			log.warn("Unable to find properties file: {}", pathName);
 		}
 
 		return null;
@@ -2155,6 +2157,73 @@ public class OpenmrsUtil {
 		} else {
 			return "";
 		}
+	}
+
+	/**
+	 * Sanitizes a string for logging by replacing carriage return and line feed characters with
+	 * underscores to prevent log injection attacks.
+	 *
+	 * @param value the value to sanitize
+	 * @return the sanitized string
+	 * @since 3.0.0
+	 */
+	public static String sanitizeForLogging(Object value) {
+		if (value == null) {
+			return null;
+		}
+		String s = value.toString();
+		boolean hasUnsafe = false;
+		for (int i = 0; i < s.length(); i++) {
+			if (isUnsafe(s.charAt(i))) {
+				hasUnsafe = true;
+				break;
+			}
+		}
+		if (!hasUnsafe) {
+			return s;
+		}
+		StringBuilder sb = new StringBuilder(s.length());
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (isUnsafe(c)) {
+				sb.append('_');
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Returns true if the character is considered unsafe for logging (e.g. control characters).
+	 *
+	 * @param c the character to check
+	 * @return true if unsafe
+	 */
+	private static boolean isUnsafe(char c) {
+		if (c == '\t') {
+			return false;
+		}
+		// Matches \p{Cntrl}, \u0085 (NEL), \u2028 (LS), \u2029 (PS)
+		return (c <= '\u001F') || (c >= '\u007F' && c <= '\u009F') || (c == '\u2028') || (c == '\u2029');
+	}
+
+	/**
+	 * Returns an object that lazily sanitizes its toString() output for logging. This is useful for
+	 * slf4j lazy evaluation.
+	 *
+	 * @param value the value to sanitize
+	 * @return an object with a sanitized toString()
+	 * @since 3.0.0
+	 */
+	public static Object applyLogSanitization(Object value) {
+		return new Object() {
+
+			@Override
+			public String toString() {
+				return sanitizeForLogging(value);
+			}
+		};
 	}
 
 }

@@ -141,6 +141,19 @@
 			<column name="description" type="varchar(255)"/>
 		</addColumn>
 	</changeSet>
-	
+
+	<changeSet id="TRUNK-6549-2026-06-07" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				SELECT count(*) FROM global_property WHERE property = 'log.layout' AND property_value = '%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n'
+			</sqlCheck>
+		</preConditions>
+		<comment>Updating log.layout to include centralized log sanitization</comment>
+		<update tableName="global_property">
+			<column name="property_value" value="%p - %C{1}.%M(%L) |%d{ISO8601}| %replace{%m}{[\\p{Cntrl}\\u2028\\u2029&amp;&amp;[^\\t]]}{_}%n"/>
+			<where>property = 'log.layout'</where>
+		</update>
+	</changeSet>
+
 </databaseChangeLog>
 
