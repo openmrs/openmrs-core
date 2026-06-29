@@ -72,14 +72,13 @@ public class Security {
 	}
 
 	public static boolean isLegacyHash(String storedHash) {
-		if (storedHash == null) return false;
-		// SHA-512 → exactly 128 lowercase hex characters
-		if (storedHash.length() == 128 && storedHash.matches("[a-f0-9]+")) return true;
-		// SHA-1 correct → exactly 40 hex chars
-		// SHA-1 buggy   → fewer than 40 hex chars (ticket #1178 leading-zero-drop bug)
-		if (storedHash.length() <= 40 && storedHash.matches("[a-f0-9]+")) return true;
-		return false;
-	}
+	    if (storedHash == null) return false;
+	    // SHA-512 → exactly 128 lowercase hex characters
+	    // SHA-1 correct → exactly 40 hex chars
+	    // SHA-1 buggy   → fewer than 40 hex chars (ticket #1178 leading-zero-drop bug)
+	    return (storedHash.length() == 128 || storedHash.length() <= 40)
+		    && storedHash.matches("[a-f0-9]+");
+}
 
 	/**
     * The modern password encoder using Argon2id algorithm.
