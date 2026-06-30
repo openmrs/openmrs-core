@@ -9,8 +9,21 @@
  */
 package org.openmrs.serialization;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleKeyDeserializers;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import org.jspecify.annotations.NonNull;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.util.OpenmrsJacksonLocaleModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,19 +31,73 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Default Jackson object mapper configuration.
  * <p>
- * Used for example by {@link org.openmrs.scheduler.jobrunr.JobRunrConfig}.
+ * Used for example by {@link org.openmrs.scheduler.jobrunr.JobRunrConfig} or
+ * {@link org.openmrs.event.outbox.OutboxEventInterceptor}.
  * 
  * @since 2.9.x
  */
 @Configuration
 public class JacksonConfig {
-	
+
 	@Bean
 	public ObjectMapper objectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new Hibernate5Module());
+		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		
+		Hibernate5Module hibernate5Module = new Hibernate5Module();
+		hibernate5Module.enable(Hibernate5Module.Feature.FORCE_LAZY_LOADING);
+		hibernate5Module.enable(Hibernate5Module.Feature.REPLACE_PERSISTENT_COLLECTIONS);
+		
+		mapper.registerModule(hibernate5Module);
 		mapper.registerModule(new OpenmrsJacksonLocaleModule());
+
+		SimpleModule keyDeserializingModule = newKeyDeserializingModule();
+		mapper.registerModule(keyDeserializingModule);
+
+		// Prevent infinite recursion on bidirectional entity relationships
+		mapper.addMixIn(OpenmrsObject.class, OpenmrsObjectMixIn.class);
+
+		// Prevent type info serialization for Collections and Maps
+		mapper.addMixIn(java.util.Collection.class, IgnoreTypeInfoMixIn.class);
+		mapper.addMixIn(java.util.Map.class, IgnoreTypeInfoMixIn.class);
+
 		return mapper;
 	}
 
+	/**
+	 * Allows to deserialize Maps that have OpenmrsObjects as keys.
+	 * @return module
+	 */
+	private static @NonNull SimpleModule newKeyDeserializingModule() {
+		SimpleModule openmrsModule = new SimpleModule();
+		openmrsModule.setKeyDeserializers(new SimpleKeyDeserializers() {
+			@Override
+			public KeyDeserializer findKeyDeserializer(JavaType type, DeserializationConfig config, BeanDescription beanDesc) {
+				if (OpenmrsObject.class.isAssignableFrom(type.getRawClass())) {
+					return new KeyDeserializer() {
+						@Override
+						public Object deserializeKey(String key, DeserializationContext ctxt) {
+							try {
+								OpenmrsObject obj = (OpenmrsObject) type.getRawClass().getDeclaredConstructor().newInstance();
+								obj.setUuid(key);
+								return obj;
+							} catch (Exception e) {
+								return null;
+							}
+						}
+					};
+				}
+				return null;
+			}
+		});
+		return openmrsModule;
+	}
+
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "uuid")
+	public abstract static class OpenmrsObjectMixIn {
+	}
+
+	@JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
+	public abstract static class IgnoreTypeInfoMixIn {
+	}
 }
