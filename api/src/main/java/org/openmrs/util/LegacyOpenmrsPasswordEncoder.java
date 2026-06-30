@@ -26,9 +26,6 @@ public class LegacyOpenmrsPasswordEncoder implements PasswordEncoder {
 			return false;
 		}
 		String encoded = encodedPassword;
-		if (encoded.startsWith("{Legacy}")) {
-			encoded = encoded.substring(8);
-		}
 		String[] parts = encoded.split(":");
 		String hash = parts[0];
 		String salt = parts.length > 1 ? parts[1] : "";
