@@ -46,7 +46,12 @@ public class Security {
 	}
 
 	private static PasswordEncoder getPasswordEncoder() {
-		return Context.getRegisteredComponent("passwordEncoder", PasswordEncoder.class);
+		try {
+			return Context.getRegisteredComponent("passwordEncoder", PasswordEncoder.class);
+		}
+		catch (Exception e) {
+			return OpenmrsPasswordEncoder.create();
+		}
 	}
 
 	/**
