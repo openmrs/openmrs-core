@@ -7,15 +7,15 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.event.outbox;
+package org.openmrs.event;
 
 /**
- * It can be implemented for events to provide a custom serialization to persist in the outbox. The
- * implementing class must have a no-arg constructor.
+ * It can be implemented for events to provide a custom serialization to persist in the outbox or
+ * send to a broker. The implementing class must have a no-arg constructor.
  *
  * @since 2.9.0
  */
-public interface OutboxEventPayload {
+public interface EventPayload {
 
 	/**
 	 * Creates a String representation of this object

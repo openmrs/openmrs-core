@@ -9,31 +9,25 @@
  */
 package org.openmrs.event;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.openmrs.event.outbox.OutboxableEvent;
-
 /**
- * See {@link EntityEvent} or {@link AggregatedEntityEvent} instead.
- *
  * @since 2.9.0
  */
-public class BaseEvent implements OutboxableEvent {
+public class EventException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	protected final Set<String> tags;
-
-	public BaseEvent() {
-		this.tags = new HashSet<>();
+	public EventException() {
 	}
 
-	public BaseEvent(Set<String> tags) {
-		this.tags = tags;
+	public EventException(String message) {
+		super(message);
 	}
 
-	public Set<String> getTags() {
-		return tags;
+	public EventException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public EventException(Throwable cause) {
+		super(cause);
 	}
 }

@@ -11,6 +11,7 @@ package org.openmrs.event.outbox;
 
 import java.util.Date;
 
+import org.openmrs.event.EventPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -52,8 +53,8 @@ public class OutboxEventInterceptor {
 		try {
 			OutboxEvent item = new OutboxEvent();
 			item.setEventType(event.getClass().getName());
-			if (event instanceof OutboxEventPayload) {
-				item.setPayload(((OutboxEventPayload) event).toPayload());
+			if (event instanceof EventPayload) {
+				item.setPayload(((EventPayload) event).toPayload());
 			} else {
 				item.setPayload(objectMapper.writeValueAsString(event));
 			}

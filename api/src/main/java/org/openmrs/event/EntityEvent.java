@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Entity events may be put in a transactional outbox. If there is a listener annotated with
  * {@link org.openmrs.event.outbox.OutboxEventListener} for an event, the event needs to be
  * serializable to JSON with Jackson {@link com.fasterxml.jackson.databind.ObjectMapper} or
- * implement {@link org.openmrs.event.outbox.OutboxEventPayload}.
+ * implement {@link EventPayload}.
  * <p>
  * Entity events contain autopopulated sessionId to group events happening in the same session.
  * <p>
