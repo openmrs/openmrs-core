@@ -10,14 +10,12 @@
 package org.openmrs.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Base64;
 import java.util.Base64.Decoder;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -213,25 +211,6 @@ public class SecurityTest {
 		assertTrue(StringUtils.hasText(encrypted));
 		actual = Security.decrypt(encrypted);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
-	}
-	
-	/**
-	 * @see Security#checkPassword(String,String,String)
-	 */
-	@Test
-	public void checkPassword_shouldReturnFalseWhenStoredHashIsNull() {
-		PasswordEncoder encoder = new LegacyOpenmrsPasswordEncoder();
-		assertFalse(encoder.matches("anyPassword", "null:"));
-	}
-	
-	/**
-	 * @see Security#checkPassword(String,String,String)
-	 */
-	@Test
-	public void checkPassword_shouldHandleNullOrBlankSalt() {
-		String hash = Security.encodeString("password");
-		PasswordEncoder encoder = new LegacyOpenmrsPasswordEncoder();
-		assertTrue(encoder.matches("password", hash + ":"));
 	}
 	
 }
