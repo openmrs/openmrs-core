@@ -694,6 +694,18 @@ public class Context {
 	}
 
 	/**
+	 * Used by {@link org.openmrs.aop.AuthorizationAdvice} to give access for unauthenticated users when
+	 * running initialization code with proxy privileges. See e.g.
+	 * {@link org.openmrs.event.outbox.tasks.OutboxTaskSchedulerInitializer#afterSingletonsInstantiated()}.
+	 *
+	 * @return true if there are any proxy privileges
+	 * @since 2.9.0
+	 */
+	public static boolean hasProxyPrivileges() {
+		return getUserContext().hasProxyPrivileges();
+	}
+
+	/**
 	 * logs out the "active" (authenticated) user within context
 	 *
 	 * @see #authenticate

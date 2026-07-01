@@ -103,7 +103,8 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 				throwUnauthorized(Context.getAuthenticatedUser(), method, privileges);
 			}
 			
-		} else if (attributes.hasAuthorizedAnnotation(method) && !Context.isAuthenticated()) {
+		} else if (attributes.hasAuthorizedAnnotation(method) &&
+			!(Context.isAuthenticated() || Context.hasProxyPrivileges())) {
 			throwUnauthorized(Context.getAuthenticatedUser(), method);
 		}
 	}

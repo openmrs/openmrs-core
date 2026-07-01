@@ -292,6 +292,8 @@
 	</bean>
 	<!-- /SerializationService setup -->
 
+	<bean id="schedulerServiceTarget" class="org.openmrs.scheduler.jobrunr.JobRunrSchedulerService" autowire="constructor" />
+
 	<bean id="hL7ServiceTarget" class="org.openmrs.hl7.impl.HL7ServiceImpl">
 		<property name="HL7DAO" ref="hL7DAO"/>
 		<property name="parser">
@@ -475,6 +477,12 @@
 	<bean id="providerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="target" ref="providerServiceTarget"/>
+		<property name="preInterceptors" ref="serviceInterceptors"/>
+		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
+	</bean>
+	<bean id="schedulerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="target" ref="schedulerServiceTarget"/>
 		<property name="preInterceptors" ref="serviceInterceptors"/>
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
