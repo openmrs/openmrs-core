@@ -12,7 +12,7 @@ package org.openmrs.scheduler;
 /**
  * Indicates an issue with the task. You may use it to prevent retries.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 public class TaskException extends Exception {
 	

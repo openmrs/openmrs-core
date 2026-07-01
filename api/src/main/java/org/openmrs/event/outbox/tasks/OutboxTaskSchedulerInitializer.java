@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Component
 public class OutboxTaskSchedulerInitializer implements SmartInitializingSingleton {

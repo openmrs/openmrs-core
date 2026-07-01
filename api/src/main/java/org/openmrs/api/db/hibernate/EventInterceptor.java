@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Publishes {@link SaveDbEvent} and {@link DeleteDbEvent}.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Component
 public class EventInterceptor extends EmptyInterceptor {

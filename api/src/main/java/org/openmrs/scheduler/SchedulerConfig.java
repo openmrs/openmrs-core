@@ -35,7 +35,7 @@ import org.springframework.scheduling.annotation.Scheduled;
  * <p>
  * See {@link ScheduledWithLock} for more details.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Configuration
 @EnableScheduling

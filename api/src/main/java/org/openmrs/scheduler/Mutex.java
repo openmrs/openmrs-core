@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * Remember to always use a unique name to avoid conflicts with other executions in the system. 
  * Use `yourmoduleid.` prefix for executions defined in modules.
  *
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

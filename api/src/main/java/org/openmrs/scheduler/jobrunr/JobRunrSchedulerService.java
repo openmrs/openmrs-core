@@ -59,7 +59,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Transactional
 public class JobRunrSchedulerService extends BaseOpenmrsService implements SchedulerService {

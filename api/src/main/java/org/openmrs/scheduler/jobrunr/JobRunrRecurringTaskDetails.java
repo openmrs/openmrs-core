@@ -15,7 +15,7 @@ import org.jobrunr.jobs.RecurringJob;
 import org.openmrs.scheduler.RecurringTaskDetails;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 public class JobRunrRecurringTaskDetails implements RecurringTaskDetails  {
 	

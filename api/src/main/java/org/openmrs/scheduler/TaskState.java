@@ -14,7 +14,7 @@ package org.openmrs.scheduler;
  * <p>
  * SCHEDULED -> ENQUEUED -> PROCESSING -> SUCCEEDED / FAILED -> DELETED
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 public enum TaskState {
 

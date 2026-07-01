@@ -25,6 +25,6 @@ import java.io.Serializable;
  * <p>
  * This interface hides the underlying JobRunr JobRequest dependency.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 public interface TaskData extends Serializable {}

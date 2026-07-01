@@ -14,7 +14,7 @@ package org.openmrs.scheduler;
  * <p>
  * This interface hides the underlying JobRunr JobContext dependency.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 public interface TaskContext extends TaskDetails {
 	

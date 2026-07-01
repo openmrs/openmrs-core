@@ -21,7 +21,7 @@ import java.util.Optional;
  * It is a one-off task details. One-off tasks are also created from {@link RecurringTaskDetails} when
  * the time comes.
  *     
- * @since 2.9.x
+ * @since 2.9.0
  */
 public interface TaskDetails {
 	

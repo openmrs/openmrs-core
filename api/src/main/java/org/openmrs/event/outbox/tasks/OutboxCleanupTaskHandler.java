@@ -25,7 +25,7 @@ import java.time.Instant;
 import java.util.Date;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Component
 public class OutboxCleanupTaskHandler implements TaskHandler<OutboxCleanupTaskData> {

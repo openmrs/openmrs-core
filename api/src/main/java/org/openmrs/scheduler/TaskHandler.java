@@ -20,7 +20,7 @@ package org.openmrs.scheduler;
  *
  * @param <T> the type of the request this handler processes
  *           
- * @since 2.9.x
+ * @since 2.9.0
  */
 public interface TaskHandler<T extends TaskData> {
 

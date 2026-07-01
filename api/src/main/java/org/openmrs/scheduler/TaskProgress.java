@@ -12,7 +12,7 @@ package org.openmrs.scheduler;
 /**
  * Allows to set task progress.
  * 
- * @since 2.9.x
+ * @since 2.9.0
  */
 public interface TaskProgress {
 	

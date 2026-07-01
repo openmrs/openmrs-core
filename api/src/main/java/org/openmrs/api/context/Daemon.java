@@ -473,7 +473,7 @@ public final class Daemon {
 	 * @param userSystemId the user to run as
 	 * @param runnable the task to run
 	 *
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	public static void executeScheduledTaskAsUser(String userSystemId, DaemonTask runnable) throws Exception {
 		// quick check to make sure we're only being called by ourselves
