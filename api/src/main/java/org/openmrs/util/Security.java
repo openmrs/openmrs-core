@@ -29,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+
 /**
  * OpenMRS's security class deals with the hashing of passwords.
  */
@@ -68,6 +70,33 @@ public class Security {
 			|| hashedPassword.equals(encodeStringSHA1(passwordToHash))
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
 	}
+
+	public static boolean isLegacyHash(String storedHash) {
+	    if (storedHash == null) return false;
+	    // SHA-512 → exactly 128 lowercase hex characters
+	    // SHA-1 correct → exactly 40 hex chars
+	    // SHA-1 buggy   → fewer than 40 hex chars (ticket #1178 leading-zero-drop bug)
+	    return (storedHash.length() == 128 || storedHash.length() <= 40)
+		    && storedHash.matches("[a-f0-9]+");
+}
+
+	/**
+    * The modern password encoder using Argon2id algorithm.
+    * Used for all new password hashing and lazy rehash upgrades.
+    * Parameters: saltLength=16, hashLength=32, parallelism=1, memory=16384, iterations=2
+    */
+    private static final Argon2PasswordEncoder ARGON2_ENCODER = 
+        Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
+
+	/**
+    * Returns the Argon2id password encoder instance.
+    *
+    * @return the configured Argon2PasswordEncoder
+    * @since 2.8.0
+    */
+    public static Argon2PasswordEncoder getArgon2Encoder() {
+        return ARGON2_ENCODER;
+    }
 
 	/**
 	 /**
