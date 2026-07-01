@@ -48,7 +48,7 @@
 		     with our version of Spring. -->
 		<springVersion>7.0.8</springVersion>
 		<springTestVersion>7.0.8</springTestVersion>
-		<hibernateVersion>7.3.6.Final</hibernateVersion>
+		<hibernateVersion>7.4.3.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.1.Final</hibernateValidatorVersion>
