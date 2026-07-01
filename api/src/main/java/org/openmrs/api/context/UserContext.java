@@ -312,7 +312,7 @@ public class UserContext implements Serializable {
 
 	/**
 	 * @return true if there are any proxy privileges
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	public boolean hasProxyPrivileges() {
 		return !proxies.isEmpty();

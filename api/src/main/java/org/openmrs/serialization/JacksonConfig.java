@@ -36,7 +36,7 @@ import com.fasterxml.jackson.datatype.hibernate7.Hibernate7Module;
  * Used for example by {@link org.openmrs.scheduler.jobrunr.JobRunrConfig} or
  * {@link org.openmrs.event.outbox.OutboxEventInterceptor}.
  *
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Configuration
 public class JacksonConfig {

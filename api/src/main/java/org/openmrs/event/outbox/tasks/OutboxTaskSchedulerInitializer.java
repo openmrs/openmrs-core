@@ -19,7 +19,7 @@ import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.stereotype.Component;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Component
 public class OutboxTaskSchedulerInitializer implements SmartInitializingSingleton {

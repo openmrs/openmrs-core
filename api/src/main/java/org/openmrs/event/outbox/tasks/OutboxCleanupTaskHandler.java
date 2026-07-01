@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Component
 public class OutboxCleanupTaskHandler implements TaskHandler<OutboxCleanupTaskData> {

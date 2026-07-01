@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Configuration
 public class JobRunrConfig {

@@ -185,7 +185,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	Optional<TaskDetails> getTask(String uuid);
@@ -197,7 +197,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return RecurringTaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	Optional<RecurringTaskDetails> getRecurringTask(String uuid);
@@ -211,7 +211,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * User can only delete its own tasks unless has Manage Scheduler privilege.
 	 *
 	 * @param uuid
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	void deleteTask(String uuid);
@@ -225,7 +225,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * User can only delete its own tasks unless has Manage Scheduler privilege.
 	 *
 	 * @param uuid
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	void deleteRecurringTask(String uuid);
@@ -240,7 +240,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param state the state of the tasks
 	 * @param updatedBefore the moment in time (for stable iteration)
 	 * @return Stream<TaskDetails>
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	Stream<TaskDetails> getTasks(TaskState state, Instant updatedBefore);
@@ -251,7 +251,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * User can only get its own tasks unless has Manage Scheduler privilege.
 	 *
 	 * @return Stream<RecurringTaskDetails>
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	Stream<RecurringTaskDetails> getRecurringTasks();
@@ -263,7 +263,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param name the name of the task
 	 * @return Stream<RecurringTaskDetails>
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	Stream<RecurringTaskDetails> getRecurringTasksByName(String name);
@@ -283,7 +283,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param taskData
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(TaskData taskData);
@@ -297,7 +297,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(TaskData taskData, String name);
@@ -313,7 +313,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param uuid
 	 * @param taskData
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(String uuid, TaskData taskData);
@@ -330,7 +330,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(String uuid, TaskData taskData, String name);
@@ -343,7 +343,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param runAt
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(TaskData taskData, Instant runAt);
@@ -357,7 +357,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param runAt
 	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(TaskData taskData, Instant runAt, String name);
@@ -373,7 +373,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param runAt
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(String uuid, TaskData taskData, Instant runAt);
@@ -390,7 +390,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param runAt
 	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(String uuid, TaskData taskData, Instant runAt, String name);
@@ -403,7 +403,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param runAt
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(TaskData taskData, ZonedDateTime runAt);
@@ -417,7 +417,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param runAt
 	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(TaskData taskData, ZonedDateTime runAt, String name);
@@ -433,7 +433,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param runAt
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(String uuid, TaskData taskData, ZonedDateTime runAt);
@@ -451,7 +451,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param runAt
 	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	TaskDetails schedule(String uuid, TaskData taskData, ZonedDateTime runAt, String name);
@@ -464,7 +464,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param cron
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron);
@@ -478,7 +478,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param cron
 	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, String name);
@@ -494,7 +494,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param cron
 	 * @return RecurringTaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron);
@@ -512,7 +512,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param cron
 	 * @param name
 	 * @return RecurringTaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, String name);
@@ -526,7 +526,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param cron
 	 * @param zoneId
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, ZoneId zoneId);
@@ -542,7 +542,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param zoneId
 	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, ZoneId zoneId, String name);
@@ -560,7 +560,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param cron
 	 * @param zoneId
 	 * @return RecurringTaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, ZoneId zoneId);
@@ -579,7 +579,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param zoneId
 	 * @param name
 	 * @return RecurringTaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, ZoneId zoneId, String name);
@@ -592,7 +592,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param interval
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, Duration interval);
@@ -606,7 +606,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param interval
 	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, Duration interval, String name);
@@ -622,7 +622,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param interval
 	 * @return RecurringTaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, Duration interval);
@@ -640,7 +640,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param interval
 	 * @param name
 	 * @return RecurringTaskDetails
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	@Authorized
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, Duration interval, String name);

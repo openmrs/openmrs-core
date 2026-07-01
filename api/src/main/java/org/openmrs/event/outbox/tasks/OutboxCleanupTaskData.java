@@ -12,7 +12,7 @@ package org.openmrs.event.outbox.tasks;
 import org.openmrs.scheduler.TaskData;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 public class OutboxCleanupTaskData implements TaskData {
 

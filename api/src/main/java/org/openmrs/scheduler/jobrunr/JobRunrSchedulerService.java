@@ -60,7 +60,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Service("schedulerService")
 @Transactional

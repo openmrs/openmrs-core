@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 /**
  * Publishes {@link SaveDbEvent} and {@link DeleteDbEvent}.
  *
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Component
 public class EventInterceptor implements Interceptor {

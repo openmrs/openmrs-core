@@ -697,7 +697,7 @@ public class Context {
 	 * {@link OutboxTaskSchedulerInitializer#afterSingletonsInstantiated()}.
 	 *
 	 * @return true if there are any proxy privileges
-	 * @since 2.9.x
+	 * @since 2.9.0
 	 */
 	public static boolean hasProxyPrivileges() {
 		return getUserContext().hasProxyPrivileges();
