@@ -112,6 +112,7 @@
 					<version>3.15.0</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
+						<parameters>true</parameters>
 					</configuration>
 				</plugin>
 				<plugin>
