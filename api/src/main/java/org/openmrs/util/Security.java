@@ -49,7 +49,8 @@ public class Security {
 		try {
 			return Context.getRegisteredComponent("passwordEncoder", PasswordEncoder.class);
 		}
-		catch (Exception e) {
+		catch (APIException e) {
+			log.debug("Falling back to legacy password encoder", e);
 			return OpenmrsPasswordEncoder.create();
 		}
 	}
