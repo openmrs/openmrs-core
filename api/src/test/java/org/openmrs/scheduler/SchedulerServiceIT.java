@@ -228,7 +228,7 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 
 	@Test
 	void schedule_shouldScheduleNamedTaskData() throws InterruptedException {
-		taskDetails = schedulerService.schedule("Named Task Data", new TestTaskData());
+		taskDetails = schedulerService.schedule(new TestTaskData(), "Named Task Data");
 		assertNotNull(taskDetails);
 		waitForExecutedCount(1);
 	}
@@ -236,7 +236,7 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 	@Test
 	void schedule_shouldScheduleTaskDataWithInstant() throws InterruptedException {
 		Instant runAt = Instant.now().plus(5, ChronoUnit.SECONDS);
-		taskDetails = schedulerService.schedule("schedule_shouldScheduleTaskDataWithInstant", new TestTaskData(), runAt);
+		taskDetails = schedulerService.schedule(new TestTaskData(), runAt, "schedule_shouldScheduleTaskDataWithInstant");
 		assertNotNull(taskDetails);
 		waitForExecutedCount(1);
 	}
@@ -244,8 +244,8 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 	@Test
 	void scheduleRecurrently_shouldScheduleTaskDataWithCron() throws InterruptedException {
 		String cron = "*/5 * * * * *";
-		recurringTaskDetails = schedulerService.scheduleRecurrently("scheduleRecurrently_shouldScheduleTaskDataWithCron",
-		    new TestTaskData(), cron);
+		recurringTaskDetails = schedulerService.scheduleRecurrently(new TestTaskData(), cron,
+		    "scheduleRecurrently_shouldScheduleTaskDataWithCron");
 		assertNotNull(recurringTaskDetails);
 		waitForExecutedCount(2);
 	}
@@ -253,8 +253,8 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 	@Test
 	void scheduleRecurrently_shouldScheduleTaskDataWithDuration() throws InterruptedException {
 		Duration interval = Duration.ofSeconds(5);
-		recurringTaskDetails = schedulerService.scheduleRecurrently("scheduleRecurrently_shouldScheduleTaskDataWithDuration",
-		    new TestTaskData(), interval);
+		recurringTaskDetails = schedulerService.scheduleRecurrently(new TestTaskData(), interval,
+		    "scheduleRecurrently_shouldScheduleTaskDataWithDuration");
 		assertNotNull(recurringTaskDetails);
 		waitForExecutedCount(2);
 	}

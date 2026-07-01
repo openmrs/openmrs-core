@@ -12,7 +12,7 @@
 
 -->
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">  
-  <changeSet author="rafal (generated)" id="1773924878357-21"> 
+  <changeSet author="rafal (generated)" id="1782825454765-21"> 
     <insert tableName="person"> 
       <column name="person_id" valueNumeric="1"/>  
       <column name="gender" value="M"/>  
@@ -35,7 +35,7 @@
       <column name="cause_of_death_non_coded"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-31"> 
+  <changeSet author="rafal (generated)" id="1782825454765-31"> 
     <insert tableName="users"> 
       <column name="user_id" valueNumeric="1"/>  
       <column name="system_id" value="admin"/>  
@@ -47,7 +47,7 @@
       <column name="creator" valueNumeric="1"/>  
       <column name="date_created" value="2005-01-01T00:00"/>  
       <column name="changed_by" valueNumeric="1"/>  
-      <column name="date_changed" value="2026-03-19T13:53:46"/>  
+      <column name="date_changed" value="2026-06-30T15:16:22"/>  
       <column name="person_id" valueNumeric="1"/>  
       <column name="retired" valueBoolean="false"/>  
       <column name="retired_by"/>  
@@ -79,7 +79,7 @@
       <column name="email"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-1"> 
+  <changeSet author="rafal (generated)" id="1782825454765-1"> 
     <insert tableName="care_setting"> 
       <column name="care_setting_id" valueNumeric="1"/>  
       <column name="name" value="Outpatient"/>  
@@ -111,7 +111,7 @@
       <column name="uuid" value="c365e560-c3ec-11e3-9c1a-0800200c9a66"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-3"> 
+  <changeSet author="rafal (generated)" id="1782825454765-3"> 
     <insert tableName="concept_class"> 
       <column name="concept_class_id" valueNumeric="1"/>  
       <column name="name" value="Test"/>  
@@ -337,7 +337,7 @@
       <column name="changed_by"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-4"> 
+  <changeSet author="rafal (generated)" id="1782825454765-4"> 
     <insert tableName="concept_datatype"> 
       <column name="concept_datatype_id" valueNumeric="1"/>  
       <column name="name" value="Numeric"/>  
@@ -495,7 +495,7 @@
       <column name="uuid" value="8d4a6242-c2cc-11de-8d13-0010c6dffd0f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-2"> 
+  <changeSet author="rafal (generated)" id="1782825454765-2"> 
     <insert tableName="concept"> 
       <column name="concept_id" valueNumeric="1"/>  
       <column name="retired" valueBoolean="false"/>  
@@ -535,7 +535,7 @@
       <column name="uuid" value="488b58ff-64f5-4f8a-8979-fa79940b1594"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-5"> 
+  <changeSet author="rafal (generated)" id="1782825454765-5"> 
     <insert tableName="concept_map_type"> 
       <column name="concept_map_type_id" valueNumeric="1"/>  
       <column name="name" value="SAME-AS"/>  
@@ -1587,7 +1587,7 @@
       <column name="uuid" value="41a034da-7d8f-11e1-909d-c80aa9edcf4e"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-6"> 
+  <changeSet author="rafal (generated)" id="1782825454765-6"> 
     <insert tableName="concept_name"> 
       <column name="concept_name_id" valueNumeric="1"/>  
       <column name="concept_id" valueNumeric="1"/>  
@@ -1929,7 +1929,7 @@
       <column name="changed_by"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-7"> 
+  <changeSet author="rafal (generated)" id="1782825454765-7"> 
     <insert tableName="concept_stop_word"> 
       <column name="concept_stop_word_id" valueNumeric="1"/>  
       <column name="word" value="A"/>  
@@ -1991,7 +1991,7 @@
       <column name="uuid" value="f5f49cda-e2a7-11df-87ae-18a905e044dc"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-8"> 
+  <changeSet author="rafal (generated)" id="1782825454765-8"> 
     <insert tableName="encounter_role"> 
       <column name="encounter_role_id" valueNumeric="1"/>  
       <column name="name" value="Unknown"/>  
@@ -2007,7 +2007,7 @@
       <column name="uuid" value="a0b03050-c99b-11e0-9572-0800200c9a66"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-9"> 
+  <changeSet author="rafal (generated)" id="1782825454765-9"> 
     <insert tableName="field_type"> 
       <column name="field_type_id" valueNumeric="1"/>  
       <column name="name" value="Concept"/>  
@@ -2054,7 +2054,7 @@
       <column name="uuid" value="8d5e86fa-c2cc-11de-8d13-0010c6dffd0f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-10"> 
+  <changeSet author="rafal (generated)" id="1782825454765-10"> 
     <insert tableName="global_property"> 
       <column name="property" value="allergy.allergen.ConceptClasses"/>  
       <column name="property_value" value="Drug,MedSet"/>  
@@ -2312,9 +2312,9 @@
     </insert>  
     <insert tableName="global_property"> 
       <column name="property" value="core.version"/>  
-      <column name="property_value" value="2.9.0-88d93d"/>  
+      <column name="property_value" value="2.9.0-bda396"/>  
       <column name="description" value="Saved core version for future restarts"/>  
-      <column name="uuid" value="9f0e7d57-fdab-46ed-b3f4-bde82c9a8e68"/>  
+      <column name="uuid" value="a01be884-f0bc-4530-b66d-d7d1d363daab"/>  
       <column name="datatype"/>  
       <column name="datatype_config"/>  
       <column name="preferred_handler"/>  
@@ -3169,7 +3169,7 @@
       <column name="property" value="order.allowSettingOrderNumber"/>  
       <column name="property_value" value="false"/>  
       <column name="description" value="Specifies whether the order number property on an order can be set. If false, the order number must be generated by an order number generator."/>  
-      <column name="uuid" value="c8700530-c4cf-44e1-ae9a-c34426e1ab21"/>  
+      <column name="uuid" value="8bcfb9ce-ee5e-4311-8e52-bcc71d461b7d"/>  
       <column name="datatype"/>  
       <column name="datatype_config"/>  
       <column name="preferred_handler"/>  
@@ -3184,7 +3184,7 @@
       <column name="property" value="order.allowSettingStopDateOnInactiveOrders"/>  
       <column name="property_value" value="false"/>  
       <column name="description" value="Allow setting a stop date on an order that is already inactive. May be necessary when importing orders from another system."/>  
-      <column name="uuid" value="2483f49e-2b97-4204-8555-f3597f7dc957"/>  
+      <column name="uuid" value="2295d892-4473-452f-bf28-9204f2fdb283"/>  
       <column name="datatype"/>  
       <column name="datatype_config"/>  
       <column name="preferred_handler"/>  
@@ -4051,7 +4051,7 @@
       <column name="delete_privilege"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-11"> 
+  <changeSet author="rafal (generated)" id="1782825454765-11"> 
     <insert tableName="hl7_source"> 
       <column name="hl7_source_id" valueNumeric="1"/>  
       <column name="name" value="LOCAL"/>  
@@ -4061,7 +4061,7 @@
       <column name="uuid" value="8d6b8bb6-c2cc-11de-8d13-0010c6dffd0f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-18"> 
+  <changeSet author="rafal (generated)" id="1782825454765-18"> 
     <insert tableName="location"> 
       <column name="location_id" valueNumeric="1"/>  
       <column name="name" value="Unknown Location"/>  
@@ -4101,7 +4101,7 @@
       <column name="location_type_concept_id"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-19"> 
+  <changeSet author="rafal (generated)" id="1782825454765-19"> 
     <insert tableName="order_type"> 
       <column name="order_type_id" valueNumeric="2"/>  
       <column name="name" value="Drug Order"/>  
@@ -4135,7 +4135,7 @@
       <column name="date_changed"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-20"> 
+  <changeSet author="rafal (generated)" id="1782825454765-20"> 
     <insert tableName="patient_identifier_type"> 
       <column name="patient_identifier_type_id" valueNumeric="1"/>  
       <column name="name" value="OpenMRS Identification Number"/>  
@@ -4179,7 +4179,7 @@
       <column name="changed_by"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-22"> 
+  <changeSet author="rafal (generated)" id="1782825454765-22"> 
     <insert tableName="person_attribute_type"> 
       <column name="person_attribute_type_id" valueNumeric="1"/>  
       <column name="name" value="Race"/>  
@@ -4314,7 +4314,7 @@
       <column name="uuid" value="8d87236c-c2cc-11de-8d13-0010c6dffd0f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-23"> 
+  <changeSet author="rafal (generated)" id="1782825454765-23"> 
     <insert tableName="person_name"> 
       <column name="person_name_id" valueNumeric="1"/>  
       <column name="preferred" valueBoolean="true"/>  
@@ -4338,7 +4338,7 @@
       <column name="uuid" value="5f897a68-6814-11e8-923f-e9a88dcb533f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-24"> 
+  <changeSet author="rafal (generated)" id="1782825454765-24"> 
     <insert tableName="privilege"> 
       <column name="privilege" value="Add Allergies"/>  
       <column name="description" value="Add allergies"/>  
@@ -4665,6 +4665,11 @@
       <column name="uuid" value="5f8a3250-6814-11e8-923f-e9a88dcb533f"/> 
     </insert>  
     <insert tableName="privilege"> 
+      <column name="privilege" value="Get Alerts"/>  
+      <column name="description" value="Able to get alerts"/>  
+      <column name="uuid" value="f08447c2-784f-4fda-908b-23a3f9a2e849"/> 
+    </insert>  
+    <insert tableName="privilege"> 
       <column name="privilege" value="Get Allergies"/>  
       <column name="description" value="Able to get allergies"/>  
       <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a220"/> 
@@ -4892,7 +4897,7 @@
     <insert tableName="privilege"> 
       <column name="privilege" value="Get Provider Roles"/>  
       <column name="description" value="Able to get Provider Roles"/>  
-      <column name="uuid" value="0c05c41c-0a17-4a75-b61e-7f50ff9d10fc"/> 
+      <column name="uuid" value="f362a08b-cb43-4935-9bf9-6d351f9a0cb1"/> 
     </insert>  
     <insert tableName="privilege"> 
       <column name="privilege" value="Get Providers"/>  
@@ -5092,7 +5097,7 @@
     <insert tableName="privilege"> 
       <column name="privilege" value="Manage Provider Roles"/>  
       <column name="description" value="Able to add/edit/retire Provider Roles"/>  
-      <column name="uuid" value="3195cd4b-e472-4407-bc17-7aad3e2732d7"/> 
+      <column name="uuid" value="fa645f84-fca2-480f-b9cc-f426082c7200"/> 
     </insert>  
     <insert tableName="privilege"> 
       <column name="privilege" value="Manage Providers"/>  
@@ -5415,7 +5420,7 @@
       <column name="uuid" value="5f8a3f2a-6814-11e8-923f-e9a88dcb533f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-25"> 
+  <changeSet author="rafal (generated)" id="1782825454765-25"> 
     <insert tableName="relationship_type"> 
       <column name="relationship_type_id" valueNumeric="1"/>  
       <column name="a_is_to_b" value="Doctor"/>  
@@ -5485,7 +5490,7 @@
       <column name="changed_by"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-26"> 
+  <changeSet author="rafal (generated)" id="1782825454765-26"> 
     <insert tableName="role"> 
       <column name="role" value="Anonymous"/>  
       <column name="description" value="Privileges for non-authenticated users."/>  
@@ -5507,7 +5512,7 @@
       <column name="uuid" value="8d94f852-c2cc-11de-8d13-0010c6dffd0f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-27"> 
+  <changeSet author="rafal (generated)" id="1782825454765-27"> 
     <insert tableName="role_privilege"> 
       <column name="role" value="Authenticated"/>  
       <column name="privilege" value="Get Concept Classes"/> 
@@ -5617,7 +5622,7 @@
       <column name="privilege" value="View Roles"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-28"> 
+  <changeSet author="rafal (generated)" id="1782825454765-28"> 
     <insert tableName="scheduler_task_config"> 
       <column name="task_config_id" valueNumeric="2"/>  
       <column name="name" value="Auto Close Visits Task"/>  
@@ -5631,12 +5636,12 @@
       <column name="created_by" valueNumeric="1"/>  
       <column name="date_created" value="2018-06-04T18:30:16"/>  
       <column name="changed_by" valueNumeric="2"/>  
-      <column name="date_changed" value="2026-03-19T13:53:46"/>  
+      <column name="date_changed" value="2026-06-30T15:16:23"/>  
       <column name="last_execution_time"/>  
       <column name="uuid" value="8c17b376-1a2b-11e1-a51a-00248140a5eb"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-29"> 
+  <changeSet author="rafal (generated)" id="1782825454765-29"> 
     <insert tableName="user_property"> 
       <column name="user_id" valueNumeric="1"/>  
       <column name="property" value="defaultLocale"/>  
@@ -5645,7 +5650,7 @@
     <insert tableName="user_property"> 
       <column name="user_id" valueNumeric="1"/>  
       <column name="property" value="lastLoginTimestamp"/>  
-      <column name="property_value" value="1773924826151"/> 
+      <column name="property_value" value="1782825382759"/> 
     </insert>  
     <insert tableName="user_property"> 
       <column name="user_id" valueNumeric="1"/>  
@@ -5658,7 +5663,7 @@
       <column name="property_value" value="0"/> 
     </insert> 
   </changeSet>
-  <changeSet author="rafal (generated)" id="1773924878357-30"> 
+  <changeSet author="rafal (generated)" id="1782825454765-30"> 
     <insert tableName="user_role"> 
       <column name="user_id" valueNumeric="1"/>  
       <column name="role" value="Provider"/> 
