@@ -9,16 +9,6 @@
  */
 package org.openmrs.api.context;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Location;
 import org.openmrs.PrivilegeListener;
@@ -34,6 +24,16 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents an OpenMRS <code>User Context</code> which stores the current user information. Only
@@ -311,6 +311,14 @@ public class UserContext implements Serializable {
 				proxies.remove(privilege);
 			}
 		}
+	}
+
+	/**
+	 * @return true if there are any proxy privileges
+	 * @since 2.9.0
+	 */
+	public boolean hasProxyPrivileges() {
+		return !proxies.isEmpty();
 	}
 	
 	/**

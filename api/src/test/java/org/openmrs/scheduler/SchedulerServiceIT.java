@@ -42,6 +42,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
@@ -238,6 +239,13 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 		taskDetails = schedulerService.schedule(new TestTaskData(), runAt, "schedule_shouldScheduleTaskDataWithInstant");
 		assertNotNull(taskDetails);
 		waitForExecutedCount(1);
+	}
+
+	@Test
+	void schedule_shouldThrowExceptionIfUserNotAuthenticated() {
+		Context.logout();
+		assertThrows(APIAuthenticationException.class, () -> schedulerService.schedule(new TestTaskData()));
+		authenticate();
 	}
 
 	@Test
