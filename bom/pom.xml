@@ -62,7 +62,7 @@
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<owaspEncoderVersion>1.4.0</owaspEncoderVersion>
-		<graalJsVersion>25.0.3</graalJsVersion>
+		<graalJsVersion>25.1.3</graalJsVersion>
 		<nettyVersion>4.2.15.Final</nettyVersion>
 
 		<!-- Jakarta -->
@@ -105,7 +105,7 @@
 		<!-- Database -->
 		<mysqlConnectorVersion>9.7.0</mysqlConnectorVersion>
 		<mariadbClientVersion>3.5.9</mariadbClientVersion>
-		<postgresqlVersion>42.7.11</postgresqlVersion>
+		<postgresqlVersion>42.7.12</postgresqlVersion>
 		<liquibaseVersion>4.32.0</liquibaseVersion>
 		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
 
@@ -150,7 +150,7 @@
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>3.7.0</version>
+				<version>3.8.0</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
