@@ -9,7 +9,9 @@
  */
 package org.openmrs.util;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Base64;
@@ -72,6 +74,21 @@ public class SecurityTest {
 		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
 	}
 	
+	@Test
+	public void encodePassword_shouldFallbackToLegacyEncoderWithoutSpringContext() {
+		String[] encoded = assertDoesNotThrow(() -> Security.encodePassword("testPassword"));
+		assertNotNull(encoded);
+		assertEquals(2, encoded.length);
+		assertNotNull(encoded[0]);
+	}
+
+	@Test
+	public void checkPassword_shouldFallbackToLegacyEncoderWithoutSpringContext() {
+		String[] encoded = Security.encodePassword("testPassword");
+		boolean matches = assertDoesNotThrow(() -> Security.checkPassword("testPassword", encoded[0], encoded[1]));
+		assertTrue(matches);
+	}
+
 	/**
 	 * @see Security#decrypt(String)
 	 */
