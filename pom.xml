@@ -64,6 +64,11 @@
 		<dependencies>
 			<!-- OpenMRS Dependencies -->
 			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-crypto</artifactId>
+				<version>5.7.0</version>
+			</dependency>
+			<dependency>
 				<groupId>org.openmrs.tools</groupId>
 				<artifactId>openmrs-tools</artifactId>
 				<version>${project.version}</version>

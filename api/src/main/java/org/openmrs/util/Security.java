@@ -25,6 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -42,6 +43,44 @@ public class Security {
 	private static final Random RANDOM = new SecureRandom();
 
 	private Security() {
+	}
+
+	private static PasswordEncoder getPasswordEncoder() {
+		try {
+			return Context.getRegisteredComponent("passwordEncoder", PasswordEncoder.class);
+		}
+		catch (RuntimeException e) {
+			log.debug("Falling back to legacy password encoder", e);
+			return OpenmrsPasswordEncoder.create();
+		}
+	}
+
+	/**
+	 * Encodes a password by generating a salt, hashing with SHA-512, and returning
+	 * the hash and salt as a two-element array. Uses the configured PasswordEncoder internally.
+	 *
+	 * @param rawPassword the cleartext password
+	 * @return String[] where [0] is the hashed password and [1] is the salt
+	 * @since 2.8.8
+	 */
+	public static String[] encodePassword(String rawPassword) {
+		String encoded = getPasswordEncoder().encode(rawPassword);
+		String[] parts = encoded.split(":", 2);
+		return new String[] { parts[0], parts.length > 1 ? parts[1] : "" };
+	}
+
+	/**
+	 * Checks a raw password against a stored hash and salt using the configured PasswordEncoder.
+	 *
+	 * @param rawPassword the cleartext password
+	 * @param storedHash the stored hashed password
+	 * @param storedSalt the stored salt
+	 * @return true if the password matches
+	 * @since 2.8.8
+	 */
+	public static boolean checkPassword(String rawPassword, String storedHash, String storedSalt) {
+		String encodedPassword = storedHash + ":" + (storedSalt != null ? storedSalt : "");
+		return getPasswordEncoder().matches(rawPassword, encodedPassword);
 	}
 
 	/**
@@ -70,7 +109,6 @@ public class Security {
 	}
 
 	/**
-	 /**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
 	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
 	 *

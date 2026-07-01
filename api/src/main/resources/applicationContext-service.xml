@@ -31,6 +31,7 @@
 	
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
+	<bean id="passwordEncoder" class="org.openmrs.util.OpenmrsPasswordEncoder" factory-method="create"/>
 	<!--  **************************  EVENT LISTENERS ***************************** -->
 
 	<!--  Clear out the global property listeners list first -->
