@@ -34,9 +34,9 @@ public class Duration {
 
 	/**
 	 * Active SNOMED CT code for minute. SNOMED CT inactivated the legacy code
-	 * {@link #SNOMED_CT_MINUTES_CODE} ("258701004") in its 2021-07-31 release, and dictionaries
-	 * such as CIEL now map minutes concepts to this code. The legacy code is still accepted for
-	 * backward compatibility.
+	 * {@link #SNOMED_CT_MINUTES_CODE} ("258701004") in its 2021-07-31 release, and dictionaries such as
+	 * CIEL now map minutes concepts to this code. The legacy code is still accepted for backward
+	 * compatibility.
 	 *
 	 * @since 3.0.0
 	 */
