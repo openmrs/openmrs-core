@@ -38,7 +38,7 @@ public class Duration {
 	 * CIEL now map minutes concepts to this code. The legacy code is still accepted for backward
 	 * compatibility.
 	 *
-	 * @since 3.0.0
+	 * @since 2.8.8, 2.9.0, 3.0.0
 	 */
 	public static final String SNOMED_CT_MINUTES_CODE_2 = "1156209001";
 
