@@ -45,6 +45,33 @@ public class DurationTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void addToDate_shouldAddMinutesWhenUnitIsUcumMinutes() throws ParseException {
+		Duration duration = new Duration(30, Duration.UCUM_MINUTES_CODE);
+
+		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
+
+		assertEquals(createDateTime("2014-07-01 10:30:00"), autoExpireDate);
+	}
+
+	@Test
+	public void addToDate_shouldAddDaysWhenUnitIsUcumDays() throws ParseException {
+		Duration duration = new Duration(30, Duration.UCUM_DAYS_CODE);
+
+		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
+
+		assertEquals(createDateTime("2014-07-31 10:00:00"), autoExpireDate);
+	}
+
+	@Test
+	public void addToDate_shouldAddWeeksWhenUnitIsUcumWeeks() throws ParseException {
+		Duration duration = new Duration(2, Duration.UCUM_WEEKS_CODE);
+
+		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
+
+		assertEquals(createDateTime("2014-07-15 10:00:00"), autoExpireDate);
+	}
+
+	@Test
 	public void addToDate_shouldAddHoursWhenUnitIsHours() throws ParseException {
 		Duration duration = new Duration(10, Duration.SNOMED_CT_HOURS_CODE);
 
@@ -133,5 +160,42 @@ public class DurationTest extends BaseContextSensitiveTest {
 		final String daysCode = Duration.SNOMED_CT_DAYS_CODE;
 		Concept concept = SimpleDosingInstructionsTest.createUnits(daysCode);
 		assertEquals(daysCode, Duration.getCode(concept));
+	}
+
+	/**
+	 * @see Duration#getCode(Concept)
+	 */
+	@Test
+	public void getCode_shouldReturnTheUcumCodeWhenAUcumMappingIsPresent() {
+		Concept concept = SimpleDosingInstructionsTest.createUnits(Duration.UCUM_CONCEPT_SOURCE_HL7_CODE,
+		    Duration.UCUM_MINUTES_CODE, null);
+		assertEquals(Duration.UCUM_MINUTES_CODE, Duration.getCode(concept));
+	}
+
+	/**
+	 * @see Duration#getCode(Concept)
+	 */
+	@Test
+	public void getCode_shouldPreferTheUcumCodeWhenBothUcumAndSnomedMappingsArePresent() {
+		Concept concept = new Concept();
+		concept.addConceptMapping(sameAsMapping(Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE,
+		    Duration.SNOMED_CT_MINUTES_CODE));
+		concept.addConceptMapping(sameAsMapping(Duration.UCUM_CONCEPT_SOURCE_HL7_CODE, Duration.UCUM_MINUTES_CODE));
+
+		assertEquals(Duration.UCUM_MINUTES_CODE, Duration.getCode(concept));
+	}
+
+	private static ConceptMap sameAsMapping(String sourceHl7Code, String code) {
+		ConceptMap conceptMap = new ConceptMap();
+		ConceptReferenceTerm conceptReferenceTerm = new ConceptReferenceTerm();
+		ConceptSource conceptSource = new ConceptSource();
+		conceptSource.setHl7Code(sourceHl7Code);
+		conceptReferenceTerm.setConceptSource(conceptSource);
+		conceptReferenceTerm.setCode(code);
+		conceptMap.setConceptReferenceTerm(conceptReferenceTerm);
+		ConceptMapType conceptMapType = new ConceptMapType();
+		conceptMapType.setUuid(ConceptMapType.SAME_AS_MAP_TYPE_UUID);
+		conceptMap.setConceptMapType(conceptMapType);
+		return conceptMap;
 	}
 }
