@@ -32,6 +32,12 @@ public class Duration {
 
 	public static final String SNOMED_CT_MINUTES_CODE = "258701004";
 
+	/**
+	 * Current CIEL/SNOMED CT SAME-AS code for Minutes (concept 1733). The legacy code
+	 * {@link #SNOMED_CT_MINUTES_CODE} ("258701004") is retained for backward compatibility.
+	 */
+	public static final String SNOMED_CT_MINUTES_CODE_2 = "1156209001";
+
 	public static final String SNOMED_CT_HOURS_CODE = "258702006";
 
 	public static final String SNOMED_CT_DAYS_CODE = "258703001";
@@ -77,7 +83,7 @@ public class Duration {
 		if (SNOMED_CT_SECONDS_CODE.equals(code)) {
 			return addSeconds(startDate, this.duration);
 		}
-		if (SNOMED_CT_MINUTES_CODE.equals(code)) {
+		if (SNOMED_CT_MINUTES_CODE.equals(code) || SNOMED_CT_MINUTES_CODE_2.equals(code)) {
 			return addMinutes(startDate, this.duration);
 		}
 		if (SNOMED_CT_HOURS_CODE.equals(code)) {

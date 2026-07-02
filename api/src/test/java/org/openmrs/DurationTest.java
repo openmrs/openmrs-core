@@ -45,6 +45,15 @@ public class DurationTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void addToDate_shouldAddMinutesWhenUnitIsMinutesUsingNewSnomedCode() throws ParseException {
+		Duration duration = new Duration(30, Duration.SNOMED_CT_MINUTES_CODE_2);
+
+		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
+
+		assertEquals(createDateTime("2014-07-01 10:30:00"), autoExpireDate);
+	}
+
+	@Test
 	public void addToDate_shouldAddHoursWhenUnitIsHours() throws ParseException {
 		Duration duration = new Duration(10, Duration.SNOMED_CT_HOURS_CODE);
 
