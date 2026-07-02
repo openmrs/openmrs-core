@@ -637,6 +637,11 @@
 				<artifactId>spring-security-crypto</artifactId>
 				<version>${springSecurityVersion}</version>
 			</dependency>
+			<dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>${bouncyCastleVersion}</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -1242,6 +1247,7 @@
 		<springVersion>5.3.30</springVersion>
 		<springSecurityVersion>5.8.9</springSecurityVersion>
 		<hibernateVersion>5.6.15.Final</hibernateVersion>
+		<bouncyCastleVersion>1.82</bouncyCastleVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>6.2.4.Final</hibernateSearchVersion>
 		<luceneVersion>8.11.2</luceneVersion>

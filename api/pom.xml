@@ -301,6 +301,10 @@
 			<artifactId>spring-security-crypto</artifactId>
 			<version>${springSecurityVersion}</version>
 		</dependency>
+		<dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+        </dependency>
 	</dependencies>
 	<build>
 		<resources>
