@@ -22,8 +22,8 @@ import static org.apache.commons.lang3.time.DateUtils.addWeeks;
 import static org.apache.commons.lang3.time.DateUtils.addYears;
 
 /**
- * Duration represented using UCUM time codes, with SNOMED CT duration codes
- * accepted as a fallback for backward compatibility
+ * Duration represented using UCUM time codes, with SNOMED CT duration codes accepted as a fallback
+ * for backward compatibility
  *
  * @since 1.10
  */
@@ -35,9 +35,9 @@ public class Duration {
 
 	/**
 	 * Active SNOMED CT code for minute. SNOMED CT inactivated the legacy code
-	 * {@link #SNOMED_CT_MINUTES_CODE} ("258701004") in its 2021-07-31 release,
-	 * and dictionaries such as CIEL now map minutes concepts to this code. The
-	 * legacy code is still accepted for backward compatibility.
+	 * {@link #SNOMED_CT_MINUTES_CODE} ("258701004") in its 2021-07-31 release, and dictionaries such as
+	 * CIEL now map minutes concepts to this code. The legacy code is still accepted for backward
+	 * compatibility.
 	 *
 	 * @since 3.0.0
 	 */
@@ -60,10 +60,9 @@ public class Duration {
 	/**
 	 * UCUM code for the "second" unit of time.
 	 * <p>
-	 * UCUM (Unified Code for Units of Measure) time codes are standardized and
-	 * stable, unlike SNOMED CT codes which are occasionally inactivated and
-	 * re-coded. These codes match the FHIR Timing.UnitsOfTime system codes,
-	 * aligning core with the FHIR module.
+	 * UCUM (Unified Code for Units of Measure) time codes are standardized and stable, unlike SNOMED CT
+	 * codes which are occasionally inactivated and re-coded. These codes match the FHIR
+	 * Timing.UnitsOfTime system codes, aligning core with the FHIR module.
 	 *
 	 * @since 3.0.0
 	 */
@@ -114,11 +113,10 @@ public class Duration {
 	/**
 	 * Identifier for the UCUM concept source.
 	 * <p>
-	 * OpenMRS core ships no UCUM concept source in its metadata, so the source
-	 * cannot be matched by a fixed database id. Deployments (e.g. those loading
-	 * the CIEL dictionary) commonly register it with both an hl7Code and a name
-	 * of "UCUM". It is therefore matched case-insensitively against either the
-	 * concept source's hl7Code or its name.
+	 * OpenMRS core ships no UCUM concept source in its metadata, so the source cannot be matched by a
+	 * fixed database id. Deployments (e.g. those loading the CIEL dictionary) commonly register it with
+	 * both an hl7Code and a name of "UCUM". It is therefore matched case-insensitively against either
+	 * the concept source's hl7Code or its name.
 	 *
 	 * @since 3.0.0
 	 */
@@ -155,8 +153,7 @@ public class Duration {
 		if (UCUM_SECONDS_CODE.equals(code) || SNOMED_CT_SECONDS_CODE.equals(code)) {
 			return addSeconds(startDate, this.duration);
 		}
-		if (UCUM_MINUTES_CODE.equals(code) || SNOMED_CT_MINUTES_CODE.equals(code)
-		        || SNOMED_CT_MINUTES_CODE_2.equals(code)) {
+		if (UCUM_MINUTES_CODE.equals(code) || SNOMED_CT_MINUTES_CODE.equals(code) || SNOMED_CT_MINUTES_CODE_2.equals(code)) {
 			return addMinutes(startDate, this.duration);
 		}
 		if (UCUM_HOURS_CODE.equals(code) || SNOMED_CT_HOURS_CODE.equals(code)) {
@@ -187,17 +184,13 @@ public class Duration {
 	/**
 	 * Returns the SAME-AS reference term code used to resolve the duration unit.
 	 * <p>
-	 * The UCUM mapping is preferred when present because UCUM time codes are
-	 * standardized and stable. When no UCUM SAME-AS mapping exists, the SNOMED CT
-	 * SAME-AS mapping is returned for backward compatibility, preserving the
-	 * historical behavior for deployments that only carry SNOMED codes.
+	 * The UCUM mapping is preferred when present because UCUM time codes are standardized and stable.
+	 * When no UCUM SAME-AS mapping exists, the SNOMED CT SAME-AS mapping is returned for backward
+	 * compatibility, preserving the historical behavior for deployments that only carry SNOMED codes.
 	 * <p>
-	 * <strong>Should</strong> return null if the concept has no mapping to the
-	 * SNOMED CT source<br/>
-	 * <strong>Should</strong> return the code for the term of the mapping to the
-	 * SNOMED CT source<br/>
-	 * <strong>Should</strong> prefer the UCUM code when both a UCUM and a SNOMED
-	 * CT mapping are present
+	 * <strong>Should</strong> return null if the concept has no mapping to the SNOMED CT source<br/>
+	 * <strong>Should</strong> return the code for the term of the mapping to the SNOMED CT source<br/>
+	 * <strong>Should</strong> prefer the UCUM code when both a UCUM and a SNOMED CT mapping are present
 	 *
 	 * @param durationUnits
 	 * @return a string which is reference term code
@@ -214,8 +207,7 @@ public class Duration {
 			if (isUcumSource(conceptSource)) {
 				return conceptReferenceTerm.getCode();
 			}
-			if (snomedCtCode == null
-			        && Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE.equals(conceptSource.getHl7Code())) {
+			if (snomedCtCode == null && Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE.equals(conceptSource.getHl7Code())) {
 				snomedCtCode = conceptReferenceTerm.getCode();
 			}
 		}
@@ -225,8 +217,8 @@ public class Duration {
 	/**
 	 * Tells whether the given concept source is the UCUM source.
 	 * <p>
-	 * Matched case-insensitively against either the source's hl7Code or its
-	 * name, since core ships no UCUM source with a fixed id.
+	 * Matched case-insensitively against either the source's hl7Code or its name, since core ships no
+	 * UCUM source with a fixed id.
 	 *
 	 * @param conceptSource the concept source to inspect
 	 * @return true if the source represents UCUM

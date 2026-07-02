@@ -178,8 +178,8 @@ public class DurationTest extends BaseContextSensitiveTest {
 	@Test
 	public void getCode_shouldPreferTheUcumCodeWhenBothUcumAndSnomedMappingsArePresent() {
 		Concept concept = new Concept();
-		concept.addConceptMapping(sameAsMapping(Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE,
-		    Duration.SNOMED_CT_MINUTES_CODE));
+		concept.addConceptMapping(
+		    sameAsMapping(Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE, Duration.SNOMED_CT_MINUTES_CODE));
 		concept.addConceptMapping(sameAsMapping(Duration.UCUM_CONCEPT_SOURCE_HL7_CODE, Duration.UCUM_MINUTES_CODE));
 
 		assertEquals(Duration.UCUM_MINUTES_CODE, Duration.getCode(concept));
