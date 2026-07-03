@@ -386,7 +386,6 @@ public class HibernateContextDAO implements ContextDAO {
 	    }
 
 	    credential.setHashedPassword(Security.getArgon2Encoder().encode(rawPassword));
-	    credential.setSalt(null);
 	    credential.setDateChanged(new Date());
 	    credential.setChangedBy(user);
 	    userDao.updateLoginCredential(credential);
