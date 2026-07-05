@@ -46,12 +46,14 @@ public class ChangeSetChecksumBaselineTest {
 	private static final String BASELINE = "org/openmrs/liquibase/liquibase-v8-checksum-baseline.tsv";
 
 	private static final Set<String> CHANGESETS_ADDED_BY_TRUNK_6634 = Set.of("TRUNK-6634-2026-07-03-1000",
-	    "TRUNK-6634-2026-07-03-1001", "TRUNK-6634-2026-07-03-1002");
+	    "TRUNK-6634-2026-07-03-1002");
 
 	/**
 	 * Changesets that must remain restricted to mysql (and oracle where declared) because extending
-	 * them requires modifySql blocks, which are part of the checksum. Each has a dedicated mariadb
-	 * changeset instead.
+	 * them requires modifySql blocks, which are part of the checksum. MariaDB is covered instead by the
+	 * GenerateUuid fallback in 20090831-1041-scheduler_task_config (which runs for every dbms other
+	 * than mysql/oracle/mssql) and by the dedicated changeset TRUNK-6634-2026-07-03-1002 for the
+	 * 'System Developer' role.
 	 */
 	private static final Set<String> MYSQL_ONLY_BY_DESIGN = Set.of("20100128-1", "20090831-1040-scheduler_task_config");
 
@@ -109,20 +111,27 @@ public class ChangeSetChecksumBaselineTest {
 	}
 
 	@Test
-	public void shouldOrderMariaDbRepairChangeSetsBeforeTheirDependentConstraints() throws Exception {
+	public void shouldOrderMariaDbRepairChangeSetsBeforeTheirDependentChangeSets() throws Exception {
 		List<ChangeSet> changeSets = parse("org/openmrs/liquibase/updates/liquibase-update-to-latest-2.0.x.xml");
 		int schedulerBackfill = indexOf(changeSets, "20090831-1040-scheduler_task_config");
-		int mariaDbSchedulerBackfill = indexOf(changeSets, "TRUNK-6634-2026-07-03-1001");
+		int schedulerJavaFallback = indexOf(changeSets, "20090831-1041-scheduler_task_config");
 		int schedulerConstraint = indexOf(changeSets, "20090831-1042-scheduler_task_config");
 		int roleInsert = indexOf(changeSets, "20100128-1");
 		int mariaDbRoleInsert = indexOf(changeSets, "TRUNK-6634-2026-07-03-1002");
+		int roleSwitch = indexOf(changeSets, "20100128-2");
 
-		assertTrue(schedulerBackfill < mariaDbSchedulerBackfill,
-		    "mariadb scheduler_task_config backfill should follow the historical mysql/oracle backfill");
-		assertTrue(mariaDbSchedulerBackfill < schedulerConstraint,
-		    "mariadb scheduler_task_config backfill must run before the uuid not-null constraint");
+		// scheduler_task_config needs no dedicated mariadb changeset: the java fallback in
+		// 20090831-1041 runs for every dbms other than mysql/oracle/mssql, including mariadb,
+		// and must stay ordered between the mysql/oracle backfill and the not-null constraint.
+		assertTrue(schedulerBackfill < schedulerJavaFallback,
+		    "scheduler_task_config java fallback should follow the mysql/oracle backfill");
+		assertTrue(schedulerJavaFallback < schedulerConstraint,
+		    "scheduler_task_config java fallback must run before the uuid not-null constraint");
+
 		assertTrue(roleInsert < mariaDbRoleInsert,
 		    "mariadb 'System Developer' insert should follow the historical mysql insert");
+		assertTrue(mariaDbRoleInsert < roleSwitch,
+		    "mariadb 'System Developer' insert must run before 20100128-2 reassigns users to that role");
 	}
 
 	private static Map<String, String> loadBaseline() throws Exception {

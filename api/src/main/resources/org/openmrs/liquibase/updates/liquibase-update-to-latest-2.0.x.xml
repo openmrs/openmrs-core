@@ -2496,23 +2496,6 @@
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
-	<changeSet id="TRUNK-6634-2026-07-03-1001" author="arrabelli" dbms="mariadb">
-		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="scheduler_task_config" columnName="uuid"/>
-		</preConditions>
-		<comment>
-			Generating UUIDs for rows in scheduler_task_config on MariaDB. Changeset
-			20090831-1040-scheduler_task_config only runs for MySQL and Oracle, and the table is not
-			covered by the java fallback in 20090402-1517, so on MariaDB the uuid column stayed null
-			and the not-null constraint in 20090831-1042-scheduler_task_config failed.
-			20090831-1040-scheduler_task_config must stay untouched because adding a modifySql block
-			changes its checksum and would break validation on existing databases.
-		</comment>
-		<update tableName="scheduler_task_config">
-			<column name="uuid" valueComputed="UUID()"/>
-			<where>uuid is null</where>
-		</update>
-	</changeSet>
 	
 	<changeSet id="20090831-1041-scheduler_task_config" author="bwolfe">
 		<validCheckSum><comment>Fixed missing id from scheduler_task_config</comment>3:25127273b2d501664ce325922b0c7db2</validCheckSum>
