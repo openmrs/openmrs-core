@@ -634,12 +634,33 @@ public final class OpenmrsConstants {
 	 */
 	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
 
+	/**
+	 * Global property name for enabling or disabling observation archiving task.
+	 *
+	 * @since 3.0.0
+	 */
 	public static final String GP_OBS_ARCHIVE_ENABLED = "obs.archive.enabled";
 
+	/**
+	 * Global property name for the batch size used when processing observations for archiving.
+	 *
+	 * @since 3.0.0
+	 */
 	public static final String GP_OBS_ARCHIVE_BATCH_SIZE = "obs.archive.batch_size";
 
+	/**
+	 * Global property name for the number of days to retain voided observations before archiving.
+	 *
+	 * @since 3.0.0
+	 */
 	public static final String GP_OBS_ARCHIVE_RETENTION_DAYS = "obs.archive.retention_days";
 
+	/**
+	 * Global property name for tracking the ID of the last observation processed by the observation
+	 * archiving task.
+	 *
+	 * @since 3.0.0
+	 */
 	public static final String GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID = "obs.archive.last_processed_obs_id";
 
 	/**

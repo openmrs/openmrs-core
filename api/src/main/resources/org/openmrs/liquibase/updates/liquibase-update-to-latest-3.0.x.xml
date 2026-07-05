@@ -221,10 +221,21 @@
 			<column name="uuid" type="CHAR(38)">
 				<constraints unique="true"/>
 			</column>
+			<column defaultValueComputed="NULL" name="archived_by" type="INT"/>
+			<column defaultValueComputed="NULL" name="date_archived" type="DATETIME"/>
 		</createTable>
 		
 		<createIndex indexName="idx_obs_archive_uuid" tableName="obs_archive">
 			<column name="uuid"/>
+		</createIndex>
+		<createIndex indexName="idx_obs_archive_obs_group_id" tableName="obs_archive">
+			<column name="obs_group_id"/>
+		</createIndex>
+		<createIndex indexName="idx_obs_archive_encounter_id" tableName="obs_archive">
+			<column name="encounter_id"/>
+		</createIndex>
+		<createIndex indexName="idx_obs_archive_date_voided" tableName="obs_archive">
+			<column name="date_voided"/>
 		</createIndex>
 	</changeSet>
 
@@ -262,5 +273,6 @@
 		<comment>Drop the previous_version foreign key constraint on the obs table to allow archiving old versions</comment>
 		<dropForeignKeyConstraint baseTableName="obs" constraintName="previous_version"/>
 	</changeSet>
+
 
 </databaseChangeLog>

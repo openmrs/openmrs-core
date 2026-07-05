@@ -9,13 +9,18 @@
  */
 package org.openmrs.scheduler.tasks;
 
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.TransactionException;
 
 /**
  * Legacy task definition for Observation Archiving. This class is registered in the database task
  * config and executes the Spring-managed handler.
+ *
+ * @since 3.0.0
  */
 public class ObsArchivingTask extends AbstractTask {
 
@@ -32,7 +37,7 @@ public class ObsArchivingTask extends AbstractTask {
 			} else {
 				log.error("ObsArchivingTaskHandler bean not found.");
 			}
-		} catch (Exception e) {
+		} catch (APIException | DataAccessException | TransactionException | NumberFormatException e) {
 			log.error("Error occurred during Observation Archiving Task execution", e);
 		}
 		log.info("Observation Archiving Task completed.");

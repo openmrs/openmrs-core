@@ -88,9 +88,9 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	public void onStartup() {
 		for (TaskDefinition taskDefinition : schedulerDAO.getTasks()) {
 			if (Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
-				String creatorSystemId = getValidCreatorSystemId(taskDefinition);
+				String scheduledBy = getValidCreatorSystemId(taskDefinition);
 				JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(taskDefinition.getUuid()),
-				    new JobRequestAdapter(taskDefinition, creatorSystemId));
+				    new JobRequestAdapter(taskDefinition, scheduledBy));
 				String name = taskDefinition.getName();
 				if (name == null) {
 					name = taskDefinition.getTaskClass();
@@ -491,6 +491,13 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		return Context.getAuthenticatedUser().getSystemId();
 	}
 
+	/**
+	 * Gets a valid creator system ID from the given task definition.
+	 *
+	 * @param taskDefinition the task definition
+	 * @return the system ID of the creator, or the authenticated user's system ID if none exists
+	 * @since 3.0.0
+	 */
 	private String getValidCreatorSystemId(TaskDefinition taskDefinition) {
 		if (taskDefinition.getCreator() != null && !Boolean.TRUE.equals(taskDefinition.getCreator().isRetired())
 		        && taskDefinition.getCreator().getSystemId() != null) {
