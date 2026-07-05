@@ -16,6 +16,8 @@ import org.openmrs.scheduler.TaskData;
 /**
  * TaskData marker class for the observation archiving scheduled task. Used by JobRunr to serialize
  * the task definition.
+ *
+ * @since 3.0.0
  */
 public class ObsArchivingTaskData implements TaskData, Serializable {
 

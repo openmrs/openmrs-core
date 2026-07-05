@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * Tests for the {@link ObsArchivingTaskData} class.
+ */
 public class ObsArchivingTaskDataTest {
 
 	@Test

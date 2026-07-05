@@ -595,6 +595,13 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		return user != null ? user.getSystemId() : "daemon";
 	}
 
+	/**
+	 * Gets a valid creator system ID from the given task definition.
+	 *
+	 * @param taskDefinition the task definition
+	 * @return the system ID of the creator, or the authenticated user's system ID if none exists
+	 * @since 3.0.0
+	 */
 	private String getValidCreatorSystemId(TaskDefinition taskDefinition) {
 		if (taskDefinition.getCreator() != null && !Boolean.TRUE.equals(taskDefinition.getCreator().isRetired())
 		        && taskDefinition.getCreator().getSystemId() != null) {

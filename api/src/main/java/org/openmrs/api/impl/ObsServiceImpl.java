@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -139,6 +140,14 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		}
 	}
 
+	/**
+	 * Restores a voided observation from the archive table and unvoids it.
+	 *
+	 * @param obs the observation to restore and unvoid
+	 * @param isSaveOperation true if this is part of a save operation, false otherwise
+	 * @return the restored and unvoided observation
+	 * @since 3.0.0
+	 */
 	private Obs restoreAndUnvoidFromArchive(Obs obs, boolean isSaveOperation) {
 		boolean restored = getArchiveHelper().restoreFromArchive(obs.getObsId());
 		if (!restored) {
@@ -182,8 +191,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		return obs;
 	}
 
-	private void unvoidArchivedChildren(Obs obs, java.util.Date originalDateVoided) {
-		Set<Obs> members = new java.util.LinkedHashSet<>(obs.getGroupMembers(true));
+	private void unvoidArchivedChildren(Obs obs, Date originalDateVoided) {
+		Set<Obs> members = new LinkedHashSet<>(obs.getGroupMembers(true));
 		for (Obs child : members) {
 			boolean datesMatch = (child.getDateVoided() == null && originalDateVoided == null)
 			        || (child.getDateVoided() != null && originalDateVoided != null
@@ -721,6 +730,12 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		return handlers;
 	}
 
+	/**
+	 * Gets the ObsArchiveHelper component from the Spring application context.
+	 *
+	 * @return the ObsArchiveHelper instance
+	 * @since 3.0.0
+	 */
 	private ObsArchiveHelper getArchiveHelper() {
 		if (archiveHelper == null) {
 			archiveHelper = Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class);
@@ -782,6 +797,13 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		return Arrays.asList(Obs.class);
 	}
 
+	/**
+	 * Copies modified data fields from the source observation to the target observation.
+	 *
+	 * @param source the observation with modified fields
+	 * @param target the observation to copy fields into
+	 * @since 3.0.0
+	 */
 	private void copyModifiedDataFields(Obs source, Obs target) {
 		if (source.getPerson() != null && (target.getPerson() == null
 		        || !source.getPerson().getPersonId().equals(target.getPerson().getPersonId()))) {

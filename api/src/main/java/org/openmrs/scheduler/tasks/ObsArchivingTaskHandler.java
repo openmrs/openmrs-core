@@ -9,6 +9,7 @@
  */
 package org.openmrs.scheduler.tasks;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.hibernate.query.Query;
 import org.openmrs.Obs;
 import org.openmrs.ObsArchive;
 import org.openmrs.ObsArchiveReferenceRange;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.TaskContext;
 import org.openmrs.scheduler.TaskHandler;
@@ -34,6 +36,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Task handler for observation archiving using Hibernate Session and HQL.
+ *
+ * @since 3.0.0
  */
 @Component
 public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData> {
@@ -50,7 +54,8 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 	}
 
 	@Override
-	public void execute(ObsArchivingTaskData taskData, TaskContext taskContext) throws Exception {
+	public void execute(ObsArchivingTaskData taskData, TaskContext taskContext)
+	        throws APIException, DataAccessException, TransactionException, NumberFormatException {
 		boolean enabled = Boolean.parseBoolean(
 		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_ENABLED, "false"));
 		if (!enabled) {
@@ -122,7 +127,7 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 			        .createQuery("FROM Obs o LEFT JOIN FETCH o.referenceRange WHERE o.obsId IN (:batchIds)", Obs.class)
 			        .setParameter("batchIds", batchIds).list();
 
-			List<Integer> idsToProcess = new java.util.ArrayList<>();
+			List<Integer> idsToProcess = new ArrayList<>();
 			for (Obs obs : obsList) {
 				if (obs.hasGroupMembers(true)) {
 					Number activeChildrenCount = (Number) session.createQuery(
@@ -207,6 +212,10 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 
 				archive.setArchivedBy(Context.getAuthenticatedUser());
 				archive.setDateArchived(new Date());
+				if (archive.getReferenceRange() != null) {
+					archive.getReferenceRange().setArchivedBy(Context.getAuthenticatedUser());
+					archive.getReferenceRange().setDateArchived(archive.getDateArchived());
+				}
 
 				session.persist(archive);
 
