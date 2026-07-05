@@ -81,8 +81,9 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(7));
 		obs.setConcept(Context.getConceptService().getConcept(5089));
-		if (value != null)
+		if (value != null) {
 			obs.setValueNumeric(value);
+		}
 		obs.setObsDatetime(new java.util.Date());
 		obs.setLocation(Context.getLocationService().getLocation(1));
 		return obs;
@@ -107,8 +108,9 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 				Obs child = new Obs();
 				child.setPerson(Context.getPersonService().getPerson(7));
 				child.setConcept(Context.getConceptService().getConcept(5089));
-				if (val != null)
+				if (val != null) {
 					child.setValueNumeric(val);
+				}
 				child.setObsDatetime(new java.util.Date());
 				child.setLocation(Context.getLocationService().getLocation(1));
 				parent.addGroupMember(child);

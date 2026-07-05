@@ -23,9 +23,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import org.hibernate.envers.Audited;
+
 /**
  * Entity representing archived observations.
+ *
+ * @since 3.0.0
  */
+@Audited
 @Entity
 @Table(name = "obs_archive")
 public class ObsArchive extends BaseFormRecordableOpenmrsData {

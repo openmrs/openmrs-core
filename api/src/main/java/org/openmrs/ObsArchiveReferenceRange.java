@@ -9,17 +9,26 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import org.hibernate.envers.Audited;
+
 /**
  * Entity representing archived observation reference ranges.
+ *
+ * @since 3.0.0
  */
+@Audited
 @Entity
 @Table(name = "obs_archive_reference_range")
 public class ObsArchiveReferenceRange extends BaseReferenceRange {
@@ -34,6 +43,13 @@ public class ObsArchiveReferenceRange extends BaseReferenceRange {
 	@MapsId
 	@JoinColumn(name = "obs_id", referencedColumnName = "obs_id", unique = true)
 	private ObsArchive obsArchive;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "archived_by")
+	private User archivedBy;
+
+	@Column(name = "date_archived")
+	private Date dateArchived;
 
 	public ObsArchiveReferenceRange() {
 		// required by Hibernate
@@ -53,6 +69,22 @@ public class ObsArchiveReferenceRange extends BaseReferenceRange {
 
 	public void setObsArchive(ObsArchive obsArchive) {
 		this.obsArchive = obsArchive;
+	}
+
+	public User getArchivedBy() {
+		return archivedBy;
+	}
+
+	public void setArchivedBy(User archivedBy) {
+		this.archivedBy = archivedBy;
+	}
+
+	public Date getDateArchived() {
+		return dateArchived;
+	}
+
+	public void setDateArchived(Date dateArchived) {
+		this.dateArchived = dateArchived;
 	}
 
 	@Override

@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Helper class for observation archiving operations using Hibernate Session and HQL.
+ *
+ * @since 3.0.0
  */
 public class ObsArchiveHelper {
 
@@ -224,8 +226,17 @@ public class ObsArchiveHelper {
 		obs.setObsDatetime(archive.getObsDatetime());
 		obs.setLocation(archive.getLocation());
 		if (archive.getObsGroupId() != null) {
-			Obs parent = new Obs();
-			parent.setObsId(archive.getObsGroupId());
+			Session session = sessionFactory.getCurrentSession();
+			Obs parent = session.get(Obs.class, archive.getObsGroupId());
+			if (parent == null) {
+				ObsArchive parentArchive = session.get(ObsArchive.class, archive.getObsGroupId());
+				if (parentArchive != null) {
+					parent = convertToObs(parentArchive);
+				} else {
+					parent = new Obs();
+					parent.setObsId(archive.getObsGroupId());
+				}
+			}
 			obs.setObsGroup(parent);
 		}
 		obs.setAccessionNumber(archive.getAccessionNumber());
@@ -252,8 +263,17 @@ public class ObsArchiveHelper {
 		obs.setUuid(archive.getUuid());
 
 		if (archive.getPreviousVersionId() != null) {
-			Obs prev = new Obs();
-			prev.setObsId(archive.getPreviousVersionId());
+			Session session = sessionFactory.getCurrentSession();
+			Obs prev = session.get(Obs.class, archive.getPreviousVersionId());
+			if (prev == null) {
+				ObsArchive prevArchive = session.get(ObsArchive.class, archive.getPreviousVersionId());
+				if (prevArchive != null) {
+					prev = convertToObs(prevArchive);
+				} else {
+					prev = new Obs();
+					prev.setObsId(archive.getPreviousVersionId());
+				}
+			}
 			obs.setPreviousVersion(prev);
 		}
 		obs.setStatus(archive.getStatus());
