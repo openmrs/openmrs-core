@@ -73,6 +73,15 @@ public class DurationTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void addToDate_shouldAddWeeksWhenUnitIsWeeks() throws ParseException {
+		Duration duration = new Duration(3, Duration.SNOMED_CT_WEEKS_CODE);
+
+		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
+
+		assertEquals(createDateTime("2014-07-22 10:00:00"), autoExpireDate);
+	}
+
+	@Test
 	public void addToDate_shouldAddMonthsWhenUnitIsMonths() throws ParseException {
 		Duration duration = new Duration(3, Duration.SNOMED_CT_MONTHS_CODE);
 
@@ -206,7 +215,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getKnownCode_shouldReturnNullIfNoSameAsMappingCarriesAKnownCode() {
-		Concept units = unitsWithMappings(sameAsMapping("SNOMED CT", "SCT", "999999999"));
+		Concept units = SimpleDosingInstructionsTest.createUnits("SCT", "999999999", null);
 
 		assertNull(Duration.getKnownCode(units));
 	}
@@ -230,6 +239,16 @@ public class DurationTest extends BaseContextSensitiveTest {
 		    sameAsMapping("UCUM", null, Duration.UCUM_MONTHS_CODE));
 
 		assertNull(Duration.getKnownCode(units));
+	}
+
+	/**
+	 * @see Duration#getKnownCode(Concept)
+	 */
+	@Test
+	public void getKnownCode_shouldMatchTheUcumSourceNameCaseInsensitively() {
+		Concept units = unitsWithMappings(sameAsMapping("ucum", null, Duration.UCUM_MINUTES_CODE));
+
+		assertEquals(Duration.UCUM_MINUTES_CODE, Duration.getKnownCode(units));
 	}
 
 	/**

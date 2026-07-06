@@ -26,6 +26,7 @@ import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.SimpleDosingInstructionsTest;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
@@ -713,6 +714,36 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode",
 		    errors.getFieldError("durationUnits").getCode());
+	}
+
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfDurationUnitsIsMappedOnlyToAnUnknownDurationCode() {
+		Patient patient = Context.getPatientService().getPatient(7);
+		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		order.setEncounter(encounter);
+		order.setConcept(Context.getConceptService().getConcept(5497));
+		order.setPatient(patient);
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("None");
+		order.setDosingInstructions("Test Instruction");
+		order.setDuration(20);
+		order.setDurationUnits(SimpleDosingInstructionsTest.createUnits("SCT", "999999999", null));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertTrue(errors.getFieldErrors("durationUnits").stream()
+		        .anyMatch(e -> "DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode".equals(e.getCode())));
 	}
 
 	/**

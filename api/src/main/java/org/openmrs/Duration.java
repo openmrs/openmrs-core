@@ -265,12 +265,12 @@ public class Duration {
 	 * considering all of the concept's SAME-AS mappings to the SNOMED CT and UCUM concept sources.
 	 * Every code this method returns is accepted by {@link #addToDate(Date, OrderFrequency)}.
 	 * <p>
-	 * Unlike {@link #getCode(Concept)}, the result does not depend on the iteration order of the
-	 * concept's mappings. Dictionaries may map one unit concept to several codes, for example both the
-	 * legacy and the current SNOMED CT code for minute, and any of them is accepted as long as all
-	 * known codes of the concept denote the same unit. If they denote different units, null is
-	 * returned, so that a miscurated dictionary surfaces as a validation error rather than a silently
-	 * wrong expiry date.
+	 * Unlike {@link #getCode(Concept)}, the unit denoted by the result does not depend on the iteration
+	 * order of the concept's mappings, though which of several equivalent codes is returned may.
+	 * Dictionaries may map one unit concept to several codes, for example both the legacy and the
+	 * current SNOMED CT code for minute, and any of them is accepted as long as all known codes of the
+	 * concept denote the same unit. If they denote different units, null is returned, so that a
+	 * miscurated dictionary surfaces as a validation error rather than a silently wrong expiry date.
 	 * <p>
 	 * <strong>Should</strong> return the code of a SNOMED CT SAME-AS mapping with a known code<br/>
 	 * <strong>Should</strong> return a minutes code for a concept carrying both the legacy and the

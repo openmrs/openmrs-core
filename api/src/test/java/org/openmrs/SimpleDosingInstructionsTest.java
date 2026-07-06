@@ -83,6 +83,19 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void validate_shouldFailValidationIfDurationUnitsIsMappedOnlyToAnUnknownDurationCode() {
+		DrugOrder drugOrder = createValidDrugOrder();
+		drugOrder.setDuration(30);
+		drugOrder.setDurationUnits(createUnits("999999999"));
+		drugOrder.setAutoExpireDate(null);
+		Errors errors = new BindException(drugOrder, "drugOrder");
+
+		new SimpleDosingInstructions().validate(drugOrder, errors);
+
+		assertTrue(errors.hasFieldErrors("durationUnits"));
+	}
+
+	@Test
 	public void getAutoExpireDate_shouldInferAutoExpireDateForAKnownSNOMEDCTDurationUnit() throws ParseException {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10:00:00"));
