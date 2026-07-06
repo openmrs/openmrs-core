@@ -1,0 +1,80 @@
+# On-demand PR review by Claude.
+# Runs ONLY when a /dev/3-or-above developer comments "@claude review" on a PR.
+# It never runs automatically on PR open. Gating is by membership of the
+# OpenMRS developer-stage GitHub teams below, because a GitHub Action cannot
+# read OpenMRS developer stages directly. "/dev/3 and above" == membership of
+# any of dev-3, dev-4, dev-5 (the teams are flat, not nested).
+name: Claude PR Review
+
+on:
+  issue_comment:
+    types: [created]
+
+# Edit these to change the org or which stages may invoke the reviewer.
+env:
+  REVIEWER_ORG: openmrs
+  REVIEWER_TEAMS: "dev-3 dev-4 dev-5"
+
+jobs:
+  review:
+    # Cheap pre-filter so we don't start a runner on unrelated comments:
+    # only PR comments (not issue comments) that contain the trigger phrase.
+    if: >
+      github.event.issue.pull_request != null &&
+      contains(github.event.comment.body, '@claude review')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      # Fail-closed dev-stage gate: the commenter must be an active member of
+      # one of the reviewer teams. DEV_STAGE_READ_TOKEN needs read:org scope,
+      # because the default GITHUB_TOKEN cannot read another org's team
+      # membership (and this runs on a fork).
+      - name: Verify commenter is /dev/3 or above
+        id: gate
+        env:
+          GH_TOKEN: ${{ secrets.DEV_STAGE_READ_TOKEN }}
+          LOGIN: ${{ github.event.comment.user.login }}
+        run: |
+          allowed=false
+          for team in $REVIEWER_TEAMS; do
+            if gh api "/orgs/${REVIEWER_ORG}/teams/${team}/memberships/${LOGIN}" \
+                 --jq '.state' 2>/dev/null | grep -qx active; then
+              allowed=true
+              echo "::notice::${LOGIN} is a member of ${REVIEWER_ORG}/${team}; proceeding."
+              break
+            fi
+          done
+          echo "allowed=${allowed}" >> "$GITHUB_OUTPUT"
+          if [ "$allowed" = false ]; then
+            echo "::notice::${LOGIN} is not /dev/3+ (not in: ${REVIEWER_TEAMS}); skipping."
+          fi
+
+      - name: Checkout
+        if: steps.gate.outputs.allowed == 'true'
+        uses: actions/checkout@v6
+
+      - name: Review
+        if: steps.gate.outputs.allowed == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          trigger_phrase: "@claude review"
+          prompt: |
+            Begin your comment with this exact line:
+            "🤖 Automated review by Claude, requested via @claude review. A maintainer still makes the merge decision."
+
+            Review this openmrs-core pull request. Because core is the API
+            contract that hundreds of downstream modules depend on, weight these
+            most heavily:
+            - Backward compatibility and any public-API breakage
+            - Security (this underpins a medical record system)
+            - Test coverage for the changed behavior
+            - Adherence to the OpenMRS coding conventions
+
+            Post a single PR comment with your findings. Do NOT modify code,
+            push commits, or open pull requests.
+          claude_args: |
+            --max-turns 4
+            --disallowedTools Edit,Write,Bash
