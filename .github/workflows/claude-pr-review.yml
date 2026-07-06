@@ -23,8 +23,9 @@ env:
 
 jobs:
   review:
-    # Bound cost and stop a hung run on this public repo.
-    timeout-minutes: 15
+    # Bound cost and stop a hung run on this public repo. Generous because
+    # Opus 4.8 at max effort reasons deeply and takes longer per review.
+    timeout-minutes: 20
     # Cheap pre-filter so we don't start a runner on unrelated comments:
     # a PR comment (not a plain issue), not authored by a bot (so the reviewer's
     # own comment can never re-trigger this), containing the trigger phrase.
@@ -102,5 +103,7 @@ jobs:
           # `gh pr diff`/git. `contents: read` above is what actually prevents
           # any push, so read-only Bash is safe.
           claude_args: |
-            --max-turns 4
+            --model claude-opus-4-8
+            --effort max
+            --max-turns 5
             --disallowedTools "Write,Edit"
