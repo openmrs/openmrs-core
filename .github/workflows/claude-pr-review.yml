@@ -10,16 +10,14 @@ on:
   issue_comment:
     types: [created]
 
-# One review at a time per PR; a fresh "@claude review" supersedes an in-flight
-# one instead of posting a duplicate. The group is keyed on the PR AND on whether
-# this comment is a review request: concurrency is evaluated per workflow run
-# BEFORE the job `if:`, and the workflow triggers on every issue comment, so a
-# PR-number-only group would let an unrelated comment (its run joins the same
-# group, then skips) cancel an in-flight review. Two review requests share the
-# `-true` group and the newer supersedes; everything else lands in `-false`.
-concurrency:
-  group: claude-pr-review-${{ github.event.issue.number }}-${{ contains(github.event.comment.body, '@claude review') }}
-  cancel-in-progress: true
+# No `concurrency` here on purpose. It is evaluated at run creation, upstream of
+# the membership gate below, so any cancel-in-progress group joinable by an
+# arbitrary comment is a denial-of-service vector: on this public repo anyone
+# could post "@claude review" (or quote it) to join the group and cancel a
+# legitimate in-flight review before their own run is gated out. Cancellation
+# cannot be membership-gated (that needs a runtime API call, not an `if:`), so
+# we simply don't cancel. The cost is that a dev who invokes twice gets two
+# reviews rather than a supersede — rare, visible, and preferable to the DoS.
 
 # Edit these to change the org, which stages may invoke the reviewer, or the
 # review methodology source. Pin SKILL_URL to a commit SHA (swap `main` for the
