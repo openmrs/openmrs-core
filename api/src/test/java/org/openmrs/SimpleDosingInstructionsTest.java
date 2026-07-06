@@ -70,6 +70,19 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void validate_shouldPassValidationIfDurationUnitsIsMappedToTheCurrentSnomedCtMinuteCode() {
+		DrugOrder drugOrder = createValidDrugOrder();
+		drugOrder.setDuration(30);
+		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_MINUTES_CODE_2021));
+		drugOrder.setAutoExpireDate(null);
+		Errors errors = new BindException(drugOrder, "drugOrder");
+
+		new SimpleDosingInstructions().validate(drugOrder, errors);
+
+		assertFalse(errors.hasErrors());
+	}
+
+	@Test
 	public void getAutoExpireDate_shouldInferAutoExpireDateForAKnownSNOMEDCTDurationUnit() throws ParseException {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10:00:00"));
@@ -77,6 +90,30 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_SECONDS_CODE));
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
 		assertEquals(createDateTime("2014-07-01 10:00:29"), autoExpireDate);
+	}
+
+	@Test
+	public void getAutoExpireDate_shouldInferAutoExpireDateForTheCurrentSnomedCtMinuteCode() throws ParseException {
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setDateActivated(createDateTime("2014-07-01 10:00:00"));
+		drugOrder.setDuration(30);
+		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_MINUTES_CODE_2021));
+
+		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
+
+		assertEquals(createDateTime("2014-07-01 10:29:59"), autoExpireDate);
+	}
+
+	@Test
+	public void getAutoExpireDate_shouldInferAutoExpireDateForAUcumDurationUnit() throws ParseException {
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setDateActivated(createDateTime("2014-07-01 10:00:00"));
+		drugOrder.setDuration(30);
+		drugOrder.setDurationUnits(createUnits("UCUM", Duration.UCUM_MINUTES_CODE, null));
+
+		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
+
+		assertEquals(createDateTime("2014-07-01 10:29:59"), autoExpireDate);
 	}
 
 	@Test
