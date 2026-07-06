@@ -120,11 +120,13 @@ jobs:
             PR is clean with nothing to act on, post nothing.
 
             Security constraint — this OVERRIDES the skill wherever they differ:
-            you are reviewing untrusted PR code, so never execute any code or
-            build from the repository. Do not run mvn, gradle, npm, make, the
-            test suite, or any script or binary from the tree, and do not build
-            base or PR branches in worktrees. Verify only by reading files and
-            by read-only tooling: git diff/log/grep, gh pr diff, and gh api.
+            you are reviewing untrusted PR code, so never execute the
+            repository's own code. Do not run its build or tests (mvn, gradle,
+            npm, make, and the like), and do not run any script or binary from
+            the tree, including inside worktrees. This ban is on the PR's code
+            only — your own read-only tooling is expected: use git
+            (diff/log/grep), gh (pr diff, api), curl to fetch upstream
+            references, and python to assemble the review payload you post.
             Where the skill would build something to verify it (e.g. a
             build-config PR), you cannot run that build here — treat it as an
             experiment that cannot run and report the check as a question, per
