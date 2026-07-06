@@ -16,10 +16,13 @@ concurrency:
   group: claude-pr-review-${{ github.event.issue.number }}
   cancel-in-progress: true
 
-# Edit these to change the org or which stages may invoke the reviewer.
+# Edit these to change the org, which stages may invoke the reviewer, or the
+# review methodology source. Pin SKILL_URL to a commit SHA (swap `main` for the
+# SHA in the raw path) to freeze the methodology and avoid it changing upstream.
 env:
   REVIEWER_ORG: openmrs
   REVIEWER_TEAMS: "dev-3 dev-4 dev-5"
+  SKILL_URL: https://raw.githubusercontent.com/openmrs/openmrs-module-querystore/main/.claude/skills/pr-review/SKILL.md
 
 jobs:
   review:
@@ -70,13 +73,15 @@ jobs:
 
       # issue_comment checks out the default branch by default. Fetch the PR
       # head instead so the review sees the PR's code, not master. This ref
-      # resolves for fork PRs too.
+      # resolves for fork PRs too. fetch-depth: 0 (full history) is required by
+      # the skill's local-git verification — merge-base, diffing against the
+      # base branch, drift checks — which a shallow clone cannot support.
       - name: Check out the PR head
         if: steps.gate.outputs.allowed == 'true'
         uses: actions/checkout@v6
         with:
           ref: refs/pull/${{ github.event.issue.number }}/head
-          fetch-depth: 1
+          fetch-depth: 0
 
       # Pull the review methodology from the trusted querystore repo into a temp
       # path OUTSIDE the checked-out PR tree, so a malicious PR cannot substitute
@@ -84,8 +89,6 @@ jobs:
       # silently reviewing with no methodology.
       - name: Fetch the pr-review skill
         if: steps.gate.outputs.allowed == 'true'
-        env:
-          SKILL_URL: https://raw.githubusercontent.com/openmrs/openmrs-module-querystore/main/.claude/skills/pr-review/SKILL.md
         run: |
           dest="$RUNNER_TEMP/pr-review-SKILL.md"
           curl -fsSL "$SKILL_URL" -o "$dest"
