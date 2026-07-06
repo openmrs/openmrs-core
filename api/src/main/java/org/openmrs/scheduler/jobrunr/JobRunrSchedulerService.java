@@ -37,6 +37,7 @@ import org.jobrunr.scheduling.JobScheduler;
 import org.jobrunr.storage.JobNotFoundException;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.navigation.OffsetBasedPageRequest;
+import org.jspecify.annotations.NonNull;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -59,7 +60,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Service("schedulerService")
 @Transactional
@@ -87,6 +88,8 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	public void onStartup() {
 		for (TaskDefinition taskDefinition : schedulerDAO.getTasks()) {
 			if (Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
+				String scheduledBy = taskDefinition.getCreator() != null ? taskDefinition.getCreator().getSystemId()
+				        : "daemon";
 				JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(taskDefinition.getUuid()),
 				    new JobRequestAdapter(taskDefinition, taskDefinition.getCreator().getSystemId()));
 				String name = taskDefinition.getName();
@@ -306,7 +309,9 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	@Override
 	public void deleteTask(String uuid) {
 		if (getTask(uuid).isPresent()) {
-			jobRequestScheduler.delete(JobId.parse(uuid));
+			JobId jobId = JobId.parse(uuid);
+			jobRequestScheduler.delete(jobId);
+			storageProvider.deletePermanently(jobId.asUUID());
 		}
 	}
 
@@ -314,6 +319,12 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	public void deleteRecurringTask(String uuid) {
 		if (getRecurringTask(uuid).isPresent()) {
 			jobRequestScheduler.deleteRecurringJob(uuid);
+			// Delete any already scheduled task as well
+			getTasks(TaskState.SCHEDULED, Instant.now()).forEach(t -> t.getRecurringTaskUuid().ifPresent(taskUuid -> {
+				if (taskUuid.equals(uuid)) {
+					deleteTask(t.getUuid());
+				}
+			}));
 		}
 	}
 
@@ -326,9 +337,11 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 			    private Iterator<Job> currentBatch;
 
-			    private final boolean isSchedulerManager = isSchedulerManager(Context.getAuthenticatedUser());
+			    private final boolean isSchedulerManager = Context.hasPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 
-			    private final String userSystemId = Context.getAuthenticatedUser().getSystemId();
+			    private final User user = Context.getAuthenticatedUser();
+
+			    private final String userSystemId = user != null ? user.getSystemId() : null;
 
 			    @Override
 			    public boolean tryAdvance(Consumer<? super TaskDetails> action) {
@@ -339,11 +352,14 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 					    if (jobs == null || jobs.isEmpty()) {
 						    return false;
 					    }
-					    // Filter tasks based on scheduled by or updated at
-					    currentBatch = jobs.stream()
-					            .filter(job -> (isSchedulerManager || isScheduledBy(job.getJobDetails(), userSystemId))
-					                    && (before == null || job.getUpdatedAt().isBefore(before)))
-					            .iterator();
+					    if (!isSchedulerManager) {
+						    // List only tasks for the currently authenticated user
+						    currentBatch = jobs.stream()
+						            .filter(job -> userSystemId != null && isScheduledBy(job.getJobDetails(), userSystemId))
+						            .iterator();
+					    } else {
+						    currentBatch = jobs.iterator();
+					    }
 					    offset += jobs.size();
 				    }
 
@@ -356,13 +372,12 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		    }, false);
 	}
 
-	public boolean isSchedulerManager(User user) {
-		return user.hasPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
-	}
-
 	public boolean hasPrivileges(JobDetails jobDetails) {
+		if (Context.hasPrivilege(PrivilegeConstants.MANAGE_SCHEDULER)) {
+			return true;
+		}
 		User user = Context.getAuthenticatedUser();
-		return isSchedulerManager(user) || isScheduledBy(jobDetails, user.getSystemId());
+		return user != null && isScheduledBy(jobDetails, user.getSystemId());
 	}
 
 	public boolean isScheduledBy(JobDetails jobDetails, String userSystemId) {
@@ -377,22 +392,38 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	@Override
 	public Stream<RecurringTaskDetails> getRecurringTasks() {
+		boolean isSchedulerManager = Context.hasPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 		User user = Context.getAuthenticatedUser();
-		boolean isSchedulerManager = isSchedulerManager(user);
+		String userSystemId = user != null ? user.getSystemId() : null;
 		return storageProvider.getRecurringJobs().stream()
-		        .filter(j -> isSchedulerManager || isScheduledBy(j.getJobDetails(), user.getSystemId()))
+		        .filter(j -> isSchedulerManager || (userSystemId != null && isScheduledBy(j.getJobDetails(), userSystemId)))
 		        .map(JobRunrRecurringTaskDetails::new);
 	}
 
 	@Override
-	public TaskDetails schedule(TaskData taskData) {
-		return schedule(taskData.getClass().getSimpleName(), taskData);
+	public Stream<RecurringTaskDetails> getRecurringTasksByName(String name) {
+		return getRecurringTasks().filter(task -> task.getName().equals(name));
 	}
 
 	@Override
-	public TaskDetails schedule(String name, TaskData taskData) {
+	public TaskDetails schedule(TaskData taskData) {
+		return schedule(taskData, taskData.getClass().getSimpleName());
+	}
+
+	@Override
+	public TaskDetails schedule(TaskData taskData, String name) {
+		return schedule(UUID.randomUUID().toString(), taskData, name);
+	}
+
+	@Override
+	public TaskDetails schedule(String uuid, TaskData taskData) {
+		return schedule(uuid, taskData, taskData.getClass().getSimpleName());
+	}
+
+	@Override
+	public TaskDetails schedule(String uuid, TaskData taskData, String name) {
 		String scheduledBy = getScheduledBySystemId();
-		JobId jobId = jobRequestScheduler.enqueue(new JobRequestAdapter(taskData, scheduledBy));
+		JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(uuid), new JobRequestAdapter(taskData, scheduledBy));
 		Job job = updateJobWithName(jobId, name);
 		return new JobRunrTaskDetails(job);
 	}
@@ -424,73 +455,140 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	@Override
 	public TaskDetails schedule(TaskData taskData, Instant runAt) {
-		return schedule(taskData.getClass().getSimpleName(), taskData, runAt);
+		return schedule(taskData, runAt, taskData.getClass().getSimpleName());
 	}
 
 	@Override
-	public TaskDetails schedule(String name, TaskData taskData, Instant runAt) {
+	public TaskDetails schedule(TaskData taskData, Instant runAt, String name) {
+		return schedule(UUID.randomUUID().toString(), taskData, runAt, name);
+	}
+
+	@Override
+	public TaskDetails schedule(String uuid, TaskData taskData, Instant runAt) {
+		return schedule(uuid, taskData, runAt, taskData.getClass().getSimpleName());
+	}
+
+	@Override
+	public TaskDetails schedule(String uuid, TaskData taskData, Instant runAt, String name) {
 		String scheduledBy = getScheduledBySystemId();
-		JobId jobId = jobRequestScheduler.schedule(runAt, new JobRequestAdapter(taskData, scheduledBy));
+		JobId jobId = jobRequestScheduler.schedule(UUID.fromString(uuid), runAt,
+		    new JobRequestAdapter(taskData, scheduledBy));
 		Job job = updateJobWithName(jobId, name);
 		return new JobRunrTaskDetails(job);
 	}
 
 	@Override
 	public TaskDetails schedule(TaskData taskData, ZonedDateTime runAt) {
-		return schedule(taskData.getClass().getSimpleName(), taskData, runAt);
+		return schedule(taskData, runAt, taskData.getClass().getSimpleName());
 	}
 
 	@Override
-	public TaskDetails schedule(String name, TaskData taskData, ZonedDateTime runAt) {
+	public TaskDetails schedule(TaskData taskData, ZonedDateTime runAt, String name) {
+		return schedule(UUID.randomUUID().toString(), taskData, runAt, name);
+	}
+
+	@Override
+	public TaskDetails schedule(String uuid, TaskData taskData, ZonedDateTime runAt) {
+		return schedule(uuid, taskData, runAt, taskData.getClass().getSimpleName());
+	}
+
+	@Override
+	public TaskDetails schedule(String uuid, TaskData taskData, ZonedDateTime runAt, String name) {
 		String scheduledBy = getScheduledBySystemId();
-		JobId jobId = jobRequestScheduler.schedule(runAt, new JobRequestAdapter(taskData, scheduledBy));
+		JobId jobId = jobRequestScheduler.schedule(UUID.fromString(uuid), runAt,
+		    new JobRequestAdapter(taskData, scheduledBy));
 		Job job = updateJobWithName(jobId, name);
 		return new JobRunrTaskDetails(job);
 	}
 
 	@Override
 	public RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron) {
-		return scheduleRecurrently(taskData.getClass().getSimpleName(), taskData, cron);
+		return scheduleRecurrently(taskData, cron, taskData.getClass().getSimpleName());
 	}
 
 	@Override
-	public RecurringTaskDetails scheduleRecurrently(String name, TaskData taskData, String cron) {
+	public RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, String name) {
+		return scheduleRecurrently(UUID.randomUUID().toString(), taskData, cron, name);
+	}
+
+	@Override
+	public RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron) {
+		return scheduleRecurrently(uuid, taskData, cron, taskData.getClass().getSimpleName());
+	}
+
+	@Override
+	public RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, String name) {
 		String scheduledBy = getScheduledBySystemId();
-		String jobId = jobRequestScheduler.scheduleRecurrently(UUID.randomUUID().toString(), cron,
-		    new JobRequestAdapter(taskData, scheduledBy));
-		RecurringJob job = updateRecurringJobWithName(jobId, name);
+		Optional<RecurringJob> existingJob = getRecurringJob(uuid);
+		RecurringJob job = existingJob.orElseGet(() -> {
+			String jobId = jobRequestScheduler.scheduleRecurrently(uuid, cron, new JobRequestAdapter(taskData, scheduledBy));
+			return updateRecurringJobWithName(jobId, name);
+		});
+
 		return new JobRunrRecurringTaskDetails(job);
+	}
+
+	private @NonNull Optional<RecurringJob> getRecurringJob(String uuid) {
+		return storageProvider.getRecurringJobs().stream().filter(rj -> rj.getId().equals(uuid)).findAny();
 	}
 
 	@Override
 	public RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, ZoneId zoneId) {
-		return scheduleRecurrently(taskData.getClass().getSimpleName(), taskData, cron, zoneId);
+		return scheduleRecurrently(taskData, cron, zoneId, taskData.getClass().getSimpleName());
 	}
 
 	@Override
-	public RecurringTaskDetails scheduleRecurrently(String name, TaskData taskData, String cron, ZoneId zoneId) {
+	public RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, ZoneId zoneId, String name) {
+		return scheduleRecurrently(UUID.randomUUID().toString(), taskData, cron, zoneId, name);
+	}
+
+	@Override
+	public RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, ZoneId zoneId) {
+		return scheduleRecurrently(uuid, taskData, cron, zoneId, taskData.getClass().getSimpleName());
+	}
+
+	@Override
+	public RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, ZoneId zoneId,
+	        String name) {
 		String scheduledBy = getScheduledBySystemId();
-		String jobId = jobRequestScheduler.scheduleRecurrently(UUID.randomUUID().toString(), cron, zoneId,
-		    new JobRequestAdapter(taskData, scheduledBy));
-		RecurringJob job = updateRecurringJobWithName(jobId, name);
+		Optional<RecurringJob> existingJob = getRecurringJob(uuid);
+		RecurringJob job = existingJob.orElseGet(() -> {
+			String jobId = jobRequestScheduler.scheduleRecurrently(uuid, cron, zoneId,
+			    new JobRequestAdapter(taskData, scheduledBy));
+			return updateRecurringJobWithName(jobId, name);
+		});
 		return new JobRunrRecurringTaskDetails(job);
 	}
 
 	@Override
 	public RecurringTaskDetails scheduleRecurrently(TaskData taskData, Duration interval) {
-		return scheduleRecurrently(taskData.getClass().getSimpleName(), taskData, interval);
+		return scheduleRecurrently(taskData, interval, taskData.getClass().getSimpleName());
 	}
 
 	@Override
-	public RecurringTaskDetails scheduleRecurrently(String name, TaskData taskData, Duration interval) {
+	public RecurringTaskDetails scheduleRecurrently(TaskData taskData, Duration interval, String name) {
+		return scheduleRecurrently(UUID.randomUUID().toString(), taskData, interval, name);
+	}
+
+	@Override
+	public RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, Duration interval) {
+		return scheduleRecurrently(uuid, taskData, interval, taskData.getClass().getSimpleName());
+	}
+
+	@Override
+	public RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, Duration interval, String name) {
 		String scheduledBy = getScheduledBySystemId();
-		String jobId = jobRequestScheduler.scheduleRecurrently(UUID.randomUUID().toString(), interval,
-		    new JobRequestAdapter(taskData, scheduledBy));
-		RecurringJob job = updateRecurringJobWithName(jobId, name);
+		Optional<RecurringJob> existingJob = getRecurringJob(uuid);
+		RecurringJob job = existingJob.orElseGet(() -> {
+			String jobId = jobRequestScheduler.scheduleRecurrently(uuid, interval,
+			    new JobRequestAdapter(taskData, scheduledBy));
+			return updateRecurringJobWithName(jobId, name);
+		});
 		return new JobRunrRecurringTaskDetails(job);
 	}
 
 	private String getScheduledBySystemId() {
-		return Context.getAuthenticatedUser().getSystemId();
+		User user = Context.getAuthenticatedUser();
+		return user != null ? user.getSystemId() : "daemon";
 	}
 }
