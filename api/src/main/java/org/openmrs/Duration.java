@@ -61,6 +61,15 @@ public class Duration {
 	public static final String SNOMED_CT_CONCEPT_SOURCE_HL7_CODE = "SCT";
 
 	/**
+	 * Name identifying the SNOMED CT concept source, used as a fallback for dictionaries that register
+	 * the source by name without setting its HL7 code to {@link #SNOMED_CT_CONCEPT_SOURCE_HL7_CODE},
+	 * mirroring how {@link #UCUM_CONCEPT_SOURCE_NAME} is matched.
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String SNOMED_CT_CONCEPT_SOURCE_NAME = "SNOMED CT";
+
+	/**
 	 * Name identifying the concept source for The Unified Code for Units of Measure
 	 * (<a href="https://ucum.org">ucum.org</a>), whose codes for the units of time are stable by
 	 * design. Dictionaries commonly map duration unit concepts to UCUM in addition to SNOMED CT.
@@ -204,11 +213,25 @@ public class Duration {
 
 	private final Integer duration;
 
+	private final Unit unit;
+
+	/**
+	 * The raw code this duration was constructed from, retained only so {@link #addToDate} can name the
+	 * offending code when it is not one this class recognises. Null when the duration was built from an
+	 * already-resolved {@link Unit}.
+	 */
 	private final String code;
 
 	public Duration(Integer duration, String code) {
 		this.duration = duration;
 		this.code = code;
+		this.unit = findUnit(code);
+	}
+
+	private Duration(Integer duration, Unit unit) {
+		this.duration = duration;
+		this.unit = unit;
+		this.code = null;
 	}
 
 	/**
@@ -220,14 +243,20 @@ public class Duration {
 	 * @return date which is startDate plus duration
 	 */
 	public Date addToDate(Date startDate, OrderFrequency frequency) {
-		Unit unit = SNOMED_CT_UNITS_BY_CODE.get(code);
-		if (unit == null) {
-			unit = UCUM_UNITS_BY_CODE.get(code);
-		}
 		if (unit == null) {
 			throw new APIException("Duration.unknown.code", new Object[] { code });
 		}
 		return unit.addToDate(startDate, this.duration, frequency);
+	}
+
+	/**
+	 * Resolves a bare code to a {@link Unit} the way the legacy {@link #Duration(Integer, String)}
+	 * constructor must: by trying the SNOMED CT then the UCUM code tables, since the constructor
+	 * carries no concept source. Returns null when the code is not recognised.
+	 */
+	private static Unit findUnit(String code) {
+		Unit unit = SNOMED_CT_UNITS_BY_CODE.get(code);
+		return unit != null ? unit : UCUM_UNITS_BY_CODE.get(code);
 	}
 
 	/**
@@ -278,7 +307,6 @@ public class Duration {
 	 * @since 3.0.0
 	 */
 	public static Duration getDuration(Integer duration, Concept durationUnits) {
-		String knownCode = null;
 		Unit knownUnit = null;
 		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {
 			if (!ConceptMapType.SAME_AS_MAP_TYPE_UUID.equals(conceptMapping.getConceptMapType().getUuid())) {
@@ -290,19 +318,18 @@ public class Duration {
 				continue;
 			}
 			if (knownUnit == null) {
-				knownCode = conceptReferenceTerm.getCode();
 				knownUnit = unit;
 			} else if (knownUnit != unit) {
 				log.warn("Not resolving duration units concept {} because its SAME-AS mappings denote different units,"
-				        + " e.g. codes {} and {}",
-				    durationUnits.getUuid(), knownCode, conceptReferenceTerm.getCode());
+				        + " e.g. {} and {}",
+				    durationUnits.getUuid(), knownUnit, unit);
 				return null;
 			}
 		}
-		if (knownCode == null) {
+		if (knownUnit == null) {
 			return null;
 		}
-		return new Duration(duration, knownCode);
+		return new Duration(duration, knownUnit);
 	}
 
 	private static Unit findUnit(ConceptSource conceptSource, String code) {
@@ -316,7 +343,8 @@ public class Duration {
 	}
 
 	private static boolean isSnomedCtSource(ConceptSource conceptSource) {
-		return SNOMED_CT_CONCEPT_SOURCE_HL7_CODE.equals(conceptSource.getHl7Code());
+		return SNOMED_CT_CONCEPT_SOURCE_HL7_CODE.equals(conceptSource.getHl7Code())
+		        || SNOMED_CT_CONCEPT_SOURCE_NAME.equalsIgnoreCase(conceptSource.getName());
 	}
 
 	private static boolean isUcumSource(ConceptSource conceptSource) {

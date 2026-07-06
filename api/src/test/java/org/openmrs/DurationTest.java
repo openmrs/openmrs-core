@@ -262,6 +262,19 @@ public class DurationTest extends BaseContextSensitiveTest {
 	 * @see Duration#getDuration(Integer, Concept)
 	 */
 	@Test
+	public void getDuration_shouldMatchTheSnomedCtSourceNameCaseInsensitivelyWhenNoHl7CodeIsSet() throws ParseException {
+		Concept units = unitsWithMappings(sameAsMapping("snomed ct", null, Duration.SNOMED_CT_DAYS_CODE));
+
+		Duration duration = Duration.getDuration(30, units);
+
+		assertNotNull(duration);
+		assertEquals(createDateTime("2014-07-31 10:00:00"), duration.addToDate(createDateTime("2014-07-01 10:00:00"), null));
+	}
+
+	/**
+	 * @see Duration#getDuration(Integer, Concept)
+	 */
+	@Test
 	public void getDuration_shouldIgnoreKnownCodesMappedToOtherSources() {
 		Concept units = unitsWithMappings(sameAsMapping("Some Dictionary", "L", Duration.UCUM_MINUTES_CODE));
 
