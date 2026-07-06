@@ -10,10 +10,15 @@ on:
   issue_comment:
     types: [created]
 
-# One review at a time per PR; a fresh "@claude review" supersedes an
-# in-flight one instead of posting a duplicate.
+# One review at a time per PR; a fresh "@claude review" supersedes an in-flight
+# one instead of posting a duplicate. The group is keyed on the PR AND on whether
+# this comment is a review request: concurrency is evaluated per workflow run
+# BEFORE the job `if:`, and the workflow triggers on every issue comment, so a
+# PR-number-only group would let an unrelated comment (its run joins the same
+# group, then skips) cancel an in-flight review. Two review requests share the
+# `-true` group and the newer supersedes; everything else lands in `-false`.
 concurrency:
-  group: claude-pr-review-${{ github.event.issue.number }}
+  group: claude-pr-review-${{ github.event.issue.number }}-${{ contains(github.event.comment.body, '@claude review') }}
   cancel-in-progress: true
 
 # Edit these to change the org, which stages may invoke the reviewer, or the
