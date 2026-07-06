@@ -105,5 +105,5 @@ jobs:
           claude_args: |
             --model claude-opus-4-8
             --effort max
-            --max-turns 5
+            --max-turns 10
             --disallowedTools "Write,Edit"
