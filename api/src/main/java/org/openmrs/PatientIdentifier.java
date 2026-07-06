@@ -41,8 +41,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s). PatientIdentifiers
  * are anything from medical record numbers, to social security numbers, to driver's licenses. The
@@ -243,7 +241,6 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 * @deprecated as of 2.0, use {@link #getPreferred()}
 	 */
 	@Deprecated
-	@JsonIgnore
 	public Boolean isPreferred() {
 		return getPreferred();
 	}

@@ -16,8 +16,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+						http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
 	<!-- 
 		Tell the service context to use the system classloader to load classes instead of
@@ -65,4 +67,8 @@
 		<property name="preInterceptors" ref="serviceInterceptors"/>
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
+
+	<jdbc:initialize-database data-source="dataSource" ignore-failures="DROPS">
+		<jdbc:script location="classpath:create_shedlock_table.sql"/>
+	</jdbc:initialize-database>
 </beans>

@@ -15,7 +15,7 @@ import org.openmrs.scheduler.TaskData;
 /**
  * Adapts a {@link TaskData} to a JobRunr {@link org.jobrunr.jobs.lambdas.JobRequest}.
  *
- * @since 2.9.x
+ * @since 2.9.0
  */
 public class JobRequestAdapter implements org.jobrunr.jobs.lambdas.JobRequest {
 
