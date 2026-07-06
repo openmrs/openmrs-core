@@ -50,7 +50,7 @@ public interface ObsService extends OpenmrsService {
 	 *            {@code previousVersion} association.
 	 * @return a List of Obs representing the full version history up to and including the supplied obs
 	 * @throws IllegalArgumentException if obs is null or obsId is null
-	 * @since 3.0.0, 2.9.0, and the next 2.8.1 release
+	 * @since 3.0.0, 2.9.0, 2.8.8
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
 	List<Obs> getObsVersionHistory(Obs obs);

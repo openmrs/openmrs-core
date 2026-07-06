@@ -93,7 +93,7 @@ public interface ObsDAO {
 	 * @see org.openmrs.api.ObsService#getObsVersionHistory(Obs)
 	 * @param obs the Obs to retrieve version history for; must not be null and must have a non-null
 	 *            obsId
-	 * @since 3.0.0, 2.9.0, 2.8.7
+	 * @since 3.0.0, 2.9.0, 2.8.8
 	 */
 	List<Obs> getObsVersionHistory(Obs obs);
 
