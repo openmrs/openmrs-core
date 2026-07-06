@@ -24,8 +24,11 @@ env:
 jobs:
   review:
     # Bound cost and stop a hung run on this public repo. Generous because
-    # Opus 4.8 at max effort reasons deeply and takes longer per review.
-    timeout-minutes: 20
+    # Opus 4.8 at max effort plus the skill's verification steps take a while.
+    # Note: the skill builds base+PR for build-config PRs, which can exceed
+    # this on core's large build; such runs stop here and the skill reports the
+    # unverified check as a question rather than a fact.
+    timeout-minutes: 30
     # Cheap pre-filter so we don't start a runner on unrelated comments:
     # a PR comment (not a plain issue), not authored by a bot (so the reviewer's
     # own comment can never re-trigger this), containing the trigger phrase.
@@ -75,35 +78,51 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/head
           fetch-depth: 1
 
+      # Pull the review methodology from the trusted querystore repo into a temp
+      # path OUTSIDE the checked-out PR tree, so a malicious PR cannot substitute
+      # its own SKILL.md. Fail loudly if it's missing or unexpected rather than
+      # silently reviewing with no methodology.
+      - name: Fetch the pr-review skill
+        if: steps.gate.outputs.allowed == 'true'
+        env:
+          SKILL_URL: https://raw.githubusercontent.com/openmrs/openmrs-module-querystore/main/.claude/skills/pr-review/SKILL.md
+        run: |
+          dest="$RUNNER_TEMP/pr-review-SKILL.md"
+          curl -fsSL "$SKILL_URL" -o "$dest"
+          test -s "$dest"
+          grep -q "name: pr-review" "$dest"
+          echo "Fetched pr-review skill ($(wc -l < "$dest") lines)."
+
       - name: Review
         if: steps.gate.outputs.allowed == 'true'
         uses: anthropics/claude-code-action@v1
+        env:
+          # The skill posts its review through `gh api .../reviews`; give gh the
+          # workflow token so those calls are authenticated.
+          GH_TOKEN: ${{ github.token }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # No trigger_phrase: supplying `prompt` selects the action's
-          # automation mode (trigger_phrase is ignored). That is what we want —
-          # the job `if:` and the gate above already decide who and when, and
-          # this lets us drive a review tailored to openmrs-core.
+          # No trigger_phrase: supplying `prompt` selects automation mode. The
+          # methodology comes from the pr-review skill, injected as a system
+          # prompt via --append-system-prompt-file below — skills are not
+          # reliably auto-invoked in automation mode (claude-code-action #1003),
+          # so injecting the file is the documented, dependable path.
           prompt: |
-            Begin your comment with this exact line:
-            "🤖 Automated review by Claude, requested by a maintainer. A maintainer still makes the final merge decision."
-
-            Review this openmrs-core pull request. Because core is the API
-            contract that hundreds of downstream modules depend on, weight these
-            most heavily:
-            - Backward compatibility and any public-API breakage
-            - Security (this underpins a medical record system)
-            - Test coverage for the changed behavior
-            - Adherence to the OpenMRS coding conventions
-
-            Post a single PR comment with your findings. Do NOT modify code,
-            push commits, or open pull requests.
-          # Review-only: Write/Edit are disabled so Claude cannot alter files.
-          # Bash stays enabled on purpose — the action reads the diff through
-          # `gh pr diff`/git. `contents: read` above is what actually prevents
-          # any push, so read-only Bash is safe.
+            Review pull request #${{ github.event.issue.number }} in the
+            repository ${{ github.repository }}, following the PR-review
+            methodology appended to your system prompt exactly: its verification
+            requirements, its rules for every inline comment, and its posting
+            rules. Post the review to the PR the way the skill's `--post` does —
+            submit the findings as inline review comments through the GitHub API.
+            This runs in CI with no interactive user to report back to, so if the
+            PR is clean with nothing to act on, post nothing.
+          # Review-only: Write/Edit disabled so Claude cannot alter tracked
+          # files (the skill writes its payload JSON via python in Bash, not the
+          # Write tool). Bash stays enabled — the skill drives through git, gh,
+          # and python. `contents: read` guarantees no push regardless.
           claude_args: |
             --model claude-opus-4-8
             --effort max
-            --max-turns 10
+            --append-system-prompt-file ${{ runner.temp }}/pr-review-SKILL.md
+            --max-turns 40
             --disallowedTools "Write,Edit"
