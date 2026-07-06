@@ -17,11 +17,11 @@
 	   xmlns:context="http://www.springframework.org/schema/context"
 	   xmlns:util="http://www.springframework.org/schema/util"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
-       		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       		http://www.springframework.org/schema/beans/spring-beans.xsd
 			http://www.springframework.org/schema/context
-			http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/context/spring-context.xsd
             http://www.springframework.org/schema/util
-            http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+            http://www.springframework.org/schema/util/spring-util.xsd">
 	
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
@@ -203,6 +203,12 @@
 		<constructor-arg name="url" value="https://implementation.openmrs.org"/>
 	</bean>
 
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" >
+		<property name="corePoolSize" value="1" />
+		<property name="maxPoolSize" value="20" />
+		<property name="queueCapacity" value="1000" />
+	</bean>
+
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 
 	<context:component-scan base-package="org.openmrs">
@@ -213,5 +219,4 @@
 								expression="org.openmrs.util.TestTypeFilter"/>
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter"/>
 	</context:component-scan>
-
 </beans>
