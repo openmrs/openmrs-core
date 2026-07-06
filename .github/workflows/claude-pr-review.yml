@@ -27,10 +27,9 @@ env:
 jobs:
   review:
     # Bound cost and stop a hung run on this public repo. Generous because
-    # Opus 4.8 at max effort plus the skill's verification steps take a while.
-    # Note: the skill builds base+PR for build-config PRs, which can exceed
-    # this on core's large build; such runs stop here and the skill reports the
-    # unverified check as a question rather than a fact.
+    # Opus 4.8 at max effort plus the skill's read-based verification take a
+    # while. The prompt forbids running PR builds, so reviews don't wait on long
+    # mvn builds (and build-only checks are reported as questions, not facts).
     timeout-minutes: 30
     # Cheap pre-filter so we don't start a runner on unrelated comments:
     # a PR comment (not a plain issue), not authored by a bot (so the reviewer's
@@ -119,6 +118,17 @@ jobs:
             submit the findings as inline review comments through the GitHub API.
             This runs in CI with no interactive user to report back to, so if the
             PR is clean with nothing to act on, post nothing.
+
+            Security constraint — this OVERRIDES the skill wherever they differ:
+            you are reviewing untrusted PR code, so never execute any code or
+            build from the repository. Do not run mvn, gradle, npm, make, the
+            test suite, or any script or binary from the tree, and do not build
+            base or PR branches in worktrees. Verify only by reading files and
+            by read-only tooling: git diff/log/grep, gh pr diff, and gh api.
+            Where the skill would build something to verify it (e.g. a
+            build-config PR), you cannot run that build here — treat it as an
+            experiment that cannot run and report the check as a question, per
+            the skill's own rule, rather than asserting it as fact.
           # Review-only: Write/Edit disabled so Claude cannot alter tracked
           # files (the skill writes its payload JSON via python in Bash, not the
           # Write tool). Bash stays enabled — the skill drives through git, gh,
