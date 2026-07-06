@@ -26,11 +26,10 @@ public abstract class BaseDosingInstructions implements DosingInstructions {
 		if (drugOrder.getDuration() == null || drugOrder.getDurationUnits() == null) {
 			return null;
 		}
-		String durationCode = Duration.getKnownCode(drugOrder.getDurationUnits());
-		if (durationCode == null) {
+		Duration duration = Duration.getDuration(drugOrder.getDuration(), drugOrder.getDurationUnits());
+		if (duration == null) {
 			return null;
 		}
-		Duration duration = new Duration(drugOrder.getDuration(), durationCode);
 		return aMomentBefore(duration.addToDate(drugOrder.getEffectiveStartDate(), drugOrder.getFrequency()));
 	}
 

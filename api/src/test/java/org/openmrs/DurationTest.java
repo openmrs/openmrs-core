@@ -175,90 +175,97 @@ public class DurationTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see Duration#getKnownCode(Concept)
+	 * @see Duration#getDuration(Integer, Concept)
 	 */
 	@Test
-	public void getKnownCode_shouldReturnTheCodeOfASnomedCtSameAsMappingWithAKnownCode() {
+	public void getDuration_shouldResolveASnomedCtSameAsMappingWithAKnownCode() throws ParseException {
 		Concept units = SimpleDosingInstructionsTest.createUnits(Duration.SNOMED_CT_DAYS_CODE);
 
-		assertEquals(Duration.SNOMED_CT_DAYS_CODE, Duration.getKnownCode(units));
+		Duration duration = Duration.getDuration(30, units);
+
+		assertNotNull(duration);
+		assertEquals(createDateTime("2014-07-31 10:00:00"), duration.addToDate(createDateTime("2014-07-01 10:00:00"), null));
 	}
 
 	/**
-	 * @see Duration#getKnownCode(Concept)
+	 * @see Duration#getDuration(Integer, Concept)
 	 */
 	@Test
-	public void getKnownCode_shouldReturnAMinutesCodeForAConceptCarryingBothLegacyAndCurrentSnomedCtMinuteCodes()
-	        throws ParseException {
+	public void getDuration_shouldResolveAConceptCarryingBothLegacyAndCurrentSnomedCtMinuteCodes() throws ParseException {
 		Concept units = unitsWithMappings(sameAsMapping("SNOMED CT", "SCT", Duration.SNOMED_CT_MINUTES_CODE_2021),
 		    sameAsMapping("SNOMED CT", "SCT", Duration.SNOMED_CT_MINUTES_CODE));
 
-		String code = Duration.getKnownCode(units);
+		Duration duration = Duration.getDuration(30, units);
 
-		assertNotNull(code);
-		Date autoExpireDate = new Duration(30, code).addToDate(createDateTime("2014-07-01 10:00:00"), null);
-		assertEquals(createDateTime("2014-07-01 10:30:00"), autoExpireDate);
+		assertNotNull(duration);
+		assertEquals(createDateTime("2014-07-01 10:30:00"), duration.addToDate(createDateTime("2014-07-01 10:00:00"), null));
 	}
 
 	/**
-	 * @see Duration#getKnownCode(Concept)
+	 * @see Duration#getDuration(Integer, Concept)
 	 */
 	@Test
-	public void getKnownCode_shouldReturnAUcumCodeWhenTheConceptHasOnlyAUcumMapping() {
+	public void getDuration_shouldResolveAConceptWithOnlyAUcumMapping() throws ParseException {
 		Concept units = unitsWithMappings(sameAsMapping("UCUM", null, Duration.UCUM_MINUTES_CODE));
 
-		assertEquals(Duration.UCUM_MINUTES_CODE, Duration.getKnownCode(units));
+		Duration duration = Duration.getDuration(30, units);
+
+		assertNotNull(duration);
+		assertEquals(createDateTime("2014-07-01 10:30:00"), duration.addToDate(createDateTime("2014-07-01 10:00:00"), null));
 	}
 
 	/**
-	 * @see Duration#getKnownCode(Concept)
+	 * @see Duration#getDuration(Integer, Concept)
 	 */
 	@Test
-	public void getKnownCode_shouldReturnNullIfNoSameAsMappingCarriesAKnownCode() {
+	public void getDuration_shouldReturnNullIfNoSameAsMappingCarriesAKnownCode() {
 		Concept units = SimpleDosingInstructionsTest.createUnits("SCT", "999999999", null);
 
-		assertNull(Duration.getKnownCode(units));
+		assertNull(Duration.getDuration(30, units));
 	}
 
 	/**
-	 * @see Duration#getKnownCode(Concept)
+	 * @see Duration#getDuration(Integer, Concept)
 	 */
 	@Test
-	public void getKnownCode_shouldReturnNullIfTheKnownCodeIsMappedWithANonSameAsType() {
+	public void getDuration_shouldReturnNullIfTheKnownCodeIsMappedWithANonSameAsType() {
 		Concept units = SimpleDosingInstructionsTest.createUnits("SCT", Duration.SNOMED_CT_DAYS_CODE, "some-map-type-uuid");
 
-		assertNull(Duration.getKnownCode(units));
+		assertNull(Duration.getDuration(30, units));
 	}
 
 	/**
-	 * @see Duration#getKnownCode(Concept)
+	 * @see Duration#getDuration(Integer, Concept)
 	 */
 	@Test
-	public void getKnownCode_shouldReturnNullIfKnownCodesOfTheConceptDenoteDifferentUnits() {
+	public void getDuration_shouldReturnNullIfKnownCodesOfTheConceptDenoteDifferentUnits() {
 		Concept units = unitsWithMappings(sameAsMapping("SNOMED CT", "SCT", Duration.SNOMED_CT_DAYS_CODE),
 		    sameAsMapping("UCUM", null, Duration.UCUM_MONTHS_CODE));
 
-		assertNull(Duration.getKnownCode(units));
+		assertNull(Duration.getDuration(30, units));
 	}
 
 	/**
-	 * @see Duration#getKnownCode(Concept)
+	 * @see Duration#getDuration(Integer, Concept)
 	 */
 	@Test
-	public void getKnownCode_shouldMatchTheUcumSourceNameCaseInsensitively() {
+	public void getDuration_shouldMatchTheUcumSourceNameCaseInsensitively() throws ParseException {
 		Concept units = unitsWithMappings(sameAsMapping("ucum", null, Duration.UCUM_MINUTES_CODE));
 
-		assertEquals(Duration.UCUM_MINUTES_CODE, Duration.getKnownCode(units));
+		Duration duration = Duration.getDuration(30, units);
+
+		assertNotNull(duration);
+		assertEquals(createDateTime("2014-07-01 10:30:00"), duration.addToDate(createDateTime("2014-07-01 10:00:00"), null));
 	}
 
 	/**
-	 * @see Duration#getKnownCode(Concept)
+	 * @see Duration#getDuration(Integer, Concept)
 	 */
 	@Test
-	public void getKnownCode_shouldIgnoreKnownCodesMappedToOtherSources() {
+	public void getDuration_shouldIgnoreKnownCodesMappedToOtherSources() {
 		Concept units = unitsWithMappings(sameAsMapping("Some Dictionary", "L", Duration.UCUM_MINUTES_CODE));
 
-		assertNull(Duration.getKnownCode(units));
+		assertNull(Duration.getDuration(30, units));
 	}
 
 	private static Concept unitsWithMappings(ConceptMap... mappings) {

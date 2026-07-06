@@ -9,12 +9,12 @@
  */
 package org.openmrs;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.openmrs.api.APIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.addHours;
@@ -30,6 +30,8 @@ import static org.apache.commons.lang3.time.DateUtils.addYears;
  * @since 1.10
  */
 public class Duration {
+
+	private static final Logger log = LoggerFactory.getLogger(Duration.class);
 
 	public static final String SNOMED_CT_SECONDS_CODE = "257997001";
 
@@ -188,28 +190,17 @@ public class Duration {
 		abstract Date addToDate(Date startDate, Integer duration, OrderFrequency frequency);
 	}
 
-	private static final Map<String, Unit> UNITS_BY_CODE;
+	private static final Map<String, Unit> SNOMED_CT_UNITS_BY_CODE = Map.ofEntries(
+	    Map.entry(SNOMED_CT_SECONDS_CODE, Unit.SECONDS), Map.entry(SNOMED_CT_MINUTES_CODE, Unit.MINUTES),
+	    Map.entry(SNOMED_CT_MINUTES_CODE_2021, Unit.MINUTES), Map.entry(SNOMED_CT_HOURS_CODE, Unit.HOURS),
+	    Map.entry(SNOMED_CT_DAYS_CODE, Unit.DAYS), Map.entry(SNOMED_CT_WEEKS_CODE, Unit.WEEKS),
+	    Map.entry(SNOMED_CT_MONTHS_CODE, Unit.MONTHS), Map.entry(SNOMED_CT_YEARS_CODE, Unit.YEARS),
+	    Map.entry(SNOMED_CT_RECURRING_INTERVAL_CODE, Unit.RECURRING_INTERVAL));
 
-	static {
-		Map<String, Unit> unitsByCode = new HashMap<>();
-		unitsByCode.put(SNOMED_CT_SECONDS_CODE, Unit.SECONDS);
-		unitsByCode.put(UCUM_SECONDS_CODE, Unit.SECONDS);
-		unitsByCode.put(SNOMED_CT_MINUTES_CODE, Unit.MINUTES);
-		unitsByCode.put(SNOMED_CT_MINUTES_CODE_2021, Unit.MINUTES);
-		unitsByCode.put(UCUM_MINUTES_CODE, Unit.MINUTES);
-		unitsByCode.put(SNOMED_CT_HOURS_CODE, Unit.HOURS);
-		unitsByCode.put(UCUM_HOURS_CODE, Unit.HOURS);
-		unitsByCode.put(SNOMED_CT_DAYS_CODE, Unit.DAYS);
-		unitsByCode.put(UCUM_DAYS_CODE, Unit.DAYS);
-		unitsByCode.put(SNOMED_CT_WEEKS_CODE, Unit.WEEKS);
-		unitsByCode.put(UCUM_WEEKS_CODE, Unit.WEEKS);
-		unitsByCode.put(SNOMED_CT_MONTHS_CODE, Unit.MONTHS);
-		unitsByCode.put(UCUM_MONTHS_CODE, Unit.MONTHS);
-		unitsByCode.put(SNOMED_CT_YEARS_CODE, Unit.YEARS);
-		unitsByCode.put(UCUM_YEARS_CODE, Unit.YEARS);
-		unitsByCode.put(SNOMED_CT_RECURRING_INTERVAL_CODE, Unit.RECURRING_INTERVAL);
-		UNITS_BY_CODE = Collections.unmodifiableMap(unitsByCode);
-	}
+	private static final Map<String, Unit> UCUM_UNITS_BY_CODE = Map.ofEntries(Map.entry(UCUM_SECONDS_CODE, Unit.SECONDS),
+	    Map.entry(UCUM_MINUTES_CODE, Unit.MINUTES), Map.entry(UCUM_HOURS_CODE, Unit.HOURS),
+	    Map.entry(UCUM_DAYS_CODE, Unit.DAYS), Map.entry(UCUM_WEEKS_CODE, Unit.WEEKS),
+	    Map.entry(UCUM_MONTHS_CODE, Unit.MONTHS), Map.entry(UCUM_YEARS_CODE, Unit.YEARS));
 
 	private final Integer duration;
 
@@ -229,7 +220,10 @@ public class Duration {
 	 * @return date which is startDate plus duration
 	 */
 	public Date addToDate(Date startDate, OrderFrequency frequency) {
-		Unit unit = UNITS_BY_CODE.get(code);
+		Unit unit = SNOMED_CT_UNITS_BY_CODE.get(code);
+		if (unit == null) {
+			unit = UCUM_UNITS_BY_CODE.get(code);
+		}
 		if (unit == null) {
 			throw new APIException("Duration.unknown.code", new Object[] { code });
 		}
@@ -239,21 +233,22 @@ public class Duration {
 	/**
 	 * Returns concept reference term code of the mapping to the SNOMED CT concept source
 	 * <p>
-	 * Note that the returned code depends on the iteration order of the concept's mappings and is not
-	 * necessarily a code this class can interpret; see {@link #getKnownCode(Concept)} for resolving a
-	 * concept to a code that is guaranteed to be accepted by {@link #addToDate(Date, OrderFrequency)}.
-	 * <p>
 	 * <strong>Should</strong> return null if the concept has no mapping to the SNOMED CT source<br/>
 	 * <strong>Should</strong> return the code for the term of the mapping to the SNOMED CT source
 	 *
 	 * @param durationUnits
 	 * @return a string which is reference term code
+	 * @deprecated as of 3.0.0, because the returned code depends on the iteration order of the
+	 *             concept's mappings and is not necessarily a code this class can interpret; use
+	 *             {@link #getDuration(Integer, Concept)} instead
 	 */
+	@Deprecated
 	public static String getCode(Concept durationUnits) {
 		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {
 			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
 			if (ConceptMapType.SAME_AS_MAP_TYPE_UUID.equals(conceptMapping.getConceptMapType().getUuid())
-			        && isSnomedCtSource(conceptReferenceTerm.getConceptSource())) {
+			        && Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE
+			                .equals(conceptReferenceTerm.getConceptSource().getHl7Code())) {
 				return conceptReferenceTerm.getCode();
 			}
 		}
@@ -261,29 +256,28 @@ public class Duration {
 	}
 
 	/**
-	 * Returns a code of the given concept that this class knows how to interpret as a duration unit,
-	 * considering all of the concept's SAME-AS mappings to the SNOMED CT and UCUM concept sources.
-	 * Every code this method returns is accepted by {@link #addToDate(Date, OrderFrequency)}.
+	 * Resolves the given duration units concept to a {@link Duration} of the given length, considering
+	 * all of the concept's SAME-AS mappings to the SNOMED CT and UCUM concept sources.
 	 * <p>
-	 * Unlike {@link #getCode(Concept)}, the unit denoted by the result does not depend on the iteration
-	 * order of the concept's mappings, though which of several equivalent codes is returned may.
-	 * Dictionaries may map one unit concept to several codes, for example both the legacy and the
-	 * current SNOMED CT code for minute, and any of them is accepted as long as all known codes of the
-	 * concept denote the same unit. If they denote different units, null is returned, so that a
-	 * miscurated dictionary surfaces as a validation error rather than a silently wrong expiry date.
+	 * The result does not depend on the iteration order of the concept's mappings. Dictionaries may map
+	 * one unit concept to several codes, for example both the legacy and the current SNOMED CT code for
+	 * minute, and the concept resolves as long as all of its known codes denote the same unit. If they
+	 * denote different units, null is returned and the conflict is logged, so that a miscurated
+	 * dictionary surfaces as a validation error rather than a silently wrong expiry date.
 	 * <p>
-	 * <strong>Should</strong> return the code of a SNOMED CT SAME-AS mapping with a known code<br/>
-	 * <strong>Should</strong> return a minutes code for a concept carrying both the legacy and the
-	 * current SNOMED CT minute code<br/>
-	 * <strong>Should</strong> return a UCUM code when the concept has only a UCUM mapping<br/>
+	 * <strong>Should</strong> resolve a SNOMED CT SAME-AS mapping with a known code<br/>
+	 * <strong>Should</strong> resolve a concept carrying both the legacy and the current SNOMED CT
+	 * minute code<br/>
+	 * <strong>Should</strong> resolve a concept with only a UCUM mapping<br/>
 	 * <strong>Should</strong> return null if no SAME-AS mapping carries a known code<br/>
 	 * <strong>Should</strong> return null if known codes of the concept denote different units
 	 *
+	 * @param duration the length of the duration, in the units the concept denotes
 	 * @param durationUnits the duration units concept of a drug order
-	 * @return a known reference term code, or null if the concept cannot be resolved to a single unit
+	 * @return a Duration, or null if the concept cannot be resolved to exactly one known unit
 	 * @since 3.0.0
 	 */
-	public static String getKnownCode(Concept durationUnits) {
+	public static Duration getDuration(Integer duration, Concept durationUnits) {
 		String knownCode = null;
 		Unit knownUnit = null;
 		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {
@@ -291,11 +285,7 @@ public class Duration {
 				continue;
 			}
 			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
-			ConceptSource conceptSource = conceptReferenceTerm.getConceptSource();
-			if (!isSnomedCtSource(conceptSource) && !isUcumSource(conceptSource)) {
-				continue;
-			}
-			Unit unit = UNITS_BY_CODE.get(conceptReferenceTerm.getCode());
+			Unit unit = findUnit(conceptReferenceTerm.getConceptSource(), conceptReferenceTerm.getCode());
 			if (unit == null) {
 				continue;
 			}
@@ -303,10 +293,26 @@ public class Duration {
 				knownCode = conceptReferenceTerm.getCode();
 				knownUnit = unit;
 			} else if (knownUnit != unit) {
+				log.warn("Not resolving duration units concept {} because its SAME-AS mappings denote different units,"
+				        + " e.g. codes {} and {}",
+				    durationUnits.getUuid(), knownCode, conceptReferenceTerm.getCode());
 				return null;
 			}
 		}
-		return knownCode;
+		if (knownCode == null) {
+			return null;
+		}
+		return new Duration(duration, knownCode);
+	}
+
+	private static Unit findUnit(ConceptSource conceptSource, String code) {
+		if (isSnomedCtSource(conceptSource)) {
+			return SNOMED_CT_UNITS_BY_CODE.get(code);
+		}
+		if (isUcumSource(conceptSource)) {
+			return UCUM_UNITS_BY_CODE.get(code);
+		}
+		return null;
 	}
 
 	private static boolean isSnomedCtSource(ConceptSource conceptSource) {
