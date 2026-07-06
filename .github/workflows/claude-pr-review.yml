@@ -39,8 +39,11 @@ jobs:
         run: |
           allowed=false
           for team in $REVIEWER_TEAMS; do
-            if gh api "/orgs/${REVIEWER_ORG}/teams/${team}/memberships/${LOGIN}" \
-                 --jq '.state' 2>/dev/null | grep -qx active; then
+            # Capture the state and compare in bash; do NOT pipe into grep for a
+            # security gate. An active membership returns state "active".
+            state="$(gh api "/orgs/${REVIEWER_ORG}/teams/${team}/memberships/${LOGIN}" \
+                       --jq '.state' 2>/dev/null || true)"
+            if [ "$state" = "active" ]; then
               allowed=true
               echo "::notice::${LOGIN} is a member of ${REVIEWER_ORG}/${team}; proceeding."
               break
