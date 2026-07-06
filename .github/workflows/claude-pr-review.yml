@@ -10,6 +10,12 @@ on:
   issue_comment:
     types: [created]
 
+# One review at a time per PR; a fresh "@claude review" supersedes an
+# in-flight one instead of posting a duplicate.
+concurrency:
+  group: claude-pr-review-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
 # Edit these to change the org or which stages may invoke the reviewer.
 env:
   REVIEWER_ORG: openmrs
@@ -17,20 +23,24 @@ env:
 
 jobs:
   review:
+    # Bound cost and stop a hung run on this public repo.
+    timeout-minutes: 15
     # Cheap pre-filter so we don't start a runner on unrelated comments:
-    # only PR comments (not issue comments) that contain the trigger phrase.
+    # a PR comment (not a plain issue), not authored by a bot (so the reviewer's
+    # own comment can never re-trigger this), containing the trigger phrase.
     if: >
       github.event.issue.pull_request != null &&
+      github.event.comment.user.type != 'Bot' &&
       contains(github.event.comment.body, '@claude review')
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pull-requests: write
+      contents: read          # read-only: the hard guarantee that no code is pushed
+      pull-requests: write     # read the PR/diff and post the review
+      issues: write            # a PR conversation comment posts via the issues API
     steps:
       # Fail-closed dev-stage gate: the commenter must be an active member of
       # one of the reviewer teams. DEV_STAGE_READ_TOKEN needs read:org scope,
-      # because the default GITHUB_TOKEN cannot read another org's team
-      # membership (and this runs on a fork).
+      # because the default GITHUB_TOKEN cannot read org team membership.
       - name: Verify commenter is /dev/3 or above
         id: gate
         env:
@@ -54,19 +64,28 @@ jobs:
             echo "::notice::${LOGIN} is not /dev/3+ (not in: ${REVIEWER_TEAMS}); skipping."
           fi
 
-      - name: Checkout
+      # issue_comment checks out the default branch by default. Fetch the PR
+      # head instead so the review sees the PR's code, not master. This ref
+      # resolves for fork PRs too.
+      - name: Check out the PR head
         if: steps.gate.outputs.allowed == 'true'
         uses: actions/checkout@v6
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
+          fetch-depth: 1
 
       - name: Review
         if: steps.gate.outputs.allowed == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          trigger_phrase: "@claude review"
+          # No trigger_phrase: supplying `prompt` selects the action's
+          # automation mode (trigger_phrase is ignored). That is what we want —
+          # the job `if:` and the gate above already decide who and when, and
+          # this lets us drive a review tailored to openmrs-core.
           prompt: |
             Begin your comment with this exact line:
-            "🤖 Automated review by Claude, requested via @claude review. A maintainer still makes the merge decision."
+            "🤖 Automated review by Claude, requested by a maintainer. A maintainer still makes the final merge decision."
 
             Review this openmrs-core pull request. Because core is the API
             contract that hundreds of downstream modules depend on, weight these
@@ -78,6 +97,10 @@ jobs:
 
             Post a single PR comment with your findings. Do NOT modify code,
             push commits, or open pull requests.
+          # Review-only: Write/Edit are disabled so Claude cannot alter files.
+          # Bash stays enabled on purpose — the action reads the diff through
+          # `gh pr diff`/git. `contents: read` above is what actually prevents
+          # any push, so read-only Bash is safe.
           claude_args: |
             --max-turns 4
-            --disallowedTools Edit,Write,Bash
+            --disallowedTools "Write,Edit"
