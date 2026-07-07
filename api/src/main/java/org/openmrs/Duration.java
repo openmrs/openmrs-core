@@ -271,7 +271,7 @@ public class Duration {
 	 *             concept's mappings and is not necessarily a code this class can interpret; use
 	 *             {@link #getDuration(Integer, Concept)} instead
 	 */
-	@Deprecated
+	@Deprecated(since = "3.0.0")
 	public static String getCode(Concept durationUnits) {
 		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {
 			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
@@ -309,27 +309,30 @@ public class Duration {
 	public static Duration getDuration(Integer duration, Concept durationUnits) {
 		Unit knownUnit = null;
 		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {
-			if (!ConceptMapType.SAME_AS_MAP_TYPE_UUID.equals(conceptMapping.getConceptMapType().getUuid())) {
-				continue;
-			}
-			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
-			Unit unit = findUnit(conceptReferenceTerm.getConceptSource(), conceptReferenceTerm.getCode());
-			if (unit == null) {
-				continue;
-			}
-			if (knownUnit == null) {
-				knownUnit = unit;
-			} else if (knownUnit != unit) {
-				log.warn("Not resolving duration units concept {} because its SAME-AS mappings denote different units,"
-				        + " e.g. {} and {}",
-				    durationUnits.getUuid(), knownUnit, unit);
-				return null;
+			Unit unit = findUnit(conceptMapping);
+			if (unit != null) {
+				if (knownUnit == null) {
+					knownUnit = unit;
+				} else if (knownUnit != unit) {
+					log.warn("Not resolving duration units concept {} because its SAME-AS mappings denote different"
+					        + " units, e.g. {} and {}",
+					    durationUnits.getUuid(), knownUnit, unit);
+					return null;
+				}
 			}
 		}
 		if (knownUnit == null) {
 			return null;
 		}
 		return new Duration(duration, knownUnit);
+	}
+
+	private static Unit findUnit(ConceptMap conceptMapping) {
+		if (!ConceptMapType.SAME_AS_MAP_TYPE_UUID.equals(conceptMapping.getConceptMapType().getUuid())) {
+			return null;
+		}
+		ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
+		return findUnit(conceptReferenceTerm.getConceptSource(), conceptReferenceTerm.getCode());
 	}
 
 	private static Unit findUnit(ConceptSource conceptSource, String code) {
