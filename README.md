@@ -184,7 +184,7 @@ Grafana will be available at http://localhost:3000. Use admin as username and se
 
 ### Scheduler Dashboard
 
-The scheduler dashboard can be accessed at http://localhost:9000 by default (user: admin / passowrd: Admin123). It is enabled by default when running `docker compose up` command. It is configured in `docker-compose.override.yml`.
+The scheduler dashboard can be accessed at http://localhost:9000 by default (user: admin / password: Admin123). It is enabled by default when running `docker compose up` command. It is configured in `docker-compose.override.yml`.
 
 If you want to enable it in other environments, you need to set the following properties in `openmrs-runtime.properties`:
 
