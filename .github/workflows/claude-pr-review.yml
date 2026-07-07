@@ -109,11 +109,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # TEMPORARY (remove after posting is validated): surface Claude's full
-          # output, including per-tool permission denials, so a run that fails to
-          # post is diagnosable. Exposes the transcript in this public repo's
-          # logs (secrets stay masked) — do not leave enabled.
-          show_full_output: true
           # No trigger_phrase: supplying `prompt` selects automation mode. The
           # methodology comes from the pr-review skill, injected as a system
           # prompt via --append-system-prompt-file below — skills are not
@@ -147,14 +142,12 @@ jobs:
           # --allowedTools is a positive allow-list; anything not listed
           # (including Write/Edit and build tools like mvn) is denied, which also
           # enforces the no-untrusted-build rule at the permission layer. The
-          # native inline-comment tool is allowed as the reliable posting path.
+          # native inline-comment tool is allowed as an alternative posting path
+          # (the skill posts via `gh api .../reviews`, which works under Bash).
           # --disallowedTools kept as belt-and-suspenders on Write/Edit.
-          # TEMPORARY debug: Sonnet 5 + medium effort keeps iteration cheap while
-          # we confirm posting works; restore --model claude-opus-4-8 / --effort
-          # max once validated.
           claude_args: |
-            --model claude-sonnet-5
-            --effort medium
+            --model claude-opus-4-8
+            --effort max
             --append-system-prompt-file ${{ runner.temp }}/pr-review-SKILL.md
             --max-turns 40
             --allowedTools "Bash,Read,Grep,Glob,mcp__github_inline_comment__create_inline_comment"
