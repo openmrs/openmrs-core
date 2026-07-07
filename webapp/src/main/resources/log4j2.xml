@@ -15,7 +15,7 @@
 	<Properties>
 		<!-- The default pattern is stored as a property so that it's only defined once.
 		     It's also quite challenging to escape using Log4j2's variable substitution. -->
-		<Property name="defaultPattern">%p - %C{1}.%M(%L) |%d{ISO8601}| %replace{%m}{[\\p{Cntrl}\\u2028\\u2029&amp;&amp;[^\\t]]}{_}%n</Property>
+		<Property name="defaultPattern">%p - %C{1}.%M(%L) |%d{ISO8601}| %replace{%m}{[\p{Cntrl}\u2028\u2029&amp;&amp;[^\t]]}{_}%n</Property>
 	</Properties>
 	<Appenders>
 		<!-- the console appender is not required but usually a good idea -->

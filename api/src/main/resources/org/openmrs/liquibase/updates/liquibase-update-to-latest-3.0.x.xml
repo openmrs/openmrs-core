@@ -150,7 +150,7 @@
 		</preConditions>
 		<comment>Updating log.layout to include centralized log sanitization</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="%p - %C{1}.%M(%L) |%d{ISO8601}| %replace{%m}{[\\p{Cntrl}\\u2028\\u2029&amp;&amp;[^\\t]]}{_}%n"/>
+			<column name="property_value" value="%p - %C{1}.%M(%L) |%d{ISO8601}| %replace{%m}{[\p{Cntrl}\u2028\u2029&amp;&amp;[^\t]]}{_}%n"/>
 			<where>property = 'log.layout'</where>
 		</update>
 	</changeSet>

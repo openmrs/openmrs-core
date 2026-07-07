@@ -9,6 +9,11 @@
  */
 package org.openmrs.logging;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.impl.Log4jLogEvent;
+import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.logging.log4j.message.SimpleMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +25,9 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mockStatic;
 
@@ -206,5 +213,39 @@ class OpenmrsPropertyLookupTest {
 
 		contextMock.verify(() -> Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
 		contextMock.verify(() -> Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
+	}
+
+	// --- PatternLayout sanitization ---
+
+	@Test
+	void layoutPattern_shouldReplaceControlCharactersWithUnderscores() {
+		String message = "before\nafter";
+		PatternLayout layout = PatternLayout.newBuilder().withPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
+		LogEvent event = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
+		        .setMessage(new SimpleMessage(message)).build();
+		String result = layout.toSerializable(event).toString();
+		assertThat(result, containsString("before_after"));
+		assertThat(result, not(containsString("before\n")));
+	}
+
+	@Test
+	void layoutPattern_shouldReplaceCarriageReturnWithUnderscores() {
+		String message = "before\rafter";
+		PatternLayout layout = PatternLayout.newBuilder().withPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
+		LogEvent event = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
+		        .setMessage(new SimpleMessage(message)).build();
+		String result = layout.toSerializable(event).toString();
+		assertThat(result, containsString("before_after"));
+		assertThat(result, not(containsString("before\r")));
+	}
+
+	@Test
+	void layoutPattern_shouldNotReplaceTabs() {
+		String message = "before\tafter";
+		PatternLayout layout = PatternLayout.newBuilder().withPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
+		LogEvent event = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
+		        .setMessage(new SimpleMessage(message)).build();
+		String result = layout.toSerializable(event).toString();
+		assertThat(result, containsString("before\tafter"));
 	}
 }

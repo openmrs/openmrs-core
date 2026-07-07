@@ -128,8 +128,6 @@ public class OpenmrsUtil {
 
 	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<>();
 
-	private static final Pattern LOG_SANITIZATION_PATTERN = Pattern.compile("[\\p{Cntrl}\\u0085\\u2028\\u2029&&[^\\t]]");
-
 	/**
 	 * Compares origList to newList returning map of differences
 	 *
