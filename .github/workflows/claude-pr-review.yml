@@ -20,12 +20,13 @@ on:
 # reviews rather than a supersede — rare, visible, and preferable to the DoS.
 
 # Edit these to change the org, which stages may invoke the reviewer, or the
-# review methodology source. Pin SKILL_URL to a commit SHA (swap `main` for the
-# SHA in the raw path) to freeze the methodology and avoid it changing upstream.
+# review methodology source. SKILL_URL is pinned to a querystore commit SHA so
+# the review methodology can't change under us without a deliberate bump here
+# (bump the SHA in a PR to pick up skill updates).
 env:
   REVIEWER_ORG: openmrs
   REVIEWER_TEAMS: "dev-3 dev-4 dev-5"
-  SKILL_URL: https://raw.githubusercontent.com/openmrs/openmrs-module-querystore/main/.claude/skills/pr-review/SKILL.md
+  SKILL_URL: https://raw.githubusercontent.com/openmrs/openmrs-module-querystore/a5ea7a9b4640849d31b6adf65f0e5706a3a18666/.claude/skills/pr-review/SKILL.md
 
 jobs:
   review:
