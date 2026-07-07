@@ -14,18 +14,25 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsClassLoader;
 
 public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	
@@ -473,6 +480,86 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 
 		assertFalse(ModuleClassLoader.isMatchingConditionalResource(mockModuleV2_0, fileUrl, conditionalResource),
 			"Path should not match glob pattern: " + filePath);
+	}
+
+	@Test
+	public void getLibCacheFolderForModule_shouldRecreateNonEmptyDirWhenModuleChanged() throws Exception {
+		File tempLibCache = Files.createTempDirectory("libcache-test").toFile();
+		Field libCacheFolderField = OpenmrsClassLoader.class.getDeclaredField("libCacheFolder");
+		libCacheFolderField.setAccessible(true);
+		File savedLibCacheFolder = (File) libCacheFolderField.get(null);
+		libCacheFolderField.set(null, tempLibCache);
+
+		Field libCacheFoldersField = ModuleClassLoader.class.getDeclaredField("libCacheFolders");
+		libCacheFoldersField.setAccessible(true);
+		@SuppressWarnings("unchecked")
+		Map<String, File> libCacheFolders = (Map<String, File>) libCacheFoldersField.get(null);
+
+		File omodFile = File.createTempFile("testmodule", ".omod");
+		try {
+			long currentTimestamp = System.currentTimeMillis();
+			omodFile.setLastModified(currentTimestamp);
+
+			Module module = new Module("testmodule", "testmodule", "org.openmrs.module.testmodule",
+				"author", "description", "1.0", "1.0");
+			module.setFile(omodFile);
+
+			File moduleDir = new File(tempLibCache, "testmodule");
+			moduleDir.mkdirs();
+			FileUtils.writeStringToFile(new File(moduleDir, ".moduleLastModified"),
+				String.valueOf(currentTimestamp - 1000), Charset.defaultCharset());
+			File staleFile = new File(moduleDir, "old-resource.txt");
+			FileUtils.writeStringToFile(staleFile, "stale content", Charset.defaultCharset());
+
+			ModuleClassLoader.getLibCacheFolderForModule(module);
+
+			assertFalse(staleFile.exists(), "Stale file should be deleted when module changes");
+			assertTrue(moduleDir.exists(), "Module dir should be recreated");
+		} finally {
+			libCacheFolderField.set(null, savedLibCacheFolder);
+			libCacheFolders.remove("testmodule");
+			omodFile.delete();
+			FileUtils.deleteDirectory(tempLibCache);
+		}
+	}
+
+	@Test
+	public void getLibCacheFolderForModule_shouldRecreateNonEmptyDirWhenOptimizedStartupDisabled() throws Exception {
+		File tempLibCache = Files.createTempDirectory("libcache-test").toFile();
+		Field libCacheFolderField = OpenmrsClassLoader.class.getDeclaredField("libCacheFolder");
+		libCacheFolderField.setAccessible(true);
+		File savedLibCacheFolder = (File) libCacheFolderField.get(null);
+		libCacheFolderField.set(null, tempLibCache);
+
+		Field libCacheFoldersField = ModuleClassLoader.class.getDeclaredField("libCacheFolders");
+		libCacheFoldersField.setAccessible(true);
+		@SuppressWarnings("unchecked")
+		Map<String, File> libCacheFolders = (Map<String, File>) libCacheFoldersField.get(null);
+
+		File omodFile = File.createTempFile("testmodule2", ".omod");
+		try {
+			Module module = new Module("testmodule2", "testmodule2", "org.openmrs.module.testmodule2",
+				"author", "description", "1.0", "1.0");
+			module.setFile(omodFile);
+
+			File moduleDir = new File(tempLibCache, "testmodule2");
+			moduleDir.mkdirs();
+			File staleFile = new File(moduleDir, "old-resource.txt");
+			FileUtils.writeStringToFile(staleFile, "stale content", Charset.defaultCharset());
+
+			Context.getRuntimeProperties().setProperty("optimized.startup", "false");
+
+			ModuleClassLoader.getLibCacheFolderForModule(module);
+
+			assertFalse(staleFile.exists(), "Stale file should be deleted when optimized startup is disabled");
+			assertTrue(moduleDir.exists(), "Module dir should be recreated");
+		} finally {
+			Context.getRuntimeProperties().remove("optimized.startup");
+			libCacheFolderField.set(null, savedLibCacheFolder);
+			libCacheFolders.remove("testmodule2");
+			omodFile.delete();
+			FileUtils.deleteDirectory(tempLibCache);
+		}
 	}
 
 	@Test
