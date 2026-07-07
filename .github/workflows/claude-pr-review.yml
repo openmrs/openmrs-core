@@ -109,6 +109,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # TEMPORARY (remove after posting is validated): surface Claude's full
+          # output, including per-tool permission denials, so a run that fails to
+          # post is diagnosable. Exposes the transcript in this public repo's
+          # logs (secrets stay masked) — do not leave enabled.
+          show_full_output: true
           # No trigger_phrase: supplying `prompt` selects automation mode. The
           # methodology comes from the pr-review skill, injected as a system
           # prompt via --append-system-prompt-file below — skills are not
@@ -136,13 +141,21 @@ jobs:
             build-config PR), you cannot run that build here — treat it as an
             experiment that cannot run and report the check as a question, per
             the skill's own rule, rather than asserting it as fact.
-          # Review-only: Write/Edit disabled so Claude cannot alter tracked
-          # files (the skill writes its payload JSON via python in Bash, not the
-          # Write tool). Bash stays enabled — the skill drives through git, gh,
-          # and python. `contents: read` guarantees no push regardless.
+          # Tool permissions: claude-code-action DENIES all tools by default in
+          # automation mode, so the skill's gh/git/python Bash calls were all
+          # denied and it could never post (the cause of the empty first runs).
+          # --allowedTools is a positive allow-list; anything not listed
+          # (including Write/Edit and build tools like mvn) is denied, which also
+          # enforces the no-untrusted-build rule at the permission layer. The
+          # native inline-comment tool is allowed as the reliable posting path.
+          # --disallowedTools kept as belt-and-suspenders on Write/Edit.
+          # TEMPORARY debug: Sonnet 5 + medium effort keeps iteration cheap while
+          # we confirm posting works; restore --model claude-opus-4-8 / --effort
+          # max once validated.
           claude_args: |
-            --model claude-opus-4-8
-            --effort max
+            --model claude-sonnet-5
+            --effort medium
             --append-system-prompt-file ${{ runner.temp }}/pr-review-SKILL.md
             --max-turns 40
+            --allowedTools "Bash,Read,Grep,Glob,mcp__github_inline_comment__create_inline_comment"
             --disallowedTools "Write,Edit"
