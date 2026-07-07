@@ -1,0 +1,147 @@
+# On-demand PR review by Claude.
+# Runs ONLY when a /dev/3-or-above developer comments "@claude review" on a PR.
+# It never runs automatically on PR open. Gating is by membership of the
+# OpenMRS developer-stage GitHub teams below, because a GitHub Action cannot
+# read OpenMRS developer stages directly. "/dev/3 and above" == membership of
+# any of dev-3, dev-4, dev-5 (the teams are flat, not nested).
+name: Claude PR Review
+
+on:
+  issue_comment:
+    types: [created]
+
+# No `concurrency` here on purpose. It is evaluated at run creation, upstream of
+# the membership gate below, so any cancel-in-progress group joinable by an
+# arbitrary comment is a denial-of-service vector: on this public repo anyone
+# could post "@claude review" (or quote it) to join the group and cancel a
+# legitimate in-flight review before their own run is gated out. Cancellation
+# cannot be membership-gated (that needs a runtime API call, not an `if:`), so
+# we simply don't cancel. The cost is that a dev who invokes twice gets two
+# reviews rather than a supersede — rare, visible, and preferable to the DoS.
+
+# Edit these to change the org, which stages may invoke the reviewer, or the
+# review methodology source. SKILL_URL is pinned to a querystore commit SHA so
+# the review methodology can't change under us without a deliberate bump here
+# (bump the SHA in a PR to pick up skill updates).
+env:
+  REVIEWER_ORG: openmrs
+  REVIEWER_TEAMS: "dev-3 dev-4 dev-5"
+  SKILL_URL: https://raw.githubusercontent.com/openmrs/openmrs-module-querystore/a5ea7a9b4640849d31b6adf65f0e5706a3a18666/.claude/skills/pr-review/SKILL.md
+
+jobs:
+  review:
+    # Bound cost and stop a hung run on this public repo. Generous because
+    # Opus 4.8 at max effort plus the skill's read-based verification take a
+    # while. The prompt forbids running PR builds, so reviews don't wait on long
+    # mvn builds (and build-only checks are reported as questions, not facts).
+    timeout-minutes: 30
+    # Cheap pre-filter so we don't start a runner on unrelated comments:
+    # a PR comment (not a plain issue), not authored by a bot (so the reviewer's
+    # own comment can never re-trigger this), containing the trigger phrase.
+    if: >
+      github.event.issue.pull_request != null &&
+      github.event.comment.user.type != 'Bot' &&
+      contains(github.event.comment.body, '@claude review')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read          # read-only: the hard guarantee that no code is pushed
+      pull-requests: write     # read the PR/diff and post the review
+      issues: write            # a PR conversation comment posts via the issues API
+    steps:
+      # Fail-closed dev-stage gate: the commenter must be an active member of
+      # one of the reviewer teams. DEV_STAGE_READ_TOKEN needs read:org scope,
+      # because the default GITHUB_TOKEN cannot read org team membership.
+      - name: Verify commenter is /dev/3 or above
+        id: gate
+        env:
+          GH_TOKEN: ${{ secrets.DEV_STAGE_READ_TOKEN }}
+          LOGIN: ${{ github.event.comment.user.login }}
+        run: |
+          allowed=false
+          for team in $REVIEWER_TEAMS; do
+            # Capture the state and compare in bash; do NOT pipe into grep for a
+            # security gate. An active membership returns state "active".
+            state="$(gh api "/orgs/${REVIEWER_ORG}/teams/${team}/memberships/${LOGIN}" \
+                       --jq '.state' 2>/dev/null || true)"
+            if [ "$state" = "active" ]; then
+              allowed=true
+              echo "::notice::${LOGIN} is a member of ${REVIEWER_ORG}/${team}; proceeding."
+              break
+            fi
+          done
+          echo "allowed=${allowed}" >> "$GITHUB_OUTPUT"
+          if [ "$allowed" = false ]; then
+            echo "::notice::${LOGIN} is not /dev/3+ (not in: ${REVIEWER_TEAMS}); skipping."
+          fi
+
+      # issue_comment checks out the default branch by default. Fetch the PR
+      # head instead so the review sees the PR's code, not master. This ref
+      # resolves for fork PRs too. fetch-depth: 0 (full history) is required by
+      # the skill's local-git verification — merge-base, diffing against the
+      # base branch, drift checks — which a shallow clone cannot support.
+      - name: Check out the PR head
+        if: steps.gate.outputs.allowed == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
+          fetch-depth: 0
+
+      # Pull the review methodology from the trusted querystore repo into a temp
+      # path OUTSIDE the checked-out PR tree, so a malicious PR cannot substitute
+      # its own SKILL.md. Fail loudly if it's missing or unexpected rather than
+      # silently reviewing with no methodology.
+      - name: Fetch the pr-review skill
+        if: steps.gate.outputs.allowed == 'true'
+        run: |
+          dest="$RUNNER_TEMP/pr-review-SKILL.md"
+          curl -fsSL "$SKILL_URL" -o "$dest"
+          test -s "$dest"
+          grep -q "name: pr-review" "$dest"
+          echo "Fetched pr-review skill ($(wc -l < "$dest") lines)."
+
+      - name: Review
+        if: steps.gate.outputs.allowed == 'true'
+        uses: anthropics/claude-code-action@v1
+        env:
+          # The skill posts its review through `gh api .../reviews`; give gh the
+          # workflow token so those calls are authenticated.
+          GH_TOKEN: ${{ github.token }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # No trigger_phrase: supplying `prompt` selects automation mode. The
+          # methodology comes from the pr-review skill, injected as a system
+          # prompt via --append-system-prompt-file below — skills are not
+          # reliably auto-invoked in automation mode (claude-code-action #1003),
+          # so injecting the file is the documented, dependable path.
+          prompt: |
+            Review pull request #${{ github.event.issue.number }} in the
+            repository ${{ github.repository }}, following the PR-review
+            methodology appended to your system prompt exactly: its verification
+            requirements, its rules for every inline comment, and its posting
+            rules. Post the review to the PR the way the skill's `--post` does —
+            submit the findings as inline review comments through the GitHub API.
+            This runs in CI with no interactive user to report back to, so if the
+            PR is clean with nothing to act on, post nothing.
+
+            Security constraint — this OVERRIDES the skill wherever they differ:
+            you are reviewing untrusted PR code, so never execute the
+            repository's own code. Do not run its build or tests (mvn, gradle,
+            npm, make, and the like), and do not run any script or binary from
+            the tree, including inside worktrees. This ban is on the PR's code
+            only — your own read-only tooling is expected: use git
+            (diff/log/grep), gh (pr diff, api), curl to fetch upstream
+            references, and python to assemble the review payload you post.
+            Where the skill would build something to verify it (e.g. a
+            build-config PR), you cannot run that build here — treat it as an
+            experiment that cannot run and report the check as a question, per
+            the skill's own rule, rather than asserting it as fact.
+          # Review-only: Write/Edit disabled so Claude cannot alter tracked
+          # files (the skill writes its payload JSON via python in Bash, not the
+          # Write tool). Bash stays enabled — the skill drives through git, gh,
+          # and python. `contents: read` guarantees no push regardless.
+          claude_args: |
+            --model claude-opus-4-8
+            --effort max
+            --append-system-prompt-file ${{ runner.temp }}/pr-review-SKILL.md
+            --max-turns 40
+            --disallowedTools "Write,Edit"
