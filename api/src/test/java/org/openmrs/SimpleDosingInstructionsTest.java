@@ -38,7 +38,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		new SimpleDosingInstructions().validate(drugOrder, errors);
 
 		assertTrue(errors.hasFieldErrors("durationUnits"));
-		assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode",
+		assertEquals("DrugOrder.error.durationUnitsNotMappedToKnownDurationCode",
 		    errors.getFieldError("durationUnits").getCode());
 	}
 

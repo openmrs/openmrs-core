@@ -35,6 +35,11 @@ public class Duration {
 
 	public static final String SNOMED_CT_SECONDS_CODE = "257997001";
 
+	/**
+	 * The legacy SNOMED CT code for minute, inactive in SNOMED CT since its 2021-07-31 release but
+	 * still accepted for backward compatibility with existing dictionaries. New mappings should use
+	 * {@link #SNOMED_CT_MINUTES_CODE_2021}.
+	 */
 	public static final String SNOMED_CT_MINUTES_CODE = "258701004";
 
 	/**
@@ -112,6 +117,15 @@ public class Duration {
 	 * @since 3.0.0
 	 */
 	public static final String UCUM_YEARS_CODE = "a";
+
+	/**
+	 * HL7 code identifying the concept source for The Unified Code for Units of Measure. It happens to
+	 * share its value with {@link #UCUM_CONCEPT_SOURCE_NAME}, but names and HL7 codes are semantically
+	 * different identifiers.
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String UCUM_CONCEPT_SOURCE_HL7_CODE = "UCUM";
 
 	private static final int SECONDS_PER_MINUTE = 60;
 
@@ -351,7 +365,7 @@ public class Duration {
 	}
 
 	private static boolean isUcumSource(ConceptSource conceptSource) {
-		return UCUM_CONCEPT_SOURCE_NAME.equalsIgnoreCase(conceptSource.getName())
-		        || UCUM_CONCEPT_SOURCE_NAME.equals(conceptSource.getHl7Code());
+		return UCUM_CONCEPT_SOURCE_HL7_CODE.equals(conceptSource.getHl7Code())
+		        || UCUM_CONCEPT_SOURCE_NAME.equalsIgnoreCase(conceptSource.getName());
 	}
 }

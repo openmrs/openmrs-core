@@ -127,7 +127,7 @@ public class SimpleDosingInstructions extends BaseDosingInstructions {
 		ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
 		if (order.getAutoExpireDate() == null && order.getDurationUnits() != null
 		        && Duration.getDuration(order.getDuration(), order.getDurationUnits()) == null) {
-			errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode");
+			errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToKnownDurationCode");
 		}
 	}
 
