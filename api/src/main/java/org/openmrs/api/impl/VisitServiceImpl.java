@@ -464,12 +464,12 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 			return visit;
 		}
 
-		VisitType defaultType = getDefaultVisitType(visitList);
+		VisitType defaultType = getDefaultVisitType();
 		if (defaultType == null) {
-			throw new APIException("Visit.error.visitType.required");
+			throw new APIException("Visit.error.defaultVisitType.notConfigured");
 		}
 
-		return ensureVisit(patient, visitTime, location, defaultType);
+		return createVisit(patient, visitTime, location, defaultType);
 	}
 
 	/**
@@ -492,18 +492,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 			return existing;
 		}
 
-		Location visitLocation = getLocationThatSupportsVisits(location);
-		if (visitLocation == null) {
-			throw new APIException("No location in the hierarchy supports visits.");
-		}
-
-		Visit visit = new Visit();
-		visit.setPatient(patient);
-		visit.setLocation(visitLocation);
-		visit.setStartDatetime(visitTime);
-		visit.setVisitType(visitType);
-
-		return saveVisit(visit);
+		return createVisit(patient, visitTime, location, visitType);
 	}
 
 	/**
@@ -518,23 +507,12 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 			return visit;
 		}
 
-		Location visitLocation = getLocationThatSupportsVisits(location);
-		if (visitLocation == null) {
-			throw new APIException("No ancestor location supports visits.");
-		}
-
-		VisitType defaultType = getDefaultVisitType(visitList);
+		VisitType defaultType = getDefaultVisitType();
 		if (defaultType == null) {
-			throw new APIException("Visit.error.visitType.required");
+			throw new APIException("Visit.error.defaultVisitType.notConfigured");
 		}
 
-		visit = new Visit();
-		visit.setPatient(patient);
-		visit.setLocation(visitLocation);
-		visit.setStartDatetime(new Date());
-		visit.setVisitType(defaultType);
-
-		return saveVisit(visit);
+		return createVisit(patient, new Date(), location, defaultType);
 	}
 
 	/**
@@ -551,14 +529,6 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		return isSameOrAncestor(visit.getLocation(), location);
 	}
 
-	/**
-	 * Finds the first visit that is suitable for the specified location and date.
-	 *
-	 * @param visits the candidate visits to evaluate
-	 * @param location the location for which a suitable visit is being sought
-	 * @param when the date and time the visit must be active
-	 * @return the first suitable visit, or {@code null} if none is found
-	 */
 	private Visit findSuitableVisit(List<Visit> visits, Location location, Date when) {
 		for (Visit visit : visits) {
 			if (location == null || isSuitableVisit(visit, location, when)) {
@@ -568,15 +538,6 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		return null;
 	}
 
-	/**
-	 * Determines whether the specified location is the same as, or a descendant of, the ancestor
-	 * location.
-	 *
-	 * @param ancestor the ancestor location
-	 * @param child the location to test
-	 * @return {@code true} if the child is the same as or a descendant of the ancestor, otherwise
-	 *         {@code false}
-	 */
 	private boolean isSameOrAncestor(Location ancestor, Location child) {
 		if (ancestor == null) {
 			return child == null;
@@ -592,12 +553,6 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		return false;
 	}
 
-	/**
-	 * Finds the nearest location in the hierarchy that supports visits.
-	 *
-	 * @param location the starting location
-	 * @return the nearest location that supports visits, or {@code null} if none is found
-	 */
 	private Location getLocationThatSupportsVisits(Location location) {
 		while (location != null) {
 			if (Boolean.TRUE.equals(location.getSupportsVisits())) {
@@ -610,19 +565,29 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		return null;
 	}
 
-	/**
-	 * Gets the default visit type to use when creating a visit.
-	 *
-	 * @param visitList the candidate visits
-	 * @return the default visit type
-	 * @throws APIException if no default visit type can be determined
-	 */
-	private VisitType getDefaultVisitType(List<Visit> visitList) {
-		if (visitList.isEmpty()) {
-			throw new APIException("Visit.error.visitType.required");
+	private VisitType getDefaultVisitType() {
+		String value = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_VISIT_TYPE);
+		if (StringUtils.isBlank(value)) {
+			return null;
 		}
 
-		return visitList.getFirst().getVisitType();
+		return Context.getVisitService().getVisitTypeByUuid(value);
+	}
+
+	private Visit createVisit(Patient patient, Date visitTime, Location location, VisitType visitType) {
+		Location visitLocation = getLocationThatSupportsVisits(location);
+		if (visitLocation == null) {
+			throw new APIException("No location in the hierarchy supports visits.");
+		}
+
+		Visit visit = new Visit();
+		visit.setPatient(patient);
+		visit.setLocation(visitLocation);
+		visit.setStartDatetime(visitTime);
+		visit.setVisitType(visitType);
+
+		return Context.getVisitService().saveVisit(visit);
 	}
 
 }

@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
@@ -989,9 +990,8 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isSuitableVisit_shouldReturnTrueWhenLocationIsDescendantAndVisitIsActive() {
-		// Create a parent location that supports visits.
+		// Create a parent location.
 		Location parent = new Location();
-		parent.setSupportsVisits(true);
 
 		// Create a child location beneath the parent.
 		Location child = new Location();
@@ -1011,19 +1011,16 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isSuitableVisit_shouldReturnFalseWhenLocationIsNotInHierarchy() {
-		// Create a location that supports visits.
+		// Create new locations.
 		Location visitLocation = new Location();
-		visitLocation.setSupportsVisits(true);
-
-		// Create an unrelated location.
 		Location other = new Location();
 
-		// Create an active visit at the location.
+		// Create an active visit at  visitLocation.
 		Visit visit = new Visit();
 		visit.setLocation(visitLocation);
 		visit.setStartDatetime(new Date());
 
-		// Verify that the visit is not suitable for an unrelated location.
+		// Verify that the visit is not suitable for the other location.
 		assertFalse(Context.getVisitService().isSuitableVisit(visit, other, new Date()));
 	}
 
@@ -1056,6 +1053,132 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 
 		// Verify that the existing visit is returned.
 		assertEquals(existing.getVisitId(), actual.getVisitId());
+	}
+
+	/**
+	 * @see VisitService#ensureVisit(Patient, Date, Location)
+	 */
+	@Test
+	public void ensureVisit_shouldCreateNewVisitWhenNoSuitableVisitExists() {
+		// Get an existing patient.
+		Patient patient = Context.getPatientService().getPatient(2);
+
+		// Create a location that supports visits.
+		Location location = new Location();
+		location.setName("Hospital");
+		location.setSupportsVisits(true);
+		Context.getLocationService().saveLocation(location);
+
+		// Configure the default visit type.
+		VisitType visitType = Context.getVisitService().getAllVisitTypes().getFirst();
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_VISIT_TYPE, visitType.getUuid()));
+
+		// Ensure a visit is created.
+		Visit visit = Context.getVisitService().ensureVisit(patient, new Date(), location);
+
+		// Verify that a new visit was created with the expected values.
+		assertNotNull(visit.getVisitId());
+		assertEquals(patient, visit.getPatient());
+		assertEquals(location, visit.getLocation());
+		assertEquals(visitType, visit.getVisitType());
+	}
+
+	/**
+	 * @see VisitService#ensureVisit(Patient, Date, Location, VisitType)
+	 */
+	@Test
+	public void ensureVisit_shouldCreateVisitAtNearestAncestorSupportingVisits() {
+		// Get an existing patient.
+		Patient patient = Context.getPatientService().getPatient(2);
+
+		// Create a hierarchy where only the top-level location supports visits.
+		Location hospital = new Location();
+		hospital.setName("Hospital");
+		hospital.setSupportsVisits(true);
+		Context.getLocationService().saveLocation(hospital);
+
+		Location ward = new Location();
+		ward.setName("Ward");
+		ward.setParentLocation(hospital);
+		ward.setSupportsVisits(false);
+		Context.getLocationService().saveLocation(ward);
+
+		Location room = new Location();
+		room.setName("Room");
+		room.setParentLocation(ward);
+		room.setSupportsVisits(false);
+		Context.getLocationService().saveLocation(room);
+
+		// Get an existing visit type.
+		VisitType visitType = Context.getVisitService().getAllVisitTypes().getFirst();
+
+		// Ensure a visit using the descendant location.
+		Visit visit = Context.getVisitService().ensureVisit(patient, new Date(), room, visitType);
+
+		// Verify that the visit was created at the nearest ancestor that supports visits.
+		assertEquals(hospital, visit.getLocation());
+	}
+
+	/**
+	 * @see VisitService#ensureActiveVisit(Patient, Location)
+	 */
+	@Test
+	public void ensureActiveVisit_shouldReturnExistingActiveVisit() {
+		// Get an existing patient.
+		Patient patient = Context.getPatientService().getPatient(2);
+
+		// Create a location that supports visits.
+		Location location = new Location();
+		location.setName("Hospital");
+		location.setSupportsVisits(true);
+		Context.getLocationService().saveLocation(location);
+
+		// Get an existing visit type.
+		VisitType visitType = Context.getVisitService().getAllVisitTypes().getFirst();
+
+		// Create and save an active visit.
+		Visit existing = new Visit();
+		existing.setPatient(patient);
+		existing.setLocation(location);
+		existing.setVisitType(visitType);
+		existing.setStartDatetime(new Date());
+		Context.getVisitService().saveVisit(existing);
+
+		// Ensure an active visit.
+		Visit actual = Context.getVisitService().ensureActiveVisit(patient, location);
+
+		// Verify that the existing visit was returned.
+		assertEquals(existing.getVisitId(), actual.getVisitId());
+	}
+
+	/**
+	 * @see VisitService#ensureActiveVisit(Patient, Location)
+	 */
+	@Test
+	public void ensureActiveVisit_shouldCreateNewVisitWhenNoActiveVisitExists() {
+		// Get an existing patient.
+		Patient patient = Context.getPatientService().getPatient(2);
+
+		// Create a location that supports visits.
+		Location location = new Location();
+		location.setName("Hospital");
+		location.setSupportsVisits(true);
+		Context.getLocationService().saveLocation(location);
+
+		// Configure the default visit type.
+		VisitType visitType = Context.getVisitService().getAllVisitTypes().getFirst();
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_VISIT_TYPE, visitType.getUuid()));
+
+		// Ensure an active visit.
+		Visit visit = Context.getVisitService().ensureActiveVisit(patient, location);
+
+		// Verify that a new active visit was created.
+		assertNotNull(visit.getVisitId());
+		assertEquals(patient, visit.getPatient());
+		assertEquals(location, visit.getLocation());
+		assertEquals(visitType, visit.getVisitType());
 	}
 
 	private int getNumberOfAllVisitsIncludingVoided() {

@@ -95,7 +95,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	private String countyDistrict;
 
 	@Column(name = "supports_visits")
-	private Boolean supportsVisits;
+	private Boolean supportsVisits = Boolean.FALSE;
 
 	@Column(name = "address3")
 	private String address3;
@@ -862,14 +862,20 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Gets whether this location supports visits.
+	 *
+	 * @return {@code true} if this location supports visits, otherwise {@code false}
+	 * @since 3.0.0
 	 */
 	public Boolean getSupportsVisits() {
 		return supportsVisits;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Sets supports visits for this location.
+	 *
+	 * @param supportsVisits {@code true} if this location supports visits, otherwise {@code false}
+	 * @since 3.0.0
 	 */
 	public void setSupportsVisits(Boolean supportsVisits) {
 		this.supportsVisits = supportsVisits;

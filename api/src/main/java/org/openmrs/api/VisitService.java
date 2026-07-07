@@ -437,8 +437,9 @@ public interface VisitService extends OpenmrsService {
 	 * @param visitTime the date and time of the visit
 	 * @param location the location where the visit occurred
 	 * @return an existing or newly created {@link Visit}
+	 * @since 3.0.0
 	 */
-	@Authorized(PrivilegeConstants.GET_VISITS)
+	@Authorized({ PrivilegeConstants.GET_VISITS, PrivilegeConstants.ADD_VISITS })
 	Visit ensureVisit(Patient patient, Date visitTime, Location location);
 
 	/**
@@ -453,8 +454,9 @@ public interface VisitService extends OpenmrsService {
 	 * @param location the location where the visit occurred
 	 * @param visitType the visit type to use when creating a new visit
 	 * @return an existing or newly created {@link Visit}
+	 * @since 3.0.0
 	 */
-	@Authorized(PrivilegeConstants.GET_VISITS)
+	@Authorized({ PrivilegeConstants.GET_VISITS, PrivilegeConstants.ADD_VISITS })
 	Visit ensureVisit(Patient patient, Date visitTime, Location location, VisitType visitType);
 
 	/**
@@ -466,8 +468,9 @@ public interface VisitService extends OpenmrsService {
 	 * @param patient the patient
 	 * @param location the location where the visit occurred
 	 * @return the active {@link Visit}
+	 * @since 3.0.0
 	 */
-	@Authorized(PrivilegeConstants.GET_VISITS)
+	@Authorized({ PrivilegeConstants.GET_VISITS, PrivilegeConstants.ADD_VISITS })
 	Visit ensureActiveVisit(Patient patient, Location location);
 
 	/**
@@ -480,6 +483,7 @@ public interface VisitService extends OpenmrsService {
 	 * @param location the location to compare
 	 * @param when the date and time to evaluate
 	 * @return {@code true} if the visit is suitable, otherwise {@code false}
+	 * @since 3.0.0
 	 */
 	boolean isSuitableVisit(Visit visit, Location location, Date when);
 }

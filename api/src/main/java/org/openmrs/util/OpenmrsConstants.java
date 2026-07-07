@@ -319,6 +319,8 @@ public final class OpenmrsConstants {
 
 	public static final int GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS = 2;
 
+	public static final String GLOBAL_PROPERTY_DEFAULT_VISIT_TYPE = "visit.defaultVisitType";
+
 	public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "default_locale";
 
 	public static final String GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME = "default_location";

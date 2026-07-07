@@ -570,6 +570,7 @@ public interface LocationService extends OpenmrsService {
 	 * Gets all non-retired locations that support visits.
 	 *
 	 * @return a list of locations that support visits
+	 * @since 3.0.0
 	 */
 	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getAllLocationsThatSupportVisits() throws APIException;

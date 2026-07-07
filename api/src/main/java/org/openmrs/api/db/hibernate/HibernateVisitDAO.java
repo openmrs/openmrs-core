@@ -417,6 +417,6 @@ public class HibernateVisitDAO implements VisitDAO {
 		cq.where(predicates.toArray(new Predicate[0]));
 		cq.orderBy(cb.desc(root.get("startDatetime")), cb.desc(root.get("visitId")));
 
-		return session.createQuery(cq).setMaxResults(20).getResultList();
+		return session.createQuery(cq).getResultList();
 	}
 }
