@@ -47,6 +47,7 @@ jobs:
       contents: read          # read-only: the hard guarantee that no code is pushed
       pull-requests: write     # read the PR/diff and post the review
       issues: write            # a PR conversation comment posts via the issues API
+      id-token: write          # claude-code-action fetches an OIDC token on startup even with an API key
     steps:
       # Fail-closed dev-stage gate: the commenter must be an active member of
       # one of the reviewer teams. DEV_STAGE_READ_TOKEN needs read:org scope,
