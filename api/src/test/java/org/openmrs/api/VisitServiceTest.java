@@ -984,6 +984,80 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, visitTypes.size(), "get all visit types excluding retired");
 	}
 
+	/**
+	 * @see VisitService#isSuitableVisit(Visit, Location, Date)
+	 */
+	@Test
+	public void isSuitableVisit_shouldReturnTrueWhenLocationIsDescendantAndVisitIsActive() {
+		// Create a parent location that supports visits.
+		Location parent = new Location();
+		parent.setSupportsVisits(true);
+
+		// Create a child location beneath the parent.
+		Location child = new Location();
+		child.setParentLocation(parent);
+
+		// Create an active visit at the parent location.
+		Visit visit = new Visit();
+		visit.setLocation(parent);
+		visit.setStartDatetime(new Date());
+
+		// Verify that the visit is suitable for the descendant location.
+		assertTrue(Context.getVisitService().isSuitableVisit(visit, child, new Date()));
+	}
+
+	/**
+	 * @see VisitService#isSuitableVisit(Visit, Location, Date)
+	 */
+	@Test
+	public void isSuitableVisit_shouldReturnFalseWhenLocationIsNotInHierarchy() {
+		// Create a location that supports visits.
+		Location visitLocation = new Location();
+		visitLocation.setSupportsVisits(true);
+
+		// Create an unrelated location.
+		Location other = new Location();
+
+		// Create an active visit at the location.
+		Visit visit = new Visit();
+		visit.setLocation(visitLocation);
+		visit.setStartDatetime(new Date());
+
+		// Verify that the visit is not suitable for an unrelated location.
+		assertFalse(Context.getVisitService().isSuitableVisit(visit, other, new Date()));
+	}
+
+	/**
+	 * @see VisitService#ensureVisit(Patient, Date, Location, VisitType)
+	 */
+	@Test
+	public void ensureVisit_shouldReturnExistingSuitableVisit() {
+		// Get an existing patient.
+		Patient patient = Context.getPatientService().getAllPatients().getFirst();
+
+		// Configure a location that supports visits.
+		Location location = Context.getLocationService().getAllLocations().get(1);
+		location.setSupportsVisits(true);
+		Context.getLocationService().saveLocation(location);
+
+		// Get an existing visit type.
+		VisitType visitType = Context.getVisitService().getAllVisitTypes().get(1);
+
+		// Save an active visit for the patient.
+		Visit existing = new Visit();
+		existing.setPatient(patient);
+		existing.setLocation(location);
+		existing.setVisitType(visitType);
+		existing.setStartDatetime(new Date());
+		Context.getVisitService().saveVisit(existing);
+
+		// Ensure a visit for the same patient, time, and location.
+		Visit actual = Context.getVisitService().ensureVisit(patient, new Date(), location);
+
+		// Verify that the existing visit is returned.
+		assertEquals(existing.getVisitId(), actual.getVisitId());
+	}
+
 	private int getNumberOfAllVisitsIncludingVoided() {
 		return visitService.getVisits(null, null, null, null, null, null, null, null, null, true, true).size();
 	}

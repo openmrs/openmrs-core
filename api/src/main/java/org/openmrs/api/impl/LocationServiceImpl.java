@@ -560,4 +560,12 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		return Arrays.asList(LocationAttributeType.class, LocationTag.class, LocationAttribute.class, Location.class);
 	}
 
+	/**
+	 * @see org.openmrs.api.LocationService#getAllLocationsThatSupportVisits()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Location> getAllLocationsThatSupportVisits() {
+		return dao.getAllLocationsThatSupportVisits();
+	}
 }

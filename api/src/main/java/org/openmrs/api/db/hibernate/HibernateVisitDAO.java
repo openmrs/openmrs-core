@@ -392,4 +392,31 @@ public class HibernateVisitDAO implements VisitDAO {
 
 		return session.createQuery(cq).setMaxResults(1).uniqueResult();
 	}
+
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getSuitableVisits(Patient, Date)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Visit> getSuitableVisits(Patient patient, Date visitTime) {
+		Session session = getCurrentSession();
+
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);
+
+		Root<Visit> root = cq.from(Visit.class);
+		List<Predicate> predicates = new ArrayList<>();
+
+		predicates.add(cb.equal(root.get("patient"), patient));
+		predicates.add(cb.isFalse(root.get("voided")));
+		predicates.add(cb.lessThanOrEqualTo(root.get("startDatetime"), visitTime));
+
+		predicates.add(
+		    cb.or(cb.isNull(root.get("stopDatetime")), cb.greaterThanOrEqualTo(root.get("stopDatetime"), visitTime)));
+
+		cq.where(predicates.toArray(new Predicate[0]));
+		cq.orderBy(cb.desc(root.get("startDatetime")), cb.desc(root.get("visitId")));
+
+		return session.createQuery(cq).setMaxResults(20).getResultList();
+	}
 }

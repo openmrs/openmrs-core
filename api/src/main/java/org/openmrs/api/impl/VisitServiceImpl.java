@@ -34,6 +34,7 @@ import org.openmrs.api.db.VisitDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.parameter.VisitSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -445,6 +446,183 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	@Override
 	public List<Class<?>> getRefTypes() {
 		return Arrays.asList(Visit.class, VisitType.class, VisitAttribute.class, VisitAttributeType.class);
+	}
+
+	/**
+	 * @see org.openmrs.api.VisitService#ensureVisit(Patient, Date, Location)
+	 */
+	@Override
+	public Visit ensureVisit(Patient patient, Date visitTime, Location location) {
+		if (visitTime == null) {
+			visitTime = new Date();
+		}
+
+		List<Visit> visitList = dao.getSuitableVisits(patient, visitTime);
+		Visit visit = findSuitableVisit(visitList, location, visitTime);
+
+		if (visit != null) {
+			return visit;
+		}
+
+		VisitType defaultType = getDefaultVisitType(visitList);
+		if (defaultType == null) {
+			throw new APIException("Visit.error.visitType.required");
+		}
+
+		return ensureVisit(patient, visitTime, location, defaultType);
+	}
+
+	/**
+	 * @see org.openmrs.api.VisitService#ensureVisit(Patient, Date, Location, VisitType)
+	 */
+	@Override
+	public Visit ensureVisit(Patient patient, Date visitTime, Location location, VisitType visitType) {
+		if (visitType == null) {
+			throw new APIException("Visit.error.visitType.required");
+		}
+
+		if (visitTime == null) {
+			visitTime = new Date();
+		}
+
+		List<Visit> visitList = dao.getSuitableVisits(patient, visitTime);
+		Visit existing = findSuitableVisit(visitList, location, visitTime);
+
+		if (existing != null) {
+			return existing;
+		}
+
+		Location visitLocation = getLocationThatSupportsVisits(location);
+		if (visitLocation == null) {
+			throw new APIException("No location in the hierarchy supports visits.");
+		}
+
+		Visit visit = new Visit();
+		visit.setPatient(patient);
+		visit.setLocation(visitLocation);
+		visit.setStartDatetime(visitTime);
+		visit.setVisitType(visitType);
+
+		return saveVisit(visit);
+	}
+
+	/**
+	 * @see org.openmrs.api.VisitService#ensureActiveVisit(Patient, Location)
+	 */
+	@Override
+	public Visit ensureActiveVisit(Patient patient, Location location) {
+		List<Visit> visitList = dao.getSuitableVisits(patient, new Date());
+		Visit visit = findSuitableVisit(visitList, location, new Date());
+
+		if (visit != null) {
+			return visit;
+		}
+
+		Location visitLocation = getLocationThatSupportsVisits(location);
+		if (visitLocation == null) {
+			throw new APIException("No ancestor location supports visits.");
+		}
+
+		VisitType defaultType = getDefaultVisitType(visitList);
+		if (defaultType == null) {
+			throw new APIException("Visit.error.visitType.required");
+		}
+
+		visit = new Visit();
+		visit.setPatient(patient);
+		visit.setLocation(visitLocation);
+		visit.setStartDatetime(new Date());
+		visit.setVisitType(defaultType);
+
+		return saveVisit(visit);
+	}
+
+	/**
+	 * @see org.openmrs.api.VisitService#isSuitableVisit(Visit, Location, Date)
+	 */
+	@Override
+	public boolean isSuitableVisit(Visit visit, Location location, Date when) {
+		if (OpenmrsUtil.compare(when, visit.getStartDatetime()) < 0) {
+			return false;
+		}
+		if (OpenmrsUtil.compareWithNullAsLatest(when, visit.getStopDatetime()) > 0) {
+			return false;
+		}
+		return isSameOrAncestor(visit.getLocation(), location);
+	}
+
+	/**
+	 * Finds the first visit that is suitable for the specified location and date.
+	 *
+	 * @param visits the candidate visits to evaluate
+	 * @param location the location for which a suitable visit is being sought
+	 * @param when the date and time the visit must be active
+	 * @return the first suitable visit, or {@code null} if none is found
+	 */
+	private Visit findSuitableVisit(List<Visit> visits, Location location, Date when) {
+		for (Visit visit : visits) {
+			if (location == null || isSuitableVisit(visit, location, when)) {
+				return visit;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Determines whether the specified location is the same as, or a descendant of, the ancestor
+	 * location.
+	 *
+	 * @param ancestor the ancestor location
+	 * @param child the location to test
+	 * @return {@code true} if the child is the same as or a descendant of the ancestor, otherwise
+	 *         {@code false}
+	 */
+	private boolean isSameOrAncestor(Location ancestor, Location child) {
+		if (ancestor == null) {
+			return child == null;
+		}
+
+		while (child != null) {
+			if (ancestor.equals(child)) {
+				return true;
+			}
+			child = child.getParentLocation();
+		}
+
+		return false;
+	}
+
+	/**
+	 * Finds the nearest location in the hierarchy that supports visits.
+	 *
+	 * @param location the starting location
+	 * @return the nearest location that supports visits, or {@code null} if none is found
+	 */
+	private Location getLocationThatSupportsVisits(Location location) {
+		while (location != null) {
+			if (Boolean.TRUE.equals(location.getSupportsVisits())) {
+				return location;
+			}
+
+			location = location.getParentLocation();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Gets the default visit type to use when creating a visit.
+	 *
+	 * @param visitList the candidate visits
+	 * @return the default visit type
+	 * @throws APIException if no default visit type can be determined
+	 */
+	private VisitType getDefaultVisitType(List<Visit> visitList) {
+		if (visitList.isEmpty()) {
+			throw new APIException("Visit.error.visitType.required");
+		}
+
+		return visitList.getFirst().getVisitType();
 	}
 
 }

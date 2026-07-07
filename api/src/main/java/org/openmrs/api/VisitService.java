@@ -425,4 +425,61 @@ public interface VisitService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.EDIT_VISITS)
 	public void stopVisits(Date maximumStartDate);
+
+	/**
+	 * Gets an existing suitable visit for the patient at the specified location and time, or creates
+	 * one if none exists.
+	 * <p>
+	 * <strong>Should</strong> return an existing suitable visit when one is available, otherwise create
+	 * and save a new visit.
+	 *
+	 * @param patient the patient
+	 * @param visitTime the date and time of the visit
+	 * @param location the location where the visit occurred
+	 * @return an existing or newly created {@link Visit}
+	 */
+	@Authorized(PrivilegeConstants.GET_VISITS)
+	Visit ensureVisit(Patient patient, Date visitTime, Location location);
+
+	/**
+	 * Gets an existing suitable visit for the patient at the specified location and time, or creates
+	 * one if none exists using the specified visit type.
+	 * <p>
+	 * <strong>Should</strong> return an existing suitable visit when one is available, otherwise create
+	 * and save a new visit with the specified visit type.
+	 *
+	 * @param patient the patient
+	 * @param visitTime the date and time of the visit
+	 * @param location the location where the visit occurred
+	 * @param visitType the visit type to use when creating a new visit
+	 * @return an existing or newly created {@link Visit}
+	 */
+	@Authorized(PrivilegeConstants.GET_VISITS)
+	Visit ensureVisit(Patient patient, Date visitTime, Location location, VisitType visitType);
+
+	/**
+	 * Gets the patient's active visit at the specified location, or creates one if none exists.
+	 * <p>
+	 * <strong>Should</strong> return an existing active visit when one is available, otherwise create
+	 * and save a new active visit.
+	 *
+	 * @param patient the patient
+	 * @param location the location where the visit occurred
+	 * @return the active {@link Visit}
+	 */
+	@Authorized(PrivilegeConstants.GET_VISITS)
+	Visit ensureActiveVisit(Patient patient, Location location);
+
+	/**
+	 * Determines whether a visit is suitable for the specified location and date.
+	 * <p>
+	 * <strong>Should</strong> return {@code true} if the specified date falls within the visit's time
+	 * span and the location is the same as, or a descendant of, the visit location.
+	 *
+	 * @param visit the visit to evaluate
+	 * @param location the location to compare
+	 * @param when the date and time to evaluate
+	 * @return {@code true} if the visit is suitable, otherwise {@code false}
+	 */
+	boolean isSuitableVisit(Visit visit, Location location, Date when);
 }

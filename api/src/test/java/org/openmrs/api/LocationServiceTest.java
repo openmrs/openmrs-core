@@ -1403,4 +1403,34 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		assertTrue(result.contains(ls.getLocation(7)));
 	}
 
+	/**
+	 * @see LocationService#getAllLocationsThatSupportVisits()
+	 */
+	@Test
+	public void getAllLocationsThatSupportVisits_shouldReturnOnlyLocationsThatSupportVisits() {
+		LocationService ls = Context.getLocationService();
+
+		// Mark one location as supporting visits.
+		Location supports = ls.getLocation(1);
+		supports.setSupportsVisits(true);
+		ls.saveLocation(supports);
+
+		// Ensure another location does not support visits.
+		Location noSupport = ls.getLocation(2);
+		noSupport.setSupportsVisits(false);
+		ls.saveLocation(noSupport);
+
+		// Save one new location that supports visits.
+		Location newSupports = new Location();
+		newSupports.setName("Hospital");
+		newSupports.setSupportsVisits(true);
+		ls.saveLocation(newSupports);
+
+		List<Location> locations = ls.getAllLocationsThatSupportVisits();
+
+		// Verify that only locations supporting visits are returned.
+		assertEquals(2, locations.size());
+		assertTrue(locations.contains(supports));
+		assertFalse(locations.contains(noSupport));
+	}
 }
