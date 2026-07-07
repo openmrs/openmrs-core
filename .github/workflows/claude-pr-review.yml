@@ -1,0 +1,21 @@
+# On-demand PR review by Claude, invoked by commenting "@claude review" on a PR.
+# The logic lives in a shared reusable workflow so every OpenMRS repo stays in
+# sync; see openmrs/openmrs-contrib-gha-workflows. Tracking @main while the
+# reusable is still being refined, so changes flow through without editing this
+# file; this will be pinned to a @v1 tag once it stabilises. Defaults there are
+# Opus 4.8 at max effort; override via `with:` if needed.
+name: Claude PR Review
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  review:
+    uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/claude-pr-review.yml@main
+    secrets: inherit
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
