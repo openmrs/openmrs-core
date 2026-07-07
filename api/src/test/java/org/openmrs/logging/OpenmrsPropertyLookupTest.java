@@ -223,7 +223,7 @@ class OpenmrsPropertyLookupTest {
 		PatternLayout layout = PatternLayout.newBuilder().withPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
 		LogEvent event = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
 		        .setMessage(new SimpleMessage(message)).build();
-		String result = layout.toSerializable(event).toString();
+		String result = layout.toSerializable(event);
 		assertThat(result, containsString("before_after"));
 		assertThat(result, not(containsString("before\n")));
 	}
@@ -234,7 +234,7 @@ class OpenmrsPropertyLookupTest {
 		PatternLayout layout = PatternLayout.newBuilder().withPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
 		LogEvent event = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
 		        .setMessage(new SimpleMessage(message)).build();
-		String result = layout.toSerializable(event).toString();
+		String result = layout.toSerializable(event);
 		assertThat(result, containsString("before_after"));
 		assertThat(result, not(containsString("before\r")));
 	}
@@ -245,7 +245,7 @@ class OpenmrsPropertyLookupTest {
 		PatternLayout layout = PatternLayout.newBuilder().withPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
 		LogEvent event = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
 		        .setMessage(new SimpleMessage(message)).build();
-		String result = layout.toSerializable(event).toString();
+		String result = layout.toSerializable(event);
 		assertThat(result, containsString("before\tafter"));
 	}
 }
