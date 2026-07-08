@@ -13,8 +13,6 @@ import java.util.Date;
 import java.util.Map;
 
 import org.openmrs.api.APIException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.addHours;
@@ -30,8 +28,6 @@ import static org.apache.commons.lang3.time.DateUtils.addYears;
  * @since 1.10
  */
 public class Duration {
-
-	private static final Logger log = LoggerFactory.getLogger(Duration.class);
 
 	public static final String SNOMED_CT_SECONDS_CODE = "257997001";
 
@@ -299,64 +295,49 @@ public class Duration {
 	}
 
 	/**
-	 * Resolves the given duration units concept to a {@link Duration} of the given length, considering
-	 * all of the concept's SAME-AS mappings to the SNOMED CT and UCUM concept sources.
+	 * Resolves the given duration units concept to a {@link Duration} of the given length from the
+	 * concept's SAME-AS mappings to the SNOMED CT and UCUM concept sources.
 	 * <p>
-	 * The result does not depend on the iteration order of the concept's mappings. Dictionaries may map
-	 * one unit concept to several codes, for example both the legacy and the current SNOMED CT code for
-	 * minute, and the concept resolves as long as all of its known codes denote the same unit. If they
-	 * denote different units, null is returned and the conflict is logged, so that a miscurated
-	 * dictionary surfaces as a validation error rather than a silently wrong expiry date.
+	 * SNOMED CT mappings take priority: the first SNOMED CT mapping carrying a known code resolves the
+	 * concept, and UCUM is consulted only when no SNOMED CT mapping does. Concepts that resolved while
+	 * only SNOMED CT was consulted therefore keep resolving identically however their UCUM mappings are
+	 * curated, and UCUM strictly extends resolution to concepts, such as ones mapped only to UCUM, that
+	 * previously resolved to nothing. Dictionaries may map one unit concept to several codes, for
+	 * example both the legacy and the current SNOMED CT code for minute, which denote the same unit and
+	 * resolve to it whichever is seen first.
 	 * <p>
 	 * <strong>Should</strong> resolve a SNOMED CT SAME-AS mapping with a known code<br/>
 	 * <strong>Should</strong> resolve a concept carrying both the legacy and the current SNOMED CT
 	 * minute code<br/>
 	 * <strong>Should</strong> resolve a concept with only a UCUM mapping<br/>
-	 * <strong>Should</strong> return null if no SAME-AS mapping carries a known code<br/>
-	 * <strong>Should</strong> return null if known codes of the concept denote different units
+	 * <strong>Should</strong> prefer the SNOMED CT mapping when a UCUM mapping denotes a different
+	 * unit<br/>
+	 * <strong>Should</strong> fall back to UCUM when no SNOMED CT mapping carries a known code<br/>
+	 * <strong>Should</strong> return null if no SAME-AS mapping carries a known code
 	 *
 	 * @param duration the length of the duration, in the units the concept denotes
 	 * @param durationUnits the duration units concept of a drug order
-	 * @return a Duration, or null if the concept cannot be resolved to exactly one known unit
+	 * @return a Duration, or null if no SAME-AS mapping carries a known code
 	 * @since 3.0.0
 	 */
 	public static Duration getDuration(Integer duration, Concept durationUnits) {
-		Unit knownUnit = null;
+		Unit ucumUnit = null;
 		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {
-			Unit unit = findUnit(conceptMapping);
-			if (unit != null) {
-				if (knownUnit == null) {
-					knownUnit = unit;
-				} else if (knownUnit != unit) {
-					log.warn("Not resolving duration units concept {} because its SAME-AS mappings denote different"
-					        + " units, e.g. {} and {}",
-					    durationUnits.getUuid(), knownUnit, unit);
-					return null;
+			if (!ConceptMapType.SAME_AS_MAP_TYPE_UUID.equals(conceptMapping.getConceptMapType().getUuid())) {
+				continue;
+			}
+			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
+			ConceptSource conceptSource = conceptReferenceTerm.getConceptSource();
+			if (isSnomedCtSource(conceptSource)) {
+				Unit snomedCtUnit = SNOMED_CT_UNITS_BY_CODE.get(conceptReferenceTerm.getCode());
+				if (snomedCtUnit != null) {
+					return new Duration(duration, snomedCtUnit);
 				}
+			} else if (ucumUnit == null && isUcumSource(conceptSource)) {
+				ucumUnit = UCUM_UNITS_BY_CODE.get(conceptReferenceTerm.getCode());
 			}
 		}
-		if (knownUnit == null) {
-			return null;
-		}
-		return new Duration(duration, knownUnit);
-	}
-
-	private static Unit findUnit(ConceptMap conceptMapping) {
-		if (!ConceptMapType.SAME_AS_MAP_TYPE_UUID.equals(conceptMapping.getConceptMapType().getUuid())) {
-			return null;
-		}
-		ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
-		return findUnit(conceptReferenceTerm.getConceptSource(), conceptReferenceTerm.getCode());
-	}
-
-	private static Unit findUnit(ConceptSource conceptSource, String code) {
-		if (isSnomedCtSource(conceptSource)) {
-			return SNOMED_CT_UNITS_BY_CODE.get(code);
-		}
-		if (isUcumSource(conceptSource)) {
-			return UCUM_UNITS_BY_CODE.get(code);
-		}
-		return null;
+		return ucumUnit != null ? new Duration(duration, ucumUnit) : null;
 	}
 
 	private static boolean isSnomedCtSource(ConceptSource conceptSource) {

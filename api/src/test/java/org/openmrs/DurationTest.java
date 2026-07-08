@@ -238,11 +238,28 @@ public class DurationTest extends BaseContextSensitiveTest {
 	 * @see Duration#getDuration(Integer, Concept)
 	 */
 	@Test
-	public void getDuration_shouldReturnNullIfKnownCodesOfTheConceptDenoteDifferentUnits() {
+	public void getDuration_shouldPreferTheSnomedCtMappingWhenAUcumMappingDenotesADifferentUnit() throws ParseException {
 		Concept units = unitsWithMappings(sameAsMapping("SNOMED CT", "SCT", Duration.SNOMED_CT_DAYS_CODE),
 		    sameAsMapping("UCUM", null, Duration.UCUM_MONTHS_CODE));
 
-		assertNull(Duration.getDuration(30, units));
+		Duration duration = Duration.getDuration(30, units);
+
+		assertNotNull(duration);
+		assertEquals(createDateTime("2014-07-31 10:00:00"), duration.addToDate(createDateTime("2014-07-01 10:00:00"), null));
+	}
+
+	/**
+	 * @see Duration#getDuration(Integer, Concept)
+	 */
+	@Test
+	public void getDuration_shouldFallBackToUcumWhenNoSnomedCtMappingCarriesAKnownCode() throws ParseException {
+		Concept units = unitsWithMappings(sameAsMapping("SNOMED CT", "SCT", "999999999"),
+		    sameAsMapping("UCUM", null, Duration.UCUM_MINUTES_CODE));
+
+		Duration duration = Duration.getDuration(30, units);
+
+		assertNotNull(duration);
+		assertEquals(createDateTime("2014-07-01 10:30:00"), duration.addToDate(createDateTime("2014-07-01 10:00:00"), null));
 	}
 
 	/**
