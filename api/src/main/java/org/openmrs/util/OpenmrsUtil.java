@@ -2158,9 +2158,9 @@ public class OpenmrsUtil {
 	}
 
 	/**
-	 * Sanitizes a value for logging by replacing characters that can be used to forge log entries
-	 * (all C0 and C1 control characters except tab, plus the U+2028 and U+2029 line separators)
-	 * with underscores to prevent log injection attacks.
+	 * Sanitizes a value for logging by replacing characters that can be used to forge log entries (all
+	 * C0 and C1 control characters except tab, plus the U+2028 and U+2029 line separators) with
+	 * underscores to prevent log injection attacks.
 	 *
 	 * @param value the value to sanitize
 	 * @return the sanitized string
