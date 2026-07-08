@@ -81,6 +81,16 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	public void getAutoExpireDate_shouldInferAutoExpireDateForTheCurrentSnomedCtMinuteCode() throws ParseException {
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setDateActivated(createDateTime("2014-07-01 10:00:00"));
+		drugOrder.setDuration(30);
+		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_MINUTES_CODE_2021));
+		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
+		assertEquals(createDateTime("2014-07-01 10:29:59"), autoExpireDate);
+	}
+	
+	@Test
 	public void getAutoExpireDate_shouldInferAutoExpireDateForScheduledDrugOrder() throws ParseException {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 00:00:00"));
