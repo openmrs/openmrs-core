@@ -2,8 +2,8 @@
 # The logic lives in a shared reusable workflow so every OpenMRS repo stays in
 # sync; see openmrs/openmrs-contrib-gha-workflows. Tracking @main while the
 # reusable is still being refined, so changes flow through without editing this
-# file; this will be pinned to a @v1 tag once it stabilises. Defaults there are
-# Opus 4.8 at max effort; override via `with:` if needed.
+# file; this will be pinned to a @v1 tag once it stabilises. The defaults
+# (model, effort, turn budget) live there; override via `with:` if needed.
 name: Claude PR Review
 
 on:
