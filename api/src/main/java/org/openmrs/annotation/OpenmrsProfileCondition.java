@@ -24,7 +24,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * {@link OpenmrsProfileExcludeFilter#matchOpenmrsProfileAttributes(Map)} so that version/module
  * semantics remain centralised and are not duplicated here.
  *
- * @since 2.8
+ * @since 3.0
  * @see OpenmrsProfile
  * @see OpenmrsProfileExcludeFilter
  */
