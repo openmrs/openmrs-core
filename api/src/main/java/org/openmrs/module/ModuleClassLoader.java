@@ -479,7 +479,11 @@ public class ModuleClassLoader extends URLClassLoader {
 						Charset.defaultCharset());
 					if (!Long.valueOf(savedLastModified).equals(moduleLastModified)) {
 						log.debug("Deleting {} since the module was modified", tmpModuleDir.getAbsolutePath());
-						FileUtils.deleteDirectory(tmpModuleDir);
+						try {
+							FileUtils.deleteDirectory(tmpModuleDir);
+						} catch (IOException e) {
+							log.warn("Failed to delete lib cache dir for module {}", module.getModuleId(), e);
+						}
 					}
 				} catch (IOException | NumberFormatException e) {
 					log.warn("Error while reading module last modified file: {}", moduleLastModifiedFile, e);

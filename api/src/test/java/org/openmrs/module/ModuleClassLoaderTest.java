@@ -497,6 +497,7 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 
 		File omodFile = File.createTempFile("testmodule", ".omod");
 		try {
+			Context.getRuntimeProperties().setProperty("optimized.startup", "true");
 			long currentTimestamp = System.currentTimeMillis();
 			omodFile.setLastModified(currentTimestamp);
 
@@ -516,6 +517,7 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 			assertFalse(staleFile.exists(), "Stale file should be deleted when module changes");
 			assertTrue(moduleDir.exists(), "Module dir should be recreated");
 		} finally {
+			Context.getRuntimeProperties().remove("optimized.startup");
 			libCacheFolderField.set(null, savedLibCacheFolder);
 			libCacheFolders.remove("testmodule");
 			omodFile.delete();
