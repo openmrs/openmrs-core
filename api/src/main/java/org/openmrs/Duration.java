@@ -24,6 +24,18 @@ import static org.apache.commons.lang3.time.DateUtils.addYears;
 
 /**
  * Duration represented using SNOMED CT or UCUM duration codes
+ * <p>
+ * The vocabulary codes this class understands are deliberately compiled in rather than configurable
+ * at runtime: what a duration code means is the semantics of the standard itself, not
+ * implementation data, and a misconfigured mapping would silently change how long medications run
+ * before they auto-expire. Runtime-configurable registries and terminology-server lookups were
+ * considered and rejected; the trade-offs are recorded on TRUNK-6674. The compiled-in design stays
+ * safe only while three invariants hold, so preserve them when touching the code registries:
+ * entries are additive across vocabulary generations and never removed or repurposed, because
+ * existing dictionaries and module binaries carry the old codes; unknown codes surface as
+ * validation errors rather than save-time failures; and UCUM, whose codes are stable by design, is
+ * recognised alongside SNOMED CT so no single SNOMED inactivation, like the 2021 minute code
+ * change, can break order saving on its own.
  *
  * @since 1.10
  */
