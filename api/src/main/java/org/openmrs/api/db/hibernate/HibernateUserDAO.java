@@ -346,12 +346,10 @@ public class HibernateUserDAO implements UserDAO {
 			authUser = u;
 		}
 		
+		// Encode using Argon2id — salt is embedded internally by the encoder
+		String newHashedPassword = Security.getArgon2Encoder().encode(pw);
+		// Preserve existing salt for secret answer verification
 		String salt = getLoginCredential(u).getSalt();
-		if (StringUtils.isBlank(salt)) {
-			salt = Security.getRandomToken();
-		}
-		String newHashedPassword = Security.encodeString(pw + salt);
-		
 		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
 	}
 	
@@ -432,9 +430,10 @@ public class HibernateUserDAO implements UserDAO {
 		
 		log.info("updating password for {}", u.getUsername());
 		
-		// update the user with the new password
+		// Encode using Argon2id — salt is embedded internally by the encoder
+		String newHashedPassword = Security.getArgon2Encoder().encode(newPassword);
+		// Preserve existing salt for secret answer verification
 		String salt = credentials.getSalt();
-		String newHashedPassword = Security.encodeString(newPassword + salt);
 		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
 	}
 	

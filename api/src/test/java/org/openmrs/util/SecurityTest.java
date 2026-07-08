@@ -268,5 +268,16 @@ public class SecurityTest {
 	public void isLegacyHash_shouldReturnFalseForEmptyString() {
 		assertFalse(Security.isLegacyHash(""));
 	}
+	/**
+ 	* @see Security#getArgon2Encoder()
+ 	*/
+	@Test
+	public void checkPassword_shouldMatchArgon2idHash() {
+		String rawPassword = "testArgon2";
+		String argon2Hash = Security.getArgon2Encoder().encode(rawPassword);
+		// verify the encoder correctly matches the password against its own hash
+		assertTrue(Security.getArgon2Encoder().matches(rawPassword, argon2Hash));
+		assertFalse(Security.getArgon2Encoder().matches("wrongPassword", argon2Hash));
+	}
 	
 }

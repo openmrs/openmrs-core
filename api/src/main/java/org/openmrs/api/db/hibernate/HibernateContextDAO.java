@@ -54,6 +54,7 @@ import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.aop.framework.AopContext;
 
 import java.util.Date;
 import org.springframework.transaction.annotation.Propagation;
@@ -78,6 +79,7 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	@Autowired
 	private SearchSessionFactory searchSessionFactory;
+	private HibernateContextDAO self;
 	
 	private UserDAO userDao;
 	
@@ -106,11 +108,8 @@ public class HibernateContextDAO implements ContextDAO {
     * @return true if the password matches
     */
     private boolean isPasswordMatch(String storedHash, String rawPassword, String salt) {
-	    if (Security.isLegacyHash(storedHash)) {
-		    return Security.hashMatches(storedHash, rawPassword + (salt != null ? salt : ""));
-	    }
-	    return Security.getArgon2Encoder().matches(rawPassword, storedHash);
-    }
+	    return Security.passwordMatches(storedHash, rawPassword, salt);
+	}
 
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
@@ -206,7 +205,7 @@ public class HibernateContextDAO implements ContextDAO {
 				// Lazy rehash: if password is legacy, upgrade to Argon2id transparently
                 if (Security.isLegacyHash(passwordOnRecord)) {
 	                try {
-		                upgradePasswordHash(candidateUser, password);
+		                ((HibernateContextDAO) AopContext.currentProxy()).upgradePasswordHash(candidateUser, password);
 	                }
 	                catch (Exception e) {
 		                log.error("Failed to upgrade password hash for user {}: {}",

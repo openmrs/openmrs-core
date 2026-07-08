@@ -78,7 +78,29 @@ public class Security {
 	    // SHA-1 buggy   → fewer than 40 hex chars (ticket #1178 leading-zero-drop bug)
 	    return (storedHash.length() == 128 || storedHash.length() <= 40)
 		    && storedHash.matches("[a-f0-9]+");
-}
+	}
+
+	/**
+ 	* Verifies a raw password against a stored hash, handling both legacy SHA-based
+ 	* hashes and modern Argon2id hashes transparently.
+ 	* <p>
+ 	* For legacy hashes, the external salt is appended to the raw password before
+ 	* comparison. For Argon2id hashes, the salt is embedded in the hash itself and
+ 	* the encoder handles verification directly.
+ 	*
+ 	* @param storedHash the hash stored in the database
+ 	* @param rawPassword the plaintext password to verify
+ 	* @param salt the legacy salt from the database (preserved after upgrade for
+ 	*             secret answer verification; ignored for Argon2id hashes)
+ 	* @return true if the password matches the stored hash
+ 	* @since 2.8.0
+ 	*/
+	public static boolean passwordMatches(String storedHash, String rawPassword, String salt) {
+		if (isLegacyHash(storedHash)) {
+			return hashMatches(storedHash, rawPassword + (salt != null ? salt : ""));
+		}
+		return getArgon2Encoder().matches(rawPassword, storedHash);
+	}
 
 	/**
     * The modern password encoder using Argon2id algorithm.

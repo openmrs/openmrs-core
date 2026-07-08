@@ -433,4 +433,24 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	   assertTrue(credential.getHashedPassword().startsWith("$argon2id$"),
 		"Password should have been upgraded to Argon2id format");
     }
+
+	/**
+ 	* @see ContextDAO#authenticate(String,String)
+ 	*/
+	@Test
+	public void authenticate_shouldAuthenticateGivenArgon2idHashedPassword() {
+		// argon2user has a pre-seeded Argon2id hash — exercises the modern verification path
+		User user = dao.authenticate("argon2user", "testArgon2");
+		assertNotNull(user);
+		assertEquals("argon2user", user.getUsername());
+	}
+
+	/**
+ 	* @see ContextDAO#authenticate(String,String)
+ 	*/
+	@Test
+	public void authenticate_shouldNotAuthenticateGivenArgon2idHashedPasswordWithWrongPassword() {
+		// ensures the modern verification path correctly rejects wrong passwords
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("argon2user", "wrongPassword"));
+	}
 }

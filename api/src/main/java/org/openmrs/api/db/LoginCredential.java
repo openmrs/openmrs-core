@@ -147,10 +147,7 @@ public class LoginCredential extends BaseOpenmrsObject implements OpenmrsObject 
 	 * @return Whether pw is the correct cleartext password for this user
 	 */
 	public boolean checkPassword(String pw) {
-        if (Security.isLegacyHash(getHashedPassword())) {
-            return Security.hashMatches(getHashedPassword(), pw + (getSalt() != null ? getSalt() : ""));
-        }
-        return Security.getArgon2Encoder().matches(pw, getHashedPassword());
+        return Security.passwordMatches(getHashedPassword(), pw, getSalt());
     }
 	
 	/**

@@ -23,4 +23,7 @@
   
  <person person_id="507" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="7e93b11f-fc1f-4c3a-ab5f-cc6e3ded6c88"/>
  <users user_id="507" person_id="507" system_id="8-5" username="  " password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="ff2ca94c-e135-11de-babe-001e378eb888"/>
+
+  <person person_id="508" gender="M" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="7e93b11f-fc1f-4c3a-ab5f-cc6e3ded6c99"/>
+  <users user_id="508" person_id="508" system_id="9-3" username="argon2user" password="$argon2id$v=19$m=16384,t=2,p=1$4UlL2i3qyvao4o9f2CvYAA$kVn004oaqW9XybEqIsRCwVXXh7vIUFf4oAbpAvrTrZs" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="ff2ca94c-e135-11de-babe-001e378eb999"/>
 </dataset>
