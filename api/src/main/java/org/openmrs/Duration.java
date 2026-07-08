@@ -55,7 +55,7 @@ public class Duration {
 	 * code {@link #SNOMED_CT_MINUTES_CODE} was inactivated as ambiguous. Dictionaries that track
 	 * current SNOMED CT releases, such as CIEL, map their minutes concepts to this code.
 	 *
-	 * @since 3.0.0
+	 * @since 2.8.8, 2.9.0, 3.0.0
 	 */
 	public static final String SNOMED_CT_MINUTES_CODE_2021 = "1156209001";
 
