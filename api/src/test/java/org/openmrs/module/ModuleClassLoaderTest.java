@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -495,9 +496,13 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 		@SuppressWarnings("unchecked")
 		Map<String, File> libCacheFolders = (Map<String, File>) libCacheFoldersField.get(null);
 
+		Properties savedRuntimeProperties = Context.getRuntimeProperties();
 		File omodFile = File.createTempFile("testmodule", ".omod");
 		try {
-			Context.getRuntimeProperties().setProperty("optimized.startup", "true");
+			Properties props = Context.getRuntimeProperties();
+			props.setProperty("optimized.startup", "true");
+			Context.setRuntimeProperties(props);
+
 			long currentTimestamp = System.currentTimeMillis();
 			omodFile.setLastModified(currentTimestamp);
 
@@ -517,7 +522,7 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 			assertFalse(staleFile.exists(), "Stale file should be deleted when module changes");
 			assertTrue(moduleDir.exists(), "Module dir should be recreated");
 		} finally {
-			Context.getRuntimeProperties().remove("optimized.startup");
+			Context.setRuntimeProperties(savedRuntimeProperties);
 			libCacheFolderField.set(null, savedLibCacheFolder);
 			libCacheFolders.remove("testmodule");
 			omodFile.delete();
@@ -538,6 +543,7 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 		@SuppressWarnings("unchecked")
 		Map<String, File> libCacheFolders = (Map<String, File>) libCacheFoldersField.get(null);
 
+		Properties savedRuntimeProperties = Context.getRuntimeProperties();
 		File omodFile = File.createTempFile("testmodule2", ".omod");
 		try {
 			Module module = new Module("testmodule2", "testmodule2", "org.openmrs.module.testmodule2",
@@ -549,14 +555,16 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 			File staleFile = new File(moduleDir, "old-resource.txt");
 			FileUtils.writeStringToFile(staleFile, "stale content", Charset.defaultCharset());
 
-			Context.getRuntimeProperties().setProperty("optimized.startup", "false");
+			Properties props = Context.getRuntimeProperties();
+			props.setProperty("optimized.startup", "false");
+			Context.setRuntimeProperties(props);
 
 			ModuleClassLoader.getLibCacheFolderForModule(module);
 
 			assertFalse(staleFile.exists(), "Stale file should be deleted when optimized startup is disabled");
 			assertTrue(moduleDir.exists(), "Module dir should be recreated");
 		} finally {
-			Context.getRuntimeProperties().remove("optimized.startup");
+			Context.setRuntimeProperties(savedRuntimeProperties);
 			libCacheFolderField.set(null, savedLibCacheFolder);
 			libCacheFolders.remove("testmodule2");
 			omodFile.delete();

@@ -472,6 +472,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			long moduleLastModified = module.getFile().lastModified();
 			File moduleLastModifiedFile = new File(tmpModuleDir, ".moduleLastModified");
 			
+			boolean deleted = true;
 			if (Context.isOptimizedStartup() && moduleLastModifiedFile.exists()) {
 				// Re-create tmpModuleDir if module changed
 				try {
@@ -479,11 +480,7 @@ public class ModuleClassLoader extends URLClassLoader {
 						Charset.defaultCharset());
 					if (!Long.valueOf(savedLastModified).equals(moduleLastModified)) {
 						log.debug("Deleting {} since the module was modified", tmpModuleDir.getAbsolutePath());
-						try {
-							FileUtils.deleteDirectory(tmpModuleDir);
-						} catch (IOException e) {
-							log.warn("Failed to delete lib cache dir for module {}", module.getModuleId(), e);
-						}
+						deleted = deleteLibCacheDir(tmpModuleDir, module.getModuleId());
 					}
 				} catch (IOException | NumberFormatException e) {
 					log.warn("Error while reading module last modified file: {}", moduleLastModifiedFile, e);
@@ -491,17 +488,13 @@ public class ModuleClassLoader extends URLClassLoader {
 			} else {
 				log.debug("Optimized startup disabled or {} does not exist, deleting {}", moduleLastModifiedFile,
 					tmpModuleDir);
-				try {
-					FileUtils.deleteDirectory(tmpModuleDir);
-				} catch (IOException e) {
-					log.warn("Failed to delete lib cache dir for module {}", module.getModuleId(), e);
-				}
+				deleted = deleteLibCacheDir(tmpModuleDir, module.getModuleId());
 			}
 
 			tmpModuleDir.mkdirs();
 			libCacheFolders.put(module.getModuleId(), tmpModuleDir);
 
-			if (moduleLastModified != 0L) {
+			if (deleted && moduleLastModified != 0L) {
 				try {
 					FileUtils.writeStringToFile(moduleLastModifiedFile, moduleLastModified + "", Charset.defaultCharset());
 				} catch (IOException e) {
@@ -513,6 +506,16 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 	}
 	
+	private static boolean deleteLibCacheDir(File dir, String moduleId) {
+		try {
+			FileUtils.deleteDirectory(dir);
+			return true;
+		} catch (IOException e) {
+			log.warn("Failed to delete lib cache dir {} for module {}", dir, moduleId, e);
+			return false;
+		}
+	}
+
 	/**
 	 * Get all urls for the given <code>module</code> that are not already in the
 	 * <code>existingUrls</code>
