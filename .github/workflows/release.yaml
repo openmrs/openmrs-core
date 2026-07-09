@@ -22,14 +22,21 @@
 #                                               org-level secrets already shared with this
 #                                               repo; preferred token source (short-lived App
 #                                               installation tokens, like the shared module
-#                                               release workflow) — the App must be on this
-#                                               repo's ruleset bypass list, which the
-#                                               validation pre-flight verifies up front
+#                                               release workflow). REQUIRED SETUP: the App
+#                                               must be added as a bypass actor on each
+#                                               maintenance-branch ruleset — the validation
+#                                               pre-flight can only verify the token
+#                                               authenticates and the branch state, NOT
+#                                               ruleset bypass (git push --dry-run never runs
+#                                               server-side rules), so without the bypass the
+#                                               branch push is rejected only after the maven
+#                                               deploy
 #   OMRS_BOT_GH_TOKEN                           org-level secret already shared with this
 #                                               repo — the same PAT module releases and
 #                                               tx-pull use; fallback when the App
-#                                               credentials are absent; either token is used
-#                                               only at push time, after the images have been
+#                                               credentials are absent or the App token
+#                                               cannot be minted; either token is used only
+#                                               at push time, after the images have been
 #                                               built, so it can never end up inside a
 #                                               published image; on forks both may be omitted
 #                                               and the default token is used instead
@@ -132,13 +139,17 @@ jobs:
 
       # prefer a short-lived App token over the long-lived PAT, like the shared
       # module-release workflow (App token || OMRS_BOT_GH_TOKEN || github.token); the App
-      # must be on this repo's ruleset bypass list, which the pre-flight below proves
-      # before anything irreversible happens. App tokens expire after an hour — shorter
-      # than this job — so this one only serves the pre-flight; the push steps mint a
-      # fresh one just before they run
+      # must be a bypass actor on this branch's ruleset — the pre-flight below verifies
+      # the token authenticates and can reach the branch, but ruleset bypass is only
+      # exercised by the real pushes. App tokens expire after an hour — shorter than
+      # this job — so this one only serves the pre-flight; the push steps mint a fresh
+      # one just before they run
       - name: Create release bot App token
         id: app-token
         if: ${{ env.HAS_APP_CREDS == 'true' }}
+        # a failed mint falls through to the PAT in the token chains instead of
+        # killing the release while a usable fallback exists
+        continue-on-error: true
         uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
         with:
           app-id: ${{ secrets.OMRS_RELEASE_BOT_APP_ID }}
@@ -165,7 +176,7 @@ jobs:
         run: |
           if [[ "${GITHUB_REPOSITORY}" == "openmrs/openmrs-core" ]]; then
             if [[ -z "${BOT_TOKEN}" ]]; then
-              echo "::error::Neither the OMRS_RELEASE_BOT_APP_ID/OMRS_RELEASE_BOT_PRIVATE_KEY pair nor OMRS_BOT_GH_TOKEN is configured; the default token cannot push to the protected ${GITHUB_REF_NAME} branch"
+              echo "::error::No usable push token: no App token could be created (missing OMRS_RELEASE_BOT_APP_ID/OMRS_RELEASE_BOT_PRIVATE_KEY or the mint failed) and OMRS_BOT_GH_TOKEN is not configured; the default token cannot push to the protected ${GITHUB_REF_NAME} branch"
               exit 1
             fi
             if [[ -z "${MAVEN_REPO_USERNAME}" || -z "${MAVEN_REPO_API_KEY}" ]]; then
@@ -177,7 +188,7 @@ jobs:
             # never end up inside the published images
             if ! git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "${BOT_TOKEN}" | base64 -w0)" \
                 push --dry-run origin "HEAD:refs/heads/${GITHUB_REF_NAME}"; then
-              echo "::error::The release token cannot push to ${GITHUB_REF_NAME} (App not on the ruleset bypass list, expired token, missing permissions, or the branch moved since dispatch)"
+              echo "::error::The release token cannot push to ${GITHUB_REF_NAME} (expired or invalid token, missing repository permission, or the branch moved since dispatch)"
               exit 1
             fi
           fi
@@ -189,6 +200,11 @@ jobs:
             echo "::error::releaseVersion must look like 2.8.8, got '${OMRS_VERSION}'"
             exit 1
           fi
+          BRANCH_PREFIX="${GITHUB_REF_NAME%.x}"
+          if [[ "${OMRS_VERSION}" != "${BRANCH_PREFIX}."* ]]; then
+            echo "::error::releaseVersion ${OMRS_VERSION} does not belong to the ${GITHUB_REF_NAME} branch"
+            exit 1
+          fi
           if [[ -n "${OMRS_DEV_VERSION}" ]]; then
             if [[ ! "${OMRS_DEV_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-SNAPSHOT$ ]]; then
               echo "::error::developmentVersion must look like 2.8.9-SNAPSHOT, got '${OMRS_DEV_VERSION}'"
@@ -196,6 +212,10 @@ jobs:
             fi
             if [[ "${OMRS_DEV_VERSION}" == "${OMRS_VERSION}-SNAPSHOT" ]]; then
               echo "::error::developmentVersion must differ from the version being released"
+              exit 1
+            fi
+            if [[ "${OMRS_DEV_VERSION}" != "${BRANCH_PREFIX}."* ]]; then
+              echo "::error::developmentVersion ${OMRS_DEV_VERSION} does not belong to the ${GITHUB_REF_NAME} branch"
               exit 1
             fi
           fi
@@ -291,10 +311,15 @@ jobs:
             mvn deploy -DskipTests --batch-mode --settings /.m2/settings.xml
 
       # the pre-flight's App token has likely expired by now (~1h lifetime, and the
-      # builds and deploy take longer); mint a fresh one for the pushes
+      # builds and deploy take longer); mint a fresh one from the same source the
+      # pre-flight tested — only if the first mint worked — falling back to the PAT
+      # if the refresh fails
       - name: Refresh the release bot App token
         id: push-token
-        if: ${{ env.HAS_APP_CREDS == 'true' }}
+        if: ${{ steps.app-token.outcome == 'success' }}
+        # a failed refresh falls through to the PAT rather than stranding the
+        # release after the maven deploy
+        continue-on-error: true
         uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
         with:
           app-id: ${{ secrets.OMRS_RELEASE_BOT_APP_ID }}
@@ -325,7 +350,7 @@ jobs:
             fi &&
             git commit -am "Setting new SNAPSHOT version" &&
             git push origin "HEAD:${GITHUB_REF_NAME}"
-          ) || echo "::warning::The ${OMRS_VERSION} release itself is complete (images, maven artifacts, tag), but ${GITHUB_REF_NAME} was not fully updated; push the release commit and/or the new SNAPSHOT version manually (the step log shows where it stopped)."
+          ) || echo "::warning::The ${OMRS_VERSION} release itself is complete (images, maven artifacts, tag), but ${GITHUB_REF_NAME} was not fully updated; push the release commit and/or the new SNAPSHOT version manually (the step log shows where it stopped; a GH013 rejection means the pushing App/PAT is not a bypass actor on this branch's ruleset)."
 
   release-image-variants:
     name: Release JDK ${{ matrix.jdk }} image
