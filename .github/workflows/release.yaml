@@ -17,14 +17,21 @@
 #      openmrs/openmrs-core:2.8.8[-dev]-amazoncorretto-{8,11,17,21}
 #
 # Required secrets:
+#   OMRS_RELEASE_BOT_APP_ID / OMRS_RELEASE_BOT_PRIVATE_KEY
+#                                               org-level secrets already shared with this
+#                                               repo; preferred token source (short-lived App
+#                                               installation tokens, like the shared module
+#                                               release workflow) — the App must be on this
+#                                               repo's ruleset bypass list, which the
+#                                               validation pre-flight verifies up front
 #   OMRS_BOT_GH_TOKEN                           org-level secret already shared with this
 #                                               repo — the same PAT module releases and
-#                                               tx-pull use; it may push to the protected
-#                                               maintenance branch, and is used only at push
-#                                               time, after the images have been built, so it
-#                                               can never end up inside a published image; on
-#                                               forks it may be omitted and the default token
-#                                               is used instead
+#                                               tx-pull use; fallback when the App
+#                                               credentials are absent; either token is used
+#                                               only at push time, after the images have been
+#                                               built, so it can never end up inside a
+#                                               published image; on forks both may be omitted
+#                                               and the default token is used instead
 #   MAVEN_REPO_USERNAME / MAVEN_REPO_API_KEY    org-level secrets already shared with this
 #                                               repo (same ones module releases use); deploy
 #                                               access to mavenrepo.openmrs.org (used for the
@@ -98,8 +105,11 @@ jobs:
     # the only gate is dispatch permission itself
     environment: release
     permissions:
-      contents: write # fork-fallback pushes of the release/SNAPSHOT commits and the tag (upstream pushes use the bot PAT)
+      contents: write # fork-fallback pushes of the release/SNAPSHOT commits and the tag (upstream pushes use the App token or bot PAT)
       actions: read # query build.yaml runs for the green-build gate
+    env:
+      HAS_APP_CREDS: ${{ secrets.OMRS_RELEASE_BOT_APP_ID != '' && secrets.OMRS_RELEASE_BOT_PRIVATE_KEY != '' }}
+      PARTIAL_APP_CREDS: ${{ (secrets.OMRS_RELEASE_BOT_APP_ID != '') != (secrets.OMRS_RELEASE_BOT_PRIVATE_KEY != '') }}
     steps:
       # never persist credentials: the Dockerfile copies the whole checkout (including
       # .git) into the published dev image, so persisted credentials would ship in a
@@ -107,6 +117,26 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           persist-credentials: false
+
+      # prefer a short-lived App token over the long-lived PAT, like the shared
+      # module-release workflow (App token || OMRS_BOT_GH_TOKEN || github.token); the App
+      # must be on this repo's ruleset bypass list, which the pre-flight below proves
+      # before anything irreversible happens. App tokens expire after an hour — shorter
+      # than this job — so this one only serves the pre-flight; the push steps mint a
+      # fresh one just before they run
+      - name: Create release bot App token
+        id: app-token
+        if: ${{ env.HAS_APP_CREDS == 'true' }}
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
+        with:
+          app-id: ${{ secrets.OMRS_RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.OMRS_RELEASE_BOT_PRIVATE_KEY }}
+          # least privilege: pushing commits and tags needs nothing else
+          permission-contents: write
+
+      - name: Warn about partially configured App credentials
+        if: ${{ env.PARTIAL_APP_CREDS == 'true' }}
+        run: echo "::warning::Only one of OMRS_RELEASE_BOT_APP_ID/OMRS_RELEASE_BOT_PRIVATE_KEY is configured; falling back to OMRS_BOT_GH_TOKEN"
 
       - name: Setup JDK
         uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
@@ -117,13 +147,13 @@ jobs:
 
       - name: Validate the release preconditions
         env:
-          BOT_TOKEN: ${{ secrets.OMRS_BOT_GH_TOKEN }}
+          BOT_TOKEN: ${{ steps.app-token.outputs.token || secrets.OMRS_BOT_GH_TOKEN }}
           MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
           MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
         run: |
           if [[ "${GITHUB_REPOSITORY}" == "openmrs/openmrs-core" ]]; then
             if [[ -z "${BOT_TOKEN}" ]]; then
-              echo "::error::OMRS_BOT_GH_TOKEN is not configured; the default token cannot push to the protected ${GITHUB_REF_NAME} branch"
+              echo "::error::Neither the OMRS_RELEASE_BOT_APP_ID/OMRS_RELEASE_BOT_PRIVATE_KEY pair nor OMRS_BOT_GH_TOKEN is configured; the default token cannot push to the protected ${GITHUB_REF_NAME} branch"
               exit 1
             fi
             if [[ -z "${MAVEN_REPO_USERNAME}" || -z "${MAVEN_REPO_API_KEY}" ]]; then
@@ -135,7 +165,7 @@ jobs:
             # never end up inside the published images
             if ! git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "${BOT_TOKEN}" | base64 -w0)" \
                 push --dry-run origin "HEAD:refs/heads/${GITHUB_REF_NAME}"; then
-              echo "::error::OMRS_BOT_GH_TOKEN cannot push to ${GITHUB_REF_NAME} (expired token, missing permissions, or the branch moved since dispatch)"
+              echo "::error::The release token cannot push to ${GITHUB_REF_NAME} (App not on the ruleset bypass list, expired token, missing permissions, or the branch moved since dispatch)"
               exit 1
             fi
           fi
@@ -238,12 +268,24 @@ jobs:
             "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}-dev" \
             mvn deploy -DskipTests --batch-mode --settings /.m2/settings.xml
 
+      # the pre-flight's App token has likely expired by now (~1h lifetime, and the
+      # builds and deploy take longer); mint a fresh one for the pushes
+      - name: Refresh the release bot App token
+        id: push-token
+        if: ${{ env.HAS_APP_CREDS == 'true' }}
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
+        with:
+          app-id: ${{ secrets.OMRS_RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.OMRS_RELEASE_BOT_PRIVATE_KEY }}
+          # least privilege: pushing commits and tags needs nothing else
+          permission-contents: write
+
       - name: Tag the release in git
         # authenticate the remote only now, after the docker builds, so the token can
         # never end up inside the published images (Bamboo also swaps the remote via
         # set-url, but to a credential-free SSH URL, so it can do so up front)
         env:
-          GH_PUSH_TOKEN: ${{ secrets.OMRS_BOT_GH_TOKEN || github.token }}
+          GH_PUSH_TOKEN: ${{ steps.push-token.outputs.token || secrets.OMRS_BOT_GH_TOKEN || github.token }}
         run: |
           git remote set-url origin "https://x-access-token:${GH_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git tag "${OMRS_VERSION}"
