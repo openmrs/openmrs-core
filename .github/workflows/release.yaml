@@ -12,7 +12,8 @@
 #      mvn deploy inside the :2.8.8-dev image, exactly as Bamboo does
 #   4. tag 2.8.8 and push the tag
 #   5. push the release commit to 2.8.x, then set the next development version
-#      (2.8.9-SNAPSHOT) and push "Setting new SNAPSHOT version" (non-fatal, as in Bamboo)
+#      (auto-incremented to 2.8.9-SNAPSHOT, or the developmentVersion input if given)
+#      and push "Setting new SNAPSHOT version" (non-fatal, as in Bamboo)
 #   6. build and push the per-JDK image variants from the tag:
 #      openmrs/openmrs-core:2.8.8[-dev]-amazoncorretto-{8,11,17,21}
 #
@@ -57,7 +58,8 @@
 # step rejects non-N.N.x branches) but Dependabot only scans the default branch, so the
 # master copy is what keeps the action SHA pins below from rotting; pin bumps then reach
 # maintenance branches through the normal backport flow. Run it with:
-#   gh workflow run release.yaml --ref 2.8.x -f releaseVersion=2.8.8
+#   gh workflow run release.yaml --ref 2.8.x -f releaseVersion=2.8.8 \
+#     [-f developmentVersion=2.8.9-SNAPSHOT]
 #
 # On forks: the image pushes still target openmrs/openmrs-core itself, so set the
 # repository variable DOCKER_IMAGE_NAME to a registry namespace the fork's Docker Hub
@@ -80,6 +82,10 @@ on:
       releaseVersion:
         description: 'Version to release (e.g. 2.8.8); the branch must be at this SNAPSHOT version'
         required: true
+      developmentVersion:
+        description: 'Next development version (e.g. 2.8.9-SNAPSHOT); leave empty to auto-increment'
+        required: false
+        default: ''
 
 # never allow two releases to run at the same time on the same branch; queue rather
 # than cancel: cancelling a release mid-Nexus-deploy would leave a half-published version
@@ -95,6 +101,7 @@ env:
   DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME || 'openmrs/openmrs-core' }}
   DOCKER_IMAGE_PLATFORMS: linux/amd64,linux/arm64
   OMRS_VERSION: ${{ inputs.releaseVersion }}
+  OMRS_DEV_VERSION: ${{ inputs.developmentVersion }}
   # passed to every image build; the production builds reuse the dev builds' compile
   # stages only while this value is byte-identical across the invocations
   MVN_ARGS: clean install -DskipTests
@@ -181,6 +188,16 @@ jobs:
           if [[ ! "${OMRS_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::releaseVersion must look like 2.8.8, got '${OMRS_VERSION}'"
             exit 1
+          fi
+          if [[ -n "${OMRS_DEV_VERSION}" ]]; then
+            if [[ ! "${OMRS_DEV_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-SNAPSHOT$ ]]; then
+              echo "::error::developmentVersion must look like 2.8.9-SNAPSHOT, got '${OMRS_DEV_VERSION}'"
+              exit 1
+            fi
+            if [[ "${OMRS_DEV_VERSION}" == "${OMRS_VERSION}-SNAPSHOT" ]]; then
+              echo "::error::developmentVersion must differ from the version being released"
+              exit 1
+            fi
           fi
           TAG_LOOKUP=0
           git ls-remote --exit-code origin "refs/tags/${OMRS_VERSION}" > /dev/null || TAG_LOOKUP=$?
@@ -301,7 +318,11 @@ jobs:
         run: |
           (
             git push origin "HEAD:${GITHUB_REF_NAME}" &&
-            mvn versions:set -DnextSnapshot=true -DgenerateBackupPoms=false --batch-mode &&
+            if [[ -n "${OMRS_DEV_VERSION}" ]]; then
+              mvn versions:set -DnewVersion="${OMRS_DEV_VERSION}" -DgenerateBackupPoms=false --batch-mode
+            else
+              mvn versions:set -DnextSnapshot=true -DgenerateBackupPoms=false --batch-mode
+            fi &&
             git commit -am "Setting new SNAPSHOT version" &&
             git push origin "HEAD:${GITHUB_REF_NAME}"
           ) || echo "::warning::The ${OMRS_VERSION} release itself is complete (images, maven artifacts, tag), but ${GITHUB_REF_NAME} was not fully updated; push the release commit and/or the new SNAPSHOT version manually (the step log shows where it stopped)."
