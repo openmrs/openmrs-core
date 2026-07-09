@@ -133,7 +133,7 @@ jobs:
       # never persist credentials: the Dockerfile copies the whole checkout (including
       # .git) into the published dev image, so persisted credentials would ship in a
       # public image; pushes authenticate via remote set-url after the images are built
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
@@ -388,7 +388,7 @@ jobs:
     steps:
       # persist-credentials false for the same reason as in the release job: .git is
       # copied into the published dev image variants
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           # the tag pushed by the release job
           ref: refs/tags/${{ env.OMRS_VERSION }}
