@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
@@ -22,6 +23,7 @@ import com.mchange.v2.c3p0.PoolBackedDataSource;
 import com.mchange.v2.c3p0.WrapperConnectionPoolDataSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Verifies that the connection pool limits configured in hibernate.default.properties actually
@@ -42,7 +44,14 @@ public class ConnectionPoolConfigTest extends BaseContextSensitiveTest {
 	private SessionFactory sessionFactory;
 
 	@Test
-	public void shouldBoundConnectionCheckoutWaitsAsConfigured() {
+	public void shouldApplyConfiguredConnectionPoolLimits() {
+		// a machine-local openmrs-runtime.properties may legitimately tune the pool and would
+		// win over hibernate.default.properties; only pin the shipped defaults when it does not
+		assumeTrue(
+		    Stream.of("hibernate.c3p0.checkoutTimeout", "c3p0.checkoutTimeout", "hibernate.c3p0.max_size", "c3p0.max_size")
+		            .noneMatch(runtimeProperties::containsKey),
+		    "skipped because local runtime properties override the c3p0 pool defaults");
+
 		ConnectionProvider connectionProvider = ((SessionFactoryImplementor) sessionFactory).getServiceRegistry()
 		        .getService(ConnectionProvider.class);
 		DataSource dataSource = connectionProvider.unwrap(DataSource.class);
