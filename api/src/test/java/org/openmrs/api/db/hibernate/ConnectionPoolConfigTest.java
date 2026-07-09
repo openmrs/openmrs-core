@@ -29,6 +29,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * of 0 an exhausted pool blocks every waiting thread forever, so if a change to the property
  * loading in {@link HibernateSessionFactoryBean} silently dropped the value, pool exhaustion would
  * once again freeze the server instead of failing recoverably.
+ * <p>
+ * The max pool size is deliberately pinned as well: the bounded concurrency in
+ * {@code OrderServiceTest.getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders}
+ * is derived from it (two connections per call must stay below the pool cap), so anyone changing
+ * hibernate.c3p0.max_size needs to revisit that test's threadCount before simply updating the
+ * expected value here.
  */
 public class ConnectionPoolConfigTest extends BaseContextSensitiveTest {
 
