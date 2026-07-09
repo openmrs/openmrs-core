@@ -54,4 +54,21 @@
 	   <cve>CVE-2014-8073</cve>
 	   <cve>CVE-2025-25927</cve>
 	</suppress>
+	<suppress>
+	   <notes><![CDATA[
+	   False positive. Per the Apache advisory (GHSA-hf6x-8p5f-cgmf and the
+	   oss-security announcement) both CVEs affect the 5.x artifact
+	   org.apache.httpcomponents.core5:httpcore5 only (5.4.2 / 5.5-beta1 and
+	   earlier); CVE-2026-54428 targets the HTTP/2 HPACK decoder, which the 4.x
+	   line does not implement. We pull org.apache.httpcomponents:httpcore 4.4.16
+	   transitively (hibernate-search elasticsearch rest4 client -> httpclient
+	   4.5.14); 4.4.16 is the final 4.4.x release, so there is no 4.x upstream fix.
+	   Dependency-Check matches it via the shared apache:httpcomponents_core CPE.
+	   The regex is scoped to 4.4.x so a future move onto the affected 5.x line
+	   would correctly resurface these CVEs rather than stay suppressed.
+	   ]]></notes>
+	   <packageUrl regex="true">^pkg:maven/org\.apache\.httpcomponents/httpcore(-nio)?@4\.4\..*$</packageUrl>
+	   <cve>CVE-2026-54399</cve>
+	   <cve>CVE-2026-54428</cve>
+	</suppress>
 </suppressions>
