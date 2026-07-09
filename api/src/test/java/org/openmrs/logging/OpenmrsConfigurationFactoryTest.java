@@ -171,6 +171,8 @@ class OpenmrsConfigurationFactoryTest {
 		write(unreadable, "<Configuration/>");
 		Assumptions.assumeTrue(unreadable.toFile().setReadable(false),
 		    "Cannot make file unreadable on this platform; skipping test");
+		Assumptions.assumeFalse(unreadable.toFile().canRead(),
+		    "File remains readable after chmod (likely running as root); skipping test");
 
 		try {
 			OpenmrsConfigurationFactory factory = new OpenmrsConfigurationFactory();
