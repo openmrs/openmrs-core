@@ -241,18 +241,18 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
 	        throws Exception {
 
-		int N = 50;
+		int taskCount = 50;
 		// Each call transiently holds two pooled connections: one for the getNewOrderNumber
 		// transaction and one for the REQUIRES_NEW transaction that increments the seed.
 		// Concurrency must therefore stay below half the c3p0 max_size of 50, otherwise
 		// every thread can end up holding one connection while waiting forever for a
 		// second one, deadlocking the pool. See TRUNK-6465.
 		int threadCount = 20;
-		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(50));
+		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(taskCount));
 		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
 		try {
 			List<Future<?>> futures = new ArrayList<>();
-			for (int i = 0; i < N; i++) {
+			for (int i = 0; i < taskCount; i++) {
 				futures.add(executor.submit(() -> {
 					try {
 						Context.openSession();
@@ -268,17 +268,15 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				try {
 					future.get(30, TimeUnit.SECONDS);
 				} catch (TimeoutException e) {
-					fail("getNewOrderNumber did not complete within 30 seconds, most likely because the "
-					        + "connection pool deadlocked, see TRUNK-6465",
-					    e);
+					fail("getNewOrderNumber timed out, likely a connection pool deadlock; see TRUNK-6465", e);
 				}
 			}
 		} finally {
 			executor.shutdownNow();
 			executor.awaitTermination(10, TimeUnit.SECONDS);
 		}
-		//since we used a set we should have the size as N indicating that there were no duplicates
-		assertEquals(N, uniqueOrderNumbers.size());
+		//since we used a set we should have the size as taskCount indicating that there were no duplicates
+		assertEquals(taskCount, uniqueOrderNumbers.size());
 	}
 
 	/**
