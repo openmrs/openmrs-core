@@ -36,15 +36,20 @@
 #                                               repo (same ones module releases use); deploy
 #                                               access to mavenrepo.openmrs.org (used for the
 #                                               openmrs-repo-releases/-snapshots server ids)
-#   DOCKERHUB_USERNAME / DOCKERHUB_PASSWORD     push access to docker.io/openmrs; add them
-#                                               to BOTH the "release" and "release-images"
-#                                               environments: the variant jobs run in the
-#                                               reviewer-less "release-images" environment,
-#                                               which needs the same *.*.x deployment-branch
-#                                               rule but no approval, so variants run
-#                                               unattended
-# The org secrets resolve with no repo setup; environment-scoped copies (same names on the
-# "release" environment) would shadow them if tighter control is ever wanted.
+#   DOCKER_HUB_USERNAME / DOCKER_HUB_TOKEN      push access to docker.io/openmrs — the same
+#                                               org-level secrets the RefApp and contrib
+#                                               docker workflows use; both are required
+#                                               (the token is only the password half of
+#                                               docker login). They must be shared with
+#                                               this repo in the org secret settings, or
+#                                               added to BOTH the "release" and
+#                                               "release-images" environments; the variant
+#                                               jobs run in the reviewer-less
+#                                               "release-images" environment, which needs
+#                                               the same *.*.x deployment-branch rule but
+#                                               no approval, so variants run unattended
+# Shared org secrets resolve with no repo setup; environment-scoped copies (same names on
+# the environments) would shadow them if tighter control is ever wanted.
 #
 # The workflow file must exist on the branch being released, and the branch must be in
 # build.yaml's push triggers: the green-build gate below requires a successful build of
@@ -216,8 +221,8 @@ jobs:
 
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build and push the dev image
         run: |
@@ -349,8 +354,8 @@ jobs:
 
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       # Bamboo's Deploy stage (bamboo-specs/bamboo.yml) pushes per-JDK caches for
       # 11/17/21 but not for 8 (it publishes the JDK 8 build under the unsuffixed
