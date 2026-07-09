@@ -111,6 +111,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -128,6 +129,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.openmrs.Order.Action.DISCONTINUE;
 import static org.openmrs.Order.FulfillerStatus.COMPLETED;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
@@ -299,10 +301,16 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				}));
 			}
 			for (Future<?> future : futures) {
-				future.get(30, TimeUnit.SECONDS);
+				try {
+					future.get(30, TimeUnit.SECONDS);
+				} catch (TimeoutException e) {
+					fail("getNewOrderNumber did not complete within 30 seconds, most likely because the "
+					        + "connection pool deadlocked, see TRUNK-6465", e);
+				}
 			}
 		} finally {
 			executor.shutdownNow();
+			executor.awaitTermination(10, TimeUnit.SECONDS);
 		}
 		//since we used a set we should have the size as N indicating that there were no duplicates
 		assertEquals(N, uniqueOrderNumbers.size());
