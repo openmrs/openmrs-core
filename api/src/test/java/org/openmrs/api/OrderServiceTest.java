@@ -107,6 +107,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -264,39 +268,41 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @throws InterruptedException
+	 * @throws Exception
 	 * @see OrderNumberGenerator#getNewOrderNumber(OrderContext)
 	 */
 	@Test
 	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
-		throws InterruptedException {
+		throws Exception {
 
-		String javaVersion = System.getProperty("java.version");
-		if (javaVersion.startsWith("1.8") || javaVersion.startsWith("8")) {
-			System.out.println("Ignoring test on Java 1.8 due to hanging.  See TRUNK-6465");
-			return;
-		}
-		
 		int N = 50;
+		// Each call transiently holds two pooled connections: one for the getNewOrderNumber
+		// transaction and one for the REQUIRES_NEW transaction that increments the seed.
+		// Concurrency must therefore stay below half the c3p0 max_size of 50, otherwise
+		// every thread can end up holding one connection while waiting forever for a
+		// second one, deadlocking the pool. See TRUNK-6465.
+		int threadCount = 20;
 		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(50));
-		List<Thread> threads = new ArrayList<>();
-		for (int i = 0; i < N; i++) {
-			threads.add(new Thread(() -> {
-				try {
-					Context.openSession();
-					Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-					uniqueOrderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
-				} finally {
-					Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-					Context.closeSession();
-				}
-			}));
-		}
-		for (int i = 0; i < N; ++i) {
-			threads.get(i).start();
-		}
-		for (int i = 0; i < N; ++i) {
-			threads.get(i).join();
+		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+		try {
+			List<Future<?>> futures = new ArrayList<>();
+			for (int i = 0; i < N; i++) {
+				futures.add(executor.submit(() -> {
+					try {
+						Context.openSession();
+						Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+						uniqueOrderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
+					} finally {
+						Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+						Context.closeSession();
+					}
+				}));
+			}
+			for (Future<?> future : futures) {
+				future.get(30, TimeUnit.SECONDS);
+			}
+		} finally {
+			executor.shutdownNow();
 		}
 		//since we used a set we should have the size as N indicating that there were no duplicates
 		assertEquals(N, uniqueOrderNumbers.size());
