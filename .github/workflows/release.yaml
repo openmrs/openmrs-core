@@ -16,28 +16,28 @@
 #   6. build and push the per-JDK image variants from the tag:
 #      openmrs/openmrs-core:2.8.8[-dev]-amazoncorretto-{8,11,17,21}
 #
-# Required secrets — scope them deliberately:
-#   OPENMRS_BOT_GITHUB_TOKEN                    PAT of a user that may push to the protected
-#                                               maintenance branch (Bamboo pushes as openmrs-bot);
-#                                               used only at push time, after the images have been
-#                                               built, so it can never end up inside a published
-#                                               image; on forks it may be omitted and the default
-#                                               token is used instead
-#   OPENMRS_MAVEN_USERNAME / OPENMRS_MAVEN_PASSWORD
-#                                               deploy access to mavenrepo.openmrs.org (used for
-#                                               the openmrs-repo-releases/-snapshots server ids)
-#     ^ scope these three to the "release" environment, not the repository: they are only
-#       read inside the release job (which carries environment: release), and repository
-#       scope would let any write-access user read them from a workflow on any branch,
-#       bypassing the environment's approval; also restrict the environment's deployment
-#       branches to *.*.x
+# Required secrets:
+#   OMRS_BOT_GH_TOKEN                           org-level secret already shared with this
+#                                               repo — the same PAT module releases and
+#                                               tx-pull use; it may push to the protected
+#                                               maintenance branch, and is used only at push
+#                                               time, after the images have been built, so it
+#                                               can never end up inside a published image; on
+#                                               forks it may be omitted and the default token
+#                                               is used instead
+#   MAVEN_REPO_USERNAME / MAVEN_REPO_API_KEY    org-level secrets already shared with this
+#                                               repo (same ones module releases use); deploy
+#                                               access to mavenrepo.openmrs.org (used for the
+#                                               openmrs-repo-releases/-snapshots server ids)
 #   DOCKERHUB_USERNAME / DOCKERHUB_PASSWORD     push access to docker.io/openmrs; add them
 #                                               to BOTH the "release" and "release-images"
-#                                               environments (not the repository): the
-#                                               variant jobs run in the reviewer-less
-#                                               "release-images" environment, which needs
-#                                               the same *.*.x deployment-branch rule but
-#                                               no approval, so variants run unattended
+#                                               environments: the variant jobs run in the
+#                                               reviewer-less "release-images" environment,
+#                                               which needs the same *.*.x deployment-branch
+#                                               rule but no approval, so variants run
+#                                               unattended
+# The org secrets resolve with no repo setup; environment-scoped copies (same names on the
+# "release" environment) would shadow them if tighter control is ever wanted.
 #
 # The workflow file must exist on the branch being released, and the branch must be in
 # build.yaml's push triggers: the green-build gate below requires a successful build of
@@ -117,17 +117,17 @@ jobs:
 
       - name: Validate the release preconditions
         env:
-          BOT_TOKEN: ${{ secrets.OPENMRS_BOT_GITHUB_TOKEN }}
-          OPENMRS_MAVEN_USERNAME: ${{ secrets.OPENMRS_MAVEN_USERNAME }}
-          OPENMRS_MAVEN_PASSWORD: ${{ secrets.OPENMRS_MAVEN_PASSWORD }}
+          BOT_TOKEN: ${{ secrets.OMRS_BOT_GH_TOKEN }}
+          MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+          MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
         run: |
           if [[ "${GITHUB_REPOSITORY}" == "openmrs/openmrs-core" ]]; then
             if [[ -z "${BOT_TOKEN}" ]]; then
-              echo "::error::OPENMRS_BOT_GITHUB_TOKEN is not configured; the default token cannot push to the protected ${GITHUB_REF_NAME} branch"
+              echo "::error::OMRS_BOT_GH_TOKEN is not configured; the default token cannot push to the protected ${GITHUB_REF_NAME} branch"
               exit 1
             fi
-            if [[ -z "${OPENMRS_MAVEN_USERNAME}" || -z "${OPENMRS_MAVEN_PASSWORD}" ]]; then
-              echo "::error::OPENMRS_MAVEN_USERNAME/OPENMRS_MAVEN_PASSWORD are not configured; the maven deploy would fail long after the docker images are published"
+            if [[ -z "${MAVEN_REPO_USERNAME}" || -z "${MAVEN_REPO_API_KEY}" ]]; then
+              echo "::error::MAVEN_REPO_USERNAME/MAVEN_REPO_API_KEY are not configured; the maven deploy would fail long after the docker images are published"
               exit 1
             fi
             # prove the token can actually push before anything irreversible happens; the
@@ -135,7 +135,7 @@ jobs:
             # never end up inside the published images
             if ! git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "${BOT_TOKEN}" | base64 -w0)" \
                 push --dry-run origin "HEAD:refs/heads/${GITHUB_REF_NAME}"; then
-              echo "::error::OPENMRS_BOT_GITHUB_TOKEN cannot push to ${GITHUB_REF_NAME} (expired token, missing permissions, or the branch moved since dispatch)"
+              echo "::error::OMRS_BOT_GH_TOKEN cannot push to ${GITHUB_REF_NAME} (expired token, missing permissions, or the branch moved since dispatch)"
               exit 1
             fi
           fi
@@ -208,8 +208,8 @@ jobs:
 
       - name: Release to maven
         env:
-          OPENMRS_MAVEN_USERNAME: ${{ secrets.OPENMRS_MAVEN_USERNAME }}
-          OPENMRS_MAVEN_PASSWORD: ${{ secrets.OPENMRS_MAVEN_PASSWORD }}
+          MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+          MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
         # run mvn deploy inside the dev image just pushed, as Bamboo does, so the
         # artifacts deployed to Nexus are built from exactly what the image contains
         run: |
@@ -218,13 +218,13 @@ jobs:
             <servers>
               <server>
                 <id>openmrs-repo-releases</id>
-                <username>${env.OPENMRS_MAVEN_USERNAME}</username>
-                <password>${env.OPENMRS_MAVEN_PASSWORD}</password>
+                <username>${env.MAVEN_REPO_USERNAME}</username>
+                <password>${env.MAVEN_REPO_API_KEY}</password>
               </server>
               <server>
                 <id>openmrs-repo-snapshots</id>
-                <username>${env.OPENMRS_MAVEN_USERNAME}</username>
-                <password>${env.OPENMRS_MAVEN_PASSWORD}</password>
+                <username>${env.MAVEN_REPO_USERNAME}</username>
+                <password>${env.MAVEN_REPO_API_KEY}</password>
               </server>
             </servers>
           </settings>
@@ -233,7 +233,7 @@ jobs:
           sleep 10
           docker pull "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}-dev"
           docker run --rm \
-            -e OPENMRS_MAVEN_USERNAME -e OPENMRS_MAVEN_PASSWORD \
+            -e MAVEN_REPO_USERNAME -e MAVEN_REPO_API_KEY \
             -v "${RUNNER_TEMP}/settings.xml:/.m2/settings.xml:ro" \
             "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}-dev" \
             mvn deploy -DskipTests --batch-mode --settings /.m2/settings.xml
@@ -243,7 +243,7 @@ jobs:
         # never end up inside the published images (Bamboo also swaps the remote via
         # set-url, but to a credential-free SSH URL, so it can do so up front)
         env:
-          GH_PUSH_TOKEN: ${{ secrets.OPENMRS_BOT_GITHUB_TOKEN || github.token }}
+          GH_PUSH_TOKEN: ${{ secrets.OMRS_BOT_GH_TOKEN || github.token }}
         run: |
           git remote set-url origin "https://x-access-token:${GH_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git tag "${OMRS_VERSION}"
