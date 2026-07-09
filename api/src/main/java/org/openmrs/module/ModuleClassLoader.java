@@ -484,6 +484,7 @@ public class ModuleClassLoader extends URLClassLoader {
 					}
 				} catch (IOException | NumberFormatException e) {
 					log.warn("Error while reading module last modified file: {}", moduleLastModifiedFile, e);
+					deleted = deleteLibCacheDir(tmpModuleDir, module.getModuleId());
 				}
 			} else {
 				log.debug("Optimized startup disabled or {} does not exist, deleting {}", moduleLastModifiedFile,
