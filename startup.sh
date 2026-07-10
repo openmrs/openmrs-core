@@ -19,7 +19,7 @@ if [ "${OMRS_DB}" = "mysql" ] || [ "${OMRS_DB}" = "mariadb" ]; then
   for i in $(seq 1 30); do
     if mariadb -h "${OMRS_DB_HOSTNAME}" -P "${OMRS_DB_PORT}" \
         -u "${OMRS_DB_USERNAME}" -p"${OMRS_DB_PASSWORD}" \
-        --ssl=0 -e "SELECT 1" > /dev/null 2>&1; then
+        "${OMRS_DB_NAME}" -e "SELECT 1;" > /dev/null 2>&1; then
       DB_READY=true
       echo "Database authentication successful."
       break
