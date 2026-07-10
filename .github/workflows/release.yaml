@@ -133,7 +133,7 @@ jobs:
       # never persist credentials: the Dockerfile copies the whole checkout (including
       # .git) into the published dev image, so persisted credentials would ship in a
       # public image; pushes authenticate via remote set-url after the images are built
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
@@ -150,7 +150,7 @@ jobs:
         # a failed mint falls through to the PAT in the token chains instead of
         # killing the release while a usable fallback exists
         continue-on-error: true
-        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           app-id: ${{ secrets.OMRS_RELEASE_BOT_APP_ID }}
           private-key: ${{ secrets.OMRS_RELEASE_BOT_PRIVATE_KEY }}
@@ -162,7 +162,7 @@ jobs:
         run: echo "::warning::Only one of OMRS_RELEASE_BOT_APP_ID/OMRS_RELEASE_BOT_PRIVATE_KEY is configured; falling back to OMRS_BOT_GH_TOKEN"
 
       - name: Setup JDK
-        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
         with:
           distribution: 'temurin'
           java-version: 17
@@ -252,9 +252,9 @@ jobs:
           git config user.email infrastructure@openmrs.org
           git commit -am "[skip-ci] [skip actions] Releasing ${OMRS_VERSION}"
 
-      - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+      - uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
 
-      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
@@ -320,7 +320,7 @@ jobs:
         # a failed refresh falls through to the PAT rather than stranding the
         # release after the maven deploy
         continue-on-error: true
-        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           app-id: ${{ secrets.OMRS_RELEASE_BOT_APP_ID }}
           private-key: ${{ secrets.OMRS_RELEASE_BOT_PRIVATE_KEY }}
@@ -388,15 +388,15 @@ jobs:
     steps:
       # persist-credentials false for the same reason as in the release job: .git is
       # copied into the published dev image variants
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           # the tag pushed by the release job
           ref: refs/tags/${{ env.OMRS_VERSION }}
           persist-credentials: false
 
-      - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+      - uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
 
-      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
