@@ -115,7 +115,7 @@ on useful Maven commands and build options.
 
 ## Docker build
 
-Docker builds are still work in progress. We appreciate any feedback and improvements to the process.
+Docker builds are still a work in progress. We appreciate any feedback and improvements to the process.
 
 The only prerequisite needed is Docker. 
 
@@ -231,9 +231,9 @@ https://wiki.openmrs.org/display/docs/OpenMRS+SDK
 
 OpenMRS has a modular architecture that allows developers to extend the OpenMRS core functionality by creating modules that can easily be added or removed to meet the needs of a specific implementation.
 
-Before creating your own module go to the [OpenMRS Module Repository](https://addons.openmrs.org/) and see if there is already a module for your specific use case. If so deploy and try it and if a functionality is missing join the developers of the module to add a feature.
+Before creating your own module, go to the [OpenMRS Module Repository](https://addons.openmrs.org/) and see if there is already a module for your specific use case. If so, deploy and try it. If functionality is missing, work with the module's developers to add the feature.
 
-If you haven't found what you were looking for refer to the [Module - wiki](https://wiki.openmrs.org/display/docs/Modules) to learn how you can create a new module.
+If you haven't found what you were looking for, refer to the [Module - wiki](https://wiki.openmrs.org/display/docs/Modules) to learn how you can create a new module.
 
 ## Documentation
 
@@ -261,7 +261,7 @@ http://openmrs.org
 
 ## Contributing
 
-Contributions are very welcome, we can definitely use your help!
+Contributions are very welcome. We can definitely use your help!
 
 OpenMRS organizes the privileges of its contributors in developer stages which
 are documented [here](https://wiki.openmrs.org/display/RES/OpenMRS+Developer+Stages).
@@ -276,15 +276,14 @@ After you've read up :eyeglasses: [grab an introductory issue](https://openmrs.a
 
 ### Code Reviews
 
-You might not have the time to develop yourself but enough experience with
-OpenMRS and/or reviewing code, your help on code reviews will be much
-appreciated!
+If you do not have time to develop but have experience with OpenMRS or reviewing
+code, your help with code reviews would be greatly appreciated!
 
 Read
 
 https://openmrs.atlassian.net/wiki/x/-r_EAQ
 
-and get started with re-:eyes: pull requests!
+and get started reviewing pull requests!
 
 ### Translation
 
@@ -298,9 +297,9 @@ The `messages.properties` file in this repository is our single source of
 truth. It contains key, value pairs for the English language which is the
 default.
 
-Transifex fetches updates to this file every night which can then be translated
-by you and me on transifex website itself. At any time we can pull new translations from transifex
-back into this repository. Other languages like for ex. Spanish will then be in
+Transifex fetches updates to this file every night so they can be translated
+on the Transifex website. At any time, we can pull new translations from Transifex
+back into this repository. Other languages, such as Spanish, will then be in
 the `messages_es.properties` file.
 
 If you would like to know how to help with translations see
@@ -309,7 +308,7 @@ https://openmrs.org/get-involved/translate-openmrs/
 
 ## Issues
 
-If you want help fix existing issues or you found a bug and want to tell us please go to
+If you want to help fix existing issues or have found a bug to report, please go to
 
 https://issues.openmrs.org
 
