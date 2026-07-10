@@ -9,6 +9,9 @@ on:
 jobs:
   dependencycheck:
     runs-on: ubuntu-latest
+    # a stalled NVD feed download otherwise runs until the 6 hour GitHub default; normal runs
+    # take 3-8 minutes with occasional NVD-update tails up to ~35, so 60 clears the worst observed
+    timeout-minutes: 60
     name: dependencycheck_test
     steps:
       - name: Checkout
