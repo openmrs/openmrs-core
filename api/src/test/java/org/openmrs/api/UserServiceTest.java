@@ -1737,6 +1737,32 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertThat(Context.getUserService().getLastLoginTime(createdUser), not(emptyString()));
 	}
 
+	/**
+	 * @see Security#checkPassword(String,String,String)
+	 */
+	@Test
+	public void checkPassword_shouldReturnFalseWhenStoredHashIsNull() {
+		assertFalse(Security.checkPassword("anyPassword", null, ""));
+	}
+
+	/**
+	 * @see Security#checkPassword(String,String,String)
+	 */
+	@Test
+	public void checkPassword_shouldHandleNullOrBlankSalt() {
+		String hash = Security.encodeString("password");
+		assertTrue(Security.checkPassword("password", hash, null));
+	}
+
+	/**
+	 * @see Security#checkPassword(String,String,String)
+	 */
+	@Test
+	public void checkPassword_shouldReturnFalseWhenRawPasswordIsNull() {
+		String[] encoded = Security.encodePassword("testPassword");
+		assertFalse(Security.checkPassword(null, encoded[0], encoded[1]));
+	}
+
 	private Credentials getTestUserCredentials() {
 		return new UsernamePasswordCredentials("test", "testUser1234");
 	}

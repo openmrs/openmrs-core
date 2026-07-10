@@ -43,7 +43,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@BeforeEach
@@ -188,6 +188,15 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
 	}
 	
+	@Test
+	public void changePassword_shouldNotInvalidateSecretAnswer() {
+		dao.changePassword(userJoe, PASSWORD);
+		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
+		dao.changePassword(userJoe, "NewPass456");
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
+	}
+
 	@Test
 	public void isSecretAnswer_shouldReturnTrueWhenTheAnswerMatches() {
 		dao.saveUser(userJoe, PASSWORD);

@@ -74,19 +74,8 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public User saveUser(User user, String password) {
-		StackTraceElement[] stack = new Exception().getStackTrace();
-		if (stack.length < 2) {
-			throw new DAOException("Could not determine where change password was called from");
-		}
-		StackTraceElement caller = stack[1];
-		String callerClass = caller.getClassName();
+		verifyPasswordChangeCaller();
 
-		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
-			!UserServiceImpl.class.getName().equals(callerClass) &&
-		    !HibernateUserDAO.class.getName().equals(callerClass)) {
-			throw new DAOException("Illegal attempt to change user password from unknown caller");
-		}
-		
 		// only change the user's password when creating a new user
 		boolean isNewUser = user.getUserId() == null;
 		
@@ -101,11 +90,8 @@ public class HibernateUserDAO implements UserDAO {
 			*/
 			sessionFactory.getCurrentSession().flush();
 			
-			//update the new user with the password
-			String salt = Security.getRandomToken();
-			String hashedPassword = Security.encodeString(password + salt);
-			
-			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user
+			String[] encoded = Security.encodePassword(password);
+			updateUserPassword(encoded[0], encoded[1], Context.getAuthenticatedUser().getUserId(), new Date(), user
 			        .getUserId());
 		}
 		
@@ -325,34 +311,54 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
+	 * Verifies the calling class is an allowed caller for password-change operations.
+	 *
+	 * @throws DAOException if the caller is not in the whitelist
+	 */
+	private void verifyPasswordChangeCaller() {
+		StackTraceElement[] stack = new Exception().getStackTrace();
+		if (stack.length < 3) {
+			throw new DAOException("Could not determine where change password was called from");
+		}
+		String callerClass = stack[2].getClassName();
+
+		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
+			!UserServiceImpl.class.getName().equals(callerClass) &&
+			!HibernateUserDAO.class.getName().equals(callerClass)) {
+			throw new DAOException("Illegal attempt to change user password from unknown caller");
+		}
+	}
+
+	/**
+	 * Encodes a password, reusing an existing salt when present.
+	 * The salt must be reused (not regenerated) because the secret answer is hashed with the same
+	 * salt (see {@link #changeQuestionAnswer(User, String, String)} and {@link #isSecretAnswer}).
+	 * Generating a new salt here would invalidate any stored secret answer.
+	 *
+	 * @param rawPassword the cleartext password to encode
+	 * @param existingSalt the stored salt (may be null/empty, in which case a new salt is generated)
+	 * @return String[] where [0] is the hashed password and [1] is the salt
+	 */
+	private String[] encodeWithReusedSalt(String rawPassword, String existingSalt) {
+		String salt = StringUtils.isEmpty(existingSalt) ? Security.getRandomToken() : existingSalt;
+		return Security.encodePasswordWithSalt(rawPassword, salt);
+	}
+
+	/**
 	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws DAOException {
-		StackTraceElement[] stack = new Exception().getStackTrace();
-		if (stack.length < 2) {
-			throw new DAOException("Could not determine where change password was called from");
-		}
-		StackTraceElement caller = stack[1];
-		String callerClass = caller.getClassName();
+		verifyPasswordChangeCaller();
 
-		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
-			!UserServiceImpl.class.getName().equals(callerClass)) {
-			throw new DAOException("Illegal attempt to change user password from unknown caller");
-		}
-		
 		User authUser = Context.getAuthenticatedUser();
-		
+
 		if (authUser == null) {
 			authUser = u;
 		}
-		
-		String salt = getLoginCredential(u).getSalt();
-		if (StringUtils.isBlank(salt)) {
-			salt = Security.getRandomToken();
-		}
-		String newHashedPassword = Security.encodeString(pw + salt);
-		
-		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
+
+		LoginCredential credentials = getLoginCredential(u);
+		String[] encoded = encodeWithReusedSalt(pw, credentials.getSalt());
+		updateUserPassword(encoded[0], encoded[1], authUser.getUserId(), new Date(), u.getUserId());
 	}
 	
 	/**
@@ -360,18 +366,8 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws DAOException {
-		StackTraceElement[] stack = new Exception().getStackTrace();
-		if (stack.length < 2) {
-			throw new DAOException("Could not determine where change password was called from");
-		}
-		StackTraceElement caller = stack[1];
-		String callerClass = caller.getClassName();
+		verifyPasswordChangeCaller();
 
-		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
-			!UserServiceImpl.class.getName().equals(callerClass)) {
-			throw new DAOException("Illegal attempt to change user password from unknown caller");
-		}
-		
 		User authUser = Context.getAuthenticatedUser();
 		updateUserPassword(hashedPassword, salt, authUser.getUserId(), new Date(), user.getUserId());
 	}
@@ -411,18 +407,8 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changePassword(String oldPassword, String newPassword) throws DAOException {
-		StackTraceElement[] stack = new Exception().getStackTrace();
-		if (stack.length < 2) {
-			throw new DAOException("Could not determine where change password was called from");
-		}
-		StackTraceElement caller = stack[1];
-		String callerClass = caller.getClassName();
+		verifyPasswordChangeCaller();
 
-		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
-			!UserServiceImpl.class.getName().equals(callerClass)) {
-			throw new DAOException("Illegal attempt to change user password from unknown caller");
-		}
-		
 		User u = Context.getAuthenticatedUser();
 		LoginCredential credentials = getLoginCredential(u);
 		if (!credentials.checkPassword(oldPassword)) {
@@ -432,10 +418,8 @@ public class HibernateUserDAO implements UserDAO {
 		
 		log.info("updating password for {}", u.getUsername());
 		
-		// update the user with the new password
-		String salt = credentials.getSalt();
-		String newHashedPassword = Security.encodeString(newPassword + salt);
-		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
+		String[] encoded = encodeWithReusedSalt(newPassword, credentials.getSalt());
+		updateUserPassword(encoded[0], encoded[1], u.getUserId(), new Date(), u.getUserId());
 	}
 	
 	/**
