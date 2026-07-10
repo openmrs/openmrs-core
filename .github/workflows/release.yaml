@@ -162,7 +162,7 @@ jobs:
         run: echo "::warning::Only one of OMRS_RELEASE_BOT_APP_ID/OMRS_RELEASE_BOT_PRIVATE_KEY is configured; falling back to OMRS_BOT_GH_TOKEN"
 
       - name: Setup JDK
-        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
         with:
           distribution: 'temurin'
           java-version: 17
