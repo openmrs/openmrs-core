@@ -79,7 +79,7 @@ cd openmrs-core
 ./mvnw clean package
 ```
 
-This will generate the OpenMRS application in `webapp/target/openmrs.war` which you will have to deploy into an application server like for example [tomcat](https://tomcat.apache.org/) or [jetty](http://www.eclipse.org/jetty/).
+This will generate the OpenMRS application in `webapp/target/openmrs.war`, which you will have to deploy to an application server such as [Tomcat](https://tomcat.apache.org/) or [Jetty](https://jetty.org/).
 
 ### Deploy
 
@@ -110,76 +110,95 @@ mvn -Dcargo.servlet.port=8081 cargo:run
 
 If all goes well (check the console output) you can access the OpenMRS application at `localhost:8080/openmrs`.
 
-Refer to [Getting Started as a Developer - Maven](https://wiki.openmrs.org/display/docs/Maven) for some more information
+Refer to [Getting Started as a Developer](https://wiki.openmrs.org/display/docs/Getting+Started+as+a+Developer) for some more information
 on useful Maven commands and build options.
 
 ## Docker build
 
 Docker builds are still a work in progress. We appreciate any feedback and improvements to the process.
 
-The only prerequisite needed is Docker. 
+The only prerequisite needed is Docker.
 
 In order to build a development version run:
-```bash 
+
+```bash
 docker compose build
 ```
+
 It calls `mvn install` by default. If you would like to customize mvn build arguments you can do so by running:
+
 ```bash
 docker compose build --build-arg MVN_ARGS='install -DskipTests'
 ```
+
 It is also possible to use the built dev image to run jetty:
+
 ```bash
 docker compose up
 ```
 
 In order to build a production version run:
+
 ```bash
 docker compose -f docker-compose.yml build
 ```
-It first builds the dev image and then an image with Tomcat and openmrs.war. 
+
+It first builds the dev image and then an image with Tomcat and openmrs.war.
 It has no dev dependencies.
 
 The production version can be run with:
+
 ```bash
 docker compose -f docker-compose.yml up
 ```
+
 If you want to debug, you need to run a development version and connect your debugger to port 8000, which is exposed by default.
 
 Unfortunately, at this point any code changes require full restart and rebuild of the docker container. To speed up the process,
 please use:
+
 ```bash
 docker compose build --build-arg MVN_ARGS='install -DskipTests'
 docker compose up
 ```
+
 We are working towards providing support for Spring Boot auto-reload feature, which will be documented here once ready.
 
-It is also possible to deploy an image built by our CI, which is published at 
-https://hub.docker.com/r/openmrs/openmrs-core
+It is also possible to deploy an image built by our CI, which is published at
+[OpenMRS Core on Docker Hub](https://hub.docker.com/r/openmrs/openmrs-core).
 
 You can run any tag available with:
+
 ```bash
 TAG=nightly docker compose -f docker-compose.yml up
 ```
+
 It is also possible to run a development version of an image with:
+
 ```bash
 TAG=dev docker compose up
 ```
+
 All development versions contain dev suffix. The cache suffix is for use by our CI.
 
 ### Running with ElasticSearch
 
 OpenMRS can run with ElasticSearch backend instead of the in-built Lucene index. You can run it with:
+
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.es.yml up
 ```
+
 If you change backend, you need to rebuild the search index by going to Legacy UI -> Administration -> Search Index. Alternatively, you can rebuild the search index using the `searchindexupdate` REST endpoint.
 
 ### Running with Grafana
 
 OpenMRS can run with Grafana for monitoring logs. You can run it with:
+
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.grafana.yml up
 ```
+
 Grafana will be available at http://localhost:3000. Use admin as username and see docker-compose.grafana.yml for the initial password.
 
 ### Scheduler Dashboard
@@ -217,15 +236,13 @@ The project tree is set up as follows:
  <tr>
   <td>pom.xml</td>
   <td>The main maven file used to build and package OpenMRS.</td>
- </tr>  
+ </tr>
 </table>
 
 ## Software Development Kit
 
-For rapid development of modules and the OpenMRS Platform code check out the
-awesome SDK at
-
-https://wiki.openmrs.org/display/docs/OpenMRS+SDK
+For rapid development of modules and the OpenMRS Platform code, see the
+[OpenMRS SDK documentation](https://wiki.openmrs.org/display/docs/OpenMRS+SDK).
 
 ## Extending OpenMRS with Modules
 
@@ -248,16 +265,12 @@ If you want to contribute please refer to these resources
 ### Wiki
 
 If you are looking for detailed guides on how to install, configure, contribute and
-extend OpenMRS visit
-
-http://wiki.openmrs.org
+extend OpenMRS, visit [the OpenMRS Wiki](https://wiki.openmrs.org).
 
 ### Website
 
-If you are looking for more information regarding OpenMRS as an organization
-check
-
-http://openmrs.org
+For more information about OpenMRS as an organization, check
+[the OpenMRS website](https://openmrs.org).
 
 ## Contributing
 
@@ -279,19 +292,11 @@ After you've read up :eyeglasses: [grab an introductory issue](https://openmrs.a
 If you do not have time to develop but have experience with OpenMRS or reviewing
 code, your help with code reviews would be greatly appreciated!
 
-Read
-
-https://openmrs.atlassian.net/wiki/x/-r_EAQ
-
-and get started reviewing pull requests!
+Read [the code review guide](https://openmrs.atlassian.net/wiki/x/-r_EAQ) and get started reviewing pull requests!
 
 ### Translation
 
-We use
-
-https://explore.transifex.com/openmrs/OpenMRS/
-
-to manage our translations.
+We use [Transifex](https://explore.transifex.com/openmrs/OpenMRS/) to manage our translations.
 
 The `messages.properties` file in this repository is our single source of
 truth. It contains key, value pairs for the English language which is the
@@ -302,15 +307,13 @@ on the Transifex website. At any time, we can pull new translations from Transif
 back into this repository. Other languages, such as Spanish, will then be in
 the `messages_es.properties` file.
 
-If you would like to know how to help with translations see
-
-https://openmrs.org/get-involved/translate-openmrs/
+If you would like to know how to help with translations, see
+[the OpenMRS translation guide](https://om.rs/translate).
 
 ## Issues
 
 If you want to help fix existing issues or have found a bug to report, please go to
-
-https://issues.openmrs.org
+[the OpenMRS issue tracker](https://issues.openmrs.org).
 
 ## Community
 
@@ -324,4 +327,4 @@ Talk to us on [OpenMRS Talk](https://talk.openmrs.org/)
 
 ## License
 
-[MPL 2.0 w/ HD](http://openmrs.org/license/) © [OpenMRS Inc.](http://www.openmrs.org/)
+[MPL 2.0 w/ HD](LICENSE) © [OpenMRS Inc.](https://openmrs.org/)
