@@ -16,7 +16,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="ConceptReferenceTerm" table="concept_reference_term">
+	<class name="ConceptReferenceTerm" table="concept_reference_term" batch-size="25">
 
 		<id name="conceptReferenceTermId" type="java.lang.Integer" column="concept_reference_term_id">
 			<generator class="native">

@@ -324,7 +324,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		List<Order> originalPatientOrders = orderService.getAllOrdersByPatient(originalDCOrder.getPatient());
 		final Order previousOrder = originalDCOrder.getPreviousOrder();
 		assertNotNull(previousOrder);
-		final Date newStartDate = originalDCOrder.getEncounter().getEncounterDatetime();
+		final Date newStartDate = originalDCOrder.getDateActivated();
 		
 		Order newDcOrder = originalDCOrder.cloneForRevision();
 		newDcOrder.setEncounter(originalDCOrder.getEncounter());

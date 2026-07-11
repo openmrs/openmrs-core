@@ -41,6 +41,7 @@ import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
+import org.openmrs.parameter.ConceptSearchCriteria;
 
 /**
  * Concept-related database functions
@@ -49,6 +50,11 @@ import org.openmrs.api.ConceptService;
  */
 public interface ConceptDAO {
 	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	public List<Concept> getConcepts(ConceptSearchCriteria criteria);
+
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConcept(org.openmrs.Concept)
 	 */

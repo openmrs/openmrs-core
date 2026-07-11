@@ -30,6 +30,7 @@ import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptReferenceRange;
+import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -41,6 +42,7 @@ import org.openmrs.DrugIngredient;
 import org.openmrs.Person;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
+import org.openmrs.parameter.ConceptSearchCriteria;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
@@ -94,6 +96,19 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getConceptByUuid(String uuid);
 	
+	/**
+	 * Search for concepts matching the given criteria. The identifier fields ({@code uuids},
+	 * {@code conceptIds}, and {@code mappings}) are combined with OR semantics — a concept matching any
+	 * one of them is included. Global filter fields such as {@code includeRetired} are then applied
+	 * with AND semantics on top of those results.
+	 *
+	 * @param conceptSearchCriteria the search criteria
+	 * @return list of matching concepts
+	 * @since 2.8.7
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public List<Concept> getConcepts(ConceptSearchCriteria conceptSearchCriteria);
+
 	/**
 	 * Save or update the given <code>Concept</code> or <code>ConceptNumeric</code> in the database
 	 * <p>
@@ -2038,7 +2053,19 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept);
-	
+
+	/**
+	 * Get the appropriate concept reference range for a given context. The context specifies the
+	 * person, concept, and optionally a date at which to evaluate reference range criteria.
+	 *
+	 * @param context the context containing person, concept, and optional date
+	 * @return the matching ConceptReferenceRange, or null if none found
+	 *
+	 * @since 3.0.0, 2.9.0, 2.8.5, 2.7.9
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	ConceptReferenceRange getConceptReferenceRange(ConceptReferenceRangeContext context);
+
 	/**
 	 * Completely purge a <code>ConceptReferenceRange</code> from the database.
 	 * 
