@@ -95,7 +95,7 @@ public class Security {
 	 * @return String[] where [0] is the hash and [1] is the salt (empty string if absent)
 	 * @since 2.8.8
 	 */
-	public static String[] parseEncodedPassword(String encodedPassword) {
+	static String[] parseEncodedPassword(String encodedPassword) {
 		if (encodedPassword == null) {
 			return new String[] { "", "" };
 		}

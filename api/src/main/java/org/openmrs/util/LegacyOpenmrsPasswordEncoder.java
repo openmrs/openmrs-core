@@ -27,7 +27,7 @@ public class LegacyOpenmrsPasswordEncoder implements PasswordEncoder {
 	 * @param salt the salt to use (must not be null or empty)
 	 * @return the encoded password as {@code hash:salt}
 	 */
-	public String encodeWithSalt(CharSequence rawPassword, String salt) {
+	String encodeWithSalt(CharSequence rawPassword, String salt) {
 		if (salt == null || salt.isEmpty()) {
 			throw new IllegalArgumentException("Salt must not be null or empty");
 		}
