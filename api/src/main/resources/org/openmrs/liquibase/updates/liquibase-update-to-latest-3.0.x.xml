@@ -141,6 +141,15 @@
 			<column name="description" type="varchar(255)"/>
 		</addColumn>
 	</changeSet>
+
+	<changeSet id="TRUNK-6289-2026-07-11-outbox-payload-mediumtext" author="Tarekchehahde">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="outbox_event"/>
+		</preConditions>
+		<comment>Widen outbox_event payload columns to match @Lob intent (#6289 sign-off)</comment>
+		<modifyDataType tableName="outbox_event" columnName="payload" newDataType="MEDIUMTEXT"/>
+		<modifyDataType tableName="outbox_event" columnName="completed_listeners" newDataType="MEDIUMTEXT"/>
+	</changeSet>
 	
 </databaseChangeLog>
 
