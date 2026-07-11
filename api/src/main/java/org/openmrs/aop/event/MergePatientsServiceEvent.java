@@ -15,8 +15,6 @@ import java.util.Set;
 import org.openmrs.Patient;
 import org.openmrs.event.BaseSessionEvent;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 /**
  * Published when {@link org.openmrs.api.PatientService#mergePatients(Patient, Patient)} completes.
  *
@@ -26,10 +24,8 @@ public class MergePatientsServiceEvent extends BaseSessionEvent {
 
 	private static final long serialVersionUID = 1L;
 
-	@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 	private Patient preferred;
 
-	@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 	private Patient notPreferred;
 
 	public MergePatientsServiceEvent() {
