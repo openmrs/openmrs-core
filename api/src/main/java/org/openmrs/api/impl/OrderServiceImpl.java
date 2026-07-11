@@ -56,7 +56,9 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UnchangeableObjectException;
+import org.openmrs.aop.event.SaveServiceEvent;
 import org.openmrs.api.context.Context;
+import org.openmrs.event.EventPublisher;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.order.OrderUtil;
@@ -94,6 +96,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 
 	@Autowired
 	protected OrderDAO dao;
+
+	@Autowired
+	private EventPublisher eventPublisher;
 
 	private static OrderNumberGenerator orderNumberGenerator = null;
 
@@ -894,7 +899,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 
 		setProperty(orderToStop, "dateStopped", discontinueDate);
-		saveOrderInternal(orderToStop, null);
+		Order stoppedOrder = saveOrderInternal(orderToStop, null);
+		eventPublisher.publishEvent(new SaveServiceEvent<>(stoppedOrder));
 	}
 
 	/**
