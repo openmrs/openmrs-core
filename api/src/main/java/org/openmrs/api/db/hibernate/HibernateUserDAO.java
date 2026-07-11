@@ -74,8 +74,19 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public User saveUser(User user, String password) {
-		verifyPasswordChangeCaller();
+		StackTraceElement[] stack = new Exception().getStackTrace();
+		if (stack.length < 2) {
+			throw new DAOException("Could not determine where change password was called from");
+		}
+		StackTraceElement caller = stack[1];
+		String callerClass = caller.getClassName();
 
+		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
+			!UserServiceImpl.class.getName().equals(callerClass) &&
+		    !HibernateUserDAO.class.getName().equals(callerClass)) {
+			throw new DAOException("Illegal attempt to change user password from unknown caller");
+		}
+		
 		// only change the user's password when creating a new user
 		boolean isNewUser = user.getUserId() == null;
 		
@@ -311,25 +322,6 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * Verifies the calling class is an allowed caller for password-change operations.
-	 *
-	 * @throws DAOException if the caller is not in the whitelist
-	 */
-	private void verifyPasswordChangeCaller() {
-		StackTraceElement[] stack = new Exception().getStackTrace();
-		if (stack.length < 3) {
-			throw new DAOException("Could not determine where change password was called from");
-		}
-		String callerClass = stack[2].getClassName();
-
-		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
-			!UserServiceImpl.class.getName().equals(callerClass) &&
-			!HibernateUserDAO.class.getName().equals(callerClass)) {
-			throw new DAOException("Illegal attempt to change user password from unknown caller");
-		}
-	}
-
-	/**
 	 * Encodes a password, reusing an existing salt when present.
 	 * The salt must be reused (not regenerated) because the secret answer is hashed with the same
 	 * salt (see {@link #changeQuestionAnswer(User, String, String)} and {@link #isSecretAnswer}).
@@ -348,14 +340,24 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws DAOException {
-		verifyPasswordChangeCaller();
+		StackTraceElement[] stack = new Exception().getStackTrace();
+		if (stack.length < 2) {
+			throw new DAOException("Could not determine where change password was called from");
+		}
+		StackTraceElement caller = stack[1];
+		String callerClass = caller.getClassName();
 
+		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
+			!UserServiceImpl.class.getName().equals(callerClass)) {
+			throw new DAOException("Illegal attempt to change user password from unknown caller");
+		}
+		
 		User authUser = Context.getAuthenticatedUser();
-
+		
 		if (authUser == null) {
 			authUser = u;
 		}
-
+		
 		LoginCredential credentials = getLoginCredential(u);
 		String[] encoded = encodeWithReusedSalt(pw, credentials.getSalt());
 		updateUserPassword(encoded[0], encoded[1], authUser.getUserId(), new Date(), u.getUserId());
@@ -366,8 +368,18 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws DAOException {
-		verifyPasswordChangeCaller();
+		StackTraceElement[] stack = new Exception().getStackTrace();
+		if (stack.length < 2) {
+			throw new DAOException("Could not determine where change password was called from");
+		}
+		StackTraceElement caller = stack[1];
+		String callerClass = caller.getClassName();
 
+		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
+			!UserServiceImpl.class.getName().equals(callerClass)) {
+			throw new DAOException("Illegal attempt to change user password from unknown caller");
+		}
+		
 		User authUser = Context.getAuthenticatedUser();
 		updateUserPassword(hashedPassword, salt, authUser.getUserId(), new Date(), user.getUserId());
 	}
@@ -407,8 +419,18 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changePassword(String oldPassword, String newPassword) throws DAOException {
-		verifyPasswordChangeCaller();
+		StackTraceElement[] stack = new Exception().getStackTrace();
+		if (stack.length < 2) {
+			throw new DAOException("Could not determine where change password was called from");
+		}
+		StackTraceElement caller = stack[1];
+		String callerClass = caller.getClassName();
 
+		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
+			!UserServiceImpl.class.getName().equals(callerClass)) {
+			throw new DAOException("Illegal attempt to change user password from unknown caller");
+		}
+		
 		User u = Context.getAuthenticatedUser();
 		LoginCredential credentials = getLoginCredential(u);
 		if (!credentials.checkPassword(oldPassword)) {

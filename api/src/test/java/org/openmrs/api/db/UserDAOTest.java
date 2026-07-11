@@ -43,7 +43,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	@BeforeEach
