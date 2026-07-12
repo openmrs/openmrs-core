@@ -9,8 +9,6 @@
  */
 package org.openmrs.test;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.util.Collection;
@@ -53,56 +51,14 @@ public class TestUtil {
 	}
 
 	/**
-	 * Mimics org.openmrs.web.Listener.getRuntimeProperties()
+	 * Loads runtime properties using the same lookup rules as the application.
 	 *
 	 * @param webappName name to use when looking up the runtime properties env var or filename
 	 * @return Properties runtime
 	 */
 	public static Properties getRuntimeProperties(String webappName) {
-
-		Properties props = new Properties();
-
-		try {
-			FileInputStream propertyStream = null;
-
-			// Look for environment variable
-			// {WEBAPP.NAME}_RUNTIME_PROPERTIES_FILE
-			String env = webappName.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
-
-			String filepath = System.getenv(env);
-
-			if (filepath != null) {
-				try {
-					propertyStream = new FileInputStream(filepath);
-				} catch (IOException e) {}
-			}
-
-			// env is the name of the file to look for in the directories
-			String filename = webappName + "-runtime.properties";
-
-			if (propertyStream == null) {
-				filepath = OpenmrsUtil.getApplicationDataDirectory() + filename;
-				try {
-					propertyStream = new FileInputStream(filepath);
-				} catch (IOException e) {}
-			}
-
-			// look in current directory last
-			if (propertyStream == null) {
-				filepath = filename;
-				try {
-					propertyStream = new FileInputStream(filepath);
-				} catch (IOException e) {}
-			}
-
-			if (propertyStream == null)
-				throw new IOException("Could not open '" + filename + "' in user or local directory.");
-			OpenmrsUtil.loadProperties(props, propertyStream);
-			propertyStream.close();
-
-		} catch (IOException e) {}
-
-		return props;
+		Properties properties = OpenmrsUtil.getRuntimeProperties(webappName);
+		return properties == null ? new Properties() : properties;
 	}
 
 	/**
