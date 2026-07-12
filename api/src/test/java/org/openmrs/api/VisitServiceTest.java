@@ -841,8 +841,9 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void purgeVisit_shouldThrowIllegalArgumentExceptionWhenVisitIsNull() {
 		// purgeVisit must reject null explicitly — passing null is a programming error,
-        // not a recoverable condition, so IllegalArgumentException is the correct contract.
-        assertThrows(IllegalArgumentException.class, () -> visitService.purgeVisit(null));	}
+		// not a recoverable condition, so IllegalArgumentException is the correct contract.
+		assertThrows(IllegalArgumentException.class, () -> visitService.purgeVisit(null));
+	}
 	/**
 	 * @see VisitService#saveVisit(Visit)
 	 */
