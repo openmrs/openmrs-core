@@ -1466,9 +1466,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	@Test
 	public void purgeObs_shouldDoNothingWhenObsIsNull() {
-		// voidObs guards against null input (line 104 of ObsServiceImpl).
-		// purgeObs must be consistent to prevent null reaching the DAO layer.
+		// purgeObs guards against null directly; null must not reach the DAO layer.
 		assertDoesNotThrow(() -> Context.getObsService().purgeObs(null));
+		assertDoesNotThrow(() -> Context.getObsService().purgeObs(null, true));
 	}
 
 	/**

@@ -313,7 +313,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 * @see org.openmrs.api.ObsService#purgeObs(org.openmrs.Obs, boolean)
 	 */
 	@Override
-    public void purgeObs(Obs obs, boolean cascade) throws APIException {
+	public void purgeObs(Obs obs, boolean cascade) throws APIException {
 		if (obs == null) {
 			return;
 		}
