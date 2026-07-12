@@ -345,12 +345,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @implNote If the patient argument is null, this method is a no-op.
 	 */
 	@Override
-public void purgePatient(Patient patient) throws APIException {
-    if (patient == null) {
-        return;
-    }
-    dao.deletePatient(patient);
-}
+	public void purgePatient(Patient patient) throws APIException {
+		if (patient == null) {
+			return;
+		}
+		dao.deletePatient(patient);
+	}
 
 	// patient identifier section
 
