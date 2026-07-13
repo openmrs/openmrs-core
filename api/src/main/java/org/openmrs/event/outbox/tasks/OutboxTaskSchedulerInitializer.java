@@ -12,17 +12,15 @@ package org.openmrs.event.outbox.tasks;
 import java.time.Duration;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.event.outbox.OutboxEventRegistry;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.stereotype.Component;
 
 /**
  * @since 2.9.0
  */
 @Component
-public class OutboxTaskSchedulerInitializer implements SmartInitializingSingleton {
+public class OutboxTaskSchedulerInitializer {
 
 	public static final String OUTBOX_POLLER_TASK_NAME = "Transactional Outbox Poller";
 
@@ -34,34 +32,22 @@ public class OutboxTaskSchedulerInitializer implements SmartInitializingSingleto
 
 	private final SchedulerService schedulerService;
 
-	private final OutboxEventRegistry outboxEventRegistry;
-
-	public OutboxTaskSchedulerInitializer(SchedulerService schedulerService, OutboxEventRegistry outboxEventRegistry) {
+	public OutboxTaskSchedulerInitializer(SchedulerService schedulerService) {
 		this.schedulerService = schedulerService;
-		this.outboxEventRegistry = outboxEventRegistry;
 	}
 
-	@Override
-	public void afterSingletonsInstantiated() {
+	public void schedule() {
 		try {
 			if (!Context.isSessionOpen()) {
 				Context.openSession();
 			}
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 
-			if (outboxEventRegistry.hasOutboxListeners()) {
-				// Schedule the outbox polling task to run recurrently in the background
-				schedulerService.scheduleRecurrently(OUTBOX_POLLER_TASK_UUID, new OutboxPollingTaskData(),
-				    Duration.ofSeconds(15), OUTBOX_POLLER_TASK_NAME);
+			schedulerService.scheduleRecurrently(OUTBOX_POLLER_TASK_UUID, new OutboxPollingTaskData(),
+			    Duration.ofSeconds(15), OUTBOX_POLLER_TASK_NAME);
 
-				// Schedule the outbox cleanup task to run recurrently (e.g., every day)
-				schedulerService.scheduleRecurrently(OUTBOX_CLEANUP_TASK_UUID, new OutboxCleanupTaskData(),
-				    Duration.ofDays(1), OUTBOX_CLEANUP_TASK_NAME);
-			} else {
-				schedulerService.deleteRecurringTask(OUTBOX_POLLER_TASK_UUID);
-				schedulerService.deleteRecurringTask(OUTBOX_CLEANUP_TASK_UUID);
-
-			}
+			schedulerService.scheduleRecurrently(OUTBOX_CLEANUP_TASK_UUID, new OutboxCleanupTaskData(), Duration.ofDays(1),
+			    OUTBOX_CLEANUP_TASK_NAME);
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 		}

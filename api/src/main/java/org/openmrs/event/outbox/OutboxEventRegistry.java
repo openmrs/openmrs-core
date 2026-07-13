@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.openmrs.event.outbox.tasks.OutboxTaskSchedulerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -51,12 +52,15 @@ public class OutboxEventRegistry implements SmartInitializingSingleton {
 
 	private final boolean enabled;
 
-	public OutboxEventRegistry(ApplicationContext applicationContext,
-	    @Value("${outboxevent.enabled:true}") boolean enabled) {
+	private final OutboxTaskSchedulerInitializer schedulerInitializer;
+
+	public OutboxEventRegistry(ApplicationContext applicationContext, @Value("${outboxevent.enabled:true}") boolean enabled,
+	    OutboxTaskSchedulerInitializer schedulerInitializer) {
 		this.applicationContext = applicationContext;
 		this.registry = new ArrayList<>();
 		this.hasOutboxListenersCache = CacheBuilder.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
 		this.enabled = enabled;
+		this.schedulerInitializer = schedulerInitializer;
 	}
 
 	@Override
@@ -66,26 +70,57 @@ public class OutboxEventRegistry implements SmartInitializingSingleton {
 		}
 
 		for (String beanName : applicationContext.getBeanDefinitionNames()) {
-			Class<?> type = applicationContext.getType(beanName);
-			if (type != null) {
-				// Extract original class just in case it is wrapped by CGLIB proxy (e.g., @Transactional beans)
-				Class<?> userClass = ClassUtils.getUserClass(type);
-				ReflectionUtils.doWithMethods(userClass, method -> {
-					if (AnnotatedElementUtils.hasAnnotation(method, OutboxEventListener.class)) {
-						Class<?>[] parameterTypes = method.getParameterTypes();
-						if (parameterTypes.length == 1) {
-							ResolvableType eventType = ResolvableType.forMethodParameter(method, 0);
-							Order orderAnnotation = AnnotatedElementUtils.findMergedAnnotation(method, Order.class);
-							int order = orderAnnotation != null ? orderAnnotation.value() : Ordered.LOWEST_PRECEDENCE;
-							registry.add(new ListenerMethod(eventType, beanName, method, order));
-						}
-					}
-				});
-			}
+			scanBean(beanName);
 		}
 
-		// Sort all listeners once at application startup
 		Collections.sort(registry);
+
+		if (hasOutboxListeners()) {
+			schedulerInitializer.schedule();
+		}
+	}
+
+	/**
+	 * Scans the given bean for {@link OutboxEventListener} methods and registers them. Called for every
+	 * bean at startup; does not trigger scheduling (that happens once at end of
+	 * {@link #afterSingletonsInstantiated()}).
+	 */
+	private void scanBean(String beanName) {
+		Class<?> type = applicationContext.getType(beanName);
+		if (type == null) {
+			return;
+		}
+		Class<?> userClass = ClassUtils.getUserClass(type);
+		ReflectionUtils.doWithMethods(userClass, method -> {
+			if (AnnotatedElementUtils.hasAnnotation(method, OutboxEventListener.class)) {
+				Class<?>[] parameterTypes = method.getParameterTypes();
+				if (parameterTypes.length == 1) {
+					ResolvableType eventType = ResolvableType.forMethodParameter(method, 0);
+					Order orderAnnotation = AnnotatedElementUtils.findMergedAnnotation(method, Order.class);
+					int order = orderAnnotation != null ? orderAnnotation.value() : Ordered.LOWEST_PRECEDENCE;
+					registry.add(new ListenerMethod(eventType, beanName, method, order));
+				}
+			}
+		});
+	}
+
+	/**
+	 * Registers any {@link OutboxEventListener} methods found on the given bean and, if this is the
+	 * first listener ever registered, starts the outbox poller. Modules must call this for each of
+	 * their beans when starting up so their listeners are discovered after core startup.
+	 *
+	 * @param beanName the Spring bean name to scan
+	 */
+	public void registerBean(String beanName) {
+		boolean wasEmpty = registry.isEmpty();
+		scanBean(beanName);
+		if (!registry.isEmpty()) {
+			Collections.sort(registry);
+			hasOutboxListenersCache.invalidateAll();
+			if (wasEmpty) {
+				schedulerInitializer.schedule();
+			}
+		}
 	}
 
 	public boolean hasOutboxListeners() {
