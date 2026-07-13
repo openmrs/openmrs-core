@@ -15,22 +15,26 @@ echo "Waiting for database to initialize..."
 
 echo "Verifying database authentication..."
 if [ "${OMRS_DB}" = "mysql" ] || [ "${OMRS_DB}" = "mariadb" ]; then
-  DB_READY=false
-  for i in $(seq 1 30); do
-    if mysql -h "${OMRS_DB_HOSTNAME}" -P "${OMRS_DB_PORT}" \
-        -u "${OMRS_DB_USERNAME}" -p"${OMRS_DB_PASSWORD}" \
-        "${OMRS_DB_NAME}" -e "SELECT 1" > /dev/null 2>&1; then
-      DB_READY=true
-      echo "Database authentication successful."
-      break
-    fi
-    echo "  Database not accepting credentials yet (attempt ${i}/30) — retrying in 2s..."
-    sleep 2
-  done
+  if [ "${OMRS_HAS_CURRENT_OPENMRS_DATABASE}" = "false" ]; then
+    echo "Skipping database authentication check (fresh install — wizard will create DB)."
+  else
+    DB_READY=false
+    for i in $(seq 1 30); do
+      if mysql -h "${OMRS_DB_HOSTNAME}" -P "${OMRS_DB_PORT}" \
+          -u "${OMRS_DB_USERNAME}" -p"${OMRS_DB_PASSWORD}" \
+          "${OMRS_DB_NAME}" -e "SELECT 1" > /dev/null 2>&1; then
+        DB_READY=true
+        echo "Database authentication successful."
+        break
+      fi
+      echo "  Database not accepting credentials yet (attempt ${i}/30) — retrying in 2s..."
+      sleep 2
+    done
 
-  if [ "$DB_READY" = false ]; then
-    echo "ERROR: Database did not accept credentials after 30 attempts."
-    exit 1
+    if [ "$DB_READY" = false ]; then
+      echo "ERROR: Database did not accept credentials after 30 attempts."
+      exit 1
+    fi
   fi
 fi
 
