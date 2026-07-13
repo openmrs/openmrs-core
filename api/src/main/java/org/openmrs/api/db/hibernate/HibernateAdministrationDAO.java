@@ -237,9 +237,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 				}
 				Column column = columns.get(0);
 				String columnDefinition = column.getSqlType();
-				if (columnDefinition != null
-				        && (columnDefinition.equalsIgnoreCase("LONGTEXT") || columnDefinition.equalsIgnoreCase("MEDIUMTEXT")
-				                || columnDefinition.equalsIgnoreCase("TEXT") || columnDefinition.equalsIgnoreCase("CLOB"))) {
+				if (columnDefinition != null && (columnDefinition.equalsIgnoreCase("LONGTEXT")
+				        || columnDefinition.equalsIgnoreCase("MEDIUMTEXT"))) {
 					fieldLength = Integer.MAX_VALUE;
 				} else {
 					fieldLength = column.getLength();

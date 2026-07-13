@@ -52,9 +52,7 @@ public class BrokerEventListenerTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldReceiveEventWhenSourceAndBrokerMatch() {
-		BrokerIncomingEvent event = new BrokerIncomingEvent();
-		event.setSource("test-source");
-		event.setBroker("test-broker");
+		BrokerIncomingEvent<String> event = new BrokerIncomingEvent<>("payload", "test-source", "test-broker");
 
 		eventPublisher.publishEvent(event);
 
