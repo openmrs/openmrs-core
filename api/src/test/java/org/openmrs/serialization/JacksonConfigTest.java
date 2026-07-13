@@ -15,10 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.event.CDCEvent;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -76,5 +78,25 @@ public class JacksonConfigTest {
 		// Verify bidirectional relationship is maintained without infinite recursion
 		assertNotNull(deserializedIdentifier.getPatient());
 		assertEquals(patient.getUuid(), deserializedIdentifier.getPatient().getUuid());
+	}
+
+	@Test
+	public void objectMapper_shouldSerializeCDCEventWithoutSelfReferentialCycle() throws Exception {
+		// CDCEvent.getResolvableType() must be ignored by Jackson; using the Codehaus
+		// @JsonIgnore import instead of FasterXML caused InvalidDefinitionException:
+		// "Direct self-reference leading to cycle (CDCEvent["resolvableType"] -> ResolvableType[...])"
+		CDCEvent<Patient> event = new CDCEvent<>(Patient.class);
+		event.setTableName("patient");
+		event.setOperation(CDCEvent.Operation.CREATE);
+
+		String json = objectMapper.writeValueAsString(event);
+
+		assertNotNull(json);
+		assertFalse(json.contains("resolvableType"), "resolvableType must be excluded from serialized JSON");
+		assertTrue(json.contains("patient"));
+
+		CDCEvent deserialized = objectMapper.readValue(json, CDCEvent.class);
+		assertEquals("patient", deserialized.getTableName());
+		assertEquals(CDCEvent.Operation.CREATE, deserialized.getOperation());
 	}
 }
