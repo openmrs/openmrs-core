@@ -89,7 +89,7 @@ public class BrokerEventListenerTest extends BaseContextSensitiveTest {
 		private final List<BrokerIncomingEvent> receivedEvents = new ArrayList<>();
 
 		@BrokerEventListener(value = "test-source", broker = "test-broker")
-		public void handleEvent(BrokerIncomingEvent event) {
+		public void handleEvent(BrokerIncomingEvent<String> event) {
 			receivedEvents.add(event);
 		}
 
