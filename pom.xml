@@ -318,6 +318,16 @@
 				<version>${owaspCsrfGuardVersion}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-crypto</artifactId>
+				<version>${springSecurityVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk18on</artifactId>
+				<version>${bouncyCastleVersion}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper</artifactId>
 				<version>8.5.71</version>
@@ -1235,6 +1245,8 @@
 			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
 			 be compatible with our version of Spring. -->
 		<springVersion>5.3.30</springVersion>
+		<springSecurityVersion>5.8.14</springSecurityVersion>
+		<bouncyCastleVersion>1.78.1</bouncyCastleVersion>
 		<hibernateVersion>5.6.15.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>6.2.4.Final</hibernateSearchVersion>

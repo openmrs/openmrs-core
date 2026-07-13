@@ -27,6 +27,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -63,23 +64,25 @@ public class Security {
 		if (hashedPassword == null || passwordToHash == null) {
 			throw new APIException("password.cannot.be.null", (Object[]) null);
 		}
-		
-		return hashedPassword.equals(encodeString(passwordToHash))
+
+		if (hashedPassword.startsWith("$argon2id$")) {
+			return getArgon2Encoder().matches(passwordToHash, hashedPassword);
+		}
+
+		return hashedPassword.equals(encodeString(passwordToHash, "SHA-512"))
 			|| hashedPassword.equals(encodeStringSHA1(passwordToHash))
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
 	}
 
 	/**
-	 /**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
-	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
+	 * OpenMRS's preferred algorithm is Argon2id.
 	 *
 	 * @param strToEncode string to encode
-	 * @return the SHA-512 encryption of a given string
-	 * <strong>Should</strong> encode strings to 128 characters
+	 * @return the Argon2id encryption of a given string
 	 */
 	public static String encodeString(String strToEncode) throws APIException {
-		return encodeString(strToEncode, "SHA-512");
+		return getArgon2Encoder().encode(strToEncode);
 	}
 
 	/**
@@ -90,6 +93,57 @@ public class Security {
 	 */
 	private static String encodeStringSHA1(String strToEncode) throws APIException {
 		return encodeString(strToEncode, "SHA-1");
+	}
+
+	private static volatile Argon2PasswordEncoder argon2Encoder;
+	private static volatile String configFingerprint;
+
+	private static Argon2PasswordEncoder getArgon2Encoder() {
+		String currentFingerprint = getConfigFingerprint();
+		if (argon2Encoder == null || !currentFingerprint.equals(configFingerprint)) {
+			synchronized (Security.class) {
+				if (argon2Encoder == null || !currentFingerprint.equals(configFingerprint)) {
+					argon2Encoder = new Argon2PasswordEncoder(
+						getIntProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, 16),
+						getIntProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, 32),
+						getIntProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, 1),
+						getIntProperty(OpenmrsConstants.GP_ARGON2_MEMORY, 65536),
+						getIntProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, 3)
+					);
+					configFingerprint = currentFingerprint;
+				}
+			}
+		}
+		return argon2Encoder;
+	}
+
+	private static String getConfigFingerprint() {
+		return OpenmrsConstants.GP_ARGON2_SALT_LENGTH + "="
+			+ Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16") + "|"
+			+ OpenmrsConstants.GP_ARGON2_HASH_LENGTH + "="
+			+ Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32") + "|"
+			+ OpenmrsConstants.GP_ARGON2_PARALLELISM + "="
+			+ Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1") + "|"
+			+ OpenmrsConstants.GP_ARGON2_MEMORY + "="
+			+ Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536") + "|"
+			+ OpenmrsConstants.GP_ARGON2_ITERATIONS + "="
+			+ Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3");
+	}
+
+	private static int getIntProperty(String key, int defaultValue) {
+		try {
+			String value = Context.getAdministrationService()
+				.getGlobalProperty(key, String.valueOf(defaultValue));
+			int parsed = Integer.parseInt(value.trim());
+			if (parsed <= 0) {
+				log.warn("Invalid value for global property '{}': {}, must be > 0, using default: {}", key, parsed, defaultValue);
+				return defaultValue;
+			}
+			return parsed;
+		} catch (Exception e) {
+			log.warn("Invalid value for global property '{}', using default: {}", key, defaultValue);
+			return defaultValue;
+		}
 	}
 
 	private static String encodeString(String strToEncode, String algorithm) {

@@ -434,7 +434,17 @@ public final class OpenmrsConstants {
 	 * adhere to
 	 */
 	public static final String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
-	
+
+	public static final String GP_ARGON2_MEMORY = "security.argon2.memory";
+
+	public static final String GP_ARGON2_PARALLELISM = "security.argon2.parallelism";
+
+	public static final String GP_ARGON2_ITERATIONS = "security.argon2.iterations";
+
+	public static final String GP_ARGON2_HASH_LENGTH = "security.argon2.hashLength";
+
+	public static final String GP_ARGON2_SALT_LENGTH = "security.argon2.saltLength";
+
 	/**
 	 * Global property name for absolute color for patient graphs.
 	 */
@@ -902,7 +912,22 @@ public final class OpenmrsConstants {
 		        .add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",
 		                "Configure whether passwords must contain both upper and lower case characters",
 		                BooleanDatatype.class, null));
-		
+
+		props.add(new GlobalProperty(GP_ARGON2_MEMORY, "65536",
+		        "Argon2 memory in KB"));
+
+		props.add(new GlobalProperty(GP_ARGON2_PARALLELISM, "1",
+		        "Argon2 parallelism factor"));
+
+		props.add(new GlobalProperty(GP_ARGON2_ITERATIONS, "3",
+		        "Argon2 iterations"));
+
+		props.add(new GlobalProperty(GP_ARGON2_HASH_LENGTH, "32",
+		        "Argon2 hash length in bytes"));
+
+		props.add(new GlobalProperty(GP_ARGON2_SALT_LENGTH, "16",
+		        "Argon2 salt length in bytes"));
+
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
 		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",
 		        BooleanDatatype.class, null));
