@@ -39,6 +39,9 @@ jobs:
           #- platform: windows-latest
           #  java-version: 24
     runs-on: ${{ matrix.platform }}
+    # a wedged test otherwise runs until the 6 hour GitHub default; normal jobs finish in
+    # 9-21 minutes, so this leaves roughly 3x headroom for degraded runners
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - name: Setup JDK
