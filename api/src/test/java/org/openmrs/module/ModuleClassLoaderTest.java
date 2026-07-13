@@ -9,18 +9,23 @@
  */
 package org.openmrs.module;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsClassLoader;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -477,5 +482,88 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 		final URL fileUrl = URI.create("file:/atomfeed/lib/jackson-mapper-asl-1.9.13.jar").toURL();
 		assertFalse(
 		    ModuleClassLoader.isMatchingConditionalResource(moduleWithNullConfigVersions, fileUrl, conditionalResource));
+	}
+
+	/**
+	 * @see ModuleClassLoader#getLibCacheFolderForModule(Module)
+	 */
+	@Test
+	public void getLibCacheFolderForModule_shouldPruneJarsDroppedByAModifiedModule() throws IOException {
+		Module module = new Module("mockmodule", "libcacheprunetest", "org.openmrs.module.libcacheprunetest", "author",
+		        "description", "2.0", "2.0");
+		File omod = File.createTempFile("libcacheprunetest", ".omod");
+		omod.deleteOnExit();
+		module.setFile(omod);
+
+		// Prime the cache folder to look like the previous version's expansion: a lib jar the new
+		// version no longer ships, plus a .moduleLastModified marker predating this omod so the
+		// module counts as modified.
+		File cacheFolder = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
+		File staleJar = new File(new File(cacheFolder, "lib"), "dropped-by-upgrade.jar");
+		FileUtils.writeStringToFile(staleJar, "stale", Charset.defaultCharset());
+		FileUtils.writeStringToFile(new File(cacheFolder, ".moduleLastModified"), Long.toString(omod.lastModified() - 1000L),
+		    Charset.defaultCharset());
+		assertTrue(staleJar.exists());
+
+		try {
+			File result = ModuleClassLoader.getLibCacheFolderForModule(module);
+
+			assertThat(result, is(cacheFolder));
+			assertFalse(staleJar.exists(), "a jar dropped by the upgraded module must not linger in the lib cache");
+			assertTrue(cacheFolder.isDirectory(), "the lib cache folder should be recreated for re-expansion");
+		} finally {
+			FileUtils.deleteQuietly(cacheFolder);
+		}
+	}
+
+	/**
+	 * @see ModuleClassLoader#getLibCacheFolderForModule(Module)
+	 */
+	@Test
+	public void getLibCacheFolderForModule_shouldClearTheCacheWhenTheLastModifiedMarkerIsUnreadable() throws IOException {
+		Module module = new Module("mockmodule", "libcachemarkertest", "org.openmrs.module.libcachemarkertest", "author",
+		        "description", "2.0", "2.0");
+		File omod = File.createTempFile("libcachemarkertest", ".omod");
+		omod.deleteOnExit();
+		module.setFile(omod);
+
+		// A corrupt marker we cannot parse: we can no longer tell whether the module changed, so the
+		// cache must be cleared rather than reused with possibly stale jars.
+		File cacheFolder = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
+		File staleJar = new File(new File(cacheFolder, "lib"), "dropped-by-upgrade.jar");
+		FileUtils.writeStringToFile(staleJar, "stale", Charset.defaultCharset());
+		FileUtils.writeStringToFile(new File(cacheFolder, ".moduleLastModified"), "not-a-timestamp",
+		    Charset.defaultCharset());
+		assertTrue(staleJar.exists());
+
+		try {
+			ModuleClassLoader.getLibCacheFolderForModule(module);
+
+			assertFalse(staleJar.exists(), "an unreadable last-modified marker must clear the cache rather than reuse it");
+		} finally {
+			FileUtils.deleteQuietly(cacheFolder);
+		}
+	}
+
+	/**
+	 * @see ModuleClassLoader#deleteLibCacheFolder(File)
+	 */
+	@Test
+	public void deleteLibCacheFolder_shouldRefuseToDeleteAFolderOutsideTheLibCacheRoot() throws IOException {
+		// A folder that is a sibling of the lib cache root, i.e. not a direct child, as a malformed
+		// module id such as "../something" would resolve to.
+		File outside = new File(OpenmrsClassLoader.getLibCacheFolder().getParentFile(), "libcache-guard-test");
+		File keep = new File(outside, "keep.txt");
+		FileUtils.writeStringToFile(keep, "keep", Charset.defaultCharset());
+		assertTrue(keep.exists());
+
+		try {
+			ModuleClassLoader.deleteLibCacheFolder(outside);
+
+			assertTrue(keep.exists(),
+			    "must refuse to recursively delete a folder that is not directly inside the lib cache root");
+		} finally {
+			FileUtils.deleteQuietly(outside);
+		}
 	}
 }

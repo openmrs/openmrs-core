@@ -462,18 +462,22 @@ public class ModuleClassLoader extends URLClassLoader {
 					String savedLastModified = FileUtils.readFileToString(moduleLastModifiedFile, Charset.defaultCharset());
 					if (!Long.valueOf(savedLastModified).equals(moduleLastModified)) {
 						log.debug("Deleting {} since the module was modified", tmpModuleDir.getAbsolutePath());
-						tmpModuleDir.delete();
+						deleteLibCacheFolder(tmpModuleDir);
 					}
 				} catch (IOException | NumberFormatException e) {
-					log.warn("Error while reading module last modified file: {}", moduleLastModifiedFile, e);
+					log.warn("Could not read the last modified marker {}; clearing the lib cache to be safe",
+					    moduleLastModifiedFile, e);
+					deleteLibCacheFolder(tmpModuleDir);
 				}
 			} else {
 				log.debug("Optimized startup disabled or {} does not exist, deleting {}", moduleLastModifiedFile,
 				    tmpModuleDir);
-				tmpModuleDir.delete();
+				deleteLibCacheFolder(tmpModuleDir);
 			}
 
-			tmpModuleDir.mkdirs();
+			if (!tmpModuleDir.mkdirs() && !tmpModuleDir.isDirectory()) {
+				log.warn("Unable to create the module lib cache folder {}", tmpModuleDir);
+			}
 			libCacheFolders.put(module.getModuleId(), tmpModuleDir);
 
 			if (moduleLastModified != 0L) {
@@ -485,6 +489,35 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 
 			return tmpModuleDir;
+		}
+	}
+
+	/**
+	 * Recursively deletes the module's lib cache folder so a modified module is fully re-expanded.
+	 * {@link java.io.File#delete()} only removes an empty directory and silently no-ops otherwise, so
+	 * jars a module dropped between versions would linger in the cache and stay on its classpath. Only
+	 * a direct child of the lib cache root is ever deleted.
+	 *
+	 * @param tmpModuleDir the module's lib cache folder
+	 */
+	static void deleteLibCacheFolder(File tmpModuleDir) {
+		try {
+			// Guard this recursive delete on a path built from the module id: only ever remove a
+			// direct child of the lib cache root, never something a malformed id resolved to outside it.
+			if (!OpenmrsClassLoader.getLibCacheFolder().getCanonicalFile()
+			        .equals(tmpModuleDir.getCanonicalFile().getParentFile())) {
+				log.warn("Refusing to delete {}; it is not directly inside the lib cache folder", tmpModuleDir);
+				return;
+			}
+			FileUtils.deleteDirectory(tmpModuleDir);
+		} catch (IOException e) {
+			log.warn("Unable to delete the module lib cache folder {}", tmpModuleDir, e);
+		}
+		if (tmpModuleDir.exists()) {
+			log.warn("The module lib cache folder {} could not be fully cleared and may still hold jars from a previous "
+			        + "version of the module, which can leave stale classes on the module classpath; delete it and "
+			        + "restart if the module misbehaves after an upgrade.",
+			    tmpModuleDir);
 		}
 	}
 
