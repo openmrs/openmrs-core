@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
@@ -233,7 +234,7 @@ class SecurityTest extends BaseContextSensitiveTest {
 	@Test
 	void encodeString_shouldReturnSHA512Hash() {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
-		assertEquals(HASH_LENGTH, hash.length());
+		assertTrue(hash.startsWith("$argon2id$"));
 	}
 
 	/**
