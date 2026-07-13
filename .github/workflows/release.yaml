@@ -1,0 +1,428 @@
+# Releases a maintenance version of openmrs-core from a maintenance branch (N.N.x).
+#
+# This duplicates the manual "Release" stage (and the "Release image variants" stage that
+# follows it automatically) of the Bamboo plan defined in bamboo-specs/bamboo.yml
+# (e.g. TRUNK-OC28 "OpenMRS Core 2.8.x").
+# For example, dispatching it on 2.8.x with releaseVersion=2.8.8 will:
+#   1. set the maven version to 2.8.8 and commit "[skip-ci] [skip actions] Releasing 2.8.8"
+#      as openmrs-bot ([skip-ci] is Bamboo's skip marker; [skip actions] is the one GitHub
+#      recognizes, so the release commit does not trigger a redundant CI run)
+#   2. build and push openmrs/openmrs-core:2.8.8-dev and :2.8.8 (linux/amd64 + linux/arm64)
+#   3. deploy the release artifacts to the OpenMRS Nexus releases repository by running
+#      mvn deploy inside the :2.8.8-dev image, exactly as Bamboo does
+#   4. tag 2.8.8 and push the tag
+#   5. push the release commit to 2.8.x, then set the next development version
+#      (auto-incremented to 2.8.9-SNAPSHOT, or the developmentVersion input if given)
+#      and push "Setting new SNAPSHOT version" (non-fatal, as in Bamboo)
+#   6. build and push the per-JDK image variants from the tag:
+#      openmrs/openmrs-core:2.8.8[-dev]-amazoncorretto-{8,11,17,21}
+#
+# Required secrets:
+#   OMRS_RELEASE_BOT_APP_ID / OMRS_RELEASE_BOT_PRIVATE_KEY
+#                                               org-level secrets already shared with this
+#                                               repo; preferred token source (short-lived App
+#                                               installation tokens, like the shared module
+#                                               release workflow). REQUIRED SETUP: the App
+#                                               must be added as a bypass actor on each
+#                                               maintenance-branch ruleset — the validation
+#                                               pre-flight can only verify the token
+#                                               authenticates and the branch state, NOT
+#                                               ruleset bypass (git push --dry-run never runs
+#                                               server-side rules), so without the bypass the
+#                                               branch push is rejected only after the maven
+#                                               deploy
+#   OMRS_BOT_GH_TOKEN                           org-level secret already shared with this
+#                                               repo — the same PAT module releases and
+#                                               tx-pull use; fallback when the App
+#                                               credentials are absent or the App token
+#                                               cannot be minted; either token is used only
+#                                               at push time, after the images have been
+#                                               built, so it can never end up inside a
+#                                               published image; on forks both may be omitted
+#                                               and the default token is used instead
+#   MAVEN_REPO_USERNAME / MAVEN_REPO_API_KEY    org-level secrets already shared with this
+#                                               repo (same ones module releases use); deploy
+#                                               access to mavenrepo.openmrs.org (used for the
+#                                               openmrs-repo-releases/-snapshots server ids)
+#   DOCKER_HUB_USERNAME / DOCKER_HUB_TOKEN      push access to docker.io/openmrs — the same
+#                                               org-level secrets the RefApp and contrib
+#                                               docker workflows use; both are required
+#                                               (the token is only the password half of
+#                                               docker login). They must be shared with
+#                                               this repo in the org secret settings, or
+#                                               added to BOTH the "release" and
+#                                               "release-images" environments; the variant
+#                                               jobs run in the reviewer-less
+#                                               "release-images" environment, which needs
+#                                               the same *.*.x deployment-branch rule but
+#                                               no approval, so variants run unattended
+# Shared org secrets resolve with no repo setup; environment-scoped copies (same names on
+# the environments) would shadow them if tighter control is ever wanted.
+#
+# The workflow file must exist on the branch being released, and the branch must be in
+# build.yaml's push triggers: the green-build gate below requires a successful build of
+# the released commit. Keep a copy on master as well — it is inert there (the validation
+# step rejects non-N.N.x branches) but Dependabot only scans the default branch, so the
+# master copy is what keeps the action SHA pins below from rotting; pin bumps then reach
+# maintenance branches through the normal backport flow. Run it with:
+#   gh workflow run release.yaml --ref 2.8.x -f releaseVersion=2.8.8 \
+#     [-f developmentVersion=2.8.9-SNAPSHOT]
+#
+# On forks: the image pushes still target openmrs/openmrs-core itself, so set the
+# repository variable DOCKER_IMAGE_NAME to a registry namespace the fork's Docker Hub
+# account can push to (without it a fork's pushes are denied); past the image pushes,
+# the run stops at "Release to maven" unless Nexus credentials are configured (the
+# validation step only enforces the secrets on openmrs/openmrs-core).
+#
+# If a run fails AFTER "Release to maven" succeeded, do not simply re-run it: the Nexus
+# releases repository rejects re-deployment of the same version, so finish the remaining
+# steps manually instead — tag push, branch push, SNAPSHOT bump, and the per-JDK variant
+# images (run the variant buildx commands from this file against the tag). A failure
+# DURING "Release to maven" may likewise have left some modules in Nexus already; check
+# what was uploaded before re-running.
+
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Version to release (e.g. 2.8.8); the branch must be at this SNAPSHOT version'
+        required: true
+      developmentVersion:
+        description: 'Next development version (e.g. 2.8.9-SNAPSHOT); leave empty to auto-increment'
+        required: false
+        default: ''
+
+# never allow two releases to run at the same time on the same branch; queue rather
+# than cancel: cancelling a release mid-Nexus-deploy would leave a half-published version
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+# deny-all default; each job declares exactly what it needs
+permissions: {}
+
+env:
+  # overridable via a repository variable so forks can push test images to their own registry
+  DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME || 'openmrs/openmrs-core' }}
+  DOCKER_IMAGE_PLATFORMS: linux/amd64,linux/arm64
+  OMRS_VERSION: ${{ inputs.releaseVersion }}
+  OMRS_DEV_VERSION: ${{ inputs.developmentVersion }}
+  # passed to every image build; the production builds reuse the dev builds' compile
+  # stages only while this value is byte-identical across the invocations
+  MVN_ARGS: clean install -DskipTests
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    # configure protection rules on the "release" environment to require an approval,
+    # mirroring the manual trigger of the Bamboo Release stage; GitHub auto-creates the
+    # environment on first run with NO protection rules, so until they are configured
+    # the only gate is dispatch permission itself
+    environment: release
+    permissions:
+      contents: write # fork-fallback pushes of the release/SNAPSHOT commits and the tag (upstream pushes use the App token or bot PAT)
+      actions: read # query build.yaml runs for the green-build gate
+    env:
+      HAS_APP_CREDS: ${{ secrets.OMRS_RELEASE_BOT_APP_ID != '' && secrets.OMRS_RELEASE_BOT_PRIVATE_KEY != '' }}
+      PARTIAL_APP_CREDS: ${{ (secrets.OMRS_RELEASE_BOT_APP_ID != '') != (secrets.OMRS_RELEASE_BOT_PRIVATE_KEY != '') }}
+    steps:
+      # never persist credentials: the Dockerfile copies the whole checkout (including
+      # .git) into the published dev image, so persisted credentials would ship in a
+      # public image; pushes authenticate via remote set-url after the images are built
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      # prefer a short-lived App token over the long-lived PAT, like the shared
+      # module-release workflow (App token || OMRS_BOT_GH_TOKEN || github.token); the App
+      # must be a bypass actor on this branch's ruleset — the pre-flight below verifies
+      # the token authenticates and can reach the branch, but ruleset bypass is only
+      # exercised by the real pushes. App tokens expire after an hour — shorter than
+      # this job — so this one only serves the pre-flight; the push steps mint a fresh
+      # one just before they run
+      - name: Create release bot App token
+        id: app-token
+        if: ${{ env.HAS_APP_CREDS == 'true' }}
+        # a failed mint falls through to the PAT in the token chains instead of
+        # killing the release while a usable fallback exists
+        continue-on-error: true
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ secrets.OMRS_RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.OMRS_RELEASE_BOT_PRIVATE_KEY }}
+          # least privilege: pushing commits and tags needs nothing else
+          permission-contents: write
+
+      - name: Warn about partially configured App credentials
+        if: ${{ env.PARTIAL_APP_CREDS == 'true' }}
+        run: echo "::warning::Only one of OMRS_RELEASE_BOT_APP_ID/OMRS_RELEASE_BOT_PRIVATE_KEY is configured; falling back to OMRS_BOT_GH_TOKEN"
+
+      - name: Setup JDK
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: 'maven'
+
+      - name: Validate the release preconditions
+        env:
+          BOT_TOKEN: ${{ steps.app-token.outputs.token || secrets.OMRS_BOT_GH_TOKEN }}
+          MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+          MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
+        run: |
+          if [[ "${GITHUB_REPOSITORY}" == "openmrs/openmrs-core" ]]; then
+            if [[ -z "${BOT_TOKEN}" ]]; then
+              echo "::error::No usable push token: no App token could be created (missing OMRS_RELEASE_BOT_APP_ID/OMRS_RELEASE_BOT_PRIVATE_KEY or the mint failed) and OMRS_BOT_GH_TOKEN is not configured; the default token cannot push to the protected ${GITHUB_REF_NAME} branch"
+              exit 1
+            fi
+            if [[ -z "${MAVEN_REPO_USERNAME}" || -z "${MAVEN_REPO_API_KEY}" ]]; then
+              echo "::error::MAVEN_REPO_USERNAME/MAVEN_REPO_API_KEY are not configured; the maven deploy would fail long after the docker images are published"
+              exit 1
+            fi
+            # prove the token can actually push before anything irreversible happens; the
+            # auth header is process-scoped (-c), so it never touches .git/config and can
+            # never end up inside the published images
+            if ! git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "${BOT_TOKEN}" | base64 -w0)" \
+                push --dry-run origin "HEAD:refs/heads/${GITHUB_REF_NAME}"; then
+              echo "::error::The release token cannot push to ${GITHUB_REF_NAME} (expired or invalid token, missing repository permission, or the branch moved since dispatch)"
+              exit 1
+            fi
+          fi
+          if [[ ! "${GITHUB_REF_NAME}" =~ ^[0-9]+\.[0-9]+\.x$ ]]; then
+            echo "::error::This workflow releases maintenance versions and must be dispatched on a maintenance branch (N.N.x), not '${GITHUB_REF_NAME}'"
+            exit 1
+          fi
+          if [[ ! "${OMRS_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::releaseVersion must look like 2.8.8, got '${OMRS_VERSION}'"
+            exit 1
+          fi
+          BRANCH_PREFIX="${GITHUB_REF_NAME%.x}"
+          if [[ "${OMRS_VERSION}" != "${BRANCH_PREFIX}."* ]]; then
+            echo "::error::releaseVersion ${OMRS_VERSION} does not belong to the ${GITHUB_REF_NAME} branch"
+            exit 1
+          fi
+          if [[ -n "${OMRS_DEV_VERSION}" ]]; then
+            if [[ ! "${OMRS_DEV_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-SNAPSHOT$ ]]; then
+              echo "::error::developmentVersion must look like 2.8.9-SNAPSHOT, got '${OMRS_DEV_VERSION}'"
+              exit 1
+            fi
+            if [[ "${OMRS_DEV_VERSION}" == "${OMRS_VERSION}-SNAPSHOT" ]]; then
+              echo "::error::developmentVersion must differ from the version being released"
+              exit 1
+            fi
+            if [[ "${OMRS_DEV_VERSION}" != "${BRANCH_PREFIX}."* ]]; then
+              echo "::error::developmentVersion ${OMRS_DEV_VERSION} does not belong to the ${GITHUB_REF_NAME} branch"
+              exit 1
+            fi
+          fi
+          TAG_LOOKUP=0
+          git ls-remote --exit-code origin "refs/tags/${OMRS_VERSION}" > /dev/null || TAG_LOOKUP=$?
+          if [[ "${TAG_LOOKUP}" -eq 0 ]]; then
+            echo "::error::Tag ${OMRS_VERSION} already exists; was this version already released?"
+            exit 1
+          elif [[ "${TAG_LOOKUP}" -ne 2 ]]; then
+            echo "::error::Could not check whether tag ${OMRS_VERSION} exists (git ls-remote exited ${TAG_LOOKUP})"
+            exit 1
+          fi
+          CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          if [[ "${CURRENT_VERSION}" != "${OMRS_VERSION}-SNAPSHOT" ]]; then
+            echo "::error::${GITHUB_REF_NAME} is at ${CURRENT_VERSION}, expected ${OMRS_VERSION}-SNAPSHOT"
+            exit 1
+          fi
+
+      - name: Require a green build on this commit
+        # Bamboo only offers the Release stage on a green build; enforce the same here
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SUCCESSFUL_RUNS=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/build.yaml/runs?head_sha=${GITHUB_SHA}&status=success&exclude_pull_requests=true" --jq '.total_count')
+          if [[ "${SUCCESSFUL_RUNS}" -lt 1 ]]; then
+            echo "::error::No successful 'Build with Maven' run for ${GITHUB_SHA}; wait for CI to pass on ${GITHUB_REF_NAME} before releasing"
+            exit 1
+          fi
+
+      - name: Set the release version
+        run: |
+          mvn versions:set -DnewVersion="${OMRS_VERSION}" -DgenerateBackupPoms=false --batch-mode
+          git config user.name openmrs-bot
+          git config user.email infrastructure@openmrs.org
+          git commit -am "[skip-ci] [skip actions] Releasing ${OMRS_VERSION}"
+
+      - uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
+
+      - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+
+      - uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push the dev image
+        run: |
+          docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+            --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-cache" \
+            --target dev \
+            --build-arg MVN_ARGS="${MVN_ARGS}" \
+            -t "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}-dev" .
+
+      - name: Build and push the production image
+        # the compile/dev stages are reused from the previous step via the local
+        # buildx cache; the registry cache only helps when that is unavailable
+        run: |
+          docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+            --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-cache" \
+            --build-arg MVN_ARGS="${MVN_ARGS}" \
+            -t "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}" .
+
+      - name: Release to maven
+        env:
+          MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+          MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
+        # run mvn deploy inside the dev image just pushed, as Bamboo does, so the
+        # artifacts deployed to Nexus are built from exactly what the image contains
+        run: |
+          cat > "${RUNNER_TEMP}/settings.xml" <<'EOF'
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+            <servers>
+              <server>
+                <id>openmrs-repo-releases</id>
+                <username>${env.MAVEN_REPO_USERNAME}</username>
+                <password>${env.MAVEN_REPO_API_KEY}</password>
+              </server>
+              <server>
+                <id>openmrs-repo-snapshots</id>
+                <username>${env.MAVEN_REPO_USERNAME}</username>
+                <password>${env.MAVEN_REPO_API_KEY}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+          # as in Bamboo: give Docker Hub a moment to serve the manifest buildx just pushed
+          sleep 10
+          docker pull "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}-dev"
+          docker run --rm \
+            -e MAVEN_REPO_USERNAME -e MAVEN_REPO_API_KEY \
+            -v "${RUNNER_TEMP}/settings.xml:/.m2/settings.xml:ro" \
+            "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}-dev" \
+            mvn deploy -DskipTests --batch-mode --settings /.m2/settings.xml
+
+      # the pre-flight's App token has likely expired by now (~1h lifetime, and the
+      # builds and deploy take longer); mint a fresh one from the same source the
+      # pre-flight tested — only if the first mint worked — falling back to the PAT
+      # if the refresh fails
+      - name: Refresh the release bot App token
+        id: push-token
+        if: ${{ steps.app-token.outcome == 'success' }}
+        # a failed refresh falls through to the PAT rather than stranding the
+        # release after the maven deploy
+        continue-on-error: true
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ secrets.OMRS_RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.OMRS_RELEASE_BOT_PRIVATE_KEY }}
+          # least privilege: pushing commits and tags needs nothing else
+          permission-contents: write
+
+      - name: Tag the release in git
+        # authenticate the remote only now, after the docker builds, so the token can
+        # never end up inside the published images (Bamboo also swaps the remote via
+        # set-url, but to a credential-free SSH URL, so it can do so up front)
+        env:
+          GH_PUSH_TOKEN: ${{ steps.push-token.outputs.token || secrets.OMRS_BOT_GH_TOKEN || github.token }}
+        run: |
+          git remote set-url origin "https://x-access-token:${GH_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git tag "${OMRS_VERSION}"
+          git push origin "${OMRS_VERSION}"
+
+      - name: Push the release commit and set the next SNAPSHOT version
+        # like Bamboo, a failure here does not fail the release
+        run: |
+          (
+            git push origin "HEAD:${GITHUB_REF_NAME}" &&
+            if [[ -n "${OMRS_DEV_VERSION}" ]]; then
+              mvn versions:set -DnewVersion="${OMRS_DEV_VERSION}" -DgenerateBackupPoms=false --batch-mode
+            else
+              mvn versions:set -DnextSnapshot=true -DgenerateBackupPoms=false --batch-mode
+            fi &&
+            git commit -am "Setting new SNAPSHOT version" &&
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          ) || echo "::warning::The ${OMRS_VERSION} release itself is complete (images, maven artifacts, tag), but ${GITHUB_REF_NAME} was not fully updated; push the release commit and/or the new SNAPSHOT version manually (the step log shows where it stopped; a GH013 rejection means the pushing App/PAT is not a bypass actor on this branch's ruleset)."
+
+  release-image-variants:
+    name: Release JDK ${{ matrix.jdk }} image
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    # reviewer-less environment that scopes the Docker Hub secrets and carries the same
+    # *.*.x deployment-branch rule as "release"; with no required reviewers configured on
+    # it, the variant jobs still start unattended after the release job
+    environment: release-images
+    permissions:
+      contents: read # checkout of the release tag only
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - jdk: 8
+            dev_jdk: amazoncorretto-8
+            runtime_jdk: jdk8-corretto
+          - jdk: 11
+            dev_jdk: amazoncorretto-11
+            runtime_jdk: jdk11-corretto
+          - jdk: 17
+            dev_jdk: amazoncorretto-17
+            runtime_jdk: jdk17-corretto
+          # bamboo.yml's "Release JDK 21 image" job omits the -dev suffix from its dev
+          # tag (a typo: no Bamboo release has a -dev-amazoncorretto-21 tag on Docker
+          # Hub); this workflow does not copy the typo and publishes the dev variant
+          - jdk: 21
+            dev_jdk: amazoncorretto-21
+            runtime_jdk: jdk21-corretto
+    env:
+      DEV_JDK: ${{ matrix.dev_jdk }}
+      RUNTIME_JDK: ${{ matrix.runtime_jdk }}
+    steps:
+      # persist-credentials false for the same reason as in the release job: .git is
+      # copied into the published dev image variants
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # the tag pushed by the release job
+          ref: refs/tags/${{ env.OMRS_VERSION }}
+          persist-credentials: false
+
+      - uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
+
+      - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+
+      - uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      # Bamboo's Deploy stage (bamboo-specs/bamboo.yml) pushes per-JDK caches for
+      # 11/17/21 but not for 8 (it publishes the JDK 8 build under the unsuffixed
+      # tags), so the plain branch dev cache is a fallback; missing refs are non-fatal
+      - name: Build and push the dev image variant
+        run: |
+          docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+            --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-${DEV_JDK}-cache" \
+            --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-cache" \
+            --target dev \
+            --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+            -t "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}-dev-${DEV_JDK}" .
+
+      - name: Build and push the production image variant
+        run: |
+          docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+            --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-${DEV_JDK}-cache" \
+            --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-cache" \
+            --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+            -t "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}-${DEV_JDK}" .

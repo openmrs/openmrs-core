@@ -193,7 +193,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 
 		if (!useInMemoryDatabase()) {
-			Containers.ensureDatabaseRunning();
+			ensureDatabaseRunning();
 		}
 
 		Properties props = getRuntimeProperties();
@@ -204,6 +204,15 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		Context.setRuntimeProperties(props);
 
 		loadCount++;
+	}
+
+	/**
+	 * Note it is called from the constructor, before subclass instance fields are initialized.
+	 *
+	 * @since 2.9.0
+	 */
+	protected void ensureDatabaseRunning() {
+		Containers.ensureDatabaseRunning();
 	}
 
 	/**
@@ -223,7 +232,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 	@BeforeEach
 	public void checkNotModule() throws Exception {
 		if (this.getClass().getPackage().toString().contains("org.openmrs.module.")
-		        && !(this instanceof BaseContextSensitiveTest)) {
+		        && !(this instanceof BaseModuleContextSensitiveNonTransactionalTest)) {
 			throw new RuntimeException(
 			        "Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
 		}
@@ -582,12 +591,6 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		if (!useInMemoryDatabase())
 			throw new RuntimeException(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
-
-		//Create shedlock table for tests
-		getConnection().prepareStatement(
-		    "CREATE TABLE IF NOT EXISTS shedlock(" + "name VARCHAR(64) NOT NULL, " + "lock_until TIMESTAMP NOT NULL, "
-		            + "locked_at TIMESTAMP NOT NULL, " + "locked_by VARCHAR(255) NOT NULL, " + "PRIMARY KEY (name))")
-		        .execute();
 
 		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the
 		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from

@@ -16,7 +16,7 @@ import java.time.Instant;
  * <p>
  * Recurring tasks are used to schedule actual task instances when the time to run comes.
  *
- * @since 2.9.x
+ * @since 2.9.0
  */
 public interface RecurringTaskDetails {
 
