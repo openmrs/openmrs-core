@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.openmrs.Location;
 import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
@@ -171,18 +172,10 @@ public class UserContext implements Serializable {
 			throw new ContextAuthenticationException("User not found with systemId: " + systemId);
 		}
 
-		// hydrate the user object
-		if (userToBecome.getAllRoles() != null) {
-			userToBecome.getAllRoles().size();
-		}
-
-		if (userToBecome.getUserProperties() != null) {
-			userToBecome.getUserProperties().size();
-		}
-
-		if (userToBecome.getPrivileges() != null) {
-			userToBecome.getPrivileges().size();
-		}
+		// hydrate the user object by initializing its lazy collections within the session
+		Hibernate.initialize(userToBecome.getAllRoles());
+		Hibernate.initialize(userToBecome.getUserProperties());
+		Hibernate.initialize(userToBecome.getPrivileges());
 
 		this.user = userToBecome;
 

@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -123,6 +124,8 @@ public class OpenmrsUtil {
 	private static volatile MimetypesFileTypeMap mimetypesFileTypeMap = null;
 
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
+
+	private static final Random RANDOM = new Random();
 
 	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<>();
 
@@ -238,22 +241,10 @@ public class OpenmrsUtil {
 	 * @throws IOException
 	 */
 	public static byte[] getFileAsBytes(File file) throws IOException {
-		FileInputStream fileInputStream = null;
 		try {
-			fileInputStream = new FileInputStream(file);
-			byte[] b = new byte[fileInputStream.available()];
-			fileInputStream.read(b);
-			return b;
-		} catch (Exception e) {
+			return Files.readAllBytes(file.toPath());
+		} catch (IOException e) {
 			log.error("Unable to get file as byte array", e);
-		} finally {
-			if (fileInputStream != null) {
-				try {
-					fileInputStream.close();
-				} catch (IOException io) {
-					log.warn("Couldn't close fileInputStream: " + io);
-				}
-			}
 		}
 
 		return null;
@@ -1484,7 +1475,7 @@ public class OpenmrsUtil {
 	 * @return file new file that is able to be written to
 	 */
 	public static File getOutFile(File dir, Date date, User user) {
-		Random gen = new Random();
+		Random gen = RANDOM;
 		File outFile;
 		do {
 			// format to print date in filename
@@ -1527,7 +1518,7 @@ public class OpenmrsUtil {
 	 * @return unique string
 	 */
 	public static String generateUid(Integer size) {
-		Random gen = new Random();
+		Random gen = RANDOM;
 		StringBuilder sb = new StringBuilder(size);
 		for (int i = 0; i < size; i++) {
 			int ch = gen.nextInt() * 62;

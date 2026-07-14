@@ -1444,7 +1444,9 @@ public class ModuleFactory {
 			return newModule;
 		} catch (Exception e) {
 			log.warn("Error while unloading old module and loading in new module");
-			moduleFile.delete();
+			if (!moduleFile.delete()) {
+				log.warn("Unable to delete module file at {}", moduleFile.getAbsolutePath());
+			}
 			return mod;
 		}
 

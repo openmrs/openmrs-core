@@ -408,7 +408,7 @@ public class WebUtil implements GlobalPropertyListener {
 				dateFormat = new OpenmrsDateFormat(new SimpleDateFormat(formatValue), locale);
 			}
 		}
-		return date == null ? "" : dateFormat.format(date);
+		return (date == null || dateFormat == null) ? "" : dateFormat.format(date);
 	}
 
 	/**

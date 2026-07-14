@@ -230,7 +230,9 @@ public class ModuleClassLoader extends URLClassLoader {
 
 			if (!tmpModuleJar.exists()) {
 				try {
-					tmpModuleJar.createNewFile();
+					if (!tmpModuleJar.createNewFile()) {
+						log.warn("Unable to create tmpModuleFile at {}", tmpModuleJar.getAbsolutePath());
+					}
 				} catch (IOException io) {
 					log.warn("Unable to create tmpModuleFile", io);
 				}
@@ -462,7 +464,9 @@ public class ModuleClassLoader extends URLClassLoader {
 					String savedLastModified = FileUtils.readFileToString(moduleLastModifiedFile, Charset.defaultCharset());
 					if (!Long.valueOf(savedLastModified).equals(moduleLastModified)) {
 						log.debug("Deleting {} since the module was modified", tmpModuleDir.getAbsolutePath());
-						tmpModuleDir.delete();
+						if (!tmpModuleDir.delete()) {
+							log.warn("Unable to delete module cache directory {}", tmpModuleDir.getAbsolutePath());
+						}
 					}
 				} catch (IOException | NumberFormatException e) {
 					log.warn("Error while reading module last modified file: {}", moduleLastModifiedFile, e);
@@ -470,7 +474,9 @@ public class ModuleClassLoader extends URLClassLoader {
 			} else {
 				log.debug("Optimized startup disabled or {} does not exist, deleting {}", moduleLastModifiedFile,
 				    tmpModuleDir);
-				tmpModuleDir.delete();
+				if (!tmpModuleDir.delete()) {
+					log.warn("Unable to delete module cache directory {}", tmpModuleDir.getAbsolutePath());
+				}
 			}
 
 			tmpModuleDir.mkdirs();

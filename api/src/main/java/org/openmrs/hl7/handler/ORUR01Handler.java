@@ -339,22 +339,22 @@ public class ORUR01Handler implements Application {
 					if (!StringUtils.isEmpty(value)) {
 						conceptProposals.add(createConceptProposal(encounter, questionConcept, value));
 					} else {
+						//stop any further processing of current message by recording the error below
 						errorInHL7Queue = new HL7Exception(
 						        Context.getMessageSourceService().getMessage("Hl7.proposed.concept.name.empty"),
 						        proposingException);
-						break;//stop any further processing of current message
 					}
 
 				} catch (HL7Exception e) {
 					errorInHL7Queue = e;
-				} finally {
-					// Handle obs-level exceptions
-					if (errorInHL7Queue != null) {
-						throw new HL7Exception(
-						        Context.getMessageSourceService().getMessage("ORUR01.error.improperlyFormattedOBX",
-						            new Object[] { PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")) }, null),
-						        HL7Exception.DATA_TYPE_ERROR, errorInHL7Queue);
-					}
+				}
+
+				// Handle obs-level exceptions
+				if (errorInHL7Queue != null) {
+					throw new HL7Exception(
+					        Context.getMessageSourceService().getMessage("ORUR01.error.improperlyFormattedOBX",
+					            new Object[] { PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")) }, null),
+					        HL7Exception.DATA_TYPE_ERROR, errorInHL7Queue);
 				}
 			}
 
