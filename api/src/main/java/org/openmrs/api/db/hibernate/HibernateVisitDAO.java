@@ -171,14 +171,15 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#deleteVisit(org.openmrs.Visit)
 	 */
-@Override
-@Transactional
-public void deleteVisit(Visit visit) throws DAOException {
-    if (visit == null) {
-        throw new DAOException("Visit must not be null");
-    }
-    getCurrentSession().remove(visit);
-}
+	@Override
+	@Transactional
+	public void deleteVisit(Visit visit) throws DAOException {
+		if (visit == null) {
+			throw new DAOException("Visit must not be null");
+		}
+		getCurrentSession().remove(visit);
+	}
+
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisits(java.util.Collection, java.util.Collection,
 	 *      java.util.Collection, java.util.Collection, java.util.Date, java.util.Date, java.util.Date,

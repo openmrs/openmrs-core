@@ -835,6 +835,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 
 		assertThrows(APIException.class, () -> visitService.purgeVisit(visit));
 	}
+
 	/**
 	 * @see VisitService#purgeVisit(Visit)
 	 */
@@ -844,6 +845,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		// not a recoverable condition, so IllegalArgumentException is the correct contract.
 		assertThrows(IllegalArgumentException.class, () -> visitService.purgeVisit(null));
 	}
+
 	/**
 	 * @see VisitService#saveVisit(Visit)
 	 */
