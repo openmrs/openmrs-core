@@ -52,4 +52,18 @@ public class OutboxTaskSchedulerInitializer {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 		}
 	}
+
+	public void deleteScheduledTasks() {
+		try {
+			if (!Context.isSessionOpen()) {
+				Context.openSession();
+			}
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
+
+			schedulerService.deleteRecurringTask(OUTBOX_POLLER_TASK_UUID);
+			schedulerService.deleteRecurringTask(OUTBOX_CLEANUP_TASK_UUID);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
+		}
+	}
 }

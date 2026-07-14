@@ -66,6 +66,7 @@ public class OutboxEventRegistry implements SmartInitializingSingleton {
 	@Override
 	public void afterSingletonsInstantiated() {
 		if (!enabled) {
+			schedulerInitializer.deleteScheduledTasks();
 			return;
 		}
 
@@ -77,6 +78,8 @@ public class OutboxEventRegistry implements SmartInitializingSingleton {
 
 		if (hasOutboxListeners()) {
 			schedulerInitializer.schedule();
+		} else {
+			schedulerInitializer.deleteScheduledTasks();
 		}
 	}
 
@@ -102,25 +105,6 @@ public class OutboxEventRegistry implements SmartInitializingSingleton {
 				}
 			}
 		});
-	}
-
-	/**
-	 * Registers any {@link OutboxEventListener} methods found on the given bean and, if this is the
-	 * first listener ever registered, starts the outbox poller. Modules must call this for each of
-	 * their beans when starting up so their listeners are discovered after core startup.
-	 *
-	 * @param beanName the Spring bean name to scan
-	 */
-	public void registerBean(String beanName) {
-		boolean wasEmpty = registry.isEmpty();
-		scanBean(beanName);
-		if (!registry.isEmpty()) {
-			Collections.sort(registry);
-			hasOutboxListenersCache.invalidateAll();
-			if (wasEmpty) {
-				schedulerInitializer.schedule();
-			}
-		}
 	}
 
 	public boolean hasOutboxListeners() {

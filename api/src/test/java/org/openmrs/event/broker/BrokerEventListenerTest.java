@@ -61,9 +61,7 @@ public class BrokerEventListenerTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldFilterOutEventWhenSourceDoesNotMatch() {
-		BrokerIncomingEvent event = new BrokerIncomingEvent();
-		event.setSource("wrong-source");
-		event.setBroker("test-broker");
+		BrokerIncomingEvent<String> event = new BrokerIncomingEvent<>("payload", "wrong-source", "test-broker");
 
 		eventPublisher.publishEvent(event);
 
@@ -72,9 +70,7 @@ public class BrokerEventListenerTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldFilterOutEventWhenBrokerDoesNotMatch() {
-		BrokerIncomingEvent event = new BrokerIncomingEvent();
-		event.setSource("test-source");
-		event.setBroker("wrong-broker");
+		BrokerIncomingEvent<String> event = new BrokerIncomingEvent<>("payload", "test-source", "wrong-broker");
 
 		eventPublisher.publishEvent(event);
 
