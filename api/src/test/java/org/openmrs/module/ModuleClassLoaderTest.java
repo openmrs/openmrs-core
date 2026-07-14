@@ -491,14 +491,14 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 			long currentTimestamp = System.currentTimeMillis();
 			omodFile.setLastModified(currentTimestamp);
 
-			Module module = new Module("testmodule", "testmodule", "org.openmrs.module.testmodule",
-				"author", "description", "1.0", "1.0");
+			Module module = new Module("testmodule", "testmodule", "org.openmrs.module.testmodule", "author", "description",
+			        "1.0", "1.0");
 			module.setFile(omodFile);
 
 			File moduleDir = new File(tempLibCache, "testmodule");
 			moduleDir.mkdirs();
-			FileUtils.writeStringToFile(new File(moduleDir, ".moduleLastModified"),
-				String.valueOf(currentTimestamp - 1000), Charset.defaultCharset());
+			FileUtils.writeStringToFile(new File(moduleDir, ".moduleLastModified"), String.valueOf(currentTimestamp - 1000),
+			    Charset.defaultCharset());
 			File staleFile = new File(moduleDir, "old-resource.txt");
 			FileUtils.writeStringToFile(staleFile, "stale content", Charset.defaultCharset());
 
@@ -531,8 +531,8 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 		Properties savedRuntimeProperties = Context.getRuntimeProperties();
 		File omodFile = File.createTempFile("testmodule2", ".omod");
 		try {
-			Module module = new Module("testmodule2", "testmodule2", "org.openmrs.module.testmodule2",
-				"author", "description", "1.0", "1.0");
+			Module module = new Module("testmodule2", "testmodule2", "org.openmrs.module.testmodule2", "author",
+			        "description", "1.0", "1.0");
 			module.setFile(omodFile);
 
 			File moduleDir = new File(tempLibCache, "testmodule2");
