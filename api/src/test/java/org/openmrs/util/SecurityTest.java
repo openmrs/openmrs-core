@@ -27,7 +27,7 @@ public class SecurityTest {
 	 * @see Security#encodeString(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsTo128Characters() {
+	public void encodeString_shouldEncodeStringsToArgon2id() {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
 		assertTrue(hash.startsWith("$argon2id$"));
 	}

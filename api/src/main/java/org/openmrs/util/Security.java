@@ -24,6 +24,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +88,17 @@ public class Security {
 	}
 
 	/**
+	 * This method will hash <code>strToEncode</code> using SHA-512 for deterministic hashing
+	 * (e.g., activation keys, secret answers).
+	 *
+	 * @param strToEncode string to encode
+	 * @return the SHA-512 encryption of a given string
+	 */
+	public static String encodeStringSHA512(String strToEncode) throws APIException {
+		return encodeString(strToEncode, "SHA-512");
+	}
+
+	/**
 	 * This method will hash <code>strToEncode</code> using the old SHA-1 algorithm.
 	 *
 	 * @param strToEncode string to encode
@@ -118,28 +131,41 @@ public class Security {
 	}
 
 	private static String getConfigFingerprint() {
-		return OpenmrsConstants.GP_ARGON2_SALT_LENGTH + "="
-			+ Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16") + "|"
-			+ OpenmrsConstants.GP_ARGON2_HASH_LENGTH + "="
-			+ Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32") + "|"
-			+ OpenmrsConstants.GP_ARGON2_PARALLELISM + "="
-			+ Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1") + "|"
-			+ OpenmrsConstants.GP_ARGON2_MEMORY + "="
-			+ Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536") + "|"
-			+ OpenmrsConstants.GP_ARGON2_ITERATIONS + "="
-			+ Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3");
+		if (!Context.isSessionOpen()) {
+			return "default";
+		}
+		try {
+			AdministrationService adminService = Context.getAdministrationService();
+			return OpenmrsConstants.GP_ARGON2_SALT_LENGTH + "="
+				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16") + "|"
+				+ OpenmrsConstants.GP_ARGON2_HASH_LENGTH + "="
+				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32") + "|"
+				+ OpenmrsConstants.GP_ARGON2_PARALLELISM + "="
+				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1") + "|"
+				+ OpenmrsConstants.GP_ARGON2_MEMORY + "="
+				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536") + "|"
+				+ OpenmrsConstants.GP_ARGON2_ITERATIONS + "="
+				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3");
+		} catch ( APIException e) {
+			return "default";
+		}
 	}
 
 	private static int getIntProperty(String key, int defaultValue) {
+		if (!Context.isSessionOpen()) {
+			return defaultValue;
+		}
 		try {
-			String value = Context.getAdministrationService()
-				.getGlobalProperty(key, String.valueOf(defaultValue));
+			AdministrationService adminService = Context.getAdministrationService();
+			String value = adminService.getGlobalProperty(key, String.valueOf(defaultValue));
 			int parsed = Integer.parseInt(value.trim());
 			if (parsed <= 0) {
 				log.warn("Invalid value for global property '{}': {}, must be > 0, using default: {}", key, parsed, defaultValue);
 				return defaultValue;
 			}
 			return parsed;
+		} catch (APIException e) {
+			return defaultValue;
 		} catch (Exception e) {
 			log.warn("Invalid value for global property '{}', using default: {}", key, defaultValue);
 			return defaultValue;

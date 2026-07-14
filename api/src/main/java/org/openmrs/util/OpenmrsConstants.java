@@ -435,14 +435,29 @@ public final class OpenmrsConstants {
 	 */
 	public static final String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
 
+	/**
+	 * Global property name for Argon2 memory cost in KB
+	 */
 	public static final String GP_ARGON2_MEMORY = "security.argon2.memory";
 
+	/**
+	 * Global property name for Argon2 parallelism factor
+	 */
 	public static final String GP_ARGON2_PARALLELISM = "security.argon2.parallelism";
 
+	/**
+	 * Global property name for Argon2 iterations
+	 */
 	public static final String GP_ARGON2_ITERATIONS = "security.argon2.iterations";
 
+	/**
+	 * Global property name for Argon2 hash length in bytes
+	 */
 	public static final String GP_ARGON2_HASH_LENGTH = "security.argon2.hashLength";
 
+	/**
+	 * Global property name for Argon2 salt length in bytes
+	 */
 	public static final String GP_ARGON2_SALT_LENGTH = "security.argon2.saltLength";
 
 	/**
