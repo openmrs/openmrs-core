@@ -40,7 +40,7 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 	 * @throws SerializationException
 	 */
 	@Test
-	@Disabled
+	@Disabled("Temporarily disabled because it fails when executed with other tests")
 	public void shouldCheckThatAMethodIsNotRolledBackInCaseOfAnErrorInAnotherInvokedInsideIt()
 	        throws SerializationException {
 		//TODO FIx why this test fails when run with other tests
