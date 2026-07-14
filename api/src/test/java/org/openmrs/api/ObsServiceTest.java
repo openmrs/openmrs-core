@@ -1464,6 +1464,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void purgeObs_shouldThrowAPIExceptionIfGivenTrueCascade() {
 		assertThrows(APIException.class, () -> Context.getObsService().purgeObs(new Obs(1), true));
 	}
+
 	@Test
 	public void purgeObs_shouldDoNothingWhenObsIsNull() {
 		// purgeObs guards against null directly; null must not reach the DAO layer.
