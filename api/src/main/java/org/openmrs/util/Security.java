@@ -8,7 +8,6 @@
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
-
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -26,11 +25,8 @@ import javax.crypto.spec.SecretKeySpec;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
-<<<<<<< HEAD
 import org.openmrs.api.GlobalPropertyListener;
-=======
 import org.openmrs.api.ServiceNotFoundException;
->>>>>>> 6e54dbf51 (Response to reviews1)
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
@@ -333,9 +329,6 @@ public class Security implements GlobalPropertyListener {
 		if (newValue == null || newValue.getPropertyValue() == null) {
 			return;
 	private static String getConfigFingerprint() {
-		if (!Context.isSessionOpen()) {
-			return "default";
-		}
 		try {
 			AdministrationService adminService = Context.getAdministrationService();
 			return OpenmrsConstants.GP_ARGON2_SALT_LENGTH + "="
@@ -354,9 +347,6 @@ public class Security implements GlobalPropertyListener {
 	}
 
 	private static int getIntProperty(String key, int defaultValue) {
-		if (!Context.isSessionOpen()) {
-			return defaultValue;
-		}
 		try {
 			AdministrationService adminService = Context.getAdministrationService();
 			String value = adminService.getGlobalProperty(key, String.valueOf(defaultValue));
