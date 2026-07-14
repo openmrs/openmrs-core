@@ -696,7 +696,7 @@ public class Context {
 	/**
 	 * Used by {@link org.openmrs.aop.AuthorizationAdvice} to give access for unauthenticated users when
 	 * running initialization code with proxy privileges. See e.g.
-	 * {@link org.openmrs.event.outbox.tasks.OutboxTaskSchedulerInitializer#afterSingletonsInstantiated()}.
+	 * {@link org.openmrs.event.outbox.tasks.OutboxTaskSchedulerInitializer#schedule()}.
 	 *
 	 * @return true if there are any proxy privileges
 	 * @since 2.9.0

@@ -11,7 +11,7 @@ package org.openmrs.event.outbox;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.MapMaker;
+import org.openmrs.event.outbox.tasks.OutboxTaskSchedulerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -31,13 +31,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 
 /**
  * It is used to discover any {@link OutboxEventListener} listeners and
  * dispatch events to them.
- * 
+ * <p>
+ * After scanning for listeners at startup it drives the outbox scheduler lifecycle, triggering
+ * {@link OutboxTaskSchedulerInitializer#schedule()} when at least one listener is present and
+ * {@link OutboxTaskSchedulerInitializer#deleteScheduledTasks()} when there are none or the feature
+ * is disabled.
+ *
  * @since 2.9.0
  */
 @Component
@@ -49,20 +53,24 @@ public class OutboxEventRegistry implements SmartInitializingSingleton {
 	private final List<ListenerMethod> registry;
 	private final Cache<ResolvableType, Boolean> hasOutboxListenersCache;
 	private final boolean enabled;
-	
-	public OutboxEventRegistry(ApplicationContext applicationContext, @Value("${outboxevent.enabled:true}") boolean enabled) {
+	private final OutboxTaskSchedulerInitializer schedulerInitializer;
+
+	public OutboxEventRegistry(ApplicationContext applicationContext, @Value("${outboxevent.enabled:true}") boolean enabled,
+	    OutboxTaskSchedulerInitializer schedulerInitializer) {
 		this.applicationContext = applicationContext;
 		this.registry = new ArrayList<>();
 		this.hasOutboxListenersCache = CacheBuilder.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build();
 		this.enabled = enabled;
+		this.schedulerInitializer = schedulerInitializer;
 	}
 
 	@Override
 	public void afterSingletonsInstantiated() {
 		if (!enabled) {
+			schedulerInitializer.deleteScheduledTasks();
 			return;
 		}
-		
+
 		for (String beanName : applicationContext.getBeanDefinitionNames()) {
 			Class<?> type = applicationContext.getType(beanName);
 			if (type != null) {
@@ -84,6 +92,14 @@ public class OutboxEventRegistry implements SmartInitializingSingleton {
 
 		// Sort all listeners once at application startup
 		Collections.sort(registry);
+
+		// Trigger scheduling only after scanning is complete, so the poller starts when at least
+		// one listener is present and is removed when none remain.
+		if (hasOutboxListeners()) {
+			schedulerInitializer.schedule();
+		} else {
+			schedulerInitializer.deleteScheduledTasks();
+		}
 	}
 	
 	public boolean hasOutboxListeners() {
