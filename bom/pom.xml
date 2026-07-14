@@ -121,7 +121,7 @@
 		<shedlockVersion>7.7.0</shedlockVersion>
 
 		<!-- Testing -->
-		<junitVersion>6.1.1</junitVersion>
+		<junitVersion>6.1.2</junitVersion>
 		<mockitoVersion>5.23.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<h2Version>2.3.232</h2Version>
