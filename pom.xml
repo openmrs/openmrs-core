@@ -287,6 +287,11 @@
 				</exclusions>
 			</dependency>
 			<dependency>
+				<groupId>de.mkammerer</groupId>
+				<artifactId>argon2-jvm</artifactId>
+				<version>2.11</version>
+			</dependency>
+			<dependency>
 				<groupId>org.openmrs.liquibase.ext</groupId>
 				<artifactId>type-converter</artifactId>
 				<version>1.0.1</version>
