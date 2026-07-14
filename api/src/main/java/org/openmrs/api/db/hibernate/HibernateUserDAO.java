@@ -479,11 +479,11 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public boolean isSecretAnswer(User u, String answer) throws DAOException {
-		
+
 		if (StringUtils.isEmpty(answer)) {
 			return false;
 		}
-		
+
 		LoginCredential credentials = getLoginCredential(u);
 		String answerOnRecord = credentials.getSecretAnswer();
 		String hashedAnswer = Security.encodeStringSHA512(answer.toLowerCase() + credentials.getSalt());

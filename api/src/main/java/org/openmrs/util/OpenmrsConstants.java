@@ -439,6 +439,7 @@ public final class OpenmrsConstants {
 	 * Global property for the Argon2 memory cost parameter (in KiB). Default is 65536 (64 MiB).
 	 * Must be between 1 and 1048576 (1 GiB).
 	 * @since 2.8.10
+	 * Global property name for Argon2 memory cost in KB
 	 */
 	public static final String GP_ARGON2_MEMORY = "security.argon2.memory";
 
@@ -446,6 +447,12 @@ public final class OpenmrsConstants {
 	 * Global property for the Argon2 time cost parameter (iterations). Default is 3.
 	 * Must be between 1 and 10.
 	 * @since 2.8.10
+	 * Global property name for Argon2 parallelism factor
+	 */
+	public static final String GP_ARGON2_PARALLELISM = "security.argon2.parallelism";
+
+	/**
+	 * Global property name for Argon2 iterations
 	 */
 	public static final String GP_ARGON2_ITERATIONS = "security.argon2.iterations";
 
@@ -460,6 +467,7 @@ public final class OpenmrsConstants {
 	 * Global property for the Argon2 hash output length (in bytes). Default is 32.
 	 * Must be between 4 and 55 to fit in VARCHAR(128).
 	 * @since 2.8.10
+	 * Global property name for Argon2 hash length in bytes
 	 */
 	public static final String GP_ARGON2_HASH_LENGTH = "security.argon2.hashLength";
 
@@ -467,6 +475,7 @@ public final class OpenmrsConstants {
 	 * Global property for the Argon2 salt length (in bytes). Default is 16.
 	 * Must be between 8 and 32 to fit in VARCHAR(128).
 	 * @since 2.8.10
+	 * Global property name for Argon2 salt length in bytes
 	 */
 	public static final String GP_ARGON2_SALT_LENGTH = "security.argon2.saltLength";
 	

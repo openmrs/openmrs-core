@@ -40,8 +40,13 @@ class SecurityTest extends BaseContextSensitiveTest {
 	 * @see Security#encodeStringArgon2(String)
 	 */
 	@Test
+<<<<<<< HEAD
 	void encodeStringArgon2_shouldEncodeStringsToArgon2id() {
 		String hash = Security.encodeStringArgon2("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
+=======
+	public void encodeString_shouldEncodeStringsToArgon2id() {
+		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
+>>>>>>> 6e54dbf51 (Response to reviews1)
 		assertTrue(hash.startsWith("$argon2id$"));
 	}
 

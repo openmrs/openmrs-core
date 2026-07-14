@@ -26,7 +26,11 @@ import javax.crypto.spec.SecretKeySpec;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+<<<<<<< HEAD
 import org.openmrs.api.GlobalPropertyListener;
+=======
+import org.openmrs.api.ServiceNotFoundException;
+>>>>>>> 6e54dbf51 (Response to reviews1)
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
@@ -257,10 +261,9 @@ public class Security implements GlobalPropertyListener {
 	 *
 	 * @param strToEncode string to encode
 	 * @return the SHA-512 encryption of a given string
-	 * @since 2.8.10
 	 */
 	public static String encodeStringSHA512(String strToEncode) throws APIException {
-		return encodeString(strToEncode, SHA512);
+		return encodeString(strToEncode, "SHA-512");
 	}
 
 	/**
@@ -329,6 +332,45 @@ public class Security implements GlobalPropertyListener {
 	public void globalPropertyChanged(GlobalProperty newValue) {
 		if (newValue == null || newValue.getPropertyValue() == null) {
 			return;
+	private static String getConfigFingerprint() {
+		if (!Context.isSessionOpen()) {
+			return "default";
+		}
+		try {
+			AdministrationService adminService = Context.getAdministrationService();
+			return OpenmrsConstants.GP_ARGON2_SALT_LENGTH + "="
+				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16") + "|"
+				+ OpenmrsConstants.GP_ARGON2_HASH_LENGTH + "="
+				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32") + "|"
+				+ OpenmrsConstants.GP_ARGON2_PARALLELISM + "="
+				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1") + "|"
+				+ OpenmrsConstants.GP_ARGON2_MEMORY + "="
+				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536") + "|"
+				+ OpenmrsConstants.GP_ARGON2_ITERATIONS + "="
+				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3");
+		} catch ( APIException e) {
+			return "default";
+		}
+	}
+
+	private static int getIntProperty(String key, int defaultValue) {
+		if (!Context.isSessionOpen()) {
+			return defaultValue;
+		}
+		try {
+			AdministrationService adminService = Context.getAdministrationService();
+			String value = adminService.getGlobalProperty(key, String.valueOf(defaultValue));
+			int parsed = Integer.parseInt(value.trim());
+			if (parsed <= 0) {
+				log.warn("Invalid value for global property '{}': {}, must be > 0, using default: {}", key, parsed, defaultValue);
+				return defaultValue;
+			}
+			return parsed;
+		} catch (APIException e) {
+			return defaultValue;
+		} catch (Exception e) {
+			log.warn("Invalid value for global property '{}', using default: {}", key, defaultValue);
+			return defaultValue;
 		}
 
 		String propertyName = newValue.getProperty();
