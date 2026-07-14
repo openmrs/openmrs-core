@@ -2239,7 +2239,7 @@
       <column name="event_type" type="VARCHAR(255)"> 
         <constraints nullable="false"/> 
       </column>  
-      <column name="payload" type="TEXT"> 
+      <column name="payload" type="MEDIUMTEXT"> 
         <constraints nullable="false"/> 
       </column>  
       <column defaultValue="PENDING" name="status" type="VARCHAR(50)"> 
@@ -2249,7 +2249,7 @@
         <constraints nullable="false"/> 
       </column>  
       <column name="error_message" type="VARCHAR(1024)"/>  
-      <column name="completed_listeners" type="TEXT"/>  
+      <column name="completed_listeners" type="MEDIUMTEXT"/>  
       <column defaultValueComputed="NULL" name="creator" type="INT"/>  
       <column name="date_created" type="datetime(0)"> 
         <constraints nullable="false"/> 

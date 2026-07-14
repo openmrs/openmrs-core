@@ -29,8 +29,18 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Publishes {@link SaveServiceEvent}, {@link VoidServiceEvent}, {@link UnvoidServiceEvent},
- * {@link RetireServiceEvent}, and {@link UnretireServiceEvent}.
+ * Publishes typed {@link SaveServiceEvent}, {@link VoidServiceEvent}, {@link UnvoidServiceEvent},
+ * {@link RetireServiceEvent}, and {@link UnretireServiceEvent} for proxied public service methods
+ * whose names match {@code save*}, {@code create*}, {@code void*}, {@code unvoid*}, {@code retire*},
+ * {@code unretire*}, or {@code purge*}.
+ * <p>
+ * Events are published <strong>before</strong> the intercepted method runs ({@code proceed()}). A
+ * synchronous listener therefore sees the entity in its pre-operation state (e.g. a newly created
+ * record may not yet have a database id). For post-persist change notifications regardless of call
+ * path, prefer the Hibernate-level {@link org.openmrs.api.db.event.SaveDbEvent} /
+ * {@link org.openmrs.api.db.event.DeleteDbEvent} stream emitted by {@link org.openmrs.api.db.hibernate.EventInterceptor}.
+ * Operations that bypass this advice (non-pattern method names, self-invocation, or direct DAO writes)
+ * must publish events explicitly — see e.g. #6195, #6197, #6199.
  * <p>
  * It is registered after transaction advice so that
  * {@link org.openmrs.event.outbox.OutboxEventListener},
