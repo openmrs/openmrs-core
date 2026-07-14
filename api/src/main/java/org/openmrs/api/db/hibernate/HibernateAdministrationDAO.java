@@ -233,7 +233,14 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		} else {
 			int fieldLength;
 			try {
-				fieldLength = ((Column) persistentClass.getProperty(fieldName).getColumnIterator().next()).getLength();
+				Column column = (Column) persistentClass.getProperty(fieldName).getColumnIterator().next();
+				String columnDefinition = column.getSqlType();
+				if (columnDefinition != null && (columnDefinition.equalsIgnoreCase("LONGTEXT")
+				        || columnDefinition.equalsIgnoreCase("MEDIUMTEXT"))) {
+					fieldLength = Integer.MAX_VALUE;
+				} else {
+					fieldLength = column.getLength();
+				}
 			}
 			catch (Exception e) {
 				log.debug("Could not determine maximum length", e);

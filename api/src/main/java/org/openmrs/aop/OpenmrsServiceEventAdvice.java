@@ -33,10 +33,17 @@ import java.util.function.Function;
  * {@link RetireServiceEvent}, and {@link UnretireServiceEvent}.
  * <p>
  * It is registered after transaction advice so that {@link org.openmrs.event.outbox.OutboxEventListener},
- * {@link org.springframework.transaction.event.TransactionalEventListener} and 
+ * {@link org.springframework.transaction.event.TransactionalEventListener} and
  * {@link org.springframework.context.event.EventListener}
  * can run in the same transaction.
- * 
+ * <p>
+ * Events are published synchronously before the service method executes. Any exception thrown by a
+ * synchronous {@link org.springframework.context.event.EventListener} will propagate out of the
+ * advice and abort the service call — this is intentional, as it allows listeners to act as
+ * precondition guards. Listeners that must not block the service call should use
+ * {@link org.springframework.transaction.event.TransactionalEventListener} (runs after commit) or
+ * {@link org.openmrs.event.outbox.OutboxEventListener} (persisted and delivered asynchronously).
+ *
  * @since 2.9.0
  */
 @Aspect

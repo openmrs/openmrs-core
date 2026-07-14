@@ -53,43 +53,37 @@ public class BrokerEventListenerTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldReceiveEventWhenSourceAndBrokerMatch() {
-		BrokerIncomingEvent event = new BrokerIncomingEvent();
-		event.setSource("test-source");
-		event.setBroker("test-broker");
-		
+		BrokerIncomingEvent<String> event = new BrokerIncomingEvent<>("payload", "test-source", "test-broker");
+
 		eventPublisher.publishEvent(event);
-		
+
 		assertThat(testListener.getReceivedEvents(), hasItem(event));
 	}
-	
+
 	@Test
 	public void shouldFilterOutEventWhenSourceDoesNotMatch() {
-		BrokerIncomingEvent event = new BrokerIncomingEvent();
-		event.setSource("wrong-source");
-		event.setBroker("test-broker");
-		
+		BrokerIncomingEvent<String> event = new BrokerIncomingEvent<>("payload", "wrong-source", "test-broker");
+
 		eventPublisher.publishEvent(event);
-		
+
 		assertThat(testListener.getReceivedEvents(), is(empty()));
 	}
-	
+
 	@Test
 	public void shouldFilterOutEventWhenBrokerDoesNotMatch() {
-		BrokerIncomingEvent event = new BrokerIncomingEvent();
-		event.setSource("test-source");
-		event.setBroker("wrong-broker");
-		
+		BrokerIncomingEvent<String> event = new BrokerIncomingEvent<>("payload", "test-source", "wrong-broker");
+
 		eventPublisher.publishEvent(event);
-		
+
 		assertThat(testListener.getReceivedEvents(), is(empty()));
 	}
-	
+
 	@Component
 	public static class TestListener {
 		private final List<BrokerIncomingEvent> receivedEvents = new ArrayList<>();
-		
+
 		@BrokerEventListener(value = "test-source", broker = "test-broker")
-		public void handleEvent(BrokerIncomingEvent event) {
+		public void handleEvent(BrokerIncomingEvent<String> event) {
 			receivedEvents.add(event);
 		}
 		

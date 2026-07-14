@@ -99,13 +99,25 @@ public class BrokerEventListenerFactoryTest {
 	}
 
 	@Test
-	public void createApplicationListener_shouldNotThrowExceptionIfRawBrokerIncomingEvent() {
+	public void createApplicationListener_shouldThrowExceptionIfRawBrokerIncomingEvent() {
 		Method method = ReflectionUtils.findMethod(TestBean.class, "rawListener", BrokerIncomingEvent.class);
-		
-		factory.createApplicationListener("testBean", TestBean.class, method);
 
-		List<BrokerEventListenerFactory.Listener> registeredListeners = factory.getListeners();
-		assertEquals(1, registeredListeners.size());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			factory.createApplicationListener("testBean", TestBean.class, method);
+		});
+
+		assertTrue(exception.getMessage().contains("must use a concrete type parameter, not <?> or raw"));
+	}
+
+	@Test
+	public void createApplicationListener_shouldThrowExceptionIfWildcardBrokerIncomingEvent() {
+		Method method = ReflectionUtils.findMethod(TestBean.class, "wildcardListener", BrokerIncomingEvent.class);
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			factory.createApplicationListener("testBean", TestBean.class, method);
+		});
+
+		assertTrue(exception.getMessage().contains("must use a concrete type parameter, not <?> or raw"));
 	}
 
 	@Test
@@ -139,6 +151,9 @@ public class BrokerEventListenerFactoryTest {
 		@SuppressWarnings("rawtypes")
 		@BrokerEventListener("my-source")
 		public void rawListener(BrokerIncomingEvent event) {}
+
+		@BrokerEventListener("my-source")
+		public void wildcardListener(BrokerIncomingEvent<?> event) {}
 
 		public void notAListener() {}
 	}

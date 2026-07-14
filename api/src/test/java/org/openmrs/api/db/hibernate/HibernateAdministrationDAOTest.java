@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.Role;
+import org.openmrs.event.outbox.OutboxEvent;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
@@ -147,5 +149,22 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(role, "type");
 		dao.validate(role, errors);
 		assertFalse(errors.hasFieldErrors("role"));
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getMaximumPropertyLength(Class, String)
+	 */
+	@Test
+	public void getMaximumPropertyLength_shouldTreatMediumtextColumnsAsUnbounded() {
+		assertEquals(Integer.MAX_VALUE, dao.getMaximumPropertyLength(OutboxEvent.class, "payload"));
+		assertEquals(Integer.MAX_VALUE, dao.getMaximumPropertyLength(OutboxEvent.class, "completedListeners"));
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getMaximumPropertyLength(Class, String)
+	 */
+	@Test
+	public void getMaximumPropertyLength_shouldReturnActualLengthForBoundedColumns() {
+		assertEquals(1024, dao.getMaximumPropertyLength(OutboxEvent.class, "errorMessage"));
 	}
 }

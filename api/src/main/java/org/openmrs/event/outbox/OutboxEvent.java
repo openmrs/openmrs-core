@@ -45,7 +45,7 @@ public class OutboxEvent extends BaseOpenmrsObject implements Auditable {
 	private String eventType;
 
 	@Lob
-	@Column(name = "payload", nullable = false)
+	@Column(name = "payload", nullable = false, columnDefinition = "MEDIUMTEXT")
 	private String payload;
 
 	@Column(name = "date_created", nullable = false)
@@ -67,7 +67,7 @@ public class OutboxEvent extends BaseOpenmrsObject implements Auditable {
 	private String errorMessage;
 	
 	@Lob
-	@Column(name = "completed_listeners")
+	@Column(name = "completed_listeners", columnDefinition = "MEDIUMTEXT")
 	private String completedListeners;
 
 	@ManyToOne
