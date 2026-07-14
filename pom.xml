@@ -287,9 +287,9 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>de.mkammerer</groupId>
-				<artifactId>argon2-jvm</artifactId>
-				<version>2.11</version>
+				<groupId>com.password4j</groupId>
+				<artifactId>password4j</artifactId>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openmrs.liquibase.ext</groupId>

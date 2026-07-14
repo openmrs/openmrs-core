@@ -193,8 +193,8 @@
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.mkammerer</groupId>
-			<artifactId>argon2-jvm</artifactId>
+			<groupId>com.password4j</groupId>
+			<artifactId>password4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.reflections</groupId>

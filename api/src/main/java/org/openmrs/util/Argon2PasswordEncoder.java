@@ -9,22 +9,21 @@
  */
 package org.openmrs.util;
 
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
+import com.password4j.Password;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Argon2 PasswordEncoder that verifies passwords against Argon2 hashes.
+ * Argon2 PasswordEncoder that verifies passwords against Argon2 hashes using Password4j.
  * This encoder handles the Argon2i, Argon2d, and Argon2id variants.
  *
  * @since 2.8.8
  */
 public class Argon2PasswordEncoder {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Argon2PasswordEncoder.class);
-	
+
 	/**
 	 * Verify a password against a stored Argon2 hash.
 	 *
@@ -33,9 +32,8 @@ public class Argon2PasswordEncoder {
 	 * @return true if the password matches the hash, false otherwise
 	 */
 	public boolean verify(String hashedPassword, String password) {
-		Argon2 argon2 = Argon2Factory.create();
 		try {
-			return argon2.verify(hashedPassword, password.toCharArray());
+			return Password.check(password, hashedPassword).withArgon2();
 		}
 		catch (Exception e) {
 			log.error("Failed to verify Argon2 password hash", e);
