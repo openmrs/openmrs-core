@@ -489,15 +489,25 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * Builds a module whose backing omod is a fresh temp file, with a module id unique to the calling
+	 * test so each test works in its own folder under the shared lib cache root.
+	 */
+	private Module moduleWithTempOmod(String moduleId) throws IOException {
+		Module module = new Module("mockmodule", moduleId, "org.openmrs.module." + moduleId, "author", "description", "2.0",
+		        "2.0");
+		File omod = File.createTempFile(moduleId, ".omod");
+		omod.deleteOnExit();
+		module.setFile(omod);
+		return module;
+	}
+
+	/**
 	 * @see ModuleClassLoader#getLibCacheFolderForModule(Module)
 	 */
 	@Test
 	public void getLibCacheFolderForModule_shouldPruneJarsDroppedByAModifiedModule() throws IOException {
-		Module module = new Module("mockmodule", "libcacheprunetest", "org.openmrs.module.libcacheprunetest", "author",
-		        "description", "2.0", "2.0");
-		File omod = File.createTempFile("libcacheprunetest", ".omod");
-		omod.deleteOnExit();
-		module.setFile(omod);
+		Module module = moduleWithTempOmod("libcacheprunetest");
+		File omod = module.getFile();
 
 		// Prime the cache folder to look like the previous version's expansion: a lib jar the new
 		// version no longer ships, plus a .moduleLastModified marker predating this omod so the
@@ -505,8 +515,8 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 		File cacheFolder = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
 		File staleJar = new File(new File(cacheFolder, "lib"), "dropped-by-upgrade.jar");
 		FileUtils.writeStringToFile(staleJar, "stale", Charset.defaultCharset());
-		FileUtils.writeStringToFile(new File(cacheFolder, ".moduleLastModified"), Long.toString(omod.lastModified() - 1000L),
-		    Charset.defaultCharset());
+		File marker = new File(cacheFolder, ".moduleLastModified");
+		FileUtils.writeStringToFile(marker, Long.toString(omod.lastModified() - 1000L), Charset.defaultCharset());
 		assertTrue(staleJar.exists());
 
 		try {
@@ -515,6 +525,9 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 			assertThat(result, is(cacheFolder));
 			assertFalse(staleJar.exists(), "a jar dropped by the upgraded module must not linger in the lib cache");
 			assertTrue(cacheFolder.isDirectory(), "the lib cache folder should be recreated for re-expansion");
+			// The successful clear must also refresh the marker, or every later optimized startup
+			// would re-delete and re-expand the cache, silently defeating optimized startup.
+			assertThat(FileUtils.readFileToString(marker, Charset.defaultCharset()), is(Long.toString(omod.lastModified())));
 		} finally {
 			FileUtils.deleteQuietly(cacheFolder);
 		}
@@ -524,12 +537,8 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	 * @see ModuleClassLoader#getLibCacheFolderForModule(Module)
 	 */
 	@Test
-	public void getLibCacheFolderForModule_shouldClearTheCacheWhenTheLastModifiedMarkerIsUnreadable() throws IOException {
-		Module module = new Module("mockmodule", "libcachemarkertest", "org.openmrs.module.libcachemarkertest", "author",
-		        "description", "2.0", "2.0");
-		File omod = File.createTempFile("libcachemarkertest", ".omod");
-		omod.deleteOnExit();
-		module.setFile(omod);
+	public void getLibCacheFolderForModule_shouldClearTheCacheWhenTheLastModifiedMarkerIsUnparseable() throws IOException {
+		Module module = moduleWithTempOmod("libcachemarkertest");
 
 		// A corrupt marker we cannot parse: we can no longer tell whether the module changed, so the
 		// cache must be cleared rather than reused with possibly stale jars.
@@ -543,7 +552,7 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 		try {
 			ModuleClassLoader.getLibCacheFolderForModule(module);
 
-			assertFalse(staleJar.exists(), "an unreadable last-modified marker must clear the cache rather than reuse it");
+			assertFalse(staleJar.exists(), "an unparseable last-modified marker must clear the cache rather than reuse it");
 		} finally {
 			FileUtils.deleteQuietly(cacheFolder);
 		}
@@ -578,11 +587,8 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	@Test
 	@DisabledOnOs(OS.WINDOWS) // java.io.File cannot remove a directory's read permission on Windows
 	public void getLibCacheFolderForModule_shouldNotRefreshTheMarkerWhenTheCacheCannotBeCleared() throws IOException {
-		Module module = new Module("mockmodule", "libcachefailedcleartest", "org.openmrs.module.libcachefailedcleartest",
-		        "author", "description", "2.0", "2.0");
-		File omod = File.createTempFile("libcachefailedcleartest", ".omod");
-		omod.deleteOnExit();
-		module.setFile(omod);
+		Module module = moduleWithTempOmod("libcachefailedcleartest");
+		File omod = module.getFile();
 
 		// A folder the recursive delete cannot fully remove, standing in for jars still locked by the
 		// previous classloader during a hot upgrade: commons-io restores write permissions while
@@ -614,11 +620,7 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getLibCacheFolderForModule_shouldReplaceAStrayFileAtTheCacheFolderPath() throws IOException {
-		Module module = new Module("mockmodule", "libcachestrayfiletest", "org.openmrs.module.libcachestrayfiletest",
-		        "author", "description", "2.0", "2.0");
-		File omod = File.createTempFile("libcachestrayfiletest", ".omod");
-		omod.deleteOnExit();
-		module.setFile(omod);
+		Module module = moduleWithTempOmod("libcachestrayfiletest");
 
 		// A regular file sitting where the module's cache folder should be; FileUtils.deleteDirectory
 		// would throw an unchecked IllegalArgumentException for it and fail the module's startup.

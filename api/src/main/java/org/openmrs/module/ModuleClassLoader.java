@@ -489,7 +489,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				try {
 					FileUtils.writeStringToFile(moduleLastModifiedFile, moduleLastModified + "", Charset.defaultCharset());
 				} catch (IOException e) {
-					log.warn("Error while writing module last modified file: {}", moduleLastModifiedFile, e);
+					log.warn("Could not write the last modified marker {}", moduleLastModifiedFile, e);
 				}
 			}
 
@@ -498,14 +498,20 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Recursively deletes the module's lib cache folder so a modified module is fully re-expanded.
-	 * {@link java.io.File#delete()} only removes an empty directory and silently no-ops otherwise, so
-	 * jars a module dropped between versions would linger in the cache and stay on its classpath. Only
-	 * a direct child of the lib cache root is ever deleted.
+	 * Recursively deletes the module's lib cache folder (or a stray regular file in its place) so a
+	 * modified module is fully re-expanded. {@link java.io.File#delete()} only removes an empty
+	 * directory and silently no-ops otherwise, so jars a module dropped between versions would linger
+	 * in the cache and stay on its classpath. Only a direct child of the lib cache root is ever
+	 * deleted.
+	 * <p>
+	 * A disposed classloader still executing during an in-place reload keeps reading the jars it
+	 * already has open on POSIX (the open handle outlives the unlink, unlike the previous in-place
+	 * overwrite in getModuleUrls, which corrupted them); anything it never opened fails loudly after
+	 * the prune instead of silently serving another version's bytes.
 	 *
 	 * @param tmpModuleDir the module's lib cache folder
-	 * @return true if the folder no longer exists, false if it or part of its contents could not be
-	 *         removed
+	 * @return true if the folder no longer exists, false if it could not be fully removed or the delete
+	 *         was refused because the folder is not directly inside the lib cache root
 	 */
 	static boolean deleteLibCacheFolder(File tmpModuleDir) {
 		try {
