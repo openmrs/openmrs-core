@@ -1,0 +1,136 @@
+# Fills in missing per-JDK docker image variant tags for an already-released version.
+#
+# Bamboo's "Release image variants" stage has copy-paste bugs (see bamboo-specs/bamboo.yml
+# and the notes in release.yaml): releases it cuts never publish the amazoncorretto-8 pair
+# and lose the -dev variants for JDK 17 and 21. This workflow builds ONLY the variant tags
+# missing on Docker Hub for the given version, from that version's git tag; tags that
+# already exist are never rebuilt or overwritten, so re-running it is always safe.
+#
+# Releases cut by release.yaml do not need this: its variants job publishes the full set.
+#
+# Required secrets: DOCKER_HUB_USERNAME / DOCKER_HUB_TOKEN (org-level, shared with this
+# repo). Dispatch on the maintenance branch the version belongs to:
+#   gh workflow run backfill-image-variants.yaml --ref 2.8.x -f version=2.8.8
+
+name: Backfill image variants
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Released version whose missing variant tags to build (e.g. 2.8.8)'
+        required: true
+
+# one backfill at a time per branch; queue rather than cancel (idempotence makes
+# overlap harmless, but queuing keeps the logs readable)
+concurrency:
+  group: backfill-image-variants-${{ github.ref }}
+  cancel-in-progress: false
+
+# deny-all default; the job declares exactly what it needs
+permissions: {}
+
+env:
+  # overridable via a repository variable so forks can push test images to their own registry
+  DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME || 'openmrs/openmrs-core' }}
+  DOCKER_IMAGE_PLATFORMS: linux/amd64,linux/arm64
+  OMRS_VERSION: ${{ inputs.version }}
+  # must stay byte-identical across the builds so the prod build reuses the dev
+  # build's compile stages (see release.yaml)
+  MVN_ARGS: clean install -DskipTests
+
+jobs:
+  backfill:
+    name: Backfill JDK ${{ matrix.jdk }} variants
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    # same reviewer-less environment as release.yaml's variants job: scopes the Docker
+    # Hub secrets and carries the *.*.x deployment-branch rule without an approval gate
+    environment: release-images
+    permissions:
+      contents: read # checkout of the release tag only
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - jdk: 8
+            dev_jdk: amazoncorretto-8
+            runtime_jdk: jdk8-corretto
+          - jdk: 11
+            dev_jdk: amazoncorretto-11
+            runtime_jdk: jdk11-corretto
+          - jdk: 17
+            dev_jdk: amazoncorretto-17
+            runtime_jdk: jdk17-corretto
+          - jdk: 21
+            dev_jdk: amazoncorretto-21
+            runtime_jdk: jdk21-corretto
+    env:
+      DEV_JDK: ${{ matrix.dev_jdk }}
+      RUNTIME_JDK: ${{ matrix.runtime_jdk }}
+    steps:
+      - name: Validate the version
+        run: |
+          if [[ ! "${GITHUB_REF_NAME}" =~ ^[0-9]+\.[0-9]+\.x$ ]]; then
+            echo "::error::Dispatch this workflow on the maintenance branch the version belongs to (N.N.x), not '${GITHUB_REF_NAME}'"
+            exit 1
+          fi
+          if [[ ! "${OMRS_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::version must look like 2.8.8, got '${OMRS_VERSION}'"
+            exit 1
+          fi
+          BRANCH_PREFIX="${GITHUB_REF_NAME%.x}"
+          if [[ "${OMRS_VERSION}" != "${BRANCH_PREFIX}."* ]]; then
+            echo "::error::version ${OMRS_VERSION} does not belong to the ${GITHUB_REF_NAME} branch"
+            exit 1
+          fi
+
+      # never persist credentials: the Dockerfile copies the whole checkout (including
+      # .git) into the published dev images
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          # the tag of the already-released version; checkout fails if it does not exist
+          ref: refs/tags/${{ inputs.version }}
+          persist-credentials: false
+
+      - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      # dev first, then production: when both are missing the production build reuses
+      # the dev build's compile stages from the local buildx cache; cache refs are the
+      # same ones release.yaml's variants job uses, and missing refs are non-fatal
+      - name: Build the variant tags missing on Docker Hub
+        run: |
+          tag_exists() {
+            [[ "$(curl -s -o /dev/null -w '%{http_code}' "https://hub.docker.com/v2/repositories/${DOCKER_IMAGE_NAME}/tags/${1}")" == "200" ]]
+          }
+          build() { # $1 = tag, $2... = extra buildx args
+            TAG="$1"; shift
+            docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+              --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-${DEV_JDK}-cache" \
+              --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-cache" \
+              --build-arg MVN_ARGS="${MVN_ARGS}" \
+              --build-arg DEV_JDK="${DEV_JDK}" \
+              --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+              "$@" -t "${DOCKER_IMAGE_NAME}:${TAG}" .
+          }
+          DEV_TAG="${OMRS_VERSION}-dev-${DEV_JDK}"
+          PROD_TAG="${OMRS_VERSION}-${DEV_JDK}"
+          if tag_exists "${DEV_TAG}"; then
+            echo "::notice::${DOCKER_IMAGE_NAME}:${DEV_TAG} already exists; skipping"
+          else
+            echo "Building ${DEV_TAG}"
+            build "${DEV_TAG}" --target dev
+          fi
+          if tag_exists "${PROD_TAG}"; then
+            echo "::notice::${DOCKER_IMAGE_NAME}:${PROD_TAG} already exists; skipping"
+          else
+            echo "Building ${PROD_TAG}"
+            build "${PROD_TAG}"
+          fi

@@ -32,6 +32,16 @@ public class Duration {
 	
 	public static final String SNOMED_CT_MINUTES_CODE = "258701004";
 	
+	/**
+	 * Active SNOMED CT code for minute. SNOMED CT inactivated the legacy code
+	 * {@link #SNOMED_CT_MINUTES_CODE} ("258701004") in its 2021-07-31 release, and dictionaries such as
+	 * CIEL now map minutes concepts to this code. The legacy code is still accepted for backward
+	 * compatibility.
+	 *
+	 * @since 2.8.8, 2.9.0, 3.0.0
+	 */
+	public static final String SNOMED_CT_MINUTES_CODE_2021 = "1156209001";
+	
 	public static final String SNOMED_CT_HOURS_CODE = "258702006";
 	
 	public static final String SNOMED_CT_DAYS_CODE = "258703001";
@@ -77,7 +87,7 @@ public class Duration {
 		if (SNOMED_CT_SECONDS_CODE.equals(code)) {
 			return addSeconds(startDate, this.duration);
 		}
-		if (SNOMED_CT_MINUTES_CODE.equals(code)) {
+		if (SNOMED_CT_MINUTES_CODE.equals(code) || SNOMED_CT_MINUTES_CODE_2021.equals(code)) {
 			return addMinutes(startDate, this.duration);
 		}
 		if (SNOMED_CT_HOURS_CODE.equals(code)) {
