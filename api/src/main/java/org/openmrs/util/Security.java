@@ -25,7 +25,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,9 +130,6 @@ public class Security {
 	}
 
 	private static String getConfigFingerprint() {
-		if (!Context.isSessionOpen()) {
-			return "default";
-		}
 		try {
 			AdministrationService adminService = Context.getAdministrationService();
 			return OpenmrsConstants.GP_ARGON2_SALT_LENGTH + "="
@@ -152,9 +148,6 @@ public class Security {
 	}
 
 	private static int getIntProperty(String key, int defaultValue) {
-		if (!Context.isSessionOpen()) {
-			return defaultValue;
-		}
 		try {
 			AdministrationService adminService = Context.getAdministrationService();
 			String value = adminService.getGlobalProperty(key, String.valueOf(defaultValue));

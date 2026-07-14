@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Date;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,9 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Date;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
@@ -112,7 +111,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
+		String hashedSecretAnswer = Security.encodeStringSHA512(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		dao.changePassword(userJoe, "Openmr6zz");
@@ -126,7 +125,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.saveUser(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
+		String hashedSecretAnswer = Security.encodeStringSHA512(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		userJoe.setUserProperty("foo", "bar");
@@ -163,7 +162,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
+		String hashedSecretAnswer = Security.encodeStringSHA512(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
 		assertEquals( hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
@@ -178,7 +177,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
+		String hashedSecretAnswer = Security.encodeStringSHA512(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		userJoe.setUserProperty("foo", "bar");
