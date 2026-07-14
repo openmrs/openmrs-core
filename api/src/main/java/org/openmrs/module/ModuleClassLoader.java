@@ -228,30 +228,12 @@ public class ModuleClassLoader extends URLClassLoader {
 		if (devDir == null) {
 			File tmpModuleJar = new File(tmpModuleDir, module.getModuleId() + ".jar");
 
-			if (!tmpModuleJar.exists()) {
-				try {
-					tmpModuleJar.createNewFile();
-				} catch (IOException io) {
-					log.warn("Unable to create tmpModuleFile", io);
-				}
-			}
-
 			// copy the module jar into that temporary folder
-			FileInputStream in = null;
-			FileOutputStream out = null;
-			try {
-				in = new FileInputStream(module.getFile());
-				out = new FileOutputStream(tmpModuleJar);
+			try (FileInputStream in = new FileInputStream(module.getFile());
+			        FileOutputStream out = new FileOutputStream(tmpModuleJar)) {
 				OpenmrsUtil.copyFile(in, out);
 			} catch (IOException io) {
 				log.warn("Unable to copy tmpModuleFile", io);
-			} finally {
-				try {
-					in.close();
-				} catch (Exception e) { /* pass */}
-				try {
-					out.close();
-				} catch (Exception e) { /* pass */}
 			}
 
 			// add the module jar as a url in the classpath of the classloader
