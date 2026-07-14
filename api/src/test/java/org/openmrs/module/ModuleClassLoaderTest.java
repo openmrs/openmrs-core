@@ -10,6 +10,7 @@
 package org.openmrs.module;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -33,6 +34,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
@@ -574,5 +576,42 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 		final URL fileUrl = URI.create("file:/atomfeed/lib/jackson-mapper-asl-1.9.13.jar").toURL();
 		assertFalse(
 		    ModuleClassLoader.isMatchingConditionalResource(moduleWithNullConfigVersions, fileUrl, conditionalResource));
+	}
+
+	/**
+	 * @see ModuleClassLoader#ModuleClassLoader(Module, ClassLoader)
+	 */
+	@Test
+	public void moduleClassLoader_shouldFailToLoadWhenTheModuleJarCannotBeCopied() {
+		Module module = new Module("mockmodule", "libcachecopyfailtest", "org.openmrs.module.libcachecopyfailtest", "author",
+		        "description", "2.0", "2.0");
+		// Point the module at a file that does not exist so copying its jar into the lib cache fails.
+		module.setFile(new File(OpenmrsClassLoader.getLibCacheFolder(), "does-not-exist.omod"));
+
+		try {
+			assertThrows(ModuleException.class, () -> new ModuleClassLoader(module, ClassLoader.getSystemClassLoader()));
+		} finally {
+			FileUtils.deleteQuietly(new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId()));
+		}
+	}
+
+	/**
+	 * @see ModuleClassLoader#ModuleClassLoader(Module, ClassLoader)
+	 */
+	@Test
+	public void moduleClassLoader_shouldFailToLoadWhenTheLibFolderCannotBeExpanded() throws IOException {
+		Module module = new Module("mockmodule", "libcacheexpandfailtest", "org.openmrs.module.libcacheexpandfailtest",
+		        "author", "description", "2.0", "2.0");
+		// A real file that is not a valid jar: copying it succeeds, but expanding its lib folder fails.
+		File notAJar = File.createTempFile("libcacheexpandfailtest", ".omod");
+		notAJar.deleteOnExit();
+		FileUtils.writeStringToFile(notAJar, "not a jar", Charset.defaultCharset());
+		module.setFile(notAJar);
+
+		try {
+			assertThrows(ModuleException.class, () -> new ModuleClassLoader(module, ClassLoader.getSystemClassLoader()));
+		} finally {
+			FileUtils.deleteQuietly(new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId()));
+		}
 	}
 }
