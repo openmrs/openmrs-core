@@ -22,6 +22,8 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -30,7 +32,9 @@ import org.openmrs.util.OpenmrsClassLoader;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 
@@ -558,12 +562,78 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 		assertTrue(keep.exists());
 
 		try {
-			ModuleClassLoader.deleteLibCacheFolder(outside);
+			assertFalse(ModuleClassLoader.deleteLibCacheFolder(outside),
+			    "a refused delete must not report the folder as cleared");
 
 			assertTrue(keep.exists(),
 			    "must refuse to recursively delete a folder that is not directly inside the lib cache root");
 		} finally {
 			FileUtils.deleteQuietly(outside);
+		}
+	}
+
+	/**
+	 * @see ModuleClassLoader#getLibCacheFolderForModule(Module)
+	 */
+	@Test
+	@DisabledOnOs(OS.WINDOWS) // java.io.File cannot remove a directory's read permission on Windows
+	public void getLibCacheFolderForModule_shouldNotRefreshTheMarkerWhenTheCacheCannotBeCleared() throws IOException {
+		Module module = new Module("mockmodule", "libcachefailedcleartest", "org.openmrs.module.libcachefailedcleartest",
+		        "author", "description", "2.0", "2.0");
+		File omod = File.createTempFile("libcachefailedcleartest", ".omod");
+		omod.deleteOnExit();
+		module.setFile(omod);
+
+		// A folder the recursive delete cannot fully remove, standing in for jars still locked by the
+		// previous classloader during a hot upgrade: commons-io restores write permissions while
+		// deleting (OVERRIDE_READ_ONLY), but it cannot walk a directory it is not allowed to read.
+		File cacheFolder = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
+		File undeletable = new File(new File(cacheFolder, "lib"), "undeletable");
+		FileUtils.writeStringToFile(new File(undeletable, "child.txt"), "x", Charset.defaultCharset());
+		File marker = new File(cacheFolder, ".moduleLastModified");
+		FileUtils.writeStringToFile(marker, Long.toString(omod.lastModified() - 1000L), Charset.defaultCharset());
+		assumeTrue(undeletable.setReadable(false, false));
+
+		try {
+			ModuleClassLoader.getLibCacheFolderForModule(module);
+
+			// If the folder was cleared anyway (e.g. running as root), the failure path was not exercised.
+			assumeTrue(undeletable.exists());
+			String stamped = marker.exists() ? FileUtils.readFileToString(marker, Charset.defaultCharset()) : null;
+			assertNotEquals(Long.toString(omod.lastModified()), stamped,
+			    "the last modified marker must not be refreshed over a cache that could not be cleared, otherwise "
+			            + "the next optimized startup trusts the stale jars instead of retrying the delete");
+		} finally {
+			undeletable.setReadable(true, false);
+			FileUtils.deleteQuietly(cacheFolder);
+		}
+	}
+
+	/**
+	 * @see ModuleClassLoader#getLibCacheFolderForModule(Module)
+	 */
+	@Test
+	public void getLibCacheFolderForModule_shouldReplaceAStrayFileAtTheCacheFolderPath() throws IOException {
+		Module module = new Module("mockmodule", "libcachestrayfiletest", "org.openmrs.module.libcachestrayfiletest",
+		        "author", "description", "2.0", "2.0");
+		File omod = File.createTempFile("libcachestrayfiletest", ".omod");
+		omod.deleteOnExit();
+		module.setFile(omod);
+
+		// A regular file sitting where the module's cache folder should be; FileUtils.deleteDirectory
+		// would throw an unchecked IllegalArgumentException for it and fail the module's startup.
+		File cacheFolder = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
+		FileUtils.writeStringToFile(cacheFolder, "stray", Charset.defaultCharset());
+		assertTrue(cacheFolder.isFile());
+
+		try {
+			File result = ModuleClassLoader.getLibCacheFolderForModule(module);
+
+			assertThat(result, is(cacheFolder));
+			assertTrue(cacheFolder.isDirectory(),
+			    "a stray regular file at the cache folder path must be replaced with the folder");
+		} finally {
+			FileUtils.deleteQuietly(cacheFolder);
 		}
 	}
 }
