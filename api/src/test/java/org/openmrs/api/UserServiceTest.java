@@ -558,6 +558,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("correctlyhashedSha1", "test");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
 
 		User user = Context.getAuthenticatedUser();
 		assertNotNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
@@ -565,6 +566,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User reloadedUser = userService.getUser(user.getUserId());
 		assertNotNull(reloadedUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
 
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
 		Context.logout();
 	}
 
@@ -578,7 +580,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate("userWithSha512Hash", "test");
 
 		User user = Context.getAuthenticatedUser();
-		assertNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
+		assertThat(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD), is(emptyString()));
 
 		Context.logout();
 	}
@@ -594,6 +596,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
 
 		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
 		userService.changePassword("test", "Tester12");
 
 		User user = userService.getUser(Context.getAuthenticatedUser().getUserId());
@@ -603,6 +606,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertEquals(128, credentials.getHashedPassword().length());
 		assertFalse(Security.isLegacyPasswordHash(credentials.getHashedPassword()));
 
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		Context.logout();
 	}
 
