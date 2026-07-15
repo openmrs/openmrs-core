@@ -21,10 +21,17 @@ import org.openmrs.Role;
 import org.openmrs.event.outbox.OutboxEvent;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
+// HibernateAdministrationDAO captures the boot-time Hibernate Metadata once when its context is
+// created. A prior test that rebuilds the shared context can leave that cached Metadata without the
+// annotation-scanned OutboxEvent entity, making getMaximumPropertyLength(OutboxEvent.class, ...)
+// below intermittently throw "Couldn't find a class in the hibernate configuration". Forcing a fresh
+// context for this class rebuilds the session factory so the DAO's Metadata reflects the full mapping.
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	
 	@Autowired
