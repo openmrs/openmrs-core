@@ -295,7 +295,10 @@
 	<bean id="hL7ServiceTarget" class="org.openmrs.hl7.impl.HL7ServiceImpl">
 		<property name="HL7DAO" ref="hL7DAO"/>
 		<property name="parser">
-			<bean class="ca.uhn.hl7v2.parser.GenericParser"/>
+			<!-- PipeParser (ER7 only), not GenericParser: rejects XML-encoded payloads outright
+			     rather than routing them to HAPI's XML parser, which can expose XXE (external file
+			     reads, SSRF, entity-expansion DoS) when its JAXP factory is not hardened. -->
+			<bean class="ca.uhn.hl7v2.parser.PipeParser"/>
 		</property>
 		<property name="router">
 			<bean class="ca.uhn.hl7v2.app.MessageTypeRouter"/>
