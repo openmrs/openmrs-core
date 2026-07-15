@@ -57,6 +57,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.api.impl.PatientServiceImplTest;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
@@ -3775,6 +3776,45 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			Context.removeProxyPrivilege(PrivilegeConstants.ADD_ALLERGIES);
 		}
 		assertNotNull(allergy.getAllergyId());
+	}
+
+	/**
+	 * Adding a patient identifier through the aggregate savePatient path must honour the
+	 * identifier-specific privilege, not just the patient-level one, so a user denied Add Patient
+	 * Identifiers cannot inject an identifier via savePatient.
+	 *
+	 * @see PatientService#savePatient(Patient)
+	 */
+	@Test
+	public void savePatient_shouldRequireAddPatientIdentifiersPrivilegeToAddAnIdentifier() {
+		// build the change as the super user, then detach so the new identifier stays transient,
+		// mirroring a patient deserialized from a REST request
+		Patient patient = patientService.getPatient(2);
+		PatientIdentifier newIdentifier = new PatientIdentifier("cw94-new-mrn", new PatientIdentifierType(2),
+		        new Location(1));
+		patient.addIdentifier(newIdentifier);
+		Context.evictFromSession(patient);
+
+		// become a user granted Edit Patients (and reads validation needs) but not Add Patient Identifiers
+		User user = Context.getUserService().getUserByUsername("butch");
+		assertNotNull(user);
+		Context.becomeUser(user.getSystemId());
+		String[] granted = { PrivilegeConstants.EDIT_PATIENTS, PrivilegeConstants.GET_PATIENTS,
+		        PrivilegeConstants.GET_GLOBAL_PROPERTIES, PrivilegeConstants.GET_IDENTIFIER_TYPES,
+		        PrivilegeConstants.GET_PATIENT_IDENTIFIERS, PrivilegeConstants.GET_LOCATIONS };
+		for (String privilege : granted) {
+			Context.addProxyPrivilege(privilege);
+		}
+		try {
+			assertNull(newIdentifier.getPatientIdentifierId(), "identifier must still be transient at save time");
+			assertFalse(Context.hasPrivilege(PrivilegeConstants.ADD_PATIENT_IDENTIFIERS));
+			assertThrows(ContextAuthenticationException.class, () -> patientService.savePatient(patient));
+		} finally {
+			for (String privilege : granted) {
+				Context.removeProxyPrivilege(privilege);
+			}
+			Context.logout();
+		}
 	}
 
 }

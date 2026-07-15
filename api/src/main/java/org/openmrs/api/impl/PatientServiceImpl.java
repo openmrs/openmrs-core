@@ -134,6 +134,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	public Patient savePatient(Patient patient) throws APIException {
 		requireAppropriatePatientModificationPrivilege(patient);
+		requireAppropriatePatientIdentifierPrivilege(patient);
 
 		if (!patient.getVoided() && patient.getIdentifiers().size() == 1) {
 			patient.getPatientIdentifier().setPreferred(true);
@@ -158,6 +159,22 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		if (patient.getVoided()) {
 			Context.requirePrivilege(PrivilegeConstants.DELETE_PATIENTS);
+		}
+	}
+
+	/**
+	 * Adding a patient identifier through the aggregate {@link #savePatient(Patient)} path must not
+	 * bypass the identifier-specific privilege that {@link #savePatientIdentifier(PatientIdentifier)}
+	 * enforces. Any not-yet-persisted identifier in the graph therefore requires the Add Patient
+	 * Identifiers privilege. Existing identifiers are left untouched so that editing a patient's
+	 * demographics does not require identifier privileges.
+	 */
+	private void requireAppropriatePatientIdentifierPrivilege(Patient patient) {
+		for (PatientIdentifier identifier : patient.getIdentifiers()) {
+			if (identifier.getPatientIdentifierId() == null) {
+				Context.requirePrivilege(PrivilegeConstants.ADD_PATIENT_IDENTIFIERS);
+				break;
+			}
 		}
 	}
 
