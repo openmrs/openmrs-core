@@ -44,6 +44,7 @@ import org.springframework.expression.spel.ast.ConstructorReference;
 import org.springframework.expression.spel.ast.Indexer;
 import org.springframework.expression.spel.ast.MethodReference;
 import org.springframework.expression.spel.ast.OperatorMatches;
+import org.springframework.expression.spel.ast.PropertyOrFieldReference;
 import org.springframework.expression.spel.ast.TypeReference;
 import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -99,6 +100,18 @@ public class ConceptReferenceRangeUtility {
 	    "getGender", "getAttribute", "getValue", "getValueNumeric", "getValueBoolean", "getValueText", "getValueDate",
 	    "getValueDatetime", "getValueCoded", "getValueAsString", "equals", "equalsIgnoreCase");
 
+	/**
+	 * Property names that must not be reachable even through property syntax, because they expose a
+	 * non-value capability rather than a bound value. Read-only property access invokes JavaBean
+	 * getters directly and so is not covered by {@link #ALLOWED_METHODS}: {@code class} is the
+	 * reflection gateway (also blocked at evaluation), while {@code bytes} and {@code length} recover a
+	 * String's raw bytes and its length, circumventing the deliberate {@code getBytes}/{@code length}
+	 * exclusions from the allowed methods (e.g. {@code $patient.uuid.bytes.length} would otherwise leak
+	 * a value's length). Matched case-insensitively because SpEL resolves a getter from the capitalized
+	 * property name, so both {@code bytes} and {@code Bytes} reach {@code getBytes()}.
+	 */
+	private static final Set<String> DENIED_PROPERTIES = Set.of("class", "bytes", "length");
+
 	private final CriteriaFunctions functions = new CriteriaFunctions();
 
 	public ConceptReferenceRangeUtility() {
@@ -114,8 +127,10 @@ public class ConceptReferenceRangeUtility {
 	 * Rejects expression constructs that let a stored criteria escape the intended "read a few values
 	 * and compare them" surface: constructor calls, type references, bean references, indexing
 	 * (including into strings, e.g. {@code $patient.uuid[0]}), the {@code matches} regex operator (a
-	 * string-inspection primitive equivalent to the blocked String methods, and also a ReDoS vector)
-	 * and any method outside {@link #ALLOWED_METHODS}.
+	 * string-inspection primitive equivalent to the blocked String methods, and also a ReDoS vector),
+	 * any method outside {@link #ALLOWED_METHODS}, and any property in {@link #DENIED_PROPERTIES}
+	 * (which would otherwise reach a getter, e.g. {@code getBytes()}, that the method allow-list
+	 * excludes).
 	 */
 	private static void validateNode(SpelNode node) {
 		if (node instanceof ConstructorReference || node instanceof TypeReference || node instanceof BeanReference
@@ -125,6 +140,11 @@ public class ConceptReferenceRangeUtility {
 		}
 		if (node instanceof MethodReference && !ALLOWED_METHODS.contains(((MethodReference) node).getName())) {
 			throw new IllegalArgumentException("Criteria may not call method: " + ((MethodReference) node).getName());
+		}
+		if (node instanceof PropertyOrFieldReference
+		        && DENIED_PROPERTIES.contains(((PropertyOrFieldReference) node).getName().toLowerCase(Locale.ROOT))) {
+			throw new IllegalArgumentException(
+			        "Criteria may not read property: " + ((PropertyOrFieldReference) node).getName());
 		}
 		for (int i = 0; i < node.getChildCount(); i++) {
 			validateNode(node.getChild(i));
