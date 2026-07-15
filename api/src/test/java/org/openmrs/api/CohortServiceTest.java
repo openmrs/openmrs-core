@@ -28,6 +28,7 @@ import org.openmrs.util.PrivilegeConstants;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -130,7 +131,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
 		    () -> service.purgeCohort(cohort));
-		assertTrue(exception.getMessage().contains(PrivilegeConstants.PURGE_COHORTS));
+		assertThat(exception.getMessage(), containsString(PrivilegeConstants.PURGE_COHORTS));
 	}
 
 	/**
@@ -171,7 +172,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
 		    () -> service.getCohorts("Example"));
-		assertTrue(exception.getMessage().contains(PrivilegeConstants.GET_PATIENT_COHORTS));
+		assertThat(exception.getMessage(), containsString(PrivilegeConstants.GET_PATIENT_COHORTS));
 	}
 
 	/**
