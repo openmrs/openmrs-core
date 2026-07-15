@@ -168,6 +168,15 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * enforces. Any not-yet-persisted identifier in the graph therefore requires the Add Patient
 	 * Identifiers privilege. Existing identifiers are left untouched so that editing a patient's
 	 * demographics does not require identifier privileges.
+	 * <p>
+	 * This check relies on a newly added identifier still being transient (its id {@code null}) when it
+	 * runs. Requests served through the REST and web layers satisfy that: the session is opened with
+	 * {@code FlushMode.MANUAL} and no read-write transaction wraps the request, so no query flushes the
+	 * pending identifier beforehand, and the identifier-uniqueness validation runs in an advice ordered
+	 * outside this method's transaction. A caller that instead invokes savePatient from within its own
+	 * read-write transaction, on a session-managed patient, could have the new identifier auto-flushed
+	 * and assigned an id before this point, which would skip the check; closing that residual for such
+	 * callers would require enforcing the privilege at the persistence layer rather than here.
 	 */
 	private void requireAppropriatePatientIdentifierPrivilege(Patient patient) {
 		for (PatientIdentifier identifier : patient.getIdentifiers()) {
