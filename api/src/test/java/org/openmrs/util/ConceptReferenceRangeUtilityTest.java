@@ -1070,4 +1070,31 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		return obs;
 	}
+
+	/**
+	 * Guards against the stored-criteria data-exfiltration oracle (GHSA-cf7m): the SpEL surface must
+	 * not permit string inspection or indexing, arbitrary getters, constructors or type references, but
+	 * must still allow the documented value comparisons.
+	 */
+	@Test
+	public void evaluateCriteria_shouldRejectExfiltrationConstructsButAllowValueComparisons() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		String[] blocked = { "$patient.uuid.startsWith('a')", "$patient.uuid.charAt(0) == 'a'",
+		        "$patient.uuid.substring(0, 1) == 'a'", "$patient.uuid.length() > 5", "$patient.uuid.compareTo('a') > 0",
+		        "$patient.uuid.getBytes()[0] > 50", "$patient.uuid[0] == 'a'", "$patient.getUuid().startsWith('a')",
+		        "$patient.names[0].familyName == 'x'", "T(java.lang.Runtime).getRuntime()",
+		        "new java.net.URL('http://evil')" };
+		for (String criteria : blocked) {
+			assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(criteria, obs),
+			    "criteria should be rejected: " + criteria);
+		}
+
+		// documented comparisons must keep working (null values simply evaluate to false)
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender() == 'M'", obs));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('M')", obs));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$fn.getCurrentHour() >= 0", obs));
+	}
+
 }

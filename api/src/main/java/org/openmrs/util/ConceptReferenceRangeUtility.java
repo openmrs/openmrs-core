@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,13 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelMessage;
+import org.springframework.expression.spel.SpelNode;
+import org.springframework.expression.spel.ast.BeanReference;
+import org.springframework.expression.spel.ast.ConstructorReference;
+import org.springframework.expression.spel.ast.Indexer;
+import org.springframework.expression.spel.ast.MethodReference;
+import org.springframework.expression.spel.ast.TypeReference;
+import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.DataBindingMethodResolver;
 import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
@@ -75,9 +83,50 @@ public class ConceptReferenceRangeUtility {
 	        .forPropertyAccessors(new MapAccessor(), DataBindingPropertyAccessor.forReadOnlyAccess())
 	        .withMethodResolvers(DataBindingMethodResolver.forInstanceMethodInvocation()).build();
 
+	/**
+	 * Method names a criteria expression is permitted to invoke. Allow-list of the {@code $fn} helper
+	 * API ({@link CriteriaFunctions}), a curated set of scalar/value accessors on the bound domain
+	 * objects, and String equality only. It deliberately excludes String inspection methods
+	 * (startsWith, charAt, substring, length, compareTo, getBytes, ...) and arbitrary getters, which
+	 * together with the node checks in {@link #validateNode} stop a stored criteria from being used as
+	 * a blind data-exfiltration oracle over the bound patient graph.
+	 */
+	private static final Set<String> ALLOWED_METHODS = Set.of("getLatestObs", "getCurrentHour", "getCurrentObs",
+	    "getLatestObsDate", "isObsValueCodedAnswer", "getObsDays", "getObsWeeks", "getObsMonths", "getObsYears",
+	    "getDaysBetween", "getWeeksBetween", "getMonthsBetween", "getYearsBetween", "getDays", "getWeeks", "getMonths",
+	    "getYears", "isEnrolledInProgram", "isInProgramState", "getAge", "getAgeInMonths", "getAgeInWeeks", "getAgeInDays",
+	    "getGender", "getAttribute", "getValue", "getValueNumeric", "getValueBoolean", "getValueText", "getValueDate",
+	    "getValueDatetime", "getValueCoded", "getValueAsString", "equals", "equalsIgnoreCase");
+
 	private final CriteriaFunctions functions = new CriteriaFunctions();
 
 	public ConceptReferenceRangeUtility() {
+	}
+
+	private static Expression parseAndValidate(String criteria) {
+		SpelExpression expression = (SpelExpression) PARSER.parseExpression(criteria);
+		validateNode(expression.getAST());
+		return expression;
+	}
+
+	/**
+	 * Rejects expression constructs that let a stored criteria escape the intended "read a few values
+	 * and compare them" surface: constructor calls, type references, bean references, indexing
+	 * (including into strings, e.g. {@code $patient.uuid[0]}) and any method outside
+	 * {@link #ALLOWED_METHODS}.
+	 */
+	private static void validateNode(SpelNode node) {
+		if (node instanceof ConstructorReference || node instanceof TypeReference || node instanceof BeanReference
+		        || node instanceof Indexer) {
+			throw new IllegalArgumentException(
+			        "Criteria may not use constructors, type references, bean references or indexing");
+		}
+		if (node instanceof MethodReference && !ALLOWED_METHODS.contains(((MethodReference) node).getName())) {
+			throw new IllegalArgumentException("Criteria may not call method: " + ((MethodReference) node).getName());
+		}
+		for (int i = 0; i < node.getChildCount(); i++) {
+			validateNode(node.getChild(i));
+		}
 	}
 
 	/**
@@ -137,7 +186,7 @@ public class ConceptReferenceRangeUtility {
 		root.put("$date", context.getDate());
 
 		try {
-			Expression expression = EXPRESSION_CACHE.get(criteria, PARSER::parseExpression);
+			Expression expression = EXPRESSION_CACHE.get(criteria, ConceptReferenceRangeUtility::parseAndValidate);
 			Boolean result = expression.getValue(EVAL_CONTEXT, root, Boolean.class);
 			return result != null && result;
 		} catch (SpelEvaluationException e) {
