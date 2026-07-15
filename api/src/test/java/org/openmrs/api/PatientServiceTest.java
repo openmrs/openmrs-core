@@ -71,6 +71,7 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -3669,6 +3670,36 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		    () -> patientService.getIdentifierValidator("com.example.InvalidIdentifierValidator"));
 		assertEquals("Could not find patient identifier validator com.example.InvalidIdentifierValidator",
 		    patientIdentifierException.getMessage());
+	}
+
+	/**
+	 * Before this fix {@code getAllergies} carried no {@code @Authorized} annotation, so the
+	 * authorization advice performed no privilege check at all and any caller could read a patient's
+	 * allergy list. It now requires the Get Allergies privilege.
+	 *
+	 * @see PatientService#getAllergies(Patient)
+	 */
+	@Test
+	public void getAllergies_shouldRequireTheGetAllergiesPrivilege() {
+		Patient patient = patientService.getPatient(2);
+		Context.logout();
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		    () -> patientService.getAllergies(patient));
+		assertTrue(exception.getMessage().contains(PrivilegeConstants.GET_ALLERGIES));
+	}
+
+	/**
+	 * Before this fix {@code setAllergies} carried no {@code @Authorized} annotation, so any caller
+	 * could modify a patient's allergy list. It now requires an allergy add/edit privilege.
+	 *
+	 * @see PatientService#setAllergies(Patient, Allergies)
+	 */
+	@Test
+	public void setAllergies_shouldRequireAnAllergyWritePrivilege() {
+		Patient patient = patientService.getPatient(2);
+		Allergies allergies = new Allergies();
+		Context.logout();
+		assertThrows(APIAuthenticationException.class, () -> patientService.setAllergies(patient, allergies));
 	}
 
 }
