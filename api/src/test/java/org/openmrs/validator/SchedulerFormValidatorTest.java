@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
@@ -131,7 +132,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		TaskDefinition def = new TaskDefinition();
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
-		def.setTaskClass("org.openmrs.BaseOpenmrsData");
+		def.setTaskClass(UninstantiableTask.class.getName());
 
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
@@ -215,4 +216,50 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("description"));
 		assertTrue(errors.hasFieldErrors("startTimePattern"));
 	}
+
+	/**
+	 * A non-Task class whose construction has an observable side effect, used to prove that a class
+	 * which does not implement {@link org.openmrs.scheduler.Task} is rejected by the type check before
+	 * it is ever instantiated.
+	 */
+	public static class ConstructorSideEffectNonTask {
+
+		static boolean instantiated = false;
+
+		public ConstructorSideEffectNonTask() {
+			instantiated = true;
+		}
+	}
+
+	/**
+	 * @see SchedulerFormValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldRejectANonTaskClassBeforeInstantiatingIt() {
+		ConstructorSideEffectNonTask.instantiated = false;
+		TaskDefinition def = new TaskDefinition();
+		def.setName("Chores");
+		def.setRepeatInterval(3600000L);
+		def.setTaskClass(ConstructorSideEffectNonTask.class.getName());
+
+		Errors errors = new BindException(def, "def");
+		new SchedulerFormValidator().validate(def, errors);
+
+		assertTrue(errors.hasFieldErrors("taskClass"));
+		assertEquals("Scheduler.taskForm.classDoesNotImplementTask", errors.getFieldError("taskClass").getCode());
+		assertFalse(ConstructorSideEffectNonTask.instantiated,
+		    "a class that does not implement Task must be rejected before it is instantiated");
+	}
+
+	/**
+	 * An abstract class that implements Task but cannot be instantiated (public no-arg constructor, so
+	 * newInstance throws InstantiationException rather than IllegalAccessException). Used to exercise
+	 * the instantiation-failure branch, which now runs only after the Task type check passes.
+	 */
+	public abstract static class UninstantiableTask implements Task {
+
+		public UninstantiableTask() {
+		}
+	}
+
 }
