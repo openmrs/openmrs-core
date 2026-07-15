@@ -78,6 +78,7 @@ public interface CohortService extends OpenmrsService {
 	 * @param cohort the Cohort to completely remove from the database
 	 * @throws APIException
 	 */
+	@Authorized({ PrivilegeConstants.PURGE_COHORTS })
 	public Cohort purgeCohort(Cohort cohort) throws APIException;
 
 	/**
