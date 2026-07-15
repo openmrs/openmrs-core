@@ -43,6 +43,7 @@ import org.springframework.expression.spel.ast.BeanReference;
 import org.springframework.expression.spel.ast.ConstructorReference;
 import org.springframework.expression.spel.ast.Indexer;
 import org.springframework.expression.spel.ast.MethodReference;
+import org.springframework.expression.spel.ast.OperatorMatches;
 import org.springframework.expression.spel.ast.TypeReference;
 import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -112,14 +113,15 @@ public class ConceptReferenceRangeUtility {
 	/**
 	 * Rejects expression constructs that let a stored criteria escape the intended "read a few values
 	 * and compare them" surface: constructor calls, type references, bean references, indexing
-	 * (including into strings, e.g. {@code $patient.uuid[0]}) and any method outside
-	 * {@link #ALLOWED_METHODS}.
+	 * (including into strings, e.g. {@code $patient.uuid[0]}), the {@code matches} regex operator (a
+	 * string-inspection primitive equivalent to the blocked String methods, and also a ReDoS vector)
+	 * and any method outside {@link #ALLOWED_METHODS}.
 	 */
 	private static void validateNode(SpelNode node) {
 		if (node instanceof ConstructorReference || node instanceof TypeReference || node instanceof BeanReference
-		        || node instanceof Indexer) {
+		        || node instanceof Indexer || node instanceof OperatorMatches) {
 			throw new IllegalArgumentException(
-			        "Criteria may not use constructors, type references, bean references or indexing");
+			        "Criteria may not use constructors, type references, bean references, indexing or regex matching");
 		}
 		if (node instanceof MethodReference && !ALLOWED_METHODS.contains(((MethodReference) node).getName())) {
 			throw new IllegalArgumentException("Criteria may not call method: " + ((MethodReference) node).getName());
