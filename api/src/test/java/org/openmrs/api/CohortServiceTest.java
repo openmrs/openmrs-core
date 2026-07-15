@@ -163,6 +163,16 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohorts(String)
 	 */
 	@Test
+	public void getCohorts_shouldFailIfUserDoesNotHaveTheGetPatientCohortsPrivilege() {
+		executeDataSet(COHORT_XML);
+		Context.logout();
+		assertThrows(APIAuthenticationException.class, () -> service.getCohorts("Example"));
+	}
+
+	/**
+	 * @see CohortService#getCohorts(String)
+	 */
+	@Test
 	public void getCohorts_shouldBeCaseInsensitive() {
 		executeDataSet(COHORT_XML);
 

@@ -150,6 +150,7 @@ public interface CohortService extends OpenmrsService {
 	 * @return list of cohorts matching the name fragment
 	 * @throws APIException
 	 */
+	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
 	public List<Cohort> getCohorts(String nameFragment) throws APIException;
 
 	/**
