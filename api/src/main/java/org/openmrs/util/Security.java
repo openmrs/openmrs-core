@@ -64,10 +64,6 @@ public class Security {
 			throw new APIException("password.cannot.be.null", (Object[]) null);
 		}
 
-		if (PasswordHashDetector.isArgon2Hash(hashedPassword)) {
-			return new Argon2PasswordEncoder().verify(hashedPassword, passwordToHash);
-		}
-
 		return hashedPassword.equals(encodeString(passwordToHash))
 			|| hashedPassword.equals(encodeStringSHA1(passwordToHash))
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
