@@ -123,6 +123,17 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#purgeCohort(Cohort)
 	 */
 	@Test
+	public void purgeCohort_shouldFailIfUserDoesNotHaveThePurgeCohortsPrivilege() {
+		executeDataSet(COHORT_XML);
+		Cohort cohort = service.getAllCohorts(true).get(0);
+		Context.logout();
+		assertThrows(APIAuthenticationException.class, () -> service.purgeCohort(cohort));
+	}
+
+	/**
+	 * @see CohortService#purgeCohort(Cohort)
+	 */
+	@Test
 	public void purgeCohort_shouldDeleteCohortFromDatabase() {
 		executeDataSet(COHORT_XML);
 		List<Cohort> allCohorts = service.getAllCohorts(true);
