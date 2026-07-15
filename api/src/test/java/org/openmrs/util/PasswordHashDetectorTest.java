@@ -81,8 +81,8 @@ public class PasswordHashDetectorTest {
 	}
 
 	@Test
-	public void isArgon2Hash_shouldReturnTrueForPartialArgon2Prefix() {
-		assertTrue(PasswordHashDetector.isArgon2Hash("$argon2"));
+	public void isArgon2Hash_shouldReturnFalseForPartialArgon2Prefix() {
+		assertFalse(PasswordHashDetector.isArgon2Hash("$argon2"));
 	}
 
 	@Test
@@ -118,13 +118,13 @@ public class PasswordHashDetectorTest {
 	}
 
 	@Test
-	public void detectAlgorithm_shouldReturnUnknownForSha512Hash() {
-		assertEquals(PasswordHashAlgorithm.UNKNOWN, PasswordHashDetector.detectAlgorithm(SHA512_HASH));
+	public void detectAlgorithm_shouldReturnSha512ForSha512Hash() {
+		assertEquals(PasswordHashAlgorithm.SHA_512, PasswordHashDetector.detectAlgorithm(SHA512_HASH));
 	}
 
 	@Test
-	public void detectAlgorithm_shouldReturnUnknownForSha1Hash() {
-		assertEquals(PasswordHashAlgorithm.UNKNOWN, PasswordHashDetector.detectAlgorithm(SHA1_HASH));
+	public void detectAlgorithm_shouldReturnSha1ForSha1Hash() {
+		assertEquals(PasswordHashAlgorithm.SHA_1, PasswordHashDetector.detectAlgorithm(SHA1_HASH));
 	}
 
 	@Test
@@ -133,8 +133,8 @@ public class PasswordHashDetectorTest {
 	}
 
 	@Test
-	public void detectAlgorithm_shouldReturnArgon2ForPartialArgon2Prefix() {
-		assertEquals(PasswordHashAlgorithm.ARGON2, PasswordHashDetector.detectAlgorithm("$argon2"));
+	public void detectAlgorithm_shouldReturnUnknownForPartialArgon2Prefix() {
+		assertEquals(PasswordHashAlgorithm.UNKNOWN, PasswordHashDetector.detectAlgorithm("$argon2"));
 	}
 
 	@Test

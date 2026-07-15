@@ -59,10 +59,12 @@ public class PasswordHashDetector {
 	 * @return true if the hash matches the Argon2 format, false otherwise
 	 */
 	public static boolean isArgon2Hash(String hashedPassword) {
-		if (hashedPassword == null || hashedPassword.isEmpty()) {
+		if (hashedPassword == null || hashedPassword.trim().isEmpty()) {
 			return false;
 		}
-		return hashedPassword.startsWith(ARGON2_PREFIX);
+		String s = hashedPassword.trim();
+		// Match standard Argon2 encoded hashes: $argon2id$..., $argon2i$..., $argon2d$...
+		return s.matches("^\\$argon2(?:id|i|d)\\$.*");
 	}
 
 	/**
@@ -72,12 +74,24 @@ public class PasswordHashDetector {
 	 * @return the detected algorithm, or {@link PasswordHashAlgorithm#UNKNOWN} if unrecognized
 	 */
 	public static PasswordHashAlgorithm detectAlgorithm(String hashedPassword) {
-		if (hashedPassword == null || hashedPassword.isEmpty()) {
+		if (hashedPassword == null || hashedPassword.trim().isEmpty()) {
 			return PasswordHashAlgorithm.UNKNOWN;
 		}
+		String s = hashedPassword.trim();
 
-		if (isArgon2Hash(hashedPassword)) {
+		// Argon2 encoded hashes start with $argon2id|$argon2i|$argon2d
+		if (s.matches("^\\$argon2(?:id|i|d)\\$.*")) {
 			return PasswordHashAlgorithm.ARGON2;
+		}
+
+		String lower = s.toLowerCase();
+		// SHA-512 is represented as 128 hex characters
+		if (lower.matches("^[0-9a-f]{128}$")) {
+			return PasswordHashAlgorithm.SHA_512;
+		}
+		// SHA-1 is represented as 40 hex characters
+		if (lower.matches("^[0-9a-f]{40}$")) {
+			return PasswordHashAlgorithm.SHA_1;
 		}
 
 		return PasswordHashAlgorithm.UNKNOWN;
