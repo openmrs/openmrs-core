@@ -224,7 +224,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	 */
 	public static class ConstructorSideEffectNonTask {
 
-		static boolean instantiated = false;
+		public static boolean instantiated = false;
 
 		public ConstructorSideEffectNonTask() {
 			instantiated = true;
