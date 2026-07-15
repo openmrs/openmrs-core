@@ -468,6 +468,21 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ProgramWorkflowService#getPatientProgramByUuid(String)
+	 */
+	@Test
+	public void getPatientProgramByUuid_shouldFailIfUserHasNoGetPatientProgramsPrivilege() {
+		// a valid uuid so the missing privilege is the only possible reason for failure
+		String uuid = "2edf272c-bf05-4208-9f93-2fa213ed0415";
+
+		// log out so the context no longer holds the Get Patient Programs privilege
+		Context.logout();
+
+		assertThrows(APIAuthenticationException.class,
+		    () -> Context.getProgramWorkflowService().getPatientProgramByUuid(uuid));
+	}
+
+	/**
 	 * @see ProgramWorkflowService#getPatientStateByUuid(String)
 	 */
 	@Test
@@ -483,6 +498,21 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getPatientStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		assertNull(Context.getProgramWorkflowService().getPatientStateByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see ProgramWorkflowService#getPatientStateByUuid(String)
+	 */
+	@Test
+	public void getPatientStateByUuid_shouldFailIfUserHasNoGetPatientProgramsPrivilege() {
+		// a valid uuid so the missing privilege is the only possible reason for failure
+		String uuid = "ea89deaa-23cc-4840-92fe-63d199c37e4c";
+
+		// log out so the context no longer holds the Get Patient Programs privilege
+		Context.logout();
+
+		assertThrows(APIAuthenticationException.class,
+		    () -> Context.getProgramWorkflowService().getPatientStateByUuid(uuid));
 	}
 
 	/**
@@ -764,6 +794,22 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		int totalAttributeTypes = pws.getAllProgramAttributeTypes().size();
 		pws.purgeProgramAttributeType(programAttributeType);
 		assertEquals((totalAttributeTypes - 1), pws.getAllProgramAttributeTypes().size());
+	}
+
+	/**
+	 * @see ProgramWorkflowService#getPatientProgramAttributeByAttributeName(List, String)
+	 */
+	@Test
+	public void getPatientProgramAttributeByAttributeName_shouldFailIfUserHasNoGetPatientProgramsPrivilege() {
+		// valid arguments so the missing privilege is the only possible reason for failure
+		List<Integer> patients = Arrays.asList(2);
+		String attributeName = "ProgramId";
+
+		// log out so the context no longer holds the Get Patient Programs privilege
+		Context.logout();
+
+		assertThrows(APIAuthenticationException.class,
+		    () -> Context.getProgramWorkflowService().getPatientProgramAttributeByAttributeName(patients, attributeName));
 	}
 
 	@Test
