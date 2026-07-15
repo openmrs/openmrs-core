@@ -3702,4 +3702,35 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertThrows(APIAuthenticationException.class, () -> patientService.setAllergies(patient, allergies));
 	}
 
+	/**
+	 * Now that {@code getAllergies} requires the Get Allergies privilege,
+	 * {@link org.openmrs.validator.AllergyValidator} must not force that privilege onto every allergy
+	 * write. While a new allergy is being saved the validator reads the patient's existing allergies to
+	 * reject duplicates; that internal read is wrapped in a Get Allergies proxy privilege so a caller
+	 * holding only an allergy write privilege can still save a new allergy without also holding Get
+	 * Allergies.
+	 *
+	 * @see PatientService#saveAllergy(Allergy)
+	 * @see org.openmrs.validator.AllergyValidator
+	 */
+	@Test
+	public void saveAllergy_shouldNotRequireTheGetAllergiesPrivilegeForTheDuplicateCheck() {
+		Patient patient = patientService.getPatient(2);
+		Allergen allergen = new Allergen(AllergenType.DRUG, new Concept(3), null);
+		Allergy allergy = new Allergy(patient, allergen, new Concept(4), "some comment", new ArrayList<>());
+
+		// become a user whose role grants no privileges, then grant only Add Allergies; the caller
+		// deliberately lacks Get Allergies, so a regression in the validator's duplicate check surfaces
+		User user = Context.getUserService().getUserByUsername("butch");
+		assertNotNull(user);
+		Context.becomeUser(user.getSystemId());
+		Context.addProxyPrivilege(PrivilegeConstants.ADD_ALLERGIES);
+		try {
+			assertDoesNotThrow(() -> patientService.saveAllergy(allergy));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.ADD_ALLERGIES);
+		}
+		assertNotNull(allergy.getAllergyId());
+	}
+
 }
