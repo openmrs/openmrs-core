@@ -594,6 +594,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized({ "Get Patient Programs" })
 	public PatientProgramAttribute getPatientProgramAttributeByUuid(String var1);
 
+	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public Map<Object, Object> getPatientProgramAttributeByAttributeName(List<Integer> patients, String attributeName);
 
 	@Transactional(readOnly = true)
