@@ -35,8 +35,7 @@ import org.openmrs.serialization.JacksonConfig;
  * {@code InputStream}. The temporary file is automatically scheduled for deletion, when the event
  * is garbage-collected.
  * <p>
- * Values from headers are deserialized to simple values or in case of complex objects from JSON
- * with {@link JacksonConfig#objectMapper()}.
+ * Values from headers are deserialized to simple values.
  *
  * @since 2.9.0
  */
