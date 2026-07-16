@@ -310,7 +310,7 @@ class OpenmrsConfigurationFactoryTest {
 	 * Log4j2 configuration is triggered from within {@code ServiceContext}'s static initializer, so a
 	 * session appears open but the {@code ServiceContext} singleton has not been created yet. In that
 	 * state {@code doOpenmrsCustomisations} must not try to read global properties, which triggers a
-	 * message logged using the {@code ServiceContext}'s logger.'
+	 * message logged using the {@code ServiceContext}'s logger.
 	 */
 	@Test
 	void doOpenmrsCustomisations_shouldNotForceServiceContextInitializationWhenNotYetAvailable() {
