@@ -75,6 +75,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws APIException
 	 * <strong>Should</strong> delete cohort from database
 	 */
+	@Authorized({ PrivilegeConstants.PURGE_COHORTS })
 	public Cohort purgeCohort(Cohort cohort) throws APIException;
 	
 	/**
@@ -141,6 +142,7 @@ public interface CohortService extends OpenmrsService {
 	 * <strong>Should</strong> never return null
 	 * <strong>Should</strong> match cohorts by partial name
 	 */
+	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
 	public List<Cohort> getCohorts(String nameFragment) throws APIException;
 	
 	/**
