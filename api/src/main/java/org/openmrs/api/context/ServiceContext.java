@@ -147,6 +147,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * its creation the way {@link #getInstance()} would.
 	 *
 	 * @return true if the ServiceContext singleton has been instantiated
+	 * @since 3.0.0, 2.9.0, 2.8.9
 	 */
 	public static boolean isInstantiated() {
 		return ServiceContextHolder.instance != null;
