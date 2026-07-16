@@ -59,7 +59,7 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 		adminService.saveGlobalProperty(new GlobalProperty("eventPublished", "false"));
 		testEventPublisherService.clearOutbox();
 		testOutboxEventListener.clearCapturedEvents();
-		outboxTaskSchedulerInitializer.afterSingletonsInstantiated();
+		outboxTaskSchedulerInitializer.schedule();
 	}
 
 	@Test
