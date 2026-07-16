@@ -462,7 +462,7 @@ public class SearchQueryUnique<T, R> {
 	 * @param chunkSize the scroll chunk size
 	 * @return the number of hits scanned before stopping
 	 */
-	static int collectUniqueKeys(SearchQuery<?> keyQuery, Collection<Object> uniqueKeys, int cap, int chunkSize) {
+	static int collectUniqueKeys(SearchQuery<?> keyQuery, Set<Object> uniqueKeys, int cap, int chunkSize) {
 		int scannedHitCount = 0;
 		try (SearchScroll<?> scroll = keyQuery.scroll(chunkSize)) {
 			SearchScrollResult<?> chunk = scroll.next();
