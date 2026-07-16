@@ -9,13 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,10 +25,17 @@ import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 	private HibernatePatientDAO hibernatePatientDao;
-	
+
 	private HibernatePersonDAO hibernatePersonDAO;
 
 	@BeforeEach
@@ -48,10 +48,9 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getPatientIdentifiers_shouldGetByIdentifierType() {
 		List<PatientIdentifierType> identifierTypes = singletonList(new PatientIdentifierType(2));
-		List<PatientIdentifier> identifiers = hibernatePatientDao
-				.getPatientIdentifiers(null, identifierTypes, emptyList(), emptyList(), null);
-		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId)
-				.collect(Collectors.toList());
+		List<PatientIdentifier> identifiers = hibernatePatientDao.getPatientIdentifiers(null, identifierTypes, emptyList(),
+		    emptyList(), null);
+		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId).collect(Collectors.toList());
 
 		assertEquals(2, identifiers.size());
 		assertThat(identifierIds, hasItems(1, 3));
@@ -59,14 +58,10 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void getPatientIdentifiers_shouldGetByPatients() {
-		List<Patient> patients = Arrays.asList(
-				hibernatePatientDao.getPatient(6),
-				hibernatePatientDao.getPatient(7)
-		);
-		List<PatientIdentifier> identifiers = hibernatePatientDao
-				.getPatientIdentifiers(null, emptyList(), emptyList(), patients, null);
-		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId)
-				.collect(Collectors.toList());
+		List<Patient> patients = Arrays.asList(hibernatePatientDao.getPatient(6), hibernatePatientDao.getPatient(7));
+		List<PatientIdentifier> identifiers = hibernatePatientDao.getPatientIdentifiers(null, emptyList(), emptyList(),
+		    patients, null);
+		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId).collect(Collectors.toList());
 
 		assertEquals(2, identifiers.size());
 		assertThat(identifierIds, hasItems(3, 4));
@@ -214,7 +209,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		Context.flushSession(); //needed by postgres
 
 		// when
-		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName", "familyName");
+		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName",
+		    "familyName");
 		Collections.shuffle(attributes); // random order of attributes to make sure this test isn't flaky
 		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(attributes);
 
@@ -249,7 +245,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 
 		// when
-		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName", "familyName");
+		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName",
+		    "familyName");
 		Collections.shuffle(attributes); // random order of attributes to make sure this test isn't flaky
 		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(attributes);
 
@@ -284,7 +281,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 
 		// when
-		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName", "familyName", "includeVoided");
+		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName", "familyName",
+		    "includeVoided");
 		Collections.shuffle(attributes); // random order of attributes to make sure this test isn't flaky
 		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(attributes);
 

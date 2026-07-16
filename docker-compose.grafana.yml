@@ -1,0 +1,54 @@
+version: "3.7"
+
+#    This Source Code Form is subject to the terms of the Mozilla Public License,
+#    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+#    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+#    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+#    
+#    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+#    graphic logo is a trademark of OpenMRS Inc.
+
+services:
+    loki-init:
+        image: alpine:3.23
+        user: "0"
+        command: chown -R 10001:10001 /loki/data
+        volumes:
+            - loki-data:/loki/data
+
+    loki:
+        image: grafana/loki:3.6
+        volumes:
+            - ./monitoring/loki-config.yaml:/etc/loki/local-config.yaml
+            - loki-data:/loki/data
+        command: -config.file=/etc/loki/local-config.yaml
+        depends_on:
+            loki-init:
+                condition: service_completed_successfully
+
+    alloy:
+        image: grafana/alloy:v1.13.1
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./monitoring/config.alloy:/etc/alloy/config.alloy
+        command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+
+    grafana:
+        image: grafana/grafana:12.3
+        ports:
+            - "3000:3000"
+        environment:
+            GF_LOG_LEVEL: warn
+            GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-Admin123}
+            GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/provisioning/dashboards/json/logs-dashboard.json
+        volumes:
+            - ./monitoring/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+            - ./monitoring/grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+            - ./monitoring/dashboards:/etc/grafana/provisioning/dashboards/json
+            - grafana-data:/var/lib/grafana
+        depends_on:
+            - loki
+
+volumes:
+    grafana-data:
+    loki-data:

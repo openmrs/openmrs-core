@@ -9,6 +9,9 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,13 +21,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.io.Serializable;
-import java.util.Date;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -38,19 +37,14 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
  * @since 1.10
  */
 @Entity
-@Table(name="drug_reference_map")
+@Table(name = "drug_reference_map")
 @Audited
 public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Serializable {
 
 	public static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "drug_reference_map_id_seq")
-	@GenericGenerator(
-		name = "drug_reference_map_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "drug_reference_map_drug_reference_map_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@DocumentId
 	@Column(name = "drug_reference_map_id")
 	private Integer drugReferenceMapId;
@@ -61,7 +55,7 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 
 	@ManyToOne
 	@JoinColumn(name = "term_id", nullable = false)
-	@Cascade(CascadeType.SAVE_UPDATE)
+	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private ConceptReferenceTerm conceptReferenceTerm;

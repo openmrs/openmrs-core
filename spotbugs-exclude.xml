@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<FindBugsFilter>
+	<!--
+		SpotBugs exclusion filter for OpenMRS Core.
+
+		This file replaces the legacy findbugs-include.xml. Unlike the old config
+		which listed every pattern as an include (effectively a no-op), this
+		exclusion filter suppresses specific known issues so that all other
+		checks are active.
+
+		As the codebase is cleaned up, patterns should be removed from this
+		file so SpotBugs can enforce them.
+	-->
+
+	<!-- Exclude test classes from most checks -->
+	<Match>
+		<Source name="~.*(Test|IT)\.java"/>
+		<Or>
+			<Bug pattern="DM_DEFAULT_ENCODING"/>
+			<Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
+			<Bug pattern="NP_NULL_ON_SOME_PATH_EXCEPTION"/>
+			<Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+		</Or>
+	</Match>
+
+	<!-- TODO Narrow these project-wide exclusions to specific packages as the codebase improves -->
+
+	<!-- Serialization warnings: OpenMRS domain objects use Hibernate-managed serialization -->
+	<Match>
+		<Or>
+			<Bug pattern="SE_NO_SERIALVERSIONID"/>
+			<Bug pattern="SE_BAD_FIELD"/>
+			<Bug pattern="SE_BAD_FIELD_STORE"/>
+			<Bug pattern="SE_BAD_FIELD_INNER_CLASS"/>
+			<Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
+			<Bug pattern="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS"/>
+			<Bug pattern="SE_INNER_CLASS"/>
+			<Bug pattern="SE_NO_SUITABLE_CONSTRUCTOR"/>
+			<Bug pattern="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION"/>
+			<Bug pattern="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"/>
+		</Or>
+	</Match>
+
+	<!-- Mutable exposure: domain objects intentionally expose internal state for Hibernate -->
+	<Match>
+		<Or>
+			<Bug pattern="EI_EXPOSE_REP"/>
+			<Bug pattern="EI_EXPOSE_REP2"/>
+			<Bug pattern="EI_EXPOSE_STATIC_REP2"/>
+			<Bug pattern="MS_EXPOSE_REP"/>
+		</Or>
+	</Match>
+
+	<!-- Inner class patterns: common in Spring/Hibernate configuration -->
+	<Match>
+		<Or>
+			<Bug pattern="SIC_INNER_SHOULD_BE_STATIC"/>
+			<Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
+			<Bug pattern="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS"/>
+		</Or>
+	</Match>
+</FindBugsFilter>

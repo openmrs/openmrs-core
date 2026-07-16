@@ -15,12 +15,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
 /**
  * A user-defined extension to the {@link OrderSet} class.
+ *
  * @see AttributeType
  * @since 2.4.0
  */
@@ -28,7 +30,7 @@ import org.openmrs.attribute.BaseAttributeType;
 @Table(name = "order_set_attribute_type")
 @Audited
 public class OrderSetAttributeType extends BaseAttributeType<OrderSet> implements AttributeType<OrderSet> {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "order_set_attribute_type_id")

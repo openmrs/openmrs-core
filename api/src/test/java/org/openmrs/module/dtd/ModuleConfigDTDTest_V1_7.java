@@ -9,11 +9,6 @@
  */
 package org.openmrs.module.dtd;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.openmrs.module.dtd.ConfigXmlBuilder.withMinimalTags;
-import static org.openmrs.module.dtd.ConfigXmlBuilder.writeToInputStream;
-import static org.openmrs.module.dtd.DtdTestValidator.isValidConfigXml;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -23,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -32,20 +26,25 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.w3c.dom.Document;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.module.dtd.ConfigXmlBuilder.withMinimalTags;
+import static org.openmrs.module.dtd.ConfigXmlBuilder.writeToInputStream;
+import static org.openmrs.module.dtd.DtdTestValidator.isValidConfigXml;
+
 public class ModuleConfigDTDTest_V1_7 {
-	
+
 	private static final String[] compatibleVersions = new String[] { "1.7", "2.0" };
-	
+
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void configXmlServletWithInitParams(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
+	public void configXmlServletWithInitParams(String version)
+	        throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		Map<String, String> initParams = new HashMap<>();
 		initParams.put("param1", "value1");
 		initParams.put("param2", "value2");
 
 		Document configXml = withMinimalTags(version)
-			.withServlet(Optional.of("ServletName"), Optional.of("ServletClass"), initParams)
-			.build();
+		        .withServlet(Optional.of("ServletName"), Optional.of("ServletClass"), initParams).build();
 
 		try (InputStream inputStream = writeToInputStream(configXml)) {
 			assertTrue(isValidConfigXml(inputStream));
@@ -54,16 +53,16 @@ public class ModuleConfigDTDTest_V1_7 {
 
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void configXmlServletMissingInitParamsIsValid(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
+	public void configXmlServletMissingInitParamsIsValid(String version)
+	        throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		Document configXml = withMinimalTags(version)
-			.withServlet(Optional.of("ServletName"), Optional.of("ServletClass"), Collections.emptyMap())
-			.build();
-		
+		        .withServlet(Optional.of("ServletName"), Optional.of("ServletClass"), Collections.emptyMap()).build();
+
 		try (InputStream inputStream = writeToInputStream(configXml)) {
 			assertTrue(isValidConfigXml(inputStream));
 		}
 	}
-	
+
 	private static Stream<Arguments> getCompatibleVersions() {
 		return Arrays.stream(compatibleVersions).map(Arguments::of);
 	}

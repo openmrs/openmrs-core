@@ -11,7 +11,6 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.List;
 
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -25,16 +24,15 @@ import org.openmrs.api.db.OpenmrsMetadataDAO;
  * Abstract class implementing basic data access methods for BaseOpenmrsMetadata persistents
  *
  * @since 1.10
- *
  * @param <T>
  */
 public class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends HibernateOpenmrsObjectDAO<T> implements OpenmrsMetadataDAO<T> {
-	
+
 	public HibernateOpenmrsMetadataDAO(Class<T> mappedClass) {
 		super();
 		this.mappedClass = mappedClass;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getAll(boolean)
 	 */
@@ -73,26 +71,28 @@ public class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends 
 		if (maxResults != null) {
 			query.setMaxResults(maxResults);
 		}
-		
+
 		return query.getResultList();
 	}
-
 
 	/**
 	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getAllCount(boolean)
 	 */
 	@Override
 	public int getAllCount(boolean includeRetired) {
-		
-		String hql = "select count(*)" + " from " + mappedClass;
-		
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<T> root = cq.from(mappedClass);
+
+		cq.select(cb.count(root));
+
 		if (!includeRetired) {
-			hql += " where retired = false";
+			cq.where(cb.isFalse(root.get("retired")));
 		}
-		Query query = sessionFactory.getCurrentSession().createQuery(hql);
-		
-		Number count = JpaUtils.getSingleResultOrNull(query);
-		
+
+		Long count = session.createQuery(cq).getSingleResult();
+
 		return count == null ? 0 : count.intValue();
 	}
 }

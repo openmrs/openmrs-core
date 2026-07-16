@@ -9,6 +9,8 @@
  */
 package org.openmrs.util;
 
+import java.util.Properties;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
@@ -17,8 +19,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -31,10 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class ConfigUtilTest extends BaseContextSensitiveTest {
 
-	@Autowired 
+	@Autowired
 	@Qualifier("adminService")
 	AdministrationService administrationService;
-	
+
 	static {
 		System.setProperty("inRuntimeAndSystem", "system-property-value");
 		System.setProperty("inSystemNotRuntime", "system-property-value");

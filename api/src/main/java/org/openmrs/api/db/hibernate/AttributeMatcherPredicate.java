@@ -17,17 +17,19 @@ import org.openmrs.attribute.AttributeType;
 import org.openmrs.customdatatype.Customizable;
 
 /**
- * Used in conjunction with commons-collections filter to find attributes with values in the given map.
+ * Used in conjunction with commons-collections filter to find attributes with values in the given
+ * map.
+ *
  * @since 1.9
  */
 public class AttributeMatcherPredicate<T extends Customizable, AT extends AttributeType> implements Predicate {
-	
+
 	private final Map<AT, String> serializedAttributeValues;
-	
+
 	public AttributeMatcherPredicate(Map<AT, String> serializedAttributeValues) {
 		this.serializedAttributeValues = serializedAttributeValues;
 	}
-	
+
 	@Override
 	public boolean evaluate(Object o) {
 		final T customizable = (T) o;

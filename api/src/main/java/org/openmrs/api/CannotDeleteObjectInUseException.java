@@ -13,23 +13,23 @@ package org.openmrs.api;
  * An instance of this exception is thrown if a delete operation is attempted on an object that is
  * referenced by others, typically this should be thrown when deleting an existing object is
  * detrimental to the integrity of objects referencing it or any other existing associated data.
- * 
+ *
  * @since 2.1
  */
 public class CannotDeleteObjectInUseException extends InvalidOperationOnObjectException {
-	
+
 	public CannotDeleteObjectInUseException(String message) {
 		super(message);
 	}
-	
+
 	public CannotDeleteObjectInUseException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 	public CannotDeleteObjectInUseException(String messageKey, Object[] parameters) {
 		super(messageKey, parameters);
 	}
-	
+
 	/**
 	 * @see InvalidOperationOnObjectException#InvalidOperationOnObjectException(Class)
 	 */

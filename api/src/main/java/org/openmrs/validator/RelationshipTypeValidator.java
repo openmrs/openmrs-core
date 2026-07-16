@@ -19,31 +19,36 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates a {@link RelationshipType} object.
- * 
+ *
  * @since 1.10
  */
 @Handler(supports = { RelationshipType.class }, order = 50)
 public class RelationshipTypeValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return RelationshipType.class.isAssignableFrom(c);
 	}
-	
+
 	/**
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if aIsToB(or A is To B) is null or empty or whitespace
-	 * <strong>Should</strong> fail validation if bIsToA(or B is To A) is null or empty or whitespace
-	 * <strong>Should</strong> fail validation if description is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if all required fields are set
-	 * <strong>Should</strong> fail validation if relationshipTypeName already exist
-	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <p>
+	 * <strong>Should</strong> fail validation if aIsToB(or A is To B) is null or empty or
+	 * whitespace<br/>
+	 * <strong>Should</strong> fail validation if bIsToA(or B is To A) is null or empty or
+	 * whitespace<br/>
+	 * <strong>Should</strong> fail validation if description is null or empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if all required fields are set<br/>
+	 * <strong>Should</strong> fail validation if relationshipTypeName already exist<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
 	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -54,8 +59,8 @@ public class RelationshipTypeValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "aIsToB", "RelationshipType.aIsToB.required");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "bIsToA", "RelationshipType.bIsToA.required");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "RelationshipType.description.required");
-			RelationshipType exist = Context.getPersonService().getRelationshipTypeByName(
-			    relationshipType.getaIsToB() + "/" + relationshipType.getbIsToA());
+			RelationshipType exist = Context.getPersonService()
+			        .getRelationshipTypeByName(relationshipType.getaIsToB() + "/" + relationshipType.getbIsToA());
 			if (exist != null && !exist.getRetired()
 			        && !OpenmrsUtil.nullSafeEquals(relationshipType.getUuid(), exist.getUuid())) {
 				errors.reject("duplicate.relationshipType");

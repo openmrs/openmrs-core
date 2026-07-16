@@ -19,7 +19,7 @@ import org.openmrs.User;
  * services. The {@link org.openmrs.aop.RequiredDataAdvice} uses AOP around each method to call all
  * handlers that a certain interface. Having this super interface makes it easier to have one method
  * for this.
- * 
+ *
  * @see org.openmrs.aop.RequiredDataAdvice#recursivelyHandle(Class, OpenmrsObject, User, Date,
  *      String, java.util.List)
  * @see org.openmrs.aop.RequiredDataAdvice
@@ -29,10 +29,10 @@ import org.openmrs.User;
  * @since 1.5
  */
 public interface RequiredDataHandler<O extends OpenmrsObject> {
-	
+
 	/**
 	 * This method is called to when the required data needs to be set.
-	 * 
+	 *
 	 * @param openmrsObject an {@link OpenmrsObject} that needs to have some required data set
 	 * @param currentUser the currently authenticated {@link User}
 	 * @param currentDate the current {@link Date}
@@ -40,5 +40,5 @@ public interface RequiredDataHandler<O extends OpenmrsObject> {
 	 *            exists
 	 */
 	public void handle(O openmrsObject, User currentUser, Date currentDate, String other);
-	
+
 }

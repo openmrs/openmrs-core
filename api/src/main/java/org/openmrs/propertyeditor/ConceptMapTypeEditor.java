@@ -18,20 +18,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 public class ConceptMapTypeEditor extends PropertyEditorSupport {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ConceptMapTypeEditor.class);
-	
+
 	public ConceptMapTypeEditor() {
 	}
-	
+
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		log.debug("Setting text: " + text);
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(Context.getConceptService().getConceptMapType(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				ConceptMapType value = Context.getConceptService().getConceptMapTypeByUuid(text);
 				setValue(value);
 				if (value == null) {
@@ -42,15 +41,15 @@ public class ConceptMapTypeEditor extends PropertyEditorSupport {
 			setValue(null);
 		}
 	}
-	
+
 	@Override
 	public String getAsText() {
 		ConceptMapType mapType = (ConceptMapType) getValue();
 		if (mapType == null || mapType.getConceptMapTypeId() == null) {
 			return "";
 		}
-		
+
 		return mapType.getConceptMapTypeId().toString();
 	}
-	
+
 }

@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DateDatatypeHandler implements CustomDatatypeHandler<DateDatatype, Date> {
-	
+
 	@Override
 	public void setHandlerConfiguration(String handlerConfig) {
-		
+
 	}
 }

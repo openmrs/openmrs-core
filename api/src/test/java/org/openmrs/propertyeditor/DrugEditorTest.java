@@ -14,17 +14,17 @@ import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class DrugEditorTest extends BasePropertyEditorTest<Drug, DrugEditor> {
-	
+
 	private static final Integer EXISTING_ID = 2;
-	
+
 	@Autowired
 	ConceptService conceptService;
-	
+
 	@Override
 	protected DrugEditor getNewEditor() {
 		return new DrugEditor();
 	}
-	
+
 	@Override
 	protected Drug getExistingObject() {
 		return conceptService.getDrug(EXISTING_ID);

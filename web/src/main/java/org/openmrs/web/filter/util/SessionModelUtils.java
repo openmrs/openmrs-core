@@ -9,28 +9,29 @@
  */
 package org.openmrs.web.filter.util;
 
-import org.openmrs.web.filter.initialization.InitializationWizardModel;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-
-import jakarta.servlet.http.HttpSession;
 import java.lang.reflect.Field;
 import java.util.Enumeration;
+
+import jakarta.servlet.http.HttpSession;
+
+import org.openmrs.web.filter.initialization.InitializationWizardModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for saving and loading the state of an {@link InitializationWizardModel} to and
  * from an {@link HttpSession}.
  */
 public class SessionModelUtils {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(SessionModelUtils.class);
-	
+
 	private static final String PREFIX = "setup.";
-	
+
 	/**
-	 * Saves all non-null fields of the {@link InitializationWizardModel} to the HTTP session. The
-	 * field name is used as the session key, prefixed with "setup.".
-	 * 
+	 * Saves all non-null fields of the {@link InitializationWizardModel} to the HTTP session. The field
+	 * name is used as the session key, prefixed with "setup.".
+	 *
 	 * @param session the current {@link HttpSession}, must not be null
 	 * @param model the {@link InitializationWizardModel} to save
 	 */
@@ -38,7 +39,7 @@ public class SessionModelUtils {
 		if (session == null || model == null) {
 			return;
 		}
-		
+
 		for (Field field : model.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			String fieldName = field.getName().toLowerCase();
@@ -58,11 +59,11 @@ public class SessionModelUtils {
 			}
 		}
 	}
-	
+
 	/**
-	 * Loads all existing session attributes (with "setup." prefix) into the corresponding fields of
-	 * the given {@link InitializationWizardModel}, if present.
-	 * 
+	 * Loads all existing session attributes (with "setup." prefix) into the corresponding fields of the
+	 * given {@link InitializationWizardModel}, if present.
+	 *
 	 * @param session the current {@link HttpSession}, must not be null
 	 * @param model the {@link InitializationWizardModel} to populate with values
 	 */
@@ -70,7 +71,7 @@ public class SessionModelUtils {
 		if (session == null || model == null) {
 			return;
 		}
-		
+
 		for (Field field : model.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			String fieldName = field.getName().toLowerCase();
@@ -90,11 +91,11 @@ public class SessionModelUtils {
 			}
 		}
 	}
-	
+
 	/**
 	 * Clears all session attributes previously saved by the wizard, i.e., those with the "setup."
 	 * prefix.
-	 * 
+	 *
 	 * @param session the current {@link HttpSession}, must not be null
 	 */
 	public static void clearWizardSessionAttributes(HttpSession session) {

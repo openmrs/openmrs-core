@@ -14,17 +14,17 @@ import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConceptReferenceTermEditorTest extends BasePropertyEditorTest<ConceptReferenceTerm, ConceptReferenceTermEditor> {
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	@Autowired
 	ConceptService conceptService;
-	
+
 	@Override
 	protected ConceptReferenceTermEditor getNewEditor() {
 		return new ConceptReferenceTermEditor();
 	}
-	
+
 	@Override
 	protected ConceptReferenceTerm getExistingObject() {
 		return conceptService.getConceptReferenceTerm(EXISTING_ID);

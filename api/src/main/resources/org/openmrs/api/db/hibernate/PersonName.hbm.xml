@@ -21,7 +21,7 @@
 
 		<id name="personNameId" type="java.lang.Integer"
 			column="person_name_id" unsaved-value="0">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">person_name_person_name_id_seq</param>
 			</generator>
 		</id>

@@ -34,7 +34,28 @@ public class DatabaseUtil {
 
 	private DatabaseUtil() {
 	}
-	
+
+	private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
+
+	private static final String MYSQL_LEGACY_DRIVER = "com.mysql.jdbc.Driver";
+
+	private static final String MARIADB_DRIVER = "org.mariadb.jdbc.Driver";
+
+	private static final String POSTGRESQL_DRIVER = "org.postgresql.Driver";
+
+	private static final String H2_DRIVER = "org.h2.Driver";
+
+	private static final String HSQLDB_DRIVER = "org.hsqldb.jdbcDriver";
+
+	private static final String ORACLE_DRIVER = "oracle.jdbc.driver.OracleDriver";
+
+	private static final String JTDS_DRIVER = "net.sourceforge.jtds.jdbc.Driver";
+
+	private static final String SQLSERVER_DRIVER = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
+
+	private static final Set<String> ALLOWED_JDBC_DRIVERS = Set.of(MYSQL_DRIVER, MYSQL_LEGACY_DRIVER, MARIADB_DRIVER,
+	    POSTGRESQL_DRIVER, H2_DRIVER, HSQLDB_DRIVER, ORACLE_DRIVER, SQLSERVER_DRIVER, JTDS_DRIVER);
+
 	private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 
 	public static final String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
@@ -44,64 +65,72 @@ public class DatabaseUtil {
 	 * driver class for the database which is specified by the connectionUrl and connectionDriver
 	 * parameters <br>
 	 * <br>
-	 * This is only needed when loading up a jdbc connection manually for the first time. This is
-	 * not needed by most users and development practices with the openmrs API.
+	 * This is only needed when loading up a jdbc connection manually for the first time. This is not
+	 * needed by most users and development practices with the openmrs API.
 	 *
 	 * @param connectionUrl the connection url for the database, such as
-	 * "jdbc:mysql://localhost:3306/..."
+	 *            "jdbc:mysql://localhost:3306/..."
 	 * @param connectionDriver the database driver class name, such as "com.mysql.cj.jdbc.Driver"
 	 * @throws ClassNotFoundException
 	 */
 	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
 		if (StringUtils.hasText(connectionDriver)) {
+			if (!ALLOWED_JDBC_DRIVERS.contains(connectionDriver)) {
+				log.error("Attempted to load an unauthorized database driver: {}", connectionDriver);
+				throw new IllegalArgumentException("Database driver '" + connectionDriver + "' is not an allowed driver.");
+			}
 			Class.forName(connectionDriver);
 			log.debug("set user defined Database driver class: " + connectionDriver);
 		} else {
 			if (connectionUrl.contains("jdbc:mysql")) {
-				Class.forName("com.mysql.cj.jdbc.Driver");
-				connectionDriver = "com.mysql.cj.jdbc.Driver";
+				Class.forName(MYSQL_DRIVER);
+				connectionDriver = MYSQL_DRIVER;
 			} else if (connectionUrl.contains("jdbc:mariadb")) {
-				Class.forName("org.mariadb.jdbc.Driver");
-				connectionDriver = "org.mariadb.jdbc.Driver";
+				Class.forName(MARIADB_DRIVER);
+				connectionDriver = MARIADB_DRIVER;
 			} else if (connectionUrl.contains("jdbc:hsqldb")) {
-				Class.forName("org.hsqldb.jdbcDriver");
-				connectionDriver = "org.hsqldb.jdbcDriver";
+				Class.forName(HSQLDB_DRIVER);
+				connectionDriver = HSQLDB_DRIVER;
 			} else if (connectionUrl.contains("jdbc:postgresql")) {
-				Class.forName("org.postgresql.Driver");
-				connectionDriver = "org.postgresql.Driver";
+				Class.forName(POSTGRESQL_DRIVER);
+				connectionDriver = POSTGRESQL_DRIVER;
 			} else if (connectionUrl.contains("jdbc:oracle")) {
-				Class.forName("oracle.jdbc.driver.OracleDriver");
-				connectionDriver = "oracle.jdbc.driver.OracleDriver";
+				Class.forName(ORACLE_DRIVER);
+				connectionDriver = ORACLE_DRIVER;
 			} else if (connectionUrl.contains("jdbc:jtds")) {
-				Class.forName("net.sourceforge.jtds.jdbc.Driver");
-				connectionDriver = "net.sourceforge.jtds.jdbc.Driver";
+				Class.forName(JTDS_DRIVER);
+				connectionDriver = JTDS_DRIVER;
 			} else if (connectionUrl.contains("sqlserver")) {
-				Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
-				connectionDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
+				Class.forName(SQLSERVER_DRIVER);
+				connectionDriver = SQLSERVER_DRIVER;
+			} else if (connectionUrl.contains("jdbc:h2")) {
+				Class.forName(H2_DRIVER);
+				connectionDriver = H2_DRIVER;
 			}
 		}
 		log.info("Set database driver class as " + connectionDriver);
 		return connectionDriver;
 	}
-	
+
 	/**
 	 * Executes the passed SQL query, enforcing select only if that parameter is set for given Session
 	 */
 	public static List<List<Object>> executeSQL(Session session, String sql, boolean selectOnly) throws DAOException {
 		sql = sql.trim();
 		boolean dataManipulation = checkQueryForManipulationCommands(sql, selectOnly);
-		
+
 		final List<List<Object>> result = new ArrayList<>();
 		final String query = sql;
 		final boolean sessionDataManipulation = dataManipulation;
-		
+
 		session.doWork(conn -> populateResultsFromSQLQuery(conn, query, sessionDataManipulation, result));
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * Executes the passed SQL query, enforcing select only if that parameter is set for given Connection
+	 * Executes the passed SQL query, enforcing select only if that parameter is set for given
+	 * Connection
 	 */
 	public static List<List<Object>> executeSQL(Connection conn, String sql, boolean selectOnly) throws DAOException {
 		sql = sql.trim();
@@ -110,23 +139,23 @@ public class DatabaseUtil {
 		populateResultsFromSQLQuery(conn, sql, dataManipulation, result);
 		return result;
 	}
-	
+
 	private static boolean checkQueryForManipulationCommands(String sql, boolean selectOnly) {
 		boolean dataManipulation = false;
-		
+
 		String sqlLower = sql.toLowerCase();
 		if (sqlLower.startsWith("insert") || sqlLower.startsWith("update") || sqlLower.startsWith("delete")
 		        || sqlLower.startsWith("alter") || sqlLower.startsWith("drop") || sqlLower.startsWith("create")
 		        || sqlLower.startsWith("rename")) {
 			dataManipulation = true;
 		}
-		
+
 		if (selectOnly && dataManipulation) {
 			throw new IllegalArgumentException("Illegal command(s) found in query string");
 		}
 		return dataManipulation;
 	}
-	
+
 	private static void populateResultsFromSQLQuery(Connection conn, String sql, boolean dataManipulation,
 	        List<List<Object>> results) {
 		PreparedStatement ps = null;
@@ -139,10 +168,10 @@ public class DatabaseUtil {
 				results.add(row);
 			} else {
 				ResultSet resultSet = ps.executeQuery();
-				
+
 				ResultSetMetaData rmd = resultSet.getMetaData();
 				int columnCount = rmd.getColumnCount();
-				
+
 				while (resultSet.next()) {
 					List<Object> rowObjects = new ArrayList<>();
 					for (int x = 1; x <= columnCount; x++) {
@@ -151,28 +180,25 @@ public class DatabaseUtil {
 					results.add(rowObjects);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.debug("Error while running sql: " + sql, e);
 			throw new DAOException("Error while running sql: " + sql + " . Message: " + e.getMessage(), e);
-		}
-		finally {
+		} finally {
 			if (ps != null) {
 				try {
 					ps.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.error("Error generated while closing statement", e);
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets all unique values excluding nulls in the specified column and table
 	 *
 	 * @param columnName the column
-	 * @param tableName  the table
+	 * @param tableName the table
 	 * @param connection
 	 * @return set of unique values
 	 * @throws Exception
@@ -188,7 +214,7 @@ public class DatabaseUtil {
 			//There can only be one column since we are selecting one
 			uniqueValues.add((T) row.get(0));
 		}
-		
+
 		return uniqueValues;
 	}
 }

@@ -23,36 +23,39 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates {@link Drug} objects.
- * 
+ *
  * @since 1.10
  */
 @Handler(supports = { Drug.class })
 public class DrugValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return Drug.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * Validates an Drug object
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fail if the drug object is null<br/>
+	 * <strong>Should</strong> fail if drug on drugReferenceMap is null<br/>
+	 * <strong>Should</strong> fail if conceptReferenceTerm on drugReferenceMap is null<br/>
+	 * <strong>Should</strong> invoke ConceptReferenceTermValidator if term on drugReferenceMap is
+	 * new<br/>
+	 * <strong>Should</strong> invoke ConceptMapTypeValidator if conceptMapType on drugReferenceMap is
+	 * new<br/>
+	 * <strong>Should</strong> pass if all fields are correct<br/>
+	 * <strong>Should</strong> reject drug multiple mappings to the same term<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail if the drug object is null
-	 * <strong>Should</strong> fail if drug on drugReferenceMap is null
-	 * <strong>Should</strong> fail if conceptReferenceTerm on drugReferenceMap is null
-	 * <strong>Should</strong> invoke ConceptReferenceTermValidator if term on drugReferenceMap is new
-	 * <strong>Should</strong> invoke ConceptMapTypeValidator if conceptMapType on drugReferenceMap is new
-	 * <strong>Should</strong> pass if all fields are correct
-	 * <strong>Should</strong> reject drug multiple mappings to the same term
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -67,7 +70,7 @@ public class DrugValidator implements Validator {
 				Drug mappedDrug = referenceMap.getDrug();
 				ConceptReferenceTerm referenceTerm = referenceMap.getConceptReferenceTerm();
 				ConceptMapType mapType = referenceMap.getConceptMapType();
-				
+
 				if (mappedDrug == null) {
 					errors.rejectValue("drugReferenceMaps[" + index + "].drug", "Drug.drugReferenceMap.mappedDrug");
 				}
@@ -78,12 +81,11 @@ public class DrugValidator implements Validator {
 					try {
 						errors.pushNestedPath("drugReferenceMaps[" + index + "].conceptReferenceTerm");
 						ValidationUtils.invokeValidator(new ConceptReferenceTermValidator(), referenceTerm, errors);
-					}
-					finally {
+					} finally {
 						errors.popNestedPath();
 					}
 				}
-				
+
 				if (mapType == null) {
 					errors.rejectValue("drugReferenceMaps[" + index + "].conceptMapType",
 					    "Drug.drugReferenceMap.conceptMapType");
@@ -91,17 +93,16 @@ public class DrugValidator implements Validator {
 					try {
 						errors.pushNestedPath("drugReferenceMaps[" + index + "].conceptMapType");
 						ValidationUtils.invokeValidator(new ConceptMapTypeValidator(), mapType, errors);
-					}
-					finally {
+					} finally {
 						errors.popNestedPath();
 					}
 				}
-				
+
 				//don't proceed to the next map
 				if (errors.hasErrors()) {
 					return;
 				}
-				
+
 				//if we already have a mapping to this term, reject it this map
 				if (!mappedTermUuids.add(referenceMap.getConceptReferenceTerm().getUuid())) {
 					errors.rejectValue("drugReferenceMaps[" + index + "].conceptReferenceTerm",

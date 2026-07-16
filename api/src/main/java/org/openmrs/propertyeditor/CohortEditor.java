@@ -13,23 +13,23 @@ import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 
 /**
- * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
- * an object back and forth through an html form or other medium. <br>
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass an
+ * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
- * 
+ *
  * @see Cohort
  */
 public class CohortEditor extends OpenmrsPropertyEditor<Cohort> {
-	
+
 	public CohortEditor() {
 	}
-	
+
 	@Override
 	protected Cohort getObjectById(Integer id) {
 		return Context.getCohortService().getCohort(id);
 	}
-	
+
 	@Override
 	protected Cohort getObjectByUuid(String uuid) {
 		return Context.getCohortService().getCohortByUuid(uuid);

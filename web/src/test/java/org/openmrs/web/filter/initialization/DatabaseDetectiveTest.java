@@ -10,6 +10,7 @@
 package org.openmrs.web.filter.initialization;
 
 import java.util.Properties;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,7 @@ public class DatabaseDetectiveTest {
 	public void setup() {
 		databaseDetective = new DatabaseDetective();
 	}
-	
+
 	@Test
 	public void shouldRecogniseNull() {
 		assertTrue(databaseDetective.isDatabaseEmpty(null));

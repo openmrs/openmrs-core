@@ -9,40 +9,41 @@
  */
 package liquibase.ext.datatype.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import liquibase.database.Database;
 import liquibase.database.core.MySQLDatabase;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.core.BooleanType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * MySQL (and MariaDB) represent boolean variables as TINYINT(1). Liquibase changed the representation of boolean
- * types in these databases to BIT(1) or BIT as of Liquibase version 3. This custom type ensures that TINYINT(1) is 
- * used instead.
- * 
+ * MySQL (and MariaDB) represent boolean variables as TINYINT(1). Liquibase changed the
+ * representation of boolean types in these databases to BIT(1) or BIT as of Liquibase version 3.
+ * This custom type ensures that TINYINT(1) is used instead.
+ *
  * @since 2.4
  */
 public class MySQLBooleanType extends BooleanType {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(MySQLBooleanType.class);
-	
+
 	@Override
 	public DatabaseDataType toDatabaseDataType(Database database) {
 		if (database instanceof MySQLDatabase) {
 			DatabaseDataType result = new DatabaseDataType("TINYINT", 1);
-			
+
 			log.debug("boolean type for MySQL is '{}' ", result.getType());
-			
+
 			return result;
 		}
-		
+
 		log.debug("delegating the choice of boolean type for database '{}' to super class of MySQLBooleanType",
 		    database.getDatabaseProductName());
-		
+
 		return super.toDatabaseDataType(database);
 	}
-	
+
 	@Override
 	public int getPriority() {
 		return super.getPriority() + 1;

@@ -83,12 +83,4 @@ EOF
 
 echo "Starting up OpenMRS..."
 
-/usr/local/tomcat/bin/catalina.sh run &
-
-# Trigger first filter to start data import
-sleep 15
-curl -sL "http://localhost:8080/${OMRS_WEBAPP_NAME}/" > /dev/null || true
-sleep 15
-
-# Bring tomcat process to foreground again
-wait ${!}
+exec /usr/local/tomcat/bin/catalina.sh run

@@ -17,7 +17,6 @@ import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -31,30 +30,36 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 
 /**
- * The service can be used to convert data from OutputStream to InputStream without copying all data in memory.
+ * The service can be used to convert data from OutputStream to InputStream without copying all data
+ * in memory.
  * <p>
- * The {@link #streamData(StreamDataWriter, Long)} method may run {@link StreamDataWriter#write(OutputStream)} in a 
- * separate thread using {@link TaskExecutor}.
+ * The {@link #streamData(StreamDataWriter, Long)} method may run
+ * {@link StreamDataWriter#write(OutputStream)} in a separate thread using {@link TaskExecutor}.
  * <p>
- * It's providing the {@link java.io.PipedInputStream}/{@link java.io.PipedOutputStream} mechanism in a thread safe way 
- * with the use of {@link BlockingQueue}.
- * 
+ * It's providing the {@link java.io.PipedInputStream}/{@link java.io.PipedOutputStream} mechanism
+ * in a thread safe way with the use of {@link BlockingQueue}.
+ *
  * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 @Service
 public class StreamDataService {
+
 	public static final int BUFFER_SIZE = (int) DataSize.ofKilobytes(128).toBytes();
-	
+
 	private static final Logger log = LoggerFactory.getLogger(StreamDataService.class);
+
 	private final TaskExecutor taskExecutor;
-	
+
 	public StreamDataService(@Autowired TaskExecutor taskExecutor) {
 		this.taskExecutor = taskExecutor;
 	}
-	
+
 	private static class QueueInputStream extends InputStream {
+
 		private final BlockingQueue<Integer> blockingQueue;
+
 		private final long timeoutNanos;
+
 		private volatile IOException streamException;
 
 		public QueueInputStream() {
@@ -70,7 +75,7 @@ public class StreamDataService {
 		public int read() throws IOException {
 			try {
 				checkStreamException();
-				
+
 				int result;
 				Integer peek = this.blockingQueue.peek();
 				if (Integer.valueOf(-1).equals(peek)) {
@@ -110,37 +115,38 @@ public class StreamDataService {
 
 		/**
 		 * Propagate exception from a writing thread to a reading thread so that processing is stopped.
-		 * 
+		 *
 		 * @param streamException exception
 		 * @throws UncheckedIOException rethrows e
 		 */
 		public void propagateStreamException(IOException streamException) {
 			this.streamException = streamException;
 		}
-		
+
 		public void checkStreamException() throws IOException {
 			if (streamException != null) {
 				throw streamException;
 			}
 		}
 	}
-	
+
 	private static class QueueOutputStream extends OutputStream {
+
 		private final QueueInputStream queueInputStream;
-		
+
 		public QueueOutputStream(QueueInputStream queueInputStream) {
 			this.queueInputStream = queueInputStream;
 		}
 
 		/**
-		 * @param b   the <code>byte</code>.
+		 * @param b the <code>byte</code>.
 		 * @throws IOException when queue full or interrupted
 		 */
 		@Override
 		public void write(int b) throws IOException {
 			try {
 				queueInputStream.checkStreamException();
-				
+
 				if (!queueInputStream.blockingQueue.offer(255 & b, queueInputStream.timeoutNanos, TimeUnit.NANOSECONDS)) {
 					IOException streamException = new IOException("Failed to write to full queue");
 					queueInputStream.propagateStreamException(streamException);
@@ -154,16 +160,16 @@ public class StreamDataService {
 		}
 
 		/**
-		 * Closing the stream doesn't fail any following writes, but effectively only data up to closing the stream
-		 * is read.
-		 * 
+		 * Closing the stream doesn't fail any following writes, but effectively only data up to closing the
+		 * stream is read.
+		 *
 		 * @throws IOException when queue full or interrupted
 		 */
 		@Override
 		public void close() throws IOException {
 			try {
 				queueInputStream.checkStreamException();
-				
+
 				// Indicate the end of stream
 				if (!this.queueInputStream.blockingQueue.offer(-1, queueInputStream.timeoutNanos, TimeUnit.NANOSECONDS)) {
 					IOException streamException = new IOException("Failed to write to full queue");
@@ -179,15 +185,14 @@ public class StreamDataService {
 	}
 
 	/**
-	 * Runs {@link StreamDataWriter#write(OutputStream)} in a separate thread using {@link TaskExecutor} or copies 
-	 * in-memory if the length is smaller than {@link #BUFFER_SIZE}.
+	 * Runs {@link StreamDataWriter#write(OutputStream)} in a separate thread using {@link TaskExecutor}
+	 * or copies in-memory if the length is smaller than {@link #BUFFER_SIZE}.
 	 * <p>
 	 * The returned InputStream doesn't need to be closed and the close operation takes no effect.
-	 * 
+	 *
 	 * @param writer the write method
 	 * @param length the number of bytes if known or null
 	 * @return InputStream
-	 * 
 	 * @throws IOException when failing to stream data
 	 */
 	public InputStream streamData(StreamDataWriter writer, Long length) throws IOException {

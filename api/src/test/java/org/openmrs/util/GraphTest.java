@@ -9,44 +9,49 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests the methods on the {@link Graph} class
  */
 public class GraphTest {
-	
+
 	/**
-	 * @throws CycleException 
+	 * @throws CycleException
 	 * @see Graph#topologicalSort()
 	 */
 	@Test
 	public void topologicalSort_shouldSortGraphInTopologicalOrder() throws CycleException {
-		
+
 		Graph<String> graph = new Graph<>();
-		
+
 		graph.addNode("E");
 		graph.addNode("D");
 		graph.addNode("C");
 		graph.addNode("B");
 		graph.addNode("A");
-		
+
 		graph.addEdge(graph.new Edge(
-		                             "A", "B"));
+		                             "A",
+		                             "B"));
 		graph.addEdge(graph.new Edge(
-		                             "B", "C"));
+		                             "B",
+		                             "C"));
 		graph.addEdge(graph.new Edge(
-		                             "A", "C"));
+		                             "A",
+		                             "C"));
 		graph.addEdge(graph.new Edge(
-		                             "B", "D"));
+		                             "B",
+		                             "D"));
 		graph.addEdge(graph.new Edge(
-		                             "D", "E"));
-		
+		                             "D",
+		                             "E"));
+
 		List<String> sortedNodes = graph.topologicalSort();
 		assertTrue(sortedNodes.indexOf("A") < sortedNodes.indexOf("B"));
 		assertTrue(sortedNodes.indexOf("A") < sortedNodes.indexOf("C"));
@@ -54,34 +59,39 @@ public class GraphTest {
 		assertTrue(sortedNodes.indexOf("B") < sortedNodes.indexOf("D"));
 		assertTrue(sortedNodes.indexOf("D") < sortedNodes.indexOf("E"));
 	}
-	
+
 	/**
-	 * @throws CycleException 
+	 * @throws CycleException
 	 * @see Graph#topologicalSort()
 	 */
 	@Test
 	public void topologicalSort_shouldThrowCycleException() throws CycleException {
-		
+
 		Graph<String> graph = new Graph<>();
-		
+
 		graph.addNode("E");
 		graph.addNode("D");
 		graph.addNode("C");
 		graph.addNode("B");
 		graph.addNode("A");
-		
+
 		graph.addEdge(graph.new Edge(
-		                             "A", "B"));
+		                             "A",
+		                             "B"));
 		graph.addEdge(graph.new Edge(
-		                             "A", "C"));
+		                             "A",
+		                             "C"));
 		graph.addEdge(graph.new Edge(
-		                             "B", "C"));
+		                             "B",
+		                             "C"));
 		graph.addEdge(graph.new Edge(
-		                             "B", "D"));
+		                             "B",
+		                             "D"));
 		graph.addEdge(graph.new Edge(
-		                             "D", "A"));
-		
+		                             "D",
+		                             "A"));
+
 		assertThrows(CycleException.class, () -> graph.topologicalSort());
 	}
-	
+
 }

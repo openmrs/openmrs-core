@@ -10,12 +10,6 @@
 
 package org.openmrs;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.envers.Audited;
-import org.openmrs.attribute.AttributeType;
-import org.openmrs.attribute.BaseAttributeType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,36 +17,35 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import org.hibernate.envers.Audited;
+import org.openmrs.attribute.AttributeType;
+import org.openmrs.attribute.BaseAttributeType;
+
 @Entity
 @Table(name = "program_attribute_type")
 @Audited
 public class ProgramAttributeType extends BaseAttributeType<PatientProgram> implements AttributeType<PatientProgram> {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "program_attribute_type_id_seq")
-	@GenericGenerator(
-		name = "program_attribute_type_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "program_attribute_type_program_attribute_type_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "program_attribute_type_id")
-    private Integer programAttributeTypeId;
+	private Integer programAttributeTypeId;
 
-    @Override
-    public Integer getId() {
-        return getProgramAttributeTypeId();
-    }
+	@Override
+	public Integer getId() {
+		return getProgramAttributeTypeId();
+	}
 
-    @Override
-    public void setId(Integer id) {
-        setProgramAttributeTypeId(id);
-    }
+	@Override
+	public void setId(Integer id) {
+		setProgramAttributeTypeId(id);
+	}
 
-    public Integer getProgramAttributeTypeId() {
-        return programAttributeTypeId;
-    }
+	public Integer getProgramAttributeTypeId() {
+		return programAttributeTypeId;
+	}
 
-    public void setProgramAttributeTypeId(Integer programAttributeTypeId) {
-        this.programAttributeTypeId = programAttributeTypeId;
-    }
+	public void setProgramAttributeTypeId(Integer programAttributeTypeId) {
+		this.programAttributeTypeId = programAttributeTypeId;
+	}
 }

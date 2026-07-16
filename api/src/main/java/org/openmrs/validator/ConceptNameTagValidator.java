@@ -34,20 +34,22 @@ public class ConceptNameTagValidator implements Validator {
 	public boolean supports(Class<?> c) {
 		return ConceptNameTag.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
+	 * <p>
+	 * <strong>Should</strong> fail validation if conceptNameTag is null<br/>
+	 * <strong>Should</strong> fail validation if tag is null or empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if tag does not exist and is not null, empty or
+	 * whitespace<br/>
+	 * <strong>Should</strong> fail if the concept name tag is a duplicate<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if conceptNameTag is null
-	 * <strong>Should</strong> fail validation if tag is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if tag does not exist and is not null, empty or whitespace
-	 * <strong>Should</strong> fail if the concept name tag is a duplicate
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
-	
+
 	@Override
 	public void validate(Object obj, Errors errors) {
 		ConceptNameTag cnt = (ConceptNameTag) obj;
@@ -55,7 +57,7 @@ public class ConceptNameTagValidator implements Validator {
 			throw new IllegalArgumentException("The parameter obj should not be null");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tag", "error.name");
-			
+
 			if (cnt.getTag() != null) {
 				ConceptNameTag currentTag = Context.getConceptService().getConceptNameTagByName(cnt.getTag());
 				if (currentTag != null && !OpenmrsUtil.nullSafeEqualsIgnoreCase(cnt.getUuid(), currentTag.getUuid())

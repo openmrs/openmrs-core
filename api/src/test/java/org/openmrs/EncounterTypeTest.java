@@ -9,20 +9,20 @@
  */
 package org.openmrs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This class tests the all of the {@link EncounterType} non-trivial object methods.
- * 
+ *
  * @see EncounterType
  */
 public class EncounterTypeTest {
-	
+
 	/**
 	 * Make sure the EncounterType(Integer) constructor sets the encounterTypeId
-	 * 
+	 *
 	 * @see EncounterType#EncounterType(Integer)
 	 */
 	@Test

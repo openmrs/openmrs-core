@@ -9,19 +9,20 @@
  */
 package liquibase.ext.sqlgenerator.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import liquibase.change.ColumnConfig;
 import liquibase.database.core.MySQLDatabase;
 import liquibase.statement.SqlStatement;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.DataType;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ModifyColumnChangeTest {
-	
+
 	@Test
 	public void shouldGenerateStatements() {
 		ModifyColumnChange change = new ModifyColumnChange();
@@ -29,34 +30,34 @@ public class ModifyColumnChangeTest {
 		change.setTableName("some_table");
 		change.setColumns(
 		    Arrays.asList(new ColumnConfig(new Column("column_one")), new ColumnConfig(new Column("column_two"))));
-		
+
 		SqlStatement[] statements = change.generateStatements(new MySQLDatabase());
 		ModifyColumnStatement actual = (ModifyColumnStatement) statements[0];
-		
+
 		assertEquals("openmrs", actual.getSchemaName());
 		assertEquals("some_table", actual.getTableName());
 		assertEquals("column_one", actual.getColumns()[0].getName());
 		assertEquals("column_two", actual.getColumns()[1].getName());
 	}
-	
+
 	@Test
 	public void shouldGetConfirmationMessage() {
 		ModifyColumnChange change = new ModifyColumnChange();
-		
+
 		change.setSchemaName("openmrs");
 		change.setTableName("some_table");
-		
+
 		Column columnOne = new Column("column_one");
 		columnOne.setType(new DataType("type_one"));
-		
+
 		Column columnTwo = new Column("column_two");
 		columnTwo.setType(new DataType("type_two"));
-		
+
 		change.setColumns(Arrays.asList(new ColumnConfig(columnOne), new ColumnConfig(columnTwo)));
-		
+
 		String actual = change.getConfirmationMessage();
 		String expected = "Columns column_one(type_one),column_two(type_two) of some_table modified";
-		
-		assertEquals( expected, actual );
+
+		assertEquals(expected, actual);
 	}
 }

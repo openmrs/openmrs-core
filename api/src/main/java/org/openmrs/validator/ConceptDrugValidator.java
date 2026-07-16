@@ -24,32 +24,34 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Drug.class }, order = 50)
 public class ConceptDrugValidator implements Validator {
-	
+
 	// Logger for this class
 	private static final Logger log = LoggerFactory.getLogger(ConceptDrugValidator.class);
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
+	 * <p>
+	 * <strong>Should</strong> support Drug class<br/>
+	 * <strong>Should</strong> reject classes not extending Drug
 	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
-	 * <strong>Should</strong> support Drug class
-	 * <strong>Should</strong> reject classes not extending Drug
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return Drug.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * Checks that a given <code>Drug</code> object is valid.
+	 * <p>
+	 * <strong>Should</strong> fail if a concept is not specified
 	 *
 	 * @param obj the Object to validate
 	 * @param errors holds the validation errors
-	 * @throws IllegalArgumentException Runtime Exception if the supplied argument is
-	 *         null or not of type <code>Drug</code>
+	 * @throws IllegalArgumentException Runtime Exception if the supplied argument is null or not of
+	 *             type <code>Drug</code>
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail if a concept is not specified
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws IllegalArgumentException {
@@ -59,5 +61,5 @@ public class ConceptDrugValidator implements Validator {
 		log.debug("request to validate drug having concept: " + ((Drug) obj).getConcept());
 		ValidationUtils.rejectIfEmpty(errors, "concept", "ConceptDrug.error.conceptRequired");
 	}
-	
+
 }

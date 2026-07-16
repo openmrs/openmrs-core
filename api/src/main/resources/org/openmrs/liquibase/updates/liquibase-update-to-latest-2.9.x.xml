@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<changeSet id="20200604-soundex_extension" author="aman" dbms="postgresql">
+		<comment> Soundex extension for PostgreSQL</comment>
+		<sql> CREATE EXTENSION IF NOT EXISTS fuzzystrmatch SCHEMA public;</sql>
+	</changeSet>
+
+	<changeSet id="20200715-uuid_ossp_extension" author="aman" dbms="postgresql">
+		<comment> Extension to use UUID functions with PostgreSQL and creating an alias similar to MySQL</comment>
+		<sql>
+			CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;
+			CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="20260212-create-shedlock-table" author="rkorytkowski">
+		<createTable tableName="shedlock">
+			<column name="name" type="VARCHAR(64)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="lock_until" type="TIMESTAMP">
+				<constraints nullable="false"/>
+			</column>
+			<column name="locked_at" type="TIMESTAMP">
+				<constraints nullable="false"/>
+			</column>
+			<column name="locked_by" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="20260519-create-outbox-event-table" author="rkorytkowski">
+		<createTable tableName="outbox_event">
+			<column autoIncrement="true" name="id" type="INT">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="uuid" type="CHAR(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="event_type" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="payload" type="MEDIUMTEXT">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="PENDING" name="status" type="VARCHAR(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="error_count" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="error_message" type="VARCHAR(1024)"/>
+			<column name="completed_listeners" type="MEDIUMTEXT"/>
+			<column name="creator" type="INT"/>
+			<column name="date_created" type="DATETIME(3)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="INT"/>
+			<column name="date_changed" type="DATETIME(3)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="outbox_event"
+								 constraintName="outbox_event_creator_fk" deferrable="false"
+								 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+								 referencedColumnNames="user_id" referencedTableName="users"/>
+
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="outbox_event"
+								 constraintName="outbox_event_changed_by_fk" deferrable="false"
+								 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+								 referencedColumnNames="user_id" referencedTableName="users"/>
+
+		<createIndex indexName="idx_outbox_event_status" tableName="outbox_event">
+			<column name="status"/>
+		</createIndex>
+
+		<createIndex indexName="idx_outbox_event_date_changed" tableName="outbox_event">
+			<column name="date_changed"/>
+		</createIndex>
+	</changeSet>
+	
+</databaseChangeLog>

@@ -10,6 +10,7 @@
 package org.openmrs.api.db.hibernate;
 
 public enum MatchMode {
+
 	START,
 	END,
 	ANYWHERE,

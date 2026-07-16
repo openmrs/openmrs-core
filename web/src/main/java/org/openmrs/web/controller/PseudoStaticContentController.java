@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.web.servlet.mvc.LastModified;
 
 /**
  * This controller basically passes requests straight through to their views. When interpretJstl is
@@ -33,50 +32,49 @@ import org.springframework.web.servlet.mvc.LastModified;
  * All jstl files are cached in the browser until a server restart or a global property is
  * added/changed/deleted
  */
-public class PseudoStaticContentController implements Controller, LastModified, GlobalPropertyListener {
-	
+public class PseudoStaticContentController implements Controller, GlobalPropertyListener {
+
 	private static final Logger log = LoggerFactory.getLogger(PseudoStaticContentController.class);
-	
+
 	private Boolean interpretJstl = false;
-	
+
 	private Map<String, String> rewrites;
-	
+
 	private static Long lastModified = System.currentTimeMillis();
-	
+
 	public Boolean getInterpretJstl() {
 		return interpretJstl;
 	}
-	
+
 	public void setInterpretJstl(Boolean interpretJstl) {
 		this.interpretJstl = interpretJstl;
 	}
-	
+
 	public Map<String, String> getRewrites() {
 		return rewrites;
 	}
-	
+
 	public void setRewrites(Map<String, String> rewrites) {
 		this.rewrites = rewrites;
 	}
-	
+
 	@Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	        IOException {
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
+	        throws ServletException, IOException {
 		String path = request.getServletPath() + request.getPathInfo();
-		
+
 		if (rewrites != null && rewrites.containsKey(path)) {
 			path = rewrites.get(path);
 		}
 		if (interpretJstl) {
 			path += ".withjstl";
 		}
-		
+
 		return new ModelAndView(path);
 	}
-	
-	@Override
+
 	public long getLastModified(HttpServletRequest request) {
-		
+
 		// return a mostly constant last modified date for all files passing
 		// through the jsp (.withjstl) servlet
 		// this allows the files to cache until we say so
@@ -84,33 +82,33 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 			log.debug("returning last modified date of : {} for : {}", lastModified, request.getPathInfo());
 			return lastModified;
 		}
-		
+
 		// the spring servletdispatcher will try to get the lastModified date
 		// from the actual file in this case
 		return -1;
 	}
-	
+
 	public static void setLastModified(Long lastModified) {
 		PseudoStaticContentController.lastModified = lastModified;
 	}
-	
+
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
 		// reset for every global property change
 		setLastModified(System.currentTimeMillis());
 	}
-	
+
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
 		// reset for every global property change
 		setLastModified(System.currentTimeMillis());
 	}
-	
+
 	@Override
 	public boolean supportsPropertyName(String propertyName) {
 		return true;
 	}
-	
+
 	public static void invalidateCachedResources(Map<String, String> newValue) {
 		setLastModified(System.currentTimeMillis());
 	}

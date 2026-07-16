@@ -18,7 +18,7 @@
 	<class name="FormField" table="form_field">
 
 		<id name="formFieldId" type="int" column="form_field_id" unsaved-value="0">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">form_field_form_field_id_seq</param>
 			</generator>
 		</id>
@@ -28,7 +28,7 @@
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-		<many-to-one name="parent" class="FormField" cascade="save-update,merge,evict">
+		<many-to-one name="parent" class="FormField" cascade="merge,persist,evict">
 			<column name="parent_form_field" />
 		</many-to-one>
 
@@ -36,7 +36,7 @@
 			<column name="form_id" />
 		</many-to-one>
 
-		<many-to-one name="field" class="Field" not-null="true" cascade="save-update,merge,evict">
+		<many-to-one name="field" class="Field" not-null="true" cascade="merge,persist,evict">
 			<column name="field_id" />
 		</many-to-one>
 

@@ -19,22 +19,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
- * an object back and forth through an html form or other medium. <br>
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass an
+ * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
  *
  * @see Privilege
  */
 public class PrivilegeEditor extends PropertyEditorSupport {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(PrivilegeEditor.class);
-	
+
 	public PrivilegeEditor() {
 	}
-	
+
 	/**
-	 * <strong>Should</strong> set using name
+	 * <p>
+	 * <strong>Should</strong> set using name<br/>
 	 * <strong>Should</strong> set using uuid
 	 */
 	@Override
@@ -48,8 +49,7 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 				if (p == null) {
 					throw new Exception();
 				}
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				Privilege p = es.getPrivilegeByUuid(text);
 				setValue(p);
 				if (p == null) {
@@ -61,7 +61,7 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 			setValue(null);
 		}
 	}
-	
+
 	@Override
 	public String getAsText() {
 		Privilege p = (Privilege) getValue();
@@ -71,5 +71,5 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 			return p.getPrivilege();
 		}
 	}
-	
+
 }

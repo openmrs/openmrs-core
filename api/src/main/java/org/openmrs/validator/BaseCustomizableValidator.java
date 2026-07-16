@@ -22,19 +22,20 @@ import org.springframework.validation.Validator;
 
 /**
  * This abstract class provides utilities for validators for Customizable subclasses.
+ *
  * @since 1.9
  */
 public abstract class BaseCustomizableValidator implements Validator {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(BaseCustomizableValidator.class);
-	
+
 	/**
 	 * Validate the attributes of the given Customizable, given the list of relevant attribute types
 	 */
 	@SuppressWarnings("rawtypes")
 	public <T extends AttributeType, A extends Attribute> void validateAttributes(Customizable<A> customizable,
 	        Errors errors, Collection<T> attributeTypes) {
-		
+
 		// check to make sure that the target has the right number of each type of attribute
 		for (T at : attributeTypes) {
 			if ((at.getMinOccurs() > 0 || at.getMaxOccurs() != null) && !at.getRetired()) {
@@ -49,24 +50,23 @@ public abstract class BaseCustomizableValidator implements Validator {
 					if (at.getMinOccurs() == 1) {
 						errors.rejectValue("activeAttributes", "error.required", new Object[] { at.getName() }, null);
 					} else {
-						errors.rejectValue("activeAttributes", "attribute.error.minOccurs", new Object[] { at.getName(),
-						        at.getMinOccurs() }, null);
+						errors.rejectValue("activeAttributes", "attribute.error.minOccurs",
+						    new Object[] { at.getName(), at.getMinOccurs() }, null);
 					}
 				}
 				if (at.getMaxOccurs() != null && numFound > at.getMaxOccurs()) {
-					errors.rejectValue("activeAttributes", "attribute.error.maxOccurs", new Object[] { at.getName(),
-					        at.getMaxOccurs() }, null);
+					errors.rejectValue("activeAttributes", "attribute.error.maxOccurs",
+					    new Object[] { at.getName(), at.getMaxOccurs() }, null);
 				}
 			}
 		}
-		
+
 		// validate all non-voided attributes for their values (we already checked minOccurs and maxOccurs for the types)
 		boolean errorsInAttributes = false;
 		for (Attribute attr : customizable.getActiveAttributes()) {
 			try {
 				ValidateUtil.validate(attr);
-			}
-			catch (APIException ex) {
+			} catch (APIException ex) {
 				logger.error(ex.getMessage(), ex);
 				errorsInAttributes = true;
 				break;
@@ -76,5 +76,5 @@ public abstract class BaseCustomizableValidator implements Validator {
 			errors.rejectValue("attributes", "Customizable.error.inAttributes");
 		}
 	}
-	
+
 }

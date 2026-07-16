@@ -9,44 +9,55 @@
  */
 package org.openmrs.parameter;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-
 /**
- * A builder class for constructing instances of {@link VisitSearchCriteria}.
- * This builder allows for the flexible creation of {@link VisitSearchCriteria}
- * objects by providing a simple interface to set various fields.
- * 
+ * A builder class for constructing instances of {@link VisitSearchCriteria}. This builder allows
+ * for the flexible creation of {@link VisitSearchCriteria} objects by providing a simple interface
+ * to set various fields.
+ *
  * @since 2.6.8
  * @since 2.7.0
  */
 public class VisitSearchCriteriaBuilder {
-	
+
 	private Collection<VisitType> visitTypes;
+
 	private Collection<Patient> patients;
+
 	private Collection<Location> locations;
+
 	private Collection<Concept> indications;
+
 	private Date minStartDatetime;
+
 	private Date maxStartDatetime;
+
 	private Date minEndDatetime;
+
 	private Date maxEndDatetime;
+
 	private Map<VisitAttributeType, String> serializedAttributeValues;
+
 	private boolean includeInactive = true;
+
 	private boolean includeVoided = false;
-	
+
 	/**
 	 * Constructs a new {@link VisitSearchCriteriaBuilder} instance.
 	 */
-	public VisitSearchCriteriaBuilder() {}
-	
+	public VisitSearchCriteriaBuilder() {
+	}
+
 	/**
 	 * Sets the visit types to include in the search criteria.
 	 *
@@ -57,7 +68,7 @@ public class VisitSearchCriteriaBuilder {
 		this.visitTypes = visitTypes;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the patients to include in the search criteria.
 	 *
@@ -68,18 +79,18 @@ public class VisitSearchCriteriaBuilder {
 		this.patients = patients;
 		return this;
 	}
-	
+
 	/**
 	 * Sets a single patient to include in the search criteria.
-	 * 
+	 *
 	 * @param patient the {@link Patient} to include.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder patient(Patient patient){
+	public VisitSearchCriteriaBuilder patient(Patient patient) {
 		this.patients = Collections.singletonList(patient);
 		return this;
 	}
-	
+
 	/**
 	 * Sets the locations to include in the search criteria.
 	 *
@@ -90,7 +101,7 @@ public class VisitSearchCriteriaBuilder {
 		this.locations = locations;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the indications to include in the search criteria.
 	 *
@@ -101,7 +112,7 @@ public class VisitSearchCriteriaBuilder {
 		this.indications = indications;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the minimum start datetime for visits to include in the search criteria.
 	 *
@@ -112,7 +123,7 @@ public class VisitSearchCriteriaBuilder {
 		this.minStartDatetime = minStartDatetime;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the maximum start datetime for visits to include in the search criteria.
 	 *
@@ -123,7 +134,7 @@ public class VisitSearchCriteriaBuilder {
 		this.maxStartDatetime = maxStartDatetime;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the minimum end datetime for visits to include in the search criteria.
 	 *
@@ -134,7 +145,7 @@ public class VisitSearchCriteriaBuilder {
 		this.minEndDatetime = minEndDatetime;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the maximum end datetime for visits to include in the search criteria.
 	 *
@@ -145,18 +156,19 @@ public class VisitSearchCriteriaBuilder {
 		this.maxEndDatetime = maxEndDatetime;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the serialized attribute values to filter visits by in the search criteria.
 	 *
-	 * @param serializedAttributeValues a map of {@link VisitAttributeType} to their corresponding serialized values.
+	 * @param serializedAttributeValues a map of {@link VisitAttributeType} to their corresponding
+	 *            serialized values.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
 	public VisitSearchCriteriaBuilder serializedAttributeValues(Map<VisitAttributeType, String> serializedAttributeValues) {
 		this.serializedAttributeValues = serializedAttributeValues;
 		return this;
 	}
-	
+
 	/**
 	 * Sets whether inactive visits should be included in the search criteria.
 	 *
@@ -167,7 +179,7 @@ public class VisitSearchCriteriaBuilder {
 		this.includeInactive = includeInactive;
 		return this;
 	}
-	
+
 	/**
 	 * Sets whether voided visits should be included in the search criteria.
 	 *
@@ -178,14 +190,15 @@ public class VisitSearchCriteriaBuilder {
 		this.includeVoided = includeVoided;
 		return this;
 	}
-	
+
 	/**
-	 * Builds and returns a {@link VisitSearchCriteria} instance based on the current state of the builder.
+	 * Builds and returns a {@link VisitSearchCriteria} instance based on the current state of the
+	 * builder.
 	 *
 	 * @return a new instance of {@link VisitSearchCriteria}.
 	 */
 	public VisitSearchCriteria build() {
 		return new VisitSearchCriteria(visitTypes, patients, locations, indications, minStartDatetime, maxStartDatetime,
-			minEndDatetime, maxEndDatetime, serializedAttributeValues, includeInactive, includeVoided);
+		        minEndDatetime, maxEndDatetime, serializedAttributeValues, includeInactive, includeVoided);
 	}
 }

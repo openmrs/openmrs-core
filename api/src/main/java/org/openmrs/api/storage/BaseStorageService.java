@@ -31,16 +31,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Implements temporary storage.
- * 
+ *
  * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 public abstract class BaseStorageService extends BaseOpenmrsService implements StorageService {
+
 	private final StreamDataService streamService;
-	
+
 	private final Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
 
 	private final DateTimeFormatter keyDateTimeFormat = DateTimeFormatter.ofPattern("yyyy/MM-dd/yyyy-MM-dd-HH-mm-ss-SSS-");
-	
+
 	public BaseStorageService(@Autowired StreamDataService streamService) {
 		this.streamService = streamService;
 	}
@@ -55,21 +56,18 @@ public abstract class BaseStorageService extends BaseOpenmrsService implements S
 	}
 
 	@Override
-	public String saveData(InputStream inputStream, ObjectMetadata metadata, String moduleIdOrGroup) 
-		throws IOException {
+	public String saveData(InputStream inputStream, ObjectMetadata metadata, String moduleIdOrGroup) throws IOException {
 		return saveData(inputStream, metadata, moduleIdOrGroup, null);
 	}
-	
 
-	public String saveData(StreamDataWriter dataWriter, ObjectMetadata metadata, String moduleIdOrGroup) 
-		throws IOException {
+	public String saveData(StreamDataWriter dataWriter, ObjectMetadata metadata, String moduleIdOrGroup) throws IOException {
 		return saveData(dataWriter, metadata, moduleIdOrGroup, null);
 	}
 
-	public String saveData(StreamDataWriter dataWriter, ObjectMetadata metadata, String moduleIdOrGroup,
-						   String keySuffix) throws IOException {
-		return saveData(streamService.streamData(dataWriter, metadata != null ? metadata.getLength() : null), metadata, 
-			moduleIdOrGroup, keySuffix);
+	public String saveData(StreamDataWriter dataWriter, ObjectMetadata metadata, String moduleIdOrGroup, String keySuffix)
+	        throws IOException {
+		return saveData(streamService.streamData(dataWriter, metadata != null ? metadata.getLength() : null), metadata,
+		    moduleIdOrGroup, keySuffix);
 	}
 
 	public String saveTempData(InputStream inputStream, ObjectMetadata metadata) throws IOException {
@@ -90,7 +88,7 @@ public abstract class BaseStorageService extends BaseOpenmrsService implements S
 		if (filename != null) {
 			keySuffix += '-' + filename.replace(File.separator, "");
 		}
-		
+
 		if (moduleIdOrGroup == null) {
 			return keySuffix;
 		} else {
@@ -111,8 +109,7 @@ public abstract class BaseStorageService extends BaseOpenmrsService implements S
 
 	protected String encodeKey(String key) {
 		try {
-			return URLEncoder.encode(key, "UTF-8").replace(".", "%2E")
-				.replace("*", "%2A").replace("%2F", "/");
+			return URLEncoder.encode(key, "UTF-8").replace(".", "%2E").replace("*", "%2A").replace("%2F", "/");
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}

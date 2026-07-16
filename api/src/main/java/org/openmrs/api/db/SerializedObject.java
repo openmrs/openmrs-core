@@ -9,18 +9,16 @@
  */
 package org.openmrs.api.db;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.envers.Audited;
-import org.openmrs.BaseChangeableOpenmrsMetadata;
-import org.openmrs.serialization.OpenmrsSerializer;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import org.hibernate.envers.Audited;
+import org.openmrs.BaseChangeableOpenmrsMetadata;
+import org.openmrs.serialization.OpenmrsSerializer;
 
 /**
  * Object representation of a Serialized Object as stored in the database.
@@ -31,12 +29,7 @@ import jakarta.persistence.Table;
 public class SerializedObject extends BaseChangeableOpenmrsMetadata {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "serialized_object_id_seq")
-	@GenericGenerator(
-		name = "serialized_object_id_seq",
-		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "serialized_object_serialized_object_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "serialized_object_id")
 	private Integer id;
 
@@ -51,15 +44,15 @@ public class SerializedObject extends BaseChangeableOpenmrsMetadata {
 
 	@Column(name = "serialized_data", length = 16777215)
 	private String serializedData;
-	
+
 	/**
 	 * Default Constructor
 	 */
 	public SerializedObject() {
 	}
-	
+
 	//***** Instance methods
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -67,9 +60,9 @@ public class SerializedObject extends BaseChangeableOpenmrsMetadata {
 	public String toString() {
 		return "Serialized " + subtype + " named <" + getName() + ">";
 	}
-	
+
 	//***** Property accessors
-	
+
 	/**
 	 * @return the id
 	 */
@@ -77,7 +70,7 @@ public class SerializedObject extends BaseChangeableOpenmrsMetadata {
 	public Integer getId() {
 		return id;
 	}
-	
+
 	/**
 	 * @param id the id to set
 	 */
@@ -85,61 +78,61 @@ public class SerializedObject extends BaseChangeableOpenmrsMetadata {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	
+
 	/**
 	 * @return the type
 	 */
 	public String getType() {
 		return type;
 	}
-	
+
 	/**
 	 * @param type the type to set
 	 */
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 	/**
 	 * @return the subtype
 	 */
 	public String getSubtype() {
 		return subtype;
 	}
-	
+
 	/**
 	 * @param subtype the subtype to set
 	 */
 	public void setSubtype(String subtype) {
 		this.subtype = subtype;
 	}
-	
+
 	/**
 	 * @return the serializationClass
 	 */
 	public Class<? extends OpenmrsSerializer> getSerializationClass() {
 		return serializationClass;
 	}
-	
+
 	/**
 	 * @param serializationClass the serializationClass to set
 	 */
 	public void setSerializationClass(Class<? extends OpenmrsSerializer> serializationClass) {
 		this.serializationClass = serializationClass;
 	}
-	
+
 	/**
 	 * @return the serializedData
 	 */
 	public String getSerializedData() {
 		return serializedData;
 	}
-	
+
 	/**
 	 * @param serializedData the serializedData to set
 	 */
 	public void setSerializedData(String serializedData) {
 		this.serializedData = serializedData;
 	}
-	
+
 }

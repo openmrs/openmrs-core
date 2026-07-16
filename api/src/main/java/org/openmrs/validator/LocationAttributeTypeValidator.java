@@ -23,7 +23,7 @@ import org.springframework.validation.ValidationUtils;
  */
 @Handler(supports = { LocationAttributeType.class }, order = 50)
 public class LocationAttributeTypeValidator extends BaseAttributeTypeValidator<LocationAttributeType> {
-	
+
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -31,16 +31,19 @@ public class LocationAttributeTypeValidator extends BaseAttributeTypeValidator<L
 	public boolean supports(Class<?> clazz) {
 		return LocationAttributeType.class.isAssignableFrom(clazz);
 	}
-	
+
 	/**
+	 * <p>
+	 * <strong>Should</strong> fail validation if name is null<br/>
+	 * <strong>Should</strong> fail validation if name already in use<br/>
+	 * <strong>Should</strong> pass validation if the location attribute type description is null or
+	 * empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if all fields are correct<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if name is null
-	 * <strong>Should</strong> fail validation if name already in use
-	 * <strong>Should</strong> pass validation if the location attribute type description is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if all fields are correct
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -58,5 +61,5 @@ public class LocationAttributeTypeValidator extends BaseAttributeTypeValidator<L
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "datatypeClassname",
 		    "preferredHandlerClassname", "retireReason");
 	}
-	
+
 }

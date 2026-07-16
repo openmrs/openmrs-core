@@ -9,29 +9,29 @@
  */
 package org.openmrs.annotation;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 public class OpenmrsProfileIncludeFilterTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see OpenmrsProfileIncludeFilter#match(MetadataReader,MetadataReaderFactory)
 	 */
 	@Test
 	public void match_shouldCreateBeanForOpenmrs1_8AndLater() {
 		OpenmrsComponent1_8 bean = applicationContext.getBean(OpenmrsComponent1_8.class);
-		
+
 		assertThat(bean, is(notNullValue()));
 	}
-	
+
 	/**
 	 * @see OpenmrsProfileIncludeFilter#match(MetadataReader,MetadataReaderFactory)
 	 */
@@ -39,5 +39,5 @@ public class OpenmrsProfileIncludeFilterTest extends BaseContextSensitiveTest {
 	public void match_shouldNotCreateBeanForOpenmrs1_6To1_7() {
 		assertThrows(NoSuchBeanDefinitionException.class, () -> applicationContext.getBean(OpenmrsComponent1_6To1_7.class));
 	}
-	
+
 }

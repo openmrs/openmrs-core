@@ -9,39 +9,38 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
 
 /**
  * A value for a user-defined {@link VisitAttributeType} that is stored on a {@link Visit}.
+ *
  * @see Attribute
  * @since 1.9
  */
 @Audited
 @Entity
 @Table(name = "visit_attribute")
-@AssociationOverride(
-	name="owner",
-	joinColumns = @JoinColumn(name="visit_id", nullable = false)
-)
+@AssociationOverride(name = "owner", joinColumns = @JoinColumn(name = "visit_id", nullable = false))
 public class VisitAttribute extends BaseAttribute<VisitAttributeType, Visit> implements Attribute<VisitAttributeType, Visit> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "visit_attribute_id")
 	private Integer visitAttributeId;
-	
+
 	// BaseAttribute<Visit> has an "owner" property of type Visit, which we re-expose as "visit"
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -49,7 +48,7 @@ public class VisitAttribute extends BaseAttribute<VisitAttributeType, Visit> imp
 	public Integer getId() {
 		return getVisitAttributeId();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
@@ -57,33 +56,33 @@ public class VisitAttribute extends BaseAttribute<VisitAttributeType, Visit> imp
 	public void setId(Integer id) {
 		setVisitAttributeId(id);
 	}
-	
+
 	/**
 	 * @return the visit
 	 */
 	public Visit getVisit() {
 		return getOwner();
 	}
-	
+
 	/**
 	 * @param visit the visit to set
 	 */
 	public void setVisit(Visit visit) {
 		setOwner(visit);
 	}
-	
+
 	/**
 	 * @return the visitAttributeId
 	 */
 	public Integer getVisitAttributeId() {
 		return visitAttributeId;
 	}
-	
+
 	/**
 	 * @param visitAttributeId the visitAttributeId to set
 	 */
 	public void setVisitAttributeId(Integer visitAttributeId) {
 		this.visitAttributeId = visitAttributeId;
 	}
-	
+
 }

@@ -61,7 +61,6 @@ nb-configuration.xml
 ################
 
 ### Linux ###
-.*
 !.gitignore
 !.gitattributes
 !.tx
@@ -88,3 +87,8 @@ nb-configuration.xml
 ### Liquibase snapshot files ###
 liquibase/snapshots/*.xml
 #############
+api/ConceptName/
+api/Drug/
+api/PatientIdentifier/
+api/PersonAttribute/
+api/PersonName/

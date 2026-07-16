@@ -13,19 +13,19 @@ package org.openmrs.logic.op;
  * Marker for all transform operator.
  */
 public interface TransformOperator extends Operator {
-	
+
 	public static final TransformOperator LAST = new Last();
-	
+
 	public static final TransformOperator FIRST = new First();
-	
+
 	public static final TransformOperator DISTINCT = new Distinct();
-	
+
 	public static final TransformOperator EXISTS = new Exists();
-	
+
 	public static final TransformOperator NOT_EXISTS = new NotExists();
-	
+
 	public static final TransformOperator COUNT = new Count();
-	
+
 	public static final TransformOperator AVERAGE = new Average();
-	
+
 }

@@ -9,21 +9,20 @@
  */
 package org.openmrs;
 
+import org.junit.jupiter.api.Test;
+import org.openmrs.util.OpenmrsConstants;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-
-
-import org.junit.jupiter.api.Test;
-import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This class should test all methods on the PersonName object This class does not touch the
  * database, so it does not need to extend the normal openmrs BaseTest
  */
 public class PersonNameTest {
-	
+
 	/**
 	 * @see PersonName#newInstance(PersonName)
 	 */
@@ -43,7 +42,7 @@ public class PersonNameTest {
 		boolean voided = true;
 		User voidedBy = new User(1);
 		String voidReason = "voidReason";
-		
+
 		PersonName pn = new PersonName(personNameId);
 		pn.setPreferred(preferred);
 		pn.setPrefix(prefix);
@@ -58,9 +57,9 @@ public class PersonNameTest {
 		pn.setVoided(voided);
 		pn.setVoidedBy(voidedBy);
 		pn.setVoidReason(voidReason);
-		
+
 		PersonName copy = PersonName.newInstance(pn);
-		
+
 		assertEquals(personNameId, copy.getPersonNameId());
 		assertEquals(preferred, copy.getPreferred());
 		assertEquals(prefix, copy.getPrefix());
@@ -93,7 +92,7 @@ public class PersonNameTest {
 		pn.setDegree("Dr.");
 		pn.setPreferred(true);
 		pn.setPerson(new Person(999));
-		
+
 		PersonName other = new PersonName(2);
 		other.setPrefix("Count");
 		other.setGivenName("Adam");
@@ -105,10 +104,10 @@ public class PersonNameTest {
 		other.setDegree("Dr.");
 		other.setPreferred(false);
 		other.setPerson(new Person(111));
-		
+
 		assertThat(pn.equalsContent(other), is(true));
 	}
-	
+
 	/**
 	 * @see PersonName#equalsContent(PersonName)
 	 */
@@ -116,13 +115,13 @@ public class PersonNameTest {
 	public void equalsContent_shouldReturnFalseIfSuffixesAreNotEqual() {
 		PersonName nameWithSenior = new PersonName(1);
 		PersonName nameWithJunior = new PersonName(2);
-		
+
 		nameWithSenior.setFamilyNameSuffix("Sr.");
 		nameWithJunior.setFamilyNameSuffix("Jr.");
-		
+
 		assertThat(nameWithSenior.equalsContent(nameWithJunior), is(false));
 	}
-	
+
 	/**
 	 * @see PersonName#equalsContent(PersonName)
 	 */
@@ -130,13 +129,13 @@ public class PersonNameTest {
 	public void equalsContent_shouldReturnFalseIfPrefixesAreNotEqual() {
 		PersonName nameWithVanDer = new PersonName(1);
 		PersonName nameWithDe = new PersonName(2);
-		
+
 		nameWithVanDer.setFamilyNamePrefix("van der");
 		nameWithDe.setFamilyNamePrefix("de");
-		
+
 		assertThat(nameWithVanDer.equalsContent(nameWithDe), is(false));
 	}
-	
+
 	/**
 	 * @see PersonName#equalsContent(PersonName)
 	 */
@@ -144,13 +143,13 @@ public class PersonNameTest {
 	public void equalsContent_shouldReturnFalseIfFamilyName2IsNotEqual() {
 		PersonName name1 = new PersonName(1);
 		PersonName name2 = new PersonName(2);
-		
+
 		name1.setFamilyName2("van der");
 		name2.setFamilyName2("de");
-		
+
 		assertThat(name1.equalsContent(name2), is(false));
 	}
-	
+
 	/**
 	 * @see PersonName#equalsContent(PersonName)
 	 */
@@ -158,13 +157,13 @@ public class PersonNameTest {
 	public void equalsContent_shouldReturnFalseIfPrefixIsNotEqual() {
 		PersonName name1 = new PersonName(1);
 		PersonName name2 = new PersonName(2);
-		
+
 		name1.setPrefix("count");
 		name2.setPrefix("baron");
-		
+
 		assertThat(name1.equalsContent(name2), is(false));
 	}
-	
+
 	/**
 	 * @see PersonName#equalsContent(PersonName)
 	 */
@@ -172,13 +171,13 @@ public class PersonNameTest {
 	public void equalsContent_shouldReturnFalseIfDegreesAreNotEqual() {
 		PersonName nameWithDoctor = new PersonName(1);
 		PersonName nameWithProfessor = new PersonName(2);
-		
+
 		nameWithDoctor.setDegree("Dr.");
 		nameWithProfessor.setFamilyNameSuffix("Prof.");
-		
+
 		assertThat(nameWithDoctor.equalsContent(nameWithProfessor), is(false));
 	}
-	
+
 	/**
 	 * @see PersonName#equalsContent(PersonName)
 	 */
@@ -195,7 +194,7 @@ public class PersonNameTest {
 		pn.setDegree("");
 		pn.setPreferred(true);
 		pn.setPerson(new Person(999));
-		
+
 		PersonName other = new PersonName(2);
 		other.setPrefix(null);
 		other.setGivenName(null);
@@ -207,105 +206,105 @@ public class PersonNameTest {
 		other.setDegree(null);
 		other.setPreferred(false);
 		other.setPerson(new Person(111));
-		
+
 		assertThat(pn.equalsContent(other), is(true));
 	}
-	
+
 	/**
 	 * @see PersonName#getFamilyName()
 	 */
 	@Test
 	public void getFamilyName_shouldReturnObscuredNameIfObscure_patientsIsSetToTrue() {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
-		
+
 		OpenmrsConstants.OBSCURE_PATIENTS_FAMILY_NAME = "family name";
 		assertEquals("family name", new PersonName().getFamilyName());
-		
-		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
+
+		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup
 	}
-	
+
 	/**
 	 * @see PersonName#getFamilyName2()
 	 */
 	@Test
 	public void getFamilyName2_shouldReturnNullIfObscure_patientsIsSetToTrue() {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
-		
+
 		PersonName pn = new PersonName();
 		pn.setFamilyName2("a non-null name");
 		assertNull(pn.getFamilyName2());
-		
-		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
+
+		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup
 	}
-	
+
 	/**
 	 * @see PersonName#getFamilyNamePrefix()
 	 */
 	@Test
 	public void getFamilyNamePrefix_shouldReturnNullIfObscure_patientsIsSetToTrue() {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
-		
+
 		PersonName pn = new PersonName();
 		pn.setFamilyNamePrefix("a non-null name");
 		assertNull(pn.getFamilyNamePrefix());
-		
-		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
+
+		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup
 	}
-	
+
 	/**
 	 * @see PersonName#getFamilyNameSuffix()
 	 */
 	@Test
 	public void getFamilyNameSuffix_shouldReturnNullIfObscure_patientsIsSetToTrue() {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
-		
+
 		PersonName pn = new PersonName();
 		pn.setFamilyNameSuffix("a non-null name");
 		assertNull(pn.getFamilyNameSuffix());
-		
-		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
+
+		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup
 	}
-	
+
 	/**
 	 * @see PersonName#getGivenName()
 	 */
 	@Test
 	public void getGivenName_shouldReturnObscuredNameIfObscure_patientsIsSetToTrue() {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
-		
+
 		OpenmrsConstants.OBSCURE_PATIENTS_GIVEN_NAME = "given name";
 		assertEquals("given name", new PersonName().getGivenName());
-		
-		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
+
+		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup
 	}
-	
+
 	/**
 	 * @see PersonName#getMiddleName()
 	 */
 	@Test
 	public void getMiddleName_shouldReturnObscuredNameIfObscure_patientsIsSetToTrue() {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
-		
+
 		OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME = "middle name";
 		assertEquals("middle name", new PersonName().getMiddleName());
-		
-		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
+
+		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup
 	}
-	
+
 	/**
 	 * @see PersonName#getPrefix()
 	 */
 	@Test
 	public void getPrefix_shouldReturnNullIfObscure_patientsIsSetToTrue() {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
-		
+
 		PersonName pn = new PersonName();
 		pn.setPrefix("a non-null name");
 		assertNull(pn.getPrefix());
-		
-		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
+
+		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup
 	}
-	
+
 	/**
 	 * @see PersonName#getFullName()
 	 */
@@ -317,7 +316,7 @@ public class PersonNameTest {
 		pn.setFamilyName("Jones");
 		assertEquals("Bob Jones", pn.getFullName());
 	}
-	
+
 	/**
 	 * @see PersonName#getFullName()
 	 */
@@ -336,7 +335,7 @@ public class PersonNameTest {
 		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_SHORT);
 		assertEquals(pn.getFullName(), "Sr. Taylor Bob Mark");
 	}
-	
+
 	@Test
 	public void getFullName_shouldNotReturnShortIfPersonNameFormatIsLong() {
 		PersonName pn = new PersonName();
@@ -351,7 +350,7 @@ public class PersonNameTest {
 		pn.setDegree("3");
 		assertEquals(pn.getFullName(), "Sr. Taylor Bob Wilson Mark Jones jr. 3");
 	}
-	
+
 	@Test
 	public void getFullName_shouldReturnShortIfPersonNameFormatIsNull() {
 		PersonName pn = new PersonName();
@@ -367,5 +366,5 @@ public class PersonNameTest {
 		PersonName.setFormat("");
 		assertEquals(pn.getFullName(), "Sr. Taylor Bob Mark");
 	}
-	
+
 }

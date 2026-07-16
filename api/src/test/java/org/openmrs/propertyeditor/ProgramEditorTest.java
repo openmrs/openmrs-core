@@ -9,13 +9,13 @@
  */
 package org.openmrs.propertyeditor;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 public class ProgramEditorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see ProgramEditor#setAsText(String)
 	 */
@@ -25,7 +25,7 @@ public class ProgramEditorTest extends BaseContextSensitiveTest {
 		editor.setAsText("concept.9");
 		assertNotNull(editor.getValue());
 	}
-	
+
 	/**
 	 * @see ProgramEditor#setAsText(String)
 	 */
@@ -35,7 +35,7 @@ public class ProgramEditorTest extends BaseContextSensitiveTest {
 		editor.setAsText("concept.0a9afe04-088b-44ca-9291-0a8c3b5c96fa");
 		assertNotNull(editor.getValue());
 	}
-	
+
 	/**
 	 * @see ProgramEditor#setAsText(String)
 	 */
@@ -45,7 +45,7 @@ public class ProgramEditorTest extends BaseContextSensitiveTest {
 		editor.setAsText("1");
 		assertNotNull(editor.getValue());
 	}
-	
+
 	/**
 	 * @see ProgramEditor#setAsText(String)
 	 */

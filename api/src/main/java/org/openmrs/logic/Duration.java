@@ -15,11 +15,11 @@ import org.openmrs.logic.op.Operand;
 /**
  * Represents a duration of time &mdash; e.g., one year, two weeks, or 18 months. Used within
  * criteria. Use the <code>Duration duration = Duration.days(5.0);</code> to get a duration object
- * 
+ *
  * @see org.openmrs.logic.LogicCriteria
  */
 public class Duration implements Operand {
-	
+
 	public static enum Units {
 		SECONDS,
 		MINUTES,
@@ -29,15 +29,15 @@ public class Duration implements Operand {
 		MONTHS,
 		YEARS
 	}
-	
+
 	private Double duration;
-	
+
 	private Units units;
-	
+
 	/**
 	 * Private constructor used by the static methods on this class. Use the
 	 * <code>Duration duration = Duration.days(5.0);</code> to get a duration object
-	 * 
+	 *
 	 * @param duration
 	 * @param units
 	 */
@@ -45,18 +45,18 @@ public class Duration implements Operand {
 		this.duration = duration;
 		this.units = units;
 	}
-	
+
 	public Double getDuration() {
 		return duration;
 	}
-	
+
 	public Units getUnits() {
 		return units;
 	}
-	
+
 	/**
 	 * Returns the equivalent duration in days
-	 * 
+	 *
 	 * @return the equivalent duration in days
 	 */
 	public Double getDurationInDays() {
@@ -79,10 +79,10 @@ public class Duration implements Operand {
 				return 0d;
 		}
 	}
-	
+
 	/**
 	 * Returns the equivalent duration in milliseconds
-	 * 
+	 *
 	 * @return the equivalent duration in milliseconds
 	 */
 	public long getDurationInMillis() {
@@ -106,147 +106,147 @@ public class Duration implements Operand {
 				return 0;
 		}
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of seconds
-	 * 
+	 *
 	 * @param duration number of seconds for duration
 	 * @return <code>Duration</code> object for given number of seconds
 	 */
 	public static Duration seconds(Double duration) {
 		return new Duration(duration, Units.SECONDS);
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of seconds
-	 * 
+	 *
 	 * @param duration number of seconds for duration
 	 * @return <code>Duration</code> object for given number of seconds
 	 */
 	public static Duration seconds(int duration) {
 		return seconds(new Double(duration));
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of minutes
-	 * 
+	 *
 	 * @param duration number of minutes for duration
 	 * @return <code>Duration</code> object for given number of minutes
 	 */
 	public static Duration minutes(Double duration) {
 		return new Duration(duration, Units.MINUTES);
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of minutes
-	 * 
+	 *
 	 * @param duration number of minutes for duration
 	 * @return <code>Duration</code> object for given number of minutes
 	 */
 	public static Duration minutes(int duration) {
 		return minutes(new Double(duration));
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of hours
-	 * 
+	 *
 	 * @param duration number of hours for duration
 	 * @return <code>Duration</code> object for given number of hours
 	 */
 	public static Duration hours(Double duration) {
 		return new Duration(duration, Units.HOURS);
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of hours
-	 * 
+	 *
 	 * @param duration number of hours for duration
 	 * @return <code>Duration</code> object for given number of hours
 	 */
 	public static Duration hours(int duration) {
 		return hours(new Double(duration));
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of days
-	 * 
+	 *
 	 * @param duration number of days for duration
 	 * @return <code>Duration</code> object with specified number of days
 	 */
 	public static Duration days(Double duration) {
 		return new Duration(duration, Units.DAYS);
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of days
-	 * 
+	 *
 	 * @param duration number of days for duration
 	 * @return <code>Duration</code> object with specified number of days
 	 */
 	public static Duration days(int duration) {
 		return days(new Double(duration));
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of weeks
-	 * 
+	 *
 	 * @param duration number of weeks for duration
 	 * @return <code>Duration</code> object with specified number of weeks
 	 */
 	public static Duration weeks(Double duration) {
 		return new Duration(duration, Units.WEEKS);
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of weeks
-	 * 
+	 *
 	 * @param duration number of weeks for duration
 	 * @return <code>Duration</code> object with specified number of weeks
 	 */
 	public static Duration weeks(int duration) {
 		return weeks(new Double(duration));
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of months
-	 * 
+	 *
 	 * @param duration number of months for duration
 	 * @return <code>Duration</code> object with specified number of months
 	 */
 	public static Duration months(Double duration) {
 		return new Duration(duration, Units.MONTHS);
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of months
-	 * 
+	 *
 	 * @param duration number of months for duration
 	 * @return <code>Duration</code> object with specified number of months
 	 */
 	public static Duration months(int duration) {
 		return months(new Double(duration));
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of years
-	 * 
+	 *
 	 * @param duration number of years for duration
 	 * @return <code>Duration</code> object with specified number of years
 	 */
 	public static Duration years(Double duration) {
 		return new Duration(duration, Units.YEARS);
 	}
-	
+
 	/**
 	 * Returns a duration for the given number of years
-	 * 
+	 *
 	 * @param duration number of years for duration
 	 * @return <code>Duration</code> object with specified number of years
 	 */
 	public static Duration years(int duration) {
 		return years(new Double(duration));
 	}
-	
+
 	/**
 	 * @see org.openmrs.logic.op.Operand#supports(org.openmrs.logic.op.ComparisonOperator)
 	 */
@@ -254,5 +254,5 @@ public class Duration implements Operand {
 	public boolean supports(ComparisonOperator operator) {
 		return (ComparisonOperator.WITHIN.equals(operator));
 	}
-	
+
 }

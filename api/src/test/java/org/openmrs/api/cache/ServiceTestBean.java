@@ -12,6 +12,6 @@ package org.openmrs.api.cache;
 import org.openmrs.api.OpenmrsService;
 
 public interface ServiceTestBean extends OpenmrsService {
-	
+
 	String getCachedUUID();
 }

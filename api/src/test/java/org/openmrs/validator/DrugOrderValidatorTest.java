@@ -9,20 +9,10 @@
  */
 package org.openmrs.validator;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.isIn;
-import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -36,6 +26,7 @@ import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.SimpleDosingInstructionsTest;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
@@ -47,15 +38,25 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link DrugOrderValidator} class.
  */
 public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
-	
+
 	@Autowired
 	@Qualifier("adminService")
 	AdministrationService adminService;
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
@@ -64,13 +65,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		DrugOrder order = new DrugOrder();
 		order.setAsNeeded(null);
 		order.setDrug(Context.getConceptService().getDrug(3));
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("asNeeded"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
@@ -79,13 +80,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(null);
 		order.setDrug(Context.getConceptService().getDrug(3));
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("dosingType"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
@@ -93,13 +94,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldNotFailValidationIfDrugIsNull() {
 		DrugOrder order = new DrugOrder();
 		order.setDrug(null);
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		
+
 		assertFalse(errors.hasFieldErrors("drug"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
@@ -126,12 +127,12 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setQuantity(2.00);
 		order.setQuantityUnits(Context.getConceptService().getConcept(51));
 		order.setNumRefills(10);
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -143,7 +144,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Errors OutpatientOrderErrors = new BindException(OutpatientOrder, "order");
 		new DrugOrderValidator().validate(OutpatientOrder, OutpatientOrderErrors);
 		assertTrue(OutpatientOrderErrors.hasFieldErrors("quantity"));
-		
+
 		DrugOrder inPatientOrder = new DrugOrder();
 		inPatientOrder.setCareSetting(Context.getOrderService().getCareSetting(2));
 		inPatientOrder.setQuantity(null);
@@ -151,7 +152,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(inPatientOrder, InpatientOrderErrors);
 		assertFalse(InpatientOrderErrors.hasFieldErrors("quantity"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -163,7 +164,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Errors OutpatientOrderErrors = new BindException(OutpatientOrder, "order");
 		new DrugOrderValidator().validate(OutpatientOrder, OutpatientOrderErrors);
 		assertTrue(OutpatientOrderErrors.hasFieldErrors("numRefills"));
-		
+
 		DrugOrder inPatientOrder = new DrugOrder();
 		inPatientOrder.setCareSetting(Context.getOrderService().getCareSetting(2));
 		inPatientOrder.setNumRefills(null);
@@ -179,7 +180,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldNotFailValidationIfQuantityAndNumRefillsAreNullIfConfiguredToNotRequire() {
 		AdministrationService as = Context.getAdministrationService();
 		as.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_OUTPATIENT_QUANTITY, "false");
-		
+
 		DrugOrder OutpatientOrder = new DrugOrder();
 		OutpatientOrder.setCareSetting(Context.getOrderService().getCareSetting(1));
 		OutpatientOrder.setQuantity(null);
@@ -187,12 +188,12 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		OutpatientOrder.setNumRefills(null);
 		Errors OutpatientOrderErrors = new BindException(OutpatientOrder, "order");
 		new DrugOrderValidator().validate(OutpatientOrder, OutpatientOrderErrors);
-		Assert.assertTrue(OutpatientOrder.getCareSetting().getCareSettingType() == CareSetting.CareSettingType.OUTPATIENT);
-		Assert.assertFalse(OutpatientOrderErrors.hasFieldErrors("quantity"));
-		Assert.assertFalse(OutpatientOrderErrors.hasFieldErrors("quantityUnits"));
-		Assert.assertFalse(OutpatientOrderErrors.hasFieldErrors("numRefills"));
+		assertSame(CareSetting.CareSettingType.OUTPATIENT, OutpatientOrder.getCareSetting().getCareSettingType());
+		assertFalse(OutpatientOrderErrors.hasFieldErrors("quantity"));
+		assertFalse(OutpatientOrderErrors.hasFieldErrors("quantityUnits"));
+		assertFalse(OutpatientOrderErrors.hasFieldErrors("numRefills"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -205,7 +206,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("dose"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -218,7 +219,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("doseUnits"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -231,7 +232,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("route"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -244,13 +245,12 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("frequency"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfDosingInstructionsIsNullForFreeTextDosingInstructionsDosingType()
-	{
+	public void validate_shouldFailValidationIfDosingInstructionsIsNullForFreeTextDosingInstructionsDosingType() {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDosingInstructions(null);
@@ -258,7 +258,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("dosingInstructions"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -272,7 +272,51 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("doseUnits"));
 	}
-	
+
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfDoseIsZero() {
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setDose(0.0);
+		order.setDoseUnits(Context.getConceptService().getConcept(51));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertTrue(errors.hasFieldErrors("dose"));
+		assertEquals("DrugOrder.error.doseZeroOrLess", errors.getFieldError("dose").getCode());
+	}
+
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfDoseIsNegative() {
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setDose(-1.0);
+		order.setDoseUnits(Context.getConceptService().getConcept(51));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertTrue(errors.hasFieldErrors("dose"));
+		assertEquals("DrugOrder.error.doseZeroOrLess", errors.getFieldError("dose").getCode());
+	}
+
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfDoseIsGreaterThanZero() {
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setDose(1.0);
+		order.setDoseUnits(Context.getConceptService().getConcept(51));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertFalse(errors.hasFieldErrors("dose"));
+	}
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -286,7 +330,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("quantityUnits"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -300,7 +344,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("durationUnits"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
@@ -312,14 +356,14 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDrug(drug);
 		order.setConcept(concept); // the actual concept which matches with drug is "88"
 		assertNotEquals(drug.getConcept(), concept);
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("concept"));
 		assertTrue(errors.hasFieldErrors("drug"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -338,12 +382,12 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		discontinuationOrder.setOrderType(orderToDiscontinue.getOrderType());
 		discontinuationOrder.setOrderer(Context.getProviderService().getProvider(1));
 		discontinuationOrder.setEncounter(Context.getEncounterService().getEncounter(3));
-		
+
 		Errors errors = new BindException(discontinuationOrder, "order");
 		new DrugOrderValidator().validate(discontinuationOrder, errors);
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
@@ -351,7 +395,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfDoseUnitsIsNotADoseUnitConcept() {
 		Concept concept = Context.getConceptService().getConcept(3);
 		assertThat(concept, not(isIn(Context.getOrderService().getDrugDosingUnits())));
-		
+
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5);
@@ -360,12 +404,12 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDoseUnits(concept);
 		order.setQuantity(30.0);
 		order.setQuantityUnits(concept);
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("doseUnits"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
@@ -373,7 +417,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfQuantityUnitsItNotAQuantityUnitConcept() {
 		Concept concept = Context.getConceptService().getConcept(3);
 		assertThat(concept, not(isIn(Context.getOrderService().getDrugDispensingUnits())));
-		
+
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5);
@@ -382,12 +426,12 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDoseUnits(concept);
 		order.setQuantity(30.0);
 		order.setQuantityUnits(concept);
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("quantityUnits"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
@@ -395,7 +439,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfDurationUnitsIsNotADurationUnitConcept() {
 		Concept concept = Context.getConceptService().getConcept(3);
 		assertThat(concept, not(isIn(Context.getOrderService().getDurationUnits())));
-		
+
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5);
@@ -404,12 +448,12 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDoseUnits(concept);
 		order.setQuantity(30.0);
 		order.setQuantityUnits(concept);
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("durationUnits"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -417,7 +461,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfRouteIsNotAValidConcept() {
 		Concept concept = Context.getConceptService().getConcept(3);
 		assertThat(concept, not(isIn(Context.getOrderService().getDrugRoutes())));
-		
+
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5);
@@ -427,26 +471,26 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setQuantity(30.0);
 		order.setQuantityUnits(concept);
 		order.setRoute(concept);
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("route"));
 		assertEquals("DrugOrder.error.routeNotAmongAllowedConcepts", errors.getFieldError("route").getCode());
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailIfConceptIsNullAndDrugIsNotSpecified() {
 		DrugOrder order = new DrugOrder();
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("concept"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -456,12 +500,12 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Drug drug = Context.getConceptService().getDrug(3);
 		drug.setConcept(null);
 		order.setDrug(drug);
-		
+
 		Errors errors = new BindException(order, "order");
 		adminService.validate(order, errors);
 		assertTrue(errors.hasFieldErrors("concept"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -478,10 +522,10 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		FreeTextDosingInstructions di = new FreeTextDosingInstructions();
 		di.setInstructions("testing");
 		di.setDosingInstructions(order);
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		
+
 		assertFalse(errors.hasFieldErrors());
 	}
 
@@ -506,7 +550,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 
 		assertFalse(errors.hasFieldErrors());
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -532,12 +576,12 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setQuantity(2.00);
 		order.setQuantityUnits(Context.getConceptService().getConcept(51));
 		order.setNumRefills(10);
-		
+
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("brandName"));
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -550,7 +594,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertFalse(errors.hasFieldErrors("dosingInstructions"));
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
@@ -558,11 +602,11 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	public void saveOrder_shouldFailDrugOrderWithoutADrugWhenDrugOrderRequireDrugGBIsTrue() {
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, "true");
 		Context.getAdministrationService().saveGlobalProperty(gp);
-		
+
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
-		
+
 		//place drug order
 		DrugOrder order = new DrugOrder();
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
@@ -580,7 +624,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("drug"));
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
@@ -591,7 +635,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
-		
+
 		//place drug order
 		DrugOrder order = new DrugOrder();
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
@@ -609,7 +653,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertFalse(errors.hasFieldErrors());
 	}
-	
+
 	/**
 	 * @throws SQLException
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
@@ -621,8 +665,8 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
-		assertNull(Context.getAdministrationService().getGlobalPropertyObject(
-		    OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG));
+		assertNull(Context.getAdministrationService()
+		        .getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG));
 		//place drug order
 		DrugOrder order = new DrugOrder();
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
@@ -640,7 +684,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertFalse(errors.hasFieldErrors());
 	}
-	
+
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -649,7 +693,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
-		
+
 		//place drug order
 		DrugOrder order = new DrugOrder();
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
@@ -668,8 +712,38 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDurationUnits(cs.getConcept(28));
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode", errors.getFieldError("durationUnits")
-		        .getCode());
+		assertEquals("DrugOrder.error.durationUnitsNotMappedToKnownDurationCode",
+		    errors.getFieldError("durationUnits").getCode());
+	}
+
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfDurationUnitsIsMappedOnlyToAnUnknownDurationCode() {
+		Patient patient = Context.getPatientService().getPatient(7);
+		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		order.setEncounter(encounter);
+		order.setConcept(Context.getConceptService().getConcept(5497));
+		order.setPatient(patient);
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("None");
+		order.setDosingInstructions("Test Instruction");
+		order.setDuration(20);
+		order.setDurationUnits(SimpleDosingInstructionsTest.createUnits("SCT", "999999999", null));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertTrue(errors.getFieldErrors("durationUnits").stream()
+		        .anyMatch(e -> "DrugOrder.error.durationUnitsNotMappedToKnownDurationCode".equals(e.getCode())));
 	}
 
 	/**
@@ -712,38 +786,38 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
-        DrugOrder order = new DrugOrder();
-        Encounter encounter = new Encounter();
-        Patient patient = Context.getPatientService().getPatient(2);
-        order.setConcept(Context.getConceptService().getConcept(88));
-        order.setOrderer(Context.getProviderService().getProvider(1));
-        order.setDosingType(FreeTextDosingInstructions.class);
-        order.setInstructions("Instructions");
-        order.setDosingInstructions("Test Instruction");
-        order.setPatient(patient);
-        encounter.setPatient(patient);
-        order.setEncounter(encounter);
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
-        order.setDateActivated(cal.getTime());
-        order.setAutoExpireDate(new Date());
-        order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
-        order.setDrug(Context.getConceptService().getDrug(3));
-        order.setCareSetting(Context.getOrderService().getCareSetting(1));
-        order.setQuantity(2.00);
-        order.setQuantityUnits(Context.getConceptService().getConcept(51));
-        order.setNumRefills(10);
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = new Encounter();
+		Patient patient = Context.getPatientService().getPatient(2);
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("Instructions");
+		order.setDosingInstructions("Test Instruction");
+		order.setPatient(patient);
+		encounter.setPatient(patient);
+		order.setEncounter(encounter);
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+		order.setDateActivated(cal.getTime());
+		order.setAutoExpireDate(new Date());
+		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
+		order.setDrug(Context.getConceptService().getDrug(3));
+		order.setCareSetting(Context.getOrderService().getCareSetting(1));
+		order.setQuantity(2.00);
+		order.setQuantityUnits(Context.getConceptService().getConcept(51));
+		order.setNumRefills(10);
 
-        order
-                .setAsNeededCondition("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-        order
-                .setBrandName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		order.setAsNeededCondition(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		order.setBrandName(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 
-        Errors errors = new BindException(order, "order");
-        new DrugOrderValidator().validate(order, errors);
-        assertTrue(errors.hasFieldErrors("asNeededCondition"));
-        assertTrue(errors.hasFieldErrors("brandName"));
-    }
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertTrue(errors.hasFieldErrors("asNeededCondition"));
+		assertTrue(errors.hasFieldErrors("brandName"));
+	}
 
 	@Test
 	public void saveOrder_shouldFailDrugOrderWithoutADrugNonCodedWhenDrugOrderIsNonCoded() {
@@ -856,7 +930,8 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void saveOrder_shouldPassDrugOrderWithNeitherDrugNonCodedNorDrugAreSetForDrugOrderWhenDrugRequiredISNotSet() {
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");Patient patient = Context.getPatientService().getPatient(7);
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
+		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
 

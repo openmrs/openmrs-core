@@ -21,15 +21,15 @@ import org.openmrs.api.context.Context;
  * @see Location
  */
 public class LocationEditor extends OpenmrsPropertyEditor<Location> {
-	
+
 	public LocationEditor() {
 	}
-	
+
 	@Override
 	protected Location getObjectById(Integer id) {
 		return Context.getLocationService().getLocation(id);
 	}
-	
+
 	@Override
 	protected Location getObjectByUuid(String uuid) {
 		return Context.getLocationService().getLocationByUuid(uuid);

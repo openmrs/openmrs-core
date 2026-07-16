@@ -11,8 +11,6 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
 /**
  * In OpenMRS, data are rarely fully deleted (purged) from the system; rather, they are either
  * voided or retired. When data can be removed (effectively deleted from the user's perspective),
@@ -21,57 +19,55 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * kept is voided (invalidated). Unlike {@link Retireable}, voiding data invalidates any data
  * referencing them. e.g., when a patient is voided, all observations for that patient must be
  * voided as well.
- * 
+ *
  * @since 1.5
  * @see OpenmrsData
  * @see Retireable
  */
 public interface Voidable extends OpenmrsObject {
-	
+
 	/**
 	 * @return Boolean - whether of not this object is voided
-	 *
 	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
 	@Deprecated
-	@JsonIgnore
 	public Boolean isVoided();
-	
+
 	/**
 	 * @return true if this object is voided and otherwise false
 	 */
 	public Boolean getVoided();
-	
+
 	/**
 	 * @param voided - whether of not this object is voided
 	 */
 	public void setVoided(Boolean voided);
-	
+
 	/**
 	 * @return User - the user who voided the object
 	 */
 	public User getVoidedBy();
-	
+
 	/**
 	 * @param voidedBy - the user who voided the object
 	 */
 	public void setVoidedBy(User voidedBy);
-	
+
 	/**
 	 * @return Date - the date the object was voided
 	 */
 	public Date getDateVoided();
-	
+
 	/**
 	 * @param dateVoided - the date the object was voided
 	 */
 	public void setDateVoided(Date dateVoided);
-	
+
 	/**
 	 * @return String - the reason the object was voided
 	 */
 	public String getVoidReason();
-	
+
 	/**
 	 * @param voidReason - the reason the object was voided
 	 */

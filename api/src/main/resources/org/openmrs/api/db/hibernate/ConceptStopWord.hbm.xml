@@ -20,7 +20,7 @@
 		<cache usage="read-write"/>
 
 		<id name="conceptStopWordId" type="int" column="concept_stop_word_id">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">concept_stop_word_concept_stop_word_id_seq</param>
 			</generator>
 		</id>

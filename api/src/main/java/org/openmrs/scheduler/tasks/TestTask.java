@@ -19,12 +19,12 @@ import org.slf4j.LoggerFactory;
  * Implementation of a simple task that throws an exception every 10 executions.
  */
 public class TestTask extends AbstractTask {
-	
+
 	private static int executionCount = 0;
-	
-	// Logger 
+
+	// Logger
 	private static final Logger log = LoggerFactory.getLogger(TestTask.class);
-	
+
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(TaskDefinition)
 	 */
@@ -32,18 +32,18 @@ public class TestTask extends AbstractTask {
 	public void initialize(TaskDefinition taskDefinition) {
 		log.info("Initializing task " + taskDefinition);
 	}
-	
+
 	public static void setExecutionCount(int executionCount) {
 		TestTask.executionCount = executionCount;
 	}
-	
+
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
 	@Override
 	public void execute() {
 		log.info("Executing task at " + new Date());
-		
+
 		setExecutionCount(executionCount + 1);
 		// Throw a runtime exception once every ten executions
 		if (executionCount % 10 == 0) {
@@ -51,7 +51,7 @@ public class TestTask extends AbstractTask {
 			throw new RuntimeException();
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#shutdown()
 	 */
@@ -60,5 +60,5 @@ public class TestTask extends AbstractTask {
 		log.info("Shutting down task ...");
 		super.shutdown();
 	}
-	
+
 }

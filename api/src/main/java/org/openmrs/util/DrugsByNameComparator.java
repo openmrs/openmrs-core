@@ -30,31 +30,34 @@ public class DrugsByNameComparator implements Comparator<Drug>, Serializable {
 	public int compare(Drug d1, Drug d2) {
 		return compareDrugNamesIgnoringNumericals(d1, d2);
 	}
-	
+
 	/**
-	 * Compare drug names ignoring numericals and other characters. Using compareToIgnoreCase()
-	 * method to prevent a capital letter getting precedence over a simple letter which comes before
-	 * it in the alphabet.
-	 * 
+	 * Compare drug names ignoring numericals and other characters. Using compareToIgnoreCase() method
+	 * to prevent a capital letter getting precedence over a simple letter which comes before it in the
+	 * alphabet.
+	 * <p>
+	 * <strong>Should</strong> return negative if name for drug1 comes before that of drug2<br/>
+	 * <strong>Should</strong> return zero if name for drug1 comes before that of drug2<br/>
+	 * <strong>Should</strong> return positive if name for drug1 comes before that of drug2 ignoring
+	 * dashes<br/>
+	 * <strong>Should</strong> return positive if name for drug1 comes before that of drug2 ignoring
+	 * numerics
+	 *
 	 * @param d1 the first Drug to be compared
 	 * @param d2 the second Drug to be compared
 	 * @return the int
-	 * <strong>Should</strong> return negative if name for drug1 comes before that of drug2
-	 * <strong>Should</strong> return zero if name for drug1 comes before that of drug2
-	 * <strong>Should</strong> return positive if name for drug1 comes before that of drug2 ignoring dashes
-	 * <strong>Should</strong> return positive if name for drug1 comes before that of drug2 ignoring numerics
 	 */
 	private int compareDrugNamesIgnoringNumericals(Drug d1, Drug d2) {
-		
+
 		String firstDrugName = remove(d1.getName());
 		String secondDrugName = remove(d2.getName());
-		
+
 		return firstDrugName.compareToIgnoreCase(secondDrugName);
 	}
-	
+
 	/**
 	 * Private method which will remove all characters expect a-z and A to Z from text strings
-	 * 
+	 *
 	 * @param drugName the drug name
 	 * @return the string
 	 */

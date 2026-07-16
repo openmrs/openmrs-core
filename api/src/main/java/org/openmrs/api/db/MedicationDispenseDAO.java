@@ -9,19 +9,21 @@
  */
 package org.openmrs.api.db;
 
+import java.util.List;
+
 import org.openmrs.MedicationDispense;
 import org.openmrs.parameter.MedicationDispenseCriteria;
 
-import java.util.List;
-
 /**
  * This interface defines database methods for the MedicationDispense domain
+ *
  * @since 2.6.0
  */
 public interface MedicationDispenseDAO {
 
 	/**
 	 * Gets a MedicationDispense by id
+	 *
 	 * @param medicationDispenseId the id of the MedicationDispense to retrieve
 	 * @return the MedicationDispense with the given id, or null if none exists
 	 */
@@ -29,6 +31,7 @@ public interface MedicationDispenseDAO {
 
 	/**
 	 * Gets a MedicationDispense based on the uuid
+	 *
 	 * @param uuid - uuid of the MedicationDispense to be returned
 	 * @return the MedicationDispense
 	 */
@@ -36,6 +39,7 @@ public interface MedicationDispenseDAO {
 
 	/**
 	 * Gets all MedicationDispense results that match the given criteria
+	 *
 	 * @param criteria - the criteria for the returned MedicationDispense results
 	 * @return a list of MedicationDispenses
 	 */
@@ -43,12 +47,14 @@ public interface MedicationDispenseDAO {
 
 	/**
 	 * Saves a MedicationDispense
+	 *
 	 * @param medicationDispense - the MedicationDispense to be saved
 	 */
 	MedicationDispense saveMedicationDispense(MedicationDispense medicationDispense);
 
 	/**
 	 * Remove a MedicationDispense from the database.
+	 *
 	 * @param medicationDispense the MedicationDispense to be purged
 	 */
 	void deleteMedicationDispense(MedicationDispense medicationDispense);

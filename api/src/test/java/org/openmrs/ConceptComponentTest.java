@@ -9,18 +9,18 @@
  */
 package org.openmrs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Contains integration tests of the Concept class.
  */
 public class ConceptComponentTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see Concept#getName(java.util.Locale, boolean)
 	 */
@@ -29,10 +29,10 @@ public class ConceptComponentTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		ConceptName frenchConceptName = new ConceptName("frenchName", Locale.FRENCH);
 		ConceptName englishConceptName = new ConceptName("enqlishName", Locale.ENGLISH);
-		
+
 		concept.addName(englishConceptName);
 		concept.addName(frenchConceptName);
-		
+
 		assertEquals(frenchConceptName, concept.getName(Locale.FRENCH));
 	}
 }

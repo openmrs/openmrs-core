@@ -19,7 +19,7 @@
     <class name="PatientProgramAttribute" table="patient_program_attribute">
 
         <id name="patientProgramAttributeId" type="int" column="patient_program_attribute_id">
-            <generator class="native">
+            <generator class="identity">
                 <param name="sequence">patient_program_attribute_id_seq</param>
             </generator>
         </id>
