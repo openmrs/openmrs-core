@@ -56,8 +56,10 @@ public class BrokerEventListenerFactory implements EventListenerFactory, Ordered
 				// If the parameter is wrapped in a generic BrokerIncomingEvent<?>, extract the inner generic type
 				if (payloadType != null && BrokerIncomingEvent.class.isAssignableFrom(payloadType)) {
 					Class<?> genericType = resolvableType.getGeneric(0).resolve();
-					if (genericType == null) {
-						genericType = Object.class;
+					if (genericType == null || genericType == Object.class) {
+						throw new IllegalArgumentException(
+						        "BrokerEventListener on " + method + " must use a concrete type parameter, not <?> or raw. "
+						                + "Use BrokerIncomingEvent<YourDto> instead of BrokerIncomingEvent<?>");
 					}
 
 					payloadType = genericType;
