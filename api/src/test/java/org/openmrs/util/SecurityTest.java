@@ -40,13 +40,8 @@ class SecurityTest extends BaseContextSensitiveTest {
 	 * @see Security#encodeStringArgon2(String)
 	 */
 	@Test
-<<<<<<< HEAD
-	void encodeStringArgon2_shouldEncodeStringsToArgon2id() {
-		String hash = Security.encodeStringArgon2("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
-=======
 	public void encodeString_shouldEncodeStringsToArgon2id() {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
->>>>>>> 6e54dbf51 (Response to reviews1)
 		assertTrue(hash.startsWith("$argon2id$"));
 	}
 
@@ -148,6 +143,19 @@ class SecurityTest extends BaseContextSensitiveTest {
 				}
 			}
 			Security.resetEncoder();
+			String hash1 = Security.encodeString("test");
+			org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16")).thenReturn("16");
+			Security.resetEncoder();
+			String hash2 = Security.encodeString("test");
+			String[] parts1 = hash1.split("\\$");
+			String[] parts2 = hash2.split("\\$");
+			assertTrue(parts1.length >= 5);
+			assertTrue(parts2.length >= 5);
+			assertTrue(parts1[4].length() != parts2[4].length());
+		}
+		finally {
+			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
+			Security.resetEncoder();
 		}
 	}
 
@@ -167,6 +175,8 @@ class SecurityTest extends BaseContextSensitiveTest {
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "-1"));
 			Security.resetEncoder();
 			String hash = Security.encodeStringArgon2("test");
+			Security.resetEncoder();
+			String hash = Security.encodeString("test");
 			assertTrue(hash.startsWith("$argon2id$"));
 			String[] parts = hash.split("\\$");
 			assertTrue(parts.length >= 5);
@@ -181,6 +191,7 @@ class SecurityTest extends BaseContextSensitiveTest {
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, originalParallelism);
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, originalMemory);
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, originalIterations);
+			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
 			Security.resetEncoder();
 		}
 	}
@@ -197,6 +208,7 @@ class SecurityTest extends BaseContextSensitiveTest {
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1"));
 			Security.resetEncoder();
 			String hash1 = Security.encodeStringArgon2("test");
+			Security.resetEncoder();
 			String[] parts1 = hash1.split("\\$");
 			assertTrue(parts1.length >= 5);
 			assertTrue(parts1[3].contains("m=65536"));
@@ -218,6 +230,7 @@ class SecurityTest extends BaseContextSensitiveTest {
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, originalMemory);
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, originalIterations);
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, originalParallelism);
+			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
 			Security.resetEncoder();
 		}
 	}
