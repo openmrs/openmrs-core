@@ -129,6 +129,19 @@ public class Security {
 		return argon2Encoder;
 	}
 
+	/**
+	 * Resets the cached Argon2 encoder and configuration fingerprint.
+	 * This is a package-private method intended for testing purposes only.
+	 * It forces the encoder to be recreated with the current configuration
+	 * on the next call to {@link #encodeString(String)}.
+	 */
+	static void resetEncoder() {
+		synchronized (Security.class) {
+			argon2Encoder = null;
+			configFingerprint = null;
+		}
+	}
+
 	private static String getConfigFingerprint() {
 		try {
 			AdministrationService adminService = Context.getAdministrationService();

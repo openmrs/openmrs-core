@@ -929,19 +929,19 @@ public final class OpenmrsConstants {
 		                BooleanDatatype.class, null));
 
 		props.add(new GlobalProperty(GP_ARGON2_MEMORY, "65536",
-		        "Argon2 memory in KB"));
+		        "Argon2 memory cost in kilobytes (KB). Higher values increase security but require more memory. Default: 65536 (64 MB). Recommended: 65536-262144 (64-256 MB)."));
 
 		props.add(new GlobalProperty(GP_ARGON2_PARALLELISM, "1",
-		        "Argon2 parallelism factor"));
+		        "Argon2 parallelism factor (number of threads). Higher values increase security but require more CPU. Default: 1. Recommended: 1-4."));
 
 		props.add(new GlobalProperty(GP_ARGON2_ITERATIONS, "3",
-		        "Argon2 iterations"));
+		        "Argon2 time cost (number of iterations). Higher values increase security but slow down hashing. Default: 3. Recommended: 3-4."));
 
 		props.add(new GlobalProperty(GP_ARGON2_HASH_LENGTH, "32",
-		        "Argon2 hash length in bytes"));
+		        "Argon2 hash length in bytes. Default: 32. Recommended: 32-64."));
 
 		props.add(new GlobalProperty(GP_ARGON2_SALT_LENGTH, "16",
-		        "Argon2 salt length in bytes"));
+		        "Argon2 salt length in bytes. Default: 16. Recommended: 16-32."));
 
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
 		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",

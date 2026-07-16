@@ -50,12 +50,10 @@ public class SecurityTest {
 		org.openmrs.api.AdministrationService originalAdministrationService = serviceContext.getAdministrationService();
 		serviceContext.setService(org.openmrs.api.AdministrationService.class, adminService);
 		try {
-			java.lang.reflect.Field field = Security.class.getDeclaredField("argon2Encoder");
-			field.setAccessible(true);
-			field.set(null, null);
+			Security.resetEncoder();
 			String hash1 = Security.encodeString("test");
 			org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16")).thenReturn("16");
-			field.set(null, null);
+			Security.resetEncoder();
 			String hash2 = Security.encodeString("test");
 			String[] parts1 = hash1.split("\\$");
 			String[] parts2 = hash2.split("\\$");
@@ -65,9 +63,7 @@ public class SecurityTest {
 		}
 		finally {
 			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
-			java.lang.reflect.Field field = Security.class.getDeclaredField("argon2Encoder");
-			field.setAccessible(true);
-			field.set(null, null);
+			Security.resetEncoder();
 		}
 	}
 
@@ -86,9 +82,7 @@ public class SecurityTest {
 		org.openmrs.api.AdministrationService originalAdministrationService = serviceContext.getAdministrationService();
 		serviceContext.setService(org.openmrs.api.AdministrationService.class, adminService);
 		try {
-			java.lang.reflect.Field field = Security.class.getDeclaredField("argon2Encoder");
-			field.setAccessible(true);
-			field.set(null, null);
+			Security.resetEncoder();
 			String hash = Security.encodeString("test");
 			assertTrue(hash.startsWith("$argon2id$"));
 			String[] parts = hash.split("\\$");
@@ -100,9 +94,7 @@ public class SecurityTest {
 		}
 		finally {
 			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
-			java.lang.reflect.Field field = Security.class.getDeclaredField("argon2Encoder");
-			field.setAccessible(true);
-			field.set(null, null);
+			Security.resetEncoder();
 		}
 	}
 
@@ -121,9 +113,7 @@ public class SecurityTest {
 		org.openmrs.api.AdministrationService originalAdministrationService = serviceContext.getAdministrationService();
 		serviceContext.setService(org.openmrs.api.AdministrationService.class, adminService);
 		try {
-			java.lang.reflect.Field field = Security.class.getDeclaredField("argon2Encoder");
-			field.setAccessible(true);
-			field.set(null, null);
+			Security.resetEncoder();
 			String hash1 = Security.encodeString("test");
 			String[] parts1 = hash1.split("\\$");
 			assertTrue(parts1.length >= 5);
@@ -144,9 +134,7 @@ public class SecurityTest {
 		}
 		finally {
 			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
-			java.lang.reflect.Field field = Security.class.getDeclaredField("argon2Encoder");
-			field.setAccessible(true);
-			field.set(null, null);
+			Security.resetEncoder();
 		}
 	}
 	
