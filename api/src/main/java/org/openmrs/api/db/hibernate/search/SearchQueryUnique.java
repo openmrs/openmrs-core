@@ -11,8 +11,10 @@ package org.openmrs.api.db.hibernate.search;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,19 +32,33 @@ import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
  * Provides methods for removing duplicate search results based on the given uniqueKey and combining
  * search results from multiple queries.
  * <p>
- * Due to max clause count limit dictated by performance reasons only first
- * <code>max = {@link BooleanQuery#getMaxClauseCount()} / 2.5</code> duplicate keys are removed from
- * results.
+ * When fetching results, deduplication is bounded to the requested page: the follow-up filtering
+ * query removes at most <code>max = {@link BooleanQuery#getMaxClauseCount()} / 2.5</code> duplicate
+ * keys, and up to <code>max</code> unique keys from previous queries are removed from results in
+ * the following queries.
  * <p>
- * The same <code>max</code> limit applies when combining results of multiple queries. Up to
- * <code>max</code> unique keys from the previous queries are removed from results in the following
- * queries.
+ * When calculating a total hit count, deduplication is exact by default but can be bounded by the
+ * caller via {@link #searchCount(SearchSessionFactory, SearchQueryUnique, int)}: the count is exact
+ * while the number of distinct hits stays within the given cap, and degrades to a raw upper bound
+ * (which counts duplicates) above it. This lets an expensive search (e.g. patient search over a
+ * huge hit set) bound the count cost while other callers keep exact counts.
  *
  * @param <T> query scope
  * @param <R> query return type
  * @since 2.8.0
  */
 public class SearchQueryUnique<T, R> {
+
+	/**
+	 * Cap value for {@link #searchCount(SearchSessionFactory, SearchQueryUnique, int)} that keeps the
+	 * total hit count exact by never falling back to the raw upper bound.
+	 */
+	public static final int UNBOUNDED_DEDUPLICATION = Integer.MAX_VALUE;
+
+	/**
+	 * The number of hits to pull from the index per scroll iteration when deduplicating.
+	 */
+	static final int DEFAULT_SCROLL_CHUNK_SIZE = 500;
 
 	Class<? extends T> scope;
 
@@ -161,15 +177,32 @@ public class SearchQueryUnique<T, R> {
 	}
 
 	/**
-	 * Runs the search calculating the total hit count only. See
-	 * {@link #search(SearchSessionFactory, SearchQueryUnique, Integer, Integer, Boolean)}.
+	 * Runs the search calculating the exact total hit count only.
 	 *
 	 * @param searchSessionFactory SearchSessionFactory
 	 * @param uniqueQuery unique query {@link #newQuery(Class, Function, String, Function)}
 	 * @return the total hit count
 	 */
 	public static Long searchCount(SearchSessionFactory searchSessionFactory, SearchQueryUnique<?, ?> uniqueQuery) {
-		return search(searchSessionFactory, uniqueQuery, 0, 0, true).getTotalHitCount();
+		return searchCount(searchSessionFactory, uniqueQuery, UNBOUNDED_DEDUPLICATION);
+	}
+
+	/**
+	 * Runs the search calculating the total hit count only, bounding the exact deduplication to
+	 * <code>deduplicationCap</code> distinct hits. The count is exact while the number of distinct hits
+	 * stays within the cap; above it the raw hit count (which counts duplicates, so an upper bound) is
+	 * returned instead of scanning the whole hit set. Pass {@link #UNBOUNDED_DEDUPLICATION} for an
+	 * always exact count.
+	 *
+	 * @param searchSessionFactory SearchSessionFactory
+	 * @param uniqueQuery unique query {@link #newQuery(Class, Function, String, Function)}
+	 * @param deduplicationCap the number of distinct hits to deduplicate exactly before falling back to
+	 *            the raw upper bound
+	 * @return the total hit count
+	 */
+	public static Long searchCount(SearchSessionFactory searchSessionFactory, SearchQueryUnique<?, ?> uniqueQuery,
+	        int deduplicationCap) {
+		return searchTotalHitCount(searchSessionFactory.getSearchSession(), uniqueQuery, deduplicationCap);
 	}
 
 	/**
@@ -203,36 +236,71 @@ public class SearchQueryUnique<T, R> {
 
 	/**
 	 * Executes unique queries applying joins and mapping to the result type.
+	 * <p>
+	 * When <code>includeTotalHitCount</code> is <code>true</code> only the exact total hit count is
+	 * calculated and the returned results are empty; use
+	 * {@link #searchCount(SearchSessionFactory, SearchQueryUnique, int)} to bound the count cost.
+	 * Otherwise the requested page of results is returned and the total hit count is <code>null</code>.
 	 *
 	 * @param searchSessionFactory search session factory
 	 * @param uniqueQuery unique query {@link #newQuery(Class, Function, String, Function)}
 	 * @param offset offset of results
 	 * @param limit limit of results
-	 * @param includeTotalHitCount calculate total hit count (it is more expensive query)
+	 * @param includeTotalHitCount calculate the total hit count instead of fetching results
 	 * @return the results
 	 * @param <T> the type of results
 	 */
 	public static <T> SearchUniqueResults<T> search(SearchSessionFactory searchSessionFactory,
 	        SearchQueryUnique<?, T> uniqueQuery, final Integer offset, final Integer limit, Boolean includeTotalHitCount) {
-		if (includeTotalHitCount == null) {
-			includeTotalHitCount = false;
+		SearchSession searchSession = searchSessionFactory.getSearchSession();
+
+		if (Boolean.TRUE.equals(includeTotalHitCount)) {
+			// The count path only needs the total number of distinct hits, so it skips fetching and
+			// hydrating a page of results entirely.
+			long totalHitCount = searchTotalHitCount(searchSession, uniqueQuery, UNBOUNDED_DEDUPLICATION);
+			return new SearchUniqueResults<>(new ArrayList<>(), offset, limit, totalHitCount);
 		}
 
-		SearchSession searchSession = searchSessionFactory.getSearchSession();
+		return searchWithResults(searchSession, uniqueQuery, offset, limit);
+	}
+
+	/**
+	 * Fetches the requested page of deduplicated results, walking the joined queries in order.
+	 * <p>
+	 * The deduplication scroll for each query is bounded to the requested page: it stops once
+	 * <code>offset + limit</code> unique keys have been found, because any hit beyond that point sorts
+	 * after the page and therefore cannot appear in it. This keeps the work proportional to the page
+	 * size rather than to the full hit set.
+	 * <p>
+	 * This bound relies on the deduplication scroll and the page fetch producing hits in the same
+	 * order. Both queries are left unsorted so they default to descending score, and the fetch's filter
+	 * clauses do not affect scoring; do not add an explicit sort to one without the other, or the bound
+	 * no longer holds.
+	 */
+	private static <T> SearchUniqueResults<T> searchWithResults(SearchSession searchSession,
+	        SearchQueryUnique<?, T> uniqueQuery, final Integer offset, final Integer limit) {
 		List<T> results = new ArrayList<>();
 		Collection<Object> uniqueKeys = new LinkedHashSet<>(); // Preserve the order
 		final int maxClauseCount = Math.round(BooleanQuery.getMaxClauseCount() / 2.5f);
 		SearchQueryUnique<?, T> nextQuery = uniqueQuery;
-		long totalHitCount = 0;
 		Integer currentOffset = offset;
 		Integer currentLimit = limit;
 		while (nextQuery != null) {
+			// A sub-query that is followed by another must define a unique key: the join deduplicates
+			// across sub-queries by unique key, and the offset carried to the next sub-query is derived
+			// from the number of unique keys this one contributed. A null key would leave both unsupported,
+			// so fail loudly rather than silently mis-paginate. All current callers satisfy this.
+			if (nextQuery.getJoinedQuery() != null && nextQuery.getUniqueKey() == null) {
+				throw new IllegalStateException("A joined SearchQueryUnique sub-query must define a unique key");
+			}
+
 			SearchScope<?> scope = searchSession.scope(nextQuery.getScope());
 			SearchPredicateFactory predicateFactory = scope.predicate();
 			SearchPredicate searchPredicate = nextQuery.getSearch().apply(predicateFactory);
 			SearchQuery<?> query;
 
 			final Collection<Object> previousQueryUniqueKeys = new ArrayList<>(uniqueKeys);
+			DeduplicationResult dedup = null;
 
 			if (nextQuery.getUniqueKey() != null) {
 				final String uniqueKey = nextQuery.getUniqueKey();
@@ -240,30 +308,22 @@ public class SearchQueryUnique<T, R> {
 				SearchQuery<List<?>> uniqueKeyQuery = searchSession.search(scope)
 				        .select(f -> f.composite(f.field(uniqueKey), f.id())).where(searchPredicate).toQuery();
 
-				final List<Object> duplicateIds = new ArrayList<>();
-				try (SearchScroll<List<?>> scroll = uniqueKeyQuery.scroll(500)) {
-					SearchScrollResult<List<?>> chunk = scroll.next();
-					while (chunk.hasHits()) {
-						boolean limitReached = false;
-						for (List<?> match : chunk.hits()) {
-							if (!uniqueKeys.add(match.get(0))) {
-								duplicateIds.add(match.get(1));
-								if (duplicateIds.size() > maxClauseCount) {
-									// stop at max clause count
-									limitReached = true;
-									break;
-								}
-							}
-						}
-						if (limitReached) {
-							break;
-						}
-						chunk = scroll.next();
-					}
+				// A null limit means "fetch everything", so scan the whole hit set; otherwise only scan
+				// far enough to fill the requested page.
+				final Integer maxNewUniqueKeys;
+				if (currentLimit == null) {
+					maxNewUniqueKeys = null;
+				} else {
+					maxNewUniqueKeys = (currentOffset == null ? 0 : currentOffset) + currentLimit;
 				}
+				dedup = collectDuplicateIds(uniqueKeyQuery, uniqueKeys, maxClauseCount, maxNewUniqueKeys,
+				    DEFAULT_SCROLL_CHUNK_SIZE);
+				final List<Object> duplicateIds = dedup.duplicateIds;
 
 				if (uniqueKeys.size() > maxClauseCount) {
-					uniqueKeys = new ArrayList<>(uniqueKeys).subList(0, maxClauseCount);
+					// Keep it a Set so later queries can still detect duplicates; a plain List here would
+					// make add() always return true and defeat deduplication for subsequent joined queries.
+					uniqueKeys = new LinkedHashSet<>(new ArrayList<>(uniqueKeys).subList(0, maxClauseCount));
 				}
 
 				query = searchSession.search(scope).where(f -> f.bool().with(b -> {
@@ -300,32 +360,194 @@ public class SearchQueryUnique<T, R> {
 				}
 			}
 
-			if (limit != null && results.size() == limit && !includeTotalHitCount) {
-				// End early as we don't need to calculate total hit count
+			if (limit != null && results.size() == limit) {
+				// The requested page is full, so there is no need to visit the remaining queries.
 				return new SearchUniqueResults<>(results, offset, limit, null);
 			}
 
-			if (includeTotalHitCount || (nextQuery.getJoinedQuery() != null && partialResults.isEmpty()
-			        && currentOffset != null && currentOffset != 0)) {
-				// Fetch total hit count only if explicitly requested or if offset caused the query to return 0 results,
-				// and we will be trying to fetch more results in the next query
-				totalHitCount += query.fetchTotalHitCount();
-			} else {
-				totalHitCount += partialResults.size();
-			}
-
-			if (currentLimit != null) {
-				currentLimit = limit - results.size();
-			}
-			if (currentOffset != null) {
-				currentOffset = currentOffset - (int) totalHitCount;
-				currentOffset = currentOffset < 0 ? 0 : currentOffset;
+			// The page was not filled by this query, so carry the remaining offset/limit to the next
+			// query. Because the page is not full, this query's whole deduplicated hit set was consumed,
+			// which is exactly the number of new unique keys the scroll found (barring the pathological
+			// maxClauseCount duplicate-id cap, which can stop the scroll early and understate the count for
+			// queries with more than maxClauseCount duplicates). The guard above guarantees dedup != null
+			// whenever there is a joined query to carry to.
+			if (nextQuery.getJoinedQuery() != null) {
+				int consumed = dedup.newUniqueKeyCount;
+				if (currentLimit != null) {
+					currentLimit = limit - results.size();
+				}
+				if (currentOffset != null) {
+					currentOffset = Math.max(0, currentOffset - consumed);
+				}
 			}
 
 			nextQuery = nextQuery.getJoinedQuery();
 		}
 
-		return new SearchUniqueResults<>(results, offset, limit, includeTotalHitCount ? totalHitCount : null);
+		return new SearchUniqueResults<>(results, offset, limit, null);
+	}
+
+	/**
+	 * Calculates the total number of distinct hits across the joined queries.
+	 * <p>
+	 * Deduplication is done by collecting distinct unique-key values from an index-level projection,
+	 * which avoids hydrating hits and avoids the follow-up filtering query used on the results path.
+	 * <p>
+	 * The exact deduplication is bounded by <code>cap</code>: once more than <code>cap</code> distinct
+	 * hits have been seen, the scroll stops and the raw hit count (which counts duplicates and so is an
+	 * upper bound on the distinct count) is returned instead of scanning the whole hit set. This lets a
+	 * caller keep the count exact for the result sizes users actually paginate through while bounding
+	 * the cost for very large hit sets; {@link #UNBOUNDED_DEDUPLICATION} keeps it always exact.
+	 */
+	private static long searchTotalHitCount(SearchSession searchSession, SearchQueryUnique<?, ?> uniqueQuery, int cap) {
+		final Set<Object> uniqueKeys = new HashSet<>();
+		long nonUniqueHitCount = 0;
+		boolean exceededCap = false;
+		SearchQueryUnique<?, ?> nextQuery = uniqueQuery;
+		while (nextQuery != null && !exceededCap) {
+			if (nextQuery.getUniqueKey() != null) {
+				SearchScope<?> scope = searchSession.scope(nextQuery.getScope());
+				SearchPredicate searchPredicate = nextQuery.getSearch().apply(scope.predicate());
+				final String uniqueKey = nextQuery.getUniqueKey();
+				SearchQuery<?> keyQuery = searchSession.search(scope).select(f -> f.field(uniqueKey)).where(searchPredicate)
+				        .toQuery();
+				collectUniqueKeys(keyQuery, uniqueKeys, cap, DEFAULT_SCROLL_CHUNK_SIZE);
+				exceededCap = uniqueKeys.size() > cap;
+			} else {
+				// Without a unique key we cannot deduplicate, so fall back to the raw hit count.
+				nonUniqueHitCount += fetchTotalHitCount(searchSession, nextQuery);
+			}
+			nextQuery = nextQuery.getJoinedQuery();
+		}
+
+		if (!exceededCap) {
+			return uniqueKeys.size() + nonUniqueHitCount;
+		}
+
+		// There are more than `cap` distinct hits, so return the raw hit count as an upper bound rather
+		// than scanning the entire hit set to determine the exact distinct count.
+		return rawHitCount(searchSession, uniqueQuery);
+	}
+
+	/**
+	 * Returns the raw (non-deduplicated) total hit count across the joined queries. This counts
+	 * documents that share a unique key more than once, so it is an upper bound on the distinct count.
+	 */
+	private static long rawHitCount(SearchSession searchSession, SearchQueryUnique<?, ?> uniqueQuery) {
+		long totalHitCount = 0;
+		SearchQueryUnique<?, ?> nextQuery = uniqueQuery;
+		while (nextQuery != null) {
+			totalHitCount += fetchTotalHitCount(searchSession, nextQuery);
+			nextQuery = nextQuery.getJoinedQuery();
+		}
+		return totalHitCount;
+	}
+
+	/**
+	 * Returns the raw (non-deduplicated) hit count for a single query.
+	 */
+	private static long fetchTotalHitCount(SearchSession searchSession, SearchQueryUnique<?, ?> query) {
+		SearchScope<?> scope = searchSession.scope(query.getScope());
+		SearchPredicate searchPredicate = query.getSearch().apply(scope.predicate());
+		return searchSession.search(scope).where(searchPredicate).fetchTotalHitCount();
+	}
+
+	/**
+	 * Scrolls the unique-key projection of the given query, adding each key to <code>uniqueKeys</code>
+	 * until more than <code>cap</code> distinct keys have been collected.
+	 *
+	 * @param keyQuery the unique-key projection query to scroll
+	 * @param uniqueKeys the running set of unique keys, mutated in place
+	 * @param cap the number of distinct keys to collect before stopping
+	 * @param chunkSize the scroll chunk size
+	 * @return the number of hits scanned before stopping
+	 */
+	static int collectUniqueKeys(SearchQuery<?> keyQuery, Collection<Object> uniqueKeys, int cap, int chunkSize) {
+		int scannedHitCount = 0;
+		try (SearchScroll<?> scroll = keyQuery.scroll(chunkSize)) {
+			SearchScrollResult<?> chunk = scroll.next();
+			scan: while (chunk.hasHits()) {
+				for (Object key : chunk.hits()) {
+					scannedHitCount++;
+					uniqueKeys.add(key);
+					if (uniqueKeys.size() > cap) {
+						break scan;
+					}
+				}
+				chunk = scroll.next();
+			}
+		}
+		return scannedHitCount;
+	}
+
+	/**
+	 * Scrolls the (uniqueKey, id) projection of the given query, adding newly seen unique keys to
+	 * <code>uniqueKeys</code> and collecting the ids of documents whose unique key was already seen.
+	 * <p>
+	 * The scroll stops early once <code>maxNewUniqueKeys</code> new unique keys have been collected
+	 * (when non-null), bounding the work to the requested page. It also stops once more than
+	 * <code>maxClauseCount</code> duplicate ids have been collected, since those ids become clauses of
+	 * the follow-up filtering query and are subject to the Lucene clause limit.
+	 *
+	 * @param uniqueKeyQuery the (uniqueKey, id) projection query to scroll
+	 * @param uniqueKeys the running set of unique keys, mutated in place
+	 * @param maxClauseCount the maximum number of duplicate ids to collect
+	 * @param maxNewUniqueKeys the number of new unique keys to collect before stopping, or
+	 *            <code>null</code> to scan the whole hit set
+	 * @param chunkSize the scroll chunk size
+	 * @return the collected duplicate ids together with counts describing the scan
+	 */
+	static DeduplicationResult collectDuplicateIds(SearchQuery<List<?>> uniqueKeyQuery, Collection<Object> uniqueKeys,
+	        int maxClauseCount, Integer maxNewUniqueKeys, int chunkSize) {
+		final List<Object> duplicateIds = new ArrayList<>();
+		int newUniqueKeyCount = 0;
+		int scannedHitCount = 0;
+		try (SearchScroll<List<?>> scroll = uniqueKeyQuery.scroll(chunkSize)) {
+			SearchScrollResult<List<?>> chunk = scroll.next();
+			scan: while (chunk.hasHits()) {
+				for (List<?> match : chunk.hits()) {
+					scannedHitCount++;
+					if (uniqueKeys.add(match.get(0))) {
+						newUniqueKeyCount++;
+						if (maxNewUniqueKeys != null && newUniqueKeyCount >= maxNewUniqueKeys) {
+							// We have enough unique keys to satisfy the requested page.
+							break scan;
+						}
+					} else {
+						duplicateIds.add(match.get(1));
+						if (duplicateIds.size() > maxClauseCount) {
+							// stop at max clause count
+							break scan;
+						}
+					}
+				}
+				chunk = scroll.next();
+			}
+		}
+		return new DeduplicationResult(duplicateIds, newUniqueKeyCount, scannedHitCount);
+	}
+
+	/**
+	 * Holds the outcome of {@link #collectDuplicateIds}: the duplicate ids to filter out, the number of
+	 * new unique keys found, and the number of hits actually scanned (which is bounded when the page
+	 * limit is reached).
+	 */
+	static final class DeduplicationResult {
+
+		final List<Object> duplicateIds;
+
+		final int newUniqueKeyCount;
+
+		/**
+		 * Total hits scanned before the scroll stopped; exposed only for test assertions on boundedness.
+		 */
+		final int scannedHitCount;
+
+		DeduplicationResult(List<Object> duplicateIds, int newUniqueKeyCount, int scannedHitCount) {
+			this.duplicateIds = duplicateIds;
+			this.newUniqueKeyCount = newUniqueKeyCount;
+			this.scannedHitCount = scannedHitCount;
+		}
 	}
 
 	/**
