@@ -280,7 +280,7 @@ public class SearchQueryUnique<T, R> {
 	private static <T> SearchUniqueResults<T> searchWithResults(SearchSession searchSession,
 	        SearchQueryUnique<?, T> uniqueQuery, final Integer offset, final Integer limit) {
 		List<T> results = new ArrayList<>();
-		Collection<Object> uniqueKeys = new LinkedHashSet<>(); // Preserve the order
+		Set<Object> uniqueKeys = new LinkedHashSet<>(); // Preserve the order
 		final int maxClauseCount = Math.round(BooleanQuery.getMaxClauseCount() / 2.5f);
 		SearchQueryUnique<?, T> nextQuery = uniqueQuery;
 		Integer currentOffset = offset;
@@ -497,7 +497,7 @@ public class SearchQueryUnique<T, R> {
 	 * @param chunkSize the scroll chunk size
 	 * @return the collected duplicate ids together with counts describing the scan
 	 */
-	static DeduplicationResult collectDuplicateIds(SearchQuery<List<?>> uniqueKeyQuery, Collection<Object> uniqueKeys,
+	static DeduplicationResult collectDuplicateIds(SearchQuery<List<?>> uniqueKeyQuery, Set<Object> uniqueKeys,
 	        int maxClauseCount, Integer maxNewUniqueKeys, int chunkSize) {
 		final List<Object> duplicateIds = new ArrayList<>();
 		int newUniqueKeyCount = 0;
