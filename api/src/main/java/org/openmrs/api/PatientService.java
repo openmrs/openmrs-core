@@ -797,7 +797,10 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Return the number of unvoided patients with names or patient identifiers or searchable person
 	 * attributes starting with or equal to the specified text
-	 * 
+	 * <p>
+	 * Note that after {@code person.searchMaxResults}, the count will be an upper bound, but not
+	 * necessarily an accurate count.
+	 *
 	 * @param query the string to search on
 	 * @return the number of patients matching the given search phrase
 	 * @since 1.8
