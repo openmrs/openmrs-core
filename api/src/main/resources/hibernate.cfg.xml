@@ -105,6 +105,7 @@
 		<!-- These mappings are required because of references in Obs & Concept -->
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
+		<mapping class="org.openmrs.event.outbox.OutboxEvent"/>
   </session-factory>
 
 </hibernate-configuration>
