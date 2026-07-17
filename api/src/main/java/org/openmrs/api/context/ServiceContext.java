@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.aopalliance.aop.Advice;
 import org.openmrs.api.APIException;
@@ -82,7 +83,7 @@ public class ServiceContext implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
 
-	private static boolean refreshingContext = false;
+	private static volatile boolean refreshingContext = false;
 
 	private static final Object refreshingContextLock = new Object();
 
@@ -93,7 +94,7 @@ public class ServiceContext implements ApplicationContextAware {
 	private boolean useSystemClassLoader = false;
 
 	// Cached service objects
-	Map<Class, Object> services = new HashMap<>();
+	Map<Class, Object> services = new ConcurrentHashMap<>();
 
 	// Advisors added to services by this service
 	Map<Class, Set<Advisor>> addedAdvisors = new HashMap<>();
@@ -680,20 +681,23 @@ public class ServiceContext implements ApplicationContextAware {
 			log.trace("Getting service: " + cls);
 		}
 
-		// if the context is refreshing, wait until it is
-		// done -- otherwise a null service might be returned
-		synchronized (refreshingContextLock) {
-			try {
-				while (refreshingContext) {
-					log.debug("Waiting to get service: {} while the context is being refreshed", cls);
+		// Only synchronize if we're refreshing the context; during context refreshes, we need
+		// to wait for services to be available. Otherwise we can take the fast-path.
+		if (refreshingContext) {
+			synchronized (refreshingContextLock) {
+				try {
+					while (refreshingContext) {
+						log.debug("Waiting to get service: {} while the context is being refreshed", cls);
 
-					refreshingContextLock.wait();
+						refreshingContextLock.wait();
 
-					log.debug("Finished waiting to get service {} while the context was being refreshed", cls);
+						log.debug("Finished waiting to get service {} while the context was being refreshed", cls);
+					}
+
+				} catch (InterruptedException e) {
+					log.warn("Refresh lock was interrupted", e);
+					Thread.currentThread().interrupt();
 				}
-
-			} catch (InterruptedException e) {
-				log.warn("Refresh lock was interrupted", e);
 			}
 		}
 
