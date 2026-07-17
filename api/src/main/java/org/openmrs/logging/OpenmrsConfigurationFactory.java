@@ -39,6 +39,7 @@ import org.apache.logging.log4j.status.StatusLogger;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -163,7 +164,7 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 
 		if (logLevel != null) {
 			applyLogLevels(configuration, logLevel);
-		} else if (Context.isSessionOpen()) {
+		} else if (Context.isSessionOpen() && ServiceContext.isInstantiated()) {
 			try {
 				applyLogLevels(configuration);
 			} catch (ServiceNotFoundException e) {
@@ -175,6 +176,9 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 					        .debug("AdministrationService is not yet available; skipping log-level overrides");
 				}
 			}
+		} else if (Context.isSessionOpen()) {
+			StatusLogger.getLogger()
+			        .debug("ServiceContext is not yet instantiated; deferring AdministrationService log-level overrides");
 		}
 	}
 
