@@ -141,6 +141,17 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
+	 * Reports whether the singleton {@link ServiceContext} has already been created, without triggering
+	 * its creation the way {@link #getInstance()} would.
+	 *
+	 * @return true if the ServiceContext singleton has been instantiated
+	 * @since 2.7.10
+	 */
+	public static boolean isInstantiated() {
+		return ServiceContextHolder.instance != null;
+	}
+
+	/**
 	 * Null out the current instance of the ServiceContext. This should be used when modules are
 	 * refreshing (being added/removed) and/or openmrs is shutting down
 	 */
