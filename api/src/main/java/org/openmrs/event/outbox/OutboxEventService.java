@@ -125,12 +125,9 @@ public class OutboxEventService {
 			return false;
 		}
 
-		// The bulk update above does not touch the passed instance, which was read before the claim and may
-		// be stale: another handler could have partially processed and released this event (recording
-		// completed listeners and bumping the error count) between that read and this claim. Refresh it from
-		// the just-claimed row so the caller resumes from the current progress instead of re-running
-		// listeners already recorded as completed.
+		// The instance itself isn't updated, so we update it here, but first we need to re-read from the database
 		OutboxEvent claimed = sessionFactory.getCurrentSession().get(OutboxEvent.class, outboxEvent.getId());
+		sessionFactory.getCurrentSession().refresh(claimed);
 		outboxEvent.updateFrom(claimed);
 		return true;
 	}

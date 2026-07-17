@@ -234,8 +234,6 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 		String captured = capturedEvents.stream()
 			.map(TestOutboxEventListener.TestEvent::getMethod)
 			.collect(Collectors.joining(", "));
-		// Clear the session first so we read the committed database state rather than the first-level cached
-		// copies loaded earlier in this test.
 		Context.clearSession();
 		String outbox = ((List<OutboxEvent>) sessionFactory.getCurrentSession()
 			.createQuery("from OutboxEvent order by id").list()).stream()
