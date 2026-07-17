@@ -10,6 +10,7 @@
 package org.openmrs.web;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -37,14 +38,19 @@ public final class WebDaemon {
 	public static void startOpenmrs(final ServletContext servletContext)
 	        throws DatabaseUpdateException, InputRequiredException {
 
+		// runNewDaemonTask may only be called from a daemon thread. Startup runs on the servlet
+		// container's thread, so mark it as a daemon context for the duration of the call
+		final Future<?>[] startup = new Future<?>[1];
+		Daemon.runInDaemonContext(() -> startup[0] = Daemon.runNewDaemonTask(() -> {
+			try {
+				Listener.startOpenmrs(servletContext);
+			} catch (ServletException e) {
+				throw new ModuleException("Unable to start OpenMRS. Error thrown was: " + e.getMessage(), e);
+			}
+		}));
+
 		try {
-			Daemon.runNewDaemonTask(() -> {
-				try {
-					Listener.startOpenmrs(servletContext);
-				} catch (ServletException e) {
-					throw new ModuleException("Unable to start OpenMRS. Error thrown was: " + e.getMessage(), e);
-				}
-			}).get();
+			startup[0].get();
 		} catch (InterruptedException ignored) {} catch (ExecutionException e) {
 			Throwable cause = e.getCause();
 			if (cause instanceof DatabaseUpdateException) {

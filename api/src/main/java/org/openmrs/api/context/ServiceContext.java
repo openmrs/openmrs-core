@@ -961,7 +961,7 @@ public class ServiceContext implements ApplicationContextAware {
 					}
 				}
 
-				Daemon.runStartupForService(openmrsService);
+				Daemon.runStartupForService(openmrsService, Daemon.callerKey());
 			} catch (InterruptedException e) {
 				log.warn("Refresh lock was interrupted while waiting to run OpenmrsService.onStartup() for " + classString,
 				    e);

@@ -86,6 +86,12 @@ public class ModuleFactory {
 	private static final Set<String> actualStartupOrder = new LinkedHashSet<>();
 
 	/**
+	 * The capability that proves to {@link Daemon} that user creation is being requested from this
+	 * class.
+	 */
+	private static Daemon.CallerKey daemonCallerKey;
+	
+	/**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an error
 	 * occurred and/or module was not successfully loaded
 	 *
@@ -563,7 +569,7 @@ public class ModuleFactory {
 				return module;
 			}
 		}
-		return Daemon.startModule(module, isOpenmrsStartup, applicationContext);
+		return Daemon.startModule(module, isOpenmrsStartup, applicationContext, daemonCallerKey());
 	}
 
 	/**
@@ -1593,5 +1599,26 @@ public class ModuleFactory {
 			}
 		}
 		return dependentModules;
+	}
+
+	/**
+	 * Receives the {@link Daemon} caller key. Called only by {@link Daemon} during its initialization.
+	 *
+	 * @param callerKey the caller key issued by {@link Daemon}
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public static void setDaemonCallerKey(Daemon.CallerKey callerKey) {
+		if (callerKey != null && daemonCallerKey == null) {
+			daemonCallerKey = callerKey;
+		}
+	}
+
+	private static Daemon.CallerKey daemonCallerKey() {
+		if (daemonCallerKey == null) {
+			// Guarantee Daemon has initialized and therefore handed us the key, regardless of the order in
+			// which the two classes were first loaded.
+			Daemon.ensureInitialized();
+		}
+		return daemonCallerKey;
 	}
 }

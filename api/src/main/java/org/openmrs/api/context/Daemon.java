@@ -47,7 +47,28 @@ public final class Daemon {
 
 	private static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
 
-	private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+	/**
+	 * Inner class passed to expected callers allowed to create DaemonThreads.
+	 *
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public static final class CallerKey {
+
+		private CallerKey() {
+		}
+	}
+
+	/**
+	 * The single {@link CallerKey} instance. Must not be exposed to the public API
+	 */
+	private static final CallerKey CALLER_KEY = new CallerKey();
+
+	static {
+		// send the key to our known collaborators
+		HibernateContextDAO.setDaemonCallerKey(CALLER_KEY);
+		ModuleFactory.setDaemonCallerKey(CALLER_KEY);
+		JobRequestHandlerAdapter.setDaemonCallerKey(CALLER_KEY);
+	}
 
 	/**
 	 * private constructor to override the default constructor to prevent it from being instantiated.
@@ -56,10 +77,20 @@ public final class Daemon {
 	}
 
 	/**
-	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
+	 * Forces this class to initialize, which distributes the caller key to its trusted collaborators.
+	 *
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public static void ensureInitialized() {
+		// Merely invoking a static method guarantees Daemon's static initializer has run; there is
+		// deliberately nothing else to do here.
+	}
+
+	/**
+	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext, CallerKey)
 	 */
 	public static Module startModule(Module module) throws ModuleException {
-		return startModule(module, false, null);
+		return startModule(module, false, null, CALLER_KEY);
 	}
 
 	/**
@@ -73,21 +104,12 @@ public final class Daemon {
 	 * @param isOpenmrsStartup Specifies whether this module is being started at application startup or
 	 *            not
 	 * @param applicationContext the spring application context instance to refresh
+	 * @param callerKey the {@link CallerKey} proving the caller is permitted to start modules
 	 * @return the module returned from {@link ModuleFactory#startModuleInternal(Module)}
 	 */
 	public static Module startModule(final Module module, final boolean isOpenmrsStartup,
-	        final AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
-		var possibleFrame = STACK_WALKER
-		        .walk(s -> s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst());
-
-		if (possibleFrame.isEmpty()) {
-			throw new APIException("Could not determine if module was called from appropriate place");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!Daemon.class.equals(callerClass) && !ModuleFactory.class.equals(callerClass)) {
-				throw new APIException("Module.factory.only", new Object[] { callerClass.getName() });
-			}
-		}
+	        final AbstractRefreshableApplicationContext applicationContext, CallerKey callerKey) throws ModuleException {
+		requireDaemonCaller(callerKey, "Module.factory.only");
 
 		Future<Module> moduleStartFuture = runInDaemonThreadInternal(
 		    () -> ModuleFactory.startModuleInternal(module, isOpenmrsStartup, applicationContext));
@@ -117,22 +139,13 @@ public final class Daemon {
 	 * @param user A new user to be created.
 	 * @param password The password to set for the new user.
 	 * @param roleNames A list of role names to fetch the roles to add to the user.
+	 * @param callerKey the {@link CallerKey} proving the caller is the context DAO
 	 * @return The newly created user
 	 * @since 2.3.0
 	 */
-	public static User createUser(User user, String password, List<String> roleNames) throws Exception {
-		// quick check to make sure we're only being called by ourselves
-		var possibleFrame = STACK_WALKER
-		        .walk(s -> s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst());
-
-		if (possibleFrame.isEmpty()) {
-			throw new APIException("Could not determine where createUser() was called from");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!HibernateContextDAO.class.equals(callerClass)) {
-				throw new APIException("Context.DAO.only", new Object[] { callerClass.getName() });
-			}
-		}
+	public static User createUser(User user, String password, List<String> roleNames, CallerKey callerKey) throws Exception {
+		// quick check to make sure we're only being called by the context DAO
+		requireDaemonCaller(callerKey, "Context.DAO.only");
 
 		// create a new thread and execute that task in it
 		Future<User> userFuture = runInDaemonThreadInternal(() -> {
@@ -267,19 +280,31 @@ public final class Daemon {
 	 */
 	public static boolean isDaemonThread() {
 		Boolean b = isDaemonThread.get();
-		if (b == null || !b) {
-			// Allow functions in Daemon and WebDaemon to be treated as a DaemonThread
-			var possibleFrame = STACK_WALKER
-			        .walk(s -> s.skip(2).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst());
+		return b != null && b;
+	}
 
-			if (possibleFrame.isEmpty()) {
-				throw new APIException("Could not determine where isDaemonThread() was called from");
+	/**
+	 * Runs the given task on the current thread as though it were a daemon thread, i.e. with the
+	 * daemon-thread flag set so that {@link #isDaemonThread()} returns {@code true} for the duration of
+	 * the task. This lets synchronous daemon entry points (such as {@code WebDaemon} startup) obtain
+	 * daemon privileges without spawning a dedicated daemon thread, and without
+	 * {@link #isDaemonThread()} having to inspect the call stack. The previous flag value is restored
+	 * when the task completes.
+	 *
+	 * @param runnable the task to run in a daemon context
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public static void runInDaemonContext(Runnable runnable) {
+		Boolean previous = isDaemonThread.get();
+		isDaemonThread.set(Boolean.TRUE);
+		try {
+			runnable.run();
+		} finally {
+			if (previous == null) {
+				isDaemonThread.remove();
 			} else {
-				var callerClass = possibleFrame.get();
-				return Daemon.class.equals(callerClass) || "org.openmrs.web.WebDaemon".equals(callerClass.getName());
+				isDaemonThread.set(previous);
 			}
-		} else {
-			return true;
 		}
 	}
 
@@ -288,20 +313,11 @@ public final class Daemon {
 	 * the {@link OpenmrsService} interface.
 	 *
 	 * @param service instance implementing the {@link OpenmrsService} interface.
+	 * @param callerKey the {@link CallerKey} proving the caller is the service context
 	 * @since 1.9
 	 */
-	public static void runStartupForService(final OpenmrsService service) throws ModuleException {
-		var possibleFrame = STACK_WALKER
-		        .walk(s -> s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst());
-
-		if (possibleFrame.isEmpty()) {
-			throw new APIException("Could not determine where executeScheduledClass() was called from");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!ServiceContext.class.equals(callerClass)) {
-				throw new APIException("Service.context.only", new Object[] { callerClass.getName() });
-			}
-		}
+	public static void runStartupForService(final OpenmrsService service, CallerKey callerKey) throws ModuleException {
+		requireDaemonCaller(callerKey, "Service.context.only");
 
 		Future<?> future = runInDaemonThreadInternal(service::onStartup);
 
@@ -465,6 +481,27 @@ public final class Daemon {
 	}
 
 	/**
+	 * @return the capability required to invoke Daemon's guarded entry points. Package-private, so it
+	 *         is only reachable from trusted collaborators in this package.
+	 */
+	static CallerKey callerKey() {
+		return CALLER_KEY;
+	}
+
+	/**
+	 * Rejects the call unless the supplied key is the genuine {@link #CALLER_KEY}. Fails closed for any
+	 * other value (including null), replacing the former stack-based caller-class checks.
+	 *
+	 * @param callerKey the key presented by the caller
+	 * @param messageCode the message (code) describing the sole legitimate caller
+	 */
+	private static void requireDaemonCaller(CallerKey callerKey, String messageCode) {
+		if (callerKey != CALLER_KEY) {
+			throw new APIException(messageCode, new Object[] { "an unauthorized caller" });
+		}
+	}
+
+	/**
 	 * Executes the given task as the given user. <br>
 	 * <br>
 	 * This can only be called from {@link JobRequestHandlerAdapter} during actual task execution
@@ -474,22 +511,13 @@ public final class Daemon {
 	 *
 	 * @param userSystemId the user to run as
 	 * @param runnable the task to run
+	 * @param callerKey the {@link CallerKey} proving the caller is the JobRunr request handler
 	 * @since 2.9.0
 	 */
-	public static void executeScheduledTaskAsUser(String userSystemId, DaemonTask runnable) throws Exception {
-		var possibleFrame = STACK_WALKER
-		        .walk(s -> s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst());
-
-		// quick check to make sure we're only being called by ourselves
-		if (possibleFrame.isEmpty()) {
-			throw new APIException("Could not determine where executeScheduledTaskAsUser was called from");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!JobRequestHandlerAdapter.class.isAssignableFrom(callerClass)) {
-				throw new APIException("executeScheduledTaskAsUser can only be called from JobRequestHandlerAdapter",
-				        new Object[] { callerClass });
-			}
-		}
+	public static void executeScheduledTaskAsUser(String userSystemId, DaemonTask runnable, CallerKey callerKey)
+	        throws Exception {
+		// quick check to make sure we're only being called by the JobRunr request handler
+		requireDaemonCaller(callerKey, "executeScheduledTaskAsUser can only be called from JobRequestHandlerAdapter");
 
 		isDaemonThread.set(true);
 		try {
