@@ -125,10 +125,13 @@ public class OutboxEventService {
 			return false;
 		}
 
-		// The bulk update above does not touch the passed (detached) instance, so mirror the claimed state
-		// onto it. Otherwise a later saveOrUpdate() would persist the stale PENDING status and un-claim the
-		// event mid-processing, letting another handler re-claim it and re-invoke not-yet-completed listeners.
-		outboxEvent.setStatus(OutboxEvent.Status.PROCESSING);
+		// The bulk update above does not touch the passed instance, which was read before the claim and may
+		// be stale: another handler could have partially processed and released this event (recording
+		// completed listeners and bumping the error count) between that read and this claim. Refresh it from
+		// the just-claimed row so the caller resumes from the current progress instead of re-running
+		// listeners already recorded as completed.
+		OutboxEvent claimed = sessionFactory.getCurrentSession().get(OutboxEvent.class, outboxEvent.getId());
+		outboxEvent.updateFrom(claimed);
 		return true;
 	}
 	
