@@ -1577,8 +1577,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		final Collection<Locale> locales = Collections.singletonList(locale == null ? Context.getLocale() : locale);
 
 		final List<Object> conceptIds;
-		// If a concept is supplied, we restrict things to only search the supplied concept. This saves a relatively
-		// expensive full text search.
+		// If a concept is supplied, skip the relatively expensive concept-name full-text search
 		if (searchDrugConceptNames && concept == null) {
 			SearchSession searchSession = searchSessionFactory.getSearchSession();
 			SearchScope<ConceptName> scope = searchSession.scope(ConceptName.class);

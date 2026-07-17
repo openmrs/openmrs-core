@@ -137,6 +137,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 
 		List<Drug> drugList = dao.getDrugs("ZEBRACONCEPT", concept, true, true, false, 0, 10);
 
+		assertEquals(1, drugList.size());
 		assertTrue(drugList.stream().noneMatch(drug -> "Placebo-X".equals(drug.getName())));
 	}
 
