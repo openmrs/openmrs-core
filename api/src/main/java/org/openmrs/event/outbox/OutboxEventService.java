@@ -121,7 +121,15 @@ public class OutboxEventService {
 		claimQuery.setParameter("now", new Date());
 
 		int updatedCount = claimQuery.executeUpdate();
-		return updatedCount == 1;
+		if (updatedCount != 1) {
+			return false;
+		}
+
+		// The bulk update above does not touch the passed (detached) instance, so mirror the claimed state
+		// onto it. Otherwise a later saveOrUpdate() would persist the stale PENDING status and un-claim the
+		// event mid-processing, letting another handler re-claim it and re-invoke not-yet-completed listeners.
+		outboxEvent.setStatus(OutboxEvent.Status.PROCESSING);
+		return true;
 	}
 	
 	@Transactional
