@@ -23,6 +23,7 @@ import org.openmrs.util.InputRequiredException;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -47,6 +48,11 @@ public class ServiceContextTest extends BaseContextSensitiveTest {
 	@AfterEach
 	public void tearDown() {
 		serviceContext.setUseSystemClassLoader(isUseSystemClassLoader);
+	}
+
+	@Test
+	public void isInstantiated_shouldReturnTrueWhenSingletonExists() {
+		assertTrue(ServiceContext.isInstantiated());
 	}
 
 	@Test
