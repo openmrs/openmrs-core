@@ -125,35 +125,31 @@ public class ServiceContextTest extends BaseContextSensitiveTest {
 	public void getService_shouldBlockUntilAnInProgressRefreshCompletes() throws Exception {
 		AtomicReference<Object> retrievedService = new AtomicReference<>();
 		AtomicReference<Throwable> thrown = new AtomicReference<>();
-		CountDownLatch lookupStarted = new CountDownLatch(1);
+		CountDownLatch lookupComplete = new CountDownLatch(1);
 
 		serviceContext.startRefreshingContext();
 
 		Thread lookup = new Thread(() -> {
-			lookupStarted.countDown();
 			try {
 				retrievedService.set(serviceContext.getService(PatientService.class));
 			} catch (Throwable t) {
 				thrown.set(t);
+			} finally {
+				lookupComplete.countDown();
 			}
 		});
 		lookup.start();
 
 		try {
-			// wait for the lookup thread to reach getService, then give it time to block
-			assertTrue(lookupStarted.await(5, TimeUnit.SECONDS));
-			Thread.sleep(500);
-
-			// the lookup must not have returned while the refresh is in progress
-			assertNull(retrievedService.get());
-			assertTrue(lookup.isAlive());
+			// the lookup must not complete while the refresh is in progress; a broken (non-blocking)
+			// implementation would return the service and count the latch down almost immediately
+			assertFalse(lookupComplete.await(500, TimeUnit.MILLISECONDS));
 		} finally {
 			serviceContext.doneRefreshingContext();
 		}
 
 		// once the refresh finishes, the blocked lookup should complete
-		lookup.join(5000);
-		assertFalse(lookup.isAlive());
+		assertTrue(lookupComplete.await(5, TimeUnit.SECONDS));
 		assertNull(thrown.get());
 		assertNotNull(retrievedService.get());
 	}
