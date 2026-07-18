@@ -90,7 +90,7 @@ public class ModuleFactory {
 	 * class.
 	 */
 	private static Daemon.CallerKey daemonCallerKey;
-	
+
 	/**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an error
 	 * occurred and/or module was not successfully loaded
