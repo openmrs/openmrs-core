@@ -9,6 +9,8 @@
  */
 package org.openmrs.util;
 
+import java.util.regex.Pattern;
+
 /**
  * Utility class for detecting the algorithm used to hash a password.
  * This class only identifies the hash format; it does not perform hashing, verification, or migration.
@@ -17,11 +19,11 @@ package org.openmrs.util;
  */
 public class PasswordHashDetector {
 
-	/**
-	 * Standard Argon2 encoded hash prefix as defined by the reference implementation.
-	 * Argon2 hashes use the format: $argon2[type]$v=[version]$m=[memory],t=[time],p=[parallelism]$[salt]$[hash]
-	 */
-	private static final String ARGON2_PREFIX = "$argon2";
+	private static final Pattern ARGON2_PATTERN = Pattern.compile("^\\$argon2(?:id|i|d)\\$.*");
+
+	private static final Pattern SHA_512_PATTERN = Pattern.compile("^[0-9a-f]{128}$");
+
+	private static final Pattern SHA_1_PATTERN = Pattern.compile("^[0-9a-f]{40}$");
 
 	private PasswordHashDetector() {
 	}
@@ -62,9 +64,7 @@ public class PasswordHashDetector {
 		if (hashedPassword == null || hashedPassword.trim().isEmpty()) {
 			return false;
 		}
-		String s = hashedPassword.trim();
-		// Match standard Argon2 encoded hashes: $argon2id$..., $argon2i$..., $argon2d$...
-		return s.matches("^\\$argon2(?:id|i|d)\\$.*");
+		return ARGON2_PATTERN.matcher(hashedPassword.trim()).matches();
 	}
 
 	/**
@@ -79,18 +79,15 @@ public class PasswordHashDetector {
 		}
 		String s = hashedPassword.trim();
 
-		// Argon2 encoded hashes start with $argon2id|$argon2i|$argon2d
-		if (s.matches("^\\$argon2(?:id|i|d)\\$.*")) {
+		if (ARGON2_PATTERN.matcher(s).matches()) {
 			return PasswordHashAlgorithm.ARGON2;
 		}
 
 		String lower = s.toLowerCase();
-		// SHA-512 is represented as 128 hex characters
-		if (lower.matches("^[0-9a-f]{128}$")) {
+		if (SHA_512_PATTERN.matcher(lower).matches()) {
 			return PasswordHashAlgorithm.SHA_512;
 		}
-		// SHA-1 is represented as 40 hex characters
-		if (lower.matches("^[0-9a-f]{40}$")) {
+		if (SHA_1_PATTERN.matcher(lower).matches()) {
 			return PasswordHashAlgorithm.SHA_1;
 		}
 
