@@ -29,12 +29,15 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.api.context.ServiceContext;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -43,6 +46,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link OpenmrsConfigurationFactory}.
@@ -281,6 +286,65 @@ class OpenmrsConfigurationFactoryTest {
 		LoggerConfig loggerConfig = configuration.getLoggerConfig(loggerName);
 		assertThat("No logger should have been configured from the global property when the session is closed",
 		    loggerConfig.getName(), not(equalTo(loggerName)));
+	}
+
+	/**
+	 * Regression test for TRUNK-6688. Reproduces the conditions of the re-entrant initialization path:
+	 * Log4j2 configuration is triggered from within {@code ServiceContext}'s static initializer, so a
+	 * session appears open but the {@code ServiceContext} singleton has not been created yet. In that
+	 * state {@code doOpenmrsCustomisations} must not try to read global properties, which triggers a
+	 * message logged using the {@code ServiceContext}'s logger.
+	 */
+	@Test
+	void doOpenmrsCustomisations_shouldNotForceServiceContextInitializationWhenNotYetAvailable() {
+		AbstractConfiguration configuration = new DefaultConfiguration();
+
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ServiceContext> serviceContextMock = mockStatic(ServiceContext.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			serviceContextMock.when(ServiceContext::isInstantiated).thenReturn(false);
+			configUtilMock.when(() -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+
+			OpenmrsConfigurationFactory.doOpenmrsCustomisations(configuration);
+
+			// The heart of the fix: we must not force ServiceContext creation from the logging path
+			configUtilMock.verify(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL), never());
+			contextMock.verify(Context::getAdministrationService, never());
+			contextMock.verify(() -> Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES), never());
+
+			// Customisations that do not depend on the context are still applied
+			assertThat(configuration.getAppender(OpenmrsConstants.MEMORY_APPENDER_NAME), notNullValue());
+		}
+	}
+
+	@Test
+	void doOpenmrsCustomisations_shouldApplyGlobalPropertyOverridesWhenServiceContextAvailable() {
+		AbstractConfiguration configuration = new DefaultConfiguration();
+		String loggerName = "org.openmrs.logging.test.factory.global";
+
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ServiceContext> serviceContextMock = mockStatic(ServiceContext.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			serviceContextMock.when(ServiceContext::isInstantiated).thenReturn(true);
+			configUtilMock.when(() -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(loggerName + ":warn");
+
+			OpenmrsConfigurationFactory.doOpenmrsCustomisations(configuration);
+
+			configUtilMock.verify(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL));
+			LoggerConfig loggerConfig = configuration.getLoggerConfig(loggerName);
+			assertThat(loggerConfig.getName(), equalTo(loggerName));
+			assertThat(loggerConfig.getLevel(), equalTo(Level.WARN));
+		}
 	}
 
 	@Test
