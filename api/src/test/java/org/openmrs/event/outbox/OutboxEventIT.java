@@ -12,8 +12,10 @@ package org.openmrs.event.outbox;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
@@ -62,6 +64,11 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 		outboxTaskSchedulerInitializer.schedule();
 	}
 
+	@AfterEach
+	public void tearDown() {
+		outboxTaskSchedulerInitializer.deleteScheduledTasks();
+	}
+
 	@Test
 	public void interceptAndSaveToOutbox_shouldSaveEventWhenListenerExists() throws InterruptedException {
 		// Arrange: A patient event is created, and the registry has a listener.
@@ -104,7 +111,7 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 		capturedEvents.remove(afterCommitEvent);
 
 		//Assert the ordering of captured outbox events is correct
-		assertThat(capturedEvents, contains(
+		assertThat(describeState(capturedEvents), capturedEvents, contains(
 		    allOf(hasProperty("method", is("onPatientCreated")),
 		        hasProperty("event", hasProperty("uuid", equalTo(event.getUuid())))),
 		    hasProperty("method", is("onPatientCreatedFailingFailed")),
@@ -171,8 +178,8 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 		assertThat(adminService.getGlobalProperty("eventPublished", "false"), equalTo("true"));
 
 		// Assert: The outbox table should have just one event
-		List<OutboxEvent> outboxEvents = (List<OutboxEvent>) sessionFactory.getCurrentSession()
-		        .createQuery("from OutboxEvent").list();
+		List<OutboxEvent> outboxEvents = sessionFactory.getCurrentSession()
+		        .createQuery("from OutboxEvent", OutboxEvent.class).list();
 
 		assertThat(outboxEvents,
 		    contains(
@@ -247,6 +254,24 @@ public class OutboxEventIT extends BaseContextSensitiveNonTransactionalTest {
 		public Object getNonSerializableObject() {
 			throw new IllegalStateException("This object is not serializable");
 		}
+	}
+
+	/**
+	 * Builds a snapshot of the captured events (in order) and the current outbox rows, attached as the
+	 * reason on the ordering assertion so a CI failure shows the actual asynchronous, timing-dependent
+	 * sequence.
+	 */
+	@SuppressWarnings("unchecked")
+	private String describeState(List<TestOutboxEventListener.TestEvent> capturedEvents) {
+		String captured = capturedEvents.stream().map(TestOutboxEventListener.TestEvent::getMethod)
+		        .collect(Collectors.joining(", "));
+		Context.clearSession();
+		String outbox = ((List<OutboxEvent>) sessionFactory.getCurrentSession().createQuery("from OutboxEvent order by id")
+		        .list()).stream()
+		        .map(e -> e.getEventType() + "[status=" + e.getStatus() + ", errorCount=" + e.getErrorCount()
+		                + ", completedListeners=" + e.getCompletedListeners() + "]")
+		        .collect(Collectors.joining("; "));
+		return "\nCaptured (in order): [" + captured + "]\nOutbox rows: [" + outbox + "]\n";
 	}
 
 	private void waitForCapturedEvents(int count) throws InterruptedException {
