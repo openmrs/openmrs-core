@@ -75,9 +75,7 @@ public final class Daemon {
 			    CALLER_KEY);
 		} catch (ClassNotFoundException e) {
 			// no web layer on the classpath; nothing to hand the key to
-		} catch (ReflectiveOperationException e) {
-			throw new IllegalStateException("Unable to provide the daemon caller key to WebDaemon", e);
-		}
+		} catch (ReflectiveOperationException e) {}
 	}
 
 	/**
