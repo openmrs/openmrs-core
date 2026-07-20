@@ -225,10 +225,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	public long getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
 		PersistentClass persistentClass = metadata.getEntityBinding(aClass.getName().split("_")[0]);
 		if (persistentClass == null) {
-			// The boot Metadata is captured once at startup, so it can fail to resolve an entity if it is
-			// ever consulted in an incomplete state (for example after a session factory rebuild). Treat
-			// the length as unknown (-1) instead of throwing: this method is called from validate() on
-			// every save, and validate() already skips the length check when it returns a negative value.
+			// Treat the length as unknown (-1) instead of throwing: this method is called from validate()
+			// on every save, and validate() skips the length check when the value is negative.
 			log.debug("Could not find a hibernate entity binding for {}; treating maximum length as unknown",
 			    aClass.getName());
 			return -1;
