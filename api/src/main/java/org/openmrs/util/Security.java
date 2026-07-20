@@ -65,7 +65,7 @@ public class Security {
 		if (hashedPassword == null || passwordToHash == null) {
 			throw new APIException("password.cannot.be.null", (Object[]) null);
 		}
-
+		
 		if (hashedPassword.startsWith("$argon2id$")) {
 			return getArgon2Encoder().matches(passwordToHash, hashedPassword);
 		}
@@ -77,24 +77,26 @@ public class Security {
 
 	/**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
-	 * OpenMRS's preferred algorithm is Argon2id.
+	 * OpenMRS's preferred algorithm is SHA-512. This method is used for activation key hashing
+	 * where deterministic, unsalted hashing is required.
 	 *
 	 * @param strToEncode string to encode
-	 * @return the Argon2id encryption of a given string
+	 * @return the SHA-512 hash of a given string
+	 * @since 1.5
 	 */
 	public static String encodeString(String strToEncode) throws APIException {
-		return getArgon2Encoder().encode(strToEncode);
+		return encodeString(strToEncode, SHA_512);
 	}
 
 	/**
-	 * This method will hash <code>strToEncode</code> using SHA-512 for deterministic hashing
-	 * (e.g., activation keys).
+	 * Encode a credential (password or secret answer) using Argon2id.
+	 * This is the credential encoding path, separate from the activation key path.
 	 *
-	 * @param strToEncode string to encode
-	 * @return the SHA-512 encryption of a given string
+	 * @param strToEncode credential string to encode
+	 * @return the Argon2id hash of the credential
 	 */
-	public static String encodeStringSHA512(String strToEncode) throws APIException {
-		return encodeString(strToEncode, SHA_512);
+	public static String encodeCredential(String strToEncode) throws APIException {
+		return getArgon2Encoder().encode(strToEncode);
 	}
 
 	/**

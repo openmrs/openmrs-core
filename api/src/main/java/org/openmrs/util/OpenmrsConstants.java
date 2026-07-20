@@ -434,7 +434,7 @@ public final class OpenmrsConstants {
 	 * adhere to
 	 */
 	public static final String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
-
+	
 	/**
 	 * Global property name for absolute color for patient graphs.
 	 */
@@ -858,7 +858,7 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_LOG_LOCATION, "",
 		        "A directory where the OpenMRS log file appender is stored. The log file name is 'openmrs.log'."));
-
+		
 		props.add(new GlobalProperty(GP_LOG_LAYOUT, DEFAULT_LOG_LAYOUT_PATTERN,
 		        "A log layout pattern which is used by the OpenMRS file appender."));
 		
@@ -927,7 +927,7 @@ public final class OpenmrsConstants {
 		        .add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",
 		                "Configure whether passwords must contain both upper and lower case characters",
 		                BooleanDatatype.class, null));
-
+		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
 		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",
 		        BooleanDatatype.class, null));

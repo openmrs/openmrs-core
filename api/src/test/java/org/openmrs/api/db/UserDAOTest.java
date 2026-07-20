@@ -213,7 +213,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.saveUser(userJoe, PASSWORD);
 
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String legacySha512Hash = Security.encodeStringSHA512(SECRET_ANSWER.toLowerCase() + lc.getSalt());
+		String legacySha512Hash = Security.encodeString(SECRET_ANSWER.toLowerCase() + lc.getSalt());
 		lc.setSecretAnswer(legacySha512Hash);
 		dao.updateLoginCredential(lc);
 
@@ -253,7 +253,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 		String token = "test-token-12345";
 		long time = System.currentTimeMillis() + 86400000;
-		String hashedKey = Security.encodeStringSHA512(token);
+		String hashedKey = Security.encodeString(token);
 		String activationKey = hashedKey + ":" + time;
 		lc.setActivationKey(activationKey);
 		dao.setUserActivationKey(lc);
