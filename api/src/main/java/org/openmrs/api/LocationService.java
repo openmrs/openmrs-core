@@ -565,4 +565,13 @@ public interface LocationService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
 	LocationAttributeType getLocationAttributeTypeByName(String locationAttributeTypeName);
+
+	/**
+	 * Gets all non-retired locations that support visits.
+	 *
+	 * @return a list of locations that support visits
+	 * @since 3.0.0
+	 */
+	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	public List<Location> getAllLocationsThatSupportVisits() throws APIException;
 }

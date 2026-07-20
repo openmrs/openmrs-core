@@ -200,4 +200,11 @@ public interface LocationDAO {
 	 * @return list of locations
 	 */
 	List<Location> getLocationsHavingAllTags(List<LocationTag> locationTagIdList);
+
+	/**
+	 * Gets all non-retired locations that support visits.
+	 *
+	 * @return a list of locations that support visits
+	 */
+	public List<Location> getAllLocationsThatSupportVisits();
 }

@@ -141,6 +141,44 @@
 			<column name="description" type="varchar(255)"/>
 		</addColumn>
 	</changeSet>
+
+	<changeSet id="TRUNK-5466-2026-07-07-01" author="mujuzi">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location" columnName="supports_visits"/>
+			</not>
+		</preConditions>
+		<comment>Adds the supports_visits column to the location table. Existing and new locations default to false.</comment>
+		<addColumn tableName="location">
+			<column name="supports_visits" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5466-2026-07-07-02" author="mujuzi">
+		<preConditions onFail="MARK_RAN">
+			<and>
+				<columnExists tableName="location" columnName="supports_visits"/>
+				<tableExists tableName="location_tag_map"/>
+				<tableExists tableName="location_tag"/>
+			</and>
+		</preConditions>
+		<comment>
+			Migrates existing locations tagged with "Visit Location" to support visits by setting supports_visits = true.
+		</comment>
+		<sql>
+			UPDATE location
+			SET supports_visits = TRUE
+			WHERE location_id IN (
+				SELECT ltm.location_id
+				FROM location_tag_map ltm
+						 INNER JOIN location_tag lt
+									ON lt.location_tag_id = ltm.location_tag_id
+				WHERE lt.name = 'Visit Location'
+			);
+		</sql>
+	</changeSet>
 	
 </databaseChangeLog>
 

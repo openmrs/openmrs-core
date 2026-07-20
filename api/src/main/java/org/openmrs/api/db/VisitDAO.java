@@ -171,4 +171,16 @@ public interface VisitDAO {
 	 */
 	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes, Date maximumStartDate);
 
+	/**
+	 * Gets all candidate visits for the specified patient that are active at the given date and time.
+	 * <p>
+	 * <strong>Should</strong> return all unvoided visits whose time span includes the specified visit
+	 * time, ordered by most recent start date first.
+	 *
+	 * @param patient the patient whose candidate visits are to be retrieved
+	 * @param visitTime the date and time that must fall within the visit's active time span
+	 * @return a list of {@link Visit} objects ordered by descending start date
+	 */
+	public List<Visit> getSuitableVisits(Patient patient, Date visitTime);
+
 }
