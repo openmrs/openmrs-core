@@ -48,7 +48,7 @@ public final class Daemon {
 	private static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
 
 	/**
-	 * Inner class passed to expected callers allowed to create DaemonThreads.
+	 * Inner class passed to expected callers that are allowed to act with daemon permissions.
 	 *
 	 * @since 3.0.0, 2.9.0, 2.8.9
 	 */
@@ -68,6 +68,16 @@ public final class Daemon {
 		HibernateContextDAO.setDaemonCallerKey(CALLER_KEY);
 		ModuleFactory.setDaemonCallerKey(CALLER_KEY);
 		JobRequestHandlerAdapter.setDaemonCallerKey(CALLER_KEY);
+		// WebDaemon lives in the web module, which the api module cannot reference at compile time, so
+		// hand it the key reflectively.
+		try {
+			Class.forName("org.openmrs.web.WebDaemon").getMethod("setDaemonCallerKey", CallerKey.class).invoke(null,
+			    CALLER_KEY);
+		} catch (ClassNotFoundException e) {
+			// no web layer on the classpath; nothing to hand the key to
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException("Unable to provide the daemon caller key to WebDaemon", e);
+		}
 	}
 
 	/**
@@ -274,6 +284,23 @@ public final class Daemon {
 	}
 
 	/**
+	 * Runs the given task on a new daemon thread, authorized by a {@link CallerKey}. This exists
+	 * strictly for internal use by trusted core entry points (such as {@code WebDaemon} startup) that
+	 * must launch daemon work from a non-daemon thread.
+	 *
+	 * @param runnable what to run in a new daemon thread
+	 * @param callerKey the {@link CallerKey} proving the caller is a trusted daemon entry point
+	 * @return a future that completes when the task is done
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	@SuppressWarnings({ "squid:S1217", "unused" })
+	public static Future<?> runNewDaemonTask(final Runnable runnable, CallerKey callerKey) {
+		requireDaemonCaller(callerKey, "runNewDaemonTask can only be called by an authorized daemon entry point");
+
+		return runInDaemonThreadInternal(runnable);
+	}
+
+	/**
 	 * @return true if the current thread was started by this class and so is a daemon thread that has
 	 *         all privileges
 	 * @see Context#hasPrivilege(String)
@@ -281,31 +308,6 @@ public final class Daemon {
 	public static boolean isDaemonThread() {
 		Boolean b = isDaemonThread.get();
 		return b != null && b;
-	}
-
-	/**
-	 * Runs the given task on the current thread as though it were a daemon thread, i.e. with the
-	 * daemon-thread flag set so that {@link #isDaemonThread()} returns {@code true} for the duration of
-	 * the task. This lets synchronous daemon entry points (such as {@code WebDaemon} startup) obtain
-	 * daemon privileges without spawning a dedicated daemon thread, and without
-	 * {@link #isDaemonThread()} having to inspect the call stack. The previous flag value is restored
-	 * when the task completes.
-	 *
-	 * @param runnable the task to run in a daemon context
-	 * @since 3.0.0, 2.9.0, 2.8.9
-	 */
-	public static void runInDaemonContext(Runnable runnable) {
-		Boolean previous = isDaemonThread.get();
-		isDaemonThread.set(Boolean.TRUE);
-		try {
-			runnable.run();
-		} finally {
-			if (previous == null) {
-				isDaemonThread.remove();
-			} else {
-				isDaemonThread.set(previous);
-			}
-		}
 	}
 
 	/**

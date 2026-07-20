@@ -33,10 +33,10 @@ public class JobRequestHandlerAdapter implements org.jobrunr.jobs.lambdas.JobReq
 	private ApplicationContext applicationContext;
 
 	/**
-	 * The capability that proves to {@link Daemon} that user creation is being requested from this
-	 * class.
+	 * The capability that proves to {@link Daemon} that this class is allowed to act with daemon
+	 * permissions.
 	 */
-	private static Daemon.CallerKey daemonCallerKey;
+	private static volatile Daemon.CallerKey daemonCallerKey;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {

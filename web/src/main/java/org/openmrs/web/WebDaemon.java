@@ -27,6 +27,12 @@ import org.openmrs.util.InputRequiredException;
  */
 public final class WebDaemon {
 
+	/**
+	 * The capability that proves to {@link Daemon} that this class is allowed to act with daemon
+	 * permissions.
+	 */
+	private static volatile Daemon.CallerKey daemonCallerKey;
+
 	private WebDaemon() {
 	};
 
@@ -38,19 +44,18 @@ public final class WebDaemon {
 	public static void startOpenmrs(final ServletContext servletContext)
 	        throws DatabaseUpdateException, InputRequiredException {
 
-		// runNewDaemonTask may only be called from a daemon thread. Startup runs on the servlet
-		// container's thread, so mark it as a daemon context for the duration of the call
-		final Future<?>[] startup = new Future<?>[1];
-		Daemon.runInDaemonContext(() -> startup[0] = Daemon.runNewDaemonTask(() -> {
+		// Startup runs on the servlet container's thread, which is not a daemon thread, so use the
+		// CallerKey-authorized overload to launch the work on a daemon thread.
+		Future<?> startup = Daemon.runNewDaemonTask(() -> {
 			try {
 				Listener.startOpenmrs(servletContext);
 			} catch (ServletException e) {
 				throw new ModuleException("Unable to start OpenMRS. Error thrown was: " + e.getMessage(), e);
 			}
-		}));
+		}, daemonCallerKey());
 
 		try {
-			startup[0].get();
+			startup.get();
 		} catch (InterruptedException ignored) {} catch (ExecutionException e) {
 			Throwable cause = e.getCause();
 			if (cause instanceof DatabaseUpdateException) {
@@ -63,5 +68,26 @@ public final class WebDaemon {
 				throw (ModuleException) cause;
 			}
 		}
+	}
+
+	/**
+	 * Receives the {@link Daemon} caller key. Called only by {@link Daemon} during its initialization.
+	 *
+	 * @param callerKey the caller key issued by {@link Daemon}
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public static void setDaemonCallerKey(Daemon.CallerKey callerKey) {
+		if (callerKey != null && daemonCallerKey == null) {
+			daemonCallerKey = callerKey;
+		}
+	}
+
+	private static Daemon.CallerKey daemonCallerKey() {
+		if (daemonCallerKey == null) {
+			// Guarantee Daemon has initialized and therefore handed us the key, regardless of the order in
+			// which the two classes were first loaded.
+			Daemon.ensureInitialized();
+		}
+		return daemonCallerKey;
 	}
 }

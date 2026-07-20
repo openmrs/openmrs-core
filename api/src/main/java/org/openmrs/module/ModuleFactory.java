@@ -86,10 +86,10 @@ public class ModuleFactory {
 	private static final Set<String> actualStartupOrder = new LinkedHashSet<>();
 
 	/**
-	 * The capability that proves to {@link Daemon} that user creation is being requested from this
-	 * class.
+	 * The capability that proves to {@link Daemon} that this class is allowed to act with daemon
+	 * permissions.
 	 */
-	private static Daemon.CallerKey daemonCallerKey;
+	private static volatile Daemon.CallerKey daemonCallerKey;
 
 	/**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an error

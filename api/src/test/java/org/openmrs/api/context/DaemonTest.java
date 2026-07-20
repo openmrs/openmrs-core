@@ -138,6 +138,11 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		}
 	}
 
+	@Test
+	public void runNewDaemonTask_shouldThrowWhenCalledWithoutCallerKey() {
+		assertThrows(APIException.class, () -> Daemon.runNewDaemonTask(() -> {}, null));
+	}
+
 	/**
 	 * Small task that just marks itself when it gets run
 	 */

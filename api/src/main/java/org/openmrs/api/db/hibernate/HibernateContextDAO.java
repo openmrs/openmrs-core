@@ -68,10 +68,10 @@ public class HibernateContextDAO implements ContextDAO {
 	private static final Long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MILLISECONDS.convert(5L, TimeUnit.MINUTES);
 
 	/**
-	 * The capability that proves to {@link Daemon} that user creation is being requested from this
-	 * class.
+	 * The capability that proves to {@link Daemon} that this class is allowed to act with daemon
+	 * permissions.
 	 */
-	private static Daemon.CallerKey daemonCallerKey;
+	private static volatile Daemon.CallerKey daemonCallerKey;
 
 	/**
 	 * Hibernate session factory
