@@ -158,9 +158,9 @@ public class StartupPerformanceIT {
 		@Override
 		public void accept(OutputFrame outputFrame) {
 			startTime.compareAndSet(0, System.nanoTime());
-			if (!outputFrame.getUtf8String().startsWith("ERROR") || !outputFrame.getUtf8String().startsWith("WARN")
-			        || !outputFrame.getUtf8String().startsWith("INFO") || !outputFrame.getUtf8String().startsWith("DEBUG")
-			        || !outputFrame.getUtf8String().startsWith("TRACE")) {
+			if (!(outputFrame.getUtf8String().startsWith("ERROR") || outputFrame.getUtf8String().startsWith("WARN")
+			        || outputFrame.getUtf8String().startsWith("INFO") || outputFrame.getUtf8String().startsWith("DEBUG")
+			        || outputFrame.getUtf8String().startsWith("TRACE"))) {
 				return;
 			}
 			super.accept(outputFrame);
