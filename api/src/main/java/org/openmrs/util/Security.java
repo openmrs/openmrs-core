@@ -208,27 +208,32 @@ public class Security {
 		return generateDeterministicHash(input, iterations);
 	}
 
-	    /**
-     * Validates a password against a user's bootstrap password.
-     * 
-     * @param user the user
-     * @param password the password to validate
-     * @return true if the password matches the user's bootstrap password
-     * @since 2.8.8
-     */
-    public static boolean validateBootstrapPassword(org.openmrs.User user, String password) {
-        if (user == null || password == null) {
-            return false;
-        }
-        
-        try {
-            String expected = generateBootstrapPassword(user);
-            return expected.equals(password);
-        } catch (APIException e) {
-            log.debug("Failed to validate bootstrap password: {}", e.getMessage());
-            return false;
-        }
-    }
+	/**
+	 * Validates a password against a user's bootstrap password.
+	 * 
+	 * @param user the user
+	 * @param password the password to validate
+	 * @return true if the password matches the user's bootstrap password and the user has not been forced to change
+	 * @since 2.8.8
+	 */
+	public static boolean validateBootstrapPassword(org.openmrs.User user, String password) {
+		if (user == null || password == null) {
+			return false;
+		}
+		
+		// If the user has already been forced to change, the bootstrap password is no longer valid
+		if (isBootstrapPasswordExpired(user)) {
+			return false;
+		}
+		
+		try {
+			String expected = generateBootstrapPassword(user);
+			return expected.equals(password);
+		} catch (APIException e) {
+			log.debug("Failed to validate bootstrap password: {}", e.getMessage());
+			return false;
+		}
+	}
 
 	/**
      * Checks if a user's bootstrap password has expired.
