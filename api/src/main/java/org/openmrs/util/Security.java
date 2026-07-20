@@ -135,32 +135,17 @@ public class Security {
     }
 
 	    /**
-     * Gets the system salt used for bootstrap password generation.
+     * Gets the pepper used for bootstrap password generation.
      * 
-     * The salt is read from the global property "security.bootstrap.systemSalt".
-     * If not set, falls back to system property "openmrs.bootstrap.systemSalt".
+     *The pepper is read from the runtime property "openmrs.bootstrap.pepper".
      * 
-     * @return the system salt, or null if not configured
+     * @return the pepper, or null if not configured
      * @since 2.8.8
      */
-    public static String getBootstrapSystemSalt() {
-        String salt = null;
-        
-        try {
-            // Try to get from global property
-            salt = Context.getAdministrationService()
-                .getGlobalProperty(OpenmrsConstants.GP_BOOTSTRAP_SYSTEM_SALT);
-        } catch (Exception e) {
-            log.debug("Could not read bootstrap system salt from global properties", e);
-        }
-        
-        // Fallback to system property
-        if (!StringUtils.hasText(salt)) {
-            salt = System.getProperty("openmrs.bootstrap.systemSalt");
-        }
-        
-        return salt;
-    }
+		public static String getBootstrapPepper() {
+		return Context.getRuntimeProperties()
+			.getProperty("openmrs.bootstrap.pepper");
+	}
 
 	/**
      * Gets the configured number of PBKDF2 iterations for bootstrap password generation.
@@ -194,34 +179,34 @@ public class Security {
 	    /**
      * Generates a deterministic bootstrap password for a user.
      * 
-     * The password is derived from the user's UUID and system salt using PBKDF2.
+     * The password is derived from the user's UUID and pepper using PBKDF2.
      * Same input always produces the same output (deterministic).
      * 
      * @param user the user
      * @return the generated bootstrap password
-     * @throws APIException if user is null, has no UUID, or system salt is not configured
+     * @throws APIException if user is null, has no UUID, or pepper is not configured
      * @since 2.8.8
      */
-    public static String generateBootstrapPassword(org.openmrs.User user) {
-        if (user == null) {
-            throw new APIException("bootstrap.user.null", (Object[]) null);
-        }
-        
-        String uuid = user.getUuid();
-        if (!StringUtils.hasText(uuid)) {
-            throw new APIException("bootstrap.user.uuid.missing", (Object[]) null);
-        }
-        
-        String salt = getBootstrapSystemSalt();
-        if (!StringUtils.hasText(salt)) {
-            throw new APIException("bootstrap.system.salt.missing", (Object[]) null);
-        }
-        
-        String input = uuid + salt;
-        int iterations = getBootstrapIterations();
-        
-        return generateDeterministicHash(input, iterations);
-    }
+		public static String generateBootstrapPassword(org.openmrs.User user) {
+		if (user == null) {
+			throw new APIException("bootstrap.user.null", (Object[]) null);
+		}
+		
+		String uuid = user.getUuid();
+		if (!StringUtils.hasText(uuid)) {
+			throw new APIException("bootstrap.user.uuid.missing", (Object[]) null);
+		}
+		
+		String pepper = getBootstrapPepper();
+		if (!StringUtils.hasText(pepper)) {
+			throw new APIException("bootstrap.pepper.missing", (Object[]) null);
+		}
+		
+		String input = uuid + pepper;
+		int iterations = getBootstrapIterations();
+		
+		return generateDeterministicHash(input, iterations);
+	}
 
 	    /**
      * Validates a password against a user's bootstrap password.

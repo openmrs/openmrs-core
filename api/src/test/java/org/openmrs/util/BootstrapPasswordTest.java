@@ -2,10 +2,13 @@ package org.openmrs.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Properties;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 
 public class BootstrapPasswordTest {
     
@@ -14,7 +17,10 @@ public class BootstrapPasswordTest {
     
     @BeforeEach
     public void setUp() {
-        System.setProperty("openmrs.bootstrap.systemSalt", testSalt);
+        // Set runtime property for testing
+        Properties props = new Properties();
+        props.setProperty("openmrs.bootstrap.pepper", "test-pepper-123");
+        Context.setRuntimeProperties(props);
         
         user = new User();
         user.setUuid("123e4567-e89b-12d3-a456-426614174000");
@@ -89,17 +95,26 @@ public class BootstrapPasswordTest {
     }
     
     @Test
-public void testGenerateBootstrapPassword_shouldThrowExceptionForUserWithoutUuid() {
-    User userNoUuid = new User();
-    userNoUuid.setUuid(null); // <-- Explicitly clear the UUID
-    assertThrows(APIException.class, () -> Security.generateBootstrapPassword(userNoUuid));
-}
+    public void testGenerateBootstrapPassword_shouldThrowExceptionForUserWithoutUuid() {
+        User userNoUuid = new User();
+        userNoUuid.setUuid(null); // <-- Explicitly clear the UUID
+        assertThrows(APIException.class, () -> Security.generateBootstrapPassword(userNoUuid));
+    }
     
     @Test
-    public void testGenerateBootstrapPassword_shouldThrowExceptionWhenSystemSaltMissing() {
-        System.clearProperty("openmrs.bootstrap.systemSalt");
-        // Also ensure global property is not set (would require mocking Context)
-        assertThrows(APIException.class, () -> Security.generateBootstrapPassword(user));
+    public void testGenerateBootstrapPassword_shouldThrowExceptionWhenPepperMissing() {
+        // Save original runtime properties
+        Properties originalProps = Context.getRuntimeProperties();
+        try {
+            // Set empty runtime properties
+            Properties emptyProps = new Properties();
+            Context.setRuntimeProperties(emptyProps);
+            
+            assertThrows(APIException.class, () -> Security.generateBootstrapPassword(user));
+        } finally {
+            // Restore original runtime properties
+            Context.setRuntimeProperties(originalProps);
+        }
     }
     
     @Test
