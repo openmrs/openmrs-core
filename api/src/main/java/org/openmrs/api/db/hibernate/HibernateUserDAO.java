@@ -152,7 +152,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public LoginCredential getLoginCredentialByActivationKey(String activationKey) {
-		String key = Security.encodeString(activationKey);
+		String key = Security.encodeStringSHA512(activationKey);
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<LoginCredential> cq = cb.createQuery(LoginCredential.class);
@@ -477,15 +477,26 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public boolean isSecretAnswer(User u, String answer) throws DAOException {
-		
+
 		if (StringUtils.isEmpty(answer)) {
 			return false;
 		}
-		
+
 		LoginCredential credentials = getLoginCredential(u);
 		String answerOnRecord = credentials.getSecretAnswer();
-		String hashedAnswer = Security.encodeString(answer.toLowerCase() + credentials.getSalt());
-		return (hashedAnswer.equals(answerOnRecord));
+		if (StringUtils.isEmpty(answerOnRecord)) {
+			return false;
+		}
+
+		boolean matches = Security.hashMatches(answerOnRecord, answer.toLowerCase() + credentials.getSalt());
+
+		if (matches && !answerOnRecord.startsWith("$argon2id$")) {
+			String rehashedAnswer = Security.encodeString(answer.toLowerCase() + credentials.getSalt());
+			credentials.setSecretAnswer(rehashedAnswer);
+			updateLoginCredential(credentials);
+		}
+
+		return matches;
 	}
 	
 	/**

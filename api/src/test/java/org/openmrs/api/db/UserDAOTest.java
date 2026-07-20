@@ -112,13 +112,12 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
-		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER), "answer should be set");
 		dao.changePassword(userJoe, "Openmr6zz");
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should not have changed");
-		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER), "answer should not have changed");
 	}
 	
 	@Test
@@ -126,14 +125,13 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.saveUser(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
-		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER), "answer should be set");
 		userJoe.setUserProperty("foo", "bar");
 		dao.saveUser(userJoe, PASSWORD);
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should not have changed");
-		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER), "answer should not have changed");
 	}
 
 	private static class DisallowedCaller {
@@ -163,14 +161,13 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
-		assertEquals( hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER), "answer should be set");
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
 		dao.changePassword(PASSWORD, PASSWORD + "foo");
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should not have changed");
-		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER), "answer should not have changed");
 	}
 	
 	@Test
@@ -178,14 +175,14 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
-		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER), "answer should be set");
+		String secretAnswerHashBefore = lc.getSecretAnswer();
 		userJoe.setUserProperty("foo", "bar");
 		dao.changeHashedPassword(userJoe, "VakesJkw1", Security.getRandomToken());
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should not have changed");
-		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
+		assertEquals(secretAnswerHashBefore, lc.getSecretAnswer(), "answer hash should not have changed");
 	}
 	
 	@Test
@@ -203,4 +200,67 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	@Test
+	public void changeQuestionAnswer_shouldStoreNewAnswerAsArgon2id() {
+		dao.saveUser(userJoe, PASSWORD);
+		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+		LoginCredential lc = dao.getLoginCredential(userJoe);
+		assertTrue(lc.getSecretAnswer().startsWith("$argon2id$"), "new secret answer should be stored as Argon2id");
+	}
+
+	@Test
+	public void isSecretAnswer_shouldUpgradeLegacyHashToArgon2id() {
+		dao.saveUser(userJoe, PASSWORD);
+
+		LoginCredential lc = dao.getLoginCredential(userJoe);
+		String legacySha512Hash = Security.encodeStringSHA512(SECRET_ANSWER.toLowerCase() + lc.getSalt());
+		lc.setSecretAnswer(legacySha512Hash);
+		dao.updateLoginCredential(lc);
+
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER), "legacy hash should still verify");
+
+		lc = dao.getLoginCredential(userJoe);
+		assertTrue(lc.getSecretAnswer().startsWith("$argon2id$"), "legacy hash should be upgraded to Argon2id after verification");
+	}
+
+	@Test
+	public void isSecretAnswer_shouldUpgradeLegacySha1HashToArgon2id() throws Exception {
+		dao.saveUser(userJoe, PASSWORD);
+
+		LoginCredential lc = dao.getLoginCredential(userJoe);
+		String input = SECRET_ANSWER.toLowerCase() + lc.getSalt();
+		java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-1");
+		byte[] digest = md.digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+		StringBuilder sb = new StringBuilder();
+		for (byte b : digest) {
+			sb.append(String.format("%02x", b));
+		}
+		String legacySha1Hash = sb.toString();
+		lc.setSecretAnswer(legacySha1Hash);
+		dao.updateLoginCredential(lc);
+
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER), "legacy SHA-1 hash should still verify");
+
+		lc = dao.getLoginCredential(userJoe);
+		assertTrue(lc.getSecretAnswer().startsWith("$argon2id$"), "legacy SHA-1 hash should be upgraded to Argon2id after verification");
+	}
+
+	@Test
+	public void setUserActivationKey_shouldStillWorkAfterSecretAnswerMigration() {
+		dao.saveUser(userJoe, PASSWORD);
+		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+
+		LoginCredential lc = dao.getLoginCredential(userJoe);
+		String token = "test-token-12345";
+		long time = System.currentTimeMillis() + 86400000;
+		String hashedKey = Security.encodeStringSHA512(token);
+		String activationKey = hashedKey + ":" + time;
+		lc.setActivationKey(activationKey);
+		dao.setUserActivationKey(lc);
+
+		String storedKey = lc.getActivationKey();
+		assertNotNull(storedKey, "activation key should be stored");
+		assertTrue(storedKey.startsWith(hashedKey), "activation key should use SHA-512 hashing");
+	}
+
 }

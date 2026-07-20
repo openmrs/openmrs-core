@@ -29,9 +29,9 @@ public class SecurityTest {
 	 * @see Security#encodeString(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsTo128Characters() {
+	public void encodeString_shouldEncodeStringsToArgon2id() {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
-		assertEquals(HASH_LENGTH, hash.length());
+		assertTrue(hash.startsWith("$argon2id$"));
 	}
 	
 	/**
@@ -40,7 +40,26 @@ public class SecurityTest {
 	@Test
 	public void encodeString_shouldEncodeStringsToXCharactersWithXCharactersSalt() {
 		String hash = Security.encodeString("test" + Security.getRandomToken());
+		assertTrue(hash.startsWith("$argon2id$"));
+	}
+	
+	/**
+	 * @see Security#encodeStringSHA512(String)
+	 */
+	@Test
+	public void encodeStringSHA512_shouldEncodeStringsTo128Characters() {
+		String hash = Security.encodeStringSHA512("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
 		assertEquals(HASH_LENGTH, hash.length());
+	}
+	
+	/**
+	 * @see Security#hashMatches(String,String)
+	 */
+	@Test
+	public void hashMatches_shouldMatchArgon2idHashedStrings() {
+		String password = "testPassword123";
+		String hash = Security.encodeString(password);
+		assertTrue(Security.hashMatches(hash, password));
 	}
 	
 	/**

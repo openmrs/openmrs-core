@@ -737,7 +737,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public User setUserActivationKey(User user) throws MessageException {
 		String token = RandomStringUtils.randomAlphanumeric(20);
 		long time = System.currentTimeMillis() + getValidTime();
-		String hashedKey = Security.encodeString(token);
+		String hashedKey = Security.encodeStringSHA512(token);
 		String activationKey = hashedKey + ":" + time;
 		LoginCredential credentials = dao.getLoginCredential(user);
 		credentials.setActivationKey(activationKey);

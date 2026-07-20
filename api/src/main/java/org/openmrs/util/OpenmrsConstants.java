@@ -434,7 +434,7 @@ public final class OpenmrsConstants {
 	 * adhere to
 	 */
 	public static final String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
-	
+
 	/**
 	 * Global property name for absolute color for patient graphs.
 	 */
@@ -559,6 +559,31 @@ public final class OpenmrsConstants {
 	
 	public static final String ENCRYPTION_KEY_DEFAULT = "dTfyELRrAICGDwzjHDjuhw==";
 	
+	/**
+	 * Runtime property name for Argon2 memory cost in KB
+	 */
+	public static final String ARGON2_MEMORY_RUNTIME_PROPERTY = "security.argon2.memory";
+
+	/**
+	 * Runtime property name for Argon2 parallelism factor
+	 */
+	public static final String ARGON2_PARALLELISM_RUNTIME_PROPERTY = "security.argon2.parallelism";
+
+	/**
+	 * Runtime property name for Argon2 iterations
+	 */
+	public static final String ARGON2_ITERATIONS_RUNTIME_PROPERTY = "security.argon2.iterations";
+
+	/**
+	 * Runtime property name for Argon2 hash length in bytes
+	 */
+	public static final String ARGON2_HASH_LENGTH_RUNTIME_PROPERTY = "security.argon2.hashLength";
+
+	/**
+	 * Runtime property name for Argon2 salt length in bytes
+	 */
+	public static final String ARGON2_SALT_LENGTH_RUNTIME_PROPERTY = "security.argon2.saltLength";
+
 	/**
 	 * Global property name for the visit type(s) to automatically close
 	 */
@@ -833,8 +858,8 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_LOG_LOCATION, "",
 		        "A directory where the OpenMRS log file appender is stored. The log file name is 'openmrs.log'."));
-		
-		props.add(new GlobalProperty(GP_LOG_LAYOUT, "%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n",
+
+		props.add(new GlobalProperty(GP_LOG_LAYOUT, DEFAULT_LOG_LAYOUT_PATTERN,
 		        "A log layout pattern which is used by the OpenMRS file appender."));
 		
 		props
@@ -902,7 +927,7 @@ public final class OpenmrsConstants {
 		        .add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",
 		                "Configure whether passwords must contain both upper and lower case characters",
 		                BooleanDatatype.class, null));
-		
+
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
 		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",
 		        BooleanDatatype.class, null));
@@ -1269,8 +1294,15 @@ public final class OpenmrsConstants {
 	public static final String GP_LOG_LAYOUT = "log.layout";
 	
 	/**
-	 * It specifies a default name of the OpenMRS file appender.
-	 * .
+	 * This is the default logging pattern we use in OpenMRS
+	 *
+	 * @since 2.9.0, 2.8.7
+	 */
+	public static final String DEFAULT_LOG_LAYOUT_PATTERN = "%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n";
+
+	/**
+	 * It specifies a default name of the OpenMRS file appender. .
+	 *
 	 * @since 1.9.2
 	 */
 	public static final String LOG_OPENMRS_FILE_APPENDER = "OPENMRS FILE APPENDER";

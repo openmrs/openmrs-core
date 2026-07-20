@@ -51,7 +51,7 @@ public class EncryptSecretAnswersChangeSet implements CustomTaskChange {
 			while (rs.next()) {
 				String answer = rs.getString("secret_answer");
 				String salt = rs.getString("salt");
-				String encryptedAnswer = Security.encodeString(answer.toLowerCase() + salt);
+				String encryptedAnswer = Security.encodeStringSHA512(answer.toLowerCase() + salt);
 				
 				pStmt.setString(1, encryptedAnswer);
 				pStmt.setInt(2, rs.getInt("user_id"));
