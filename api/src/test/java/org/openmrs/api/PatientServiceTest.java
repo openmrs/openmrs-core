@@ -3001,11 +3001,55 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(notPreferred.getIdentifiers().size() - 1, audit.getPersonMergeLogData().getCreatedIdentifiers().size());
 	}
 
+	/**
+	 * The privileges the merge workflow legitimately requires of the merging user for the data handled
+	 * by these tests. Deliberately absent are Get Allergies and Get Patient Cohorts:
+	 * {@code mergePatients} reads both patients' allergies on the merging user's behalf (under a proxy
+	 * privilege in {@code mergeAllergies}), and voiding the losing patient reads its cohort memberships
+	 * the same way ({@code CohortServiceImpl.notifyPatientVoided}), so neither internal read may demand
+	 * its privilege from the merging user. Running every merge with this privilege set keeps both
+	 * covered. (The metadata read privileges - visit attribute types, global properties, concepts,
+	 * locations, patients - are here because saving the moved data triggers validators and change
+	 * checks that read that metadata through the service proxies.)
+	 */
+	private static final String[] MERGE_PRIVILEGES = { PrivilegeConstants.EDIT_PATIENTS, PrivilegeConstants.DELETE_PATIENTS,
+	        PrivilegeConstants.EDIT_PERSONS, PrivilegeConstants.GET_PATIENTS, PrivilegeConstants.GET_CONCEPTS,
+	        PrivilegeConstants.GET_GLOBAL_PROPERTIES, PrivilegeConstants.GET_LOCATIONS, PrivilegeConstants.GET_ORDERS,
+	        PrivilegeConstants.GET_VISITS, PrivilegeConstants.EDIT_VISITS, PrivilegeConstants.GET_VISIT_ATTRIBUTE_TYPES,
+	        PrivilegeConstants.GET_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS, PrivilegeConstants.GET_PATIENT_PROGRAMS,
+	        PrivilegeConstants.EDIT_PATIENT_PROGRAMS, PrivilegeConstants.GET_RELATIONSHIPS,
+	        PrivilegeConstants.EDIT_RELATIONSHIPS, PrivilegeConstants.DELETE_RELATIONSHIPS, PrivilegeConstants.GET_OBS,
+	        PrivilegeConstants.EDIT_OBS, PrivilegeConstants.GET_CONDITIONS, PrivilegeConstants.EDIT_CONDITIONS,
+	        PrivilegeConstants.EDIT_ALLERGIES, PrivilegeConstants.GET_MEDICATION_DISPENSE,
+	        PrivilegeConstants.EDIT_MEDICATION_DISPENSE, PrivilegeConstants.GET_USERS, PrivilegeConstants.EDIT_USERS };
+
 	private PersonMergeLog mergeAndRetrieveAudit(Patient preferred, Patient notPreferred) throws SerializationException {
-		patientService.mergePatients(preferred, notPreferred);
+		mergePatientsAsNonSuperUser(preferred, notPreferred);
 		List<PersonMergeLog> result = personService.getAllPersonMergeLogs(true);
 		assertTrue(result.size() > 0, "person merge was not audited");
 		return result.get(0);
+	}
+
+	/**
+	 * Runs the merge as a user who holds only {@link #MERGE_PRIVILEGES}, so the merge workflow tests
+	 * fail if any internal step starts demanding a privilege a merging user should not need.
+	 */
+	private void mergePatientsAsNonSuperUser(Patient preferred, Patient notPreferred) throws SerializationException {
+		User user = Context.getUserService().getUserByUsername("butch");
+		assertNotNull(user);
+		Context.becomeUser(user.getSystemId());
+		for (String privilege : MERGE_PRIVILEGES) {
+			Context.addProxyPrivilege(privilege);
+		}
+		try {
+			patientService.mergePatients(preferred, notPreferred);
+		} finally {
+			for (String privilege : MERGE_PRIVILEGES) {
+				Context.removeProxyPrivilege(privilege);
+			}
+			// restore the super user; the tests run their setup and verification with full privileges
+			authenticate();
+		}
 	}
 
 	private boolean isValueInList(String value, List<String> list) {
