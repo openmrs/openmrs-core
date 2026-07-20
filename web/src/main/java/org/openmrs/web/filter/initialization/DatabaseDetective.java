@@ -73,7 +73,7 @@ public class DatabaseDetective {
 			// already-configured deployment during a database outage, so only a genuinely
 			// unconfigured instance (no connection URL) counts as empty.
 			String url = props.getProperty(CONNECTION_URL);
-			return url == null || url.trim().isEmpty();
+			return url == null || url.isBlank();
 		} finally {
 			if (connection != null) {
 				try {
