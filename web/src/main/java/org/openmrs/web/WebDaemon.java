@@ -15,6 +15,7 @@ import java.util.concurrent.Future;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.ModuleException;
 import org.openmrs.util.DatabaseUpdateException;
@@ -44,6 +45,15 @@ public final class WebDaemon {
 	public static void startOpenmrs(final ServletContext servletContext)
 	        throws DatabaseUpdateException, InputRequiredException {
 
+		Daemon.CallerKey callerKey = daemonCallerKey();
+		if (callerKey == null) {
+			// Daemon distributes the key to WebDaemon reflectively during its initialization. If we get
+			// here without one, that hand-off failed; surface the real cause rather than letting the
+			// authorization check below fail with a misleading "unauthorized caller" message.
+			throw new APIException("Unable to start OpenMRS: WebDaemon was not granted a Daemon caller key. "
+			        + "Check the logs for an earlier error about providing the DaemonCallerKey to WebDaemon.");
+		}
+
 		// Startup runs on the servlet container's thread, which is not a daemon thread, so use the
 		// CallerKey-authorized overload to launch the work on a daemon thread.
 		Future<?> startup = Daemon.runNewDaemonTask(() -> {
@@ -52,7 +62,7 @@ public final class WebDaemon {
 			} catch (ServletException e) {
 				throw new ModuleException("Unable to start OpenMRS. Error thrown was: " + e.getMessage(), e);
 			}
-		}, daemonCallerKey());
+		}, callerKey);
 
 		try {
 			startup.get();

@@ -52,7 +52,7 @@ public final class Daemon {
 	private static final Logger log = LoggerFactory.getLogger("org.openmrs.api");
 
 	/**
-	 * Inner class passed to expected callers that are allowed to act with daemon permissions.
+	 * Capability token passed to expected callers that are allowed to act with daemon permissions.
 	 *
 	 * @since 3.0.0, 2.9.0, 2.8.9
 	 */
@@ -153,12 +153,12 @@ public final class Daemon {
 	 * @param user A new user to be created.
 	 * @param password The password to set for the new user.
 	 * @param roleNames A list of role names to fetch the roles to add to the user.
-	 * @param callerKey the {@link CallerKey} proving the caller is the context DAO
+	 * @param callerKey the {@link CallerKey} proving the caller is permitted to create users
 	 * @return The newly created user
 	 * @since 2.3.0
 	 */
 	public static User createUser(User user, String password, List<String> roleNames, CallerKey callerKey) throws Exception {
-		// quick check to make sure we're only being called by the context DAO
+		// verify the caller holds the daemon caller key
 		requireDaemonCaller(callerKey, "Context.DAO.only");
 
 		// create a new thread and execute that task in it
@@ -319,7 +319,7 @@ public final class Daemon {
 	 * the {@link OpenmrsService} interface.
 	 *
 	 * @param service instance implementing the {@link OpenmrsService} interface.
-	 * @param callerKey the {@link CallerKey} proving the caller is the service context
+	 * @param callerKey the {@link CallerKey} proving the caller is permitted to run service startup
 	 * @since 1.9
 	 */
 	public static void runStartupForService(final OpenmrsService service, CallerKey callerKey) throws ModuleException {
@@ -496,10 +496,10 @@ public final class Daemon {
 
 	/**
 	 * Rejects the call unless the supplied key is the genuine {@link #CALLER_KEY}. Fails closed for any
-	 * other value (including null), replacing the former stack-based caller-class checks.
+	 * other value (including null).
 	 *
 	 * @param callerKey the key presented by the caller
-	 * @param messageCode the message (code) describing the sole legitimate caller
+	 * @param messageCode the message (code) identifying the guarded operation
 	 */
 	private static void requireDaemonCaller(CallerKey callerKey, String messageCode) {
 		if (callerKey != CALLER_KEY) {
@@ -517,12 +517,12 @@ public final class Daemon {
 	 *
 	 * @param userSystemId the user to run as
 	 * @param runnable the task to run
-	 * @param callerKey the {@link CallerKey} proving the caller is the JobRunr request handler
+	 * @param callerKey the {@link CallerKey} proving the caller is permitted to execute scheduled tasks
 	 * @since 2.9.0
 	 */
 	public static void executeScheduledTaskAsUser(String userSystemId, DaemonTask runnable, CallerKey callerKey)
 	        throws Exception {
-		// quick check to make sure we're only being called by the JobRunr request handler
+		// verify the caller holds the daemon caller key
 		requireDaemonCaller(callerKey, "executeScheduledTaskAsUser can only be called from JobRequestHandlerAdapter");
 
 		isDaemonThread.set(true);
