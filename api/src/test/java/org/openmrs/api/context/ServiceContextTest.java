@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
@@ -159,19 +160,30 @@ public class ServiceContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setService_shouldMakeRegistrationsVisibleToOtherThreads() throws Exception {
-		serviceContext.setService(RegistryVisibilityService.class, new RegistryVisibilityServiceImpl());
-
 		AtomicReference<Object> retrievedService = new AtomicReference<>();
 		AtomicReference<Throwable> thrown = new AtomicReference<>();
+		CountDownLatch readerRunning = new CountDownLatch(1);
 
 		Thread reader = new Thread(() -> {
-			try {
-				retrievedService.set(serviceContext.getService(RegistryVisibilityService.class));
-			} catch (Throwable t) {
-				thrown.set(t);
+			readerRunning.countDown();
+			long deadline = System.currentTimeMillis() + 5000;
+			while (System.currentTimeMillis() < deadline) {
+				try {
+					retrievedService.set(serviceContext.getService(RegistryVisibilityService.class));
+					return;
+				} catch (ServiceNotFoundException ignored) {
+					// not registered yet; keep racing the write
+				} catch (Throwable t) {
+					thrown.set(t);
+					return;
+				}
 			}
 		});
 		reader.start();
+
+		assertTrue(readerRunning.await(5, TimeUnit.SECONDS));
+		serviceContext.setService(RegistryVisibilityService.class, new RegistryVisibilityServiceImpl());
+
 		reader.join(5000);
 
 		assertNull(thrown.get());

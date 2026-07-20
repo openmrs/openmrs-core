@@ -696,7 +696,6 @@ public class ServiceContext implements ApplicationContextAware {
 
 				} catch (InterruptedException e) {
 					log.warn("Refresh lock was interrupted", e);
-					Thread.currentThread().interrupt();
 				}
 			}
 		}
@@ -869,9 +868,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 *         doneRefreshingContext()
 	 */
 	public boolean isRefreshingContext() {
-		synchronized (refreshingContextLock) {
-			return refreshingContext;
-		}
+		return refreshingContext;
 	}
 
 	/**
