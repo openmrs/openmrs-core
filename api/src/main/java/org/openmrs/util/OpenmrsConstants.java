@@ -647,6 +647,19 @@ public final class OpenmrsConstants {
 	public static final String GP_PASSWORD_RESET_URL = "security.passwordResetUrl";
 
 	/**
+	 * Global property that stores the system salt used for deterministic bootstrap password generation.
+	 * This salt is used to derive bootstrap passwords from user UUIDs and must be kept secret.
+	 */
+	public static final String GP_BOOTSTRAP_SYSTEM_SALT = "security.bootstrap.systemSalt";
+
+	/**
+	 * Global property that stores the number of PBKDF2 iterations for bootstrap password generation.
+	 * Higher values increase security but slow down generation.
+	 * Default: 600000 (OWASP 2025 recommendation)
+	 */
+	public static final String GP_BOOTSTRAP_ITERATIONS = "security.bootstrap.iterations";
+
+	/**
 	 * Global property that stores the number of days for users to be deactivated.
 	 */
 	public static final String GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS = "users.numberOfDaysToRetire";
@@ -735,6 +748,13 @@ public final class OpenmrsConstants {
 
 		props.add(new GlobalProperty(GP_PASSWORD_RESET_URL, "",
 		        "The URL to redirect to after requesting for a password reset. Always provide a place holder in this url with name {activationKey}, it will get substituted by the actual activation key."));
+		props.add(new GlobalProperty(GP_BOOTSTRAP_SYSTEM_SALT, "",
+		"System salt for deterministic bootstrap password generation. "
+		+ "This must be kept secret. Use: openssl rand -base64 32"));
+
+		props.add(new GlobalProperty(GP_BOOTSTRAP_ITERATIONS, "600000",
+		"Number of PBKDF2 iterations for bootstrap password derivation. "
+		+ "Higher values increase security. Default: 600000 (OWASP 2025)."));
 		
 		props.add(new GlobalProperty("mail.transport_protocol", "smtp",
 		        "Transport protocol for the messaging engine. Valid values: smtp"));
