@@ -47,6 +47,10 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Allergen;
+import org.openmrs.AllergenType;
+import org.openmrs.Allergies;
+import org.openmrs.Allergy;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
@@ -80,6 +84,7 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -2677,14 +2682,58 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(notPreferred.getIdentifiers().size() - 1, audit.getPersonMergeLogData().getCreatedIdentifiers()
 		        .size());
 	}
-	
+
+	/**
+	 * The privileges the merge workflow legitimately requires of the merging user for the data handled
+	 * by these tests. Deliberately absent are Get Allergies and Get Patient Cohorts:
+	 * {@code mergePatients} reads both patients' allergies on the merging user's behalf (under a proxy
+	 * privilege in {@code mergeAllergies}), and voiding the losing patient reads its cohort memberships
+	 * the same way ({@code CohortServiceImpl.notifyPatientVoided}), so neither internal read may demand
+	 * its privilege from the merging user. Running every merge with this privilege set keeps both
+	 * covered. (The metadata read privileges - visit attribute types, global properties, concepts,
+	 * locations, patients - are here because saving the moved data triggers validators and change
+	 * checks that read that metadata through the service proxies.)
+	 */
+	private static final String[] MERGE_PRIVILEGES = { PrivilegeConstants.EDIT_PATIENTS, PrivilegeConstants.DELETE_PATIENTS,
+	        PrivilegeConstants.EDIT_PERSONS, PrivilegeConstants.GET_PATIENTS, PrivilegeConstants.GET_CONCEPTS,
+	        PrivilegeConstants.GET_GLOBAL_PROPERTIES, PrivilegeConstants.GET_LOCATIONS, PrivilegeConstants.GET_ORDERS,
+	        PrivilegeConstants.GET_VISITS, PrivilegeConstants.EDIT_VISITS, PrivilegeConstants.GET_VISIT_ATTRIBUTE_TYPES,
+	        PrivilegeConstants.GET_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS, PrivilegeConstants.GET_PATIENT_PROGRAMS,
+	        PrivilegeConstants.EDIT_PATIENT_PROGRAMS, PrivilegeConstants.GET_RELATIONSHIPS,
+	        PrivilegeConstants.EDIT_RELATIONSHIPS, PrivilegeConstants.DELETE_RELATIONSHIPS, PrivilegeConstants.GET_OBS,
+	        PrivilegeConstants.EDIT_OBS, PrivilegeConstants.GET_CONDITIONS, PrivilegeConstants.EDIT_CONDITIONS,
+	        PrivilegeConstants.EDIT_ALLERGIES, PrivilegeConstants.GET_MEDICATION_DISPENSE,
+	        PrivilegeConstants.EDIT_MEDICATION_DISPENSE, PrivilegeConstants.GET_USERS, PrivilegeConstants.EDIT_USERS };
+
 	private PersonMergeLog mergeAndRetrieveAudit(Patient preferred, Patient notPreferred) throws SerializationException {
-		patientService.mergePatients(preferred, notPreferred);
+		mergePatientsAsNonSuperUser(preferred, notPreferred);
 		List<PersonMergeLog> result = personService.getAllPersonMergeLogs(true);
 		assertTrue(result.size() > 0, "person merge was not audited");
 		return result.get(0);
 	}
-	
+
+	/**
+	 * Runs the merge as a user who holds only {@link #MERGE_PRIVILEGES}, so the merge workflow tests
+	 * fail if any internal step starts demanding a privilege a merging user should not need.
+	 */
+	private void mergePatientsAsNonSuperUser(Patient preferred, Patient notPreferred) throws SerializationException {
+		User user = Context.getUserService().getUserByUsername("butch");
+		assertNotNull(user);
+		Context.becomeUser(user.getSystemId());
+		for (String privilege : MERGE_PRIVILEGES) {
+			Context.addProxyPrivilege(privilege);
+		}
+		try {
+			patientService.mergePatients(preferred, notPreferred);
+		} finally {
+			for (String privilege : MERGE_PRIVILEGES) {
+				Context.removeProxyPrivilege(privilege);
+			}
+			// restore the super user; the tests run their setup and verification with full privileges
+			authenticate();
+		}
+	}
+
 	private boolean isValueInList(String value, List<String> list) {
 		return (list != null && list.contains(value));
 	}
@@ -3336,6 +3385,67 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getIdentifierValidator_shouldThrowPatientIdentifierExceptionWhenClassNotFound() throws Exception {
 		PatientIdentifierException patientIdentifierException = assertThrows(PatientIdentifierException.class, () -> patientService.getIdentifierValidator("com.example.InvalidIdentifierValidator"));
 		assertEquals("Could not find patient identifier validator com.example.InvalidIdentifierValidator", patientIdentifierException.getMessage());
+	}
+
+	/**
+	 * Before this fix {@code getAllergies} carried no {@code @Authorized} annotation, so the
+	 * authorization advice performed no privilege check at all and any caller could read a patient's
+	 * allergy list. It now requires the Get Allergies privilege.
+	 *
+	 * @see PatientService#getAllergies(Patient)
+	 */
+	@Test
+	public void getAllergies_shouldRequireTheGetAllergiesPrivilege() {
+		Patient patient = patientService.getPatient(2);
+		Context.logout();
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		    () -> patientService.getAllergies(patient));
+		assertTrue(exception.getMessage().contains(PrivilegeConstants.GET_ALLERGIES));
+	}
+
+	/**
+	 * Before this fix {@code setAllergies} carried no {@code @Authorized} annotation, so any caller
+	 * could modify a patient's allergy list. It now requires an allergy add/edit privilege.
+	 *
+	 * @see PatientService#setAllergies(Patient, Allergies)
+	 */
+	@Test
+	public void setAllergies_shouldRequireAnAllergyWritePrivilege() {
+		Patient patient = patientService.getPatient(2);
+		Allergies allergies = new Allergies();
+		Context.logout();
+		assertThrows(APIAuthenticationException.class, () -> patientService.setAllergies(patient, allergies));
+	}
+
+	/**
+	 * Now that {@code getAllergies} requires the Get Allergies privilege,
+	 * {@link org.openmrs.validator.AllergyValidator} must not force that privilege onto every allergy
+	 * write. While a new allergy is being saved the validator reads the patient's existing allergies to
+	 * reject duplicates; that internal read is wrapped in a Get Allergies proxy privilege so a caller
+	 * holding only an allergy write privilege can still save a new allergy without also holding Get
+	 * Allergies.
+	 *
+	 * @see PatientService#saveAllergy(Allergy)
+	 * @see org.openmrs.validator.AllergyValidator
+	 */
+	@Test
+	public void saveAllergy_shouldNotRequireTheGetAllergiesPrivilegeForTheDuplicateCheck() {
+		Patient patient = patientService.getPatient(2);
+		Allergen allergen = new Allergen(AllergenType.DRUG, new Concept(3), null);
+		Allergy allergy = new Allergy(patient, allergen, new Concept(4), "some comment", new ArrayList<>());
+
+		// become a user whose role grants no privileges, then grant only Add Allergies; the caller
+		// deliberately lacks Get Allergies, so a regression in the validator's duplicate check surfaces
+		User user = Context.getUserService().getUserByUsername("butch");
+		assertNotNull(user);
+		Context.becomeUser(user.getSystemId());
+		Context.addProxyPrivilege(PrivilegeConstants.ADD_ALLERGIES);
+		try {
+			assertDoesNotThrow(() -> patientService.saveAllergy(allergy));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.ADD_ALLERGIES);
+		}
+		assertNotNull(allergy.getAllergyId());
 	}
 
 }
