@@ -221,6 +221,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * <strong>Should</strong> return program state with the given uuid
 	 * <strong>Should</strong> throw error when multiple program states with same uuid are found
 	 */
+	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public PatientState getPatientStateByUuid(String uuid);
 	
 	/**
@@ -475,6 +476,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * <strong>Should</strong> return a patient program with the given uuid
 	 * <strong>Should</strong> throw an error when multiple patient programs with same uuid are found
 	 */
+	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public PatientProgram getPatientProgramByUuid(String uuid);
 	
 	/**
@@ -557,6 +559,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
         @Authorized({"Get Patient Programs"})
         public PatientProgramAttribute getPatientProgramAttributeByUuid(String var1);
 
+        @Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
         public Map<Object, Object> getPatientProgramAttributeByAttributeName(List<Integer> patients, String attributeName);
 
         @Transactional(readOnly = true)
