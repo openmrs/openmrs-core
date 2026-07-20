@@ -10,6 +10,7 @@
 package org.openmrs.web.filter.update.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -40,4 +41,18 @@ public class FilterUtilTest extends BaseWebContextSensitiveTest {
 		assertEquals("it", FilterUtil.restoreLocale(FilterUtil.ADMIN_USERNAME));
 	}
 	
+	/**
+	 * @see FilterUtil#getGlobalPropertyValue(String)
+	 */
+	@Test
+	public void getGlobalPropertyValue_shouldMatchThePropertyNameLiterally() {
+		// a real property name resolves its stored value
+		assertEquals("7", FilterUtil.getGlobalPropertyValue("concept.true"));
+
+		// a name carrying SQL control characters is bound as a literal, so it matches no property
+		// and returns null. On the earlier string-concatenated query this payload resolved a single
+		// row and returned "7", so this asserts the value is now treated as data, not query text.
+		assertNull(FilterUtil.getGlobalPropertyValue("nonexistent' OR property = 'concept.true"));
+	}
+
 }

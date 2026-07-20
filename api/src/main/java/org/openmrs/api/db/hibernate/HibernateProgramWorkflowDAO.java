@@ -492,11 +492,12 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 						" from patient p " +
 						" join patient_program pp on p.patient_id = pp.patient_id and p.patient_id in (" + commaSeperatedPatientIds + ")" +
 						" join patient_program_attribute ppa on pp.patient_program_id = ppa.patient_program_id and ppa.voided=0" +
-						" join program_attribute_type ppt on ppa.attribute_type_id = ppt.program_attribute_type_id and ppt.name ='" + attributeName + "' "+
+						" join program_attribute_type ppt on ppa.attribute_type_id = ppt.program_attribute_type_id and ppt.name = :attributeName "+
 						" LEFT OUTER JOIN concept_name cn on ppa.value_reference = cn.concept_id and cn.concept_name_type= 'FULLY_SPECIFIED' and cn.voided=0 and ppt.datatype like '%ConceptDataType%'" +
 						" group by p.patient_id")
 				.addScalar("person_id", StandardBasicTypes.INTEGER)
 				.addScalar("patientProgramAttributeValue", StandardBasicTypes.STRING)
+				.setParameter("attributeName", attributeName)
 				.list();
 
 		for (Object o : list) {
