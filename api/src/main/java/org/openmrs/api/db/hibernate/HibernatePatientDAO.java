@@ -698,17 +698,18 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		PersonQuery personQuery = new PersonQuery();
 
-		return SearchQueryUnique.searchCount(searchSessionFactory,
-			SearchQueryUnique.newQuery(PatientIdentifier.class, f ->
-					newPatientIdentifierSearchPredicate(f, query, includeVoided, false),
-				 "patient.personId", PatientIdentifier::getPatient).join(
-					 SearchQueryUnique.newQuery(PersonName.class, f ->
-						personQuery.getPatientNameQuery(f, query, includeVoided),
-					 "person.personId", pN -> getPatient(pN.getPerson().getId())).join(
-						 SearchQueryUnique.newQuery(PersonAttribute.class,
-						f -> personQuery.getPatientAttributeQuery(f, query, includeVoided),
-						 "person.personId", pA -> getPatient(pA.getPerson().getId())
-					))));
+		// Bound the count deduplication to the maximum number of results a patient search can return: an
+		// exact count past that point costs a full hit-set scan for a total the caller cannot page to.
+		return SearchQueryUnique.searchCount(searchSessionFactory, SearchQueryUnique
+		        .newQuery(PatientIdentifier.class, f -> newPatientIdentifierSearchPredicate(f, query, includeVoided, false),
+		            "patient.personId", PatientIdentifier::getPatient)
+		        .join(SearchQueryUnique
+		                .newQuery(PersonName.class, f -> personQuery.getPatientNameQuery(f, query, includeVoided),
+		                    "person.personId", pN -> getPatient(pN.getPerson().getId()))
+		                .join(SearchQueryUnique.newQuery(PersonAttribute.class,
+		                    f -> personQuery.getPatientAttributeQuery(f, query, includeVoided), "person.personId",
+		                    pA -> getPatient(pA.getPerson().getId())))),
+		    HibernatePersonDAO.getMaximumSearchResults());
 	}
 
     private List<Patient> findPatients(String query, boolean includeVoided) {
