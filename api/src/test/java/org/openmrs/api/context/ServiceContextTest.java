@@ -123,6 +123,16 @@ public class ServiceContextTest extends BaseContextSensitiveTest {
 	 * @see ServiceContext#getService(Class)
 	 */
 	@Test
+	public void getService_shouldThrowServiceNotFoundExceptionForAnUnregisteredService() {
+		assertFalse(serviceContext.isRefreshingContext());
+
+		assertThrows(ServiceNotFoundException.class, () -> serviceContext.getService(UnregisteredService.class));
+	}
+
+	/**
+	 * @see ServiceContext#getService(Class)
+	 */
+	@Test
 	public void getService_shouldBlockUntilAnInProgressRefreshCompletes() throws Exception {
 		AtomicReference<Object> retrievedService = new AtomicReference<>();
 		AtomicReference<Throwable> thrown = new AtomicReference<>();
@@ -197,4 +207,9 @@ public class ServiceContextTest extends BaseContextSensitiveTest {
 	public interface RegistryVisibilityService {}
 
 	public static class RegistryVisibilityServiceImpl implements RegistryVisibilityService {}
+
+	/**
+	 * Service interface that is never registered, used to exercise the not-found path of getService.
+	 */
+	public interface UnregisteredService {}
 }
