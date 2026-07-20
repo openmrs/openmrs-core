@@ -30,6 +30,8 @@ import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.scheduler.jobrunr.JobRequestHandlerAdapter;
 import org.openmrs.util.OpenmrsThreadPoolHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
 /**
@@ -46,6 +48,8 @@ public final class Daemon {
 	private static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<>();
 
 	private static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
+
+	private static final Logger log = LoggerFactory.getLogger("org.openmrs.api");
 
 	/**
 	 * Inner class passed to expected callers that are allowed to act with daemon permissions.
@@ -74,8 +78,10 @@ public final class Daemon {
 			Class.forName("org.openmrs.web.WebDaemon").getMethod("setDaemonCallerKey", CallerKey.class).invoke(null,
 			    CALLER_KEY);
 		} catch (ClassNotFoundException e) {
-			// no web layer on the classpath; nothing to hand the key to
-		} catch (ReflectiveOperationException e) {}
+			log.debug("Could not load WebDaemon class", e);
+		} catch (ReflectiveOperationException e) {
+			log.error("Exception caught while trying to provide DaemonCallerKey to WebDaemon", e);
+		}
 	}
 
 	/**
