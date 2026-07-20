@@ -727,6 +727,7 @@ public interface PatientService extends OpenmrsService {
 	 * @return the allergies object
 	 * <strong>Should</strong> get the allergy list and status
 	 */
+	@Authorized({ PrivilegeConstants.GET_ALLERGIES })
 	Allergies getAllergies(Patient patient);
 	
 	/**
@@ -750,6 +751,7 @@ public interface PatientService extends OpenmrsService {
 	 * <strong>Should</strong> void allergies with added reactions
      * <strong>Should</strong> set the non coded concept for non coded allergen if not specified
 	 */
+	@Authorized({ PrivilegeConstants.ADD_ALLERGIES, PrivilegeConstants.EDIT_ALLERGIES })
 	Allergies setAllergies(Patient patient, Allergies allergies);
 	
 	/**
