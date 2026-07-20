@@ -74,7 +74,7 @@ import ca.uhn.hl7v2.model.v25.datatype.XPN;
 import ca.uhn.hl7v2.model.v25.segment.NK1;
 import ca.uhn.hl7v2.model.v25.segment.PID;
 import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
-import ca.uhn.hl7v2.parser.GenericParser;
+import ca.uhn.hl7v2.parser.Parser;
 
 /**
  * OpenMRS HL7 API default methods This class shouldn't be instantiated by itself. Use the
@@ -91,7 +91,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
 	protected HL7DAO dao;
 	
-	private GenericParser parser;
+	private Parser parser;
 	
 	private MessageTypeRouter router;
 	
@@ -128,7 +128,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 *
 	 * @param parser the parser to use
 	 */
-	public void setParser(GenericParser parser) {
+	public void setParser(Parser parser) {
 		this.parser = parser;
 	}
 	
