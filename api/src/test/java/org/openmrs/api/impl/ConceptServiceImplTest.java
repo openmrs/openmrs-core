@@ -47,7 +47,9 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
+import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -1018,6 +1020,159 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(0.0, conceptReferenceRange.getLowAbsolute());
 	}
 	
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldReturnDefaultRangeFromConceptNumericWhenNoReferenceRangesDefined() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+
+		// Concept 5497 has no ConceptReferenceRange records, but has ConceptNumeric range values
+		Concept concept = conceptService.getConcept(5497);
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+
+		ConceptReferenceRange range = conceptService.getConceptReferenceRange(context);
+
+		assertNotNull(range);
+		assertEquals(2500.0, range.getHiAbsolute());
+		assertEquals(1800.0, range.getHiCritical());
+		assertEquals(1497.0, range.getHiNormal());
+		assertEquals(445.0, range.getLowNormal());
+		assertEquals(99.0, range.getLowCritical());
+		assertEquals(0.0, range.getLowAbsolute());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldReturnMatchingRangeWhenCriteriaMatch() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+
+		// Concept 4090 has criteria-based reference ranges; a 6-year-old matches
+		Concept concept = conceptService.getConcept(4090);
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+
+		ConceptReferenceRange range = conceptService.getConceptReferenceRange(context);
+
+		assertNotNull(range);
+		assertEquals(140.0, range.getHiAbsolute());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldReturnStrictestMergedRangeWhenMultipleCriteriaMatch() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+
+		// Concept 4090 has two criteria that both match a 6-year-old (ranges 80-150 and 60-140)
+		Concept concept = conceptService.getConcept(4090);
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+
+		ConceptReferenceRange range = conceptService.getConceptReferenceRange(context);
+
+		assertNotNull(range);
+		assertEquals(140.0, range.getHiAbsolute());
+		assertEquals(130.0, range.getHiCritical());
+		assertEquals(118.0, range.getHiNormal());
+		assertEquals(80.0, range.getLowNormal());
+		assertEquals(75.0, range.getLowCritical());
+		assertEquals(70.0, range.getLowAbsolute());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldFallBackToConceptNumericWhenNoCriteriaMatch() {
+		Person person = new Person();
+		// Very old person — no criteria will match
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(600).toInstant()));
+
+		Concept concept = conceptService.getConcept(4090);
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+
+		ConceptReferenceRange range = conceptService.getConceptReferenceRange(context);
+
+		assertNotNull(range);
+		assertEquals(145.0, range.getHiAbsolute());
+		assertEquals(70.0, range.getLowAbsolute());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldHandleNullBoundsInRange() {
+		Person person = new Person(10);
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(10).toInstant()));
+
+		// Concept 4091 has a range with null hiAbsolute and lowAbsolute
+		Concept concept = conceptService.getConcept(4091);
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+
+		ConceptReferenceRange range = conceptService.getConceptReferenceRange(context);
+
+		assertNotNull(range);
+		assertNotNull(range.getHiCritical());
+		assertNotNull(range.getHiNormal());
+		assertNotNull(range.getLowCritical());
+		assertNotNull(range.getLowNormal());
+		assertNull(range.getHiAbsolute());
+		assertNull(range.getLowAbsolute());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldReturnNullForNonNumericConcept() {
+		Person person = new Person();
+		person.setBirthdate(new Date());
+
+		// Concept 23 is a non-numeric concept
+		Concept concept = conceptService.getConcept(23);
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+
+		assertNull(conceptService.getConceptReferenceRange(context));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldWorkWhenConstructedFromObs() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+
+		Concept concept = conceptService.getConcept(4090);
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(concept);
+		obs.setObsDatetime(new Date());
+
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(obs);
+		ConceptReferenceRange range = conceptService.getConceptReferenceRange(context);
+
+		assertNotNull(range);
+		assertEquals(140.0, range.getHiAbsolute());
+		assertEquals(130.0, range.getHiCritical());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldThrowExceptionWhenContextIsNull() {
+		assertThrows(IllegalArgumentException.class,
+			() -> conceptService.getConceptReferenceRange((ConceptReferenceRangeContext) null));
+	}
+
 	private ConceptNumeric createConceptNumeric() {
 		ConceptNumeric conceptNumeric = new ConceptNumeric();
 		ConceptName fullySpecifiedName = new ConceptName("concept name", new Locale("fr", "CA"));

@@ -28,6 +28,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.util.DateUtil;
 import org.openmrs.util.Format;
 import org.openmrs.util.Format.FORMAT_TYPE;
 import org.openmrs.util.OpenmrsUtil;
@@ -79,8 +80,6 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	public enum Status {
 		PRELIMINARY, FINAL, AMENDED
 	}
-	
-	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
 	
 	private static final String TIME_PATTERN = "HH:mm";
 	
@@ -219,6 +218,19 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		newObs.setValueComplex(obsToCopy.getValueComplex());
 		newObs.setComplexData(obsToCopy.getComplexData());
 		newObs.setFormField(obsToCopy.getFormFieldNamespace(), obsToCopy.getFormFieldPath());
+		
+		if (obsToCopy.getReferenceRange() != null) {
+			ObsReferenceRange newRange = new ObsReferenceRange();
+			ObsReferenceRange srcRange = obsToCopy.getReferenceRange();
+			newRange.setHiAbsolute(srcRange.getHiAbsolute());
+			newRange.setHiCritical(srcRange.getHiCritical());
+			newRange.setHiNormal(srcRange.getHiNormal());
+			newRange.setLowAbsolute(srcRange.getLowAbsolute());
+			newRange.setLowCritical(srcRange.getLowCritical());
+			newRange.setLowNormal(srcRange.getLowNormal());
+			newRange.setObs(newObs);
+			newObs.setReferenceRange(newRange);
+		}
 		
 		// Copy list of all members, including voided, and put them in respective groups
 		if (obsToCopy.hasGroupMembers(true)) {
@@ -1096,8 +1108,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
 					setValueDatetime(timeFormat.parse(s));
 				} else if ("TS".equals(abbrev)) {
-					DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
-					setValueDatetime(datetimeFormat.parse(s));
+					setValueDatetime(DateUtil.parseDatetimeString(s));
 				}  else {
 					throw new RuntimeException("Don't know how to handle " + abbrev + " for concept: " + getConcept().getDisplayString());
 				}

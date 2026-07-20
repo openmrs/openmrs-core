@@ -107,6 +107,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -124,6 +129,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.openmrs.Order.Action.DISCONTINUE;
 import static org.openmrs.Order.FulfillerStatus.COMPLETED;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
@@ -264,36 +270,49 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @throws InterruptedException
+	 * @throws Exception
 	 * @see OrderNumberGenerator#getNewOrderNumber(OrderContext)
 	 */
 	@Test
 	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
-		throws InterruptedException {
+		throws Exception {
 
-		int N = 50;
-		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(50));
-		List<Thread> threads = new ArrayList<>();
-		for (int i = 0; i < N; i++) {
-			threads.add(new Thread(() -> {
+		int taskCount = 50;
+		// Each call transiently holds two pooled connections: one for the getNewOrderNumber
+		// transaction and one for the REQUIRES_NEW transaction that increments the seed.
+		// Concurrency must therefore stay below half the c3p0 max_size of 50, otherwise
+		// every thread can end up holding one connection while waiting forever for a
+		// second one, deadlocking the pool. See TRUNK-6465.
+		int threadCount = 20;
+		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(taskCount));
+		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+		try {
+			List<Future<?>> futures = new ArrayList<>();
+			for (int i = 0; i < taskCount; i++) {
+				futures.add(executor.submit(() -> {
+					try {
+						Context.openSession();
+						Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+						uniqueOrderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
+					} finally {
+						Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+						Context.closeSession();
+					}
+				}));
+			}
+			for (Future<?> future : futures) {
 				try {
-					Context.openSession();
-					Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-					uniqueOrderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
-				} finally {
-					Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-					Context.closeSession();
+					future.get(30, TimeUnit.SECONDS);
+				} catch (TimeoutException e) {
+					fail("getNewOrderNumber timed out, likely a connection pool deadlock; see TRUNK-6465", e);
 				}
-			}));
+			}
+		} finally {
+			executor.shutdownNow();
+			executor.awaitTermination(10, TimeUnit.SECONDS);
 		}
-		for (int i = 0; i < N; ++i) {
-			threads.get(i).start();
-		}
-		for (int i = 0; i < N; ++i) {
-			threads.get(i).join();
-		}
-		//since we used a set we should have the size as N indicating that there were no duplicates
-		assertEquals(N, uniqueOrderNumbers.size());
+		//since we used a set we should have the size as taskCount indicating that there were no duplicates
+		assertEquals(taskCount, uniqueOrderNumbers.size());
 	}
 
 	/**
@@ -4259,7 +4278,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroup.setPatient(encounter.getPatient());
 		orderGroup.setEncounter(encounter);
 
-		Order firstOrder = new OrderBuilder().withAction(Order.Action.NEW).withPatient(1).withConcept(10).withOrderer(1)
+		Order firstOrder = new OrderBuilder().withAction(Order.Action.NEW).withConcept(10).withOrderer(1)
 			.withEncounter(3).withDateActivated(new Date()).withOrderType(17)
 			.withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).build();
 

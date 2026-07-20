@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,9 +24,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Hibernate;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -44,6 +43,7 @@ import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptReferenceRange;
+import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -65,10 +65,13 @@ import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.parameter.ConceptSearchCriteria;
+import org.openmrs.parameter.ConceptSearchCriteriaBuilder;
+import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.validator.ObsValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -350,48 +353,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (StringUtils.isBlank(conceptRef)) {
 			return null;
 		}
-		Concept cpt = null;
-		//check if input is a valid Uuid
-		if (isValidUuidFormat(conceptRef)) {
-			cpt = Context.getConceptService().getConceptByUuid(conceptRef);
-			if (cpt != null) {
-				return cpt;
-			}
-		}
-		//handle mapping
-		int idx = conceptRef.indexOf(":");
-		if (idx >= 0 && idx < conceptRef.length() - 1) {
-			String conceptSource = conceptRef.substring(0, idx);
-			String conceptCode = conceptRef.substring(idx + 1);
-			cpt = Context.getConceptService().getConceptByMapping(conceptCode, conceptSource);
-			if (cpt != null) {
-				return cpt;
-			}
-		}
-		//handle id
-		int conceptId = NumberUtils.toInt(conceptRef, -1);
-		if (conceptId >= 0) {
-			cpt = Context.getConceptService().getConcept(conceptId);
-			if (cpt != null) {
-				return cpt;
-			}
-		} else {
-			//handle name
-			cpt = Context.getConceptService().getConceptByName(conceptRef);
-			if (cpt != null) {
-				return cpt;
-			}
-		}
-		//handle static constant
-		if (conceptRef.contains(".")) {
-			try {
-				return getConceptByReference(evaluateStaticConstant(conceptRef));
-			}
-			catch (APIException e) {
-				log.warn("Unable to translate '{}' into a concept", conceptRef, e);
-			}
-		}
-		return cpt == null ? null : cpt;
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptReference(conceptRef)
+		        .includeRetired(true).build();
+		List<Concept> concepts = getConcepts(criteria);
+		return concepts.isEmpty() ? null : concepts.get(0);
 	}
 	
 	/**
@@ -1061,6 +1026,15 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		return dao.getConceptByUuid(uuid);
 	}
 	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Concept> getConcepts(ConceptSearchCriteria conceptSearchCriteria) {
+		return dao.getConcepts(conceptSearchCriteria);
+	}
+
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptClassByUuid(java.lang.String)
 	 */
@@ -2089,46 +2063,128 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	@Override
 	public ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept) {
-		Obs obs = new Obs(person, concept, null, null);
-		return new ObsValidator().getReferenceRange(obs);
+		if (person == null || concept == null) {
+			return null;
+		}
+		return Context.getConceptService().getConceptReferenceRange(
+			new ConceptReferenceRangeContext(person, concept, null));
 	}
 
-	/***
-	 * Determines if the passed string is in valid uuid format By OpenMRS standards, a uuid must be 36
-	 * characters in length and not contain whitespace, but we do not enforce that a uuid be in the
-	 * "canonical" form, with alphanumerics seperated by dashes, since the MVP dictionary does not use
-	 * this format (We also are being slightly lenient and accepting uuids that are 37 or 38 characters
-	 * in length, since the uuid data field is 38 characters long)
-	 */
-	public static boolean isValidUuidFormat(String uuid) {
-		if (uuid.length() < 36 || uuid.length() > 38 || uuid.contains(" ") || uuid.contains(".")) {
-			return false;
+	@Override
+	public ConceptReferenceRange getConceptReferenceRange(ConceptReferenceRangeContext context) {
+		if (context == null) {
+			throw new IllegalArgumentException("ConceptReferenceRangeContext must not be null");
 		}
-		return true;
+
+		Concept concept = HibernateUtil.getRealObjectFromProxy(context.getConcept());
+		if (!(concept instanceof ConceptNumeric) || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
+			return null;
+		}
+		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
+
+		List<ConceptReferenceRange> referenceRanges =
+			Context.getConceptService().getConceptReferenceRangesByConceptId(concept.getConceptId());
+
+		if (referenceRanges.isEmpty()) {
+			return getDefaultReferenceRange(conceptNumeric);
+		}
+
+		ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
+		List<ConceptReferenceRange> validRanges = new ArrayList<>();
+
+		for (ConceptReferenceRange referenceRange : referenceRanges) {
+			if (referenceRangeUtility.evaluateCriteria(
+					StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()), context)) {
+				validRanges.add(referenceRange);
+			}
+		}
+
+		if (validRanges.isEmpty()) {
+			ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
+			if (defaultReferenceRange != null) {
+				return defaultReferenceRange;
+			}
+			return null;
+		}
+
+		return findStrictestReferenceRange(validRanges);
 	}
 
 	/**
-	 * Evaluates the specified Java constant using reflection: if input is org.openmrs.CLASS_NAME.CONSTANT_NAME
-	 * then, output will be CONSTANT_NAME
-	 * @param fqn the fully qualified name of the constant
-	 * @return the constant value or null
+	 * Returns a reference range derived from the ConceptNumeric's own range fields.
+	 * Used as a fallback when no ConceptReferenceRange records exist or match.
 	 */
-	private static String evaluateStaticConstant(String fqn) {
-		int lastPeriod = fqn.lastIndexOf(".");
-		String clazzName = fqn.substring(0, lastPeriod);
-		String constantName = fqn.substring(lastPeriod + 1);
-		try {
-			Class<?> clazz = Context.loadClass(clazzName);
-			Field constantField = clazz.getDeclaredField(constantName);
-			constantField.setAccessible(true);
-			Object val = constantField.get(null);
-			return val != null ? String.valueOf(val) : null;
+	private static ConceptReferenceRange getDefaultReferenceRange(ConceptNumeric conceptNumeric) {
+		if (conceptNumeric == null || (
+			conceptNumeric.getHiAbsolute() == null &&
+			conceptNumeric.getHiCritical() == null &&
+			conceptNumeric.getHiNormal() == null &&
+			conceptNumeric.getLowAbsolute() == null &&
+			conceptNumeric.getLowCritical() == null &&
+			conceptNumeric.getLowNormal() == null
+		)) {
+			return null;
 		}
-		catch (Exception ex) {
-			throw new APIException("Error while evaluating " + fqn + " as a constant" , ex);
-		}
+
+		ConceptReferenceRange defaultReferenceRange = new ConceptReferenceRange();
+		defaultReferenceRange.setConceptNumeric(conceptNumeric);
+		defaultReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+		defaultReferenceRange.setHiCritical(conceptNumeric.getHiCritical());
+		defaultReferenceRange.setHiNormal(conceptNumeric.getHiNormal());
+		defaultReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+		defaultReferenceRange.setLowCritical(conceptNumeric.getLowCritical());
+		defaultReferenceRange.setLowNormal(conceptNumeric.getLowNormal());
+		return defaultReferenceRange;
 	}
-	
+
+	/**
+	 * Combines multiple matching reference ranges into one by selecting the strictest bound for
+	 * each limit. For low bounds, the highest value is strictest; for high bounds, the lowest.
+	 * For example, ranges 80-150 and 60-140 combine to 80-140.
+	 */
+	private static ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
+		if (conceptReferenceRanges.size() == 1) {
+			return conceptReferenceRanges.get(0);
+		}
+
+		ConceptReferenceRange strictestRange = new ConceptReferenceRange();
+		strictestRange.setConceptNumeric(conceptReferenceRanges.get(0).getConceptNumeric());
+
+		for (ConceptReferenceRange conceptReferenceRange : conceptReferenceRanges) {
+			if (conceptReferenceRange.getLowAbsolute() != null &&
+					(strictestRange.getLowAbsolute() == null || strictestRange.getLowAbsolute() < conceptReferenceRange.getLowAbsolute())) {
+				strictestRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
+			}
+
+			if (conceptReferenceRange.getLowCritical() != null &&
+					(strictestRange.getLowCritical() == null || strictestRange.getLowCritical() < conceptReferenceRange.getLowCritical())) {
+				strictestRange.setLowCritical(conceptReferenceRange.getLowCritical());
+			}
+
+			if (conceptReferenceRange.getLowNormal() != null &&
+					(strictestRange.getLowNormal() == null || strictestRange.getLowNormal() < conceptReferenceRange.getLowNormal())) {
+				strictestRange.setLowNormal(conceptReferenceRange.getLowNormal());
+			}
+
+			if (conceptReferenceRange.getHiNormal() != null &&
+					(strictestRange.getHiNormal() == null || strictestRange.getHiNormal() > conceptReferenceRange.getHiNormal())) {
+				strictestRange.setHiNormal(conceptReferenceRange.getHiNormal());
+			}
+
+			if (conceptReferenceRange.getHiCritical() != null &&
+					(strictestRange.getHiCritical() == null || strictestRange.getHiCritical() > conceptReferenceRange.getHiCritical())) {
+				strictestRange.setHiCritical(conceptReferenceRange.getHiCritical());
+			}
+
+			if (conceptReferenceRange.getHiAbsolute() != null &&
+					(strictestRange.getHiAbsolute() == null || strictestRange.getHiAbsolute() > conceptReferenceRange.getHiAbsolute())) {
+				strictestRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
+			}
+		}
+
+		return strictestRange;
+	}
+
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {
 		List<ConceptClass> mappedClasses = new ArrayList<>();
 		AdministrationService administrationService = Context.getAdministrationService();

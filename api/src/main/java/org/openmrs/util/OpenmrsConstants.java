@@ -858,7 +858,7 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_LOG_LOCATION, "",
 		        "A directory where the OpenMRS log file appender is stored. The log file name is 'openmrs.log'."));
-		
+
 		props.add(new GlobalProperty(GP_LOG_LAYOUT, DEFAULT_LOG_LAYOUT_PATTERN,
 		        "A log layout pattern which is used by the OpenMRS file appender."));
 		
