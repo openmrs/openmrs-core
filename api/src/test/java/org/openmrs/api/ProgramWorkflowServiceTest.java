@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,7 @@ import org.openmrs.ConceptStateConversion;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramAttributeType;
@@ -1113,5 +1115,40 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	//
 	//    	return props;
 	//    }
-	
+
+	/**
+	 * Regression guard for the program-attribute lookup: the attribute name is bound as a query
+	 * parameter rather than concatenated into the native SQL, so a value carrying SQL control
+	 * characters is matched literally instead of altering the query.
+	 *
+	 * @see ProgramWorkflowService#getPatientProgramAttributeByAttributeName(List, String)
+	 */
+	@Test
+	public void getPatientProgramAttributeByAttributeName_shouldMatchTheAttributeNameLiterally() {
+		// attach a "ProgramId" attribute value to the existing enrollment for patient 2
+		ProgramAttributeType attributeType = pws.getProgramAttributeType(1);
+		assertEquals("ProgramId", attributeType.getName());
+
+		PatientProgramAttribute attribute = new PatientProgramAttribute();
+		attribute.setAttributeType(attributeType);
+		attribute.setValueReferenceInternal("1234");
+
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		patientProgram.addAttribute(attribute);
+		pws.savePatientProgram(patientProgram);
+		Context.flushSession();
+
+		List<Integer> patientIds = Arrays.asList(2);
+
+		// the real name resolves the stored value
+		Map<Object, Object> byName = pws.getPatientProgramAttributeByAttributeName(patientIds, "ProgramId");
+		assertTrue(byName.containsKey(2));
+		assertTrue(((String) byName.get(2)).contains("1234"));
+
+		// a name containing SQL quote characters is compared literally, so it resolves no attribute
+		// type and returns nothing, rather than being interpreted as part of the query
+		Map<Object, Object> byNameWithQuotes = pws.getPatientProgramAttributeByAttributeName(patientIds,
+		    "ProgramId' OR '1'='1");
+		assertTrue(byNameWithQuotes.isEmpty());
+	}
 }
