@@ -16,10 +16,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -700,30 +702,30 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return the name explicitly marked as fully specified for the locale
 	 */
 	public ConceptName getFullySpecifiedName(Locale locale) {
-		if (locale != null && !getNames(locale).isEmpty()) {
-			//get the first fully specified name, since every concept must have a fully specified name,
-			//then, this loop will have to return a name
-			for (ConceptName conceptName : getNames(locale)) {
-				if (ObjectUtils.nullSafeEquals(conceptName.isFullySpecifiedName(), true)) {
-					return conceptName;
-				}
-			}
-
-			// look for partially locale match - any language matches takes precedence over country matches.
-			ConceptName bestMatch = null;
-			for (ConceptName conceptName : getPartiallyCompatibleNames(locale)) {
-				if (ObjectUtils.nullSafeEquals(conceptName.isFullySpecifiedName(), true)) {
-					Locale nameLocale = conceptName.getLocale();
-					if (locale.getLanguage().equals(nameLocale.getLanguage())) {
-						return conceptName;
-					}
-					bestMatch = conceptName;
-				}
-			}
-			return bestMatch;
-
+		if (locale == null || nonVoidedNamesIn(locale).findAny().isEmpty()) {
+			return null;
 		}
-		return null;
+
+		// exact locale match
+		Optional<ConceptName> exact = nonVoidedNamesIn(locale).filter(ConceptName::isFullySpecifiedName).findFirst();
+		if (exact.isPresent()) {
+			return exact.get();
+		}
+
+		// partial locale fallback — language match takes precedence over country match
+		ConceptName bestMatch = null;
+		Iterator<ConceptName> partials = partiallyCompatibleNamesFor(locale).filter(ConceptName::isFullySpecifiedName)
+		        .iterator();
+		while (partials.hasNext()) {
+			ConceptName candidate = partials.next();
+			if (locale.getLanguage().equals(candidate.getLocale().getLanguage())) {
+				return candidate;
+			}
+			if (bestMatch == null) {
+				bestMatch = candidate;
+			}
+		}
+		return bestMatch;
 	}
 
 	/**
