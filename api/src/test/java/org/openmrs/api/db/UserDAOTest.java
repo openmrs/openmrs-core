@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.Security;
@@ -221,6 +222,26 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 
 		lc = dao.getLoginCredential(userJoe);
 		assertTrue(lc.getSecretAnswer().startsWith("$argon2id$"), "legacy hash should be upgraded to Argon2id after verification");
+	}
+
+	@Test
+	public void isSecretAnswer_shouldPersistUpgradeThroughServiceProxy() {
+		dao.saveUser(userJoe, PASSWORD);
+
+		LoginCredential lc = dao.getLoginCredential(userJoe);
+		String legacySha512Hash = Security.encodeString(SECRET_ANSWER.toLowerCase() + lc.getSalt());
+		lc.setSecretAnswer(legacySha512Hash);
+		dao.updateLoginCredential(lc);
+		Context.flushSession();
+		Context.clearSession();
+
+		UserService userService = Context.getUserService();
+		assertTrue(userService.isSecretAnswer(userJoe, SECRET_ANSWER),
+		        "legacy hash should verify through service proxy");
+
+		lc = dao.getLoginCredential(userJoe);
+		assertTrue(lc.getSecretAnswer().startsWith("$argon2id$"),
+		        "lazy upgrade must persist when isSecretAnswer runs through the service proxy");
 	}
 
 	@Test

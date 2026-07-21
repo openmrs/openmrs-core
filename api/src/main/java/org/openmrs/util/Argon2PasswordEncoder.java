@@ -49,12 +49,16 @@ class Argon2PasswordEncoder {
 	
 	boolean matches(String rawPassword, String encodedHash) {
 		String[] parts = parseHash(encodedHash);
-		if (parts.length < 2) {
+		if (parts.length < 5) {
 			return false;
 		}
-		byte[] salt = Base64.getUrlDecoder().decode(parts[0]);
-		byte[] expectedHash = Base64.getUrlDecoder().decode(parts[1]);
-		byte[] actualHash = argon2id(rawPassword.getBytes(StandardCharsets.UTF_8), salt, expectedHash.length);
+		int embeddedMemory = Integer.parseInt(parts[0]);
+		int embeddedIterations = Integer.parseInt(parts[1]);
+		int embeddedParallelism = Integer.parseInt(parts[2]);
+		byte[] salt = Base64.getUrlDecoder().decode(parts[3]);
+		byte[] expectedHash = Base64.getUrlDecoder().decode(parts[4]);
+		byte[] actualHash = argon2idWithParams(rawPassword.getBytes(StandardCharsets.UTF_8), salt, expectedHash.length,
+		    embeddedMemory, embeddedIterations, embeddedParallelism);
 		return constantTimeEquals(expectedHash, actualHash);
 	}
 	
@@ -72,7 +76,15 @@ class Argon2PasswordEncoder {
 		if (parts.length != 6 || !"argon2id".equals(parts[1]) || !"v=19".equals(parts[2])) {
 			return new String[0];
 		}
-		return new String[] { parts[4], parts[5] };
+		String[] params = parts[3].split(",");
+		if (params.length != 3) {
+			return new String[0];
+		}
+		int memory = Integer.parseInt(params[0].substring(2));
+		int iterations = Integer.parseInt(params[1].substring(2));
+		int parallelism = Integer.parseInt(params[2].substring(2));
+		return new String[] { String.valueOf(memory), String.valueOf(iterations), String.valueOf(parallelism), parts[4],
+		        parts[5] };
 	}
 	
 	// ==================== Argon2id ====================
@@ -93,21 +105,25 @@ class Argon2PasswordEncoder {
 	}
 	
 	private byte[] argon2id(byte[] password, byte[] salt, int desiredLength) {
-		int segmentLength = Math.max(memorySize / (parallelism * 4), 2);
-		int totalBlocks = parallelism * segmentLength * 4;
+		return argon2idWithParams(password, salt, desiredLength, memorySize, iterations, parallelism);
+	}
+	
+	private byte[] argon2idWithParams(byte[] password, byte[] salt, int desiredLength, int mem, int iter, int para) {
+		int segmentLength = Math.max(mem / (para * 4), 2);
+		int totalBlocks = para * segmentLength * 4;
 		
 		long[][] blocks = new long[totalBlocks][128];
-		byte[] h0 = h0Hash(password, salt);
+		byte[] h0 = h0HashWithParams(password, salt, desiredLength, mem, iter, para);
 		
-		initializeBlocks(h0, blocks, segmentLength);
-		performPasses(blocks, segmentLength, parallelism, totalBlocks);
-		long[] finalBlock = finalizeBlocks(blocks, parallelism, segmentLength);
+		initializeBlocks(h0, blocks, segmentLength, para);
+		performPasses(blocks, segmentLength, para, totalBlocks, iter);
+		long[] finalBlock = finalizeBlocks(blocks, para, segmentLength);
 		
 		return hPrime(longsToBytes(finalBlock, 1024), desiredLength);
 	}
 	
-	private void initializeBlocks(byte[] h0, long[][] blocks, int segmentLength) {
-		for (int i = 0; i < parallelism; i++) {
+	private void initializeBlocks(byte[] h0, long[][] blocks, int segmentLength, int para) {
+		for (int i = 0; i < para; i++) {
 			blocks[i * segmentLength * 4] = toLongs(computeBlockHash(h0, 1, i));
 			blocks[i * segmentLength * 4 + 1] = toLongs(computeBlockHash(h0, 2, i));
 		}
@@ -122,9 +138,9 @@ class Argon2PasswordEncoder {
 		return hPrime(input, 1024);
 	}
 	
-	private void performPasses(long[][] blocks, int segmentLength, int parallelism, int totalBlocks) {
+	private void performPasses(long[][] blocks, int segmentLength, int parallelism, int totalBlocks, int numIterations) {
 		ArgonContext ctx = new ArgonContext(segmentLength, parallelism, blocks);
-		for (int pass = 0; pass < iterations; pass++) {
+		for (int pass = 0; pass < numIterations; pass++) {
 			for (int slice = 0; slice < 4; slice++) {
 				for (int lane = 0; lane < parallelism; lane++) {
 					for (int index = 0; index < segmentLength; index++) {
@@ -290,6 +306,10 @@ class Argon2PasswordEncoder {
 	// ==================== H0 and H' ====================
 	
 	private byte[] h0Hash(byte[] password, byte[] salt) {
+		return h0HashWithParams(password, salt, hashLength, memorySize, iterations, parallelism);
+	}
+	
+	private byte[] h0HashWithParams(byte[] password, byte[] salt, int hashLen, int mem, int iter, int para) {
 		byte[] paramBlock = new byte[72];
 		paramBlock[0] = (byte) 64;
 		paramBlock[1] = 0;
@@ -305,15 +325,15 @@ class Argon2PasswordEncoder {
 		pos += salt.length;
 		le32(fullInput, pos, 1);
 		pos += 4;
-		le32(fullInput, pos, hashLength);
+		le32(fullInput, pos, hashLen);
 		pos += 4;
-		le32(fullInput, pos, memorySize);
+		le32(fullInput, pos, mem);
 		pos += 4;
-		le32(fullInput, pos, iterations);
+		le32(fullInput, pos, iter);
 		pos += 4;
 		le32(fullInput, pos, 2);
 		pos += 4;
-		le32(fullInput, pos, 1);
+		le32(fullInput, pos, para);
 		pos += 4;
 		
 		return hPrime(fullInput, 64);

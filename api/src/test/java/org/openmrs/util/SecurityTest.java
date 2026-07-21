@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Base64;
@@ -60,6 +61,24 @@ public class SecurityTest {
 		String password = "testPassword123";
 		String hash = Security.encodeCredential(password);
 		assertTrue(Security.hashMatches(hash, password));
+	}
+	
+	/**
+	 * @see Security#hashMatches(String,String)
+	 */
+	@Test
+	public void hashMatches_shouldRejectArgon2idHashWithTamperedEmbeddedParams() {
+		String password = "testPassword123";
+		String hash = Security.encodeCredential(password);
+		assertTrue(hash.startsWith("$argon2id$"));
+
+		String[] parts = hash.split("\\$");
+		String originalT = parts[3].split(",")[1];
+		String bumpedHash = hash.replace(originalT, "t=99");
+		assertFalse(Security.hashMatches(bumpedHash, password),
+		        "hash must not verify when embedded iteration count is tampered");
+		assertTrue(Security.hashMatches(hash, password),
+		        "original hash must still verify");
 	}
 	
 	/**
