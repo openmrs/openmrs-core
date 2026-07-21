@@ -661,36 +661,36 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return null;
 		}
 
-		for (ConceptName nameInLocale : getNames(forLocale)) {
-			if (ObjectUtils.nullSafeEquals(nameInLocale.getLocalePreferred(), true)) {
-				return nameInLocale;
-			}
+		// exact locale match — find a name explicitly marked as locale-preferred
+		Optional<ConceptName> preferred = nonVoidedNamesIn(forLocale)
+		        .filter(n -> ObjectUtils.nullSafeEquals(n.getLocalePreferred(), true)).findFirst();
+		if (preferred.isPresent()) {
+			return preferred.get();
 		}
 
 		if (exact) {
 			return null;
-		} else {
-			// look for partially locale match - any language matches takes precedence over country matches.
-			ConceptName bestMatch = null;
-
-			for (ConceptName nameInLocale : getPartiallyCompatibleNames(forLocale)) {
-				if (ObjectUtils.nullSafeEquals(nameInLocale.getLocalePreferred(), true)) {
-					Locale nameLocale = nameInLocale.getLocale();
-					if (forLocale.getLanguage().equals(nameLocale.getLanguage())) {
-						return nameInLocale;
-					} else {
-						bestMatch = nameInLocale;
-					}
-
-				}
-			}
-
-			if (bestMatch != null) {
-				return bestMatch;
-			}
-
-			return getFullySpecifiedName(forLocale);
 		}
+
+		// partial locale fallback — language match takes precedence over country match
+		ConceptName bestMatch = null;
+		Iterator<ConceptName> partials = partiallyCompatibleNamesFor(forLocale)
+		        .filter(n -> ObjectUtils.nullSafeEquals(n.getLocalePreferred(), true)).iterator();
+		while (partials.hasNext()) {
+			ConceptName candidate = partials.next();
+			if (forLocale.getLanguage().equals(candidate.getLocale().getLanguage())) {
+				return candidate;
+			}
+			if (bestMatch == null) {
+				bestMatch = candidate;
+			}
+		}
+
+		if (bestMatch != null) {
+			return bestMatch;
+		}
+
+		return getFullySpecifiedName(forLocale);
 	}
 
 	/**
