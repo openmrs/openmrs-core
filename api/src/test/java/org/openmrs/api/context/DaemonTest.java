@@ -49,7 +49,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	@Test
 	public void executeScheduledTask_shouldNotBeCalledFromOtherMethodsOtherThanTimerSchedulerTask() throws Throwable {
 		try {
-			Daemon.executeScheduledTaskAsUser("", () -> {});
+			Daemon.executeScheduledTaskAsUser("", () -> {}, null);
 			fail("Should not be here, an exception should have been thrown in the line above");
 		} catch (APIException e) {
 			assertThat(e.getMessage(),
@@ -64,9 +64,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		// verify
 
 		// replay
-		APIException exception = assertThrows(APIException.class, () -> Daemon.createUser(new User(), "password", null));
+		APIException exception = assertThrows(APIException.class,
+		    () -> Daemon.createUser(new User(), "password", null, null));
 		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("Context.DAO.only",
-		    new Object[] { this.getClass().getName() }, Locale.ENGLISH)));
+		    new Object[] { "an unauthorized caller" }, Locale.ENGLISH)));
 	}
 
 	@Test
@@ -135,6 +136,11 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		} catch (APIAuthenticationException ex) {
 			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 		}
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldThrowWhenCalledWithoutCallerKey() {
+		assertThrows(APIException.class, () -> Daemon.runNewDaemonTask(() -> {}, null));
 	}
 
 	/**
