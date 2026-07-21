@@ -66,7 +66,7 @@ public class Security {
 	 *
 	 * @param rawPassword the cleartext password
 	 * @return String[] where [0] is the hashed password and [1] is the salt
-	 * @since 2.8.8
+	 * @since 2.8.9
 	 */
 	public static String[] encodePassword(String rawPassword) {
 		String encoded = getPasswordEncoder().encode(rawPassword);
@@ -81,7 +81,7 @@ public class Security {
 	 * @param rawPassword the cleartext password
 	 * @param salt the salt to use
 	 * @return String[] where [0] is the hashed password and [1] is the salt
-	 * @since 2.8.8
+	 * @since 2.8.9
 	 */
 	public static String[] encodePasswordWithSalt(String rawPassword, String salt) {
 		PasswordEncoder encoder = getPasswordEncoder();
@@ -98,7 +98,7 @@ public class Security {
 	 *
 	 * @param encodedPassword the encoded password string
 	 * @return String[] where [0] is the hash and [1] is the salt (empty string if absent)
-	 * @since 2.8.8
+	 * @since 2.8.9
 	 */
 	static String[] parseEncodedPassword(String encodedPassword) {
 		if (encodedPassword == null) {
@@ -115,7 +115,7 @@ public class Security {
 	 * @param storedHash the stored hashed password
 	 * @param storedSalt the stored salt
 	 * @return true if the password matches
-	 * @since 2.8.8
+	 * @since 2.8.9
 	 */
 	public static boolean checkPassword(String rawPassword, String storedHash, String storedSalt) {
 		if (rawPassword == null || storedHash == null) {

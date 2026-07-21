@@ -11,6 +11,9 @@ package org.openmrs.util;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * @since 2.8.9
+ */
 public class LegacyOpenmrsPasswordEncoder implements PasswordEncoder {
 
 	@Override
