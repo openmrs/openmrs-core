@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jakarta.persistence.Cacheable;
 
@@ -1009,6 +1010,45 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 
 		return names.stream().filter(n -> includeVoided || !n.getVoided()).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Returns a stream of non-voided names from the underlying collection. For internal use only —
+	 * avoids the defensive copy produced by {@link #getNames()}.
+	 */
+	private Stream<ConceptName> nonVoidedNames() {
+		return names == null ? Stream.empty() : names.stream().filter(n -> !n.getVoided());
+	}
+
+	/**
+	 * Returns a stream of non-voided names whose locale exactly matches the given locale. For internal
+	 * use only — avoids the defensive copy produced by {@link #getNames(Locale)}.
+	 */
+	private Stream<ConceptName> nonVoidedNamesIn(Locale locale) {
+		return nonVoidedNames().filter(n -> n.getLocale().equals(locale));
+	}
+
+	/**
+	 * Returns a stream of non-voided names with a partially compatible locale: matching language OR (if
+	 * the requested locale specifies a country) matching country. For internal use only — avoids the
+	 * defensive copy produced by {@link #getPartiallyCompatibleNames(Locale)}.
+	 */
+	private Stream<ConceptName> partiallyCompatibleNamesFor(Locale locale) {
+		String language = locale.getLanguage();
+		String country = locale.getCountry();
+		return nonVoidedNames().filter(n -> {
+			Locale nameLocale = n.getLocale();
+			return language.equals(nameLocale.getLanguage())
+			        || (StringUtils.isNotBlank(country) && country.equals(nameLocale.getCountry()));
+		});
+	}
+
+	/**
+	 * Returns {@code true} if this concept has at least one non-voided name. For internal use only —
+	 * avoids the defensive copy produced by {@link #getNames()}.
+	 */
+	private boolean hasNonVoidedNames() {
+		return names != null && names.stream().anyMatch(n -> !n.getVoided());
 	}
 
 	/**
