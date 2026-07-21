@@ -145,8 +145,8 @@ public final class Daemon {
 	}
 
 	/**
-	 * This method should not be called directly, only {@link ContextDAO#createUser(User, String, List)}
-	 * can legally invoke this method.
+	 * This method should not be called directly; it is guarded by the daemon caller key, which is
+	 * issued only to the {@link ContextDAO} implementation.
 	 * <p>
 	 * <strong>Should</strong> only allow the creation of new users, not the edition of existing ones
 	 *
@@ -158,7 +158,6 @@ public final class Daemon {
 	 * @since 2.3.0
 	 */
 	public static User createUser(User user, String password, List<String> roleNames, CallerKey callerKey) throws Exception {
-		// verify the caller holds the daemon caller key
 		requireDaemonCaller(callerKey, "Context.DAO.only");
 
 		// create a new thread and execute that task in it
@@ -488,7 +487,7 @@ public final class Daemon {
 
 	/**
 	 * @return the capability required to invoke Daemon's guarded entry points. Package-private, so it
-	 *         is only reachable from trusted collaborators in this package.
+	 *         is reachable only by trusted collaborators.
 	 */
 	static CallerKey callerKey() {
 		return CALLER_KEY;
@@ -510,7 +509,8 @@ public final class Daemon {
 	/**
 	 * Executes the given task as the given user. <br>
 	 * <br>
-	 * This can only be called from {@link JobRequestHandlerAdapter} during actual task execution
+	 * This is guarded by the daemon caller key, which is issued only to
+	 * {@link JobRequestHandlerAdapter}.
 	 * <p>
 	 * <strong>Should</strong> not be called from other methods other than JobRequestHandlerAdapter
 	 * <strong>Should</strong> not throw error if called from a JobRequestHandlerAdapter class
@@ -522,7 +522,6 @@ public final class Daemon {
 	 */
 	public static void executeScheduledTaskAsUser(String userSystemId, DaemonTask runnable, CallerKey callerKey)
 	        throws Exception {
-		// verify the caller holds the daemon caller key
 		requireDaemonCaller(callerKey, "executeScheduledTaskAsUser can only be called from JobRequestHandlerAdapter");
 
 		isDaemonThread.set(true);

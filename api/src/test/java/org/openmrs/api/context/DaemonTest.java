@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.context;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
@@ -141,6 +142,24 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	@Test
 	public void runNewDaemonTask_shouldThrowWhenCalledWithoutCallerKey() {
 		assertThrows(APIException.class, () -> Daemon.runNewDaemonTask(() -> {}, null));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldThrowWhenCalledWithAForgedCallerKey() throws Exception {
+		// A CallerKey minted outside Daemon (here via reflection) must be rejected: the guard compares
+		// against the genuine singleton by identity, so a non-null but foreign key does not pass.
+		Constructor<Daemon.CallerKey> constructor = Daemon.CallerKey.class.getDeclaredConstructor();
+		constructor.setAccessible(true);
+		Daemon.CallerKey forgedKey = constructor.newInstance();
+
+		assertThrows(APIException.class, () -> Daemon.runNewDaemonTask(() -> {}, forgedKey));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldRunTheTaskWhenGivenTheGenuineCallerKey() throws Exception {
+		AtomicBoolean wasRun = new AtomicBoolean(false);
+		Daemon.runNewDaemonTask(() -> wasRun.set(true), Daemon.callerKey()).get();
+		assertThat(wasRun.get(), is(true));
 	}
 
 	/**
