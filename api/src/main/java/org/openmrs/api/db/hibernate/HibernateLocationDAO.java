@@ -18,16 +18,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
@@ -448,52 +448,200 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@Override
 	public List<Location> getLocations(LocationSearchCriteria criteria) {
-		Collection<LocationTag> tags = criteria.getLocationTags();
+		Session session = sessionFactory.getCurrentSession();
 
-		return getAllLocations(true).stream().filter(loc -> matchesCriteria(loc, criteria, tags))
-		        .collect(Collectors.toList());
+		// a non-null but empty id list means a descendant filter was asked for and matched nothing, which no
+		// other predicate can widen again
+		List<Integer> descendantIds = getDescendantIds(session, criteria);
+		if (descendantIds != null && descendantIds.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Location> cq = cb.createQuery(Location.class);
+		Root<Location> root = cq.from(Location.class);
+
+		List<Predicate> predicates = buildPredicates(cb, cq, root, criteria, descendantIds);
+
+		cq.where(cb.and(predicates.toArray(new Predicate[0])));
+		cq.orderBy(cb.asc(root.get("name")));
+
+		Query<Location> query = session.createQuery(cq);
+		applyPagination(query, criteria);
+
+		return query.getResultList();
 	}
 
-	private boolean matchesCriteria(Location loc, LocationSearchCriteria criteria, Collection<LocationTag> tags) {
-		if (!criteria.getIncludeRetired() && Boolean.TRUE.equals(loc.getRetired())) {
-			return false;
+	/**
+	 * Resolves the ids of every location beneath {@code criteria.getDescendantOfLocation()} by walking the
+	 * hierarchy one level at a time. Each level issues a single query filtered to the current level's children,
+	 * so only the relevant subtree is touched rather than the whole location table. Avoiding a recursive CTE keeps
+	 * this compatible with databases that lack {@code WITH RECURSIVE} support (MySQL versions earlier than 8.0).
+	 * <p>
+	 * When retired locations are excluded, a retired location prunes its whole subtree; the ancestor is no
+	 * exception, so a retired ancestor yields no descendants at all.
+	 *
+	 * @return {@code null} when no descendant filter is requested; otherwise the descendant location ids, which is
+	 *         empty when the ancestor has no (matching) descendants
+	 */
+	private List<Integer> getDescendantIds(Session session, LocationSearchCriteria criteria) {
+		if (criteria.getDescendantOfLocation() == null) {
+			return null;
 		}
 
-		if (criteria.getDescendantOfLocation() != null
-		        && !isDescendantOf(loc, criteria.getDescendantOfLocation(), criteria.getIncludeRetired())) {
-			return false;
+		Integer ancestorId = criteria.getDescendantOfLocation().getLocationId();
+		if (ancestorId == null) {
+			return Collections.emptyList();
 		}
 
-		if (StringUtils.isNotBlank(criteria.getNameFragment())
-		        && (loc.getName() == null
-		                || !loc.getName().toLowerCase().startsWith(criteria.getNameFragment().toLowerCase()))) {
-			return false;
+		// A retired location prunes its whole subtree, and that applies to the ancestor the walk starts from:
+		// the in-memory isDescendantOf() this replaced walked upwards from each candidate and rejected it as
+		// soon as any node on the path - the ancestor included - was retired. So if the ancestor is filtered
+		// out the walk never starts.
+		if (!ancestorPassesRetiredFilter(session, criteria, ancestorId)) {
+			return Collections.emptyList();
 		}
 
-		if (tags != null && !tags.isEmpty()) {
-			Set<LocationTag> locTags = loc.getTags();
-			boolean tagMatch = criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL
-			        ? tags.stream().allMatch(locTags::contains)
-			        : tags.stream().anyMatch(locTags::contains);
-			if (!tagMatch) {
-				return false;
+		// Track every id already queued so a pathological parent cycle can neither loop forever nor pull the
+		// starting location back in as its own descendant. Seeding the ancestor keeps it out of the results.
+		Set<Integer> seen = new LinkedHashSet<>();
+		seen.add(ancestorId);
+		List<Integer> descendantIds = new ArrayList<>();
+		List<Integer> currentLevel = Collections.singletonList(ancestorId);
+
+		while (!currentLevel.isEmpty()) {
+			List<Integer> nextLevel = new ArrayList<>();
+			for (Integer childId : getChildIds(session, criteria, currentLevel)) {
+				if (seen.add(childId)) {
+					descendantIds.add(childId);
+					nextLevel.add(childId);
+				}
 			}
+			currentLevel = nextLevel;
 		}
 
-		return true;
+		return descendantIds;
 	}
 
-	private boolean isDescendantOf(Location loc, Location ancestor, boolean includeRetired) {
-		Location current = loc.getParentLocation();
-		while (current != null) {
-			if (!includeRetired && Boolean.TRUE.equals(current.getRetired())) {
-				return false;
-			}
-			if (ancestor.equals(current)) {
-				return true;
-			}
-			current = current.getParentLocation();
+	/**
+	 * Reports whether the ancestor a descendant search starts from survives the criteria's retired filter. The
+	 * flag is read back from the database rather than off {@code criteria.getDescendantOfLocation()}, so that the
+	 * ancestor's current state is used even when the caller handed in a stale instance, and so that changes still
+	 * pending in the session - a location retired earlier in the same transaction, say - are seen. No query is
+	 * issued when retired locations are included, since then nothing can be pruned.
+	 */
+	private boolean ancestorPassesRetiredFilter(Session session, LocationSearchCriteria criteria, Integer ancestorId) {
+		if (criteria.getIncludeRetired()) {
+			return true;
 		}
-		return false;
+
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		Root<Location> root = cq.from(Location.class);
+		cq.select(root.get("locationId"));
+		cq.where(cb.and(cb.equal(root.get("locationId"), ancestorId), cb.isFalse(root.get("retired"))));
+
+		return !session.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+	}
+
+	/**
+	 * Fetches the ids of the direct children of {@code parentIds}, honouring the criteria's retired filter so
+	 * that a retired location is not descended into.
+	 */
+	private List<Integer> getChildIds(Session session, LocationSearchCriteria criteria, List<Integer> parentIds) {
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		Root<Location> root = cq.from(Location.class);
+		cq.select(root.get("locationId"));
+
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(root.get("parentLocation").get("locationId").in(parentIds));
+		if (!criteria.getIncludeRetired()) {
+			predicates.add(cb.isFalse(root.get("retired")));
+		}
+		cq.where(cb.and(predicates.toArray(new Predicate[0])));
+
+		return session.createQuery(cq).getResultList();
+	}
+
+	private List<Predicate> buildPredicates(CriteriaBuilder cb, CriteriaQuery<Location> cq, Root<Location> root,
+	        LocationSearchCriteria criteria, List<Integer> descendantIds) {
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (!criteria.getIncludeRetired()) {
+			predicates.add(cb.isFalse(root.get("retired")));
+		}
+
+		if (descendantIds != null) {
+			predicates.add(root.get("locationId").in(descendantIds));
+		}
+
+		addNameFragmentPredicate(cb, root, criteria, predicates);
+		addTagPredicates(cb, cq, root, criteria, predicates);
+
+		return predicates;
+	}
+
+	private void addNameFragmentPredicate(CriteriaBuilder cb, Root<Location> root, LocationSearchCriteria criteria,
+	        List<Predicate> predicates) {
+		if (StringUtils.isNotBlank(criteria.getNameFragment())) {
+			// The fragment is a literal prefix, so escape LIKE wildcards ('%', '_') in it; the trailing '%' that
+			// MatchMode.START appends stays a wildcard and is applied against the already-escaped fragment.
+			String pattern = MatchMode.START.toLowerCasePattern(escapeLikeWildcards(criteria.getNameFragment()));
+			predicates.add(cb.like(cb.lower(root.get("name")), pattern, '\\'));
+		}
+	}
+
+	/**
+	 * Escapes the LIKE wildcards in a value bound as a query parameter, for use with an explicit
+	 * {@code ESCAPE '\'} clause. {@link HibernateUtil#escapeSqlWildcards(String, SessionFactory)} does not fit
+	 * here: it doubles quotes and escapes {@code '*'}, neither of which applies to a bound parameter, and it
+	 * leaves a backslash already present in the value unescaped.
+	 */
+	private String escapeLikeWildcards(String value) {
+		// the escape character has to go first, or the backslashes added below would be escaped in turn
+		return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+	}
+
+	private void addTagPredicates(CriteriaBuilder cb, CriteriaQuery<Location> cq, Root<Location> root,
+	        LocationSearchCriteria criteria, List<Predicate> predicates) {
+		if (criteria.getLocationTags() == null || criteria.getLocationTags().isEmpty()) {
+			return;
+		}
+
+		List<Integer> tagIds = getLocationTagIds(new ArrayList<>(criteria.getLocationTags()));
+		if (tagIds.isEmpty()) {
+			return;
+		}
+
+		// The matching tags are counted in a correlated subquery rather than joined into the outer query. A join
+		// multiplies the location rows and needs a GROUP BY to collapse them again, which would leave
+		// setFirstResult/setMaxResults paging over grouped rows and, on MySQL, depend on how the dialect renders
+		// a GROUP BY over a whole entity under ONLY_FULL_GROUP_BY. This is the same shape as
+		// getLocationsHavingAllTags and keeps the outer query at one row per location.
+		Subquery<Long> matchedTagCount = cq.subquery(Long.class);
+		Root<Location> subRoot = matchedTagCount.from(Location.class);
+		Join<Location, LocationTag> tagsJoin = subRoot.join("tags");
+		matchedTagCount.select(cb.count(tagsJoin)).where(cb.and(tagsJoin.get("locationTagId").in(tagIds),
+		    cb.equal(subRoot.get("locationId"), root.get("locationId"))));
+
+		if (criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL) {
+			// location_tag_map holds each pairing once, so the count is the number of distinct tags matched. An
+			// unsaved tag contributes a null id that can never match, which correctly keeps ALL from matching.
+			predicates.add(cb.equal(matchedTagCount, (long) tagIds.size()));
+		} else {
+			predicates.add(cb.greaterThan(matchedTagCount, 0L));
+		}
+	}
+
+	private void applyPagination(Query<Location> query, LocationSearchCriteria criteria) {
+		// Mirror the bounds handling of getLocations(String, ...): a non-positive maxResults means "no limit"
+		// rather than an empty result, and a negative startIndex is ignored rather than passed to the driver.
+		if (criteria.getStartIndex() != null && criteria.getStartIndex() >= 0) {
+			query.setFirstResult(criteria.getStartIndex());
+		}
+		if (criteria.getMaxResults() != null && criteria.getMaxResults() > 0) {
+			query.setMaxResults(criteria.getMaxResults());
+		}
 	}
 }
