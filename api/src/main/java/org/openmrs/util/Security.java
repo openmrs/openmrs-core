@@ -25,6 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,10 @@ public class Security {
 
 	private static PasswordEncoder getPasswordEncoder() {
 		try {
+			if (ServiceContext.getInstance().getApplicationContext() == null) {
+				log.debug("Spring context not initialized; falling back to legacy password encoder");
+				return new LegacyOpenmrsPasswordEncoder();
+			}
 			return Context.getRegisteredComponent("openmrsPasswordEncoder", PasswordEncoder.class);
 		}
 		catch (RuntimeException e) {
