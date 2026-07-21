@@ -403,7 +403,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 		preferredName.setLocalePreferred(true);
 		//add this name, if it is new or not among this concept's names
-		if (preferredName.getConceptNameId() == null || !getNames().contains(preferredName)) {
+		if (preferredName.getConceptNameId() == null || nonVoidedNames().noneMatch(n -> n.equals(preferredName))) {
 			addName(preferredName);
 		}
 	}
@@ -416,14 +416,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return the tagged name, or null if no name has the tag
 	 */
 	public ConceptName findNameTaggedWith(ConceptNameTag conceptNameTag) {
-		ConceptName taggedName = null;
-		for (ConceptName possibleName : getNames()) {
-			if (possibleName.hasTag(conceptNameTag)) {
-				taggedName = possibleName;
-				break;
-			}
-		}
-		return taggedName;
+		return nonVoidedNames().filter(n -> n.hasTag(conceptNameTag)).findFirst().orElse(null);
 	}
 
 	/**
@@ -529,21 +522,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (name == null) {
 			return false;
 		}
-
-		Collection<ConceptName> currentNames;
-		if (locale == null) {
-			currentNames = getNames();
-		} else {
-			currentNames = getNames(locale);
-		}
-
-		for (ConceptName currentName : currentNames) {
-			if (name.equalsIgnoreCase(currentName.getName())) {
-				return true;
-			}
-		}
-
-		return false;
+		Stream<ConceptName> candidates = (locale == null) ? nonVoidedNames() : nonVoidedNamesIn(locale);
+		return candidates.anyMatch(n -> name.equalsIgnoreCase(n.getName()));
 	}
 
 	/**
@@ -831,7 +811,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		fullySpecifiedName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		//add this name, if it is new or not among this concept's names
-		if (fullySpecifiedName.getConceptNameId() == null || !getNames().contains(fullySpecifiedName)) {
+		if (fullySpecifiedName.getConceptNameId() == null || nonVoidedNames().noneMatch(n -> n.equals(fullySpecifiedName))) {
 			addName(fullySpecifiedName);
 		}
 	}
@@ -858,7 +838,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 			shortName.setConceptNameType(ConceptNameType.SHORT);
 			if (StringUtils.isNotBlank(shortName.getName())
-			        && (shortName.getConceptNameId() == null || !getNames().contains(shortName))) {
+			        && (shortName.getConceptNameId() == null || nonVoidedNames().noneMatch(n -> n.equals(shortName)))) {
 				//add this name, if it is new or not among this concept's names
 				addName(shortName);
 			}
@@ -969,7 +949,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return whether this concept has the given name in any locale
 	 */
 	public boolean isNamed(String name) {
-		return getNames().stream().anyMatch(cn -> name.equals(cn.getName()));
+		return nonVoidedNames().anyMatch(n -> name.equals(n.getName()));
 	}
 
 	/**
