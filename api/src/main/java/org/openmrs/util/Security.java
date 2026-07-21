@@ -268,18 +268,6 @@ public class Security {
     }
 
 	/**
-	 * Checks if a password matches a user's bootstrap password.
-	 * 
-	 * @param user the user
-	 * @param password the password to check
-	 * @return true if the password is the user's bootstrap password
-	 * @since 2.8.8
-	 */
-	public static boolean isBootstrapPassword(org.openmrs.User user, String password) {
-		return validateBootstrapPassword(user, password);
-	}
-
-	/**
 	 /**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
 	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.

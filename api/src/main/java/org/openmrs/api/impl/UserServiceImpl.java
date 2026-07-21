@@ -852,14 +852,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
     }
 	
 	/**
-	 * @see org.openmrs.api.UserService#isBootstrapPassword(User, String)
-	 */
-	@Override
-	public boolean isBootstrapPassword(User user, String password) {
-		return Security.isBootstrapPassword(user, password);
-	}
-	
-	/**
 	 * @see org.openmrs.api.UserService#isBootstrapPasswordExpired(User)
 	 */
 	@Override

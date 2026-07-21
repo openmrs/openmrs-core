@@ -643,17 +643,6 @@ public interface UserService extends OpenmrsService {
 	void forcePasswordChange(User user);
 	
 	/**
-	 * Checks if a user is currently using their bootstrap password.
-	 * 
-	 * @param user the user
-	 * @param password the password to check
-	 * @return true if the password is the user's bootstrap password
-	 * @since 2.8.8
-	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
-	boolean isBootstrapPassword(User user, String password);
-	
-	/**
 	 * Checks if a user's bootstrap password has expired.
 	 * 
 	 * Bootstrap passwords are considered expired when the user has been
