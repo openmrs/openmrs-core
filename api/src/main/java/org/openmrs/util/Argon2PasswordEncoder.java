@@ -81,10 +81,10 @@ class Argon2PasswordEncoder {
 			return new String[0];
 		}
 		int memory = Integer.parseInt(params[0].substring(2));
-		int iterations = Integer.parseInt(params[1].substring(2));
-		int parallelism = Integer.parseInt(params[2].substring(2));
-		return new String[] { String.valueOf(memory), String.valueOf(iterations), String.valueOf(parallelism), parts[4],
-		        parts[5] };
+		int parsedIterations = Integer.parseInt(params[1].substring(2));
+		int parsedParallelism = Integer.parseInt(params[2].substring(2));
+		return new String[] { String.valueOf(memory), String.valueOf(parsedIterations), String.valueOf(parsedParallelism),
+		        parts[4], parts[5] };
 	}
 	
 	// ==================== Argon2id ====================
@@ -194,7 +194,7 @@ class Argon2PasswordEncoder {
 	
 	private int getReferenceIndex(int pass, int slice, int lane, int index, int curIdx, ArgonContext ctx) {
 		int segmentLength = ctx.segmentLength;
-		int parallelism = ctx.parallelism;
+		int ctxParallelism = ctx.parallelism;
 		long[][] blocks = ctx.blocks;
 		int laneLength = segmentLength * 4;
 		
@@ -209,7 +209,7 @@ class Argon2PasswordEncoder {
 		referenceAreaSize = Math.max(referenceAreaSize, 1);
 		
 		pseudoRand = Long.remainderUnsigned(pseudoRand, referenceAreaSize);
-		pseudoRand = Long.remainderUnsigned(pseudoRand, parallelism);
+		pseudoRand = Long.remainderUnsigned(pseudoRand, ctxParallelism);
 		
 		int refLane = (pass == 0 && slice == 0) ? lane : (int) pseudoRand;
 		
@@ -304,10 +304,6 @@ class Argon2PasswordEncoder {
 	}
 	
 	// ==================== H0 and H' ====================
-	
-	private byte[] h0Hash(byte[] password, byte[] salt) {
-		return h0HashWithParams(password, salt, hashLength, memorySize, iterations, parallelism);
-	}
 	
 	private byte[] h0HashWithParams(byte[] password, byte[] salt, int hashLen, int mem, int iter, int para) {
 		byte[] paramBlock = new byte[72];
