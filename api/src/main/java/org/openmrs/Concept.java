@@ -729,23 +729,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 
 	/**
-	 * Returns all names available for locale language "or" country. <br>
-	 * <br>
-	 *
-	 * @param locale locale for which names should be returned
-	 * @return Collection of ConceptNames with the given locale language or country
-	 */
-	private Collection<ConceptName> getPartiallyCompatibleNames(Locale locale) {
-		String language = locale.getLanguage();
-		String country = locale.getCountry();
-
-		return getNames().stream()
-		        .filter(n -> language.equals(n.getLocale().getLanguage())
-		                || StringUtils.isNotBlank(country) && country.equals(n.getLocale().getCountry()))
-		        .collect(Collectors.toSet());
-	}
-
-	/**
 	 * Returns all names from compatible locales. A locale is considered compatible if it is exactly the
 	 * same locale, or if either locale has no country specified and the language matches. <br>
 	 * <br>
@@ -767,12 +750,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 
 		if (compatibleNames == null) {
-			compatibleNames = new ArrayList<>();
-			for (ConceptName possibleName : getNames()) {
-				if (LocaleUtility.areCompatible(possibleName.getLocale(), desiredLocale)) {
-					compatibleNames.add(possibleName);
-				}
-			}
+			compatibleNames = nonVoidedNames().filter(n -> LocaleUtility.areCompatible(n.getLocale(), desiredLocale))
+			        .collect(Collectors.toList());
 			compatibleCache.put(desiredLocale, compatibleNames);
 		}
 		return compatibleNames;
@@ -1006,8 +985,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 	/**
 	 * Returns a stream of non-voided names with a partially compatible locale: matching language OR (if
-	 * the requested locale specifies a country) matching country. For internal use only — avoids the
-	 * defensive copy produced by {@link #getPartiallyCompatibleNames(Locale)}.
+	 * the requested locale specifies a country) matching country. For internal use only — avoids
+	 * creating intermediate collections during name resolution.
 	 */
 	private Stream<ConceptName> partiallyCompatibleNamesFor(Locale locale) {
 		String language = locale.getLanguage();
