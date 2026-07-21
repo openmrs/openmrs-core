@@ -627,11 +627,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		ConceptName fullySpecifiedName = getFullySpecifiedName(locale);
 		if (fullySpecifiedName != null) {
 			return fullySpecifiedName;
-		} else if (!getSynonyms(locale).isEmpty()) {
-			return getSynonyms(locale).iterator().next();
 		}
 
-		return null;
+		return nonVoidedNamesIn(locale).filter(ConceptName::isSynonym).findFirst().orElse(null);
 	}
 
 	public ConceptName getPreferredName(Locale forLocale) {
@@ -856,20 +854,24 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return the short name, or null if none has been explicitly set
 	 */
 	public ConceptName getShortNameInLocale(Locale locale) {
+		if (locale == null) {
+			return null;
+		}
+
 		ConceptName bestMatch = null;
-		if (locale != null && !getShortNames().isEmpty()) {
-			for (ConceptName shortName : getShortNames()) {
-				Locale nameLocale = shortName.getLocale();
-				if (nameLocale.equals(locale)) {
-					return shortName;
-				}
-				// test for partially locale match - any language matches takes precedence over country matches.
-				if (OpenmrsUtil.nullSafeEquals(locale.getLanguage(), nameLocale.getLanguage())) {
-					bestMatch = shortName;
-				} else if (bestMatch == null && StringUtils.isNotBlank(locale.getCountry())
-				        && locale.getCountry().equals(nameLocale.getCountry())) {
-					bestMatch = shortName;
-				}
+		Iterator<ConceptName> shorts = nonVoidedNames().filter(ConceptName::isShort).iterator();
+		while (shorts.hasNext()) {
+			ConceptName shortName = shorts.next();
+			Locale nameLocale = shortName.getLocale();
+			if (nameLocale.equals(locale)) {
+				return shortName;
+			}
+			// partially locale match - language takes precedence over country
+			if (OpenmrsUtil.nullSafeEquals(locale.getLanguage(), nameLocale.getLanguage())) {
+				bestMatch = shortName;
+			} else if (bestMatch == null && StringUtils.isNotBlank(locale.getCountry())
+			        && locale.getCountry().equals(nameLocale.getCountry())) {
+				bestMatch = shortName;
 			}
 		}
 		return bestMatch;
@@ -923,7 +925,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		ConceptName shortestNameForConcept = null;
 
 		if (locale != null) {
-			for (ConceptName possibleName : getNames()) {
+			Iterator<ConceptName> allNames = nonVoidedNames().iterator();
+			while (allNames.hasNext()) {
+				ConceptName possibleName = allNames.next();
 				if (possibleName.getLocale().equals(locale) && ((shortestNameForLocale == null)
 				        || (possibleName.getName().length() < shortestNameForLocale.getName().length()))) {
 					shortestNameForLocale = possibleName;
