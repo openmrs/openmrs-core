@@ -232,6 +232,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param uuid the universally unique identifier
 	 * @return the program which matches the given uuid
 	 */
+	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public PatientState getPatientStateByUuid(String uuid);
 
 	/**
@@ -506,6 +507,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param uuid the universally unique identifier
 	 * @return the patient program which matches the given uuid
 	 */
+	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public PatientProgram getPatientProgramByUuid(String uuid);
 
 	/**
@@ -592,6 +594,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized({ "Get Patient Programs" })
 	public PatientProgramAttribute getPatientProgramAttributeByUuid(String var1);
 
+	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public Map<Object, Object> getPatientProgramAttributeByAttributeName(List<Integer> patients, String attributeName);
 
 	@Transactional(readOnly = true)
