@@ -1376,6 +1376,21 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 * @see LocationService#getLocations(LocationSearchCriteria)
 	 */
 	@Test
+	public void getLocations_shouldReturnDistinctResultsWhenMatchingMultipleTagsInAnyMode() {
+		LocationService ls = Context.getLocationService();
+		// Tags 3 and 4 are both present on locations 2 and 3; matching ANY must not return those twice
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setLocationTags(new HashSet<>(Arrays.asList(ls.getLocationTag(3), ls.getLocationTag(4))));
+		criteria.setTagMatchMode(LocationSearchCriteria.TagMatchMode.ANY);
+		List<Location> result = ls.getLocations(criteria);
+		assertEquals(4, result.size());
+		assertEquals(4, new HashSet<>(result).size());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
 	public void getLocations_shouldCombineDescendantOfAndTags() {
 		LocationService ls = Context.getLocationService();
 		// Descendants of location 1 that also have tag 3: locations 2 and 3
@@ -1402,6 +1417,118 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, result.size());
 		assertTrue(result.contains(ls.getLocation(4)));
 		assertTrue(result.contains(ls.getLocation(7)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldApplyPaginationWhenProvided() {
+		LocationService ls = Context.getLocationService();
+
+		LocationSearchCriteria allCriteria = new LocationSearchCriteria();
+		allCriteria.setIncludeRetired(true);
+		List<Location> all = ls.getLocations(allCriteria);
+
+		LocationSearchCriteria pagedCriteria = new LocationSearchCriteria();
+		pagedCriteria.setIncludeRetired(true);
+		pagedCriteria.setStartIndex(1);
+		pagedCriteria.setMaxResults(2);
+		List<Location> paged = ls.getLocations(pagedCriteria);
+
+		assertEquals(2, paged.size());
+		assertEquals(all.get(1).getLocationId(), paged.get(0).getLocationId());
+		assertEquals(all.get(2).getLocationId(), paged.get(1).getLocationId());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldApplyPaginationAfterOtherFilters() {
+		LocationService ls = Context.getLocationService();
+
+		LocationSearchCriteria filteredCriteria = new LocationSearchCriteria();
+		filteredCriteria.setNameFragment("Test Level A");
+		List<Location> filtered = ls.getLocations(filteredCriteria);
+
+		LocationSearchCriteria pagedCriteria = new LocationSearchCriteria();
+		pagedCriteria.setNameFragment("Test Level A");
+		pagedCriteria.setStartIndex(1);
+		pagedCriteria.setMaxResults(1);
+		List<Location> paged = ls.getLocations(pagedCriteria);
+
+		assertEquals(1, paged.size());
+		assertEquals(filtered.get(1).getLocationId(), paged.get(0).getLocationId());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldTreatNameFragmentWildcardsLiterally() {
+		LocationService ls = Context.getLocationService();
+
+		Location underscore = new Location();
+		underscore.setName("Ward_1");
+		ls.saveLocation(underscore);
+
+		Location noUnderscore = new Location();
+		noUnderscore.setName("WardX1");
+		ls.saveLocation(noUnderscore);
+
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setNameFragment("Ward_");
+		List<Location> result = ls.getLocations(criteria);
+
+		// '_' must match itself, not any single character
+		assertEquals(1, result.size());
+		assertTrue(result.contains(underscore));
+		assertFalse(result.contains(noUnderscore));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldIgnoreNonPositiveMaxResults() {
+		LocationService ls = Context.getLocationService();
+
+		LocationSearchCriteria all = new LocationSearchCriteria();
+		all.setIncludeRetired(true);
+		int total = ls.getLocations(all).size();
+
+		LocationSearchCriteria zero = new LocationSearchCriteria();
+		zero.setIncludeRetired(true);
+		zero.setMaxResults(0);
+		assertEquals(total, ls.getLocations(zero).size());
+
+		LocationSearchCriteria negative = new LocationSearchCriteria();
+		negative.setIncludeRetired(true);
+		negative.setMaxResults(-5);
+		assertEquals(total, ls.getLocations(negative).size());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldIgnoreNegativeStartIndexAndReturnEmptyBeyondResults() {
+		LocationService ls = Context.getLocationService();
+
+		LocationSearchCriteria all = new LocationSearchCriteria();
+		all.setIncludeRetired(true);
+		int total = ls.getLocations(all).size();
+
+		LocationSearchCriteria negative = new LocationSearchCriteria();
+		negative.setIncludeRetired(true);
+		negative.setStartIndex(-1);
+		assertEquals(total, ls.getLocations(negative).size());
+
+		LocationSearchCriteria beyond = new LocationSearchCriteria();
+		beyond.setIncludeRetired(true);
+		beyond.setStartIndex(total + 10);
+		assertTrue(ls.getLocations(beyond).isEmpty());
 	}
 
 }
