@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.security.MessageDigest;
 import java.security.spec.KeySpec;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -228,7 +229,10 @@ public class Security {
 		
 		try {
 			String expected = generateBootstrapPassword(user);
-			return expected.equals(password);
+			return MessageDigest.isEqual(
+				expected.getBytes(StandardCharsets.UTF_8),
+				password.getBytes(StandardCharsets.UTF_8)
+			);
 		} catch (APIException e) {
 			log.debug("Failed to validate bootstrap password: {}", e.getMessage());
 			return false;
