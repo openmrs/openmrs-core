@@ -487,6 +487,14 @@ public class HibernateLocationDAO implements LocationDAO {
 		cq.where(cb.and(predicates.toArray(new Predicate[0])));
 		cq.orderBy(cb.asc(root.get("name")));
 
-		return session.createQuery(cq).getResultList();
+		var query = session.createQuery(cq);
+		if (criteria.getStartIndex() != null) {
+			query.setFirstResult(criteria.getStartIndex());
+		}
+		if (criteria.getMaxResults() != null) {
+			query.setMaxResults(criteria.getMaxResults());
+		}
+
+		return query.getResultList();
 	}
 }
