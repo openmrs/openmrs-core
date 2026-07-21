@@ -186,7 +186,7 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		}
 		
 		public boolean runTheTask() throws Throwable {
-			Daemon.executeScheduledTask(this.task);
+			Daemon.executeScheduledTask(this.task, daemonCallerKey());
 			return true;
 		}
 	}
