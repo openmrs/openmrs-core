@@ -133,7 +133,7 @@ jobs:
       # never persist credentials: the Dockerfile copies the whole checkout (including
       # .git) into the published dev image, so persisted credentials would ship in a
       # public image; pushes authenticate via remote set-url after the images are built
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -162,7 +162,7 @@ jobs:
         run: echo "::warning::Only one of OMRS_RELEASE_BOT_APP_ID/OMRS_RELEASE_BOT_PRIVATE_KEY is configured; falling back to OMRS_BOT_GH_TOKEN"
 
       - name: Setup JDK
-        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: 'temurin'
           java-version: 17
@@ -388,7 +388,7 @@ jobs:
     steps:
       # persist-credentials false for the same reason as in the release job: .git is
       # copied into the published dev image variants
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # the tag pushed by the release job
           ref: refs/tags/${{ env.OMRS_VERSION }}

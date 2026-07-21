@@ -68,16 +68,19 @@ public class DatabaseDetective {
 			}
 			return true;
 		} catch (Exception e) {
-			// consider the database to be empty
-			return true;
+			// A configured instance (connection URL set) that we cannot reach is unreachable, not
+			// empty. Reporting it empty here would reopen the unauthenticated setup wizard on an
+			// already-configured deployment during a database outage, so only a genuinely
+			// unconfigured instance (no connection URL) counts as empty.
+			String url = props.getProperty(CONNECTION_URL);
+			return url == null || url.isBlank();
 		} finally {
-			try {
-				if (connection != null) {
+			if (connection != null) {
+				try {
 					connection.close();
+				} catch (Exception e) {
+					// ignore; a failure to close must not change the emptiness result
 				}
-			} catch (Exception e) {
-				// consider the database to be empty
-				return true;
 			}
 		}
 	}
