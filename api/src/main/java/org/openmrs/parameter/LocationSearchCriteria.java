@@ -42,6 +42,10 @@ public class LocationSearchCriteria {
 
 	private boolean includeRetired = false;
 
+	private Integer startIndex;
+
+	private Integer maxResults;
+
 	/**
 	 * @param descendantOfLocation the ancestor location; only its descendants are returned (root
 	 *            excluded)
@@ -79,6 +83,20 @@ public class LocationSearchCriteria {
 	}
 
 	/**
+	 * @param startIndex zero-based index of the first result to return; null means no offset
+	 */
+	public void setStartIndex(Integer startIndex) {
+		this.startIndex = startIndex;
+	}
+
+	/**
+	 * @param maxResults maximum number of results to return; null means no limit
+	 */
+	public void setMaxResults(Integer maxResults) {
+		this.maxResults = maxResults;
+	}
+
+	/**
 	 * @return the ancestor location; only descendants of that location are returned (root excluded)
 	 */
 	public Location getDescendantOfLocation() {
@@ -111,5 +129,19 @@ public class LocationSearchCriteria {
 	 */
 	public boolean getIncludeRetired() {
 		return includeRetired;
+	}
+
+	/**
+	 * @return zero-based index of the first result to return, or null if not set
+	 */
+	public Integer getStartIndex() {
+		return startIndex;
+	}
+
+	/**
+	 * @return maximum number of results to return, or null if not set
+	 */
+	public Integer getMaxResults() {
+		return maxResults;
 	}
 }
