@@ -304,23 +304,25 @@ public class ORUR01Handler implements Application {
 				if (log.isDebugEnabled()) {
 					log.debug("Processing OBS ({} of {})", j, numObs);
 				}
-
+				
 				OBX obx = orderObs.getOBSERVATION(j).getOBX();
+				
 				try {
 					log.debug("Parsing observation");
 					Obs obs = parseObs(encounter, obx, obr, messageControlId);
+					
 					if (obs != null) {
-
+						
 						// if we're backfilling an encounter, don't use
 						// the creator/dateCreated from the encounter
 						if (encounter.getEncounterId() != null) {
 							obs.setCreator(getEnterer(orc));
 							obs.setDateCreated(new Date());
 						}
-
+						
 						// set the obsGroup on this obs
 						if (obsGrouper != null) {
-							// set the obs to the group.  This assumes the group is already
+							// set the obs to the group. This assumes the group is already
 							// on the encounter and that when the encounter is saved it will
 							// propagate to the children obs
 							obsGrouper.addGroupMember(obs);
@@ -332,29 +334,36 @@ public class ORUR01Handler implements Application {
 							log.debug("Done with this obs");
 						}
 					}
-				} catch (ProposingConceptException proposingException) {
+				}
+				catch (ProposingConceptException proposingException) {
 					Concept questionConcept = proposingException.getConcept();
 					String value = proposingException.getValueName();
-					//if the sender never specified any text for the proposed concept
+					
+					// if the sender never specified any text for the proposed concept
 					if (!StringUtils.isEmpty(value)) {
 						conceptProposals.add(createConceptProposal(encounter, questionConcept, value));
 					} else {
 						errorInHL7Queue = new HL7Exception(
-						        Context.getMessageSourceService().getMessage("Hl7.proposed.concept.name.empty"),
-						        proposingException);
-						break;//stop any further processing of current message
+							Context.getMessageSourceService().getMessage("Hl7.proposed.concept.name.empty"),
+							proposingException);
+						break; // stop any further processing of current message
 					}
-
-				} catch (HL7Exception e) {
+				}
+				catch (HL7Exception e) {
 					errorInHL7Queue = e;
-				} finally {
-					// Handle obs-level exceptions
-					if (errorInHL7Queue != null) {
-						throw new HL7Exception(
-						        Context.getMessageSourceService().getMessage("ORUR01.error.improperlyFormattedOBX",
-						            new Object[] { PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")) }, null),
-						        HL7Exception.DATA_TYPE_ERROR, errorInHL7Queue);
-					}
+				}
+				
+				// Handle obs-level exceptions
+				if (errorInHL7Queue != null) {
+					throw new HL7Exception(
+						Context.getMessageSourceService().getMessage(
+							"ORUR01.error.improperlyFormattedOBX",
+							new Object[] {
+								PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&"))
+							},
+							null),
+						HL7Exception.DATA_TYPE_ERROR,
+						errorInHL7Queue);
 				}
 			}
 
