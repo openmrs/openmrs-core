@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db.hibernate.search;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +32,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -100,8 +102,17 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 		return f -> f.match().field("familyNameExact").matching(familyName).toPredicate();
 	}
 
+	/**
+	 * The page mapper handed to {@link SearchQueryUnique}: it receives the whole page of hits at once
+	 * so a real caller can batch-load, mirroring the DAOs. Here it simply resolves each name to its
+	 * person.
+	 */
+	private static Function<List<PersonName>, List<Person>> personMapper() {
+		return names -> names.stream().map(PersonName::getPerson).collect(Collectors.toList());
+	}
+
 	private SearchQueryUnique<PersonName, Person> personNameQuery() {
-		return SearchQueryUnique.newQuery(PersonName.class, matchingPredicate(), "person.personId", PersonName::getPerson);
+		return SearchQueryUnique.newQuery(PersonName.class, matchingPredicate(), "person.personId", personMapper());
 	}
 
 	/**
@@ -109,10 +120,9 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 	 * second {@link #FAMILY_B}. Persons matching both must be returned/counted once across the join.
 	 */
 	private SearchQueryUnique<?, Person> joinedQuery() {
-		return SearchQueryUnique
-		        .newQuery(PersonName.class, matchingPredicate(FAMILY_A), "person.personId", PersonName::getPerson)
+		return SearchQueryUnique.newQuery(PersonName.class, matchingPredicate(FAMILY_A), "person.personId", personMapper())
 		        .join(SearchQueryUnique.newQuery(PersonName.class, matchingPredicate(FAMILY_B), "person.personId",
-		            PersonName::getPerson));
+		            personMapper()));
 	}
 
 	private void createJoinedFixture() {
@@ -231,6 +241,68 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void search_shouldMapEachPageInASingleBatchedCall() {
+		// The whole page must be handed to the mapper in a single call so a real caller can hydrate it in
+		// one batched load; the previous implementation mapped hit-by-hit, issuing one load per hit.
+		int pageSize = 5;
+		List<Integer> mappedPageSizes = new ArrayList<>();
+		Function<List<PersonName>, List<Person>> countingMapper = names -> {
+			mappedPageSizes.add(names.size());
+			return personMapper().apply(names);
+		};
+		SearchQueryUnique<PersonName, Person> query = SearchQueryUnique.newQuery(PersonName.class, matchingPredicate(),
+		    "person.personId", countingMapper);
+
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory, query, 0, pageSize);
+
+		assertEquals(pageSize, results.size());
+		assertEquals(List.of(pageSize), mappedPageSizes, "the page must be mapped in a single batched call");
+	}
+
+	@Test
+	public void search_shouldMapEachJoinedSubQueryInASingleBatchedCall() {
+		// Across a join the mapping stays bounded by the number of sub-queries, not the number of hits:
+		// each sub-query that contributes to the page maps its whole contribution in one call.
+		createJoinedFixture();
+		List<Integer> mappedPageSizes = new ArrayList<>();
+		Function<List<PersonName>, List<Person>> countingMapper = names -> {
+			mappedPageSizes.add(names.size());
+			return personMapper().apply(names);
+		};
+		SearchQueryUnique<?, Person> query = SearchQueryUnique
+		        .newQuery(PersonName.class, matchingPredicate(FAMILY_A), "person.personId", countingMapper)
+		        .join(SearchQueryUnique.newQuery(PersonName.class, matchingPredicate(FAMILY_B), "person.personId",
+		            countingMapper));
+
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory, query, 0, DISTINCT_JOINED);
+
+		assertEquals(DISTINCT_JOINED, results.size());
+		assertTrue(mappedPageSizes.size() <= 2,
+		    "expected at most one mapper call per sub-query but got " + mappedPageSizes.size());
+		assertEquals(DISTINCT_JOINED, mappedPageSizes.stream().mapToInt(Integer::intValue).sum(),
+		    "every distinct result must be produced by the batched mapper calls");
+	}
+
+	@Test
+	public void search_shouldTolerateMapperDroppingHits() {
+		// A mapper may return fewer items than the page it was given: the DAO mappers drop hits whose
+		// backing row has vanished from the database (a stale search-index entry). Such a dropped hit must
+		// simply be absent from the results and must never surface as a null.
+		List<Person> full = SearchQueryUnique.search(searchSessionFactory, personNameQuery(), 0, PERSON_COUNT);
+		Integer droppedId = full.get(0).getPersonId();
+		Function<List<PersonName>, List<Person>> droppingMapper = names -> personMapper().apply(names).stream()
+		        .filter(person -> !person.getPersonId().equals(droppedId)).collect(Collectors.toList());
+		SearchQueryUnique<PersonName, Person> query = SearchQueryUnique.newQuery(PersonName.class, matchingPredicate(),
+		    "person.personId", droppingMapper);
+
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory, query, 0, 5);
+
+		assertFalse(results.contains(null), "a dropped hit must not surface as a null result");
+		assertFalse(results.stream().anyMatch(person -> person.getPersonId().equals(droppedId)),
+		    "the dropped hit must be absent from the results");
+	}
+
+	@Test
 	public void search_shouldReturnCorrectPageForNonZeroOffset() {
 		// The second page must be the corresponding slice of the full ordered result, with no overlap or
 		// gap relative to the first page.
@@ -331,8 +403,8 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 		// A joined sub-query cannot participate in cross-sub-query dedup / offset carry without a unique
 		// key, so this unsupported configuration must fail loudly rather than mis-paginate.
 		SearchQueryUnique<?, Person> query = SearchQueryUnique
-		        .newQuery(PersonName.class, matchingPredicate(FAMILY_A), null, PersonName::getPerson).join(SearchQueryUnique
-		                .newQuery(PersonName.class, matchingPredicate(FAMILY_B), "person.personId", PersonName::getPerson));
+		        .newQuery(PersonName.class, matchingPredicate(FAMILY_A), null, personMapper()).join(SearchQueryUnique
+		                .newQuery(PersonName.class, matchingPredicate(FAMILY_B), "person.personId", personMapper()));
 
 		assertThrows(IllegalStateException.class, () -> SearchQueryUnique.search(searchSessionFactory, query, 0, 10));
 	}
