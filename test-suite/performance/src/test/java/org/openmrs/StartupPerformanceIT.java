@@ -158,10 +158,9 @@ public class StartupPerformanceIT {
 		@Override
 		public void accept(OutputFrame outputFrame) {
 			startTime.compareAndSet(0, System.nanoTime());
-		String logLine = outputFrame.getUtf8String();
-if (!(logLine.startsWith("ERROR") || logLine.startsWith("WARN")
-        || logLine.startsWith("INFO") || logLine.startsWith("DEBUG")
-        || logLine.startsWith("TRACE"))) {
+			String logLine = outputFrame.getUtf8String();
+			if (!(logLine.startsWith("ERROR") || logLine.startsWith("WARN") || logLine.startsWith("INFO")
+			        || logLine.startsWith("DEBUG") || logLine.startsWith("TRACE"))) {
 				return;
 			}
 			super.accept(outputFrame);
