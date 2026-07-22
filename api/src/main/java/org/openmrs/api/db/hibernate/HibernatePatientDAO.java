@@ -799,7 +799,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			    b.filter(f.match().field("patient.isPatient").matching(true));
 			    b.filter(f.match().field("voided").matching(false));
 		    }).toPredicate(), "patient.personId",
-		        (List<PatientIdentifier> pIs) -> multiLoadPatients(pIs, pI -> pI.getPatient().getPatientId())),
+		        (List<PatientIdentifier> pIs) -> multiLoadPatients(pIs, pI -> pI.getPatient().getPersonId())),
 		    tmpStart, tmpLength);
 	}
 
@@ -828,22 +828,15 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		PersonQuery personQuery = new PersonQuery();
 
-		patients = SearchQueryUnique
-		        .search(searchSessionFactory,
-		            SearchQueryUnique
-		                    .newQuery(PatientIdentifier.class,
-		                        f -> newPatientIdentifierSearchPredicate(f, query, includeVoided, false), "patient.personId",
-		                        (List<PatientIdentifier> pIs) -> multiLoadPatients(pIs,
-		                            pI -> pI.getPatient().getPatientId()))
-		                    .join(SearchQueryUnique.newQuery(
-		                        PersonName.class, f -> personQuery.getPatientNameQuery(f, query, includeVoided),
-		                        "person.personId",
-		                        (List<PersonName> pNs) -> multiLoadPatients(pNs, pN -> pN.getPerson().getPersonId()))
-		                            .join(SearchQueryUnique.newQuery(PersonAttribute.class,
-		                                f -> personQuery.getPatientAttributeQuery(f, query, includeVoided),
-		                                "person.personId", (List<PersonAttribute> pAs) -> multiLoadPatients(pAs,
-		                                    pA -> pA.getPerson().getPersonId())))),
-		            start, length);
+		patients = SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(PatientIdentifier.class,
+		    f -> newPatientIdentifierSearchPredicate(f, query, includeVoided, false), "patient.personId",
+		    (List<PatientIdentifier> pIs) -> multiLoadPatients(pIs, pI -> pI.getPatient().getPersonId())).join(
+		        SearchQueryUnique.newQuery(PersonName.class, f -> personQuery.getPatientNameQuery(f, query, includeVoided),
+		            "person.personId", (List<PersonName> pNs) -> multiLoadPatients(pNs, pN -> pN.getPerson().getPersonId()))
+		                .join(SearchQueryUnique.newQuery(PersonAttribute.class,
+		                    f -> personQuery.getPatientAttributeQuery(f, query, includeVoided), "person.personId",
+		                    (List<PersonAttribute> pAs) -> multiLoadPatients(pAs, pA -> pA.getPerson().getPersonId())))),
+		    start, length);
 
 		return patients;
 	}
