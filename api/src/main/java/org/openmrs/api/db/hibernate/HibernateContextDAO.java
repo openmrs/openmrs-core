@@ -68,6 +68,12 @@ public class HibernateContextDAO implements ContextDAO {
 	private static final Long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MILLISECONDS.convert(5L, TimeUnit.MINUTES);
 
 	/**
+	 * The capability that proves to {@link Daemon} that this class is allowed to act with daemon
+	 * permissions.
+	 */
+	private static volatile Daemon.CallerKey daemonCallerKey;
+
+	/**
 	 * Hibernate session factory
 	 */
 	private final SessionFactory sessionFactory;
@@ -277,7 +283,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	@Transactional
 	public User createUser(User user, String password, List<String> roleNames) throws Exception {
-		return Daemon.createUser(user, password, roleNames);
+		return Daemon.createUser(user, password, roleNames, daemonCallerKey());
 	}
 
 	/**
@@ -637,5 +643,26 @@ public class HibernateContextDAO implements ContextDAO {
 		} catch (HibernateException e) {
 			throw new RuntimeException("Unable to retrieve a database connection", e);
 		}
+	}
+
+	/**
+	 * Receives the {@link Daemon} caller key. Called only by {@link Daemon} during its initialization.
+	 *
+	 * @param callerKey the caller key issued by {@link Daemon}
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public static void setDaemonCallerKey(Daemon.CallerKey callerKey) {
+		if (callerKey != null && daemonCallerKey == null) {
+			daemonCallerKey = callerKey;
+		}
+	}
+
+	private static Daemon.CallerKey daemonCallerKey() {
+		if (daemonCallerKey == null) {
+			// Guarantee Daemon has initialized and therefore handed us the key, regardless of the order in
+			// which the two classes were first loaded.
+			Daemon.ensureInitialized();
+		}
+		return daemonCallerKey;
 	}
 }

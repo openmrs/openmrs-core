@@ -28,10 +28,18 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Allergen;
+import org.openmrs.AllergenType;
+import org.openmrs.Allergies;
+import org.openmrs.Allergy;
+import org.openmrs.CodedOrFreeText;
 import org.openmrs.Concept;
+import org.openmrs.Condition;
+import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
+import org.openmrs.MedicationDispense;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -52,6 +60,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.api.impl.PatientServiceImplTest;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
+import org.openmrs.parameter.MedicationDispenseCriteria;
+import org.openmrs.parameter.MedicationDispenseCriteriaBuilder;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
@@ -61,6 +71,7 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -113,6 +124,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	private static final String PATIENT_MERGE_XML = "org/openmrs/api/include/PatientServiceTest-mergePatients.xml";
 
 	private static final String PATIENT_MERGE_OBS_WITH_GROUP_MEMBER = "org/openmrs/api/include/PatientServiceTest-mergePatientWithExistingObsHavingGroupMember.xml";
+
+	private static final String MEDICATION_DISPENSE_XML = "org/openmrs/api/include/MedicationDispenseServiceTest-initialData.xml";
 
 	// Services
 	protected static PatientService patientService = null;
@@ -2528,6 +2541,288 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#mergePatients(Patient,Patient)
 	 */
 	@Test
+	public void mergePatients_shouldMoveConditionsFromNonPreferredToPreferredPatient() throws Exception {
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+		ConditionService conditionService = Context.getConditionService();
+
+		// give the non-preferred patient a condition
+		CodedOrFreeText codedOrFreeText = new CodedOrFreeText();
+		codedOrFreeText.setNonCoded("Severe headache");
+		Condition condition = new Condition();
+		condition.setCondition(codedOrFreeText);
+		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		condition.setPatient(notPreferred);
+		conditionService.saveCondition(condition);
+		assertThat(conditionService.getAllConditions(notPreferred).size(), is(1));
+		assertThat(conditionService.getAllConditions(preferred).size(), is(0));
+
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		// the condition should now belong to the preferred patient and the move should be audited
+		List<Condition> preferredConditions = conditionService.getAllConditions(preferred);
+		assertThat(preferredConditions.size(), is(1));
+		assertThat(preferredConditions.get(0).getCondition().getNonCoded(), is("Severe headache"));
+		assertTrue(isValueInList(preferredConditions.get(0).getUuid(), audit.getPersonMergeLogData().getMovedConditions()),
+		    "moving of condition was not audited");
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldMoveEncounterLinkedConditionFromNonPreferredToPreferredPatient() throws Exception {
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+		ConditionService conditionService = Context.getConditionService();
+
+		// give the non-preferred patient a condition linked to one of its encounters: moving the encounter
+		// does not reassign the condition's patient, so mergeConditions must move it (and keep the link)
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		assertThat(encounter.getPatient(), is(notPreferred));
+		CodedOrFreeText codedOrFreeText = new CodedOrFreeText();
+		codedOrFreeText.setNonCoded("Encounter linked condition");
+		Condition condition = new Condition();
+		condition.setCondition(codedOrFreeText);
+		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		condition.setPatient(notPreferred);
+		condition.setEncounter(encounter);
+		conditionService.saveCondition(condition);
+
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		// the condition (and the encounter it rides on) now belong to the preferred patient, and the move is audited
+		List<Condition> preferredConditions = conditionService.getAllConditions(preferred);
+		assertThat(preferredConditions.size(), is(1));
+		Condition moved = preferredConditions.get(0);
+		assertThat(moved.getCondition().getNonCoded(), is("Encounter linked condition"));
+		assertThat(moved.getEncounter().getEncounterId(), is(3));
+		assertThat(moved.getEncounter().getPatient(), is(preferred));
+		assertTrue(isValueInList(moved.getUuid(), audit.getPersonMergeLogData().getMovedConditions()),
+		    "moving of encounter-linked condition was not audited");
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldNotMoveVoidedConditions() throws Exception {
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+		ConditionService conditionService = Context.getConditionService();
+
+		// notPreferred has one live condition and one voided condition
+		CodedOrFreeText liveText = new CodedOrFreeText();
+		liveText.setNonCoded("Live condition");
+		Condition live = new Condition();
+		live.setCondition(liveText);
+		live.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		live.setPatient(notPreferred);
+		conditionService.saveCondition(live);
+		CodedOrFreeText voidedText = new CodedOrFreeText();
+		voidedText.setNonCoded("Voided condition");
+		Condition voided = new Condition();
+		voided.setCondition(voidedText);
+		voided.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		voided.setPatient(notPreferred);
+		conditionService.saveCondition(voided);
+		String voidedUuid = voided.getUuid();
+		conditionService.voidCondition(voided, "test");
+
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		// only the live condition moves; the voided one stays behind on the loser and is not audited
+		List<Condition> preferredConditions = conditionService.getAllConditions(preferred);
+		assertThat(preferredConditions.size(), is(1));
+		assertThat(preferredConditions.get(0).getCondition().getNonCoded(), is("Live condition"));
+		assertFalse(isValueInList(voidedUuid, audit.getPersonMergeLogData().getMovedConditions()),
+		    "voided condition should not have been moved");
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldMoveAllergiesFromNonPreferredToPreferredPatient() throws Exception {
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+
+		// give the non-preferred patient an allergy
+		Allergen allergen = new Allergen(AllergenType.DRUG, new Concept(3), null);
+		Allergy allergy = new Allergy(notPreferred, allergen, new Concept(4), "some comment", new ArrayList<>());
+		patientService.saveAllergy(allergy);
+		String allergyUuid = allergy.getUuid();
+		assertThat(patientService.getAllergies(notPreferred).size(), is(1));
+		assertThat(patientService.getAllergies(preferred).size(), is(0));
+
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		// the allergy should now belong to the preferred patient and the move should be audited
+		Allergies preferredAllergies = patientService.getAllergies(preferred);
+		assertThat(preferredAllergies.size(), is(1));
+		assertThat(preferredAllergies.get(0).getUuid(), is(allergyUuid));
+		assertTrue(isValueInList(allergyUuid, audit.getPersonMergeLogData().getMovedAllergies()),
+		    "moving of allergy was not audited");
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldNotMoveAllergyIfPreferredPatientAlreadyHasSameAllergen() throws Exception {
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+
+		// both patients are allergic to the same coded allergen (the same canonical concept, so the
+		// allergens compare equal by uuid the way two separately-loaded allergies would in production)
+		Concept allergen = Context.getConceptService().getConcept(3);
+		Allergy preferredAllergy = new Allergy(preferred, new Allergen(AllergenType.DRUG, allergen, null), new Concept(4),
+		        "preferred comment", new ArrayList<>());
+		patientService.saveAllergy(preferredAllergy);
+		String preferredAllergyUuid = preferredAllergy.getUuid();
+		Allergy notPreferredAllergy = new Allergy(notPreferred, new Allergen(AllergenType.DRUG, allergen, null),
+		        new Concept(4), "non-preferred comment", new ArrayList<>());
+		patientService.saveAllergy(notPreferredAllergy);
+		String notPreferredAllergyUuid = notPreferredAllergy.getUuid();
+
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		// the duplicate allergen must not be moved, otherwise getAllergies(preferred) would fail to load
+		Allergies preferredAllergies = patientService.getAllergies(preferred);
+		assertThat(preferredAllergies.size(), is(1));
+		assertThat(preferredAllergies.get(0).getUuid(), is(preferredAllergyUuid));
+		assertFalse(isValueInList(notPreferredAllergyUuid, audit.getPersonMergeLogData().getMovedAllergies()),
+		    "duplicate allergen should not have been moved");
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldMoveOnlyAllergensNotAlreadyOnPreferredPatient() throws Exception {
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+
+		// preferred and notPreferred share one allergen; notPreferred also has a second, unique one.
+		// The shared allergen must be skipped and the unique one moved, both in the same merge.
+		Concept sharedAllergen = Context.getConceptService().getConcept(3);
+		patientService.saveAllergy(new Allergy(preferred, new Allergen(AllergenType.DRUG, sharedAllergen, null),
+		        new Concept(4), "shared - preferred", new ArrayList<>()));
+		Allergy sharedNotPreferred = new Allergy(notPreferred, new Allergen(AllergenType.DRUG, sharedAllergen, null),
+		        new Concept(4), "shared - non-preferred", new ArrayList<>());
+		patientService.saveAllergy(sharedNotPreferred);
+		Allergy uniqueNotPreferred = new Allergy(notPreferred, new Allergen(AllergenType.DRUG, new Concept(24), null),
+		        new Concept(4), "unique - non-preferred", new ArrayList<>());
+		patientService.saveAllergy(uniqueNotPreferred);
+
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		// preferred keeps its shared allergen and gains only the unique one (no duplicate that would break loading)
+		Allergies preferredAllergies = patientService.getAllergies(preferred);
+		assertThat(preferredAllergies.size(), is(2));
+		List<String> movedAllergies = audit.getPersonMergeLogData().getMovedAllergies();
+		assertTrue(isValueInList(uniqueNotPreferred.getUuid(), movedAllergies), "unique allergen should have been moved");
+		assertFalse(isValueInList(sharedNotPreferred.getUuid(), movedAllergies),
+		    "duplicate allergen should not have been moved");
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldNotMoveVoidedAllergies() throws Exception {
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+
+		// notPreferred has one live allergy and one voided allergy (different allergens)
+		Allergy live = new Allergy(notPreferred, new Allergen(AllergenType.DRUG, new Concept(3), null), new Concept(4),
+		        "live allergy", new ArrayList<>());
+		patientService.saveAllergy(live);
+		String liveUuid = live.getUuid();
+		Allergy voided = new Allergy(notPreferred, new Allergen(AllergenType.DRUG, new Concept(24), null), new Concept(4),
+		        "voided allergy", new ArrayList<>());
+		patientService.saveAllergy(voided);
+		String voidedUuid = voided.getUuid();
+		patientService.voidAllergy(voided, "test");
+
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		// only the live allergy moves; the voided one stays behind on the loser and is not audited
+		Allergies preferredAllergies = patientService.getAllergies(preferred);
+		assertThat(preferredAllergies.size(), is(1));
+		assertThat(preferredAllergies.get(0).getUuid(), is(liveUuid));
+		assertFalse(isValueInList(voidedUuid, audit.getPersonMergeLogData().getMovedAllergies()),
+		    "voided allergy should not have been moved");
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldMoveMedicationDispensesFromNonPreferredToPreferredPatient() throws Exception {
+		executeDataSet(MEDICATION_DISPENSE_XML);
+		MedicationDispenseService medicationDispenseService = Context.getMedicationDispenseService();
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+
+		// the non-preferred patient has two medication dispenses, the preferred patient has none
+		List<MedicationDispense> notPreferredDispenses = medicationDispenseService
+		        .getMedicationDispenseByCriteria(new MedicationDispenseCriteriaBuilder().setPatient(notPreferred).build());
+		assertThat(notPreferredDispenses.size(), is(2));
+		List<String> movedUuids = notPreferredDispenses.stream().map(MedicationDispense::getUuid)
+		        .collect(Collectors.toList());
+		MedicationDispenseCriteria preferredCriteria = new MedicationDispenseCriteriaBuilder().setPatient(preferred).build();
+		assertThat(medicationDispenseService.getMedicationDispenseByCriteria(preferredCriteria).size(), is(0));
+
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		// the medication dispenses should now belong to the preferred patient and the moves should be audited
+		assertThat(medicationDispenseService.getMedicationDispenseByCriteria(preferredCriteria).size(), is(2));
+		assertThat(audit.getPersonMergeLogData().getMovedMedicationDispenses(), containsInAnyOrder(movedUuids.toArray()));
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldNotMoveVoidedMedicationDispense() throws Exception {
+		executeDataSet(MEDICATION_DISPENSE_XML);
+		MedicationDispenseService medicationDispenseService = Context.getMedicationDispenseService();
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+
+		// void one of the non-preferred patient's two dispenses
+		List<MedicationDispense> notPreferredDispenses = medicationDispenseService
+		        .getMedicationDispenseByCriteria(new MedicationDispenseCriteriaBuilder().setPatient(notPreferred).build());
+		assertThat(notPreferredDispenses.size(), is(2));
+		String voidedUuid = medicationDispenseService.voidMedicationDispense(notPreferredDispenses.get(0), "test").getUuid();
+		String liveUuid = notPreferredDispenses.get(1).getUuid();
+
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		// only the non-voided dispense is moved and audited; the voided one stays behind on the loser
+		MedicationDispenseCriteria preferredCriteria = new MedicationDispenseCriteriaBuilder().setPatient(preferred).build();
+		List<MedicationDispense> preferredDispenses = medicationDispenseService
+		        .getMedicationDispenseByCriteria(preferredCriteria);
+		assertThat(preferredDispenses.size(), is(1));
+		assertThat(preferredDispenses.get(0).getUuid(), is(liveUuid));
+		assertFalse(isValueInList(voidedUuid, audit.getPersonMergeLogData().getMovedMedicationDispenses()),
+		    "voided medication dispense should not have been moved");
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
 	public void mergePatients_shouldAuditMovedUsers() throws Exception {
 		//retrieve patients
 		Patient preferred = patientService.getPatient(999);
@@ -2706,11 +3001,55 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(notPreferred.getIdentifiers().size() - 1, audit.getPersonMergeLogData().getCreatedIdentifiers().size());
 	}
 
+	/**
+	 * The privileges the merge workflow legitimately requires of the merging user for the data handled
+	 * by these tests. Deliberately absent are Get Allergies and Get Patient Cohorts:
+	 * {@code mergePatients} reads both patients' allergies on the merging user's behalf (under a proxy
+	 * privilege in {@code mergeAllergies}), and voiding the losing patient reads its cohort memberships
+	 * the same way ({@code CohortServiceImpl.notifyPatientVoided}), so neither internal read may demand
+	 * its privilege from the merging user. Running every merge with this privilege set keeps both
+	 * covered. (The metadata read privileges - visit attribute types, global properties, concepts,
+	 * locations, patients - are here because saving the moved data triggers validators and change
+	 * checks that read that metadata through the service proxies.)
+	 */
+	private static final String[] MERGE_PRIVILEGES = { PrivilegeConstants.EDIT_PATIENTS, PrivilegeConstants.DELETE_PATIENTS,
+	        PrivilegeConstants.EDIT_PERSONS, PrivilegeConstants.GET_PATIENTS, PrivilegeConstants.GET_CONCEPTS,
+	        PrivilegeConstants.GET_GLOBAL_PROPERTIES, PrivilegeConstants.GET_LOCATIONS, PrivilegeConstants.GET_ORDERS,
+	        PrivilegeConstants.GET_VISITS, PrivilegeConstants.EDIT_VISITS, PrivilegeConstants.GET_VISIT_ATTRIBUTE_TYPES,
+	        PrivilegeConstants.GET_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS, PrivilegeConstants.GET_PATIENT_PROGRAMS,
+	        PrivilegeConstants.EDIT_PATIENT_PROGRAMS, PrivilegeConstants.GET_RELATIONSHIPS,
+	        PrivilegeConstants.EDIT_RELATIONSHIPS, PrivilegeConstants.DELETE_RELATIONSHIPS, PrivilegeConstants.GET_OBS,
+	        PrivilegeConstants.EDIT_OBS, PrivilegeConstants.GET_CONDITIONS, PrivilegeConstants.EDIT_CONDITIONS,
+	        PrivilegeConstants.EDIT_ALLERGIES, PrivilegeConstants.GET_MEDICATION_DISPENSE,
+	        PrivilegeConstants.EDIT_MEDICATION_DISPENSE, PrivilegeConstants.GET_USERS, PrivilegeConstants.EDIT_USERS };
+
 	private PersonMergeLog mergeAndRetrieveAudit(Patient preferred, Patient notPreferred) throws SerializationException {
-		patientService.mergePatients(preferred, notPreferred);
+		mergePatientsAsNonSuperUser(preferred, notPreferred);
 		List<PersonMergeLog> result = personService.getAllPersonMergeLogs(true);
 		assertTrue(result.size() > 0, "person merge was not audited");
 		return result.get(0);
+	}
+
+	/**
+	 * Runs the merge as a user who holds only {@link #MERGE_PRIVILEGES}, so the merge workflow tests
+	 * fail if any internal step starts demanding a privilege a merging user should not need.
+	 */
+	private void mergePatientsAsNonSuperUser(Patient preferred, Patient notPreferred) throws SerializationException {
+		User user = Context.getUserService().getUserByUsername("butch");
+		assertNotNull(user);
+		Context.becomeUser(user.getSystemId());
+		for (String privilege : MERGE_PRIVILEGES) {
+			Context.addProxyPrivilege(privilege);
+		}
+		try {
+			patientService.mergePatients(preferred, notPreferred);
+		} finally {
+			for (String privilege : MERGE_PRIVILEGES) {
+				Context.removeProxyPrivilege(privilege);
+			}
+			// restore the super user; the tests run their setup and verification with full privileges
+			authenticate();
+		}
 	}
 
 	private boolean isValueInList(String value, List<String> list) {
@@ -3375,6 +3714,67 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		    () -> patientService.getIdentifierValidator("com.example.InvalidIdentifierValidator"));
 		assertEquals("Could not find patient identifier validator com.example.InvalidIdentifierValidator",
 		    patientIdentifierException.getMessage());
+	}
+
+	/**
+	 * Before this fix {@code getAllergies} carried no {@code @Authorized} annotation, so the
+	 * authorization advice performed no privilege check at all and any caller could read a patient's
+	 * allergy list. It now requires the Get Allergies privilege.
+	 *
+	 * @see PatientService#getAllergies(Patient)
+	 */
+	@Test
+	public void getAllergies_shouldRequireTheGetAllergiesPrivilege() {
+		Patient patient = patientService.getPatient(2);
+		Context.logout();
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		    () -> patientService.getAllergies(patient));
+		assertTrue(exception.getMessage().contains(PrivilegeConstants.GET_ALLERGIES));
+	}
+
+	/**
+	 * Before this fix {@code setAllergies} carried no {@code @Authorized} annotation, so any caller
+	 * could modify a patient's allergy list. It now requires an allergy add/edit privilege.
+	 *
+	 * @see PatientService#setAllergies(Patient, Allergies)
+	 */
+	@Test
+	public void setAllergies_shouldRequireAnAllergyWritePrivilege() {
+		Patient patient = patientService.getPatient(2);
+		Allergies allergies = new Allergies();
+		Context.logout();
+		assertThrows(APIAuthenticationException.class, () -> patientService.setAllergies(patient, allergies));
+	}
+
+	/**
+	 * Now that {@code getAllergies} requires the Get Allergies privilege,
+	 * {@link org.openmrs.validator.AllergyValidator} must not force that privilege onto every allergy
+	 * write. While a new allergy is being saved the validator reads the patient's existing allergies to
+	 * reject duplicates; that internal read is wrapped in a Get Allergies proxy privilege so a caller
+	 * holding only an allergy write privilege can still save a new allergy without also holding Get
+	 * Allergies.
+	 *
+	 * @see PatientService#saveAllergy(Allergy)
+	 * @see org.openmrs.validator.AllergyValidator
+	 */
+	@Test
+	public void saveAllergy_shouldNotRequireTheGetAllergiesPrivilegeForTheDuplicateCheck() {
+		Patient patient = patientService.getPatient(2);
+		Allergen allergen = new Allergen(AllergenType.DRUG, new Concept(3), null);
+		Allergy allergy = new Allergy(patient, allergen, new Concept(4), "some comment", new ArrayList<>());
+
+		// become a user whose role grants no privileges, then grant only Add Allergies; the caller
+		// deliberately lacks Get Allergies, so a regression in the validator's duplicate check surfaces
+		User user = Context.getUserService().getUserByUsername("butch");
+		assertNotNull(user);
+		Context.becomeUser(user.getSystemId());
+		Context.addProxyPrivilege(PrivilegeConstants.ADD_ALLERGIES);
+		try {
+			assertDoesNotThrow(() -> patientService.saveAllergy(allergy));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.ADD_ALLERGIES);
+		}
+		assertNotNull(allergy.getAllergyId());
 	}
 
 }

@@ -9,12 +9,15 @@ on:
 jobs:
   dependencycheck:
     runs-on: ubuntu-latest
+    # a stalled NVD feed download otherwise runs until the 6 hour GitHub default; normal runs
+    # take 3-8 minutes with occasional NVD-update tails up to ~35, so 60 clears the worst observed
+    timeout-minutes: 60
     name: dependencycheck_test
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
       - name: Set up Java version
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.6.0
         with:
           java-version: '21'
           distribution: 'temurin'
