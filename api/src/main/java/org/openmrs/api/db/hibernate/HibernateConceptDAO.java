@@ -30,8 +30,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.criteria.Subquery;
 
@@ -608,10 +610,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 			locale = loc;
 		}
 
-		return SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(ConceptName.class, f -> 
-			newConceptNamePredicate(f, name, !searchOnPhrase, Collections.singletonList(locale),
-				false, false, classes, null, datatypes, null, null),
-			"concept.conceptId", ConceptName::getConcept));
+		return SearchQueryUnique
+		        .search(searchSessionFactory,
+		            SearchQueryUnique.newQuery(
+		                ConceptName.class, f -> newConceptNamePredicate(f, name, !searchOnPhrase,
+		                    Collections.singletonList(locale), false, false, classes, null, datatypes, null, null),
+		                "concept.conceptId", this::multiLoadConcepts));
 	}
 	
 	private LinkedHashSet<Concept> transformNamesToConcepts(List<ConceptName> names) {
@@ -1631,11 +1635,19 @@ public class HibernateConceptDAO implements ConceptDAO {
 	        final boolean includeRetired, final List<ConceptClass> requireClasses, final List<ConceptClass> excludeClasses,
 	        final List<ConceptDatatype> requireDatatypes, final List<ConceptDatatype> excludeDatatypes,
 	        final Concept answersToConcept, final Integer start, final Integer size) throws DAOException {
-		
-		return SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(ConceptName.class, f -> 
-			newConceptNamePredicate(f, phrase, true, locales, false, includeRetired,
-			requireClasses, excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept), "concept.conceptId", 
-			n -> new ConceptSearchResult(phrase, n.getConcept(), n)), start, size);
+
+		return SearchQueryUnique.search(searchSessionFactory,
+		    SearchQueryUnique.newQuery(ConceptName.class,
+		        f -> newConceptNamePredicate(f, phrase, true, locales, false, includeRetired, requireClasses, excludeClasses,
+		            requireDatatypes, excludeDatatypes, answersToConcept),
+		        "concept.conceptId", (List<ConceptName> names) -> {
+			        Map<Integer, Concept> conceptsById = multiLoadConceptsByHit(names);
+			        return names.stream().map(n -> {
+				        Concept concept = conceptsById.get(n.getConcept().getConceptId());
+				        return concept == null ? null : new ConceptSearchResult(phrase, concept, n);
+			        }).filter(Objects::nonNull).collect(Collectors.toList());
+		        }),
+		    start, size);
 	}
 	
 	@Override
@@ -2069,11 +2081,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		boolean searchExactLocale = (exactLocale == null) ? false : exactLocale;
-		
-		return SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(ConceptName.class, f -> 
-			newConceptNamePredicate(f, name, true, locales, searchExactLocale, false,
-			null, null, null, null, null), 
-			"concept.conceptId", ConceptName::getConcept));
+
+		return SearchQueryUnique.search(searchSessionFactory,
+		    SearchQueryUnique.newQuery(ConceptName.class,
+		        f -> newConceptNamePredicate(f, name, true, locales, searchExactLocale, false, null, null, null, null, null),
+		        "concept.conceptId", this::multiLoadConcepts));
 	}
 	
 	/**
@@ -2508,5 +2520,46 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public void purgeConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
 		sessionFactory.getCurrentSession().delete(conceptReferenceRange);
+	}
+
+	/**
+	 * Loads the concepts referenced by a page of concept-name search hits with a single
+	 * {@code multiLoad} instead of one {@code get} per hit, so a page issues a bounded number of
+	 * entity loads and Hibernate's collection batch fetching (see the {@code batch-size} on the concept
+	 * collections in Concept.hbm.xml) can span the whole page. The concepts are returned keyed by id so
+	 * callers can pair each hit with its concept and preserve hit order themselves; concepts no longer
+	 * present in the database (a stale search-index entry) are absent from the map.
+	 *
+	 * @param names the page of concept-name hits
+	 * @return the concepts referenced by the hits, keyed by concept id
+	 */
+	private Map<Integer, Concept> multiLoadConceptsByHit(List<ConceptName> names) {
+		List<Integer> conceptIds = names.stream().map(n -> n.getConcept().getConceptId()).collect(Collectors.toList());
+		List<Concept> concepts = sessionFactory.getCurrentSession().byMultipleIds(Concept.class).multiLoad(conceptIds);
+		Map<Integer, Concept> conceptsById = new HashMap<>();
+		for (Concept concept : concepts) {
+			if (concept != null) {
+				conceptsById.put(concept.getConceptId(), concept);
+			}
+		}
+		if (conceptsById.size() < conceptIds.size()) {
+			log.debug("Dropped {} concept search hit(s) with no matching row (stale search index?)",
+			    conceptIds.size() - conceptsById.size());
+		}
+		return conceptsById;
+	}
+
+	/**
+	 * Order-preserving list form of {@link #multiLoadConceptsByHit(List)} for searches that return the
+	 * concepts directly rather than pairing them into a {@link ConceptSearchResult}. Hits whose concept
+	 * is no longer present in the database - a stale index entry - are dropped from the results.
+	 *
+	 * @param names the page of concept-name hits, in the order they should appear in the results
+	 * @return the concepts for the page, in hit order, with missing rows removed
+	 */
+	private List<Concept> multiLoadConcepts(List<ConceptName> names) {
+		Map<Integer, Concept> conceptsById = multiLoadConceptsByHit(names);
+		return names.stream().map(n -> conceptsById.get(n.getConcept().getConceptId())).filter(Objects::nonNull)
+		        .collect(Collectors.toList());
 	}
 }
