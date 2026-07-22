@@ -376,9 +376,16 @@
 				<plugin>
 					<groupId>com.mycila</groupId>
 					<artifactId>license-maven-plugin</artifactId>
-					<version>3.0</version>
+					<version>5.1.1</version>
 					<configuration>
 						<header>/org/openmrs/license/license-header.txt</header>
+						<!-- license-maven-plugin 4.x changed the default header style for
+						     .java files from JAVADOC_STYLE (/** */) to SLASHSTAR_STYLE (/* */).
+						     All existing sources use /**, so keep the old style to avoid
+						     flagging every file. Do not remove. -->
+						<mapping>
+							<java>JAVADOC_STYLE</java>
+						</mapping>
 						<includes>
 							<include>**/*.java</include>
 							<include>**/*.txt</include>
