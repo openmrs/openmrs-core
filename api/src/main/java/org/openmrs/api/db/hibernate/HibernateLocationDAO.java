@@ -519,10 +519,10 @@ public class HibernateLocationDAO implements LocationDAO {
 	}
 
 	private void applyPagination(org.hibernate.query.Query<Location> query, LocationSearchCriteria criteria) {
-		if (criteria.getStartIndex() != null) {
+		if (criteria.getStartIndex() != null && criteria.getStartIndex() >= 0) {
 			query.setFirstResult(criteria.getStartIndex());
 		}
-		if (criteria.getMaxResults() != null) {
+		if (criteria.getMaxResults() != null && criteria.getMaxResults() > 0) {
 			query.setMaxResults(criteria.getMaxResults());
 		}
 	}
