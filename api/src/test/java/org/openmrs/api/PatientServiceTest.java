@@ -75,6 +75,8 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.Visit;
+import org.openmrs.aop.event.MergePatientServiceEvent;
+import org.openmrs.aop.event.TestMergePatientServiceEventListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.api.impl.PatientServiceImplTest;
@@ -762,6 +764,27 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		voidOrders(Collections.singleton(notPreferred));
 		Context.getPatientService().mergePatients(patientService.getPatient(6), notPreferred);
 		assertTrue(Context.getPersonService().getPerson(2).getVoided());
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldPublishMergePatientServiceEvent() throws Exception {
+		TestMergePatientServiceEventListener listener = Context.getRegisteredComponent(
+		    "testMergePatientServiceEventListener", TestMergePatientServiceEventListener.class);
+		listener.clear();
+
+		Patient preferred = patientService.getPatient(6);
+		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
+
+		Context.getPatientService().mergePatients(preferred, notPreferred);
+
+		assertEquals(1, listener.getEvents().size());
+		MergePatientServiceEvent event = listener.getEvents().get(0);
+		assertEquals(preferred.getPatientId(), event.getWinner().getPatientId());
+		assertEquals(notPreferred.getPatientId(), event.getLoser().getPatientId());
 	}
 	
 	/**
