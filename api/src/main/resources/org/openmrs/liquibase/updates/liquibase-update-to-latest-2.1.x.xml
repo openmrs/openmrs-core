@@ -74,7 +74,7 @@
 			</column>
 		</addColumn>
 	</changeSet>
-	<changeSet author="vshankar" id="201609171146-2.1" dbms="mysql">
+	<changeSet author="vshankar" id="201609171146-2.1" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<columnExists tableName="cohort_member" columnName="cohort_member_id"/>
@@ -88,14 +88,14 @@
 		<comment>Updating cohort member ids</comment>
 		<customChange class="org.openmrs.util.databasechange.UpdateCohortMemberIdsChangeset"/>
 	</changeSet>
-	<changeSet author="vshankar" id="201609171146-2.2" dbms="mysql">
+	<changeSet author="vshankar" id="201609171146-2.2" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="cohort_member" columnName="cohort_member_id"/>
 		</preConditions>
 		<comment>Adding primary key to cohort_member.cohort_member_id</comment>
 		<addPrimaryKey tableName="cohort_member" columnNames="cohort_member_id"/>
 	</changeSet>
-	<changeSet author="vshankar" id="201609171146-2.3" dbms="mysql">
+	<changeSet author="vshankar" id="201609171146-2.3" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="cohort_member" columnName="cohort_member_id"/>
 		</preConditions>
@@ -275,6 +275,22 @@
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+	</changeSet>
+	<changeSet id="TRUNK-6634-2026-07-03-1000" author="arrabelli" dbms="mariadb">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="cohort_member" columnName="uuid"/>
+		</preConditions>
+		<comment>
+			Generating UUIDs for rows in cohort_member on MariaDB. Changeset 201610042145-2.1 only
+			runs for MySQL and Oracle; since MariaDB 11 is no longer detected as MySQL, the uuid
+			backfill was silently skipped and the unique constraint in 201610042145-2.2 then failed
+			on tables with more than one row. 201610042145-2.1 must stay untouched because adding a
+			modifySql block changes its checksum and would break validation on existing databases.
+		</comment>
+		<update tableName="cohort_member">
+			<column name="uuid" valueComputed="UUID()"/>
+			<where>uuid = '' OR uuid is null</where>
+		</update>
 	</changeSet>
 	<changeSet id="201610042145-2.2" author="vshankar">
 		<preConditions>
