@@ -20,6 +20,15 @@
 			<expiration max-idle="100000" interval="5000"/>
 			<memory max-count="10000"/>
 		</local-cache-configuration>
-		
+
+		<!-- Like entity, but with a lifespan TTL: role/privilege eviction only fires on API mutations,
+		     so the lifespan is a safety net that bounds staleness from role changes made outside the API. -->
+		<local-cache-configuration name="role-privileges" simple-cache="true" statistics="false">
+			<encoding media-type="application/x-java-object"/>
+			<transaction mode="NONE" />
+			<expiration lifespan="3600000" max-idle="100000" interval="5000"/>
+			<memory max-count="10000"/>
+		</local-cache-configuration>
+
 	</cache-container>
 </infinispan>
