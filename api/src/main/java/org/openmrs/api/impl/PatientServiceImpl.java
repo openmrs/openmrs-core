@@ -61,7 +61,9 @@ import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
+import org.openmrs.aop.event.MergePatientsServiceEvent;
 import org.openmrs.api.context.Context;
+import org.openmrs.event.EventPublisher;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.parameter.EncounterSearchCriteria;
@@ -101,6 +103,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 	@Autowired
 	private PatientDAO dao;
+
+	@Autowired
+	private EventPublisher eventPublisher;
 
 	/**
 	 * PatientIdentifierValidators registered through spring's applicationContext-service.xml
@@ -608,6 +613,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		personMergeLog.setLoser(notPreferred);
 		personMergeLog.setPersonMergeLogData(mergedData);
 		Context.getPersonService().savePersonMergeLog(personMergeLog);
+
+		eventPublisher.publishEvent(new MergePatientsServiceEvent(preferred, notPreferred));
 	}
 
 	private void requireNoActiveOrderOfSameType(Patient patient1, Patient patient2) {
