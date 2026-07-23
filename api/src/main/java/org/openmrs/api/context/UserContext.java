@@ -29,6 +29,8 @@ import org.openmrs.UserSessionListener.Event;
 import org.openmrs.UserSessionListener.Status;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.cache.RolePrivilegeCache;
+import org.openmrs.api.cache.RolePrivileges;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
@@ -401,17 +403,38 @@ public class UserContext implements Serializable {
 			}
 		}
 
-		// if a user has logged in, check their privileges
-		if (isAuthenticated()
-		        && (getAuthenticatedUser().hasPrivilege(privilege) || getAuthenticatedRole().hasPrivilege(privilege))) {
+		// grab the cache component (a plain component lookup, NOT a service proxy)
+		RolePrivilegeCache cache = Context.getRegisteredComponent("rolePrivilegeCache", RolePrivilegeCache.class);
+		String normalizedPrivilege = (privilege == null) ? null : privilege.toLowerCase(Locale.ENGLISH);
 
-			// check user's privileges
-			notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
-			return true;
+		// if a user has logged in, check their own roles plus the authenticated role
+		if (isAuthenticated()) {
+			User authenticatedUser = getAuthenticatedUser();
 
+			// keep the old rule: an empty privilege string always passes for logged-in users
+			if (StringUtils.isEmpty(privilege)) {
+				notifyPrivilegeListeners(authenticatedUser, privilege, true);
+				return true;
+			}
+
+			if (authenticatedUser.getRoles() != null) {
+				// the user's DIRECT roles; each role's cached entry already contains its inherited closure
+				for (Role role : authenticatedUser.getRoles()) {
+					if (grants(cache, role, normalizedPrivilege)) {
+						notifyPrivilegeListeners(authenticatedUser, privilege, true);
+						return true;
+					}
+				}
+			}
+
+			if (grants(cache, getAuthenticatedRole(), normalizedPrivilege)) {
+				notifyPrivilegeListeners(authenticatedUser, privilege, true);
+				return true;
+			}
 		}
 
-		if (getAnonymousRole().hasPrivilege(privilege)) {
+		// the anonymous role is checked for everyone
+		if (grants(cache, getAnonymousRole(), normalizedPrivilege)) {
 			notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 			return true;
 		}
@@ -419,6 +442,15 @@ public class UserContext implements Serializable {
 		// default return value
 		notifyPrivilegeListeners(getAuthenticatedUser(), privilege, false);
 		return false;
+	}
+
+	/**
+	 * @return true if this role's cached entry grants superuser, or contains the requested privilege
+	 */
+	private static boolean grants(RolePrivilegeCache cache, Role role, String normalizedPrivilege) {
+		RolePrivileges rolePrivileges = cache.getPrivileges(role);
+		return rolePrivileges.grantsSuperuser()
+		        || (normalizedPrivilege != null && rolePrivileges.containsPrivilege(normalizedPrivilege));
 	}
 
 	/**
