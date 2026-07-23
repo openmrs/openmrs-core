@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Base64;
@@ -70,6 +71,61 @@ public class SecurityTest {
 	public void hashMatches_shouldMatchStringsHashedWithIncorrectSha1Algorithm() {
 		assertTrue(Security.hashMatches("4a1750c8607dfa237de36c6305715c223415189", "test"
 		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
+	}
+
+	/**
+	 * @see Security#isLegacyPasswordHash(String)
+	 */
+	@Test
+	public void isLegacyPasswordHash_shouldDetectSha1Hashes() {
+		assertTrue(Security.isLegacyPasswordHash("4a1750c8607d0fa237de36c6305715c223415189"));
+		assertTrue(Security.isLegacyPasswordHash("4a1750c8607dfa237de36c6305715c223415189"));
+	}
+
+	/**
+	 * @see Security#isLegacyPasswordHash(String)
+	 */
+	@Test
+	public void isLegacyPasswordHash_shouldDetectLegacyPrefixMarker() {
+		assertTrue(Security.isLegacyPasswordHash(LegacyPasswordEncoder.LEGACY_HASH_PREFIX + "abc"));
+	}
+
+	/**
+	 * @see Security#isLegacyPasswordHash(String)
+	 */
+	@Test
+	public void isLegacyPasswordHash_shouldNotDetectSha512Hashes() {
+		assertFalse(Security.isLegacyPasswordHash(
+		    "1d1436658853aceceadd72e92f1ae9089a0000fbb38cea519ce34eae9f28523930ecb212177dbd607d83dc275fde3e9ca648deb557d503ad0bcd01a955a394b2"));
+	}
+
+	/**
+	 * @see Security#isLegacyPasswordHash(String)
+	 */
+	@Test
+	public void isLegacyPasswordHash_shouldNotDetectEmptyOrNullHashes() {
+		assertFalse(Security.isLegacyPasswordHash(null));
+		assertFalse(Security.isLegacyPasswordHash(""));
+	}
+
+	/**
+	 * @see Security#matchesPassword(String,String)
+	 */
+	@Test
+	public void matchesPassword_shouldRouteLegacyHashesToLegacyEncoder() {
+		assertTrue(Security.matchesPassword("4a1750c8607d0fa237de36c6305715c223415189", "test"
+		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
+	}
+
+	/**
+	 * @see Security#matchesPassword(String,String)
+	 */
+	@Test
+	public void matchesPassword_shouldRouteSha512HashesToCurrentEncoder() {
+		String password = "1d1436658853aceceadd72e92f1ae9089a0000fbb38cea519ce34eae9f28523930ecb212177dbd607d83dc275fde3e9ca648deb557d503ad0bcd01a955a394b2";
+		String passwordToHash = "test"
+		        + "0d7bb319434295261601202e14494b959cdd69c6ceb54ee3890e176ae780ce9edf797f48afde5f39906a6bd75b8a5feeac8f5339615acf7429c7dda85220d329";
+		assertTrue(Security.matchesPassword(password, passwordToHash));
 	}
 	
 	/**

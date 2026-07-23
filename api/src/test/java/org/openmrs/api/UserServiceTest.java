@@ -551,6 +551,67 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see UserService#changePassword(String,String)
+	 */
+	@Test
+	public void authenticate_shouldSetLegacyPasswordUserPropertyWhenAuthenticatingWithLegacyHash() {
+		executeDataSet(XML_FILENAME);
+		Context.logout();
+		Context.authenticate("correctlyhashedSha1", "test");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+
+		User user = Context.getAuthenticatedUser();
+		assertNotNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
+
+		User reloadedUser = userService.getUser(user.getUserId());
+		assertNotNull(reloadedUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
+
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+		Context.logout();
+	}
+
+	/**
+	 * @see UserService#changePassword(String,String)
+	 */
+	@Test
+	public void authenticate_shouldNotSetLegacyPasswordUserPropertyWhenAuthenticatingWithSha512Hash() {
+		executeDataSet(XML_FILENAME);
+		Context.logout();
+		Context.authenticate("userWithSha512Hash", "test");
+
+		User user = Context.getAuthenticatedUser();
+		assertThat(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD), is(emptyString()));
+
+		Context.logout();
+	}
+
+	/**
+	 * @see UserService#changePassword(String,String)
+	 */
+	@Test
+	public void changePassword_shouldClearLegacyPasswordPropertyAndUpgradeHashWhenChangingPassword() {
+		executeDataSet(XML_FILENAME);
+		Context.logout();
+		Context.authenticate("correctlyhashedSha1", "test");
+		assertNotNull(Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
+
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+		userService.changePassword("test", "Tester12");
+
+		User user = userService.getUser(Context.getAuthenticatedUser().getUserId());
+		assertNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
+
+		LoginCredential credentials = dao.getLoginCredential(user);
+		assertEquals(128, credentials.getHashedPassword().length());
+		assertFalse(Security.isLegacyPasswordHash(credentials.getHashedPassword()));
+
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		Context.logout();
+	}
+
+	/**
 	 * @see UserService#getUsers(String,List,boolean)
 	 */
 	@Test

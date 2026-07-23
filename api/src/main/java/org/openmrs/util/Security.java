@@ -34,14 +34,53 @@ import org.springframework.util.StringUtils;
  */
 public class Security {
 
-	/**
-	 * encryption settings
-	 */
+	private static final int SHA512_HEX_LENGTH = 128;
+
 	private static final Logger log = LoggerFactory.getLogger(Security.class);
 	
 	private static final Random RANDOM = new SecureRandom();
 
 	private Security() {
+	}
+
+	/**
+	 * Returns true if the stored hash was produced by a legacy password algorithm (SHA-1 or the
+	 * historical buggy SHA-1 encoding). We shall not consider SHA-512 hashes and empty values.
+	 *
+	 * @param storedHash hash from the users.password column
+	 * @return true if the hash should be verified with {@link LegacyPasswordEncoder}
+	 * @since 2.8.8
+	 */
+	public static boolean isLegacyPasswordHash(String storedHash) {
+		if (!StringUtils.hasText(storedHash)) {
+			return false;
+		}
+		if (storedHash.startsWith(LegacyPasswordEncoder.LEGACY_HASH_PREFIX)) {
+			return true;
+		}
+		if (storedHash.length() == SHA512_HEX_LENGTH && isLowerHex(storedHash)) {
+			return false;
+		}
+		return isLowerHex(storedHash);
+	}
+
+	/**
+	 * Compare the given hash and the given string-to-hash using the appropriate encoder for the hash
+	 * format. ie (password + salt).
+	 *
+	 * @param storedHash a stored password that has been hashed previously
+	 * @param passwordToHash a string to encode/hash and compare to storedHash
+	 * @return true if the password matches the stored hash
+	 * @since 2.8.8
+	 */
+	public static boolean matchesPassword(String storedHash, String passwordToHash) {
+		if (storedHash == null || passwordToHash == null) {
+			throw new APIException("password.cannot.be.null", (Object[]) null);
+		}
+		if (isLegacyPasswordHash(storedHash)) {
+			return LegacyPasswordEncoder.matches(storedHash, passwordToHash);
+		}
+		return storedHash.equals(encodeString(passwordToHash));
 	}
 
 	/**
@@ -60,17 +99,10 @@ public class Security {
 	 * <strong>Should</strong> match strings hashed with sha512 algorithm and 128 characters salt
 	 */
 	public static boolean hashMatches(String hashedPassword, String passwordToHash) {
-		if (hashedPassword == null || passwordToHash == null) {
-			throw new APIException("password.cannot.be.null", (Object[]) null);
-		}
-		
-		return hashedPassword.equals(encodeString(passwordToHash))
-			|| hashedPassword.equals(encodeStringSHA1(passwordToHash))
-			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
+		return matchesPassword(hashedPassword, passwordToHash);
 	}
 
 	/**
-	 /**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
 	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
 	 *
@@ -80,16 +112,6 @@ public class Security {
 	 */
 	public static String encodeString(String strToEncode) throws APIException {
 		return encodeString(strToEncode, "SHA-512");
-	}
-
-	/**
-	 * This method will hash <code>strToEncode</code> using the old SHA-1 algorithm.
-	 *
-	 * @param strToEncode string to encode
-	 * @return the SHA-1 encryption of a given string
-	 */
-	private static String encodeStringSHA1(String strToEncode) throws APIException {
-		return encodeString(strToEncode, "SHA-1");
 	}
 
 	private static String encodeString(String strToEncode, String algorithm) {
@@ -131,36 +153,15 @@ public class Security {
 		return buf.toString();
 	}
 
-	/**
-	 * This method will hash <code>strToEncode</code> using SHA-1 and the incorrect hashing method
-	 * that sometimes dropped out leading zeros.
-	 *
-	 * @param strToEncode string to encode
-	 * @return the SHA-1 encryption of a given string
-	 */
-	private static String incorrectlyEncodeString(String strToEncode) throws APIException {
-		return incorrectHexString(digest(strToEncode.getBytes(StandardCharsets.UTF_8), "SHA-1"));
-	}
-
-	/**
-	 * This method used to be the simple hexString method, however, as pointed out in ticket
-	 * http://dev.openmrs.org/ticket/1178, it was not working correctly. Authenticated still needs
-	 * to occur against both this method and the correct hex string, so this wrong implementation
-	 * will remain until we either force users to change their passwords, or we just decide to
-	 * invalidate them.
-	 *
-	 * @param b the byte array to encode
-	 * @return the old possibly less than 40 characters hashed string
-	 */
-	private static String incorrectHexString(byte[] b) {
-		if (b == null || b.length < 1) {
-			return "";
+	private static boolean isLowerHex(String value) {
+		for (int i = 0; i < value.length(); i++) {
+			char c = value.charAt(i);
+			if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')) {
+				continue;
+			}
+			return false;
 		}
-		StringBuilder s = new StringBuilder();
-		for (byte aB : b) {
-			s.append(Integer.toHexString(aB & 0xFF));
-		}
-		return new String(s);
+		return true;
 	}
 
 	/**
