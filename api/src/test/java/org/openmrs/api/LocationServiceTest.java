@@ -1446,4 +1446,20 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		assertEquals(filtered.get(1).getLocationId(), paged.get(0).getLocationId());
 	}
 
+	@Test
+	public void shouldLoadLocationParentLazily() throws Exception {
+		LocationService ls = Context.getLocationService();
+		Location child = new Location();
+		child.setName("Child");
+		Location parent = ls.getLocation(1);
+		child.setParentLocation(parent);
+		ls.saveLocation(child);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		Location fetchedChild = ls.getLocation(child.getId());
+		org.junit.jupiter.api.Assertions.assertFalse(org.hibernate.Hibernate.isInitialized(fetchedChild.getParentLocation()),
+		    "Parent Location should be loaded lazily");
+	}
 }

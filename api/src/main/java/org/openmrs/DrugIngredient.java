@@ -13,6 +13,7 @@ import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -31,12 +32,12 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	public static final long serialVersionUID = 94023L;
 
 	// Fields
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "drug_id", updatable = false, insertable = false)
 	@Id
 	private Drug drug;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ingredient_id", updatable = false, insertable = false)
 	@Id
 	private Concept ingredient;
@@ -45,7 +46,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	private Double strength;
 
 	@JoinColumn(name = "units")
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Concept units;
 
 	// Constructors

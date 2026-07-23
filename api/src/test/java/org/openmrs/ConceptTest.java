@@ -1264,4 +1264,13 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		assertThat(concept.getSetMembers(), hasItem(setMember3));
 		assertThat(concept.getSetMembers().size(), is(3));
 	}
+
+	@Test
+	public void shouldLoadConceptAnswersLazily() throws Exception {
+		Context.clearSession();
+		Concept concept = Context.getConceptService().getConcept(21);
+		ConceptAnswer answer = concept.getAnswers().iterator().next();
+		assertFalse(org.hibernate.Hibernate.isInitialized(answer.getAnswerConcept()),
+		    "Answer Concept should be loaded lazily");
+	}
 }
