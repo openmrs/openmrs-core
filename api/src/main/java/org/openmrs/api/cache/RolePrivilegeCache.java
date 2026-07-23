@@ -25,16 +25,10 @@ import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 /**
- * Caches the fully-flattened {@link RolePrivileges} for each role, keyed by role name.
- * <p>
- * This is a plain Spring {@link Component}, not a service method, so reading it during a privilege
- * check does <b>not</b> re-enter the {@code @Authorized}/AOP service proxy (no overhead, and no
- * risk of a privilege check triggering another privilege check). It holds a direct handle to the
- * {@code rolePrivileges} cache declared in {@code cache-api.yaml}.
- * <p>
- * On a cache miss the role's entire inheritance chain is walked once by {@link #flatten(Role)},
- * collecting every privilege (lowercased) and whether the chain grants superuser, and the result is
- * stored so later checks are a single lookup with no recursion.
+ * Caches the fully-flattened {@link RolePrivileges} for each role, keyed by role name. This is a
+ * plain Spring {@link Component}, not a service method, so reading it during a privilege check does
+ * not re-enter the {@code @Authorized} service proxy. On a cache miss {@link #flatten(Role)} walks
+ * the role's entire inheritance chain once; later checks are a single lookup with no recursion.
  *
  * @since 2.8.0
  */
@@ -55,7 +49,6 @@ public class RolePrivilegeCache {
 	 * @return the role's flattened privileges (never null)
 	 */
 	public RolePrivileges getPrivileges(Role role) {
-		// key by role NAME (a stable, unique String); compute via flatten() on a cache miss
 		return cache.get(role.getRole(), () -> flatten(role));
 	}
 
@@ -73,7 +66,6 @@ public class RolePrivilegeCache {
 		while (!stack.isEmpty()) {
 			Role current = stack.pop();
 			if (current == null || !visited.add(current.getRole())) {
-				// null role, or one we have already processed -> skip (prevents infinite loops)
 				continue;
 			}
 			if (RoleConstants.SUPERUSER.equals(current.getRole())) {

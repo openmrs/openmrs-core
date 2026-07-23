@@ -394,53 +394,53 @@ public class UserContext implements Serializable {
 	 * @return true if authenticated user has given privilege
 	 */
 	public boolean hasPrivilege(String privilege) {
-		log.debug("Checking '{}' against proxies: {}", privilege, proxies);
-		// check proxied privileges
+		boolean authorized = isAuthorized(privilege);
+		notifyPrivilegeListeners(getAuthenticatedUser(), privilege, authorized);
+		return authorized;
+	}
+
+	/**
+	 * Resolves whether the current user has the given privilege, checking, in order: proxy privileges,
+	 * the authenticated user's own roles, the authenticated role, and the anonymous role.
+	 */
+	private boolean isAuthorized(String privilege) {
 		for (String s : new ArrayList<>(proxies)) {
 			if (s.equals(privilege)) {
-				notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 				return true;
 			}
 		}
 
-		// grab the cache component (a plain component lookup, NOT a service proxy)
+		// a plain component lookup, so the read path does not re-enter the service proxy
 		RolePrivilegeCache cache = Context.getRegisteredComponent("rolePrivilegeCache", RolePrivilegeCache.class);
 		String normalizedPrivilege = (privilege == null) ? null : privilege.toLowerCase(Locale.ENGLISH);
 
-		// if a user has logged in, check their own roles plus the authenticated role
 		if (isAuthenticated()) {
-			User authenticatedUser = getAuthenticatedUser();
-
-			// keep the old rule: an empty privilege string always passes for logged-in users
+			// an empty privilege always passes for logged-in users
 			if (StringUtils.isEmpty(privilege)) {
-				notifyPrivilegeListeners(authenticatedUser, privilege, true);
 				return true;
 			}
-
-			if (authenticatedUser.getRoles() != null) {
-				// the user's DIRECT roles; each role's cached entry already contains its inherited closure
-				for (Role role : authenticatedUser.getRoles()) {
-					if (grants(cache, role, normalizedPrivilege)) {
-						notifyPrivilegeListeners(authenticatedUser, privilege, true);
-						return true;
-					}
-				}
-			}
-
-			if (grants(cache, getAuthenticatedRole(), normalizedPrivilege)) {
-				notifyPrivilegeListeners(authenticatedUser, privilege, true);
+			if (userRolesGrant(cache, normalizedPrivilege) || grants(cache, getAuthenticatedRole(), normalizedPrivilege)) {
 				return true;
 			}
 		}
 
-		// the anonymous role is checked for everyone
-		if (grants(cache, getAnonymousRole(), normalizedPrivilege)) {
-			notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
-			return true;
-		}
+		return grants(cache, getAnonymousRole(), normalizedPrivilege);
+	}
 
-		// default return value
-		notifyPrivilegeListeners(getAuthenticatedUser(), privilege, false);
+	/**
+	 * @return true if any of the authenticated user's direct roles grants the privilege; each role's
+	 *         cached entry already contains its inherited closure, so no recursion is needed here
+	 */
+	private boolean userRolesGrant(RolePrivilegeCache cache, String normalizedPrivilege) {
+		User authenticatedUser = getAuthenticatedUser();
+		if (authenticatedUser.getRoles() == null) {
+			return false;
+		}
+		for (Role role : authenticatedUser.getRoles()) {
+			if (grants(cache, role, normalizedPrivilege)) {
+				return true;
+			}
+		}
 		return false;
 	}
 

@@ -34,12 +34,10 @@ public class RolePrivilegeCacheTest {
 
 	@BeforeEach
 	void setUp() {
-		// a simple in-memory cache manager that hands out a cache named "rolePrivileges"
 		ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager("rolePrivileges");
 		cache = new RolePrivilegeCache(cacheManager);
 	}
 
-	/** Builds a role with the given name and (case-preserved) privilege names. */
 	private Role role(String name, String... privileges) {
 		Role role = new Role(name);
 		Set<Privilege> privilegeSet = new HashSet<>();
@@ -81,9 +79,9 @@ public class RolePrivilegeCacheTest {
 
 		RolePrivileges result = cache.getPrivileges(seniorClinician);
 
-		assertTrue(result.containsPrivilege("edit patients")); // from Senior Clinician itself
-		assertTrue(result.containsPrivilege("add visits")); // inherited from Clinician
-		assertTrue(result.containsPrivilege("view patients")); // inherited from Basic User
+		assertTrue(result.containsPrivilege("edit patients"));
+		assertTrue(result.containsPrivilege("add visits"));
+		assertTrue(result.containsPrivilege("view patients"));
 		assertFalse(result.grantsSuperuser());
 	}
 
@@ -110,7 +108,7 @@ public class RolePrivilegeCacheTest {
 
 		RolePrivileges result = cache.getPrivileges(admin);
 
-		assertTrue(result.grantsSuperuser()); // superuser status flows down through inheritance
+		assertTrue(result.grantsSuperuser());
 	}
 
 	@Test

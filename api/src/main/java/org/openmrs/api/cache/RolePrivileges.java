@@ -15,16 +15,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Immutable, cacheable snapshot of the fully-flattened privileges granted by a single role.
- * <p>
- * One instance represents "the answer for one role": every privilege that role grants (including
- * everything it inherits), plus whether the role grants superuser status. It is computed once by
- * {@link RolePrivilegeCache} and stored in the {@code rolePrivileges} cache, so privilege checks
- * can read a pre-computed result instead of re-walking the role inheritance tree on every call.
- * <p>
- * Privilege names are stored already lowercased (see {@link RolePrivilegeCache}) so that
- * case-insensitive matching becomes a fast {@link Set} lookup. The object is immutable and
- * {@link Serializable} so it is safe to share across threads and move between cluster nodes.
+ * Immutable, cacheable snapshot of the fully-flattened privileges granted by a single role: the
+ * (lowercased) privilege names it grants, including everything it inherits, plus whether it grants
+ * superuser status. Computed once by {@link RolePrivilegeCache}. Lowercasing keeps case-insensitive
+ * matching while allowing a fast {@link Set} lookup; immutability and {@link Serializable} make it
+ * safe to share across threads and cluster nodes.
  *
  * @since 2.8.0
  */
