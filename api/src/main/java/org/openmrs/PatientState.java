@@ -13,6 +13,7 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,11 +43,11 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	@Column(name = "patient_state_id")
 	private Integer patientStateId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_program_id", nullable = false)
 	private PatientProgram patientProgram;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "state", nullable = false)
 	private ProgramWorkflowState state;
 
@@ -56,7 +57,7 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	@Column(name = "end_date", length = 19)
 	private Date endDate;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
 
