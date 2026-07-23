@@ -296,8 +296,17 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			u.setUsername("bwolfe");
 			u.getPerson().setGender("M");
 			u.addRole(role);
-			// here we expect the exception to be thrown
-			userService.createUser(u, "Openmr5xy");
+			// Add Users is held only as a proxy so the createUser gate passes; role privileges resolve from
+			// the database by name, so stubbing them on an in-memory role no longer grants them.
+			Context.addProxyPrivilege(PrivilegeConstants.ADD_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			try {
+				// here we expect the exception to be thrown
+				userService.createUser(u, "Openmr5xy");
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				Context.removeProxyPrivilege(PrivilegeConstants.ADD_USERS);
+			}
 		}));
 		assertThat(exception.getMessage(), is("You must have privilege {0} in order to assign it."));
 	}
@@ -331,8 +340,17 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			u.setUsername("bwolfe");
 			u.getPerson().setGender("M");
 			u.addRole(role);
-			// here we expect the exception to be thrown
-			userService.createUser(u, "Openmr5xy");
+			// Add Users is held only as a proxy so the createUser gate passes; role privileges resolve from
+			// the database by name, so stubbing them on an in-memory role no longer grants them.
+			Context.addProxyPrivilege(PrivilegeConstants.ADD_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			try {
+				// here we expect the exception to be thrown
+				userService.createUser(u, "Openmr5xy");
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				Context.removeProxyPrivilege(PrivilegeConstants.ADD_USERS);
+			}
 		}));
 		assertThat(exception.getMessage(),
 		    is("You must have the following privileges in order to assign them: Another Privilege, Custom Privilege"));
@@ -369,8 +387,17 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			u.getPerson().setGender("M");
 			u.isSuperUser();
 			u.addRole(role);
-			// here we expect the exception to be thrown
-			userService.createUser(u, "Openmr5xy");
+			// Add Users is held only as a proxy so the createUser gate passes; role privileges resolve from
+			// the database by name, so stubbing them on an in-memory role no longer grants them.
+			Context.addProxyPrivilege(PrivilegeConstants.ADD_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			try {
+				// here we expect the exception to be thrown
+				userService.createUser(u, "Openmr5xy");
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				Context.removeProxyPrivilege(PrivilegeConstants.ADD_USERS);
+			}
 		}));
 		assertThat(exception.getMessage(), is("You must have the role {0} in order to assign it."));
 	}
@@ -1207,18 +1234,22 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void saveRole_shouldThrowErrorWhenCurrentUserLacksPrivilegeAssignedToRole() throws IllegalAccessException {
-		Role adminRole = new Role("my role");
-		adminRole.addPrivilege(new Privilege(PrivilegeConstants.MANAGE_ROLES));
-
 		User currentUser = new User();
-		currentUser.addRole(adminRole);
 
 		Privilege myPrivilege = new Privilege("custom privilege");
 
 		APIException exception = assertThrows(APIException.class, () -> withCurrentUserAs(currentUser, () -> {
-			Role newRole = new Role("another role");
-			newRole.addPrivilege(myPrivilege);
-			userService.saveRole(newRole);
+			// Manage Roles is held only as a proxy so the saveRole gate passes; role privileges resolve from
+			// the database by name. The assigned privilege is deliberately not held, so the assignment check
+			// fails on it.
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+			try {
+				Role newRole = new Role("another role");
+				newRole.addPrivilege(myPrivilege);
+				userService.saveRole(newRole);
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+			}
 		}));
 		assertThat(exception.getMessage(),
 		    is("You must have the following privileges in order to assign them: custom privilege"));
@@ -1226,21 +1257,25 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void saveRole_shouldThrowErrorWhenCurrentUserLacksAPrivilegeAssignedToRole() throws IllegalAccessException {
+		User currentUser = new User();
+
 		Privilege myFirstPrivilege = new Privilege("custom privilege");
 		Privilege mySecondPrivilege = new Privilege("another privilege");
 
-		Role adminRole = new Role("my role");
-		adminRole.addPrivilege(new Privilege(PrivilegeConstants.MANAGE_ROLES));
-		adminRole.addPrivilege(myFirstPrivilege);
-
-		User currentUser = new User();
-		currentUser.addRole(adminRole);
-
 		APIException exception = assertThrows(APIException.class, () -> withCurrentUserAs(currentUser, () -> {
-			Role newRole = new Role("another role");
-			newRole.addPrivilege(myFirstPrivilege);
-			newRole.addPrivilege(mySecondPrivilege);
-			userService.saveRole(newRole);
+			// Manage Roles (the gate) and the already-held "custom privilege" are proxies; "another
+			// privilege" is withheld so the assignment check fails only on it.
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+			Context.addProxyPrivilege(myFirstPrivilege.getPrivilege());
+			try {
+				Role newRole = new Role("another role");
+				newRole.addPrivilege(myFirstPrivilege);
+				newRole.addPrivilege(mySecondPrivilege);
+				userService.saveRole(newRole);
+			} finally {
+				Context.removeProxyPrivilege(myFirstPrivilege.getPrivilege());
+				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+			}
 		}));
 		assertThat(exception.getMessage(),
 		    is("You must have the following privileges in order to assign them: another privilege"));
