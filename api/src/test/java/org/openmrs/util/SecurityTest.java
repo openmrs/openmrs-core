@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Base64;
@@ -29,18 +30,55 @@ public class SecurityTest {
 	 * @see Security#encodeString(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsTo128Characters() {
+	public void encodeString_shouldEncodeStringsToSHA512() {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
 		assertEquals(HASH_LENGTH, hash.length());
 	}
 	
 	/**
-	 * @see Security#encodeString(String)
+	 * @see Security#encodeCredential(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsToXCharactersWithXCharactersSalt() {
-		String hash = Security.encodeString("test" + Security.getRandomToken());
-		assertEquals(HASH_LENGTH, hash.length());
+	public void encodeCredential_shouldEncodeStringsToArgon2id() {
+		String hash = Security.encodeCredential("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
+		assertTrue(hash.startsWith("$argon2id$"));
+	}
+	
+	/**
+	 * @see Security#encodeCredential(String)
+	 */
+	@Test
+	public void encodeCredential_shouldEncodeStringsToArgon2idWithSalt() {
+		String hash = Security.encodeCredential("test" + Security.getRandomToken());
+		assertTrue(hash.startsWith("$argon2id$"));
+	}
+	
+	/**
+	 * @see Security#hashMatches(String,String)
+	 */
+	@Test
+	public void hashMatches_shouldMatchArgon2idHashedStrings() {
+		String password = "testPassword123";
+		String hash = Security.encodeCredential(password);
+		assertTrue(Security.hashMatches(hash, password));
+	}
+	
+	/**
+	 * @see Security#hashMatches(String,String)
+	 */
+	@Test
+	public void hashMatches_shouldRejectArgon2idHashWithTamperedEmbeddedParams() {
+		String password = "testPassword123";
+		String hash = Security.encodeCredential(password);
+		assertTrue(hash.startsWith("$argon2id$"));
+
+		String[] parts = hash.split("\\$");
+		String originalT = parts[3].split(",")[1];
+		String bumpedHash = hash.replace(originalT, "t=99");
+		assertFalse(Security.hashMatches(bumpedHash, password),
+		        "hash must not verify when embedded iteration count is tampered");
+		assertTrue(Security.hashMatches(hash, password),
+		        "original hash must still verify");
 	}
 	
 	/**

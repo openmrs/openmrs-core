@@ -39,6 +39,8 @@ public class Security {
 	 */
 	private static final Logger log = LoggerFactory.getLogger(Security.class);
 	
+	private static final String SHA_512 = "SHA-512";
+
 	private static final Random RANDOM = new SecureRandom();
 
 	private Security() {
@@ -64,22 +66,37 @@ public class Security {
 			throw new APIException("password.cannot.be.null", (Object[]) null);
 		}
 		
-		return hashedPassword.equals(encodeString(passwordToHash))
+		if (hashedPassword.startsWith("$argon2id$")) {
+			return getArgon2Encoder().matches(passwordToHash, hashedPassword);
+		}
+
+		return hashedPassword.equals(encodeString(passwordToHash, SHA_512))
 			|| hashedPassword.equals(encodeStringSHA1(passwordToHash))
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
 	}
 
 	/**
-	 /**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
-	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
+	 * OpenMRS's preferred algorithm is SHA-512. This method is used for activation key hashing
+	 * where deterministic, unsalted hashing is required.
 	 *
 	 * @param strToEncode string to encode
-	 * @return the SHA-512 encryption of a given string
-	 * <strong>Should</strong> encode strings to 128 characters
+	 * @return the SHA-512 hash of a given string
+	 * @since 1.5
 	 */
 	public static String encodeString(String strToEncode) throws APIException {
-		return encodeString(strToEncode, "SHA-512");
+		return encodeString(strToEncode, SHA_512);
+	}
+
+	/**
+	 * Encode a credential (password or secret answer) using Argon2id.
+	 * This is the credential encoding path, separate from the activation key path.
+	 *
+	 * @param strToEncode credential string to encode
+	 * @return the Argon2id hash of the credential
+	 */
+	public static String encodeCredential(String strToEncode) throws APIException {
+		return getArgon2Encoder().encode(strToEncode);
 	}
 
 	/**
@@ -94,6 +111,76 @@ public class Security {
 
 	private static String encodeString(String strToEncode, String algorithm) {
 		return hexString(digest(strToEncode.getBytes(StandardCharsets.UTF_8), algorithm));
+	}
+
+	private static volatile Argon2PasswordEncoder argon2Encoder;
+	private static volatile String configFingerprint;
+
+	private static Argon2PasswordEncoder getArgon2Encoder() {
+		String currentFingerprint = getConfigFingerprint();
+		if (argon2Encoder == null || !currentFingerprint.equals(configFingerprint)) {
+			synchronized (Security.class) {
+				if (argon2Encoder == null || !currentFingerprint.equals(configFingerprint)) {
+					argon2Encoder = new Argon2PasswordEncoder(
+						getIntProperty(OpenmrsConstants.ARGON2_SALT_LENGTH_RUNTIME_PROPERTY, 16),
+						getIntProperty(OpenmrsConstants.ARGON2_HASH_LENGTH_RUNTIME_PROPERTY, 32),
+						getIntProperty(OpenmrsConstants.ARGON2_PARALLELISM_RUNTIME_PROPERTY, 1),
+						getIntProperty(OpenmrsConstants.ARGON2_MEMORY_RUNTIME_PROPERTY, 65536),
+						getIntProperty(OpenmrsConstants.ARGON2_ITERATIONS_RUNTIME_PROPERTY, 3)
+					);
+					configFingerprint = currentFingerprint;
+				}
+			}
+		}
+		return argon2Encoder;
+	}
+
+	/**
+	 * Resets the cached Argon2 encoder and configuration fingerprint.
+	 * This is a package-private method intended for testing purposes only.
+	 * It forces the encoder to be recreated with the current configuration
+	 * on the next call to {@link #encodeString(String)}.
+	 */
+	static void resetEncoder() {
+		synchronized (Security.class) {
+			argon2Encoder = null;
+			configFingerprint = null;
+		}
+	}
+
+	private static String getConfigFingerprint() {
+		try {
+			return OpenmrsConstants.ARGON2_SALT_LENGTH_RUNTIME_PROPERTY + "="
+				+ getIntProperty(OpenmrsConstants.ARGON2_SALT_LENGTH_RUNTIME_PROPERTY, 16) + "|"
+				+ OpenmrsConstants.ARGON2_HASH_LENGTH_RUNTIME_PROPERTY + "="
+				+ getIntProperty(OpenmrsConstants.ARGON2_HASH_LENGTH_RUNTIME_PROPERTY, 32) + "|"
+				+ OpenmrsConstants.ARGON2_PARALLELISM_RUNTIME_PROPERTY + "="
+				+ getIntProperty(OpenmrsConstants.ARGON2_PARALLELISM_RUNTIME_PROPERTY, 1) + "|"
+				+ OpenmrsConstants.ARGON2_MEMORY_RUNTIME_PROPERTY + "="
+				+ getIntProperty(OpenmrsConstants.ARGON2_MEMORY_RUNTIME_PROPERTY, 65536) + "|"
+				+ OpenmrsConstants.ARGON2_ITERATIONS_RUNTIME_PROPERTY + "="
+				+ getIntProperty(OpenmrsConstants.ARGON2_ITERATIONS_RUNTIME_PROPERTY, 3);
+		} catch (Exception e) {
+			return "default";
+		}
+	}
+
+	private static int getIntProperty(String key, int defaultValue) {
+		try {
+			String value = Context.getRuntimeProperties().getProperty(key);
+			if (value == null) {
+				return defaultValue;
+			}
+			int parsed = Integer.parseInt(value.trim());
+			if (parsed <= 0) {
+				log.warn("Invalid value for runtime property '{}': {}, must be > 0, using default: {}", key, parsed, defaultValue);
+				return defaultValue;
+			}
+			return parsed;
+		} catch (Exception e) {
+			log.warn("Invalid value for runtime property '{}', using default: {}", key, defaultValue);
+			return defaultValue;
+		}
 	}
 
 	private static byte[] digest(byte[] input, String algorithm) {

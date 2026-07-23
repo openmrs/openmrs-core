@@ -560,6 +560,31 @@ public final class OpenmrsConstants {
 	public static final String ENCRYPTION_KEY_DEFAULT = "dTfyELRrAICGDwzjHDjuhw==";
 	
 	/**
+	 * Runtime property name for Argon2 memory cost in KB
+	 */
+	public static final String ARGON2_MEMORY_RUNTIME_PROPERTY = "security.argon2.memory";
+
+	/**
+	 * Runtime property name for Argon2 parallelism factor
+	 */
+	public static final String ARGON2_PARALLELISM_RUNTIME_PROPERTY = "security.argon2.parallelism";
+
+	/**
+	 * Runtime property name for Argon2 iterations
+	 */
+	public static final String ARGON2_ITERATIONS_RUNTIME_PROPERTY = "security.argon2.iterations";
+
+	/**
+	 * Runtime property name for Argon2 hash length in bytes
+	 */
+	public static final String ARGON2_HASH_LENGTH_RUNTIME_PROPERTY = "security.argon2.hashLength";
+
+	/**
+	 * Runtime property name for Argon2 salt length in bytes
+	 */
+	public static final String ARGON2_SALT_LENGTH_RUNTIME_PROPERTY = "security.argon2.saltLength";
+
+	/**
 	 * Global property name for the visit type(s) to automatically close
 	 */
 	public static final String GP_VISIT_TYPES_TO_AUTO_CLOSE = "visits.autoCloseVisitType";
