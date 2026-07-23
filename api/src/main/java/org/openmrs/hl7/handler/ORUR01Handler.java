@@ -334,8 +334,7 @@ public class ORUR01Handler implements Application {
 							log.debug("Done with this obs");
 						}
 					}
-				}
-				catch (ProposingConceptException proposingException) {
+				} catch (ProposingConceptException proposingException) {
 					Concept questionConcept = proposingException.getConcept();
 					String value = proposingException.getValueName();
 					
@@ -357,8 +356,7 @@ public class ORUR01Handler implements Application {
 							HL7Exception.DATA_TYPE_ERROR,
 							errorInHL7Queue);
 					}
-				}
-				catch (HL7Exception e) {
+				} catch (HL7Exception e) {
 					throw new HL7Exception(
 						Context.getMessageSourceService().getMessage(
 							"ORUR01.error.improperlyFormattedOBX",
