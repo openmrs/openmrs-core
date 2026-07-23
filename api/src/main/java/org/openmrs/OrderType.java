@@ -15,6 +15,7 @@ import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -55,7 +56,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "java_class_name", nullable = false)
 	private String javaClassName;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent")
 	private OrderType parent;
 
