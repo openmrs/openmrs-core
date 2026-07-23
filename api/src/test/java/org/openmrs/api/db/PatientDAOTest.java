@@ -90,12 +90,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	private PersonAttributeHelper personAttributeHelper;
 
 	/**
-	 * Run this before each unit test in this class. The "@Before" method in
-	 * {@link BaseContextSensitiveTest} is run right before this method.
-	 *
-	 * @throws Exception
-	 */
-	/**
 	 * Restricts search-index rebuilds to the entity types patient searches actually query, instead of
 	 * rebuilding every indexed type on each test.
 	 */
@@ -104,6 +98,12 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		return new Class<?>[] { PersonName.class, PersonAttribute.class, PatientIdentifier.class };
 	}
 
+	/**
+	 * Run this before each unit test in this class. The "@Before" method in
+	 * {@link BaseContextSensitiveTest} is run right before this method.
+	 *
+	 * @throws Exception
+	 */
 	@BeforeEach
 	public void runBeforeEachTest() {
 		executeDataSet(PEOPLE_FROM_THE_SHIRE_XML);
