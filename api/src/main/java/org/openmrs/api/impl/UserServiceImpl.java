@@ -822,4 +822,40 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public String getLastLoginTime(User user) {
 		return dao.getLastLoginTime(user);
 	}
+
+	/**
+	 * @see org.openmrs.api.UserService#generateBootstrapPassword(User)
+	 */
+	@Override
+	public String generateBootstrapPassword(User user) {
+		return Security.generateBootstrapPassword(user);
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#validateBootstrapPassword(User, String)
+	 */
+	@Override
+	public boolean validateBootstrapPassword(User user, String password) {
+		return Security.validateBootstrapPassword(user, password);
+	}
+	
+	/**
+     * @see org.openmrs.api.UserService#forcePasswordChange(User)
+     */
+    @Override
+    @Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
+    public void forcePasswordChange(User user) {
+        if (user != null) {
+            Security.forcePasswordChange(user); // Sets the property
+            dao.saveUser(user, null);
+        }
+    }
+	
+	/**
+	 * @see org.openmrs.api.UserService#isBootstrapPasswordExpired(User)
+	 */
+	@Override
+	public boolean isBootstrapPasswordExpired(User user) {
+		return Security.isBootstrapPasswordExpired(user);
+	}
 }
