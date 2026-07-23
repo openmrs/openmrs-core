@@ -153,8 +153,16 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	private RolePrivileges refresh(String key, Role role, Cache cache) {
 		Future<RolePrivileges> future;
 		try {
-			future = inFlight.computeIfAbsent(key, k -> Daemon
-			        .runNewDaemonTask((Callable<RolePrivileges>) () -> loadAndCache(k, role, cache), daemonCallerKey()));
+			future = inFlight.computeIfAbsent(key, k -> Daemon.runNewDaemonTask((Callable<RolePrivileges>) () -> {
+				try {
+					return loadAndCache(k, role, cache);
+				} finally {
+					// Clear on the daemon thread when the load finishes, not on the waiter's path: an
+					// interrupted waiter does not cancel this task, so removing there could drop a
+					// still-running refresh and let a concurrent miss schedule a duplicate.
+					inFlight.remove(k);
+				}
+			}, daemonCallerKey()));
 		} catch (RuntimeException e) {
 			log.warn("Could not schedule a daemon refresh for role '{}'; resolving against the supplied instance", key, e);
 			return computeRolePrivileges(role);
@@ -169,8 +177,6 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 		} catch (ExecutionException e) {
 			log.warn("Daemon refresh for role '{}' failed; resolving against the supplied instance", key, e.getCause());
 			return computeRolePrivileges(role);
-		} finally {
-			inFlight.remove(key, future);
 		}
 	}
 
