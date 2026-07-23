@@ -23,7 +23,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
@@ -62,8 +61,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 
 	@Independent
 	@ManyToMany
-	@JoinTable(name = "order_type_class_map", joinColumns = @JoinColumn(name = "order_type_id"), inverseJoinColumns = @JoinColumn(name = "concept_class_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
-	        "order_type_id", "concept_class_id" }))
+	@JoinTable(name = "order_type_class_map", joinColumns = @JoinColumn(name = "order_type_id"), inverseJoinColumns = @JoinColumn(name = "concept_class_id"))
 	private Set<ConceptClass> conceptClasses;
 
 	/**
