@@ -101,11 +101,8 @@ public class HibernateUserDAO implements UserDAO {
 			*/
 			sessionFactory.getCurrentSession().flush();
 			
-			//update the new user with the password
-			String salt = Security.getRandomToken();
-			String hashedPassword = Security.encodeString(password + salt);
-			
-			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user
+			String[] encoded = Security.encodePassword(password);
+			updateUserPassword(encoded[0], encoded[1], Context.getAuthenticatedUser().getUserId(), new Date(), user
 			        .getUserId());
 		}
 		
@@ -325,6 +322,21 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
+	 * Encodes a password, reusing an existing salt when present.
+	 * The salt must be reused (not regenerated) because the secret answer is hashed with the same
+	 * salt (see {@link #changeQuestionAnswer(User, String, String)} and {@link #isSecretAnswer}).
+	 * Generating a new salt here would invalidate any stored secret answer.
+	 *
+	 * @param rawPassword the cleartext password to encode
+	 * @param existingSalt the stored salt (may be null/empty, in which case a new salt is generated)
+	 * @return String[] where [0] is the hashed password and [1] is the salt
+	 */
+	private String[] encodeWithReusedSalt(String rawPassword, String existingSalt) {
+		String salt = StringUtils.isEmpty(existingSalt) ? Security.getRandomToken() : existingSalt;
+		return Security.encodePasswordWithSalt(rawPassword, salt);
+	}
+
+	/**
 	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws DAOException {
@@ -346,13 +358,9 @@ public class HibernateUserDAO implements UserDAO {
 			authUser = u;
 		}
 		
-		String salt = getLoginCredential(u).getSalt();
-		if (StringUtils.isBlank(salt)) {
-			salt = Security.getRandomToken();
-		}
-		String newHashedPassword = Security.encodeString(pw + salt);
-		
-		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
+		LoginCredential credentials = getLoginCredential(u);
+		String[] encoded = encodeWithReusedSalt(pw, credentials.getSalt());
+		updateUserPassword(encoded[0], encoded[1], authUser.getUserId(), new Date(), u.getUserId());
 	}
 	
 	/**
@@ -432,10 +440,8 @@ public class HibernateUserDAO implements UserDAO {
 		
 		log.info("updating password for {}", u.getUsername());
 		
-		// update the user with the new password
-		String salt = credentials.getSalt();
-		String newHashedPassword = Security.encodeString(newPassword + salt);
-		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
+		String[] encoded = encodeWithReusedSalt(newPassword, credentials.getSalt());
+		updateUserPassword(encoded[0], encoded[1], u.getUserId(), new Date(), u.getUserId());
 	}
 	
 	/**

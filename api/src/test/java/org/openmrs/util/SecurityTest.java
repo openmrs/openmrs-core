@@ -9,13 +9,19 @@
  */
 package org.openmrs.util;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
 import java.util.Base64;
 import java.util.Base64.Decoder;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.openmrs.api.context.ServiceContext;
 import org.springframework.util.StringUtils;
 
 /**
@@ -72,6 +78,36 @@ public class SecurityTest {
 		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
 	}
 	
+	@Test
+	public void encodePassword_shouldFallbackToLegacyEncoderWithoutSpringContext() {
+		ServiceContext mockContext = org.mockito.Mockito.mock(ServiceContext.class);
+		org.mockito.Mockito.when(mockContext.getApplicationContext()).thenReturn(null);
+
+		try (MockedStatic<ServiceContext> mockedStatic = mockStatic(ServiceContext.class)) {
+			mockedStatic.when(ServiceContext::getInstance).thenReturn(mockContext);
+
+			String[] encoded = assertDoesNotThrow(() -> Security.encodePassword("testPassword"));
+			assertNotNull(encoded);
+			assertEquals(2, encoded.length);
+			assertNotNull(encoded[0]);
+			assertFalse(encoded[0].isEmpty());
+		}
+	}
+
+	@Test
+	public void checkPassword_shouldFallbackToLegacyEncoderWithoutSpringContext() {
+		ServiceContext mockContext = org.mockito.Mockito.mock(ServiceContext.class);
+		org.mockito.Mockito.when(mockContext.getApplicationContext()).thenReturn(null);
+
+		try (MockedStatic<ServiceContext> mockedStatic = mockStatic(ServiceContext.class)) {
+			mockedStatic.when(ServiceContext::getInstance).thenReturn(mockContext);
+
+			String[] encoded = Security.encodePassword("testPassword");
+			boolean matches = assertDoesNotThrow(() -> Security.checkPassword("testPassword", encoded[0], encoded[1]));
+			assertTrue(matches);
+		}
+	}
+
 	/**
 	 * @see Security#decrypt(String)
 	 */

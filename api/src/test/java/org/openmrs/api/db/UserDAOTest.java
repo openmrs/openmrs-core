@@ -189,6 +189,15 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	public void changePassword_shouldNotInvalidateSecretAnswer() {
+		dao.changePassword(userJoe, PASSWORD);
+		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
+		dao.changePassword(userJoe, "NewPass456");
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
+	}
+
+	@Test
 	public void isSecretAnswer_shouldReturnTrueWhenTheAnswerMatches() {
 		dao.saveUser(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);

@@ -173,7 +173,7 @@ public class HibernateContextDAO implements ContextDAO {
 			String saltOnRecord = (String) passwordAndSalt[1];
 
 			// if the username and password match, hydrate the user and return it
-			if (passwordOnRecord != null && Security.hashMatches(passwordOnRecord, password + saltOnRecord)) {
+			if (Security.checkPassword(password, passwordOnRecord, saltOnRecord)) {
 				// hydrate the user object
 				candidateUser.getAllRoles().size();
 				candidateUser.getUserProperties().size();
