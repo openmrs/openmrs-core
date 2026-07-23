@@ -48,6 +48,7 @@ import org.openmrs.api.context.ServiceContext;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.PropertyValue;
@@ -677,7 +678,9 @@ public class ModuleUtil {
 	public static InputStream getURLStream(URL url) {
 		InputStream in = null;
 		try {
-			URLConnection uc = url.openConnection();
+			// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric
+			// IP as host, preventing DNS-rebinding / TOCTOU attacks.
+			URLConnection uc = Security.validateUrlForServerRequest(url).openConnection();
 			uc.setDefaultUseCaches(false);
 			uc.setUseCaches(false);
 			uc.setRequestProperty("Cache-Control", "max-age=0,no-cache");
@@ -686,6 +689,8 @@ public class ModuleUtil {
 			log.debug("Logging an attempt to connect to: " + url);
 
 			in = openConnectionCheckRedirects(uc);
+		} catch (SecurityException se) {
+			log.warn("Blocked unsafe URL request: {}", url, se);
 		} catch (IOException io) {
 			log.warn("io while reading: " + url, io);
 		}
@@ -732,8 +737,10 @@ public class ModuleUtil {
 					        || redirects >= 5) {
 						throw new SecurityException("illegal URL redirect");
 					}
+					// validateUrlForServerRequest resolves DNS once and returns a URL with the numeric
+					// IP as host, preventing DNS-rebinding / TOCTOU attacks.
 					redir = true;
-					c = target.openConnection();
+					c = Security.validateUrlForServerRequest(target).openConnection();
 					redirects++;
 				}
 			}
