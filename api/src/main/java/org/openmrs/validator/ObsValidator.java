@@ -13,11 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceRangeContext;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Obs;
 import org.openmrs.ObsReferenceRange;
 import org.openmrs.annotation.Handler;
@@ -41,7 +44,9 @@ import org.springframework.validation.Validator;
 public class ObsValidator implements Validator {
 	
 	public static final int VALUE_TEXT_MAX_LENGTH = 65535;
-	
+
+	private static final String GROUP_MEMBERS_FIELD = "groupMembers";
+
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 * <strong>Should</strong> support Obs class
@@ -157,61 +162,10 @@ public class ObsValidator implements Validator {
 		// if there is a concept, and this isn't a group, perform validation tests specific to the concept datatype
 		else if (!isObsGroup) {
 			ConceptDatatype dt = c.getDatatype();
-			if (dt != null) {
-				if (dt.isBoolean() && obs.getValueBoolean() == null) {
-					if (atRootNode) {
-						errors.rejectValue("valueBoolean", "error.null");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
-				} else if (dt.isCoded() && obs.getValueCoded() == null) {
-					if (atRootNode) {
-						errors.rejectValue("valueCoded", "error.null");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
-				} else if ((dt.isDateTime() || dt.isDate() || dt.isTime()) && obs.getValueDatetime() == null) {
-					if (atRootNode) {
-						errors.rejectValue("valueDatetime", "error.null");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
-				} else if (dt.isNumeric() && obs.getValueNumeric() == null) {
-					if (atRootNode) {
-						errors.rejectValue("valueNumeric", "error.null");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
-				} else if (dt.isNumeric()) {
-					ConceptNumeric cn = Context.getConceptService().getConceptNumeric(c.getConceptId());
-					// If the concept numeric is not precise, the value cannot be a float, so raise an error 
-					if (!cn.getAllowDecimal() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
-						if (atRootNode) {
-							errors.rejectValue("valueNumeric", "Obs.error.precision");
-						} else {
-							errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-						}
-					}
-					
-					validateConceptReferenceRange(obs, errors, atRootNode);
-				} else if (dt.isText() && obs.getValueText() == null) {
-					if (atRootNode) {
-						errors.rejectValue("valueText", "error.null");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
-				}
-				
-				//If valueText is longer than the maxlength, raise an error as well.
-				if (dt.isText() && obs.getValueText() != null && obs.getValueText().length() > VALUE_TEXT_MAX_LENGTH) {
-					if (atRootNode) {
-						errors.rejectValue("valueText", "error.exceededMaxLengthOfField");
-					} else {
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-					}
-				}
-			} else { // dt is null
+			if (dt == null) {
 				errors.rejectValue("concept", "must have a datatype");
+			} else {
+				validateValueForDatatype(obs, dt, errors, atRootNode);
 			}
 		}
 		
@@ -221,7 +175,7 @@ public class ObsValidator implements Validator {
 		}
 		
 		if (ancestors.contains(obs)) {
-			errors.rejectValue("groupMembers", "Obs.error.groupContainsItself");
+			errors.rejectValue(GROUP_MEMBERS_FIELD, "Obs.error.groupContainsItself");
 		}
 		
 		Set<Obs> groupMembers = obs.getGroupMembers();
@@ -242,6 +196,150 @@ public class ObsValidator implements Validator {
 				errors.rejectValue("valueDrug", "Obs.error.invalidDrug");
 			}
 		}
+	}
+
+	/**
+	 * Performs the value presence/precision checks specific to a concept's datatype, and triggers
+	 * interpretation derivation for datatypes that support it. Extracted out of {@link #validateHelper}
+	 * so that method's cognitive complexity stays within this project's SonarCloud quality gate.
+	 *
+	 * @param obs Observation to validate
+	 * @param dt the datatype of obs' concept
+	 * @param errors Errors to record validation issues
+	 * @param atRootNode whether or not this is the obs that validate() was originally called on
+	 */
+	private void validateValueForDatatype(Obs obs, ConceptDatatype dt, Errors errors, boolean atRootNode) {
+		if (dt.isBoolean() && obs.getValueBoolean() == null) {
+			rejectValueOrGroupMember(errors, atRootNode, "valueBoolean", "error.null");
+		} else if (dt.isCoded() && obs.getValueCoded() == null) {
+			rejectValueOrGroupMember(errors, atRootNode, "valueCoded", "error.null");
+		} else if (dt.isCoded()) {
+			validateAndInterpret(obs, errors, atRootNode);
+		} else if ((dt.isDateTime() || dt.isDate() || dt.isTime()) && obs.getValueDatetime() == null) {
+			rejectValueOrGroupMember(errors, atRootNode, "valueDatetime", "error.null");
+		} else if (dt.isNumeric() && obs.getValueNumeric() == null) {
+			rejectValueOrGroupMember(errors, atRootNode, "valueNumeric", "error.null");
+		} else if (dt.isNumeric()) {
+			validateNumericPrecision(obs, errors, atRootNode);
+			validateAndInterpret(obs, errors, atRootNode);
+		} else if (dt.isText() && obs.getValueText() == null) {
+			rejectValueOrGroupMember(errors, atRootNode, "valueText", "error.null");
+		}
+
+		//If valueText is longer than the maxlength, raise an error as well.
+		if (dt.isText() && obs.getValueText() != null && obs.getValueText().length() > VALUE_TEXT_MAX_LENGTH) {
+			rejectValueOrGroupMember(errors, atRootNode, "valueText", "error.exceededMaxLengthOfField");
+		}
+	}
+
+	/**
+	 * Raises the given field error when validating the root obs, or the generic "in group member" error
+	 * otherwise. Centralizes a check that was previously duplicated across every datatype branch in
+	 * {@link #validateValueForDatatype}.
+	 *
+	 * @param errors Errors to record validation issues
+	 * @param atRootNode whether or not this is the obs that validate() was originally called on
+	 * @param field the field to reject when atRootNode is true
+	 * @param errorCode the error code to use when atRootNode is true
+	 */
+	private void rejectValueOrGroupMember(Errors errors, boolean atRootNode, String field, String errorCode) {
+		if (atRootNode) {
+			errors.rejectValue(field, errorCode);
+		} else {
+			errors.rejectValue(GROUP_MEMBERS_FIELD, "Obs.error.inGroupMember");
+		}
+	}
+
+	/**
+	 * Rejects the Obs' numeric value if the concept requires an integer value but a decimal was
+	 * supplied.
+	 *
+	 * @param obs Observation to validate
+	 * @param errors Errors to record validation issues
+	 * @param atRootNode whether or not this is the obs that validate() was originally called on
+	 */
+	private void validateNumericPrecision(Obs obs, Errors errors, boolean atRootNode) {
+		ConceptNumeric cn = Context.getConceptService().getConceptNumeric(obs.getConcept().getConceptId());
+		// If the concept numeric is not precise, the value cannot be a float, so raise an error
+		if (!cn.getAllowDecimal() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
+			rejectValueOrGroupMember(errors, atRootNode, "valueNumeric", "Obs.error.precision");
+		}
+	}
+
+	/**
+	 * Single dispatch point for deriving an Obs' interpretation. Routes to the interpretation strategy
+	 * appropriate for the concept's datatype so that {@link #validateHelper} does not need to know how
+	 * each datatype derives its interpretation:
+	 * <ul>
+	 * <li>numeric observations are validated against their reference range, which also derives their
+	 * numeric interpretation (see {@link #validateConceptReferenceRange})</li>
+	 * <li>coded observations have their interpretation resolved from the value coded answer's concept
+	 * mappings (see {@link #getConceptInterpretation})</li>
+	 * </ul>
+	 *
+	 * @param obs Observation to validate/interpret
+	 * @param errors Errors to record validation issues
+	 * @param atRootNode whether or not this is the obs that validate() was originally called on
+	 */
+	private void validateAndInterpret(Obs obs, Errors errors, boolean atRootNode) {
+		ConceptDatatype dt = obs.getConcept().getDatatype();
+
+		if (dt.isNumeric()) {
+			validateConceptReferenceRange(obs, errors, atRootNode);
+			return;
+		}
+
+		if (dt.isCoded()) {
+			interpretCodedObs(obs);
+		}
+	}
+
+	/**
+	 * Resolves and sets the interpretation of a new coded Obs. Only applies to new observations (i.e.
+	 * not yet persisted); edited or copied observations (see {@link Obs#newInstance(Obs)}) already
+	 * carry over whatever interpretation they had, so they are left untouched here.
+	 *
+	 * @param obs Observation whose interpretation should be resolved
+	 */
+	private void interpretCodedObs(Obs obs) {
+		if (obs.getId() != null) {
+			return;
+		}
+
+		Obs.Interpretation interpretation = getConceptInterpretation(obs);
+		if (interpretation != null) {
+			obs.setInterpretation(interpretation);
+		}
+	}
+
+	/**
+	 * Resolves the {@link Obs.Interpretation} for a coded Obs by looking for a concept mapping on the
+	 * value coded answer whose reference term code matches one of the {@link Obs.Interpretation}
+	 * constants, e.g. a "Positive" answer concept mapped to a reference term coded "ABNORMAL".
+	 *
+	 * @param obs Observation whose value coded answer should be resolved to an interpretation
+	 * @return the resolved Interpretation, or null if no mapping matches
+	 */
+	private Obs.Interpretation getConceptInterpretation(Obs obs) {
+		Concept valueCoded = obs.getValueCoded();
+		if (valueCoded == null) {
+			return null;
+		}
+
+		for (ConceptMap conceptMap : valueCoded.getConceptMappings()) {
+			ConceptReferenceTerm term = conceptMap.getConceptReferenceTerm();
+			if (term == null || StringUtils.isBlank(term.getCode())) {
+				continue;
+			}
+
+			try {
+				return Obs.Interpretation.valueOf(term.getCode().toUpperCase());
+			} catch (IllegalArgumentException e) {
+				// reference term code does not match a known interpretation; keep looking
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -305,12 +403,7 @@ public class ObsValidator implements Validator {
 					null
 				);
 			} else {
-				errors.rejectValue(
-					"groupMembers",
-					"Obs.error.inGroupMember",
-					new Object[] {},
-					null
-				);
+				errors.rejectValue(GROUP_MEMBERS_FIELD, "Obs.error.inGroupMember", new Object[] {}, null);
 			}
 		}
 		
@@ -323,12 +416,7 @@ public class ObsValidator implements Validator {
 					null
 				);
 			} else {
-				errors.rejectValue(
-					"groupMembers",
-					"Obs.error.inGroupMember",
-					new Object[] { },
-					null
-				);
+				errors.rejectValue(GROUP_MEMBERS_FIELD, "Obs.error.inGroupMember", new Object[] {}, null);
 			}
 		}
 	}
