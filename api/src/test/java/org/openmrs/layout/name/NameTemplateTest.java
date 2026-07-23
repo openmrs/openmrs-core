@@ -126,4 +126,28 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 		assertEquals("Moses Mujuzi", nameTemplate.format(personName));
 	}
 
+	@Test
+	public void shouldReplaceTemplateWithSameCodeNameByValue() throws Exception {
+		// Create the existing template
+		NameTemplate existingTemplate = new NameTemplate();
+		existingTemplate.setCodeName(new String("test-code-name"));
+		existingTemplate.setDisplayName("Old Template");
+		nameSupport.setLayoutTemplates(new ArrayList<>(Collections.singletonList(existingTemplate)));
+
+		// Create the new template with the same logical codeName but a different object reference
+		NameTemplate newTemplate = new NameTemplate();
+		newTemplate.setCodeName(new String("test-code-name"));
+		newTemplate.setDisplayName("New Template");
+
+		// Invoke the private updateLayoutTemplates method
+		java.lang.reflect.Method method = NameSupport.class.getDeclaredMethod("updateLayoutTemplates", NameTemplate.class);
+		method.setAccessible(true);
+		method.invoke(nameSupport, newTemplate);
+
+		// Assert that the old template was replaced and no duplicates exist
+		List<NameTemplate> templates = nameSupport.getLayoutTemplates();
+		assertEquals(1, templates.size(), "There should only be one template (no duplicates)");
+		assertEquals("New Template", templates.get(0).getDisplayName(), "The template should be the new one");
+	}
+
 }
