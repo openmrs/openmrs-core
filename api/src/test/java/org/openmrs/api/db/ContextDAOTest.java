@@ -346,6 +346,27 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		assertNotNull(properties.getProperty("hibernate.key"));
 	}
 
+	/**
+	 * @see org.openmrs.api.db.hibernate.HibernateContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)
+	 */
+	@Test
+	public void should_defaultGenerateStatisticsToFalse() {
+		Properties properties = new Properties();
+		dao.mergeDefaultRuntimeProperties(properties);
+		assertEquals("false", properties.getProperty("hibernate.generate_statistics"));
+	}
+
+	/**
+	 * @see org.openmrs.api.db.hibernate.HibernateContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)
+	 */
+	@Test
+	public void should_notOverrideExplicitGenerateStatisticsSetting() {
+		Properties properties = new Properties();
+		properties.setProperty("hibernate.generate_statistics", "true");
+		dao.mergeDefaultRuntimeProperties(properties);
+		assertEquals("true", properties.getProperty("hibernate.generate_statistics"));
+	}
+
 	@Component("testUserSessionListener")
 	public static class TestUserSessionListener implements UserSessionListener {
 
