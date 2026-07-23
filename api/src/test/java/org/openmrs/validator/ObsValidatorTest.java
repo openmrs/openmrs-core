@@ -19,7 +19,9 @@ import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptReferenceRange;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
 import org.openmrs.ObsReferenceRange;
@@ -959,6 +961,134 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setPerson(person);
 		obs.setConcept(Context.getConceptService().getConcept(conceptId));
 		obs.setValueNumeric(valueNumeric);
+		obs.setObsDatetime(new Date());
+		return obs;
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldSetInterpretationForCodedObsWithMatchingConceptMapping() {
+		Obs obs = getCodedObs(getAnswerConceptMappedTo("ABNORMAL"));
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertEquals(Obs.Interpretation.ABNORMAL, obs.getInterpretation());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldNotSetInterpretationForCodedObsWithoutMatchingConceptMapping() {
+		Concept answer = new Concept();
+		answer.setDatatype(getCodedDatatype());
+
+		Obs obs = getCodedObs(answer);
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertNull(obs.getInterpretation());
+	}
+
+	/**
+	 * Coded observations must only be interpreted, never validated as numeric ranges.
+	 *
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldNotCreateReferenceRangeForCodedObs() {
+		Obs obs = getCodedObs(getAnswerConceptMappedTo("ABNORMAL"));
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertNull(obs.getReferenceRange());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldPreserveInterpretationWhenEditingExistingCodedObs() {
+		Obs obs = getCodedObs(getAnswerConceptMappedTo("ABNORMAL"));
+		// simulate a previously saved obs that already carries an interpretation
+		obs.setId(1);
+		obs.setInterpretation(Obs.Interpretation.NORMAL);
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
+	}
+
+	/**
+	 * @see Obs#newInstance(org.openmrs.Obs)
+	 */
+	@Test
+	public void shouldPreserveCodedInterpretationAfterNewInstanceCopy() {
+		Obs obs = getCodedObs(getAnswerConceptMappedTo("ABNORMAL"));
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+		assertEquals(Obs.Interpretation.ABNORMAL, obs.getInterpretation());
+
+		Obs copy = Obs.newInstance(obs);
+
+		assertEquals(Obs.Interpretation.ABNORMAL, copy.getInterpretation());
+	}
+
+	/**
+	 * Numeric regression: routing a numeric Obs through the validateAndInterpret dispatcher must
+	 * continue to produce the same reference range based interpretation as before the refactor.
+	 *
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldRouteNumericObsThroughValidateAndInterpretDispatcher() {
+		Obs obs = getObs(60, 4090, 100.0);
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertNotNull(obs.getReferenceRange());
+		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
+	}
+
+	private static ConceptDatatype getCodedDatatype() {
+		return Context.getConceptService().getConcept(4).getDatatype();
+	}
+
+	private static Concept getAnswerConceptMappedTo(String referenceTermCode) {
+		Concept answer = new Concept();
+		answer.setDatatype(getCodedDatatype());
+
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term.setCode(referenceTermCode);
+
+		ConceptMap conceptMap = new ConceptMap();
+		conceptMap.setConceptReferenceTerm(term);
+		answer.addConceptMapping(conceptMap);
+
+		return answer;
+	}
+
+	private static Obs getCodedObs(Concept answer) {
+		Concept question = new Concept();
+		question.setDatatype(getCodedDatatype());
+
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(question);
+		obs.setValueCoded(answer);
 		obs.setObsDatetime(new Date());
 		return obs;
 	}
