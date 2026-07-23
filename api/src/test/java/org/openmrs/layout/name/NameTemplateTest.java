@@ -126,4 +126,24 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 		assertEquals("Moses Mujuzi", nameTemplate.format(personName));
 	}
 
+	@Test
+	public void shouldReplaceExistingTemplateWithSameCodeName() throws Exception {
+		NameTemplate existingTemplate = new NameTemplate();
+		existingTemplate.setCodeName(new String("duplicateCode"));
+
+		nameSupport.setLayoutTemplates(new ArrayList<>(Collections.singletonList(existingTemplate)));
+
+		NameTemplate newTemplate = new NameTemplate();
+		newTemplate.setCodeName(new String("duplicateCode"));
+
+		GlobalProperty property = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE,
+		        Context.getSerializationService().getDefaultSerializer().serialize(newTemplate));
+
+		nameSupport.globalPropertyChanged(property);
+
+		List<NameTemplate> templates = nameSupport.getLayoutTemplates();
+
+		assertEquals(1, templates.size());
+		assertEquals(newTemplate.getCodeName(), templates.get(0).getCodeName());
+	}
 }
