@@ -95,6 +95,15 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 *
 	 * @throws Exception
 	 */
+	/**
+	 * Restricts search-index rebuilds to the entity types patient searches actually query, instead of
+	 * rebuilding every indexed type on each test.
+	 */
+	@Override
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { PersonName.class, PersonAttribute.class, PatientIdentifier.class };
+	}
+
 	@BeforeEach
 	public void runBeforeEachTest() {
 		executeDataSet(PEOPLE_FROM_THE_SHIRE_XML);

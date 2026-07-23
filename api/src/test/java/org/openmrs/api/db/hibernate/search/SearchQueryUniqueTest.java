@@ -68,6 +68,15 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 
 	private static final int RAW_JOINED = (ONLY_A + BOTH) + (ONLY_B + BOTH);
 
+	/**
+	 * Restricts search-index rebuilds to {@link PersonName}, the only type these tests query, instead
+	 * of rebuilding every indexed type on each test.
+	 */
+	@Override
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { PersonName.class };
+	}
+
 	@Autowired
 	private SearchSessionFactory searchSessionFactory;
 
