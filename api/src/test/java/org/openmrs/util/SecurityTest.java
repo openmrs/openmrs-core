@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Base64;
@@ -211,6 +212,72 @@ public class SecurityTest {
 		assertTrue(StringUtils.hasText(encrypted));
 		actual = Security.decrypt(encrypted);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
+	}
+
+	/**
+ * @see Security#isLegacyHash(String)
+ */
+@Test
+	public void isLegacyHash_shouldReturnTrueForSha512Hash() {
+		// SHA-512 produces exactly 128 lowercase hex characters
+		String sha512Hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
+		assertTrue(Security.isLegacyHash(sha512Hash));
+	}
+
+	/**
+	 * @see Security#isLegacyHash(String)
+	 */
+	@Test
+	public void isLegacyHash_shouldReturnTrueForCorrectSha1Hash() {
+		// SHA-1 correct produces exactly 40 hex characters
+		assertTrue(Security.isLegacyHash("4a1750c8607d0fa237de36c6305715c223415189"));
+	}
+
+	/**
+	 * @see Security#isLegacyHash(String)
+	 */
+	@Test
+	public void isLegacyHash_shouldReturnTrueForBuggySha1Hash() {
+		// SHA-1 buggy (ticket #1178) produces fewer than 40 hex characters
+		// due to leading zero drop — this is the hash from the existing test above
+		assertTrue(Security.isLegacyHash("4a1750c8607dfa237de36c6305715c223415189"));
+	}
+
+	/**
+	 * @see Security#isLegacyHash(String)
+	 */
+	@Test
+	public void isLegacyHash_shouldReturnFalseForNull() {
+		assertFalse(Security.isLegacyHash(null));
+	}
+
+	/**
+	 * @see Security#isLegacyHash(String)
+	 */
+	@Test
+	public void isLegacyHash_shouldReturnFalseForArgon2idHash() {
+		// Argon2id hashes start with $argon2id$ and contain non-hex characters
+		String argon2Hash = "$argon2id$v=19$m=16384,t=2,p=1$c29tZXNhbHQ$RdescudvJCsgt3ub+b+dWRWJTmaaJObG";
+		assertFalse(Security.isLegacyHash(argon2Hash));
+	}
+
+	/**
+	 * @see Security#isLegacyHash(String)
+	 */
+	@Test
+	public void isLegacyHash_shouldReturnFalseForEmptyString() {
+		assertFalse(Security.isLegacyHash(""));
+	}
+	/**
+ 	* @see Security#getArgon2Encoder()
+ 	*/
+	@Test
+	public void checkPassword_shouldMatchArgon2idHash() {
+		String rawPassword = "testArgon2";
+		String argon2Hash = Security.getArgon2Encoder().encode(rawPassword);
+		// verify the encoder correctly matches the password against its own hash
+		assertTrue(Security.getArgon2Encoder().matches(rawPassword, argon2Hash));
+		assertFalse(Security.getArgon2Encoder().matches("wrongPassword", argon2Hash));
 	}
 	
 }

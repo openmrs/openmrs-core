@@ -35,6 +35,10 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.stereotype.Component;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.openmrs.api.db.LoginCredential;
+import org.openmrs.api.db.UserDAO;
+
 /**
  * This class tests the {@link ContextDAO} linked to from the Context. Currently that file is the
  * {@link HibernateContextDAO}.<br>
@@ -410,5 +414,43 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		assertThat(testUserSessionListener.logouts,
 				contains("admin:LOGOUT:SUCCESS"));
 		assertThat(testUserSessionListener.logins, empty());
+	}
+	
+	/**
+    * @see org.openmrs.api.db.hibernate.HibernateContextDAO#authenticate(String, String)
+    */
+    @Test
+    public void authenticate_shouldUpgradeLegacyPasswordToArgon2idOnSuccessfulLogin() {
+	    // admin/test uses a legacy SHA-512 hash in the test dataset
+	    // After successful login, the stored hash should be upgraded to Argon2id
+	    User user = dao.authenticate("admin", "test");
+	    assertNotNull(user);
+
+	   // retrieve the credential directly via UserDAO and confirm Argon2id upgrade
+	   UserDAO userDAO = (UserDAO) applicationContext.getBean("userDAO");
+	   LoginCredential credential = userDAO.getLoginCredential(user);
+	   assertNotNull(credential.getHashedPassword());
+	   assertTrue(credential.getHashedPassword().startsWith("$argon2id$"),
+		"Password should have been upgraded to Argon2id format");
+    }
+
+	/**
+ 	* @see ContextDAO#authenticate(String,String)
+ 	*/
+	@Test
+	public void authenticate_shouldAuthenticateGivenArgon2idHashedPassword() {
+		// argon2user has a pre-seeded Argon2id hash — exercises the modern verification path
+		User user = dao.authenticate("argon2user", "testArgon2");
+		assertNotNull(user);
+		assertEquals("argon2user", user.getUsername());
+	}
+
+	/**
+ 	* @see ContextDAO#authenticate(String,String)
+ 	*/
+	@Test
+	public void authenticate_shouldNotAuthenticateGivenArgon2idHashedPasswordWithWrongPassword() {
+		// ensures the modern verification path correctly rejects wrong passwords
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("argon2user", "wrongPassword"));
 	}
 }
