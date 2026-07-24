@@ -547,4 +547,13 @@ public interface ObsService extends OpenmrsService {
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<Visit> visits,
 	        Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber)
 	        throws APIException;
+
+	/**
+	 * Archives voided observations in batches by moving them to obs_archive and deleting them from the
+	 * primary obs table.
+	 *
+	 * @param batchSize maximum number of records to process in one batch
+	 */
+	@Authorized(PrivilegeConstants.PURGE_OBS)
+	void archiveVoidedObs(int batchSize);
 }
