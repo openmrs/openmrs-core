@@ -45,7 +45,7 @@
 		<Logger name="org.hibernate" level="ERROR" />
 		<Logger name="net.sf.ehcache" level="ERROR" />
 		<Logger name="org.springframework" level="WARN" />
-		<Logger name="org.openmrs" level="WARN" />
+		<Logger name="org.openmrs" level="INFO" />
 		<Logger name="liquibase" level="INFO" />
 		<!-- 
 			This controls the LoggingAdvice class that wraps around the OpenMRS services 

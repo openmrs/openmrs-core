@@ -46,6 +46,7 @@ import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.messagesource.impl.DefaultMessageSourceServiceImpl;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.scheduler.SchedulerService;
@@ -932,6 +933,7 @@ public class ServiceContext implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
+		ModuleFactory.setApplicationEventPublisher(applicationContext);
 	}
 	
 	public ApplicationContext getApplicationContext() {
