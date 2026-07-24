@@ -281,47 +281,79 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 	 * @return true if the values match, else false
 	 */
 	public boolean hasSameValues(Allergy allergy) {
-		if (!OpenmrsUtil.nullSafeEquals(getAllergyId(), allergy.getAllergyId())) {
+		if (allergy == null) {
 			return false;
 		}
-		if (!OpenmrsUtil.nullSafeEquals(getPatient(), allergy.getPatient())) {
-			//if object instances are different but with the same patient id, then not changed
-			if (getPatient() != null && allergy.getPatient() != null) {
-				if (!OpenmrsUtil.nullSafeEquals(getPatient().getPatientId(), allergy.getPatient().getPatientId())) {
-					return false;
-				}
-			} else {
-				return false;
-			}
+		return OpenmrsUtil.nullSafeEquals(getAllergyId(), allergy.getAllergyId()) && hasSamePatient(allergy)
+		        && hasSameAllergenValues(allergy) && hasSameSeverity(allergy)
+		        && OpenmrsUtil.nullSafeEquals(getComment(), allergy.getComment()) && hasSameReactions(allergy);
+	}
+
+	/**
+	 * Checks if this allergy has the same patient as a given one.
+	 *
+	 * @param allergy the allergy whose values to compare with
+	 * @return true if the values match, else false
+	 */
+	private boolean hasSamePatient(Allergy allergy) {
+		if (OpenmrsUtil.nullSafeEquals(getPatient(), allergy.getPatient())) {
+			return true;
 		}
-		if (!OpenmrsUtil.nullSafeEquals(getAllergen().getCodedAllergen(), allergy.getAllergen().getCodedAllergen())) {
-			//if object instances are different but with the same concept id, then not changed
-			if (getAllergen().getCodedAllergen() != null && allergy.getAllergen().getCodedAllergen() != null) {
-				if (!OpenmrsUtil.nullSafeEquals(getAllergen().getCodedAllergen().getConceptId(),
-				    allergy.getAllergen().getCodedAllergen().getConceptId())) {
-					return false;
-				}
-			} else {
-				return false;
-			}
-		}
-		if (!OpenmrsUtil.nullSafeEquals(getAllergen().getNonCodedAllergen(), allergy.getAllergen().getNonCodedAllergen())) {
+		if (getPatient() == null || allergy.getPatient() == null) {
 			return false;
 		}
-		if (!OpenmrsUtil.nullSafeEquals(getSeverity(), allergy.getSeverity())) {
-			//if object instances are different but with the same concept id, then not changed
-			if (getSeverity() != null && allergy.getSeverity() != null) {
-				if (!OpenmrsUtil.nullSafeEquals(getSeverity().getConceptId(), allergy.getSeverity().getConceptId())) {
-					return false;
-				}
-			} else {
-				return false;
-			}
+		return OpenmrsUtil.nullSafeEquals(getPatient().getPatientId(), allergy.getPatient().getPatientId());
+	}
+
+	/**
+	 * Checks if this allergy has the same allergen values as a given one.
+	 *
+	 * @param allergy the allergy whose values to compare with
+	 * @return true if the values match, else false
+	 */
+	private boolean hasSameAllergenValues(Allergy allergy) {
+		Allergen thisAllergen = getAllergen();
+		Allergen otherAllergen = allergy.getAllergen();
+		if (thisAllergen == null || otherAllergen == null) {
+			return thisAllergen == otherAllergen;
 		}
-		if (!OpenmrsUtil.nullSafeEquals(getComment(), allergy.getComment())) {
+		return hasSameCodedAllergen(thisAllergen, otherAllergen)
+		        && OpenmrsUtil.nullSafeEquals(thisAllergen.getNonCodedAllergen(), otherAllergen.getNonCodedAllergen());
+	}
+
+	/**
+	 * Compares two allergens for the same coded allergen concepts
+	 *
+	 * @param thisAllergen the first allergen to compare
+	 * @param otherAllergen the second allergen to compare
+	 * @return true if the values match, else false
+	 */
+	private boolean hasSameCodedAllergen(Allergen thisAllergen, Allergen otherAllergen) {
+		Concept thisConcept = thisAllergen.getCodedAllergen();
+		Concept otherConcept = otherAllergen.getCodedAllergen();
+		if (OpenmrsUtil.nullSafeEquals(thisConcept, otherConcept)) {
+			return true;
+		}
+		if (thisConcept == null || otherConcept == null) {
 			return false;
 		}
-		return hasSameReactions(allergy);
+		return OpenmrsUtil.nullSafeEquals(thisConcept.getConceptId(), otherConcept.getConceptId());
+	}
+
+	/**
+	 * Checks if this Allergy has the same severity as the given one
+	 *
+	 * @param allergy the allergy whose severity to compare with
+	 * @return true if the values match, else false
+	 */
+	private boolean hasSameSeverity(Allergy allergy) {
+		if (OpenmrsUtil.nullSafeEquals(getSeverity(), allergy.getSeverity())) {
+			return true;
+		}
+		if (getSeverity() == null || allergy.getSeverity() == null) {
+			return false;
+		}
+		return OpenmrsUtil.nullSafeEquals(getSeverity().getConceptId(), allergy.getSeverity().getConceptId());
 	}
 
 	/**
@@ -334,14 +366,15 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 		if (getReactions().size() != allergy.getReactions().size()) {
 			return false;
 		}
-
 		for (AllergyReaction reaction : getReactions()) {
-			AllergyReaction rc = allergy.getAllergyReaction(reaction.getAllergyReactionId());
-			if (!reaction.hasSameValues(rc)) {
+			if (reaction == null) {
+				return false;
+			}
+			AllergyReaction otherReaction = allergy.getAllergyReaction(reaction.getAllergyReactionId());
+			if (otherReaction == null || !reaction.hasSameValues(otherReaction)) {
 				return false;
 			}
 		}
-
 		return true;
 	}
 
