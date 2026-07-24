@@ -10,8 +10,10 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -65,6 +67,42 @@ public class HibernateObsDAO implements ObsDAO {
 	@Override
 	public void deleteObs(Obs obs) throws DAOException {
 		sessionFactory.getCurrentSession().remove(obs);
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObsVersionHistory(Obs)
+	 */
+	@Override
+	public List<Obs> getObsVersionHistory(Obs obs) {
+		if (obs == null) {
+			throw new IllegalArgumentException("Obs must not be null");
+		}
+		if (obs.getObsId() == null) {
+			throw new IllegalArgumentException("Obs must have an obsId");
+		}
+
+		// Use a single recursive CTE to collect all obs_ids in the previousVersion chain,
+		// then load the Obs entities in one IN-clause query.
+		String cteSql = "WITH RECURSIVE version_chain (obs_id, previous_version, depth) AS ("
+		        + "  SELECT obs_id, previous_version, 0 FROM obs WHERE obs_id = :startId UNION ALL"
+		        + "  SELECT o.obs_id, o.previous_version, vc.depth + 1 FROM obs o"
+		        + "  INNER JOIN version_chain vc ON o.obs_id = vc.previous_version)"
+		        + " SELECT obs_id FROM version_chain ORDER BY depth";
+
+		Session session = sessionFactory.getCurrentSession();
+		List<Integer> ids = session.createNativeQuery(cteSql, Integer.class).setParameter("startId", obs.getObsId()).list();
+
+		if (ids.isEmpty()) {
+			return Arrays.asList(obs);
+		}
+
+		List<Obs> loaded = session.createQuery("FROM Obs o WHERE o.obsId IN (:obsIds)", Obs.class)
+		        .setParameter("obsIds", ids).getResultList();
+		Map<Integer, Obs> byId = new java.util.HashMap<>();
+		for (Obs o : loaded) {
+			byId.put(o.getObsId(), o);
+		}
+		return ids.stream().map(byId::get).filter(java.util.Objects::nonNull).toList();
 	}
 
 	/**
