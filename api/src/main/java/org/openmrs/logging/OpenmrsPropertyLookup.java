@@ -14,7 +14,6 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.lookup.AbstractLookup;
 import org.apache.logging.log4j.core.lookup.StrLookup;
 import org.apache.logging.log4j.status.StatusLogger;
-import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -77,10 +76,14 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			try {
 				value = ConfigUtil.getGlobalProperty(propertyName);
-			} catch (ServiceNotFoundException e) {
-				StatusLogger.getLogger().error("An exception was thrown while trying to get the \"{}\" global property",
+			} catch (RuntimeException e) {
+				// Resolving a global property requires the service layer, which may be unavailable while
+				// the logging system is being configured - in particular before, or re-entrantly during,
+				// ServiceContext initialization. Logging configuration must be resilient, so swallow the
+				// failure (e.g. ServiceNotFoundException, or a re-entrant initialization error) and fall
+				// back to the default below.
+				StatusLogger.getLogger().warn("Could not read the \"{}\" global property; falling back to the default",
 				    propertyName, e);
-				return null;
 			} finally {
 				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			}
