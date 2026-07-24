@@ -28,6 +28,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openmrs.Allergen;
 import org.openmrs.AllergenType;
 import org.openmrs.Allergies;
@@ -57,6 +58,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.api.impl.PatientServiceImplTest;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
@@ -3669,6 +3671,45 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		    () -> patientService.getIdentifierValidator("com.example.InvalidIdentifierValidator"));
 		assertEquals("Could not find patient identifier validator com.example.InvalidIdentifierValidator",
 		    patientIdentifierException.getMessage());
+	}
+
+	@Test
+	public void mergePatients_shouldCallSaveVoidPatientAndVoidPersonExactlyOnceAndCreateLog() throws Exception {
+		executeDataSet(PATIENT_MERGE_XML);
+		
+		Patient preferred = patientService.getPatient(10000);
+		Patient notPreferred = patientService.getPatient(10001);
+		
+		int mergeLogsBefore = Context.getPersonService().getAllPersonMergeLogs(false).size();
+		
+		patientService.mergePatients(preferred, notPreferred);
+		
+		// exactly one merge log should be created — not two (the original bug's symptom)
+		int mergeLogsAfter = Context.getPersonService().getAllPersonMergeLogs(false).size();
+		assertEquals(mergeLogsBefore + 1, mergeLogsAfter);
+		
+		// confirm the non-preferred patient and person were voided as part of the merge
+		Patient reloadedNotPreferred = patientService.getPatient(notPreferred.getPatientId());
+		assertTrue(reloadedNotPreferred.getVoided());
+		assertTrue(Context.getPersonService().getPerson(notPreferred.getPersonId()).getVoided());
+	}
+
+	@Test
+	public void mergePatients_shouldTransferDeathdateEstimatedToPreferred() throws Exception {
+		executeDataSet(PATIENT_MERGE_XML);
+		
+		Patient preferred = patientService.getPatient(10000);
+		Patient notPreferred = patientService.getPatient(10001);
+		
+		preferred.setDeathdateEstimated(null);
+		notPreferred.setDeathdateEstimated(true);
+		
+		patientService.savePatient(preferred);
+		patientService.savePatient(notPreferred);
+		
+		patientService.mergePatients(preferred, notPreferred);
+		
+		assertTrue(preferred.getDeathdateEstimated());
 	}
 
 }
