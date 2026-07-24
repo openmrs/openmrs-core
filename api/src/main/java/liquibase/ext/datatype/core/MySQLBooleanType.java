@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import liquibase.database.Database;
+import liquibase.database.core.MariaDBDatabase;
 import liquibase.database.core.MySQLDatabase;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.core.BooleanType;
@@ -30,10 +31,10 @@ public class MySQLBooleanType extends BooleanType {
 
 	@Override
 	public DatabaseDataType toDatabaseDataType(Database database) {
-		if (database instanceof MySQLDatabase) {
+		if (database instanceof MySQLDatabase || database instanceof MariaDBDatabase) {
 			DatabaseDataType result = new DatabaseDataType("TINYINT", 1);
 
-			log.debug("boolean type for MySQL is '{}' ", result.getType());
+			log.debug("boolean type for MySQL/MariaDB is '{}' ", result.getType());
 
 			return result;
 		}
