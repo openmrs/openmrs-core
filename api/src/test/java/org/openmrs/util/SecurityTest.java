@@ -9,8 +9,14 @@
  */
 package org.openmrs.util;
 
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Decoder;
+import javax.crypto.Cipher;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
@@ -84,7 +90,7 @@ public class SecurityTest {
 
 		// perform decryption
 		String expected = "this is fantasmic";
-		String encrypted = "GnMz8qETyKMv+edLpYqWfBhR+lX6JlkocNGwHhmhXSY=";
+		String encrypted = encryptWithGcm(expected, initVector, secretKey);
 		String actual = Security.decrypt(encrypted, initVector, secretKey);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 
@@ -127,56 +133,7 @@ public class SecurityTest {
 		        + "it amet quam justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur convallis dolor non lig"
 		        + "ula fermentum imperdiet.";
 
-		encrypted = "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"
-		        + "t9mHrJ+FI181rG5bdf62ZsSuziuQ==";
+		encrypted = encryptWithGcm(expected, initVector, secretKey);
 
 		actual = Security.decrypt(encrypted, initVector, secretKey);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
@@ -211,6 +168,52 @@ public class SecurityTest {
 		assertTrue(StringUtils.hasText(encrypted));
 		actual = Security.decrypt(encrypted);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
+	}
+
+	@Test
+	public void encrypt_shouldUseRandomIvPerEncryption() {
+		String expected = "same text";
+		String encrypted1 = Security.encrypt(expected);
+		String encrypted2 = Security.encrypt(expected);
+
+		assertTrue(StringUtils.hasText(encrypted1));
+		assertTrue(StringUtils.hasText(encrypted2));
+		assertTrue(!encrypted1.equals(encrypted2));
+
+		String actual1 = Security.decrypt(encrypted1);
+		String actual2 = Security.decrypt(encrypted2);
+		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual1));
+		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual2));
+	}
+
+	@Test
+	public void decrypt_shouldUseIvPrefixedCiphertext() {
+		String expected = "iv prefix check";
+		String encrypted = Security.encrypt(expected);
+
+		byte[] combined = Base64.getDecoder().decode(encrypted);
+		assertTrue(combined.length > 1 + 12 + 16);
+		assertEquals(1, combined[0]);
+
+		byte[] initVector = Arrays.copyOfRange(combined, 1, 13);
+		byte[] cipherText = Arrays.copyOfRange(combined, 13, combined.length);
+		String cipherOnly = Base64.getEncoder().encodeToString(cipherText);
+
+		String actual = Security.decrypt(cipherOnly, initVector, Security.getSavedSecretKey());
+		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
+	}
+
+	private static String encryptWithGcm(String text, byte[] initVector, byte[] secretKey) {
+		try {
+			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION_GCM);
+			SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
+			GCMParameterSpec spec = new GCMParameterSpec(128, initVector);
+			cipher.init(Cipher.ENCRYPT_MODE, secret, spec);
+			byte[] encrypted = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
+			return Base64.getEncoder().encodeToString(encrypted);
+		} catch (GeneralSecurityException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
