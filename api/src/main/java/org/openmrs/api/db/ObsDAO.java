@@ -45,6 +45,12 @@ public interface ObsDAO {
 	public void deleteObs(Obs obs) throws DAOException;
 
 	/**
+	 * Archives voided observations by deleting them in batches. This is used by the ObsArchiver scheduled task.
+	 * @param batchSize the number of observations to process in each batch
+	 */
+	public void archiveVoidedObs(int batchSize);
+
+	/**
 	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
 	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean, java.lang.String)
