@@ -10,11 +10,13 @@
 package org.openmrs.api.context;
 
 import java.util.Collections;
+import java.util.HashSet;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.cache.RolePrivilegeCache;
@@ -130,6 +132,32 @@ public class UserContextHasPrivilegeTest extends BaseContextSensitiveTest {
 		cacheRole(RoleConstants.ANONYMOUS, new RolePrivileges(Collections.singleton(GRANTED), false));
 
 		runAs(null, () -> assertTrue(Context.hasPrivilege(GRANTED)));
+	}
+
+	@Test
+	public void hasPrivilege_shouldHonorInheritedPrivilegesForTheAuthenticatedRole() throws Exception {
+		// The pre-cache code resolved the authenticated and anonymous roles via Role.hasPrivilege, which
+		// ignores inherited roles; routing them through the flattening cache deliberately honors inheritance.
+		// Seed the authenticated role's entry as the daemon flatten would for a role that inherits GRANTED.
+		Role inherited = new Role("Inherited Role");
+		inherited.addPrivilege(new Privilege(GRANTED));
+		Role authenticated = new Role(RoleConstants.AUTHENTICATED);
+		authenticated.setInheritedRoles(new HashSet<>(Collections.singletonList(inherited)));
+		cacheRole(RoleConstants.AUTHENTICATED, RolePrivilegeCache.computeRolePrivileges(authenticated));
+
+		runAs(userWithRole("Clerk"), () -> assertTrue(Context.hasPrivilege(GRANTED)));
+	}
+
+	@Test
+	public void hasPrivilege_shouldNotAuthorizeTheEmptyOrNullPrivilegeForUnauthenticatedUsers() throws Exception {
+		// The empty-privilege shortcut applies only to authenticated users; an unauthenticated caller is
+		// authorized solely by the anonymous role, which here grants nothing.
+		cacheRole(RoleConstants.ANONYMOUS, new RolePrivileges(Collections.emptySet(), false));
+
+		runAs(null, () -> {
+			assertFalse(Context.hasPrivilege(""));
+			assertFalse(Context.hasPrivilege(null));
+		});
 	}
 
 	@Test

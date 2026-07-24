@@ -655,6 +655,65 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * As with the view check, a proxy privilege may pass the method's {@code @Authorized} gate but must
+	 * not satisfy the impl-level, proxy-excluding edit check.
+	 *
+	 * @see org.openmrs.api.AdministrationService#updateGlobalProperty(String, String)
+	 */
+	@Test
+	public void updateGlobalProperty_shouldFailIfUserHasEditPrivilegeOnlyAsAProxyPrivilege() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithEditPrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// Get + Manage Global Properties as proxies get the call past the getGlobalPropertyObject and
+		// updateGlobalProperty gates; the impl's proxy-excluding canEditGlobalProperty must still deny it.
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		Context.addProxyPrivilege(property.getEditPrivilege().getPrivilege());
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> adminService.updateGlobalProperty(property.getProperty(), "new-value"));
+			assertFalse(exception instanceof APIAuthenticationException,
+			    "denial should come from the impl edit check, not the @Authorized gate");
+		} finally {
+			Context.removeProxyPrivilege(property.getEditPrivilege().getPrivilege());
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+	}
+
+	/**
+	 * As with the view check, a proxy privilege may pass the method's {@code @Authorized} gate but must
+	 * not satisfy the impl-level, proxy-excluding delete check.
+	 *
+	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(GlobalProperty)
+	 */
+	@Test
+	public void purgeGlobalProperty_shouldFailIfUserHasDeletePrivilegeOnlyAsAProxyPrivilege() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithDeletePrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// Purge Global Properties as a proxy gets the call past the purgeGlobalProperty gate; the impl's
+		// proxy-excluding canDeleteGlobalProperty must still deny it even with the delete privilege proxied.
+		Context.addProxyPrivilege(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES);
+		Context.addProxyPrivilege(property.getDeletePrivilege().getPrivilege());
+		try {
+			APIException exception = assertThrows(APIException.class, () -> adminService.purgeGlobalProperty(property));
+			assertFalse(exception instanceof APIAuthenticationException,
+			    "denial should come from the impl delete check, not the @Authorized gate");
+		} finally {
+			Context.removeProxyPrivilege(property.getDeletePrivilege().getPrivilege());
+			Context.removeProxyPrivilege(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES);
+		}
+	}
+
+	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
 	 */
 	@Test
