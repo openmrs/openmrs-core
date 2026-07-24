@@ -36,7 +36,6 @@ import org.hibernate.type.BasicType;
 import org.hibernate.type.Type;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.api.APIException;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.util.DatabaseUtil;
@@ -226,29 +225,32 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	public long getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
 		PersistentClass persistentClass = metadata.getEntityBinding(aClass.getName().split("_")[0]);
 		if (persistentClass == null) {
-			throw new APIException("Couldn't find a class in the hibernate configuration named: " + aClass.getName());
-		} else {
-			long fieldLength;
-			try {
-				List<Column> columns = persistentClass.getProperty(fieldName).getColumns();
-				if (columns.isEmpty()) {
-					throw new Exception(
-					        String.format("No columns found for fieldName %s to determine maximum length", fieldName));
-				}
-				Column column = columns.get(0);
-				String columnDefinition = column.getSqlType();
-				if (columnDefinition != null && (columnDefinition.equalsIgnoreCase("LONGTEXT")
-				        || columnDefinition.equalsIgnoreCase("MEDIUMTEXT"))) {
-					fieldLength = Integer.MAX_VALUE;
-				} else {
-					fieldLength = column.getLength();
-				}
-			} catch (Exception e) {
-				log.debug("Could not determine maximum length", e);
-				return -1;
-			}
-			return fieldLength;
+			// Treat the length as unknown (-1) instead of throwing: this method is called from validate()
+			// on every save, and validate() skips the length check when the value is negative.
+			log.debug("Could not find a hibernate entity binding for {}; treating maximum length as unknown",
+			    aClass.getName());
+			return -1;
 		}
+		long fieldLength;
+		try {
+			List<Column> columns = persistentClass.getProperty(fieldName).getColumns();
+			if (columns.isEmpty()) {
+				throw new Exception(
+				        String.format("No columns found for fieldName %s to determine maximum length", fieldName));
+			}
+			Column column = columns.get(0);
+			String columnDefinition = column.getSqlType();
+			if (columnDefinition != null
+			        && (columnDefinition.equalsIgnoreCase("LONGTEXT") || columnDefinition.equalsIgnoreCase("MEDIUMTEXT"))) {
+				fieldLength = Integer.MAX_VALUE;
+			} else {
+				fieldLength = column.getLength();
+			}
+		} catch (Exception e) {
+			log.debug("Could not determine maximum length", e);
+			return -1;
+		}
+		return fieldLength;
 	}
 
 	@Override
