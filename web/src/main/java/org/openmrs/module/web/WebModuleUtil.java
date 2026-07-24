@@ -59,6 +59,7 @@ import org.openmrs.module.web.filter.ModuleFilterMapping;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskDefinition;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.DispatcherServlet;
@@ -118,7 +119,7 @@ public class WebModuleUtil {
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 
-		log.debug("Trying to start module {}", mod);
+		log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Trying to start module {}", mod);
 
 		// only try and start this module if the api started it without a
 		// problem.
@@ -301,11 +302,12 @@ public class WebModuleUtil {
 			// refresh the spring web context to get the just-created xml
 			// files into it (if we copied an xml file)
 			if (moduleNeedsContextRefresh && !delayContextRefresh) {
-				log.debug("Refreshing context for module {}", mod.getModuleId());
+				log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Refreshing context for module {}", mod.getModuleId());
 
 				try {
 					refreshWAC(servletContext, false, mod);
-					log.debug("Done refreshing context for module {}", mod.getModuleId());
+					log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Done refreshing context for module {}",
+					    mod.getModuleId());
 				} catch (Exception e) {
 					String msg = "Unable to refresh the WebApplicationContext";
 					mod.setStartupErrorMessage(msg, e);
@@ -325,9 +327,11 @@ public class WebModuleUtil {
 					}
 
 					// try starting the application context again
-					log.debug("Refreshing context for module {} (re-trying)", mod.getModuleId());
+					log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Refreshing context for module {} (re-trying)",
+					    mod.getModuleId());
 					refreshWAC(servletContext, false, mod);
-					log.debug("Done refreshing context for module {} (re-trying)", mod.getModuleId());
+					log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Done refreshing context for module {} (re-trying)",
+					    mod.getModuleId());
 
 					notifySuperUsersAboutModuleFailure(mod);
 				}
@@ -342,7 +346,7 @@ public class WebModuleUtil {
 
 				// find and cache the module's servlets
 				//(only if the module started successfully previously)
-				log.debug("Loading servlets and filters for module {}", mod);
+				log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Loading servlets and filters for module {}", mod);
 				servletContext.setAttribute(OpenmrsJspServlet.OPENMRS_TLD_SCAN_NEEDED, true);
 				loadServlets(mod, servletContext);
 				loadFilters(mod, servletContext);
@@ -902,8 +906,8 @@ public class WebModuleUtil {
 	        Module startedModule) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext) WebApplicationContextUtils
 		        .getWebApplicationContext(servletContext);
-		log.debug("Refreshing Web Application Context of class: {}", wac.getClass().getName());
-
+		log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Refreshing Web Application Context of class: {}",
+		    wac.getClass().getName());
 		if (dispatcherServlet != null) {
 			dispatcherServlet.stopAndCloseApplicationContext();
 		}
