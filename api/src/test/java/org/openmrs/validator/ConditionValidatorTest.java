@@ -9,6 +9,14 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,14 +27,9 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Condition;
 import org.openmrs.ConditionClinicalStatus;
+import org.openmrs.Patient;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Class to implement tests for {@link ConditionValidator}
@@ -80,5 +83,62 @@ public class ConditionValidatorTest {
 		validator.validate(condition, errors);
 		assertFalse(errors.hasFieldErrors("condition"));
 		assertFalse(errors.hasFieldErrors("clinicalStatus"));
+	}
+
+	private Date date(int year, int month, int day) {
+		Calendar cal = Calendar.getInstance();
+		cal.set(year, month - 1, day, 0, 0, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal.getTime();
+	}
+
+	@Test
+	void shouldRejectOnsetDateBeforePatientBirthdate() {
+		Patient patient = new Patient();
+		patient.setBirthdate(date(2000, 1, 1));
+		condition.setPatient(patient);
+		condition.setOnsetDate(date(1999, 6, 15));
+		validator.validate(condition, errors);
+		assertTrue(errors.hasFieldErrors("onsetDate"));
+	}
+
+	@Test
+	void shouldNotRejectOnsetDateEqualToPatientBirthdate() {
+		Patient patient = new Patient();
+		patient.setBirthdate(date(2000, 1, 1));
+		condition.setPatient(patient);
+		condition.setOnsetDate(date(2000, 1, 1));
+		validator.validate(condition, errors);
+		assertFalse(errors.hasFieldErrors("onsetDate"));
+	}
+
+	@Test
+	void shouldNotRejectOnsetDateAfterPatientBirthdate() {
+		Patient patient = new Patient();
+		patient.setBirthdate(date(2000, 1, 1));
+		condition.setPatient(patient);
+		condition.setOnsetDate(date(2005, 3, 15));
+		validator.validate(condition, errors);
+		assertFalse(errors.hasFieldErrors("onsetDate"));
+	}
+
+	@Test
+	void shouldNotRejectNullOnsetDate() {
+		Patient patient = new Patient();
+		patient.setBirthdate(date(2000, 1, 1));
+		condition.setPatient(patient);
+		condition.setOnsetDate(null);
+		validator.validate(condition, errors);
+		assertFalse(errors.hasFieldErrors("onsetDate"));
+	}
+
+	@Test
+	void shouldNotRejectWhenPatientBirthdateIsNull() {
+		Patient patient = new Patient();
+		patient.setBirthdate(null);
+		condition.setPatient(patient);
+		condition.setOnsetDate(date(2005, 3, 15));
+		validator.validate(condition, errors);
+		assertFalse(errors.hasFieldErrors("onsetDate"));
 	}
 }
