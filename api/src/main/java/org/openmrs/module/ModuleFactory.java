@@ -52,6 +52,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.Advisor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.util.StringUtils;
 
@@ -62,7 +63,14 @@ import liquibase.Contexts;
  */
 public class ModuleFactory {
 	
+	private static Logger logger = LoggerFactory.getLogger(ModuleFactory.class);
+	
+	private static ApplicationEventPublisher applicationEventPublisher;
 	private ModuleFactory() {
+	}
+
+	public static void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		applicationEventPublisher = publisher;
 	}
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleFactory.class);
@@ -157,6 +165,11 @@ public class ModuleFactory {
 		}
 		
 		getLoadedModulesMap().put(module.getModuleId(), module);
+		if (applicationEventPublisher != null) {
+			ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, ModuleEventType.MODULE_LOAD, module.getName(), true);
+			applicationEventPublisher.publishEvent(event);
+			logger.info("== Module loaded action published for {} ==", module.getName());
+		}
 		
 		return module;
 	}
@@ -546,7 +559,16 @@ public class ModuleFactory {
 	 * @see Daemon#startModule(Module)
 	 */
 	public static Module startModule(Module module) throws ModuleException {
-		return startModule(module, false, null);
+		Module startedModule = startModule(module, false, null);
+
+		if (applicationEventPublisher != null) {
+			ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class,
+				ModuleEventType.MODULE_START, startedModule.getName(), isModuleStarted(startedModule));
+			applicationEventPublisher.publishEvent(event);
+		}
+
+		return startedModule;
+		
 	}
 	
 	/**
@@ -1034,7 +1056,6 @@ public class ModuleFactory {
 	 */
 	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
 		throws ModuleMustStartException {
-		
 		List<Module> dependentModulesStopped = new ArrayList<>();
 		
 		if (mod != null) {
@@ -1051,6 +1072,12 @@ public class ModuleFactory {
 			}
 			catch (Exception t) {
 				log.warn("Unable to call module's Activator.willStop() method", t);
+			}
+
+			logger.info("Module got stopped {}", mod.getName());
+			if (applicationEventPublisher != null) {
+				ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, ModuleEventType.MODULE_STOP, mod.getName(), true);
+				applicationEventPublisher.publishEvent(event);
 			}
 			
 			String moduleId = mod.getModuleId();
@@ -1228,6 +1255,11 @@ public class ModuleFactory {
 		if (mod != null) {
 			// remove the file from the module repository
 			File file = mod.getFile();
+			logger.info("Module got unloaded {}", mod.getName());
+			if (applicationEventPublisher != null) {
+				ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, ModuleEventType.MODULE_UNLOAD, mod.getName(), true);
+				applicationEventPublisher.publishEvent(event);
+			}
 			
 			boolean deleted = file.delete();
 			if (!deleted) {
