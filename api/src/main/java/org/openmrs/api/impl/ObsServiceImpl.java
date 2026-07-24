@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -33,6 +35,7 @@ import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -74,6 +77,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	/**
 	 * Default empty constructor for this obs service
 	 */
+	private CustomDatatypeUtil customDatatypeUtil;
+
+	private ObsArchiveHelper archiveHelper;
+
 	public ObsServiceImpl() {
 	}
 
@@ -111,6 +118,15 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 
 		ensureRequirePrivilege(obs);
 
+		// Only check obs_archive when the obs is absent from the main table.
+		// dao.getObs() hits the first-level cache before querying the database.
+		if (obs.getObsId() != null && dao.getObs(obs.getObsId()) == null) {
+			Obs restored = restoreAndUnvoidFromArchive(obs, true);
+			if (restored != null) {
+				obs = restored;
+			}
+		}
+
 		//Should allow updating a voided Obs, it seems to be pointless to restrict it,
 		//otherwise operations like merge patients won't be possible when to moving voided obs
 		if (obs.getObsId() == null || obs.getVoided()) {
@@ -124,10 +140,76 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		}
 	}
 
+	/**
+	 * Restores a voided observation from the archive table and unvoids it.
+	 *
+	 * @param obs the observation to restore and unvoid
+	 * @param isSaveOperation true if this is part of a save operation, false otherwise
+	 * @return the restored and unvoided observation
+	 * @since 3.0.0
+	 */
+	private Obs restoreAndUnvoidFromArchive(Obs obs, boolean isSaveOperation) {
+		boolean restored = getArchiveHelper().restoreFromArchive(obs.getObsId());
+		if (!restored) {
+			// Obs was not in obs_archive either, so there is nothing to restore
+			return null;
+		}
+
+		Context.evictFromSession(obs);
+		Obs reloadedObs = dao.getObs(obs.getObsId());
+
+		// Capture dateVoided before any mutation. This is needed by unvoidArchivedChildren to
+		// identify which children were voided in the same batch as this obs.
+		Date originalDateVoided = reloadedObs.getDateVoided();
+
+		if (isSaveOperation) {
+			boolean unvoiding = reloadedObs.getVoided() && !obs.getVoided();
+
+			reloadedObs.setVoided(obs.getVoided());
+			reloadedObs.setVoidedBy(obs.getVoidedBy());
+			reloadedObs.setDateVoided(obs.getDateVoided());
+			reloadedObs.setVoidReason(obs.getVoidReason());
+
+			copyModifiedDataFields(obs, reloadedObs);
+			obs = reloadedObs;
+
+			if (unvoiding && obs.hasGroupMembers(true)) {
+				unvoidArchivedChildren(obs, originalDateVoided);
+			}
+		} else {
+			reloadedObs.setVoided(false);
+			reloadedObs.setVoidedBy(null);
+			reloadedObs.setDateVoided(null);
+			reloadedObs.setVoidReason(null);
+
+			obs = Context.getObsService().saveObs(reloadedObs, "unvoided");
+
+			if (obs.hasGroupMembers(true)) {
+				unvoidArchivedChildren(obs, originalDateVoided);
+			}
+		}
+		return obs;
+	}
+
+	private void unvoidArchivedChildren(Obs obs, Date originalDateVoided) {
+		Set<Obs> members = new LinkedHashSet<>(obs.getGroupMembers(true));
+		for (Obs child : members) {
+			boolean datesMatch = (child.getDateVoided() == null && originalDateVoided == null)
+			        || (child.getDateVoided() != null && originalDateVoided != null
+			                && child.getDateVoided().getTime() == originalDateVoided.getTime());
+			if (datesMatch) {
+				Context.getObsService().unvoidObs(child);
+			}
+		}
+	}
+
 	private void setPersonFromEncounter(Obs obs) {
 		Encounter encounter = obs.getEncounter();
 		if (encounter != null) {
-			obs.setPerson(encounter.getPatient());
+			Person patient = encounter.getPatient();
+			if (patient != null) {
+				obs.setPerson(patient);
+			}
 		}
 	}
 
@@ -274,6 +356,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	@Transactional(readOnly = true)
 	public Obs getObs(Integer obsId) throws APIException {
 		Obs obs = dao.getObs(obsId);
+		if (obs == null && obsId != null) {
+			obs = getArchiveHelper().getObsFromArchive(obsId);
+		}
 		if (obs != null && obs.isComplex()) {
 			return getHandler(obs).getObs(obs, ComplexObsHandler.RAW_VIEW);
 		}
@@ -306,7 +391,16 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 */
 	@Override
 	public Obs unvoidObs(Obs obs) throws APIException {
-		return Context.getObsService().saveObs(obs, "unvoid obs");
+		// Only check obs_archive when the obs is absent from the main table.
+		// dao.getObs() hits the first-level cache before querying the database.
+		if (obs.getObsId() != null && dao.getObs(obs.getObsId()) == null) {
+			Obs restored = restoreAndUnvoidFromArchive(obs, false);
+			if (restored != null) {
+				return restored;
+			}
+		}
+
+		return Context.getObsService().saveObs(obs, "unvoided");
 	}
 
 	/**
@@ -528,6 +622,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	@Transactional(readOnly = true)
 	public Obs getObsByUuid(String uuid) throws APIException {
 		Obs obsByUuid = dao.getObsByUuid(uuid);
+		if (obsByUuid == null && uuid != null) {
+			obsByUuid = getArchiveHelper().getObsFromArchiveByUuid(uuid);
+		}
 		if (obsByUuid != null && obsByUuid.isComplex()) {
 			return getHandler(obsByUuid).getObs(obsByUuid, ComplexObsHandler.RAW_VIEW);
 		}
@@ -634,6 +731,19 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	}
 
 	/**
+	 * Gets the ObsArchiveHelper component from the Spring application context.
+	 *
+	 * @return the ObsArchiveHelper instance
+	 * @since 3.0.0
+	 */
+	private ObsArchiveHelper getArchiveHelper() {
+		if (archiveHelper == null) {
+			archiveHelper = Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class);
+		}
+		return archiveHelper;
+	}
+
+	/**
 	 * @see org.openmrs.api.ObsService#registerHandler(String, ComplexObsHandler)
 	 */
 	@Override
@@ -685,6 +795,98 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	@Override
 	public List<Class<?>> getRefTypes() {
 		return Arrays.asList(Obs.class);
+	}
+
+	/**
+	 * Copies modified data fields from the source observation to the target observation.
+	 *
+	 * @param source the observation with modified fields
+	 * @param target the observation to copy fields into
+	 * @since 3.0.0
+	 */
+	private void copyModifiedDataFields(Obs source, Obs target) {
+		if (source.getPerson() != null && (target.getPerson() == null
+		        || !source.getPerson().getPersonId().equals(target.getPerson().getPersonId()))) {
+			target.setPerson(source.getPerson());
+		}
+		if (source.getConcept() != null && (target.getConcept() == null
+		        || !source.getConcept().getConceptId().equals(target.getConcept().getConceptId()))) {
+			target.setConcept(source.getConcept());
+		}
+
+		Integer sourceEncounterId = source.getEncounter() != null ? source.getEncounter().getEncounterId() : null;
+		Integer targetEncounterId = target.getEncounter() != null ? target.getEncounter().getEncounterId() : null;
+		if (!ObsArchiveHelper.hibernateAwareEquals(sourceEncounterId, targetEncounterId)) {
+			target.setEncounter(source.getEncounter());
+		}
+
+		Integer sourceOrderId = source.getOrder() != null ? source.getOrder().getOrderId() : null;
+		Integer targetOrderId = target.getOrder() != null ? target.getOrder().getOrderId() : null;
+		if (!ObsArchiveHelper.hibernateAwareEquals(sourceOrderId, targetOrderId)) {
+			target.setOrder(source.getOrder());
+		}
+
+		if (!ObsArchiveHelper.hibernateAwareEquals(source.getObsDatetime(), target.getObsDatetime())) {
+			target.setObsDatetime(source.getObsDatetime());
+		}
+
+		Integer sourceLocationId = source.getLocation() != null ? source.getLocation().getLocationId() : null;
+		Integer targetLocationId = target.getLocation() != null ? target.getLocation().getLocationId() : null;
+		if (!ObsArchiveHelper.hibernateAwareEquals(sourceLocationId, targetLocationId)) {
+			target.setLocation(source.getLocation());
+		}
+
+		if (!ObsArchiveHelper.hibernateAwareEquals(source.getAccessionNumber(), target.getAccessionNumber())) {
+			target.setAccessionNumber(source.getAccessionNumber());
+		}
+		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueGroupId(), target.getValueGroupId())) {
+			target.setValueGroupId(source.getValueGroupId());
+		}
+
+		Integer sourceCodedId = source.getValueCoded() != null ? source.getValueCoded().getConceptId() : null;
+		Integer targetCodedId = target.getValueCoded() != null ? target.getValueCoded().getConceptId() : null;
+		if (!ObsArchiveHelper.hibernateAwareEquals(sourceCodedId, targetCodedId)) {
+			target.setValueCoded(source.getValueCoded());
+		}
+
+		Integer sourceCodedNameId = source.getValueCodedName() != null ? source.getValueCodedName().getConceptNameId()
+		        : null;
+		Integer targetCodedNameId = target.getValueCodedName() != null ? target.getValueCodedName().getConceptNameId()
+		        : null;
+		if (!ObsArchiveHelper.hibernateAwareEquals(sourceCodedNameId, targetCodedNameId)) {
+			target.setValueCodedName(source.getValueCodedName());
+		}
+
+		Integer sourceDrugId = source.getValueDrug() != null ? source.getValueDrug().getDrugId() : null;
+		Integer targetDrugId = target.getValueDrug() != null ? target.getValueDrug().getDrugId() : null;
+		if (!ObsArchiveHelper.hibernateAwareEquals(sourceDrugId, targetDrugId)) {
+			target.setValueDrug(source.getValueDrug());
+		}
+
+		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueDatetime(), target.getValueDatetime())) {
+			target.setValueDatetime(source.getValueDatetime());
+		}
+		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueNumeric(), target.getValueNumeric())) {
+			target.setValueNumeric(source.getValueNumeric());
+		}
+		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueModifier(), target.getValueModifier())) {
+			target.setValueModifier(source.getValueModifier());
+		}
+		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueText(), target.getValueText())) {
+			target.setValueText(source.getValueText());
+		}
+		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueComplex(), target.getValueComplex())) {
+			target.setValueComplex(source.getValueComplex());
+		}
+		if (!ObsArchiveHelper.hibernateAwareEquals(source.getComment(), target.getComment())) {
+			target.setComment(source.getComment());
+		}
+		if (source.getStatus() != null && source.getStatus() != target.getStatus()) {
+			target.setStatus(source.getStatus());
+		}
+		if (source.getInterpretation() != target.getInterpretation()) {
+			target.setInterpretation(source.getInterpretation());
+		}
 	}
 
 }
