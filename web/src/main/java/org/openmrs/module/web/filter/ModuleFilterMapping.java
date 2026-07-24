@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
+import org.openmrs.util.LogSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -190,9 +191,8 @@ public class ModuleFilterMapping implements Serializable {
 		if (patternToCheck == null) {
 			return false;
 		}
-
-		log.debug("Checking URL <" + requestPath + "> against pattern <" + patternToCheck + ">");
-
+		log.debug("Checking URL <{}> against pattern <{}>", LogSanitizer.sanitize(requestPath),
+		    LogSanitizer.sanitize(patternToCheck));
 		// Match exact or full wildcard
 		if ("*".equals(patternToCheck) || "/*".equals(patternToCheck) || patternToCheck.equals(requestPath)) {
 			return true;
@@ -241,9 +241,8 @@ public class ModuleFilterMapping implements Serializable {
 		if (servletName == null) {
 			return false;
 		}
-
-		log.debug("Checking servlet <" + servletName + "> against pattern <" + patternToCheck + ">");
-
+		log.debug("Checking servlet <{}> against pattern <{}>", LogSanitizer.sanitize(servletName),
+		    LogSanitizer.sanitize(patternToCheck));
 		// Match exact or full wildcard
 		return ("*").equals(patternToCheck) || servletName.equals(patternToCheck);
 
