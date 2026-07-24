@@ -2053,6 +2053,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+    public void purgePatient_shouldThrowIllegalArgumentExceptionWhenPatientIsNull() {
+    assertThrows(IllegalArgumentException.class, () -> patientService.purgePatient(null));
+    }
+
+	@Test
 	public void getPatients_shouldNotReturnVoidedPatients() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
 
