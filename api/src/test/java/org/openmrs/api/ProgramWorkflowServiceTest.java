@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,7 @@ import org.openmrs.ConceptStateConversion;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramAttributeType;
@@ -469,6 +471,21 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ProgramWorkflowService#getPatientProgramByUuid(String)
+	 */
+	@Test
+	public void getPatientProgramByUuid_shouldFailIfUserHasNoGetPatientProgramsPrivilege() {
+		// a valid uuid so the missing privilege is the only possible reason for failure
+		String uuid = "2edf272c-bf05-4208-9f93-2fa213ed0415";
+
+		// log out so the context no longer holds the Get Patient Programs privilege
+		Context.logout();
+
+		assertThrows(APIAuthenticationException.class,
+		    () -> Context.getProgramWorkflowService().getPatientProgramByUuid(uuid));
+	}
+
+	/**
 	 * @see ProgramWorkflowService#getPatientStateByUuid(String)
 	 */
 	@Test
@@ -486,6 +503,21 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertNull(Context.getProgramWorkflowService().getPatientStateByUuid("some invalid uuid"));
 	}
 	
+	/**
+	 * @see ProgramWorkflowService#getPatientStateByUuid(String)
+	 */
+	@Test
+	public void getPatientStateByUuid_shouldFailIfUserHasNoGetPatientProgramsPrivilege() {
+		// a valid uuid so the missing privilege is the only possible reason for failure
+		String uuid = "ea89deaa-23cc-4840-92fe-63d199c37e4c";
+
+		// log out so the context no longer holds the Get Patient Programs privilege
+		Context.logout();
+
+		assertThrows(APIAuthenticationException.class,
+		    () -> Context.getProgramWorkflowService().getPatientStateByUuid(uuid));
+	}
+
 	/**
 	 * @see ProgramWorkflowService#getProgramByUuid(String)
 	 */
@@ -765,8 +797,23 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		pws.purgeProgramAttributeType(programAttributeType);
 		assertEquals((totalAttributeTypes - 1), pws.getAllProgramAttributeTypes().size());
 	}
-	
-	
+
+	/**
+	 * @see ProgramWorkflowService#getPatientProgramAttributeByAttributeName(List, String)
+	 */
+	@Test
+	public void getPatientProgramAttributeByAttributeName_shouldFailIfUserHasNoGetPatientProgramsPrivilege() {
+		// valid arguments so the missing privilege is the only possible reason for failure
+		List<Integer> patients = Arrays.asList(2);
+		String attributeName = "ProgramId";
+
+		// log out so the context no longer holds the Get Patient Programs privilege
+		Context.logout();
+
+		assertThrows(APIAuthenticationException.class,
+		    () -> Context.getProgramWorkflowService().getPatientProgramAttributeByAttributeName(patients, attributeName));
+	}
+
 	@Test
 	public void getPrograms_shouldTestGetPrograms() {
 		List<Program> malPrograms = pws.getPrograms("MAL");
@@ -1113,5 +1160,40 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	//
 	//    	return props;
 	//    }
-	
+
+	/**
+	 * Regression guard for the program-attribute lookup: the attribute name is bound as a query
+	 * parameter rather than concatenated into the native SQL, so a value carrying SQL control
+	 * characters is matched literally instead of altering the query.
+	 *
+	 * @see ProgramWorkflowService#getPatientProgramAttributeByAttributeName(List, String)
+	 */
+	@Test
+	public void getPatientProgramAttributeByAttributeName_shouldMatchTheAttributeNameLiterally() {
+		// attach a "ProgramId" attribute value to the existing enrollment for patient 2
+		ProgramAttributeType attributeType = pws.getProgramAttributeType(1);
+		assertEquals("ProgramId", attributeType.getName());
+
+		PatientProgramAttribute attribute = new PatientProgramAttribute();
+		attribute.setAttributeType(attributeType);
+		attribute.setValueReferenceInternal("1234");
+
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		patientProgram.addAttribute(attribute);
+		pws.savePatientProgram(patientProgram);
+		Context.flushSession();
+
+		List<Integer> patientIds = Arrays.asList(2);
+
+		// the real name resolves the stored value
+		Map<Object, Object> byName = pws.getPatientProgramAttributeByAttributeName(patientIds, "ProgramId");
+		assertTrue(byName.containsKey(2));
+		assertTrue(((String) byName.get(2)).contains("1234"));
+
+		// a name containing SQL quote characters is compared literally, so it resolves no attribute
+		// type and returns nothing, rather than being interpreted as part of the query
+		Map<Object, Object> byNameWithQuotes = pws.getPatientProgramAttributeByAttributeName(patientIds,
+		    "ProgramId' OR '1'='1");
+		assertTrue(byNameWithQuotes.isEmpty());
+	}
 }

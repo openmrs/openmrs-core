@@ -80,6 +80,13 @@ public class UpdateFilter extends StartupFilter {
 	private static final String PROGRESS_VM_AJAXREQUEST = "updateProgress.vm.ajaxRequest";
 	
 	/**
+	 * Session attribute set once a super user authenticates at the first step and checked on every
+	 * later step. Holding it on the session, rather than on the shared filter instance, stops one
+	 * user's successful authentication from being reused by another user's unauthenticated request.
+	 */
+	private static final String AUTHENTICATED_SUCCESSFULLY = "updateFilter.authenticatedSuccessfully";
+
+	/**
 	 * The model object behind this set of screens
 	 */
 	private UpdateFilterModel updateFilterModel = null;
@@ -89,13 +96,7 @@ public class UpdateFilter extends StartupFilter {
 	 * through this filter are a simple boolean check
 	 */
 	private static boolean updatesRequired = true;
-	
-	/**
-	 * Used on all pages after the first to make sure the user isn't trying to cheat and do some url
-	 * magic to hack in.
-	 */
-	private volatile boolean authenticatedSuccessfully = false;
-	
+
 	private UpdateFilterCompletion updateJob;
 	
 	/**
@@ -156,9 +157,10 @@ public class UpdateFilter extends StartupFilter {
 			log.debug("Attempting to authenticate user: " + username);
 			if (authenticateAsSuperUser(username, password)) {
 				log.debug("Authentication successful.  Redirecting to 'reviewupdates' page.");
-				// set a variable so we know that the user started here
-				authenticatedSuccessfully = true;
-				
+				// mark this session as authenticated so later steps can verify it
+				httpRequest.getSession().setAttribute(AUTHENTICATED_SUCCESSFULLY, Boolean.TRUE);
+
+
 				//Set variable to tell us whether updates are already in progress
 				referenceMap.put("isDatabaseUpdateInProgress", isDatabaseUpdateInProgress);
 				
@@ -211,8 +213,8 @@ public class UpdateFilter extends StartupFilter {
 		}
 		// step two of wizard in case if there were some warnings
 		else if (REVIEW_CHANGES.equals(page)) {
-			
-			if (!authenticatedSuccessfully) {
+
+			if (!Boolean.TRUE.equals(httpRequest.getSession().getAttribute(AUTHENTICATED_SUCCESSFULLY))) {
 				// throw the user back to the main page because they are cheating
 				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 				return;
