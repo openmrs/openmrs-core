@@ -49,4 +49,12 @@ public class ImmutableObsInterceptor extends ImmutableEntityInterceptor {
 	protected boolean ignoreVoidedOrRetiredObjects() {
 		return true;
 	}
+
+	/**
+	 * @see ImmutableEntityInterceptor#allowChangesForEntityWithoutId()
+	 */
+	@Override
+	protected boolean allowChangesForEntityWithoutId() {
+		return true;
+	}
 }
