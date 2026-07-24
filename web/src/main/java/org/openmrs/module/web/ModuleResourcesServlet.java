@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.WebUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +52,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		log.debug("In service method for module servlet: " + request.getPathInfo());
-
+		String sanitizedPathInfo = WebUtil.sanitizeForLogging(request.getPathInfo());
+		log.debug("In service method for module servlet: {}", sanitizedPathInfo);
 		File f = getFile(request);
 		if (f == null) {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -82,10 +82,11 @@ public class ModuleResourcesServlet extends HttpServlet {
 	protected File getFile(HttpServletRequest request) {
 
 		String path = request.getPathInfo();
+		String sanitizedPath = WebUtil.sanitizeForLogging(path);
 
 		Module module = ModuleUtil.getModuleForPath(path);
 		if (module == null) {
-			log.warn("No module handles the path: " + path);
+			log.warn("No module handles the path: {}", sanitizedPath);
 			return null;
 		}
 
@@ -107,13 +108,15 @@ public class ModuleResourcesServlet extends HttpServlet {
 		Path normalizedPath = Path.of(realPath).normalize();
 		Path normalizedBase = Path.of(basePath).normalize();
 		if (!normalizedPath.startsWith(normalizedBase)) {
-			log.warn("Detected attempted directory traversal with path: " + path);
+			log.warn("Detected attempted directory traversal with path: {}", sanitizedPath);
 			return null;
 		}
 
 		File f = normalizedPath.toFile();
 		if (!f.exists()) {
-			log.warn("No file with path '" + normalizedPath + "' exists for module '" + module.getModuleId() + "'");
+			String sanitizedNormalizedPath = WebUtil.sanitizeForLogging(normalizedPath.toString());
+			String sanitizedModuleId = WebUtil.sanitizeForLogging(module.getModuleId());
+			log.warn("No file with path '{}' exists for module '{}'", sanitizedNormalizedPath, sanitizedModuleId);
 			return null;
 		}
 
