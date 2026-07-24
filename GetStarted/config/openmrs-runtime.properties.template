@@ -1,0 +1,37 @@
+# OpenMRS runtime properties template.
+#
+# This is the ALTERNATIVE to the auto-install templates: instead of letting the
+# first-start installer run, you pre-place runtime properties in the OpenMRS
+# Application Data Directory. When run-openmrs.* is used that directory is
+# GetStarted/openmrs-data, so copy this file to:
+#
+#   GetStarted/openmrs-data/openmrs-runtime.properties     (Windows)
+#   GetStarted/openmrs-data/openmrs-runtime.properties     (Mac/Linux)
+#
+# and edit it for your database. OpenMRS reads it at startup. The first start
+# will still run liquibase to create tables (create_tables below), but skips the
+# web installation wizard because the connection is already specified.
+
+# --- MySQL / MariaDB example (default) ---
+connection.url=jdbc:mysql://localhost:3306/openmrs?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8
+connection.driver_class=com.mysql.cj.jdbc.Driver
+
+# --- PostgreSQL example (swap in for Postgres) ---
+# connection.url=jdbc:postgresql://localhost:5432/openmrs
+# connection.driver_class=org.postgresql.Driver
+
+connection.username=openmrs
+connection.password=openmrs
+
+database_name=openmrs
+has_current_openmrs_database=false
+create_database_user=false
+create_tables=true
+module_web_admin=true
+auto_update_database=false
+
+admin_user_password=Admin123
+
+# Optional explicit Hibernate dialect (usually inferred):
+# hibernate.dialect=org.hibernate.dialect.MySQL57Dialect
+# hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect

@@ -1,0 +1,11 @@
+# Built module artifacts
+omod/
+
+# Per-module mvn build logs
+.build-logs/
+
+# Local OpenMRS application data dir used by run-openmrs.* (H2 db, modules, runtime props)
+openmrs-data/
+
+# Any local clone target used for smoke-testing the scripts in place
+_smoke/
