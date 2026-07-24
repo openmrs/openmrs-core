@@ -42,6 +42,16 @@ public class Security {
 	private static final Logger log = LoggerFactory.getLogger(Security.class);
 	
 	private static final Random RANDOM = new SecureRandom();
+	
+	private static final String SHA512 = "SHA-512";
+	
+	private static final String SHA1 = "SHA-1";
+	
+	private static final int MAX_MEMORY_KB = 1048576; // 1GB in KB
+	
+	private static final int MAX_ITERATIONS = 10;
+	
+	private static final int MAX_PARALLELISM = 8;
 
 	private Security() {
 	}
@@ -70,7 +80,7 @@ public class Security {
 			return getArgon2Encoder().matches(passwordToHash, hashedPassword);
 		}
 
-		return hashedPassword.equals(encodeString(passwordToHash, "SHA-512"))
+		return hashedPassword.equals(encodeString(passwordToHash, SHA512))
 			|| hashedPassword.equals(encodeStringSHA1(passwordToHash))
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
 	}
@@ -92,9 +102,10 @@ public class Security {
 	 *
 	 * @param strToEncode string to encode
 	 * @return the SHA-512 encryption of a given string
+	 * @since 2.8.9
 	 */
 	public static String encodeStringSHA512(String strToEncode) throws APIException {
-		return encodeString(strToEncode, "SHA-512");
+		return encodeString(strToEncode, SHA512);
 	}
 
 	/**
@@ -104,7 +115,7 @@ public class Security {
 	 * @return the SHA-1 encryption of a given string
 	 */
 	private static String encodeStringSHA1(String strToEncode) throws APIException {
-		return encodeString(strToEncode, "SHA-1");
+		return encodeString(strToEncode, SHA1);
 	}
 
 	private static volatile Argon2PasswordEncoder argon2Encoder;
@@ -169,6 +180,14 @@ public class Security {
 				log.warn("Invalid value for global property '{}': {}, must be > 0, using default: {}", key, parsed, defaultValue);
 				return defaultValue;
 			}
+			
+			// Apply upper bounds with warnings for security
+			int maxValue = getMaxValueForProperty(key);
+			if (maxValue > 0 && parsed > maxValue) {
+				log.warn("Value for global property '{}': {} exceeds recommended maximum of {}, clamping to maximum", key, parsed, maxValue);
+				return maxValue;
+			}
+			
 			return parsed;
 		} catch (APIException e) {
 			return defaultValue;
@@ -176,6 +195,17 @@ public class Security {
 			log.warn("Invalid value for global property '{}', using default: {}", key, defaultValue);
 			return defaultValue;
 		}
+	}
+	
+	private static int getMaxValueForProperty(String key) {
+		if (OpenmrsConstants.GP_ARGON2_MEMORY.equals(key)) {
+			return MAX_MEMORY_KB;
+		} else if (OpenmrsConstants.GP_ARGON2_ITERATIONS.equals(key)) {
+			return MAX_ITERATIONS;
+		} else if (OpenmrsConstants.GP_ARGON2_PARALLELISM.equals(key)) {
+			return MAX_PARALLELISM;
+		}
+		return -1; // No maximum for other properties
 	}
 
 	private static String encodeString(String strToEncode, String algorithm) {
