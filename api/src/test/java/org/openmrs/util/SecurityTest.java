@@ -9,12 +9,10 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Base64;
 import java.util.Base64.Decoder;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
 
@@ -29,18 +27,115 @@ public class SecurityTest {
 	 * @see Security#encodeString(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsTo128Characters() {
+	public void encodeString_shouldEncodeStringsToArgon2id() {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
-		assertEquals(HASH_LENGTH, hash.length());
+		assertTrue(hash.startsWith("$argon2id$"));
 	}
 	
 	/**
 	 * @see Security#encodeString(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsToXCharactersWithXCharactersSalt() {
-		String hash = Security.encodeString("test" + Security.getRandomToken());
-		assertEquals(HASH_LENGTH, hash.length());
+	public void encodeString_shouldEncodeStringsToXCharactersWithXCharactersSalt() throws Exception {
+		org.openmrs.api.AdministrationService adminService = org.mockito.Mockito.mock(org.openmrs.api.AdministrationService.class);
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16")).thenReturn("8");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32")).thenReturn("32");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1")).thenReturn("1");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536")).thenReturn("65536");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3")).thenReturn("3");
+
+		java.lang.reflect.Method getServiceContextMethod = org.openmrs.api.context.Context.class.getDeclaredMethod("getServiceContext");
+		getServiceContextMethod.setAccessible(true);
+		org.openmrs.api.context.ServiceContext serviceContext = (org.openmrs.api.context.ServiceContext) getServiceContextMethod.invoke(null);
+		org.openmrs.api.AdministrationService originalAdministrationService = serviceContext.getAdministrationService();
+		serviceContext.setService(org.openmrs.api.AdministrationService.class, adminService);
+		try {
+			Security.resetEncoder();
+			String hash1 = Security.encodeString("test");
+			org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16")).thenReturn("16");
+			Security.resetEncoder();
+			String hash2 = Security.encodeString("test");
+			String[] parts1 = hash1.split("\\$");
+			String[] parts2 = hash2.split("\\$");
+			assertTrue(parts1.length >= 5);
+			assertTrue(parts2.length >= 5);
+			assertTrue(parts1[4].length() != parts2[4].length());
+		}
+		finally {
+			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
+			Security.resetEncoder();
+		}
+	}
+
+	@Test
+	public void encodeString_shouldUseDefaultValuesWhenGlobalPropertyValuesAreInvalid() throws Exception {
+		org.openmrs.api.AdministrationService adminService = org.mockito.Mockito.mock(org.openmrs.api.AdministrationService.class);
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16")).thenReturn("-5");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32")).thenReturn("0");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1")).thenReturn("invalid");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536")).thenReturn("abc");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3")).thenReturn("-1");
+
+		java.lang.reflect.Method getServiceContextMethod = org.openmrs.api.context.Context.class.getDeclaredMethod("getServiceContext");
+		getServiceContextMethod.setAccessible(true);
+		org.openmrs.api.context.ServiceContext serviceContext = (org.openmrs.api.context.ServiceContext) getServiceContextMethod.invoke(null);
+		org.openmrs.api.AdministrationService originalAdministrationService = serviceContext.getAdministrationService();
+		serviceContext.setService(org.openmrs.api.AdministrationService.class, adminService);
+		try {
+			Security.resetEncoder();
+			String hash = Security.encodeString("test");
+			assertTrue(hash.startsWith("$argon2id$"));
+			String[] parts = hash.split("\\$");
+			assertTrue(parts.length >= 5);
+			String params = parts[3];
+			assertTrue(params.contains("m=65536"));
+			assertTrue(params.contains("t=3"));
+			assertTrue(params.contains("p=1"));
+		}
+		finally {
+			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
+			Security.resetEncoder();
+		}
+	}
+
+	@Test
+	public void encodeString_shouldUseUpdatedGlobalPropertyValues() throws Exception {
+		org.openmrs.api.AdministrationService adminService = org.mockito.Mockito.mock(org.openmrs.api.AdministrationService.class);
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16")).thenReturn("16");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32")).thenReturn("32");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1")).thenReturn("1");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536")).thenReturn("65536");
+		org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3")).thenReturn("3");
+
+		java.lang.reflect.Method getServiceContextMethod = org.openmrs.api.context.Context.class.getDeclaredMethod("getServiceContext");
+		getServiceContextMethod.setAccessible(true);
+		org.openmrs.api.context.ServiceContext serviceContext = (org.openmrs.api.context.ServiceContext) getServiceContextMethod.invoke(null);
+		org.openmrs.api.AdministrationService originalAdministrationService = serviceContext.getAdministrationService();
+		serviceContext.setService(org.openmrs.api.AdministrationService.class, adminService);
+		try {
+			Security.resetEncoder();
+			String hash1 = Security.encodeString("test");
+			String[] parts1 = hash1.split("\\$");
+			assertTrue(parts1.length >= 5);
+			assertTrue(parts1[3].contains("m=65536"));
+			assertTrue(parts1[3].contains("t=3"));
+			assertTrue(parts1[3].contains("p=1"));
+
+			org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536")).thenReturn("131072");
+			org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3")).thenReturn("4");
+			org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1")).thenReturn("2");
+
+			String hash2 = Security.encodeString("test");
+			String[] parts2 = hash2.split("\\$");
+			assertTrue(parts2.length >= 5);
+			assertTrue(parts2[3].contains("m=131072"));
+			assertTrue(parts2[3].contains("t=4"));
+			assertTrue(parts2[3].contains("p=2"));
+		}
+		finally {
+			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
+			Security.resetEncoder();
+		}
 	}
 	
 	/**
