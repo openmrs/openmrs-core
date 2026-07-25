@@ -143,34 +143,37 @@ public class ModuleFactory {
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		
 		log.debug("Adding module {} to the module queue", module.getName());
+		boolean isModuleLoaded = true;
 		
-		Module oldModule = getLoadedModulesMap().get(module.getModuleId());
-		if (oldModule != null) {
-			int versionComparison = ModuleUtil.compareVersion(oldModule.getVersion(), module.getVersion());
-			if (versionComparison < 0) {
-				// if oldModule version is lower, unload it and use the new
-				unloadModule(oldModule);
-			} else if (versionComparison == 0) {
-				if (replaceIfExists) {
-					// if the versions are the same and we're told to replaceIfExists, use the new
+		try {
+			Module oldModule = getLoadedModulesMap().get(module.getModuleId());
+			if (oldModule != null) {
+				int versionComparison = ModuleUtil.compareVersion(oldModule.getVersion(), module.getVersion());
+				if (versionComparison < 0) {
+					// if oldModule version is lower, unload it and use the new
 					unloadModule(oldModule);
+				} else if (versionComparison == 0) {
+					if (replaceIfExists) {
+						// if the versions are the same and we're told to replaceIfExists, use the new
+						unloadModule(oldModule);
+					} else {
+						isModuleLoaded = false;
+						// if the versions are equal and we're not told to replaceIfExists, jump out of here in a bad way
+						throw new ModuleException("A module with the same id and version already exists", module.getModuleId());
+					}
 				} else {
-					// if the versions are equal and we're not told to replaceIfExists, jump out of here in a bad way
-					throw new ModuleException("A module with the same id and version already exists", module.getModuleId());
+					isModuleLoaded = false;
+					// if the older (already loaded) module is newer, keep that original one that was loaded. return that one.
+					return oldModule;
 				}
-			} else {
-				// if the older (already loaded) module is newer, keep that original one that was loaded. return that one.
-				return oldModule;
 			}
-		}
-		
-		getLoadedModulesMap().put(module.getModuleId(), module);
-		if (applicationEventPublisher != null) {
-			ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, ModuleEventType.MODULE_LOAD, module.getName(), true);
-			applicationEventPublisher.publishEvent(event);
+
+			getLoadedModulesMap().put(module.getModuleId(), module);
+			
+		} finally {
+			publishModuleEvents(ModuleEventType.MODULE_LOAD, module.getName(), isModuleLoaded);
 			logger.info("== Module loaded action published for {} ==", module.getName());
 		}
-		
 		return module;
 	}
 	
@@ -561,12 +564,8 @@ public class ModuleFactory {
 	public static Module startModule(Module module) throws ModuleException {
 		Module startedModule = startModule(module, false, null);
 
-		if (applicationEventPublisher != null) {
-			ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class,
-				ModuleEventType.MODULE_START, startedModule.getName(), isModuleStarted(startedModule));
-			applicationEventPublisher.publishEvent(event);
-		}
-
+		publishModuleEvents(ModuleEventType.MODULE_START, startedModule.getName(), isModuleStarted(startedModule));
+		
 		return startedModule;
 		
 	}
@@ -1025,6 +1024,7 @@ public class ModuleFactory {
 	 */
 	public static void stopModule(Module mod) {
 		stopModule(mod, false, false);
+		publishModuleEvents(ModuleEventType.MODULE_STOP, mod.getName(),!isModuleStarted(mod));
 	}
 	
 	/**
@@ -1072,12 +1072,6 @@ public class ModuleFactory {
 			}
 			catch (Exception t) {
 				log.warn("Unable to call module's Activator.willStop() method", t);
-			}
-
-			logger.info("Module got stopped {}", mod.getName());
-			if (applicationEventPublisher != null) {
-				ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, ModuleEventType.MODULE_STOP, mod.getName(), true);
-				applicationEventPublisher.publishEvent(event);
 			}
 			
 			String moduleId = mod.getModuleId();
@@ -1255,18 +1249,12 @@ public class ModuleFactory {
 		if (mod != null) {
 			// remove the file from the module repository
 			File file = mod.getFile();
-			logger.info("Module got unloaded {}", mod.getName());
-			if (applicationEventPublisher != null) {
-				ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, ModuleEventType.MODULE_UNLOAD, mod.getName(), true);
-				applicationEventPublisher.publishEvent(event);
-			}
-			
 			boolean deleted = file.delete();
 			if (!deleted) {
 				file.deleteOnExit();
 				log.warn("Could not delete " + file.getAbsolutePath());
 			}
-			
+			publishModuleEvents(ModuleEventType.MODULE_UNLOAD, mod.getName(), deleted);
 		}
 	}
 	
@@ -1674,4 +1662,20 @@ public class ModuleFactory {
 		}
 		return dependentModules;
 	}
+
+	/**
+	 * Helper method to publish the module events
+	 * 
+	 * @param eventType for what action done on the module
+	 * @param moduleName defines the module name on which we're performing the action 
+	 * @param isSuccess defines whether the module event got successfully executed or not
+	 * @since 2.7
+	 */
+	private static void publishModuleEvents(ModuleEventType eventType, String moduleName, boolean isSuccess) {
+		ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, eventType, moduleName, isSuccess);
+		if(applicationEventPublisher != null) {
+			applicationEventPublisher.publishEvent(event);
+		}
+	}
+	
 }
