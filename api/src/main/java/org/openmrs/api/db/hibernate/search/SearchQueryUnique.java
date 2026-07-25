@@ -16,7 +16,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.lucene.search.BooleanQuery;
 import org.hibernate.search.engine.search.predicate.SearchPredicate;
@@ -64,14 +63,14 @@ public class SearchQueryUnique<T, R> {
 
 	Function<SearchPredicateFactory, SearchPredicate> search;
 
-	Function<T, R> mapper;
+	Function<List<T>, List<R>> mapper;
 
 	String uniqueKey;
 
 	SearchQueryUnique<?, R> joinedQuery;
 
 	public SearchQueryUnique(Class<? extends T> scope, Function<SearchPredicateFactory, SearchPredicate> search,
-	    String uniqueKey, Function<T, R> mapper, SearchQueryUnique<?, R> joinedQuery) {
+	    String uniqueKey, Function<List<T>, List<R>> mapper, SearchQueryUnique<?, R> joinedQuery) {
 		this.scope = scope;
 		this.search = search;
 		this.mapper = mapper;
@@ -87,7 +86,7 @@ public class SearchQueryUnique<T, R> {
 		return search;
 	}
 
-	public Function<T, R> getMapper() {
+	public Function<List<T>, List<R>> getMapper() {
 		return mapper;
 	}
 
@@ -117,20 +116,23 @@ public class SearchQueryUnique<T, R> {
 	 * @param scope the index type to be searched
 	 * @param search the search predicate
 	 * @param uniqueKey the field to use as unique key, or <code>null</code> if none
-	 * @param mapper the mapper from index type to result type, or <code>null</code> if none
+	 * @param mapper the mapper from a page of index-type hits to result-type items, applied once per
+	 *            page so it can batch-load the results, or <code>null</code> if none. It must preserve
+	 *            the order of the hits (its output is appended directly to the paginated results), so a
+	 *            reordering mapper would corrupt pagination.
 	 * @return the search
 	 * @param <T> the index type
 	 * @param <R> the result type
 	 */
 	public static <T, R> SearchQueryUnique<T, R> newQuery(Class<? extends T> scope,
-	        Function<SearchPredicateFactory, SearchPredicate> search, String uniqueKey, Function<T, R> mapper) {
+	        Function<SearchPredicateFactory, SearchPredicate> search, String uniqueKey, Function<List<T>, List<R>> mapper) {
 		return new SearchQueryUnique<>(scope, search, uniqueKey, mapper, null);
 	}
 
 	/**
 	 * See {@link #newQuery(Class, Function, String, Function)}.
 	 *
-	 * @param scope thh index type to be searched
+	 * @param scope the index type to be searched
 	 * @param search the search predicate
 	 * @param uniqueKey the field to use as unique key, or <code>null</code> if none
 	 * @return the search
@@ -351,9 +353,13 @@ public class SearchQueryUnique<T, R> {
 
 			if (!partialResults.isEmpty()) {
 				if (nextQuery.getMapper() != null) {
+					// The mapper receives the whole page so it can hydrate the results in one batched,
+					// order-preserving load rather than one load per hit. When a unique key is set,
+					// deduplication already ran above, so the page handed to the mapper is free of duplicate
+					// unique keys; without a unique key no deduplication is applied.
 					//noinspection unchecked
-					results.addAll(partialResults.stream().map((Function<Object, T>) nextQuery.getMapper())
-					        .collect(Collectors.toList()));
+					results.addAll(((Function<List<Object>, List<T>>) (Function<?, ?>) nextQuery.getMapper())
+					        .apply((List<Object>) partialResults));
 				} else {
 					//noinspection unchecked
 					results.addAll((Collection<? extends T>) partialResults);

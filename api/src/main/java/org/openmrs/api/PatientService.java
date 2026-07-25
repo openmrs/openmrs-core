@@ -788,6 +788,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param patient the patient
 	 * @return the allergies object
 	 */
+	@Authorized({ PrivilegeConstants.GET_ALLERGIES })
 	Allergies getAllergies(Patient patient);
 
 	/**
@@ -815,6 +816,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param allergies the allergies
 	 * @return the saved allergies
 	 */
+	@Authorized({ PrivilegeConstants.ADD_ALLERGIES, PrivilegeConstants.EDIT_ALLERGIES })
 	Allergies setAllergies(Patient patient, Allergies allergies);
 
 	/**

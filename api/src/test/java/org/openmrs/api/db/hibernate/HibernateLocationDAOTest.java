@@ -13,13 +13,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Location;
 import org.openmrs.LocationTag;
+import org.openmrs.api.context.Context;
+import org.openmrs.parameter.LocationSearchCriteria;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HibernateLocationDAOTest extends BaseContextSensitiveTest {
 
@@ -73,6 +78,39 @@ public class HibernateLocationDAOTest extends BaseContextSensitiveTest {
 		list1.add(null);
 
 		assertEquals(1, dao.getLocationsHavingAllTags(list1).size());
+	}
+
+	@Test
+	public void getLocations_shouldNotLoadAllLocationsWhenFilteringBySelectiveNameFragment() {
+		for (int i = 0; i < 40; i++) {
+			Location noise = new Location();
+			noise.setName("Noise Location " + i);
+			dao.saveLocation(noise);
+		}
+
+		Location match1 = new Location();
+		match1.setName("Target Prefix One");
+		dao.saveLocation(match1);
+
+		Location match2 = new Location();
+		match2.setName("Target Prefix Two");
+		dao.saveLocation(match2);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
+		sessionFactory.getStatistics().clear();
+
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setIncludeRetired(true);
+		criteria.setNameFragment("Target Prefix");
+
+		List<Location> result = dao.getLocations(criteria);
+
+		assertEquals(2, result.size());
+		assertTrue(sessionFactory.getStatistics().getEntityLoadCount() <= 10,
+		    "Expected selective filtering to avoid loading the full location table");
 	}
 
 }
