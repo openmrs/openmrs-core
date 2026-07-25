@@ -116,6 +116,7 @@
 		<tomcatVersion>11.0.24</tomcatVersion>
 		<jodaTimeVersion>2.14.3</jodaTimeVersion>
 		<guavaVersion>33.6.0-jre</guavaVersion>
+		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 		<jobrunrVersion>8.8.0</jobrunrVersion>
 		<shedlockVersion>7.7.0</shedlockVersion>
@@ -604,6 +605,11 @@
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>${guavaVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.uuid</groupId>
+				<artifactId>java-uuid-generator</artifactId>
+				<version>${javaUuidGeneratorVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>software.amazon.awssdk</groupId>

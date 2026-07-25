@@ -70,4 +70,20 @@
 			<Bug pattern="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS"/>
 		</Or>
 	</Match>
+
+	<!--
+		Uuids identify objects, they do not protect them: access to a record is granted by
+		privilege checks rather than by a uuid being unguessable. UuidUtil therefore generates
+		them from a per thread random number generator on purpose, rather than from the single
+		shared SecureRandom that every caller of UUID.randomUUID() has to queue up behind.
+		SecureRandom is deliberately read only once, to seed the root stream, which is what
+		DMI_RANDOM_USED_ONLY_ONCE reports.
+	-->
+	<Match>
+		<Class name="~org\.openmrs\.util\.UuidUtil(\$.*)?"/>
+		<Or>
+			<Bug pattern="PREDICTABLE_RANDOM"/>
+			<Bug pattern="DMI_RANDOM_USED_ONLY_ONCE"/>
+		</Or>
+	</Match>
 </FindBugsFilter>

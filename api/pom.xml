@@ -286,6 +286,10 @@
 			<artifactId>guava</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.fasterxml.uuid</groupId>
+			<artifactId>java-uuid-generator</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.angus</groupId>
 			<artifactId>angus-mail</artifactId>
 			<scope>runtime</scope>
