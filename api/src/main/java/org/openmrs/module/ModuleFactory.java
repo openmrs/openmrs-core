@@ -172,7 +172,6 @@ public class ModuleFactory {
 			
 		} finally {
 			publishModuleEvents(ModuleEventType.MODULE_LOAD, module.getName(), isModuleLoaded);
-			logger.info("== Module loaded action published for {} ==", module.getName());
 		}
 		return module;
 	}
