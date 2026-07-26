@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Location;
@@ -29,6 +30,8 @@ import org.openmrs.UserSessionListener.Event;
 import org.openmrs.UserSessionListener.Status;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.cache.RolePrivilegeCache;
+import org.openmrs.api.cache.RolePrivileges;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
@@ -52,6 +55,13 @@ public class UserContext implements Serializable {
 	 * Logger - shared by entire class
 	 */
 	private static final Logger log = LoggerFactory.getLogger(UserContext.class);
+
+	/**
+	 * Guards the one-time warning emitted when the role privilege cache component cannot be obtained
+	 * outside of a context refresh. Static so the warning is emitted once across all user contexts
+	 * rather than once per session.
+	 */
+	private static final AtomicBoolean rolePrivilegeCacheUnavailableWarned = new AtomicBoolean(false);
 
 	/**
 	 * User object containing details about the authenticated user
@@ -392,33 +402,114 @@ public class UserContext implements Serializable {
 	 * @return true if authenticated user has given privilege
 	 */
 	public boolean hasPrivilege(String privilege) {
-		log.debug("Checking '{}' against proxies: {}", privilege, proxies);
-		// check proxied privileges
-		for (String s : new ArrayList<>(proxies)) {
-			if (s.equals(privilege)) {
-				notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
+		return hasPrivilege(privilege, true);
+	}
+
+	/**
+	 * Tests whether the current user has a particular privilege, optionally excluding proxy privileges.
+	 * <p>
+	 * Passing <code>false</code> resolves the privilege only from the user's roles (and the anonymous
+	 * and authenticated roles), ignoring any {@link #addProxyPrivilege(String...) proxy privileges}.
+	 * This is intended for per-resource access checks that must reflect the user's actual granted roles
+	 * and must not be satisfied by a proxy privilege added merely to invoke the surrounding service
+	 * method. Role privileges are still resolved authoritatively (from the role privilege cache),
+	 * unlike {@link User#hasPrivilege(String)} which reads a potentially stale in-memory role graph.
+	 *
+	 * @param privilege The privilege to check if it's available
+	 * @param includeProxyPrivileges whether proxy privileges may satisfy the check
+	 * @return true if the current user has the given privilege
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public boolean hasPrivilege(String privilege, boolean includeProxyPrivileges) {
+		if (includeProxyPrivileges) {
+			log.debug("Checking '{}' against proxies: {}", privilege, proxies);
+			// check proxied privileges
+			for (String s : new ArrayList<>(proxies)) {
+				if (s.equals(privilege)) {
+					notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
+					return true;
+				}
+			}
+		}
+
+		boolean hasPrivilege = resolvePrivilege(privilege);
+		notifyPrivilegeListeners(getAuthenticatedUser(), privilege, hasPrivilege);
+		return hasPrivilege;
+	}
+
+	/**
+	 * Resolves whether the current user (authenticated or anonymous) holds the given privilege by
+	 * consulting the per-role privilege cache instead of recursively re-expanding the role graph on
+	 * every call. Proxy privileges are handled separately by {@link #hasPrivilege(String)}.
+	 *
+	 * @param privilege the privilege to check
+	 * @return true if the privilege is granted
+	 */
+	private boolean resolvePrivilege(String privilege) {
+		RolePrivilegeCache cache = getRolePrivilegeCache();
+
+		// if a user has logged in, check their privileges
+		if (isAuthenticated()) {
+			// All authenticated users have the "" (empty) privilege, matching User.hasPrivilege.
+			if (StringUtils.isEmpty(privilege)) {
+				return true;
+			}
+
+			User authenticatedUser = getAuthenticatedUser();
+			if (authenticatedUser.getRoles() != null) {
+				for (Role role : authenticatedUser.getRoles()) {
+					if (roleGrants(cache, role, privilege)) {
+						return true;
+					}
+				}
+			}
+
+			if (roleGrants(cache, getAuthenticatedRole(), privilege)) {
 				return true;
 			}
 		}
 
-		// if a user has logged in, check their privileges
-		if (isAuthenticated()
-		        && (getAuthenticatedUser().hasPrivilege(privilege) || getAuthenticatedRole().hasPrivilege(privilege))) {
+		return roleGrants(cache, getAnonymousRole(), privilege);
+	}
 
-			// check user's privileges
-			notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
-			return true;
+	/**
+	 * Tests whether a single role (and its inherited closure) grants the given privilege, using the
+	 * cached flattening when available and falling back to a direct computation otherwise.
+	 *
+	 * @param cache the role privilege cache, or <code>null</code> if unavailable
+	 * @param role the directly assigned role to test
+	 * @param privilege the privilege to check
+	 * @return true if the role grants superuser status or contains the privilege
+	 */
+	private boolean roleGrants(RolePrivilegeCache cache, Role role, String privilege) {
+		RolePrivileges rolePrivileges = (cache != null) ? cache.getRolePrivileges(role)
+		        : RolePrivilegeCache.computeRolePrivileges(role);
+		return rolePrivileges.grantsSuperuser() || rolePrivileges.containsPrivilege(privilege);
+	}
 
+	/**
+	 * Looks up the {@link RolePrivilegeCache} component, or returns <code>null</code> so callers fall
+	 * back to direct computation. Absence during a context refresh is expected (logged at debug);
+	 * absence otherwise is a misconfiguration that silently drops every check to the uncached path, so
+	 * it is warned once.
+	 *
+	 * @return the cache component, or <code>null</code> if unavailable
+	 */
+	private RolePrivilegeCache getRolePrivilegeCache() {
+		try {
+			return Context.getRegisteredComponent("rolePrivilegeCache", RolePrivilegeCache.class);
+		} catch (Exception e) {
+			if (Context.isRefreshingContext()) {
+				log.debug("Role privilege cache is unavailable while the context is refreshing; "
+				        + "computing role privileges directly",
+				    e);
+			} else if (rolePrivilegeCacheUnavailableWarned.compareAndSet(false, true)) {
+				log.warn("Could not obtain the rolePrivilegeCache component; privilege checks will recompute role "
+				        + "privileges on every call until this is resolved",
+				    e);
+			}
+			return null;
 		}
-
-		if (getAnonymousRole().hasPrivilege(privilege)) {
-			notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
-			return true;
-		}
-
-		// default return value
-		notifyPrivilegeListeners(getAuthenticatedUser(), privilege, false);
-		return false;
 	}
 
 	/**
