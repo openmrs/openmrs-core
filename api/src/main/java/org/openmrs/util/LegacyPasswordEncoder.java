@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  ** Password encoder for OpenMRS hashes produced before the SHA-512 algorithm was adopted. This supports
-*  the correct SHA-1 hex encoding and the historical buggy SHA-1 encoding that omitted leading zeros.
+ *  the correct SHA-1 hex encoding and the historical buggy SHA-1 encoding that omitted leading zeros.
  */
 public final class LegacyPasswordEncoder {
 	
@@ -63,10 +63,8 @@ public final class LegacyPasswordEncoder {
 	
 	private static String hexString(byte[] block) {
 		StringBuilder buf = new StringBuilder();
-		char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 		for (byte aBlock : block) {
-			buf.append(hexChars[(aBlock & 0xf0) >> 4]);
-			buf.append(hexChars[aBlock & 0x0f]);
+			buf.append(String.format("%02x", aBlock));
 		}
 		return buf.toString();
 	}
@@ -77,7 +75,7 @@ public final class LegacyPasswordEncoder {
 		}
 		StringBuilder s = new StringBuilder();
 		for (byte aB : b) {
-			s.append(Integer.toHexString(aB & 0xFF));
+			s.append(String.format("%x", aB & 0xFF));
 		}
 		return s.toString();
 	}
