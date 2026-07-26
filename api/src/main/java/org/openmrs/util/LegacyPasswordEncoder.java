@@ -62,7 +62,7 @@ public final class LegacyPasswordEncoder {
 	}
 	
 	private static String hexString(byte[] block) {
-		StringBuilder buf = new StringBuilder();
+		StringBuilder buf = new StringBuilder(block.length * 2);
 		for (byte aBlock : block) {
 			buf.append(String.format("%02x", aBlock));
 		}
@@ -73,7 +73,7 @@ public final class LegacyPasswordEncoder {
 		if (b == null || b.length < 1) {
 			return "";
 		}
-		StringBuilder s = new StringBuilder();
+		StringBuilder s = new StringBuilder(b.length * 2);
 		for (byte aB : b) {
 			s.append(String.format("%x", aB & 0xFF));
 		}
