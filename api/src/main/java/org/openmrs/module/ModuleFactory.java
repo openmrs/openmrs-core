@@ -1024,7 +1024,7 @@ public class ModuleFactory {
 	 */
 	public static void stopModule(Module mod) {
 		stopModule(mod, false, false);
-		publishModuleEvents(ModuleEventType.MODULE_STOP, mod.getName(),!isModuleStarted(mod));
+		publishModuleEvents(ModuleEventType.MODULE_STOP, mod != null ? mod.getName() : null,!isModuleStarted(mod));
 	}
 	
 	/**
@@ -1672,6 +1672,9 @@ public class ModuleFactory {
 	 * @since 2.7
 	 */
 	private static void publishModuleEvents(ModuleEventType eventType, String moduleName, boolean isSuccess) {
+		if(moduleName == null || moduleName.isEmpty() || eventType == null) {
+			return;
+		}
 		ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, eventType, moduleName, isSuccess);
 		if(applicationEventPublisher != null) {
 			applicationEventPublisher.publishEvent(event);
