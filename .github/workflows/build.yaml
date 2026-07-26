@@ -43,9 +43,9 @@ jobs:
     # 9-21 minutes, so this leaves roughly 3x headroom for degraded runners
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - name: Setup JDK
-        uses: actions/setup-java@v5.5.0
+        uses: actions/setup-java@v5.6.0
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
