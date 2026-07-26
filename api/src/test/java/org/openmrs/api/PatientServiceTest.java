@@ -3789,17 +3789,17 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void mergePatients_shouldCallSaveVoidPatientAndVoidPersonExactlyOnceAndCreateLog() throws Exception {
 		executeDataSet(PATIENT_MERGE_XML);
-		
+
 		Patient preferred = patientService.getPatient(10000);
 		Patient notPreferred = patientService.getPatient(10001);
-		
+
 		int mergeLogsBefore = Context.getPersonService().getAllPersonMergeLogs(false).size();
-		
+
 		patientService.mergePatients(preferred, notPreferred);
-		
+
 		int mergeLogsAfter = Context.getPersonService().getAllPersonMergeLogs(false).size();
 		assertEquals(mergeLogsBefore + 1, mergeLogsAfter);
-		
+
 		Patient reloadedNotPreferred = patientService.getPatient(notPreferred.getPatientId());
 		assertTrue(reloadedNotPreferred.getVoided());
 		assertTrue(Context.getPersonService().getPerson(notPreferred.getPersonId()).getVoided());
@@ -3808,18 +3808,18 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void mergePatients_shouldTransferDeathdateEstimatedToPreferred() throws Exception {
 		executeDataSet(PATIENT_MERGE_XML);
-		
+
 		Patient preferred = patientService.getPatient(10000);
 		Patient notPreferred = patientService.getPatient(10001);
-		
+
 		preferred.setDeathdateEstimated(null);
 		notPreferred.setDeathdateEstimated(true);
-		
+
 		patientService.savePatient(preferred);
 		patientService.savePatient(notPreferred);
-		
+
 		patientService.mergePatients(preferred, notPreferred);
-		
+
 		assertTrue(preferred.getDeathdateEstimated());
 	}
 
