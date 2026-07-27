@@ -42,8 +42,6 @@ public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
 	@BeforeEach
 	public void setUp() {
 		executeDataSet(CONDITIONS_XML);
-		
-		updateSearchIndex();
 	}
 	
 	@Test
