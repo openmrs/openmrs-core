@@ -116,9 +116,6 @@ public class Security {
     * @return the configured Argon2PasswordEncoder
     * @since 2.8.0
     */
-    private static Argon2PasswordEncoder getArgon2Encoder() {
-        return ARGON2_ENCODER;
-    }
 
 	/**
 	 /**
