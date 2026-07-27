@@ -94,6 +94,42 @@ public class ObsArchiveHelper {
 		}
 	}
 
+	public List<Obs> getArchivedObsByPersonId(Integer personId) {
+		if (personId == null) {
+			return Collections.emptyList();
+		}
+		try {
+			return withManualFlush(() -> {
+				Session session = sessionFactory.getCurrentSession();
+				List<ObsArchive> archives = session
+				        .createQuery("FROM ObsArchive a WHERE a.person.personId = :personId", ObsArchive.class)
+				        .setParameter("personId", personId).list();
+				return archives.stream().map(this::convertToObs).collect(Collectors.toList());
+			});
+		} catch (HibernateException e) {
+			log.debug("Failed to get archived obs for person {}.", personId, e);
+			return Collections.emptyList();
+		}
+	}
+
+	public List<Obs> getArchivedObsByPersonIdAndConceptId(Integer personId, Integer conceptId) {
+		if (personId == null || conceptId == null) {
+			return Collections.emptyList();
+		}
+		try {
+			return withManualFlush(() -> {
+				Session session = sessionFactory.getCurrentSession();
+				List<ObsArchive> archives = session.createQuery(
+				    "FROM ObsArchive a WHERE a.person.personId = :personId AND a.concept.conceptId = :conceptId",
+				    ObsArchive.class).setParameter("personId", personId).setParameter("conceptId", conceptId).list();
+				return archives.stream().map(this::convertToObs).collect(Collectors.toList());
+			});
+		} catch (HibernateException e) {
+			log.debug("Failed to get archived obs for person {} and concept {}.", personId, conceptId, e);
+			return Collections.emptyList();
+		}
+	}
+
 	public Obs getObsFromArchive(Integer obsId) {
 		if (obsId == null) {
 			return null;
