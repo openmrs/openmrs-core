@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
@@ -1270,7 +1271,6 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 		Concept concept = Context.getConceptService().getConcept(21);
 		ConceptAnswer answer = concept.getAnswers().iterator().next();
-		assertFalse(org.hibernate.Hibernate.isInitialized(answer.getAnswerConcept()),
-		    "Answer Concept should be loaded lazily");
+		assertFalse(Hibernate.isInitialized(answer.getAnswerConcept()), "Answer Concept should be loaded lazily");
 	}
 }

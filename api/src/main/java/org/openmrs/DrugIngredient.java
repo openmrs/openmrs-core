@@ -32,12 +32,12 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	public static final long serialVersionUID = 94023L;
 
 	// Fields
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "drug_id", updatable = false, insertable = false)
 	@Id
 	private Drug drug;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "ingredient_id", updatable = false, insertable = false)
 	@Id
 	private Concept ingredient;
