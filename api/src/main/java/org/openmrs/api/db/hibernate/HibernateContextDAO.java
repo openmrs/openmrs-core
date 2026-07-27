@@ -79,7 +79,6 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	@Autowired
 	private SearchSessionFactory searchSessionFactory;
-	private HibernateContextDAO self;
 	
 	private UserDAO userDao;
 	
@@ -384,7 +383,7 @@ public class HibernateContextDAO implements ContextDAO {
 		    return;
 	    }
 
-	    credential.setHashedPassword(Security.getArgon2Encoder().encode(rawPassword));
+	    credential.setHashedPassword(Security.encodePassword(rawPassword));
 	    credential.setDateChanged(new Date());
 	    credential.setChangedBy(user);
 	    userDao.updateLoginCredential(credential);

@@ -96,10 +96,10 @@ public class Security {
  	* @since 2.8.0
  	*/
 	public static boolean passwordMatches(String storedHash, String rawPassword, String salt) {
-		if (isLegacyHash(storedHash)) {
-			return hashMatches(storedHash, rawPassword + (salt != null ? salt : ""));
-		}
-		return getArgon2Encoder().matches(rawPassword, storedHash);
+    	if (isLegacyHash(storedHash)) {
+        	return hashMatches(storedHash, rawPassword + (salt != null ? salt : ""));
+    	}
+    	return ARGON2_ENCODER.matches(rawPassword, storedHash);
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class Security {
     * @return the configured Argon2PasswordEncoder
     * @since 2.8.0
     */
-    public static Argon2PasswordEncoder getArgon2Encoder() {
+    private static Argon2PasswordEncoder getArgon2Encoder() {
         return ARGON2_ENCODER;
     }
 
@@ -130,7 +130,12 @@ public class Security {
 	 * <strong>Should</strong> encode strings to 128 characters
 	 */
 	public static String encodeString(String strToEncode) throws APIException {
-		return encodeString(strToEncode, "SHA-512");
+    	return encodeString(strToEncode, "SHA-512");
+	}
+
+	// New method for password hashing only — uses Argon2id internally
+	public static String encodePassword(String password) {
+		return ARGON2_ENCODER.encode(password);
 	}
 
 	/**

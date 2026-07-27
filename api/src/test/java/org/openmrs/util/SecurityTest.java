@@ -273,11 +273,11 @@ public class SecurityTest {
  	*/
 	@Test
 	public void checkPassword_shouldMatchArgon2idHash() {
-		String rawPassword = "testArgon2";
-		String argon2Hash = Security.getArgon2Encoder().encode(rawPassword);
-		// verify the encoder correctly matches the password against its own hash
-		assertTrue(Security.getArgon2Encoder().matches(rawPassword, argon2Hash));
-		assertFalse(Security.getArgon2Encoder().matches("wrongPassword", argon2Hash));
+    	String rawPassword = "testArgon2";
+    	String argon2Hash = Security.encodeString(rawPassword);
+    	// verify passwordMatches correctly handles Argon2id hashes
+    	assertTrue(Security.passwordMatches(argon2Hash, rawPassword, null));
+    	assertFalse(Security.passwordMatches(argon2Hash, "wrongPassword", null));
 	}
 	
 }
