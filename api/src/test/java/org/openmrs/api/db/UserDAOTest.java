@@ -27,6 +27,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.Security;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserDAOTest extends BaseContextSensitiveTest {
 	
@@ -71,6 +72,11 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		Context.flushSession(); //needed by postgres
 	}
 	
+	@Test
+	public void openmrsPasswordEncoder_shouldBeRegisteredInSpringContext() {
+		assertNotNull(Context.getRegisteredComponent("openmrsPasswordEncoder", PasswordEncoder.class));
+	}
+
 	@Test
 	public void getUsers_shouldEscapeSqlWildcardsInSearchPhrase() {
 		
