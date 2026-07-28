@@ -1253,6 +1253,28 @@
 				</plugins>
 			</build>
 		</profile>
+
+		<!-- Per-JDK test-JVM workarounds for VM bugs hit by Mockito's inline mock maker on older JDKs. -->
+		<profile>
+			<id>jdk8-test-workarounds</id>
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<properties>
+				<!-- Avoid a C1 SIGSEGV compiling MethodHandle LambdaForms (ciMemberName::get_vmtarget). -->
+				<jdkTestArgLine>-XX:-TieredCompilation</jdkTestArgLine>
+			</properties>
+		</profile>
+		<profile>
+			<id>jdk11-test-workarounds</id>
+			<activation>
+				<jdk>11</jdk>
+			</activation>
+			<properties>
+				<!-- Stop reflection inflation from generating a DelegatingClassLoader (moduleEntry.cpp crash). -->
+				<jdkTestArgLine>-Dsun.reflect.inflationThreshold=2147483647</jdkTestArgLine>
+			</properties>
+		</profile>
 	</profiles>
 
 	<reporting>
@@ -1351,12 +1373,15 @@
 
 		<customArgLineForTesting />
 
+		<!-- JDK-specific test-JVM workarounds; populated by the jdk8/jdk11 profiles below. -->
+		<jdkTestArgLine />
+
 		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>		
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
 		<sonar.issuesReport.lightModeOnly>true</sonar.issuesReport.lightModeOnly>
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
 		<sonar.analysis.mode>publish</sonar.analysis.mode>
 
-		<argLine>-Duser.language=en -Duser.region=US -Xmx1g -Dsun.reflect.inflationThreshold=2147483647 ${customArgLineForTesting} -Djava.locale.providers=COMPAT</argLine>
+		<argLine>-Duser.language=en -Duser.region=US -Xmx1g ${jdkTestArgLine} ${customArgLineForTesting} -Djava.locale.providers=COMPAT</argLine>
 	</properties>
 </project>
