@@ -1261,8 +1261,9 @@
 				<jdk>1.8</jdk>
 			</activation>
 			<properties>
-				<!-- Avoid a C1 SIGSEGV compiling MethodHandle LambdaForms (ciMemberName::get_vmtarget). -->
-				<jdkTestArgLine>-XX:-TieredCompilation</jdkTestArgLine>
+				<!-- Exclude MethodHandle LambdaForms from JIT to dodge a HotSpot 8 compiler SIGSEGV in
+				     ciMemberName::get_vmtarget (crashes both C1 and C2 compiling LambdaForm$BMH::reinvoke). -->
+				<jdkTestArgLine>-XX:CompileCommand=exclude,java/lang/invoke/LambdaForm*.*</jdkTestArgLine>
 			</properties>
 		</profile>
 		<profile>
