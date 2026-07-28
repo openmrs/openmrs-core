@@ -3,3 +3,5 @@ caches:
         configuration: "entity"
     conceptIdsByMapping:
         configuration: "entity"
+    rolePrivileges:
+        configuration: "role-privileges"
