@@ -14,7 +14,7 @@ ARG RUNTIME_JDK=jdk17-corretto
 ### Compile Stage (platform-agnostic)
 FROM --platform=$BUILDPLATFORM maven:3.9-$DEV_JDK AS compile
 
-RUN yum -y update && yum -y install git && yum clean all
+RUN yum -y update && yum -y install git findutils && yum clean all
 
 WORKDIR /openmrs_core
 
@@ -54,7 +54,7 @@ RUN mvn $MVN_SETTINGS $MVN_ARGS
 ### Development Stage
 FROM maven:3.9-$DEV_JDK AS dev
 
-RUN yum -y update && yum --allowerasing -y install tar gzip git curl && yum clean all
+RUN yum -y update && yum --allowerasing -y install tar gzip git curl findutils && yum clean all
 
 # Setup Tini
 ARG TARGETARCH
