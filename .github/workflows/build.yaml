@@ -18,6 +18,9 @@ permissions: read-all
 jobs:
   build:
     strategy:
+      # one crashing job used to cancel the rest, so a failure told us nothing about whether
+      # it was specific to a single Java version or hit the whole matrix
+      fail-fast: false
       matrix:
         platform:
           - ubuntu-latest
@@ -54,6 +57,45 @@ jobs:
         run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --file pom.xml
       - name: Build with Maven
         run: mvn clean install --batch-mode && mvn test -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
+      # The openmrs-api surefire fork has been dying with SIGABRT (exit code 134, "Aborted (core
+      # dumped)") partway through the suite while every test run so far reports zero failures.
+      # Surefire routes the JVM's own explanation for that to a .dumpstream file instead of the
+      # console ("Corrupted channel by directly writing to native stream"), and the runner is torn
+      # down before anyone can read it, which leaves the console log with no reason for the crash.
+      # Print those files and keep them so the next crash explains itself.
+      - name: Show test and JVM crash diagnostics
+        if: failure()
+        continue-on-error: true
+        shell: bash
+        run: |
+          echo "::group::Disk and memory"
+          df -h || true
+          free -m || true
+          echo "::endgroup::"
+          echo "::group::Surefire dump files"
+          find . \( -name '*.dumpstream' -o -name '*.dump' \) -print | while read -r f; do
+            echo "----- $f"
+            cat "$f" || true
+          done
+          echo "::endgroup::"
+          echo "::group::JVM fatal error logs"
+          find . \( -name 'hs_err_pid*.log' -o -name 'replay_pid*.log' \) -print | while read -r f; do
+            echo "----- $f"
+            head -n 120 "$f" || true
+          done
+          echo "::endgroup::"
+      - name: Upload test and JVM crash diagnostics
+        if: failure()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-diagnostics-${{ matrix.platform }}-java${{ matrix.java-version }}
+          path: |
+            **/target/surefire-reports/**
+            **/hs_err_pid*.log
+            **/replay_pid*.log
+          if-no-files-found: ignore
+          retention-days: 7
       # this is necessary to populate the environment variables for Coveralls properly
       - name: Set branch name and PR number
         id: refs
