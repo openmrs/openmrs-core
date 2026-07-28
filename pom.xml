@@ -1181,8 +1181,24 @@
 		 11 with -verbose:class: by default jdk.internal.reflect.GeneratedConstructorAccessor1 is
 		 defined via __JVM_DefineClass__, and with this set it never is.
 
-		 Java 17 and later do not hit this, so the workaround stays on the JDKs that do. Drop it once
-		 2.8.x no longer builds on Java 8 and 11, or once the JDKs ship a fix.
+		 It also clears a second, separate crash on Temurin 8, where C2 dies with SIGSEGV in
+		 ciMemberName::get_vmtarget() while inlining a MethodHandle call
+		 (CallGenerator::for_method_handle_inline). That one reproduces deterministically: the api
+		 suite aborted at the same test class twice without this property and completed twice with it.
+		 The likely reason it helps is indirect rather than the same mechanism as above. Inflation
+		 defines a fresh accessor class per reflective member, so ConstructorAccessor.newInstance sees
+		 many receiver types and goes megamorphic; without it there is only
+		 NativeConstructorAccessorImpl. That changes what C2 chooses to inline around the neighbouring
+		 lambda call sites, and this JIT bug only shows up for some inlining shapes. Treat that as
+		 inference; the repeatable before-and-after is the evidence.
+
+		 Java 17 and later hit neither crash, so the workaround stays on the JDKs that do. Drop it once
+		 2.8.x no longer builds on Java 8 and 11, or once the JDKs ship fixes.
+
+		 Upgrading the test toolchain is not an alternative: with Mockito 4.11.0 and Byte Buddy 1.17.6
+		 the accessor generation is unchanged (231 generated constructor accessors over the same test
+		 selection, versus 231 on 3.12.4), Mockito still selects ReflectionMemberAccessor, and Java 8
+		 still crashes at the same place.
 		 -->
 		<profile>
 			<id>reflection-inflation-vm-crash-workaround</id>
