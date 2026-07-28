@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+  <!-- Patient with zero identifiers -->
+  <person person_id="501" gender="M" dead="false" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="a0000000-0000-0000-0000-000000000501"/>
+  <person_name person_name_id="501" preferred="true" person_id="501" given_name="NoIdent" middle_name=" " family_name="Patient" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="b0000000-0000-0000-0000-000000000501"/>
+  <patient patient_id="501" creator="1" date_created="2026-01-01 00:00:00.0" voided="false"/>
+
+  <!-- Patient with one identifier -->
+  <person person_id="502" gender="F" dead="false" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="a0000000-0000-0000-0000-000000000502"/>
+  <person_name person_name_id="502" preferred="true" person_id="502" given_name="Single" middle_name=" " family_name="Ident" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="b0000000-0000-0000-0000-000000000502"/>
+  <patient patient_id="502" creator="1" date_created="2026-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="501" patient_id="502" identifier="ID-502-A" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="c0000000-0000-0000-0000-000000000501"/>
+
+  <!-- Patient with several identifiers (3 identifiers, one preferred, one voided) -->
+  <person person_id="503" gender="M" dead="false" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="a0000000-0000-0000-0000-000000000503"/>
+  <person_name person_name_id="503" preferred="true" person_id="503" given_name="Multi" middle_name=" " family_name="Ident" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="b0000000-0000-0000-0000-000000000503"/>
+  <patient patient_id="503" creator="1" date_created="2026-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="502" patient_id="503" identifier="ID-503-A" identifier_type="1" preferred="0" location_id="1" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="c0000000-0000-0000-0000-000000000502"/>
+  <patient_identifier patient_identifier_id="503" patient_id="503" identifier="ID-503-B" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2026-01-02 00:00:00.0" voided="false" uuid="c0000000-0000-0000-0000-000000000503"/>
+  <patient_identifier patient_identifier_id="504" patient_id="503" identifier="ID-503-C-VOIDED" identifier_type="1" preferred="0" location_id="1" creator="1" date_created="2026-01-03 00:00:00.0" voided="true" void_reason="test" uuid="c0000000-0000-0000-0000-000000000504"/>
+
+  <!-- Additional patients to ensure batch loading works across multiple patients -->
+  <person person_id="504" gender="F" dead="false" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="a0000000-0000-0000-0000-000000000504"/>
+  <person_name person_name_id="504" preferred="true" person_id="504" given_name="Batch" middle_name=" " family_name="Patient1" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="b0000000-0000-0000-0000-000000000504"/>
+  <patient patient_id="504" creator="1" date_created="2026-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="505" patient_id="504" identifier="ID-504-A" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="c0000000-0000-0000-0000-000000000505"/>
+
+  <person person_id="505" gender="M" dead="false" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="a0000000-0000-0000-0000-000000000505"/>
+  <person_name person_name_id="505" preferred="true" person_id="505" given_name="Batch" middle_name=" " family_name="Patient2" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="b0000000-0000-0000-0000-000000000505"/>
+  <patient patient_id="505" creator="1" date_created="2026-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="506" patient_id="505" identifier="ID-505-A" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="c0000000-0000-0000-0000-000000000506"/>
+  <patient_identifier patient_identifier_id="507" patient_id="505" identifier="ID-505-B" identifier_type="2" preferred="0" location_id="1" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="c0000000-0000-0000-0000-000000000507"/>
+
+  <person person_id="506" gender="F" dead="false" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="a0000000-0000-0000-0000-000000000506"/>
+  <person_name person_name_id="506" preferred="true" person_id="506" given_name="Batch" middle_name=" " family_name="Patient3" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="b0000000-0000-0000-0000-000000000506"/>
+  <patient patient_id="506" creator="1" date_created="2026-01-01 00:00:00.0" voided="false"/>
+
+  <person person_id="507" gender="M" dead="false" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="a0000000-0000-0000-0000-000000000507"/>
+  <person_name person_name_id="507" preferred="true" person_id="507" given_name="Batch" middle_name=" " family_name="Patient4" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="b0000000-0000-0000-0000-000000000507"/>
+  <patient patient_id="507" creator="1" date_created="2026-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="508" patient_id="507" identifier="ID-507-A" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2026-01-01 00:00:00.0" voided="false" uuid="c0000000-0000-0000-0000-000000000508"/>
+</dataset>

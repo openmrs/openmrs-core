@@ -50,7 +50,8 @@
 		<!-- bi-directional one-to-many association to PatientIdentifier -->
 		<!-- list is unsorted due so that its put into a LinkedHashSet which uses .hashcode() instead of .compareTo() -->
 		<set name="identifiers" lazy="true" cascade="all-delete-orphan"
-			table="patient_identifier" inverse="true" sort="natural">
+			table="patient_identifier" inverse="true" sort="natural" batch-size="1000">
+			<cache usage="read-write"/>
 			<key not-null="true" column="patient_id" />
 			<one-to-many class="PatientIdentifier" />
 		</set>
