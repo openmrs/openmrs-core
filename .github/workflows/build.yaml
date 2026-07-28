@@ -67,7 +67,31 @@ jobs:
       - name: Install dependencies
         run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --file pom.xml
       - name: Test
-        run: mvn test ${{ matrix.test-profile }} --batch-mode --file pom.xml
+        run: mvn test ${{ matrix.test-profile }} --batch-mode --file pom.xml -DcustomArgLineForTesting=-XX:NativeMemoryTracking=summary
+      - name: Show JVM crash logs
+        if: ${{ failure() }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          shopt -s globstar nullglob
+          for f in **/hs_err_pid*.log; do
+            echo "::group::$f"; cat "$f"; echo "::endgroup::"
+          done
+          for f in **/surefire-reports/*.dumpstream **/surefire-reports/*.dump; do
+            echo "::group::$f"; cat "$f"; echo "::endgroup::"
+          done
+      - name: Upload JVM crash logs
+        if: ${{ failure() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          # job-index keeps the name unique across the matrix (platform + java + test-profile)
+          name: crash-logs-${{ matrix.platform }}-jdk${{ matrix.java-version }}-idx${{ strategy.job-index }}
+          path: |
+            **/hs_err_pid*.log
+            **/surefire-reports/**
+          if-no-files-found: ignore
+          retention-days: 14
       # this is necessary to populate the environment variables for Coveralls properly
       - name: Set branch name and PR number
         id: refs
