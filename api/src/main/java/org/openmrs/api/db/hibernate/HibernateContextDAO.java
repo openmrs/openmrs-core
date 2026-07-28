@@ -367,7 +367,7 @@ public class HibernateContextDAO implements ContextDAO {
     *
     * @param user the authenticated user whose password needs upgrading
     * @param rawPassword the plaintext password used to generate the new hash
-    * @since 2.8.0
+    * @since 2.8.9
     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void upgradePasswordHash(User user, String rawPassword) {

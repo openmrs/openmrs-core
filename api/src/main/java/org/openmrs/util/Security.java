@@ -93,7 +93,7 @@ public class Security {
  	* @param salt the legacy salt from the database (preserved after upgrade for
  	*             secret answer verification; ignored for Argon2id hashes)
  	* @return true if the password matches the stored hash
- 	* @since 2.8.0
+ 	* @since 2.8.9
  	*/
 	public static boolean passwordMatches(String storedHash, String rawPassword, String salt) {
     	if (isLegacyHash(storedHash)) {
@@ -109,13 +109,6 @@ public class Security {
     */
     private static final Argon2PasswordEncoder ARGON2_ENCODER = 
         Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
-
-	/**
-    * Returns the Argon2id password encoder instance.
-    *
-    * @return the configured Argon2PasswordEncoder
-    * @since 2.8.0
-    */
 
 	/**
 	 /**

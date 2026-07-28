@@ -269,15 +269,13 @@ public class SecurityTest {
 		assertFalse(Security.isLegacyHash(""));
 	}
 	/**
- 	* @see Security#getArgon2Encoder()
+ 	* @see Security#passwordMatches(String,String,String)
  	*/
 	@Test
-	public void checkPassword_shouldMatchArgon2idHash() {
+	public void passwordMatches_shouldMatchArgon2idHash() {
     	String rawPassword = "testArgon2";
-    	String argon2Hash = Security.encodeString(rawPassword);
-    	// verify passwordMatches correctly handles Argon2id hashes
+    	String argon2Hash = Security.encodePassword(rawPassword);
     	assertTrue(Security.passwordMatches(argon2Hash, rawPassword, null));
     	assertFalse(Security.passwordMatches(argon2Hash, "wrongPassword", null));
 	}
-	
 }
