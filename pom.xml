@@ -909,14 +909,8 @@
 							<include>org/openmrs/**</include>
 						</includes>
 					</configuration>
-					<executions>
-						<execution>
-							<id>prepare-agent</id>
-							<goals>
-								<goal>prepare-agent</goal>
-							</goals>
-						</execution>
-					</executions>
+					<!-- The prepare-agent execution lives in the JDK-8-activated `coverage` profile below,
+					     not here, so the agent only attaches on the coverage baseline. -->
 				</plugin>
 				<plugin>
 					<groupId>org.eluder.coveralls</groupId>
@@ -1230,6 +1224,34 @@
 				<mockitoVersion>5.6.0</mockitoVersion>
 				<byteBuddyVersion>1.17.6</byteBuddyVersion>
 			</properties>
+		</profile>
+
+		<!-- Collect JaCoCo coverage only on the Java 8 baseline (the JDK whose test run feeds
+		     Coveralls). The agent is deliberately off on newer JDKs: under Temurin 11 it crashes
+		     the forked test VM (moduleEntry.cpp guarantee failure) while instrumenting the
+		     reflection/ByteBuddy DelegatingClassLoader that Mockito's inline mock maker generates,
+		     and it produces coverage data that nothing consumes on those JDKs anyway. -->
+		<profile>
+			<id>coverage</id>
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>prepare-agent</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 
