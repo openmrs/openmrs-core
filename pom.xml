@@ -1162,6 +1162,37 @@
 				<byteBuddyVersion>1.17.6</byteBuddyVersion>
 			</properties>
 		</profile>
+
+		<!-- Temurin 11.0.31 aborts the VM part way through the openmrs-api suite with
+		 "Internal Error (moduleEntry.cpp:263)",
+		 "guarantee(java_lang_Module::is_instance(module)) failed: The unnamed module for ClassLoader
+		 jdk.internal.reflect.DelegatingClassLoader, is null or not an instance of java.lang.Module".
+		 Every test passes; the JVM itself dies, so the build fails with exit code 134 and no test
+		 failures to point at.
+
+		 The crash needs the JDK to inflate a reflective accessor: once a reflective member has been
+		 invoked more than sun.reflect.inflationThreshold times (15 by default), the JDK generates a
+		 bytecode accessor and defines it into a DelegatingClassLoader, and creating that loader's
+		 unnamed module is what trips the guarantee. Mockito's inline mock maker reaches it while
+		 instantiating mocks, so a suite that creates thousands of mocks in one fork hits it.
+
+		 Raising the threshold out of reach keeps reflection on the native accessor for the whole run,
+		 so no accessor is ever generated and the crashing path is never entered. Verified on Temurin
+		 11 with -verbose:class: by default jdk.internal.reflect.GeneratedConstructorAccessor1 is
+		 defined via __JVM_DefineClass__, and with this set it never is.
+
+		 Java 17 and later do not hit this, so the workaround stays on the JDKs that do. Drop it once
+		 2.8.x no longer builds on Java 8 and 11, or once the JDKs ship a fix.
+		 -->
+		<profile>
+			<id>reflection-inflation-vm-crash-workaround</id>
+			<activation>
+				<jdk>(,17)</jdk>
+			</activation>
+			<properties>
+				<customArgLineForTesting>-Dsun.reflect.inflationThreshold=2147483647</customArgLineForTesting>
+			</properties>
+		</profile>
 	</profiles>
 
 	<reporting>
