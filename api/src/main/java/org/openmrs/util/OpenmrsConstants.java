@@ -67,8 +67,17 @@ public final class OpenmrsConstants {
 	 * The format is:<br>
 	 * <i>major</i>.<i>minor</i>.<i>maintenance</i> <i>suffix</i> Build <i>buildNumber</i>
 	 */
-	public static final String OPENMRS_VERSION = THIS_PACKAGE.getSpecificationVendor() != null ? THIS_PACKAGE
-	        .getSpecificationVendor() : (getBuildVersion() != null ? getBuildVersion() : getVersion());
+	public static final String OPENMRS_VERSION;
+	static {
+		String version = THIS_PACKAGE.getSpecificationVendor();
+		if (version == null) {
+			version = getBuildVersion();
+			if (version == null) {
+				version = getVersion();
+			}
+		}
+		OPENMRS_VERSION = version;
+	}
 	
 	/**
 	 * This holds the current openmrs code version in a short space-less string.<br>
@@ -1170,7 +1179,9 @@ public final class OpenmrsConstants {
 	 * User property names
 	 */
 	public static final String USER_PROPERTY_CHANGE_PASSWORD = "forcePassword";
-	
+
+	public static final String USER_PROPERTY_LEGACY_PASSWORD = "legacyPassword";
+
 	public static final String USER_PROPERTY_DEFAULT_LOCALE = "defaultLocale";
 	
 	public static final String USER_PROPERTY_DEFAULT_LOCATION = "defaultLocation";
