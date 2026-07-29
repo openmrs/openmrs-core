@@ -750,8 +750,18 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// so moving a duplicate would make the survivor's allergy list fail to load afterwards
 		// TODO: this should be a copy, not a move
 		PatientService patientService = Context.getPatientService();
-		Allergies preferredAllergies = patientService.getAllergies(preferred);
-		for (Allergy allergy : patientService.getAllergies(notPreferred)) {
+		// these are internal reads made on behalf of the merge; mergePatients is authorized with
+		// Edit Patients, so acquire Get Allergies here rather than forcing the merging user to hold it
+		Allergies preferredAllergies;
+		Allergies notPreferredAllergies;
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_ALLERGIES);
+			preferredAllergies = patientService.getAllergies(preferred);
+			notPreferredAllergies = patientService.getAllergies(notPreferred);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_ALLERGIES);
+		}
+		for (Allergy allergy : notPreferredAllergies) {
 			if (preferredAllergies.containsAllergen(allergy)) {
 				log.debug("Skipping allergy {}; preferred patient {} already has the same allergen",
 				    allergy.getAllergyId(), preferred.getPatientId());

@@ -146,6 +146,8 @@ public class OutboxEventServiceTest extends BaseContextSensitiveTest {
 
 		boolean locked = service.lockEventForProcessing(event);
 		Assert.assertTrue("Should successfully lock the PENDING event", locked);
+		Assert.assertEquals("The passed instance should reflect the claimed status", OutboxEvent.Status.PROCESSING,
+			event.getStatus());
 
 		OutboxEvent updated = sessionFactory.getCurrentSession().get(OutboxEvent.class, event.getId());
 		Assert.assertEquals(OutboxEvent.Status.PROCESSING, updated.getStatus());

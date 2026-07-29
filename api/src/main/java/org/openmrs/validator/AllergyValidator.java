@@ -16,7 +16,9 @@ import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -84,7 +86,16 @@ public class AllergyValidator implements Validator {
 			}
 			
 			if (allergy.getAllergyId() == null && allergy.getPatient() != null) {
-				Allergies existingAllergies = patientService.getAllergies(allergy.getPatient());
+				// this duplicate-allergen check is an internal read done while saving the allergy; a
+				// user with an allergy write privilege should not additionally need Get Allergies for
+				// it, so acquire the read privilege on their behalf
+				Allergies existingAllergies;
+				try {
+					Context.addProxyPrivilege(PrivilegeConstants.GET_ALLERGIES);
+					existingAllergies = patientService.getAllergies(allergy.getPatient());
+				} finally {
+					Context.removeProxyPrivilege(PrivilegeConstants.GET_ALLERGIES);
+				}
 				if (existingAllergies.containsAllergen(allergy)) {
 					String key = "ui.i18n.Concept.name." + allergen.getCodedAllergen().getUuid();
 					String name = messageSourceService.getMessage(key);

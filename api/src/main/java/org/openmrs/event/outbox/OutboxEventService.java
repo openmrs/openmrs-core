@@ -121,7 +121,15 @@ public class OutboxEventService {
 		claimQuery.setParameter("now", new Date());
 
 		int updatedCount = claimQuery.executeUpdate();
-		return updatedCount == 1;
+		if (updatedCount != 1) {
+			return false;
+		}
+
+		// The instance itself isn't updated, so we update it here, but first we need to re-read from the database
+		OutboxEvent claimed = sessionFactory.getCurrentSession().get(OutboxEvent.class, outboxEvent.getId());
+		sessionFactory.getCurrentSession().refresh(claimed);
+		outboxEvent.updateFrom(claimed);
+		return true;
 	}
 	
 	@Transactional
