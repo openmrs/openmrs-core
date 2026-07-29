@@ -1014,6 +1014,85 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldReturnRequestedPageOfResults() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		List<Obs> page1 = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 0, 2);
+		assertEquals(2, page1.size());
+		assertEquals(Integer.valueOf(1), page1.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), page1.get(1).getObsId());
+
+		List<Obs> page2 = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 2, 2);
+		assertEquals(2, page2.size());
+		assertEquals(Integer.valueOf(11), page2.get(0).getObsId());
+		assertEquals(Integer.valueOf(17), page2.get(1).getObsId());
+
+		List<Obs> page3 = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 4, 2);
+		assertEquals(1, page3.size());
+		assertEquals(Integer.valueOf(18), page3.get(0).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldReturnEmptyListWhenStartIndexBeyondResults() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		List<Obs> result = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 10, 5);
+		assertTrue(result.isEmpty());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldIgnorePagingWhenMostRecentNIsSet() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		List<Obs> result = obsService.getObservations(whom, null, null, null, null, null, sort, null, 2, null, null, null,
+		    false, null, 0, 10);
+		assertEquals(2, result.size());
+		assertEquals(Integer.valueOf(1), result.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), result.get(1).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldReturnAllResultsWhenPagingParamsAreNull() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		List<Obs> result = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, null, null);
+		assertEquals(5, result.size());
+	}
+
+	/**
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
 	 */

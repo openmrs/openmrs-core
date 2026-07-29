@@ -119,6 +119,19 @@ public class HibernateObsDAO implements ObsDAO {
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	        boolean includeVoidedObs, String accessionNumber) throws DAOException {
+		return getObservations(whom, encounters, questions, answers, personTypes, locations, sortList, visits, mostRecentN,
+		    obsGroupId, fromDate, toDate, includeVoidedObs, accessionNumber, null, null);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List, List,
+	 *      Integer, Integer, Date, Date, boolean, String, Integer, Integer)
+	 */
+	@Override
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Obs> cq = cb.createQuery(Obs.class);
@@ -135,6 +148,13 @@ public class HibernateObsDAO implements ObsDAO {
 
 		if (mostRecentN != null && mostRecentN > 0) {
 			query.setMaxResults(mostRecentN);
+		} else {
+			if (startIndex != null && startIndex >= 0) {
+				query.setFirstResult(startIndex);
+			}
+			if (maxResults != null && maxResults > 0) {
+				query.setMaxResults(maxResults);
+			}
 		}
 
 		return query.getResultList();

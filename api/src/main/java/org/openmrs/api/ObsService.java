@@ -534,6 +534,19 @@ public interface ObsService extends OpenmrsService {
 	        boolean includeVoidedObs, String accessionNumber) throws APIException;
 
 	/**
+	 * Gets observations with paging support. If mostRecentN is set, the paging parameters are ignored.
+	 *
+	 * @param startIndex the starting index of the result set (optional, 0-based)
+	 * @param maxResults the maximum number of results to return (optional)
+	 * @since 2.8.0
+	 */
+	@Authorized(PrivilegeConstants.GET_OBS)
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws APIException;
+
+	/**
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
 	 *      java.util.Date, java.util.Date, boolean, java.lang.String) This method works exactly the

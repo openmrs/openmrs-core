@@ -101,6 +101,18 @@ public interface ObsDAO {
 	        boolean includeVoidedObs, String accessionNumber) throws DAOException;
 
 	/**
+	 * Gets observations with paging support. If mostRecentN is set, the paging parameters are ignored.
+	 *
+	 * @param startIndex the starting index of the result set (optional)
+	 * @param maxResults the maximum number of results to return (optional)
+	 * @since 2.8.0
+	 */
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws DAOException;
+
+	/**
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
 	 *      java.util.Date, java.util.Date, java.util.List, java.util.List, boolean, java.lang.String)
