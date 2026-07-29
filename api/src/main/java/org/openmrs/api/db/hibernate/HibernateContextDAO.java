@@ -97,15 +97,15 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
-    * Checks whether the given raw password matches the stored hash.
-    * Handles both legacy SHA-based hashes (which use a separate salt)
-    * and modern Argon2id hashes (which embed the salt internally).
-    *
-    * @param storedHash the hash stored in the database
-    * @param rawPassword the plaintext password to verify
-    * @param salt the legacy salt from the database (may be null for Argon2id)
-    * @return true if the password matches
-    */
+     * Checks whether the given raw password matches the stored hash.
+     * Handles both legacy SHA-based hashes (which use a separate salt)
+     * and modern Argon2id hashes (which embed the salt internally).
+     *
+     * @param storedHash the hash stored in the database
+     * @param rawPassword the plaintext password to verify
+     * @param salt the legacy salt from the database (may be null for Argon2id)
+     * @return true if the password matches
+     */
     private boolean isPasswordMatch(String storedHash, String rawPassword, String salt) {
 	    return Security.passwordMatches(storedHash, rawPassword, salt);
 	}
@@ -203,7 +203,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 				// Lazy rehash: if password is legacy, upgrade to Argon2id transparently
                 if (Security.isLegacyHash(passwordOnRecord)) {
-	                try {
+	            	try {
 		                ((HibernateContextDAO) AopContext.currentProxy()).upgradePasswordHash(candidateUser, password);
 	                }
 	                catch (Exception e) {
@@ -355,41 +355,41 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
-    * Upgrades a user's stored password hash to Argon2id in a separate transaction.
-    * This ensures that if the upgrade fails, only the upgrade is rolled back —
-    * the authentication that already succeeded is never affected.
-    * <p>
-    * A re-check of the stored hash is performed inside this method to guard
-    * against concurrent login attempts on the same legacy account. If two threads
-    * both detect a legacy hash and call this method simultaneously, only the first
-    * one to reach the re-check will perform the upgrade. The second will find an
-    * Argon2id hash already in place and skip the write safely.
-    *
-    * @param user the authenticated user whose password needs upgrading
-    * @param rawPassword the plaintext password used to generate the new hash
-    * @since 2.8.9
-    */
+	 * Upgrades a user's stored password hash to Argon2id in a separate transaction.
+	 * This ensures that if the upgrade fails, only the upgrade is rolled back —
+	 * the authentication that already succeeded is never affected.
+	 * <p>
+	 * A re-check of the stored hash is performed inside this method to guard
+	 * against concurrent login attempts on the same legacy account. If two threads
+	 * both detect a legacy hash and call this method simultaneously, only the first
+	 * one to reach the re-check will perform the upgrade. The second will find an
+	 * Argon2id hash already in place and skip the write safely.
+	 *
+	 * @param user the authenticated user whose password needs upgrading
+	 * @param rawPassword the plaintext password used to generate the new hash
+	 * @since 2.8.9
+	 */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void upgradePasswordHash(User user, String rawPassword) {
-	    // Re-read the credential fresh from the database inside this new transaction.
-	    // This guards against a race condition where two concurrent login attempts
-	    // both passed isLegacyHash() before either had a chance to write the upgrade.
-	    LoginCredential credential = userDao.getLoginCredential(user);
-
-	    // If another thread already upgraded this hash, skip to avoid double-write
-	    if (!Security.isLegacyHash(credential.getHashedPassword())) {
-		    log.debug("Password hash for user {} was already upgraded by another thread — skipping",
-			    user.getUsername());
-		    return;
-	    }
-
-	    credential.setHashedPassword(Security.encodePassword(rawPassword));
-	    credential.setDateChanged(new Date());
-	    credential.setChangedBy(user);
-	    userDao.updateLoginCredential(credential);
-	    log.info("Successfully upgraded password hash to Argon2id for user: {}",
-		    user.getUsername());
-    }
+    void upgradePasswordHash(User user, String rawPassword) {
+		LoginCredential credential = userDao.getLoginCredential(user);
+		if (!Security.isLegacyHash(credential.getHashedPassword())) {
+			log.debug("Password hash for user {} was already upgraded — skipping", user.getUsername());
+			return;
+		}
+		String newHash = Security.encodePassword(rawPassword);
+		boolean upgraded = ((HibernateUserDAO) userDao).conditionallyUpdateUserPassword(
+			user.getUserId(),
+			credential.getHashedPassword(),
+			newHash,
+			user.getUserId(),
+			new Date()
+		);
+		if (upgraded) {
+			log.info("Successfully upgraded password hash to Argon2id for user: {}", user.getUsername());
+		} else {
+			log.debug("Password upgrade skipped for user {} — already changed by another thread or process", user.getUsername());
+		}
+	}
 	
 	/**
 	 * @see org.openmrs.api.context.Context#openSession()

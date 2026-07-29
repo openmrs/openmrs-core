@@ -36,8 +36,6 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.stereotype.Component;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.openmrs.api.db.LoginCredential;
-import org.openmrs.api.db.UserDAO;
 
 /**
  * This class tests the {@link ContextDAO} linked to from the Context. Currently that file is the

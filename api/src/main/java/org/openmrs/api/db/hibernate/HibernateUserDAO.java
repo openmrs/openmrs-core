@@ -403,6 +403,32 @@ public class HibernateUserDAO implements UserDAO {
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 		saveUser(changeForUser, null);
 	}
+
+	/**
+	 * Updates the password for a user only if the stored hash still matches the expected old hash.
+	 * Returns true if the row was updated, false if another thread or process already changed it.
+	 *
+	 * @param userId the user whose password to upgrade
+	 * @param oldHashedPassword the legacy hash that must still be present for the update to proceed
+	 * @param newHashedPassword the new Argon2id hash to store
+	 * @param changedBy the user performing the change
+	 * @param dateChanged the timestamp of the change
+	 * @return true if the update succeeded, false if the row was already changed
+	 * @since 2.8.9
+	 */
+	boolean conditionallyUpdateUserPassword(Integer userId, String oldHashedPassword,
+			String newHashedPassword, Integer changedBy, Date dateChanged) {
+		String sql = "UPDATE users SET password = :newHash, date_changed = :dateChanged, changed_by = :changedBy "
+				+ "WHERE user_id = :userId AND password = :oldHash";
+		int rows = sessionFactory.getCurrentSession().createNativeQuery(sql)
+				.setParameter("newHash", newHashedPassword)
+				.setParameter("dateChanged", dateChanged)
+				.setParameter("changedBy", changedBy)
+				.setParameter("userId", userId)
+				.setParameter("oldHash", oldHashedPassword)
+				.executeUpdate();
+		return rows > 0;
+	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#changePassword(java.lang.String, java.lang.String)
