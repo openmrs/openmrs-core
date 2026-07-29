@@ -1314,6 +1314,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		criteria.setIncludeRetired(false);
 
 		assertTrue(ls.getLocations(criteria).isEmpty());
+		assertTrue(ls.getDescendantLocations(retiredRoot, false).isEmpty());
 		// the convenience method builds the same criteria, so it has to agree
 		assertTrue(ls.getDescendantLocations(retiredRoot, false).isEmpty());
 
