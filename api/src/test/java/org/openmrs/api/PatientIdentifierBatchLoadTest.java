@@ -55,28 +55,17 @@ public class PatientIdentifierBatchLoadTest extends BaseContextSensitiveTest {
 		updateSearchIndex();
 
 		Statistics stats = sessionFactory.getStatistics();
-		stats.setStatisticsEnabled(true);
 		stats.clear();
 
 		// Search for "Batch" patients (504, 505, 506, 507) - 4 patients
 		List<Patient> patients = patientService.getPatients("Batch", null, null, false);
 		assertEquals(4, patients.size(), "Should find all 4 Batch patients");
 
-		// Count queries to patient_identifier table
-		long identifierQueries = 0;
-		String[] queries = stats.getQueries();
-		for (String query : queries) {
-			if (query.contains("patient_identifier")) {
-				identifierQueries += stats.getQueryStatistics(query).getExecutionCount();
-			}
-		}
+		// hydrate the identifiers for the whole page to trigger collection initialization
+		patients.forEach(p -> p.getIdentifiers().size());
 
-		// With batch-size="1000", all 4 patients' identifiers should load in 1 query
-		// (or 0 if cached). Without the fix, this would be 4 queries.
-		assertTrue(identifierQueries <= 1,
-		    "Expected at most 1 batched identifier query for 4 patients, but got " + identifierQueries);
-
-		stats.setStatisticsEnabled(false);
+		assertEquals(1, stats.getCollectionStatistics("org.openmrs.Patient.identifiers").getFetchCount(),
+		    "a page of patients should load its identifiers in one batched select");
 	}
 
 	/**
