@@ -44,6 +44,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.User;
 import org.openmrs.Visit;
+import org.openmrs.aop.event.MergePatientServiceEvent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.ConditionService;
@@ -63,6 +64,7 @@ import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.hibernate.HibernateUtil;
+import org.openmrs.event.EventPublisher;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.parameter.MedicationDispenseCriteria;
@@ -95,18 +97,27 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
 	
 	private PatientDAO dao;
-	
+
+	private EventPublisher eventPublisher;
+
 	/**
 	 * PatientIdentifierValidators registered through spring's applicationContext-service.xml
 	 */
 	private static Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators = null;
-	
+
 	/**
 	 * @see org.openmrs.api.PatientService#setPatientDAO(org.openmrs.api.db.PatientDAO)
 	 */
 	@Override
 	public void setPatientDAO(PatientDAO dao) {
 		this.dao = dao;
+	}
+
+	/**
+	 * Registered through spring's applicationContext-service.xml
+	 */
+	public void setEventPublisher(EventPublisher eventPublisher) {
+		this.eventPublisher = eventPublisher;
 	}
 	
 	/**
@@ -608,8 +619,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		personMergeLog.setLoser(notPreferred);
 		personMergeLog.setPersonMergeLogData(mergedData);
 		Context.getPersonService().savePersonMergeLog(personMergeLog);
+
+		if (eventPublisher != null) {
+			eventPublisher.publishEvent(new MergePatientServiceEvent(preferred, notPreferred));
+		}
 	}
-	
+
 	private void requireNoActiveOrderOfSameType(Patient patient1, Patient patient2) {
 		String messageKey = "Patient.merge.cannotHaveSameTypeActiveOrders";
 		List<Order> ordersByPatient1 = Context.getOrderService().getAllOrdersByPatient(patient1);
