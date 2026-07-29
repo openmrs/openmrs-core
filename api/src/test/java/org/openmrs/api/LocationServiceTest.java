@@ -1314,15 +1314,34 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		criteria.setIncludeRetired(false);
 
 		assertTrue(ls.getLocations(criteria).isEmpty());
-		assertTrue(ls.getDescendantLocations(retiredRoot, false).isEmpty());
 		// the convenience method builds the same criteria, so it has to agree
 		assertTrue(ls.getDescendantLocations(retiredRoot, false).isEmpty());
+	}
 
-		// the deprecated entity method never looks at the ancestor's own retired flag, so it still
-		// returns the subtree; reload because it walks the child collection, which is unloaded here
+	/**
+	 * The deprecated {@link Location#getDescendantLocations(boolean)} names
+	 * {@link LocationService#getDescendantLocations(Location, boolean)} as its replacement, but it
+	 * starts from the child collection and so never examines the ancestor's own retired flag. The two
+	 * therefore disagree for a retired ancestor. That divergence is documented rather than changed -
+	 * changing it would silently alter results for everyone still on the deprecated method - so it is
+	 * pinned here instead.
+	 *
+	 * @see Location#getDescendantLocations(boolean)
+	 */
+	@Test
+	public void getDescendantLocations_shouldDisagreeWithTheDeprecatedEntityMethodForARetiredAncestor() {
+		LocationService ls = Context.getLocationService();
+		Location retiredRoot = saveTreeUnderRetiredAncestor(ls).get(0);
+
+		// the entity method walks the child collection, which is not loaded on the just-saved root
 		Context.flushSession();
 		Context.clearSession();
-		assertEquals(2, ls.getLocation(retiredRoot.getLocationId()).getDescendantLocations(false).size());
+		Location reloaded = ls.getLocation(retiredRoot.getLocationId());
+
+		// the entity method returns the whole subtree, having never looked at the root's retired flag
+		assertEquals(2, reloaded.getDescendantLocations(false).size());
+		// the service method prunes it, because the root is retired
+		assertTrue(ls.getDescendantLocations(reloaded, false).isEmpty());
 	}
 
 	/**
