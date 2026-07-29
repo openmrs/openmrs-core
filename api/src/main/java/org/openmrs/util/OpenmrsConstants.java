@@ -11,16 +11,16 @@ package org.openmrs.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import liquibase.GlobalConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
@@ -34,7 +34,7 @@ import org.openmrs.scheduler.SchedulerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.Arrays.asList;
+import liquibase.GlobalConfiguration;
 
 /**
  * Constants used in OpenMRS. Contents built from build properties (version, version_short, and
@@ -434,7 +434,32 @@ public final class OpenmrsConstants {
 	 * adhere to
 	 */
 	public static final String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
-	
+
+	/**
+	 * Global property name for Argon2 memory cost in KB
+	 */
+	public static final String GP_ARGON2_MEMORY = "security.argon2.memory";
+
+	/**
+	 * Global property name for Argon2 parallelism factor
+	 */
+	public static final String GP_ARGON2_PARALLELISM = "security.argon2.parallelism";
+
+	/**
+	 * Global property name for Argon2 iterations
+	 */
+	public static final String GP_ARGON2_ITERATIONS = "security.argon2.iterations";
+
+	/**
+	 * Global property name for Argon2 hash length in bytes
+	 */
+	public static final String GP_ARGON2_HASH_LENGTH = "security.argon2.hashLength";
+
+	/**
+	 * Global property name for Argon2 salt length in bytes
+	 */
+	public static final String GP_ARGON2_SALT_LENGTH = "security.argon2.saltLength";
+
 	/**
 	 * Global property name for absolute color for patient graphs.
 	 */
@@ -902,7 +927,22 @@ public final class OpenmrsConstants {
 		        .add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",
 		                "Configure whether passwords must contain both upper and lower case characters",
 		                BooleanDatatype.class, null));
-		
+
+		props.add(new GlobalProperty(GP_ARGON2_MEMORY, "65536",
+		        "Argon2 memory cost in kilobytes (KB). Higher values increase security but require more memory. Default: 65536 (64 MB). Recommended: 65536-262144 (64-256 MB)."));
+
+		props.add(new GlobalProperty(GP_ARGON2_PARALLELISM, "1",
+		        "Argon2 parallelism factor (number of threads). Higher values increase security but require more CPU. Default: 1. Recommended: 1-4."));
+
+		props.add(new GlobalProperty(GP_ARGON2_ITERATIONS, "3",
+		        "Argon2 time cost (number of iterations). Higher values increase security but slow down hashing. Default: 3. Recommended: 3-4."));
+
+		props.add(new GlobalProperty(GP_ARGON2_HASH_LENGTH, "32",
+		        "Argon2 hash length in bytes. Default: 32. Maximum depends on salt length to fit VARCHAR(128): with 16-byte salt max is 55, with 32-byte salt max is 39. Values are automatically clamped to safe limits."));
+
+		props.add(new GlobalProperty(GP_ARGON2_SALT_LENGTH, "16",
+		        "Argon2 salt length in bytes. Default: 16. Maximum: 32. Higher values reduce maximum allowable hash length to fit VARCHAR(128). Values are automatically clamped to safe limits."));
+
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
 		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",
 		        BooleanDatatype.class, null));

@@ -9,38 +9,215 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Base64;
 import java.util.Base64.Decoder;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 /**
  * Tests the methods on the {@link Security} class
  */
-public class SecurityTest {
+public class SecurityTest extends BaseContextSensitiveTest {
+
+	@Autowired
+	private AdministrationService administrationService;
 	
-	private static final int HASH_LENGTH = 128;
-	
+	/**
+	 * @see Security#encodeStringArgon2(String)
+	 */
+	@Test
+	public void encodeStringArgon2_shouldEncodeStringsToArgon2id() {
+		String hash = Security.encodeStringArgon2("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
+		assertTrue(hash.startsWith("$argon2id$"));
+	}
+
 	/**
 	 * @see Security#encodeString(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsTo128Characters() {
+	public void encodeString_shouldEncodeStringsToSHA512() {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
-		assertEquals(HASH_LENGTH, hash.length());
+		assertTrue(hash.length() == 128);
+		assertTrue(hash.matches("[0-9a-f]+"));
+	}
+
+	/**
+	 * @see Security#encodeStringSHA512(String)
+	 */
+	@Test
+	public void encodeStringSHA512_shouldEncodeStringsToSHA512() {
+		String hash = Security.encodeStringSHA512("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
+		assertTrue(hash.length() == 128);
+		assertTrue(hash.matches("[0-9a-f]+"));
+	}
+
+	/**
+	 * @see Security#encodeStringArgon2(String)
+	 */
+	@Test
+	public void encodeStringArgon2_shouldClampHashLengthToFitVarchar128() {
+		String originalSaltLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
+		String originalHashLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
+
+		try {
+			// Test with 16-byte salt, hash length should be clamped to max 55
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "60")); // Exceeds safe max
+			Security.resetEncoder();
+			String hash1 = Security.encodeStringArgon2("test");
+			assertTrue(hash1.length() <= 128, "Hash with 16-byte salt should fit in VARCHAR(128): " + hash1.length());
+			assertTrue(hash1.startsWith("$argon2id$"));
+
+			// Test with 32-byte salt, hash length should be clamped to max 39
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "32"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "50")); // Exceeds safe max
+			Security.resetEncoder();
+			String hash2 = Security.encodeStringArgon2("test");
+			assertTrue(hash2.length() <= 128, "Hash with 32-byte salt should fit in VARCHAR(128): " + hash2.length());
+			assertTrue(hash2.startsWith("$argon2id$"));
+		}
+		finally {
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, originalSaltLength);
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, originalHashLength);
+			Security.resetEncoder();
+		}
 	}
 	
 	/**
-	 * @see Security#encodeString(String)
+	 * @see Security#encodeStringArgon2(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsToXCharactersWithXCharactersSalt() {
-		String hash = Security.encodeString("test" + Security.getRandomToken());
-		assertEquals(HASH_LENGTH, hash.length());
+	public void encodeStringArgon2_shouldEncodeStringsToXCharactersWithXCharactersSalt() {
+		String originalSaltLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
+		String originalHashLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
+		try {
+			// Use safe values that fit in VARCHAR(128)
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "8"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32"));
+			Security.resetEncoder();
+			String hash1 = Security.encodeStringArgon2("test");
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16"));
+			Security.resetEncoder();
+			String hash2 = Security.encodeStringArgon2("test");
+			
+			// Verify both hashes are valid Argon2id hashes
+			assertTrue(hash1.startsWith("$argon2id$"));
+			assertTrue(hash2.startsWith("$argon2id$"));
+			
+			// Verify hashes are different (different salt should produce different hash)
+			assertTrue(!hash1.equals(hash2), "Different salt lengths should produce different hashes");
+			
+			// Verify both fit in VARCHAR(128)
+			assertTrue(hash1.length() <= 128, "Hash with 8-byte salt should fit in VARCHAR(128)");
+			assertTrue(hash2.length() <= 128, "Hash with 16-byte salt should fit in VARCHAR(128)");
+		}
+		finally {
+			if (originalSaltLength != null) {
+				administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, originalSaltLength));
+			} else {
+				GlobalProperty gp = administrationService.getGlobalPropertyObject(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
+				if (gp != null) {
+					administrationService.purgeGlobalProperty(gp);
+				}
+			}
+			if (originalHashLength != null) {
+				administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, originalHashLength));
+			} else {
+				GlobalProperty gp = administrationService.getGlobalPropertyObject(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
+				if (gp != null) {
+					administrationService.purgeGlobalProperty(gp);
+				}
+			}
+			Security.resetEncoder();
+		}
+	}
+
+	@Test
+	public void encodeStringArgon2_shouldUseDefaultValuesWhenGlobalPropertyValuesAreInvalid() {
+		String originalSaltLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
+		String originalHashLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
+		String originalParallelism = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM);
+		String originalMemory = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY);
+		String originalIterations = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS);
+
+		try {
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "-5"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "0"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "invalid"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "abc"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "-1"));
+			Security.resetEncoder();
+			String hash = Security.encodeStringArgon2("test");
+			assertTrue(hash.startsWith("$argon2id$"));
+			String[] parts = hash.split("\\$");
+			assertTrue(parts.length >= 5);
+			String params = parts[3];
+			assertTrue(params.contains("m=65536"));
+			assertTrue(params.contains("t=3"));
+			assertTrue(params.contains("p=1"));
+		}
+		finally {
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, originalSaltLength);
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, originalHashLength);
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, originalParallelism);
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, originalMemory);
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, originalIterations);
+			Security.resetEncoder();
+		}
+	}
+
+	@Test
+	public void encodeStringArgon2_shouldUseUpdatedGlobalPropertyValues() {
+		String originalMemory = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY);
+		String originalIterations = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS);
+		String originalParallelism = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM);
+
+		try {
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1"));
+			Security.resetEncoder();
+			String hash1 = Security.encodeStringArgon2("test");
+			String[] parts1 = hash1.split("\\$");
+			assertTrue(parts1.length >= 5);
+			assertTrue(parts1[3].contains("m=65536"));
+			assertTrue(parts1[3].contains("t=3"));
+			assertTrue(parts1[3].contains("p=1"));
+
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "131072"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "4"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "2"));
+
+			String hash2 = Security.encodeStringArgon2("test");
+			String[] parts2 = hash2.split("\\$");
+			assertTrue(parts2.length >= 5);
+			assertTrue(parts2[3].contains("m=131072"));
+			assertTrue(parts2[3].contains("t=4"));
+			assertTrue(parts2[3].contains("p=2"));
+		}
+		finally {
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, originalMemory);
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, originalIterations);
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, originalParallelism);
+			Security.resetEncoder();
+		}
+	}
+
+	private void restoreGlobalProperty(String propertyKey, String originalValue) {
+		if (originalValue != null) {
+			administrationService.saveGlobalProperty(new GlobalProperty(propertyKey, originalValue));
+		} else {
+			GlobalProperty gp = administrationService.getGlobalPropertyObject(propertyKey);
+			if (gp != null) {
+				administrationService.purgeGlobalProperty(gp);
+			}
+		}
 	}
 	
 	/**
