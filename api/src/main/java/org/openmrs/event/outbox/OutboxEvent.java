@@ -139,6 +139,25 @@ public class OutboxEvent extends BaseOpenmrsObject implements Auditable {
 		this.completedListeners = completedListeners;
 	}
 
+	/**
+	 * Copies the persisted (column) state of the given event onto this instance. The identity and the
+	 * {@code creator}/{@code changedBy} associations are intentionally left untouched: the id never
+	 * changes for the same row, and copying lazy proxies across sessions risks
+	 * {@link org.hibernate.LazyInitializationException}. Add any newly persisted scalar column here.
+	 *
+	 * @param other the event whose state should be copied onto this instance
+	 */
+	public void updateFrom(OutboxEvent other) {
+		this.eventType = other.eventType;
+		this.payload = other.payload;
+		this.dateCreated = other.dateCreated;
+		this.dateChanged = other.dateChanged;
+		this.status = other.status;
+		this.errorCount = other.errorCount;
+		this.errorMessage = other.errorMessage;
+		this.completedListeners = other.completedListeners;
+	}
+
 	// --- Auditable Interface Implementation ---
 
 	@Override

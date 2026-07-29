@@ -121,6 +121,9 @@ public class StreamDataService {
 		 */
 		public void propagateStreamException(IOException streamException) {
 			this.streamException = streamException;
+			// Wake a reader blocked on poll() so it sees the exception now instead of after the timeout.
+			// Non-blocking: if the queue is full the reader isn't waiting and will see it on its next read().
+			this.blockingQueue.offer(-1);
 		}
 
 		public void checkStreamException() throws IOException {

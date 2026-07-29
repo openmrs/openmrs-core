@@ -14,6 +14,7 @@ import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DatabaseDetectiveTest {
@@ -34,5 +35,17 @@ public class DatabaseDetectiveTest {
 	public void shouldRecogniseInvalidConnectionParameters() {
 		Properties properties = new Properties();
 		assertTrue(databaseDetective.isDatabaseEmpty(properties));
+	}
+
+	@Test
+	public void shouldNotReportConfiguredButUnreachableDatabaseAsEmpty() {
+		// a configured instance whose database is unreachable must not be reported as empty,
+		// otherwise the unauthenticated setup wizard would reopen on a production deployment
+		Properties properties = new Properties();
+		properties.setProperty("connection.url", "jdbc:h2:tcp://localhost:1/unreachable");
+		properties.setProperty("connection.driver_class", "org.h2.Driver");
+		properties.setProperty("connection.username", "sa");
+		properties.setProperty("connection.password", "");
+		assertFalse(databaseDetective.isDatabaseEmpty(properties));
 	}
 }
