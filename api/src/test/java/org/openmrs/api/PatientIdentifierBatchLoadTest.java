@@ -57,7 +57,7 @@ public class PatientIdentifierBatchLoadTest extends BaseContextSensitiveTest {
 		Statistics stats = sessionFactory.getStatistics();
 		stats.clear();
 
-		// Search for "Batch" patients (504, 505, 506, 507) - 4 patients
+		// Search for "Batch" patients (7004, 7005, 7006, 7007) - 4 patients
 		List<Patient> patients = patientService.getPatients("Batch", null, null, false);
 		assertEquals(4, patients.size(), "Should find all 4 Batch patients");
 
@@ -76,8 +76,8 @@ public class PatientIdentifierBatchLoadTest extends BaseContextSensitiveTest {
 		executeDataSet(IDENTIFIERS_DATASET);
 		updateSearchIndex();
 
-		Patient patient = patientService.getPatient(501);
-		assertNotNull(patient, "Patient 501 should exist");
+		Patient patient = patientService.getPatient(7001);
+		assertNotNull(patient, "Patient 7001 should exist");
 		assertEquals("NoIdent", patient.getGivenName());
 		assertNotNull(patient.getIdentifiers(), "Identifiers collection should not be null");
 		assertTrue(patient.getIdentifiers().isEmpty(), "Patient with no identifiers should have empty set");
@@ -91,8 +91,8 @@ public class PatientIdentifierBatchLoadTest extends BaseContextSensitiveTest {
 		executeDataSet(IDENTIFIERS_DATASET);
 		updateSearchIndex();
 
-		Patient patient = patientService.getPatient(502);
-		assertNotNull(patient, "Patient 502 should exist");
+		Patient patient = patientService.getPatient(7002);
+		assertNotNull(patient, "Patient 7002 should exist");
 		assertEquals("Single", patient.getGivenName());
 		assertEquals(1, patient.getIdentifiers().size(), "Patient should have exactly 1 identifier");
 
@@ -111,8 +111,8 @@ public class PatientIdentifierBatchLoadTest extends BaseContextSensitiveTest {
 		executeDataSet(IDENTIFIERS_DATASET);
 		updateSearchIndex();
 
-		Patient patient = patientService.getPatient(503);
-		assertNotNull(patient, "Patient 503 should exist");
+		Patient patient = patientService.getPatient(7003);
+		assertNotNull(patient, "Patient 7003 should exist");
 		assertEquals("Multi", patient.getGivenName());
 
 		// getIdentifiers() returns all (3 total: 2 non-voided + 1 voided)
@@ -144,28 +144,24 @@ public class PatientIdentifierBatchLoadTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * Verifies that identifier ordering follows natural ordering (PatientIdentifier's compareTo).
-	 * Uses getActiveIdentifiers() to get only non-voided identifiers in natural order.
-	 * Natural order: voided (false first), then preferred (true first), then dateCreated, then type, then identifier.
+	 * Verifies that the mapped collection comes back in PatientIdentifier's natural order:
+	 * non-voided first, then preferred ascending (Boolean.compareTo puts false before true),
+	 * then dateCreated, then type, then identifier.
 	 */
 	@Test
 	public void getPatient_shouldReturnIdentifiersInNaturalOrder() {
 		executeDataSet(IDENTIFIERS_DATASET);
 		updateSearchIndex();
 
-		Patient patient = patientService.getPatient(503);
+		Patient patient = patientService.getPatient(7003);
 		assertNotNull(patient);
 
-		// getActiveIdentifiers() returns non-voided identifiers in natural order
-		PatientIdentifier[] identifiers = patient.getActiveIdentifiers().toArray(new PatientIdentifier[0]);
-		assertEquals(2, identifiers.length);
+		PatientIdentifier[] identifiers = patient.getIdentifiers().toArray(new PatientIdentifier[0]);
+		assertEquals(3, identifiers.length);
 
-		// Natural order: preferred=true comes before preferred=false
-		// ID-503-B (preferred=true) comes before ID-503-A (preferred=false)
-		assertEquals("ID-503-B", identifiers[0].getIdentifier(),
-		    "First identifier should be ID-503-B (preferred=true comes first)");
-		assertEquals("ID-503-A", identifiers[1].getIdentifier(),
-		    "Second identifier should be ID-503-A (preferred=false comes second)");
+		assertEquals("ID-503-A", identifiers[0].getIdentifier());
+		assertEquals("ID-503-B", identifiers[1].getIdentifier());
+		assertEquals("ID-503-C-VOIDED", identifiers[2].getIdentifier());
 	}
 
 	/**
@@ -177,7 +173,7 @@ public class PatientIdentifierBatchLoadTest extends BaseContextSensitiveTest {
 		updateSearchIndex();
 
 		// Patient with multiple identifiers, preferred is ID-503-B
-		Patient patient = patientService.getPatient(503);
+		Patient patient = patientService.getPatient(7003);
 		assertNotNull(patient);
 		PatientIdentifier preferred = patient.getPatientIdentifier();
 		assertNotNull(preferred, "Preferred identifier should not be null");
@@ -185,14 +181,14 @@ public class PatientIdentifierBatchLoadTest extends BaseContextSensitiveTest {
 		    "getPatientIdentifier() should return the preferred identifier");
 
 		// Patient with single identifier
-		Patient singlePatient = patientService.getPatient(502);
+		Patient singlePatient = patientService.getPatient(7002);
 		assertNotNull(singlePatient);
 		PatientIdentifier singlePreferred = singlePatient.getPatientIdentifier();
 		assertNotNull(singlePreferred, "Single identifier patient should have a preferred identifier");
 		assertEquals("ID-502-A", singlePreferred.getIdentifier());
 
 		// Patient with no identifiers
-		Patient noIdPatient = patientService.getPatient(501);
+		Patient noIdPatient = patientService.getPatient(7001);
 		assertNotNull(noIdPatient);
 		assertNull(noIdPatient.getPatientIdentifier(),
 		    "Patient with no identifiers should return null from getPatientIdentifier()");
@@ -215,7 +211,7 @@ public class PatientIdentifierBatchLoadTest extends BaseContextSensitiveTest {
 			totalIdentifiers += p.getIdentifiers().size();
 		}
 
-		// Patient 504: 1 identifier, Patient 505: 2 identifiers, Patient 506: 0, Patient 507: 1
+		// Patient 7004: 1 identifier, Patient 7005: 2 identifiers, Patient 7006: 0, Patient 7007: 1
 		assertEquals(4, totalIdentifiers,
 		    "Total non-voided identifiers across all Batch patients should be 4");
 	}
