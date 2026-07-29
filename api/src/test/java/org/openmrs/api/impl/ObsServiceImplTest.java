@@ -1,3 +1,4 @@
+package org.openmrs.api.impl;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
