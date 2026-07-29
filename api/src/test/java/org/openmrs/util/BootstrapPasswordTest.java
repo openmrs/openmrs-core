@@ -28,17 +28,19 @@ public class BootstrapPasswordTest {
     }
     
     @Test
-    public void testGenerateDeterministicHash_shouldReturnSameOutputForSameInput() {
+        public void testGenerateDeterministicHash_shouldReturnSameOutputForSameInput() {
         String input = "test-input";
-        String hash1 = Security.generateDeterministicHash(input);
-        String hash2 = Security.generateDeterministicHash(input);
+        String salt = "test-salt";
+        String hash1 = Security.generateDeterministicHash(input, salt);
+        String hash2 = Security.generateDeterministicHash(input, salt);
         assertEquals(hash1, hash2, "Same input should produce same hash");
     }
     
     @Test
-    public void testGenerateDeterministicHash_shouldReturnDifferentOutputForDifferentInputs() {
-        String hash1 = Security.generateDeterministicHash("input-1");
-        String hash2 = Security.generateDeterministicHash("input-2");
+        public void testGenerateDeterministicHash_shouldReturnDifferentOutputForDifferentInputs() {
+        String salt = "test-salt";
+        String hash1 = Security.generateDeterministicHash("input-1", salt);
+        String hash2 = Security.generateDeterministicHash("input-2", salt);
         assertNotEquals(hash1, hash2, "Different inputs should produce different hashes");
     }
     

@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.security.MessageDigest;
 import java.security.spec.KeySpec;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -50,7 +49,6 @@ public class Security {
     private static final int PBKDF2_DEFAULT_ITERATIONS = 600000; 
     private static final int PBKDF2_KEY_LENGTH = 256;
     private static final int BOOTSTRAP_MAX_PASSWORD_LENGTH = 20;
-	private static final byte[] PBKDF2_SALT = "OpenMRS-Bootstrap-PBKDF2".getBytes(StandardCharsets.UTF_8);
 
 	private Security() {
 	}
@@ -80,60 +78,106 @@ public class Security {
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
 	}
 
-	/**
+	    /**
      * Generates a deterministic hash using PBKDF2.
      * 
-     * This is used for bootstrap password generation where deterministic output is required.
-     * Unlike encodeString() which uses SHA-512, this method uses PBKDF2 which is designed
-     * for password derivation and can be configured with iteration counts.
+     * This method is used for bootstrap password generation, where deterministic output is required
+     * for a given user (same user → same password). The UUID serves as a per-user salt, while the
+     * pepper (system secret) is concatenated into the input string. This ensures that even if the
+     * pepper is compromised, each user's password remains unique due to the per-user salt.
      * 
-     * @param input the input string to derive from
-     * @param iterations the number of PBKDF2 iterations (use 0 for default)
-     * @return the derived hash as a Base64 encoded string
+     * Unlike {@link #encodeString(String)}, which uses SHA-512, this method uses PBKDF2 with a high
+     * iteration count, making it suitable for password derivation.
+     * 
+     * @param input      the input string to derive from (typically user UUID + system pepper)
+     * @param salt       the per-user salt (typically the user's UUID) to make each derivation unique
+     * @param iterations the number of PBKDF2 iterations (use 0 to apply the default)
+     * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
+     * @throws APIException if input or salt is null
      * @since 2.8.8
      */
-    public static String generateDeterministicHash(String input, int iterations) {
-        if (input == null) {
-            throw new APIException("bootstrap.input.null", (Object[]) null);
-        }
-        
-        int actualIterations = iterations > 0 ? iterations : PBKDF2_DEFAULT_ITERATIONS;
-        
-        try {
-            SecretKeyFactory factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
-            KeySpec spec = new PBEKeySpec(
+	public static String generateBootstrapPassword(org.openmrs.User user) {
+		if (user == null) {
+			throw new APIException("bootstrap.user.null", (Object[]) null);
+		}
+		
+		String uuid = user.getUuid();
+		if (!StringUtils.hasText(uuid)) {
+			throw new APIException("bootstrap.user.uuid.missing", (Object[]) null);
+		}
+		
+		String pepper = getBootstrapPepper();
+		if (!StringUtils.hasText(pepper)) {
+			throw new APIException("bootstrap.pepper.missing", (Object[]) null);
+		}
+		
+		String input = uuid + pepper;
+		int iterations = getBootstrapIterations();
+		
+		return generateDeterministicHash(input, uuid, iterations);  
+	}
+
+	/**
+	 * Generates a deterministic hash using PBKDF2 with the default iteration count.
+	 * 
+	 * This is a convenience method that calls
+	 * {@link #generateDeterministicHash(String, String, int)} with the default
+	 * iterations ({@value #PBKDF2_DEFAULT_ITERATIONS}).
+	 * 
+	 * @param input the input string to derive from (typically user UUID + system pepper)
+	 * @param salt  the per-user salt (typically the user's UUID)
+	 * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
+	 * @throws APIException if input or salt is null
+	 * @since 2.8.8
+	 */
+	public static String generateDeterministicHash(String input, String salt) {
+		return generateDeterministicHash(input, salt, PBKDF2_DEFAULT_ITERATIONS);
+	}
+
+		/**
+	 * Generates a deterministic hash using PBKDF2.
+	 * 
+	 * This method is used for bootstrap password generation, where deterministic output is required
+	 * for a given user (same user → same password). The UUID serves as a per-user salt, while the
+	 * pepper (system secret) is concatenated into the input string. This ensures that even if the
+	 * pepper is compromised, each user's password remains unique due to the per-user salt.
+	 * 
+	 * Unlike {@link #encodeString(String)}, which uses SHA-512, this method uses PBKDF2 with a high
+	 * iteration count, making it suitable for password derivation.
+	 * 
+	 * @param input      the input string to derive from (typically user UUID + system pepper)
+	 * @param salt       the per-user salt (typically the user's UUID) to make each derivation unique
+	 * @param iterations the number of PBKDF2 iterations (use 0 to apply the default)
+	 * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
+	 * @throws APIException if input or salt is null
+	 * @since 2.8.8
+	 */
+	public static String generateDeterministicHash(String input, String salt, int iterations) {
+		if (input == null || salt == null) {
+			throw new APIException("bootstrap.input.null", (Object[]) null);
+		}
+		
+		int actualIterations = iterations > 0 ? iterations : PBKDF2_DEFAULT_ITERATIONS;
+		
+		try {
+			SecretKeyFactory factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
+			KeySpec spec = new PBEKeySpec(
 				input.toCharArray(),
-				PBKDF2_SALT,   // Non-empty fixed salt
+				salt.getBytes(StandardCharsets.UTF_8),
 				actualIterations,
 				PBKDF2_KEY_LENGTH
 			);
-            byte[] derived = factory.generateSecret(spec).getEncoded();
-            
-            // Base64 encode without padding and truncate for user-friendliness
-            String base64 = Base64.getEncoder().withoutPadding().encodeToString(derived);
-            
-            // Remove ambiguous characters
-            String cleaned = base64.replaceAll("[0OIl]", "");
-            
-            // Truncate to reasonable length
-            return cleaned.substring(0, Math.min(cleaned.length(), BOOTSTRAP_MAX_PASSWORD_LENGTH));
-            
-        } catch (GeneralSecurityException e) {
-            log.error("Failed to generate deterministic hash", e);
-            throw new APIException("bootstrap.hash.generation.failed", null, e);
-        }
-    }
-
-	/**
-     * Generates a deterministic hash using PBKDF2 with default iterations.
-     * 
-     * @param input the input string to derive from
-     * @return the derived hash as a Base64 encoded string
-     * @since 2.8.8
-     */
-    public static String generateDeterministicHash(String input) {
-        return generateDeterministicHash(input, PBKDF2_DEFAULT_ITERATIONS);
-    }
+			byte[] derived = factory.generateSecret(spec).getEncoded();
+			
+			String base64 = Base64.getEncoder().withoutPadding().encodeToString(derived);
+			String cleaned = base64.replaceAll("[0OIl]", "");
+			return cleaned.substring(0, Math.min(cleaned.length(), BOOTSTRAP_MAX_PASSWORD_LENGTH));
+			
+		} catch (GeneralSecurityException e) {
+			log.error("Failed to generate deterministic hash", e);
+			throw new APIException("bootstrap.hash.generation.failed", null, e);
+		}
+	}
 
 	    /**
      * Gets the pepper used for bootstrap password generation.
@@ -176,38 +220,6 @@ public class Security {
         
         return PBKDF2_DEFAULT_ITERATIONS;
     }
-
-	    /**
-     * Generates a deterministic bootstrap password for a user.
-     * 
-     * The password is derived from the user's UUID and pepper using PBKDF2.
-     * Same input always produces the same output (deterministic).
-     * 
-     * @param user the user
-     * @return the generated bootstrap password
-     * @throws APIException if user is null, has no UUID, or pepper is not configured
-     * @since 2.8.8
-     */
-		public static String generateBootstrapPassword(org.openmrs.User user) {
-		if (user == null) {
-			throw new APIException("bootstrap.user.null", (Object[]) null);
-		}
-		
-		String uuid = user.getUuid();
-		if (!StringUtils.hasText(uuid)) {
-			throw new APIException("bootstrap.user.uuid.missing", (Object[]) null);
-		}
-		
-		String pepper = getBootstrapPepper();
-		if (!StringUtils.hasText(pepper)) {
-			throw new APIException("bootstrap.pepper.missing", (Object[]) null);
-		}
-		
-		String input = uuid + pepper;
-		int iterations = getBootstrapIterations();
-		
-		return generateDeterministicHash(input, iterations);
-	}
 
 	/**
 	 * Validates a password against a user's bootstrap password.
