@@ -1316,6 +1316,12 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		assertTrue(ls.getLocations(criteria).isEmpty());
 		// the convenience method builds the same criteria, so it has to agree
 		assertTrue(ls.getDescendantLocations(retiredRoot, false).isEmpty());
+
+		// the deprecated entity method never looks at the ancestor's own retired flag, so it still
+		// returns the subtree; reload because it walks the child collection, which is unloaded here
+		Context.flushSession();
+		Context.clearSession();
+		assertEquals(2, ls.getLocation(retiredRoot.getLocationId()).getDescendantLocations(false).size());
 	}
 
 	/**
