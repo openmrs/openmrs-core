@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
 /**
  * Tests the methods on the {@link Security} class
  */
+<<<<<<< HEAD
 class SecurityTest extends BaseContextSensitiveTest {
 
 
@@ -36,12 +37,19 @@ class SecurityTest extends BaseContextSensitiveTest {
 
 	private static final int HASH_LENGTH = 128;
 
+=======
+public class SecurityTest extends BaseContextSensitiveTest {
+
+	@Autowired
+	private AdministrationService administrationService;
+	
+>>>>>>> d360b20e0 (fix-for review3)
 	/**
 	 * @see Security#encodeStringArgon2(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsToArgon2id() {
-		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
+	public void encodeStringArgon2_shouldEncodeStringsToArgon2id() {
+		String hash = Security.encodeStringArgon2("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
 		assertTrue(hash.startsWith("$argon2id$"));
 	}
 
@@ -49,9 +57,15 @@ class SecurityTest extends BaseContextSensitiveTest {
 	 * @see Security#encodeString(String)
 	 */
 	@Test
+<<<<<<< HEAD
 	void encodeString_shouldEncodeStringsToSHA512() {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
 		assertEquals(128, hash.length());
+=======
+	public void encodeString_shouldEncodeStringsToSHA512() {
+		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
+		assertTrue(hash.length() == 128);
+>>>>>>> d360b20e0 (fix-for review3)
 		assertTrue(hash.matches("[0-9a-f]+"));
 	}
 
@@ -59,9 +73,15 @@ class SecurityTest extends BaseContextSensitiveTest {
 	 * @see Security#encodeStringSHA512(String)
 	 */
 	@Test
+<<<<<<< HEAD
 	void encodeStringSHA512_shouldEncodeStringsToSHA512() {
 		String hash = Security.encodeStringSHA512("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
 		assertEquals(128, hash.length());
+=======
+	public void encodeStringSHA512_shouldEncodeStringsToSHA512() {
+		String hash = Security.encodeStringSHA512("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
+		assertTrue(hash.length() == 128);
+>>>>>>> d360b20e0 (fix-for review3)
 		assertTrue(hash.matches("[0-9a-f]+"));
 	}
 
@@ -69,7 +89,11 @@ class SecurityTest extends BaseContextSensitiveTest {
 	 * @see Security#encodeStringArgon2(String)
 	 */
 	@Test
+<<<<<<< HEAD
 	void encodeStringArgon2_shouldClampHashLengthToFitVarchar128() {
+=======
+	public void encodeStringArgon2_shouldClampHashLengthToFitVarchar128() {
+>>>>>>> d360b20e0 (fix-for review3)
 		String originalSaltLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
 		String originalHashLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
 
@@ -77,6 +101,7 @@ class SecurityTest extends BaseContextSensitiveTest {
 			// Test with 16-byte salt, hash length should be clamped to max 55
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16"));
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "60")); // Exceeds safe max
+<<<<<<< HEAD
 			Security.resetEncoder();
 			String hash1 = Security.encodeStringArgon2("test");
 			assertTrue(hash1.length() <= 128, "Hash with 16-byte salt should fit in VARCHAR(128): " + hash1.length());
@@ -142,25 +167,83 @@ class SecurityTest extends BaseContextSensitiveTest {
 					administrationService.purgeGlobalProperty(gp);
 				}
 			}
+=======
+>>>>>>> d360b20e0 (fix-for review3)
 			Security.resetEncoder();
-			String hash1 = Security.encodeString("test");
-			org.mockito.Mockito.when(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16")).thenReturn("16");
+			String hash1 = Security.encodeStringArgon2("test");
+			assertTrue(hash1.length() <= 128, "Hash with 16-byte salt should fit in VARCHAR(128): " + hash1.length());
+			assertTrue(hash1.startsWith("$argon2id$"));
+
+			// Test with 32-byte salt, hash length should be clamped to max 39
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "32"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "50")); // Exceeds safe max
 			Security.resetEncoder();
-			String hash2 = Security.encodeString("test");
-			String[] parts1 = hash1.split("\\$");
-			String[] parts2 = hash2.split("\\$");
-			assertTrue(parts1.length >= 5);
-			assertTrue(parts2.length >= 5);
-			assertTrue(parts1[4].length() != parts2[4].length());
+			String hash2 = Security.encodeStringArgon2("test");
+			assertTrue(hash2.length() <= 128, "Hash with 32-byte salt should fit in VARCHAR(128): " + hash2.length());
+			assertTrue(hash2.startsWith("$argon2id$"));
 		}
 		finally {
-			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, originalSaltLength);
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, originalHashLength);
+			Security.resetEncoder();
+		}
+	}
+	
+	/**
+	 * @see Security#encodeStringArgon2(String)
+	 */
+	@Test
+	public void encodeStringArgon2_shouldEncodeStringsToXCharactersWithXCharactersSalt() {
+		String originalSaltLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
+		String originalHashLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
+		try {
+			// Use safe values that fit in VARCHAR(128)
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "8"));
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32"));
+			Security.resetEncoder();
+			String hash1 = Security.encodeStringArgon2("test");
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16"));
+			Security.resetEncoder();
+			String hash2 = Security.encodeStringArgon2("test");
+			
+			// Verify both hashes are valid Argon2id hashes
+			assertTrue(hash1.startsWith("$argon2id$"));
+			assertTrue(hash2.startsWith("$argon2id$"));
+			
+			// Verify hashes are different (different salt should produce different hash)
+			assertTrue(!hash1.equals(hash2), "Different salt lengths should produce different hashes");
+			
+			// Verify both fit in VARCHAR(128)
+			assertTrue(hash1.length() <= 128, "Hash with 8-byte salt should fit in VARCHAR(128)");
+			assertTrue(hash2.length() <= 128, "Hash with 16-byte salt should fit in VARCHAR(128)");
+		}
+		finally {
+			if (originalSaltLength != null) {
+				administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, originalSaltLength));
+			} else {
+				GlobalProperty gp = administrationService.getGlobalPropertyObject(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
+				if (gp != null) {
+					administrationService.purgeGlobalProperty(gp);
+				}
+			}
+			if (originalHashLength != null) {
+				administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, originalHashLength));
+			} else {
+				GlobalProperty gp = administrationService.getGlobalPropertyObject(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
+				if (gp != null) {
+					administrationService.purgeGlobalProperty(gp);
+				}
+			}
 			Security.resetEncoder();
 		}
 	}
 
 	@Test
+<<<<<<< HEAD
 	void encodeStringArgon2_shouldUseDefaultValuesWhenGlobalPropertyValuesAreInvalid() {
+=======
+	public void encodeStringArgon2_shouldUseDefaultValuesWhenGlobalPropertyValuesAreInvalid() {
+>>>>>>> d360b20e0 (fix-for review3)
 		String originalSaltLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
 		String originalHashLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
 		String originalParallelism = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM);
@@ -173,10 +256,13 @@ class SecurityTest extends BaseContextSensitiveTest {
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "invalid"));
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "abc"));
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "-1"));
+<<<<<<< HEAD
 			Security.resetEncoder();
 			String hash = Security.encodeStringArgon2("test");
+=======
+>>>>>>> d360b20e0 (fix-for review3)
 			Security.resetEncoder();
-			String hash = Security.encodeString("test");
+			String hash = Security.encodeStringArgon2("test");
 			assertTrue(hash.startsWith("$argon2id$"));
 			String[] parts = hash.split("\\$");
 			assertTrue(parts.length >= 5);
@@ -191,13 +277,20 @@ class SecurityTest extends BaseContextSensitiveTest {
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, originalParallelism);
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, originalMemory);
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, originalIterations);
+<<<<<<< HEAD
 			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
+=======
+>>>>>>> d360b20e0 (fix-for review3)
 			Security.resetEncoder();
 		}
 	}
 
 	@Test
+<<<<<<< HEAD
 	void encodeStringArgon2_shouldUseUpdatedGlobalPropertyValues() {
+=======
+	public void encodeStringArgon2_shouldUseUpdatedGlobalPropertyValues() {
+>>>>>>> d360b20e0 (fix-for review3)
 		String originalMemory = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY);
 		String originalIterations = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS);
 		String originalParallelism = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM);
@@ -206,9 +299,14 @@ class SecurityTest extends BaseContextSensitiveTest {
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536"));
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3"));
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1"));
+<<<<<<< HEAD
 			Security.resetEncoder();
 			String hash1 = Security.encodeStringArgon2("test");
 			Security.resetEncoder();
+=======
+			Security.resetEncoder();
+			String hash1 = Security.encodeStringArgon2("test");
+>>>>>>> d360b20e0 (fix-for review3)
 			String[] parts1 = hash1.split("\\$");
 			assertTrue(parts1.length >= 5);
 			assertTrue(parts1[3].contains("m=65536"));
@@ -230,7 +328,10 @@ class SecurityTest extends BaseContextSensitiveTest {
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, originalMemory);
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, originalIterations);
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, originalParallelism);
+<<<<<<< HEAD
 			serviceContext.setService(org.openmrs.api.AdministrationService.class, originalAdministrationService);
+=======
+>>>>>>> d360b20e0 (fix-for review3)
 			Security.resetEncoder();
 		}
 	}
@@ -245,6 +346,7 @@ class SecurityTest extends BaseContextSensitiveTest {
 			}
 		}
 	}
+<<<<<<< HEAD
 
 	/**
 	 * @see Security#encodeString(String)
@@ -264,6 +366,9 @@ class SecurityTest extends BaseContextSensitiveTest {
 		assertEquals(HASH_LENGTH, hash.length());
 	}
 
+=======
+	
+>>>>>>> d360b20e0 (fix-for review3)
 	/**
 	 * @see Security#hashMatches(String,String)
 	 */

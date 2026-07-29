@@ -11,16 +11,16 @@ package org.openmrs.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import liquibase.GlobalConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
@@ -34,7 +34,7 @@ import org.openmrs.scheduler.SchedulerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.Arrays.asList;
+import liquibase.GlobalConfiguration;
 
 /**
  * Constants used in OpenMRS. Contents built from build properties (version, version_short, and
