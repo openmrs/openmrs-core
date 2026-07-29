@@ -16,7 +16,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.PatientProgram;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,6 +32,9 @@ public class RefByUuidTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private List<RefByUuid> refByUuids;
+
+	@Autowired
+	private DomainService domainService;
 
 	@Test
 	public void getRefByUuid_shouldSupportAllGetByUuidReturnTypes() {
@@ -86,6 +92,17 @@ public class RefByUuidTest extends BaseContextSensitiveTest {
 			    () -> "Mismatch in declared vs discovered types for: " + refByUuid.getClass().getName() + "\nDiscovered: "
 			            + discoveredTypes + "\nDeclared: " + declaredTypeSet);
 		}
+	}
+
+	@Test
+	public void fetchByUuid_shouldEnforceAuthorizationOnTheServiceGetter() {
+		String uuid = "2edf272c-bf05-4208-9f93-2fa213ed0415";
+		Context.logout();
+
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		    () -> domainService.fetchByUuid(PatientProgram.class, uuid));
+
+		assertTrue(exception.getMessage().contains(PrivilegeConstants.GET_PATIENT_PROGRAMS));
 	}
 
 	private boolean isGetByUuidMethod(Method method) {
