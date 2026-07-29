@@ -141,6 +141,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 	private Set<ConceptAttribute> attributes = new LinkedHashSet<>();
 
+	@AllowDirectAccess
+	private Set<ConceptInterpretationRule> interpretationRules = new LinkedHashSet<>();
+
 	/** default constructor */
 	public Concept() {
 		names = new HashSet<>();
@@ -1700,6 +1703,52 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void addAttribute(ConceptAttribute attribute) {
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
+	}
+
+	/**
+	 * Gets the interpretation rules for this concept.
+	 *
+	 * @return the interpretation rules
+	 */
+	public Set<ConceptInterpretationRule> getInterpretationRules() {
+		if (interpretationRules == null) {
+			interpretationRules = new LinkedHashSet<>();
+		}
+		return interpretationRules;
+	}
+
+	/**
+	 * Sets the interpretation rules for this concept.
+	 *
+	 * @param interpretationRules the interpretation rules to set
+	 */
+	public void setInterpretationRules(Set<ConceptInterpretationRule> interpretationRules) {
+		this.interpretationRules = interpretationRules;
+	}
+
+	/**
+	 * Adds the given interpretation rule to this concept.
+	 *
+	 * @param interpretationRule the interpretation rule to add
+	 */
+	public void addInterpretationRule(ConceptInterpretationRule interpretationRule) {
+		if (interpretationRule != null && !getInterpretationRules().contains(interpretationRule)) {
+			interpretationRule.setConcept(this);
+			getInterpretationRules().add(interpretationRule);
+		}
+	}
+
+	/**
+	 * Removes the given interpretation rule from this concept.
+	 *
+	 * @param interpretationRule the interpretation rule to remove
+	 * @return true if the rule was removed, otherwise false
+	 */
+	public boolean removeInterpretationRule(ConceptInterpretationRule interpretationRule) {
+		if (interpretationRule != null) {
+			interpretationRule.setConcept(null);
+		}
+		return getInterpretationRules().remove(interpretationRule);
 	}
 
 }

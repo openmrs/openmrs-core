@@ -141,6 +141,51 @@
 			<column name="description" type="varchar(255)"/>
 		</addColumn>
 	</changeSet>
+
+	<changeSet id="TRUNK-6723-2026-07-29" author="mujuzi">
+		<preConditions onFail="HALT">
+			<tableExists tableName="concept"/>
+			<not>
+				<tableExists tableName="concept_interpretation_rule"/>
+			</not>
+		</preConditions>
+		<comment>Creates the 'concept_interpretation_rule' table for coded concept interpretation rules.</comment>
+		<createTable tableName="concept_interpretation_rule">
+			<column name="concept_interpretation_rule_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="criteria" type="text"/>
+			<column name="interpretation" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="priority" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="creator" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="INT"/>
+			<column name="date_changed" type="datetime"/>
+		</createTable>
+		
+		<addForeignKeyConstraint baseTableName="concept_interpretation_rule" baseColumnNames="concept_id" 
+								 referencedTableName="concept" referencedColumnNames="concept_id" 
+								 constraintName="concept_interpretation_rule_concept_fk"/>
+
+		<createIndex tableName="concept_interpretation_rule" indexName="idx_concept_interpretation_rule_concept">
+			<column name="concept_id"/>
+		</createIndex>
+		
+	</changeSet>
 	
 </databaseChangeLog>
 
