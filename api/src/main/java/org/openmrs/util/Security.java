@@ -23,8 +23,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +36,7 @@ import org.springframework.util.StringUtils;
 /**
  * OpenMRS's security class deals with the hashing of passwords.
  */
-public class Security {
+public class Security implements GlobalPropertyListener {
 
 	/**
 	 * encryption settings
@@ -48,12 +50,107 @@ public class Security {
 	private static final String SHA1 = "SHA-1";
 	
 	private static final int MAX_MEMORY_KB = 1048576; // 1GB in KB
-	
+
 	private static final int MAX_ITERATIONS = 10;
-	
+
 	private static final int MAX_PARALLELISM = 8;
 
+	// PHC string format: $argon2id$v=19$m=X,t=Y,p=Z$SALT$HASH
+	// Approximate length calculation: ~40 chars header + salt_chars + hash_chars
+	// For VARCHAR(128), we need salt_chars + hash_chars <= ~88 chars
+	// Base64 encoding: 4 chars per 3 bytes, so ~1.33x expansion
+	private static final int MAX_SALT_LENGTH = 32; // Practical maximum
+	private static final int MAX_HASH_LENGTH = 55; // Maximum with 16-byte salt (as measured by dkayiwa)
+
+	// Cached Argon2 configuration values
+	private static volatile int cachedSaltLength = 16;
+	private static volatile int cachedHashLength = 32;
+	private static volatile int cachedParallelism = 1;
+	private static volatile int cachedMemory = 65536;
+	private static volatile int cachedIterations = 3;
+
+	private static volatile boolean listenerRegistered = false;
+	private static volatile boolean initialValuesLoaded = false;
+
 	private Security() {
+	}
+
+	/**
+	 * Initializes the Security class and registers it as a GlobalPropertyListener.
+	 * This method should be called during application startup to ensure that
+	 * changes to Argon2 configuration properties are properly cached.
+	 */
+	public static void initialize() {
+		loadInitialValues();
+		if (!listenerRegistered) {
+			synchronized (Security.class) {
+				if (!listenerRegistered) {
+					try {
+						Context.getAdministrationService().addGlobalPropertyListener(new Security());
+						listenerRegistered = true;
+						log.info("Security class registered as GlobalPropertyListener for Argon2 configuration");
+					} catch (Exception e) {
+						log.warn("Failed to register Security as GlobalPropertyListener: {}", e.getMessage());
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Loads initial values from the database for the Argon2 configuration properties.
+	 * This is called during initialization and when the listener is not yet registered.
+	 */
+	private static void loadInitialValues() {
+		if (!initialValuesLoaded) {
+			synchronized (Security.class) {
+				if (!initialValuesLoaded) {
+					try {
+						AdministrationService adminService = Context.getAdministrationService();
+						cachedSaltLength = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16"), 16);
+						cachedHashLength = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32"), 32);
+						cachedParallelism = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1"), 1);
+						cachedMemory = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536"), 65536);
+						cachedIterations = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3"), 3);
+						
+						// Ensure loaded values produce PHC strings that fit in VARCHAR(128)
+						if (!isPhcLengthSafe(cachedHashLength, cachedSaltLength)) {
+							log.warn("Loaded Argon2 configuration (hashLength={}, saltLength={}) would exceed VARCHAR(128) limit, adjusting to safe values", 
+								cachedHashLength, cachedSaltLength);
+							cachedHashLength = calculateSafeHashLength(cachedSaltLength);
+						}
+						
+						initialValuesLoaded = true;
+					} catch (Exception e) {
+						// Service layer not available yet, use defaults
+						log.debug("Service layer not available for Argon2 configuration, using defaults: {}", e.getMessage());
+						cachedSaltLength = 16;
+						cachedHashLength = 32;
+						cachedParallelism = 1;
+						cachedMemory = 65536;
+						cachedIterations = 3;
+						initialValuesLoaded = true; // Mark as loaded to prevent retries
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Helper method to parse integer properties with validation.
+	 */
+	private static int parseIntProperty(String value, int defaultValue) {
+		try {
+			if (value != null) {
+				int parsed = Integer.parseInt(value.trim());
+				if (parsed > 0) {
+					return parsed;
+				}
+			}
+		} catch (NumberFormatException e) {
+			log.warn("Invalid integer value: {}, using default: {}", value, defaultValue);
+		}
+		return defaultValue;
 	}
 
 	/**
@@ -86,13 +183,26 @@ public class Security {
 	}
 
 	/**
-	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
-	 * OpenMRS's preferred algorithm is Argon2id.
+	 * This method will hash <code>strToEncode</code> using SHA-512 for deterministic hashing.
+	 * This method is maintained for backward compatibility and public API contract.
+	 *
+	 * @param strToEncode string to encode
+	 * @return the SHA-512 encryption of a given string
+	 */
+	public static String encodeString(String strToEncode) throws APIException {
+		return encodeString(strToEncode, SHA512);
+	}
+
+	/**
+	 * This method will hash <code>strToEncode</code> using Argon2id for password encoding.
+	 * This method should only be used for password storage, not for deterministic hashing
+	 * (e.g., activation keys, secret answers).
 	 *
 	 * @param strToEncode string to encode
 	 * @return the Argon2id encryption of a given string
+	 * @since 2.8.9
 	 */
-	public static String encodeString(String strToEncode) throws APIException {
+	public static String encodeStringArgon2(String strToEncode) throws APIException {
 		return getArgon2Encoder().encode(strToEncode);
 	}
 
@@ -119,21 +229,19 @@ public class Security {
 	}
 
 	private static volatile Argon2PasswordEncoder argon2Encoder;
-	private static volatile String configFingerprint;
 
 	private static Argon2PasswordEncoder getArgon2Encoder() {
-		String currentFingerprint = getConfigFingerprint();
-		if (argon2Encoder == null || !currentFingerprint.equals(configFingerprint)) {
+		initialize(); // Ensure values are loaded and listener is registered
+		if (argon2Encoder == null) {
 			synchronized (Security.class) {
-				if (argon2Encoder == null || !currentFingerprint.equals(configFingerprint)) {
+				if (argon2Encoder == null) {
 					argon2Encoder = new Argon2PasswordEncoder(
-						getIntProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, 16),
-						getIntProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, 32),
-						getIntProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, 1),
-						getIntProperty(OpenmrsConstants.GP_ARGON2_MEMORY, 65536),
-						getIntProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, 3)
+						cachedSaltLength,
+						cachedHashLength,
+						cachedParallelism,
+						cachedMemory,
+						cachedIterations
 					);
-					configFingerprint = currentFingerprint;
 				}
 			}
 		}
@@ -141,62 +249,150 @@ public class Security {
 	}
 
 	/**
-	 * Resets the cached Argon2 encoder and configuration fingerprint.
+	 * Resets the cached Argon2 encoder and configuration values.
 	 * This is a package-private method intended for testing purposes only.
 	 * It forces the encoder to be recreated with the current configuration
-	 * on the next call to {@link #encodeString(String)}.
+	 * on the next call to {@link #encodeStringArgon2(String)}.
 	 */
 	static void resetEncoder() {
 		synchronized (Security.class) {
 			argon2Encoder = null;
-			configFingerprint = null;
+			cachedSaltLength = 16;
+			cachedHashLength = 32;
+			cachedParallelism = 1;
+			cachedMemory = 65536;
+			cachedIterations = 3;
 		}
 	}
 
-	private static String getConfigFingerprint() {
-		try {
-			AdministrationService adminService = Context.getAdministrationService();
-			return OpenmrsConstants.GP_ARGON2_SALT_LENGTH + "="
-				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16") + "|"
-				+ OpenmrsConstants.GP_ARGON2_HASH_LENGTH + "="
-				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32") + "|"
-				+ OpenmrsConstants.GP_ARGON2_PARALLELISM + "="
-				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1") + "|"
-				+ OpenmrsConstants.GP_ARGON2_MEMORY + "="
-				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536") + "|"
-				+ OpenmrsConstants.GP_ARGON2_ITERATIONS + "="
-				+ adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3");
-		} catch ( APIException e) {
-			return "default";
-		}
+	/**
+	 * GlobalPropertyListener implementation to cache Argon2 configuration values
+	 * and avoid database reads on every password operation.
+	 */
+	@Override
+	public boolean supportsPropertyName(String propertyName) {
+		return OpenmrsConstants.GP_ARGON2_SALT_LENGTH.equals(propertyName)
+			|| OpenmrsConstants.GP_ARGON2_HASH_LENGTH.equals(propertyName)
+			|| OpenmrsConstants.GP_ARGON2_PARALLELISM.equals(propertyName)
+			|| OpenmrsConstants.GP_ARGON2_MEMORY.equals(propertyName)
+			|| OpenmrsConstants.GP_ARGON2_ITERATIONS.equals(propertyName);
 	}
 
-	private static int getIntProperty(String key, int defaultValue) {
+	@Override
+	public void globalPropertyChanged(GlobalProperty newValue) {
+		if (newValue == null || newValue.getPropertyValue() == null) {
+			return;
+		}
+
+		String propertyName = newValue.getProperty();
 		try {
-			AdministrationService adminService = Context.getAdministrationService();
-			String value = adminService.getGlobalProperty(key, String.valueOf(defaultValue));
-			int parsed = Integer.parseInt(value.trim());
-			if (parsed <= 0) {
-				log.warn("Invalid value for global property '{}': {}, must be > 0, using default: {}", key, parsed, defaultValue);
-				return defaultValue;
+			int value = Integer.parseInt(newValue.getPropertyValue().trim());
+			if (value <= 0) {
+				log.warn("Invalid value for global property '{}': {}, must be > 0, ignoring", propertyName, value);
+				return;
 			}
-			
+
 			// Apply upper bounds with warnings for security
-			int maxValue = getMaxValueForProperty(key);
-			if (maxValue > 0 && parsed > maxValue) {
-				log.warn("Value for global property '{}': {} exceeds recommended maximum of {}, clamping to maximum", key, parsed, maxValue);
-				return maxValue;
+			int maxValue = getMaxValueForProperty(propertyName);
+			if (maxValue > 0 && value > maxValue) {
+				log.warn("Value for global property '{}': {} exceeds recommended maximum of {}, clamping to maximum",
+					propertyName, value, maxValue);
+				value = maxValue;
 			}
-			
-			return parsed;
-		} catch (APIException e) {
-			return defaultValue;
-		} catch (Exception e) {
-			log.warn("Invalid value for global property '{}', using default: {}", key, defaultValue);
-			return defaultValue;
+
+			// For hash/salt length, also validate combined PHC string length fits in VARCHAR(128)
+			if (OpenmrsConstants.GP_ARGON2_HASH_LENGTH.equals(propertyName) || 
+			    OpenmrsConstants.GP_ARGON2_SALT_LENGTH.equals(propertyName)) {
+				int newHashLength = OpenmrsConstants.GP_ARGON2_HASH_LENGTH.equals(propertyName) ? 
+					value : cachedHashLength;
+				int newSaltLength = OpenmrsConstants.GP_ARGON2_SALT_LENGTH.equals(propertyName) ? 
+					value : cachedSaltLength;
+				
+				if (!isPhcLengthSafe(newHashLength, newSaltLength)) {
+					int safeHashLength = calculateSafeHashLength(newSaltLength);
+					if (OpenmrsConstants.GP_ARGON2_HASH_LENGTH.equals(propertyName)) {
+						log.warn("Hash length {} with salt length {} would exceed VARCHAR(128) limit, clamping to {}", 
+							value, newSaltLength, safeHashLength);
+						value = safeHashLength;
+					} else {
+						log.warn("Salt length {} with hash length {} would exceed VARCHAR(128) limit, reducing to safe maximum", 
+							value, newHashLength);
+						// For salt length changes, we need to reduce hash length instead
+						synchronized (Security.class) {
+							cachedSaltLength = value;
+							cachedHashLength = calculateSafeHashLength(value);
+							argon2Encoder = null;
+							return;
+						}
+					}
+				}
+			}
+
+			synchronized (Security.class) {
+				if (OpenmrsConstants.GP_ARGON2_SALT_LENGTH.equals(propertyName)) {
+					cachedSaltLength = value;
+				} else if (OpenmrsConstants.GP_ARGON2_HASH_LENGTH.equals(propertyName)) {
+					cachedHashLength = value;
+				} else if (OpenmrsConstants.GP_ARGON2_PARALLELISM.equals(propertyName)) {
+					cachedParallelism = value;
+				} else if (OpenmrsConstants.GP_ARGON2_MEMORY.equals(propertyName)) {
+					cachedMemory = value;
+				} else if (OpenmrsConstants.GP_ARGON2_ITERATIONS.equals(propertyName)) {
+					cachedIterations = value;
+				}
+				// Reset encoder to pick up new configuration
+				argon2Encoder = null;
+			}
+		} catch (NumberFormatException e) {
+			log.warn("Invalid numeric value for global property '{}': {}, ignoring", propertyName, newValue.getPropertyValue());
 		}
 	}
-	
+
+	/**
+	 * Calculates whether the given hash and salt lengths will produce a PHC string
+	 * that fits within the VARCHAR(128) database column.
+	 * 
+	 * PHC format: $argon2id$v=19$m=X,t=Y,p=Z$SALT$HASH
+	 * Approximate: 40 chars header + ceil(salt/3)*4 + ceil(hash/3)*4
+	 */
+	private static boolean isPhcLengthSafe(int hashLength, int saltLength) {
+		int headerLength = 40; // Approximate header length
+		int saltEncodedLength = (int) Math.ceil(saltLength / 3.0) * 4;
+		int hashEncodedLength = (int) Math.ceil(hashLength / 3.0) * 4;
+		int totalLength = headerLength + saltEncodedLength + hashEncodedLength;
+		return totalLength <= 128;
+	}
+
+	/**
+	 * Calculates the maximum safe hash length for a given salt length to fit in VARCHAR(128).
+	 */
+	private static int calculateSafeHashLength(int saltLength) {
+		int headerLength = 40; // Approximate header length
+		int saltEncodedLength = (int) Math.ceil(saltLength / 3.0) * 4;
+		int availableForHash = 128 - headerLength - saltEncodedLength;
+		// Reverse the base64 encoding: (available / 4) * 3
+		return Math.max(4, (availableForHash / 4) * 3); // Minimum 4 bytes
+	}
+
+	@Override
+	public void globalPropertyDeleted(String propertyName) {
+		// Reset to defaults when a property is deleted
+		synchronized (Security.class) {
+			if (OpenmrsConstants.GP_ARGON2_SALT_LENGTH.equals(propertyName)) {
+				cachedSaltLength = 16;
+			} else if (OpenmrsConstants.GP_ARGON2_HASH_LENGTH.equals(propertyName)) {
+				cachedHashLength = 32;
+			} else if (OpenmrsConstants.GP_ARGON2_PARALLELISM.equals(propertyName)) {
+				cachedParallelism = 1;
+			} else if (OpenmrsConstants.GP_ARGON2_MEMORY.equals(propertyName)) {
+				cachedMemory = 65536;
+			} else if (OpenmrsConstants.GP_ARGON2_ITERATIONS.equals(propertyName)) {
+				cachedIterations = 3;
+			}
+			argon2Encoder = null;
+		}
+	}
+
 	private static int getMaxValueForProperty(String key) {
 		if (OpenmrsConstants.GP_ARGON2_MEMORY.equals(key)) {
 			return MAX_MEMORY_KB;
@@ -204,6 +400,10 @@ public class Security {
 			return MAX_ITERATIONS;
 		} else if (OpenmrsConstants.GP_ARGON2_PARALLELISM.equals(key)) {
 			return MAX_PARALLELISM;
+		} else if (OpenmrsConstants.GP_ARGON2_HASH_LENGTH.equals(key)) {
+			return MAX_HASH_LENGTH; // Absolute maximum, but actual max depends on salt length
+		} else if (OpenmrsConstants.GP_ARGON2_SALT_LENGTH.equals(key)) {
+			return MAX_SALT_LENGTH; // Absolute maximum, but affects hash length limit
 		}
 		return -1; // No maximum for other properties
 	}
