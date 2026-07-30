@@ -23,17 +23,10 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.mockito.Answers.CALLS_REAL_METHODS;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mockStatic;
 
 import javax.annotation.Resource;
 
@@ -272,21 +265,18 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void startModule_shouldPublishFailedStartModuleEventIfModuleExceptionOccur() {
-		
+	public void startModule_shouldPublishFailedStartModuleEventIfModuleExceptionOccurAndPublishStopModuleEvent() {
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
 		ModuleFactory.stopModule(test1);
+		test1.setModuleActivator(new ThrowingModuleActivator());
 		testModuleEventListener.events.clear();
 
-		try(MockedStatic<ModuleFactory> mockStatic = mockStatic(ModuleFactory.class,CALLS_REAL_METHODS)) {
-			mockStatic.when(() -> ModuleFactory.startModule(any(Module.class),eq(false),eq(null)))
-				.thenThrow(new ModuleException("Unable to start the module"));
-			assertThrows(ModuleException.class,() -> ModuleFactory.startModule(test1));
-		}
+		ModuleFactory.startModule(test1);
 		
 		assertFalse(test1.isStarted());
-		assertEquals(1, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_START:false", testModuleEventListener.events.get(0));
+		assertEquals(2, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
+		assertEquals("Test1 Module" + ":MODULE_START:false", testModuleEventListener.events.get(1));
 	}
 	
 	@Test
@@ -334,20 +324,18 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void unloadModule_shouldPublishFailUnloadModuleEventIfModuleMustStartExceptionOccur() {
+	public void unloadModule_shouldPublishFailUnloadModuleEventIfUnloadingMandatoryModule() {
 		testModuleEventListener.events.clear();
 
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
 		assertTrue(test1.isStarted());
+		test1.setMandatory(true);
 
-		try (MockedStatic<ModuleFactory> mockedStatic = mockStatic(ModuleFactory.class, CALLS_REAL_METHODS)) {
-			mockedStatic.when(() -> ModuleFactory.stopModule(any(Module.class), eq(true), eq(false)))
-				.thenThrow(new MandatoryModuleException("Error occurred while stopping module"));
-			assertThrows(ModuleMustStartException.class, () -> ModuleFactory.unloadModule(test1));
-		}
+		assertThrows(ModuleMustStartException.class, () -> ModuleFactory.unloadModule(test1));
 
-		assertEquals(1, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_UNLOAD:false", testModuleEventListener.events.get(0));
+		assertEquals(2, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
+		assertEquals("Test1 Module" + ":MODULE_UNLOAD:false", testModuleEventListener.events.get(1));
 	}
 
 	private Module loadModule(String location, String moduleName, boolean replace) {
@@ -363,6 +351,13 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		modulesToLoad.add(new File(ModuleUtil.class.getClassLoader().getResource(MODULE3_PATH).getPath()));
 		
 		return modulesToLoad;
+	}
+
+	private static class ThrowingModuleActivator extends BaseModuleActivator {
+		@Override
+		public void willStart() {
+			throw new ModuleException("Unable to start the module");
+		}
 	}
 
 	@Component("testingModuleEventListener")
