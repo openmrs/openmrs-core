@@ -1267,7 +1267,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldLoadConceptAnswersLazily() throws Exception {
+	public void getAnswers_shouldLoadConceptAnswersLazily() throws Exception {
 		Context.clearSession();
 		Concept concept = Context.getConceptService().getConcept(21);
 		ConceptAnswer answer = concept.getAnswers().iterator().next();
