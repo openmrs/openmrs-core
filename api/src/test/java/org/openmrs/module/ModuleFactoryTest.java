@@ -9,7 +9,6 @@
  */
 package org.openmrs.module;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -218,9 +217,10 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 
 		ModuleFactory.loadModule(moduleToLoad);
 
-		assertEquals(2, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_UNLOAD:true", testModuleEventListener.events.get(0));
-		assertEquals("Test1 Module" + ":MODULE_LOAD:true", testModuleEventListener.events.get(1));
+		assertEquals(3, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
+		assertEquals("Test1 Module" + ":MODULE_UNLOAD:true", testModuleEventListener.events.get(1));
+		assertEquals("Test1 Module" + ":MODULE_LOAD:true", testModuleEventListener.events.get(2));
 	}
 
 	@Test
@@ -296,7 +296,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
 		assertTrue(test1.isStarted());
 		
-		ModuleFactory.stopModule(test1);
+		ModuleFactory.stopModule(test1, false, false);
 		
 		assertFalse(test1.isStarted());
 		assertEquals(1, testModuleEventListener.events.size());
@@ -304,25 +304,22 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void stopModule_shouldPublishFailStopModuleEventIfModuleMustStartExceptionOccur() {
+	public void stopModule_shouldPublishFailStopModuleEventIfModuleIsMandatory() {
 		testModuleEventListener.events.clear();
-
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
+		
 		assertTrue(test1.isStarted());
+		test1.setMandatory(true);
 		
-		try (MockedStatic<ModuleFactory> mockedStatic = mockStatic(ModuleFactory.class, CALLS_REAL_METHODS)) {
-			mockedStatic.when(() ->  ModuleFactory.stopModule(any(Module.class), eq(false), eq(false)))
-				.thenThrow(new MandatoryModuleException("Error occurred while stopping module"));
-			assertThrows(ModuleMustStartException.class, () -> ModuleFactory.stopModule(test1));
-		}
-		
+		assertThrows(ModuleMustStartException.class, () -> ModuleFactory.stopModule(test1, false, false));
+
 		assertTrue(test1.isStarted());
 		assertEquals(1, testModuleEventListener.events.size());
 		assertEquals("Test1 Module" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
 	}
 
 	@Test
-	public void unloadModule_shouldPublishSuccessUnloadModuleEvent() {
+	public void unloadModule_shouldPublishSuccessStopAndUnloadModuleEvent() {
 		testModuleEventListener.events.clear();
 
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
@@ -330,8 +327,10 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		
 		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
 		
-		assertEquals(1, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_UNLOAD:true", testModuleEventListener.events.get(0));
+		assertEquals(2, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
+		assertEquals("Test1 Module" + ":MODULE_UNLOAD:true", testModuleEventListener.events.get(1));
+
 	}
 
 	@Test
