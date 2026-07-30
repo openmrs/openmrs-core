@@ -14,7 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import java.util.Base64;
 import java.util.Base64.Decoder;
@@ -80,8 +82,8 @@ public class SecurityTest {
 	
 	@Test
 	public void encodePassword_shouldFallbackToLegacyEncoderWithoutSpringContext() {
-		ServiceContext mockContext = org.mockito.Mockito.mock(ServiceContext.class);
-		org.mockito.Mockito.when(mockContext.getApplicationContext()).thenReturn(null);
+		ServiceContext mockContext = mock(ServiceContext.class);
+		when(mockContext.getApplicationContext()).thenReturn(null);
 
 		try (MockedStatic<ServiceContext> mockedStatic = mockStatic(ServiceContext.class)) {
 			mockedStatic.when(ServiceContext::getInstance).thenReturn(mockContext);
@@ -96,8 +98,8 @@ public class SecurityTest {
 
 	@Test
 	public void checkPassword_shouldFallbackToLegacyEncoderWithoutSpringContext() {
-		ServiceContext mockContext = org.mockito.Mockito.mock(ServiceContext.class);
-		org.mockito.Mockito.when(mockContext.getApplicationContext()).thenReturn(null);
+		ServiceContext mockContext = mock(ServiceContext.class);
+		when(mockContext.getApplicationContext()).thenReturn(null);
 
 		try (MockedStatic<ServiceContext> mockedStatic = mockStatic(ServiceContext.class)) {
 			mockedStatic.when(ServiceContext::getInstance).thenReturn(mockContext);

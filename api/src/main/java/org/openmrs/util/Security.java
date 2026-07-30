@@ -61,11 +61,14 @@ public class Security {
 	}
 
 	/**
-	 * Encodes a password by generating a salt, hashing with SHA-512, and returning
-	 * the hash and salt as a two-element array. Uses the configured PasswordEncoder internally.
+	 * Encodes a password with the configured {@code openmrsPasswordEncoder} and splits the result
+	 * into the two columns OpenMRS stores it in. With the default {@link LegacyOpenmrsPasswordEncoder}
+	 * that is SHA-512 over {@code password + salt}; any other encoder keeps its own salt inside the
+	 * encoded value, so no separate salt comes back.
 	 *
 	 * @param rawPassword the cleartext password
-	 * @return String[] where [0] is the hashed password and [1] is the salt
+	 * @return String[] where [0] is the hashed password and [1] is the salt, empty for an encoder
+	 *         that does not keep a separate salt
 	 * @since 2.8.9
 	 */
 	public static String[] encodePassword(String rawPassword) {
