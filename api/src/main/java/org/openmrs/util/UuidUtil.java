@@ -20,12 +20,7 @@ import com.fasterxml.uuid.NoArgGenerator;
 /**
  * Generates the uuids that identify OpenMRS objects.
  * <p>
- * All uuid generation should go through this class rather than calling {@link UUID#randomUUID()},
- * which draws from a single, JVM-wide {@link SecureRandom} whose {@code nextBytes} is synchronized.
- * Since {@link org.openmrs.BaseOpenmrsObject} generates a uuid in a field initializer, that one
- * monitor is entered for every object Hibernate hydrates - even though the generated value is then
- * immediately overwritten by the uuid read from the database - which makes it a significant point
- * of contention on read paths that load many rows.
+ * It is preferable to use this class to generate random UUIDs, as the JDK's default implementation can be slow under a high volume of requests.
  * <p>
  * A cryptographically strong source is not needed here: uuids identify objects, they are not
  * secrets. Access to a record is granted by privilege checks rather than by a uuid being
