@@ -71,13 +71,9 @@ public class UuidUtil {
 	}
 
 	/**
-	 * Hands out the stream for a thread that is generating its first uuid. Splitting gives the stream
-	 * its own increment as well as its own starting point, so that streams stay independent of one
-	 * another rather than being offsets into a single shared sequence.
-	 * <p>
-	 * The root has to be guarded because {@link SplittableRandom#split()} advances the instance it is
-	 * called on, but the monitor is entered once per thread rather than once per uuid, and it is held
-	 * for nothing more than a few arithmetic operations.
+	 * Used to create a new per-thread random generator. Needs to be
+	 * synchronized because {@code SplittableRandom} itself is not
+	 * thread-safe.
 	 *
 	 * @return the calling thread's own random number stream
 	 */
