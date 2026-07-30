@@ -9,6 +9,7 @@
  */
 package org.openmrs.module;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -23,7 +24,19 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.mockito.Answers.CALLS_REAL_METHODS;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
+
+import javax.annotation.Resource;
 
 public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	
@@ -38,6 +51,9 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	protected static final String MODULE3 = "test3";
 	protected static final String MODULE3_PATH = "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod";
 	
+	@Resource(name = "testingModuleEventListener")
+	TestModuleEventListener testModuleEventListener;
+
 	@BeforeEach
 	public void before() {
 		ModuleUtil.shutdown();
@@ -179,6 +195,162 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		assertFalse(test3.isStarted());
 	}
 	
+	@Test
+	public void loadModule_shouldPublishLoadModuleEventWhenNoOldModuleExists() {
+		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
+		testModuleEventListener.events.clear();
+
+		String moduleLocation = ModuleUtil.class.getClassLoader().getResource(MODULE1_PATH).getPath();
+		File moduleToLoad = new File(moduleLocation);
+
+		ModuleFactory.loadModule(moduleToLoad);
+
+		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_LOAD:true", testModuleEventListener.events.get(0));
+	}
+
+	@Test
+	public void loadModule_shouldPublishUnloadAndLoadModuleEventIfOldModuleExistsOfSameVersionAndReplacedExistingIsTrue() {
+		testModuleEventListener.events.clear();
+
+		String moduleLocation = ModuleUtil.class.getClassLoader().getResource(MODULE1_PATH).getPath();
+		File moduleToLoad = new File(moduleLocation);
+
+		ModuleFactory.loadModule(moduleToLoad);
+
+		assertEquals(2, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_UNLOAD:true", testModuleEventListener.events.get(0));
+		assertEquals("Test1 Module" + ":MODULE_LOAD:true", testModuleEventListener.events.get(1));
+	}
+
+	@Test
+	public void loadModule_shouldPublishFailedLoadModuleEventIfOldModuleExistsOfSameVersionAndReplacedExistingIsFalse() {
+		testModuleEventListener.events.clear();
+
+		String moduleLocation = ModuleUtil.class.getClassLoader().getResource(MODULE1_PATH).getPath();
+		File moduleToLoad = new File(moduleLocation);
+
+		assertThrows(
+				ModuleException.class,
+				() -> ModuleFactory.loadModule(moduleToLoad, false));
+
+		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_LOAD:false", testModuleEventListener.events.get(0));
+
+	}
+
+	@Test
+	public void loadModule_shouldPublishFailedLoadModuleEventIfOldModuleExistsOfNewerVersion() {
+		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
+		testModuleEventListener.events.clear();
+
+		String oldModuleLocation = ModuleUtil.class.getClassLoader().getResource(MODULE1_UPDATE_PATH).getPath();
+		File oldModuleToLoad = new File(oldModuleLocation);
+		ModuleFactory.loadModule(oldModuleToLoad);
+		testModuleEventListener.events.clear();
+
+		String newModuleLocation = ModuleUtil.class.getClassLoader().getResource(MODULE1_PATH).getPath();
+		File newModuleToLoad = new File(newModuleLocation);
+		ModuleFactory.loadModule(newModuleToLoad);
+
+		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_LOAD:false", testModuleEventListener.events.get(0));
+	}
+
+	@Test
+	public void startModule_shouldPublishSuccessStartModuleEvent() {
+
+		Module test1 = ModuleFactory.getModuleById(MODULE1);
+		ModuleFactory.stopModule(test1);
+		testModuleEventListener.events.clear();
+		
+		ModuleFactory.startModule(test1);
+
+		assertTrue(test1.isStarted());
+		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_START:true", testModuleEventListener.events.get(0));
+	}
+
+	@Test
+	public void startModule_shouldPublishFailedStartModuleEventIfModuleExceptionOccur() {
+		
+		Module test1 = ModuleFactory.getModuleById(MODULE1);
+		ModuleFactory.stopModule(test1);
+		testModuleEventListener.events.clear();
+
+		try(MockedStatic<ModuleFactory> mockStatic = mockStatic(ModuleFactory.class,CALLS_REAL_METHODS)) {
+			mockStatic.when(() -> ModuleFactory.startModule(any(Module.class),eq(false),eq(null)))
+				.thenThrow(new ModuleException("Unable to start the module"));
+			assertThrows(ModuleException.class,() -> ModuleFactory.startModule(test1));
+		}
+		
+		assertFalse(test1.isStarted());
+		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_START:false", testModuleEventListener.events.get(0));
+	}
+	
+	@Test
+	public void stopModule_shouldPublishSuccessStopModuleEvent() {
+		testModuleEventListener.events.clear();
+		
+		Module test1 = ModuleFactory.getModuleById(MODULE1);
+		assertTrue(test1.isStarted());
+		
+		ModuleFactory.stopModule(test1);
+		
+		assertFalse(test1.isStarted());
+		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
+	}
+
+	@Test
+	public void stopModule_shouldPublishFailStopModuleEventIfModuleMustStartExceptionOccur() {
+		testModuleEventListener.events.clear();
+
+		Module test1 = ModuleFactory.getModuleById(MODULE1);
+		assertTrue(test1.isStarted());
+		
+		try (MockedStatic<ModuleFactory> mockedStatic = mockStatic(ModuleFactory.class, CALLS_REAL_METHODS)) {
+			mockedStatic.when(() ->  ModuleFactory.stopModule(any(Module.class), eq(false), eq(false)))
+				.thenThrow(new MandatoryModuleException("Error occurred while stopping module"));
+			assertThrows(ModuleMustStartException.class, () -> ModuleFactory.stopModule(test1));
+		}
+		
+		assertTrue(test1.isStarted());
+		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
+	}
+
+	@Test
+	public void unloadModule_shouldPublishSuccessUnloadModuleEvent() {
+		testModuleEventListener.events.clear();
+
+		Module test1 = ModuleFactory.getModuleById(MODULE1);
+		assertTrue(test1.isStarted());
+		
+		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
+		
+		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_UNLOAD:true", testModuleEventListener.events.get(0));
+	}
+
+	@Test
+	public void unloadModule_shouldPublishFailUnloadModuleEventIfModuleMustStartExceptionOccur() {
+		testModuleEventListener.events.clear();
+
+		Module test1 = ModuleFactory.getModuleById(MODULE1);
+		assertTrue(test1.isStarted());
+
+		try (MockedStatic<ModuleFactory> mockedStatic = mockStatic(ModuleFactory.class, CALLS_REAL_METHODS)) {
+			mockedStatic.when(() -> ModuleFactory.stopModule(any(Module.class), eq(true), eq(false)))
+				.thenThrow(new MandatoryModuleException("Error occurred while stopping module"));
+			assertThrows(ModuleMustStartException.class, () -> ModuleFactory.unloadModule(test1));
+		}
+
+		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_UNLOAD:false", testModuleEventListener.events.get(0));
+	}
+
 	private Module loadModule(String location, String moduleName, boolean replace) {
 		String moduleLocation = ModuleUtil.class.getClassLoader().getResource(location).getPath();
 
@@ -192,5 +364,20 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		modulesToLoad.add(new File(ModuleUtil.class.getClassLoader().getResource(MODULE3_PATH).getPath()));
 		
 		return modulesToLoad;
+	}
+
+	@Component("testingModuleEventListener")
+	public static class TestModuleEventListener {
+
+		public List<String> events = new ArrayList<>();
+
+		@EventListener
+		public void onModuleEvent(ModuleActionEvent moduleEvent) {
+			events.add(moduleEvent.getModuleName() + ":" + moduleEvent.getActionType() + ":" + moduleEvent.isSuccess());
+		}
+
+		public void clear() {
+			events.clear();
+		}
 	}
 }

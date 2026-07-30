@@ -561,12 +561,21 @@ public class ModuleFactory {
 	 * @see Daemon#startModule(Module)
 	 */
 	public static Module startModule(Module module) throws ModuleException {
-		Module startedModule = startModule(module, false, null);
-
-		publishModuleEvents(ModuleEventType.MODULE_START, startedModule.getName(), isModuleStarted(startedModule));
-		
+		Module startedModule;
+		boolean isSuccess = true;
+		try {
+			startedModule = startModule(module, false, null);
+		}
+		catch (ModuleException e) {
+			isSuccess = false;
+			throw e;
+		}
+		finally {
+			String startUpErrorMsg = module.getStartupErrorMessage();
+			publishModuleEvents(ModuleEventType.MODULE_START, module.getName(), 
+				isSuccess && isModuleStarted(module) && (startUpErrorMsg==null || startUpErrorMsg.isEmpty()));
+		}
 		return startedModule;
-		
 	}
 	
 	/**
@@ -1022,8 +1031,15 @@ public class ModuleFactory {
 	 * @see ModuleFactory#stopModule(Module, boolean, boolean)
 	 */
 	public static void stopModule(Module mod) {
-		stopModule(mod, false, false);
-		publishModuleEvents(ModuleEventType.MODULE_STOP, mod != null ? mod.getName() : null,!isModuleStarted(mod));
+		boolean isStoppedSuccess = true;
+		try {
+			stopModule(mod, false, false);
+		} catch(ModuleMustStartException ex) {
+			isStoppedSuccess = false;
+			throw ex;
+		} finally {
+			publishModuleEvents(ModuleEventType.MODULE_STOP, mod.getName(), isStoppedSuccess && !isModuleStarted(mod));
+		}
 	}
 	
 	/**
@@ -1236,24 +1252,31 @@ public class ModuleFactory {
 	 * @param mod module to unload
 	 */
 	public static void unloadModule(Module mod) {
-		
-		// remove this module's advice and extensions
-		if (isModuleStarted(mod)) {
-			stopModule(mod, true);
-		}
-		
-		// remove from list of loaded modules
-		getLoadedModules().remove(mod);
-		
-		if (mod != null) {
-			// remove the file from the module repository
-			File file = mod.getFile();
-			boolean deleted = file.delete();
-			if (!deleted) {
-				file.deleteOnExit();
-				log.warn("Could not delete " + file.getAbsolutePath());
+		boolean isEventSuccess = true;
+		try {
+			// remove this module's advice and extensions
+			if (isModuleStarted(mod)) {
+				stopModule(mod, true);
 			}
-			publishModuleEvents(ModuleEventType.MODULE_UNLOAD, mod.getName(), deleted);
+
+			// remove from list of loaded modules
+			getLoadedModules().remove(mod);
+
+			if (mod != null) {
+				// remove the file from the module repository
+				File file = mod.getFile();
+				boolean deleted = file.delete();
+				if (!deleted) {
+					file.deleteOnExit();
+					isEventSuccess = false;
+					log.warn("Could not delete " + file.getAbsolutePath());
+				}
+			}
+		} catch(ModuleMustStartException ex) {
+			isEventSuccess = false;
+			throw ex;
+		} finally {
+			publishModuleEvents(ModuleEventType.MODULE_UNLOAD, mod != null ? mod.getName() : null, isEventSuccess);
 		}
 	}
 	
@@ -1671,12 +1694,16 @@ public class ModuleFactory {
 	 * @since 2.7
 	 */
 	private static void publishModuleEvents(ModuleEventType eventType, String moduleName, boolean isSuccess) {
-		if(moduleName == null || moduleName.isEmpty() || eventType == null) {
-			return;
-		}
-		ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, eventType, moduleName, isSuccess);
-		if(applicationEventPublisher != null) {
-			applicationEventPublisher.publishEvent(event);
+		try {
+			if (moduleName == null || moduleName.isEmpty() || eventType == null) {
+				return;
+			}
+			ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, eventType, moduleName, isSuccess);
+			if (applicationEventPublisher != null) {
+				applicationEventPublisher.publishEvent(event);
+			}
+		} catch (Exception e) {
+			log.warn("Unable to publish module event", e);
 		}
 	}
 	
