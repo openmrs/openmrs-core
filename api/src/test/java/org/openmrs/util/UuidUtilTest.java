@@ -97,8 +97,8 @@ public class UuidUtilTest {
 	}
 
 	/**
-	 * Threads draw from separate random number streams, so this guards against those streams being
-	 * seeded or advanced in a way that lets two threads produce the same value.
+	 * Every thread draws from its own {@link java.util.concurrent.ThreadLocalRandom} stream, so this
+	 * guards against those streams being reached in a way that lets two threads produce the same value.
 	 *
 	 * @see UuidUtil#newUuidString()
 	 */
@@ -141,12 +141,9 @@ public class UuidUtilTest {
 	}
 
 	/**
-	 * Handing java-uuid-generator a thread-confined generator is the whole point of {@link UuidUtil},
-	 * and it buys nothing unless the generator is actually the source every uuid is drawn from.
-	 * {@code RandomBasedGenerator} only takes the {@link Random#nextLong()} path for generators that
-	 * are not a {@link java.security.SecureRandom}; were it to switch to
-	 * {@link Random#nextBytes(byte[])}, or to draw from a source of its own, the per-thread streams
-	 * would stop being reached.
+	 * Supplying a generator buys nothing unless every uuid is actually drawn from it, so this pins that
+	 * {@code RandomBasedGenerator} draws through {@link Random#nextLong()} rather than from a source of
+	 * its own.
 	 */
 	@Test
 	public void randomBasedGenerator_shouldDrawEveryUuidFromTheSuppliedGenerator() {
@@ -177,12 +174,8 @@ public class UuidUtilTest {
 	}
 
 	/**
-	 * Guards the assumption the performance of {@link UuidUtil} rests on: that generation does not take
-	 * the monitor of the generator it was handed. A single {@code RandomBasedGenerator} instance is
-	 * shared by every thread, so were it to synchronize on that generator, threads would serialise on
-	 * one monitor and the per-thread streams would never be reached concurrently - reintroducing
-	 * exactly the contention this class exists to remove.
-	 * <p>
+	 * A single generator is shared by every thread, so were generation to synchronize on it, threads
+	 * would serialise on one monitor and reintroduce the contention {@link UuidUtil} exists to remove.
 	 * The monitor is held by another thread throughout, so generation completes only if it does not
 	 * need it.
 	 */
