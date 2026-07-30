@@ -36,7 +36,7 @@ import com.fasterxml.uuid.NoArgGenerator;
  * time-ordered (version 7) uuids ever be wanted for their better insert locality on the uuid
  * indexes, the generator below is the only place that needs to change.
  *
- * @since 3.0.0
+ * @since 3.0.0, 2.9.0
  */
 public class UuidUtil {
 
