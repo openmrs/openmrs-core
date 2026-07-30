@@ -38,7 +38,10 @@ import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ObsDAO;
+import org.openmrs.parameter.ObsSearchCriteria;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -51,6 +54,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("obsDAO")
 public class HibernateObsDAO implements ObsDAO {
+
+	private static final Logger log = LoggerFactory.getLogger(HibernateObsDAO.class);
 
 	protected final SessionFactory sessionFactory;
 
@@ -124,29 +129,35 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List, List,
-	 *      Integer, Integer, Date, Date, boolean, String, Integer, Integer)
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(ObsSearchCriteria)
 	 */
 	@Override
-	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
-	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
-	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws DAOException {
+	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Obs> cq = cb.createQuery(Obs.class);
 		Root<Obs> root = cq.from(Obs.class);
 
-		List<Predicate> predicates = createGetObservationsCriteria(cb, root, whom, encounters, questions, answers,
-		    personTypes, locations, obsGroupId, fromDate, toDate, null, visits, includeVoidedObs, accessionNumber);
+		List<Predicate> predicates = createGetObservationsCriteria(cb, root, obsSearchCriteria.getWhom(),
+		    obsSearchCriteria.getEncounters(), obsSearchCriteria.getQuestions(), obsSearchCriteria.getAnswers(),
+		    obsSearchCriteria.getPersonTypes(), obsSearchCriteria.getLocations(), obsSearchCriteria.getObsGroupId(),
+		    obsSearchCriteria.getFromDate(), obsSearchCriteria.getToDate(), null, obsSearchCriteria.getVisits(),
+		    obsSearchCriteria.getIncludeVoidedObs(), obsSearchCriteria.getAccessionNumber());
 
 		cq.where(predicates.toArray(new Predicate[] {}));
 
-		cq.orderBy(createOrderList(cb, root, sortList));
+		cq.orderBy(createOrderList(cb, root, obsSearchCriteria.getSort()));
 
 		TypedQuery<Obs> query = session.createQuery(cq);
 
+		Integer mostRecentN = obsSearchCriteria.getMostRecentN();
+		Integer startIndex = obsSearchCriteria.getStartIndex();
+		Integer maxResults = obsSearchCriteria.getMaxResults();
+
 		if (mostRecentN != null && mostRecentN > 0) {
+			if (startIndex != null || (maxResults != null && maxResults > 0)) {
+				log.warn("mostRecentN is set, startIndex and maxResults will be ignored");
+			}
 			query.setMaxResults(mostRecentN);
 		} else {
 			if (startIndex != null && startIndex >= 0) {
@@ -158,6 +169,20 @@ public class HibernateObsDAO implements ObsDAO {
 		}
 
 		return query.getResultList();
+	}
+
+	/**
+	 * @deprecated as of 2.9.0, use {@link #getObservations(ObsSearchCriteria)}
+	 */
+	@Override
+	@Deprecated
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws DAOException {
+		return this.getObservations(
+		    new ObsSearchCriteria(whom, encounters, questions, answers, personTypes, locations, sortList, visits,
+		            mostRecentN, obsGroupId, fromDate, toDate, includeVoidedObs, accessionNumber, startIndex, maxResults));
 	}
 
 	/**

@@ -20,6 +20,7 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.Visit;
 import org.openmrs.api.ObsService;
+import org.openmrs.parameter.ObsSearchCriteria;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 
 /**
@@ -101,12 +102,18 @@ public interface ObsDAO {
 	        boolean includeVoidedObs, String accessionNumber) throws DAOException;
 
 	/**
-	 * Gets observations with paging support. If mostRecentN is set, the paging parameters are ignored.
-	 *
-	 * @param startIndex the starting index of the result set (optional)
-	 * @param maxResults the maximum number of results to return (optional)
-	 * @since 2.8.0
+	 * @see org.openmrs.api.ObsService#getObservations(ObsSearchCriteria)
 	 */
+	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws DAOException;
+
+	/**
+	 * @deprecated as of 2.9.0, use {@link #getObservations(ObsSearchCriteria)}
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
+	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean,
+	 *      java.lang.String, java.lang.Integer, java.lang.Integer)
+	 */
+	@Deprecated
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
