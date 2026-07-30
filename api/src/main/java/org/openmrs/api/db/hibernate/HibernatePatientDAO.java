@@ -845,11 +845,10 @@ public class HibernatePatientDAO implements PatientDAO {
 	        boolean matchExactly) {
 		List<String> tokens = tokenizeIdentifierQuery(removeIdentifierPadding(paramQuery));
 		final String query = StringUtils.join(tokens, " | ");
-		//TODO: hibernate search identifierType?
-		//fields.add("identifierType");
 		return f.bool().with(b -> {
 			b.minimumShouldMatchNumber(1);
 			b.should(f.simpleQueryString().field("identifierPhrase").matching(query).boost(8f));
+			b.should(f.simpleQueryString().field("identifierType.name").matching(query));
 			String matchMode = Context.getAdministrationService()
 			        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
 			if (matchExactly) {

@@ -30,7 +30,9 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
@@ -298,5 +300,53 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 		// then
 		assertThat(duplicatePatients.size(), equalTo(2));
+	}
+
+	/**
+	 * @see HibernatePatientDAO#getPatients(String, List, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldFindPatientsByIdentifierTypeName() {
+		// Search using only the patient identifier type name.
+		String identifierTypeName = "Old Identification Number";
+		PatientIdentifierType type = Context.getPatientService().getPatientIdentifierTypeByName(identifierTypeName);
+		List<Patient> patients = hibernatePatientDao.getPatients(identifierTypeName, singletonList(type), false, null, null);
+
+		// Patients with identifiers of the requested type should be returned.
+		assertEquals(3, patients.size());
+
+		List<Integer> ids = patients.stream().map(Patient::getPatientId).collect(Collectors.toList());
+
+		assertThat(ids, hasItems(2, 6, 432));
+		// Patients with a different identifier type should not be returned.
+		assertThat(ids, not(hasItem(7)));
+	}
+
+	/**
+	 * @see HibernatePatientDAO#getPatients(String, List, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldStillFindPatientsByIdentifierValue() {
+		String identifierTypeName = "Old Identification Number";
+		PatientIdentifierType type = Context.getPatientService().getPatientIdentifierTypeByName(identifierTypeName);
+
+		// Ensure searching by identifier value continues to work after adding identifier type name to the search predicate.
+		List<Patient> patients = hibernatePatientDao.getPatients("12345K", singletonList(type), false, null, null);
+
+		assertThat(patients.stream().map(Patient::getPatientId).collect(Collectors.toList()), hasItem(6));
+	}
+
+	/**
+	 * @see HibernatePatientDAO#findPatients(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void findPatients_shouldFindPatientsByIdentifierTypeName() {
+		String identifierTypeName = "Old Identification Number";
+		List<Patient> patients = hibernatePatientDao.findPatients(identifierTypeName, false, null, null);
+
+		List<Integer> ids = patients.stream().map(Patient::getPatientId).collect(Collectors.toList());
+
+		assertThat(ids, hasItems(2, 6));
+		assertThat(ids, not(hasItem(432))); // voided patient excluded
 	}
 }
