@@ -26,9 +26,9 @@ import javax.crypto.spec.SecretKeySpec;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -89,7 +89,9 @@ public class Security {
 			String encoded = ((LegacyOpenmrsPasswordEncoder) encoder).encodeWithSalt(rawPassword, salt);
 			return parseEncodedPassword(encoded);
 		}
-		// For non-legacy encoders, encode normally (salt is managed internally by the encoder)
+		// A non-legacy encoder keeps its own salt inside the encoded value, so the salt passed in is
+		// dropped and the salt column ends up empty. Any secret answer hashed over the old salt
+		// (changeQuestionAnswer/isSecretAnswer) stops matching the first time this branch runs.
 		return encodePassword(rawPassword);
 	}
 
