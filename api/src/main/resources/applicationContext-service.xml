@@ -637,7 +637,6 @@
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter"/>
 	</context:component-scan>
 
-	<aop:config expose-proxy="true"/>
 	<cache:annotation-driven cache-manager="apiCacheManager" proxy-target-class="true"/>
 
 	<tx:annotation-driven proxy-target-class="true" />

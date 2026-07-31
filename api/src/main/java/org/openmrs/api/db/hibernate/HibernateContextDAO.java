@@ -54,7 +54,7 @@ import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.aop.framework.AopContext;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.Date;
 import org.springframework.transaction.annotation.Propagation;
@@ -81,6 +81,9 @@ public class HibernateContextDAO implements ContextDAO {
 	private SearchSessionFactory searchSessionFactory;
 	
 	private UserDAO userDao;
+	@Autowired
+	@Lazy
+	private HibernateContextDAO self;
 	
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
@@ -204,8 +207,7 @@ public class HibernateContextDAO implements ContextDAO {
 				// Lazy rehash: if password is legacy, upgrade to Argon2id transparently
                 if (Security.isLegacyHash(passwordOnRecord)) {
 	            	try {
-		                ((HibernateContextDAO) AopContext.currentProxy()).upgradePasswordHash(candidateUser, password);
-	                }
+		                self.upgradePasswordHash(candidateUser, password);	                }
 	                catch (Exception e) {
 		                log.error("Failed to upgrade password hash for user {}: {}",
 			                candidateUser.getUsername(), e.getMessage());
@@ -370,7 +372,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @since 2.8.9
 	 */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    void upgradePasswordHash(User user, String rawPassword) {
+    public void upgradePasswordHash(User user, String rawPassword) {
 		LoginCredential credential = userDao.getLoginCredential(user);
 		if (!Security.isLegacyHash(credential.getHashedPassword())) {
 			log.debug("Password hash for user {} was already upgraded — skipping", user.getUsername());
