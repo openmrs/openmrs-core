@@ -22,7 +22,7 @@ public class DatabaseDetective {
 	private static final String CONNECTION_URL = "connection.url";
 	
 	private static final String CONNECTION_DRIVER_CLASS = "connection.driver_class";
-	
+
 	private static final String CONNECTION_USERNAME = "connection.username";
 	
 	private static final String CONNECTION_PASSWORD = "connection.password";
