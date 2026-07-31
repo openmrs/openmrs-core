@@ -123,7 +123,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		// TODO Check required fields for user!!
 		OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
 
-		return dao.saveUser(user, password);
+		UserPasswordGuard.enter();
+		try {
+			return dao.saveUser(user, password);
+		} finally {
+			UserPasswordGuard.exit();
+		}
 	}
 
 	/**
@@ -184,7 +189,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			        "Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
 		}
 
-		return dao.saveUser(user, null);
+		UserPasswordGuard.enter();
+		try {
+			return dao.saveUser(user, null);
+		} finally {
+			UserPasswordGuard.exit();
+		}
 	}
 
 	public User voidUser(User user, String reason) throws APIException {
@@ -340,7 +350,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException {
-		dao.changeHashedPassword(user, hashedPassword, salt);
+		UserPasswordGuard.enter();
+		try {
+			dao.changeHashedPassword(user, hashedPassword, salt);
+		} finally {
+			UserPasswordGuard.exit();
+		}
 	}
 
 	/**
@@ -348,7 +363,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void changeQuestionAnswer(User u, String question, String answer) throws APIException {
-		dao.changeQuestionAnswer(u, question, answer);
+		UserPasswordGuard.enter();
+		try {
+			dao.changeQuestionAnswer(u, question, answer);
+		} finally {
+			UserPasswordGuard.exit();
+		}
 	}
 
 	/**
@@ -357,7 +377,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void changeQuestionAnswer(String pw, String q, String a) {
-		dao.changeQuestionAnswer(pw, q, a);
+		UserPasswordGuard.enter();
+		try {
+			dao.changeQuestionAnswer(pw, q, a);
+		} finally {
+			UserPasswordGuard.exit();
+		}
 	}
 
 	/**
@@ -622,7 +647,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			throw new APIException("no.authenticated.user.found", (Object[]) null);
 		}
 		user.setUserProperty(key, value);
-		return dao.saveUser(user, null);
+		UserPasswordGuard.enter();
+		try {
+			return dao.saveUser(user, null);
+		} finally {
+			UserPasswordGuard.exit();
+		}
 	}
 
 	@Override
@@ -635,7 +665,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		for (Map.Entry<String, String> entry : properties.entrySet()) {
 			user.setUserProperty(entry.getKey(), entry.getValue());
 		}
-		return dao.saveUser(user, null);
+		UserPasswordGuard.enter();
+		try {
+			return dao.saveUser(user, null);
+		} finally {
+			UserPasswordGuard.exit();
+		}
 	}
 
 	/**
@@ -688,7 +723,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 	private void updatePassword(User user, String newPassword) {
 		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
-		dao.changePassword(user, newPassword);
+		UserPasswordGuard.enter();
+		try {
+			dao.changePassword(user, newPassword);
+		} finally {
+			UserPasswordGuard.exit();
+		}
 	}
 
 	@Override
@@ -845,4 +885,28 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		return Arrays.asList(Role.class, Privilege.class, User.class);
 	}
 
+	public static final class UserPasswordGuard {
+
+		private static final ThreadLocal<Integer> DEPTH = ThreadLocal.withInitial(() -> 0);
+
+		private static void enter() {
+			DEPTH.set(DEPTH.get() + 1);
+		}
+
+		private static void exit() {
+			int depth = DEPTH.get() - 1;
+			if (depth <= 0) {
+				DEPTH.remove();
+			} else {
+				DEPTH.set(depth);
+			}
+		}
+
+		public static boolean isPermitted() {
+			return DEPTH.get() > 0;
+		}
+
+		private UserPasswordGuard() {
+		}
+	}
 }
