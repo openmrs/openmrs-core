@@ -2062,9 +2062,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void purgePatient_shouldDoNothingWhenPatientIsNull() {
-		// purgePatient is a no-op when patient is null; null must not reach the DAO layer.
-		assertDoesNotThrow(() -> patientService.purgePatient(null));
+	public void purgePatient_shouldThrowIllegalArgumentExceptionWhenPatientIsNull() {
+		// purgePatient throws IllegalArgumentException when patient is null; null must not reach the DAO layer.
+		assertThrows(IllegalArgumentException.class, () -> patientService.purgePatient(null));
 	}
 
 	@Test
