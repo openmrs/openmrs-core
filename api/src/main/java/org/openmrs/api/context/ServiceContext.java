@@ -933,7 +933,6 @@ public class ServiceContext implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-		ModuleFactory.setApplicationEventPublisher(applicationContext);
 	}
 	
 	public ApplicationContext getApplicationContext() {

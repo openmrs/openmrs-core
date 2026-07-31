@@ -40,6 +40,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
+import org.openmrs.api.context.ServiceContext;
 import org.openmrs.module.Extension.MEDIA_TYPE;
 import org.openmrs.util.CycleException;
 import org.openmrs.util.DatabaseUpdater;
@@ -62,13 +63,8 @@ import liquibase.Contexts;
  * Methods for loading, starting, stopping, and storing OpenMRS modules
  */
 public class ModuleFactory {
-	
-	private static ApplicationEventPublisher applicationEventPublisher;
-	private ModuleFactory() {
-	}
 
-	public static void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
-		applicationEventPublisher = publisher;
+	private ModuleFactory() {
 	}
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleFactory.class);
@@ -1688,13 +1684,14 @@ public class ModuleFactory {
 	 * @param eventType for what action done on the module
 	 * @param moduleName defines the module name on which we're performing the action 
 	 * @param isSuccess defines whether the module event got successfully executed or not
-	 * @since 2.7
+	 * @since 2.7.10
 	 */
 	private static void publishModuleEvents(ModuleEventType eventType, String moduleName, boolean isSuccess) {
 		try {
 			if (moduleName == null || moduleName.isEmpty() || eventType == null) {
 				return;
 			}
+			ApplicationEventPublisher applicationEventPublisher = ServiceContext.getInstance().getApplicationContext();
 			ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, eventType, moduleName, isSuccess);
 			if (applicationEventPublisher != null) {
 				applicationEventPublisher.publishEvent(event);
