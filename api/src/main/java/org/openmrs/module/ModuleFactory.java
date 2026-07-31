@@ -63,8 +63,6 @@ import liquibase.Contexts;
  */
 public class ModuleFactory {
 	
-	private static Logger logger = LoggerFactory.getLogger(ModuleFactory.class);
-	
 	private static ApplicationEventPublisher applicationEventPublisher;
 	private ModuleFactory() {
 	}
@@ -1268,7 +1266,6 @@ public class ModuleFactory {
 				boolean deleted = file.delete();
 				if (!deleted) {
 					file.deleteOnExit();
-					isEventSuccess = false;
 					log.warn("Could not delete " + file.getAbsolutePath());
 				}
 			}
