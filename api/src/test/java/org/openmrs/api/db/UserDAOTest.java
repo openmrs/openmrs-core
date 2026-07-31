@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db;
 
+import java.lang.reflect.Method;
 import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
@@ -254,6 +256,53 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		Context.getUserService().createUser(newUser, PASSWORD);
 
 		assertNotNull(dao.getUser(newUser.getUserId()));
+	}
+
+	@Test
+	public void changePasswordString_shouldAllowChangingPasswordWhenPermitIsHeld() throws Exception {
+		Method enter = getGuardMethod("enter");
+		Method exit = getGuardMethod("exit");
+
+		Context.authenticate(userJoe.getUsername(), PASSWORD);
+		enter.invoke(null);
+		try {
+			dao.changePassword(PASSWORD, PASSWORD + "foo");
+		} finally {
+			exit.invoke(null);
+		}
+
+		assertFalse(UserServiceImpl.UserPasswordGuard.isPermitted());
+		assertTrue(dao.getLoginCredential(userJoe).checkPassword(PASSWORD + "foo"));
+	}
+
+	@Test
+	public void userPasswordGuard_shouldAllowNestedPermitAcquisition() throws Exception {
+		Method enter = getGuardMethod("enter");
+		Method exit = getGuardMethod("exit");
+
+		enter.invoke(null);
+		enter.invoke(null);
+		try {
+			dao.saveUser(userJoe, PASSWORD);
+			assertTrue(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should be held at depth 2");
+
+			exit.invoke(null);
+			assertTrue(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should still be held at depth 1");
+
+			exit.invoke(null);
+			assertFalse(UserServiceImpl.UserPasswordGuard.isPermitted(),
+			    "permit should be released after the outermost exit");
+		} finally {
+			while (UserServiceImpl.UserPasswordGuard.isPermitted()) {
+				exit.invoke(null);
+			}
+		}
+	}
+
+	private Method getGuardMethod(String name) throws Exception {
+		Method method = UserServiceImpl.UserPasswordGuard.class.getDeclaredMethod(name);
+		method.setAccessible(true);
+		return method;
 	}
 
 }
