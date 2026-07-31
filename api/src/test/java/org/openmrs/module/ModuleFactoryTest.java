@@ -229,7 +229,6 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 
 		assertEquals(1, testModuleEventListener.events.size());
 		assertEquals("Test1 Module" + ":MODULE_LOAD:false", testModuleEventListener.events.get(0));
-
 	}
 
 	@Test
@@ -248,6 +247,30 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 
 		assertEquals(1, testModuleEventListener.events.size());
 		assertEquals("Test1 Module" + ":MODULE_LOAD:false", testModuleEventListener.events.get(0));
+	}
+	
+	@Test
+	void loadModule_shouldPublishFailStopUnloadLoadAndModuleEventIfErrorOccurWhileStoppingExistingModule_AndReplaceExistingIsTrue() {
+		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
+		testModuleEventListener.events.clear();
+		
+		String moduleLocation = ModuleUtil.class.getClassLoader().getResource(MODULE1_PATH).getPath();
+		File moduleToLoad = new File(moduleLocation);
+		ModuleFactory.loadModule(moduleToLoad);
+		
+		Module test1 = ModuleFactory.getModuleById(MODULE1);
+		ModuleFactory.startModule(test1);
+		testModuleEventListener.events.clear();
+		
+		assertTrue(test1.isStarted());
+		test1.setMandatory(true);
+		
+		assertThrows(MandatoryModuleException.class, () -> ModuleFactory.loadModule(moduleToLoad));
+		
+		assertEquals(3, testModuleEventListener.events.size());
+		assertEquals("Test1 Module" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
+		assertEquals("Test1 Module" + ":MODULE_UNLOAD:false", testModuleEventListener.events.get(1));
+		assertEquals("Test1 Module" + ":MODULE_LOAD:false", testModuleEventListener.events.get(2));
 	}
 
 	@Test
@@ -306,6 +329,23 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		assertTrue(test1.isStarted());
 		assertEquals(1, testModuleEventListener.events.size());
 		assertEquals("Test1 Module" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
+	}
+
+	@Test
+	public void stopModule_shouldNotPublishModuleEventIfModuleNotEvenStarted() {
+		testModuleEventListener.events.clear();
+
+		Module test1 = ModuleFactory.getModuleById(MODULE1);
+		assertTrue(test1.isStarted());
+		ModuleFactory.stopModule(test1, false, false);
+		testModuleEventListener.events.clear();
+
+		assertFalse(test1.isStarted());
+
+		ModuleFactory.stopModule(test1, false, false);
+
+		assertFalse(test1.isStarted());
+		assertEquals(0, testModuleEventListener.events.size());
 	}
 
 	@Test
