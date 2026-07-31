@@ -11,6 +11,12 @@ package org.openmrs.module;
 
 import org.springframework.context.ApplicationEvent;
 
+/**
+ * A POJO representing a module action event which
+ * carries data for module-related events so they can be published across the app.
+ * 
+ * @since 2.7.10
+ */
 public class ModuleActionEvent extends ApplicationEvent {
 	
 	private ModuleEventType eventType;
@@ -38,13 +44,4 @@ public class ModuleActionEvent extends ApplicationEvent {
 		return isSuccess;
 	}
 	
-}
-
-enum ModuleEventType {
-
-	MODULE_START,
-	MODULE_STOP,
-	MODULE_LOAD,
-	MODULE_UNLOAD;
-
 }
