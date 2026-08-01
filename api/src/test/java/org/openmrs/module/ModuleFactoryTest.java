@@ -198,7 +198,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		ModuleFactory.loadModule(moduleToLoad);
 
 		assertEquals(1, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_LOAD:true", testModuleEventListener.events.get(0));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_LOAD:true", testModuleEventListener.events.get(0));
 	}
 
 	@Test
@@ -211,9 +211,9 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		ModuleFactory.loadModule(moduleToLoad);
 
 		assertEquals(3, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
-		assertEquals("Test1 Module" + ":MODULE_UNLOAD:true", testModuleEventListener.events.get(1));
-		assertEquals("Test1 Module" + ":MODULE_LOAD:true", testModuleEventListener.events.get(2));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_UNLOAD:true", testModuleEventListener.events.get(1));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_LOAD:true", testModuleEventListener.events.get(2));
 	}
 
 	@Test
@@ -228,7 +228,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 				() -> ModuleFactory.loadModule(moduleToLoad, false));
 
 		assertEquals(1, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_LOAD:false", testModuleEventListener.events.get(0));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_LOAD:false", testModuleEventListener.events.get(0));
 	}
 
 	@Test
@@ -246,7 +246,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		ModuleFactory.loadModule(newModuleToLoad);
 
 		assertEquals(1, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_LOAD:false", testModuleEventListener.events.get(0));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_LOAD:false", testModuleEventListener.events.get(0));
 	}
 	
 	@Test
@@ -268,9 +268,9 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		assertThrows(MandatoryModuleException.class, () -> ModuleFactory.loadModule(moduleToLoad));
 		
 		assertEquals(3, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
-		assertEquals("Test1 Module" + ":MODULE_UNLOAD:false", testModuleEventListener.events.get(1));
-		assertEquals("Test1 Module" + ":MODULE_LOAD:false", testModuleEventListener.events.get(2));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_UNLOAD:false", testModuleEventListener.events.get(1));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_LOAD:false", testModuleEventListener.events.get(2));
 	}
 
 	@Test
@@ -284,7 +284,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 
 		assertTrue(test1.isStarted());
 		assertEquals(1, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_START:true", testModuleEventListener.events.get(0));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_START:true", testModuleEventListener.events.get(0));
 	}
 
 	@Test
@@ -298,8 +298,8 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		
 		assertFalse(test1.isStarted());
 		assertEquals(2, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
-		assertEquals("Test1 Module" + ":MODULE_START:false", testModuleEventListener.events.get(1));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_START:false", testModuleEventListener.events.get(1));
 	}
 	
 	@Test
@@ -313,7 +313,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		
 		assertFalse(test1.isStarted());
 		assertEquals(1, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
 	}
 
 	@Test
@@ -328,7 +328,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 
 		assertTrue(test1.isStarted());
 		assertEquals(1, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
 	}
 
 	@Test
@@ -358,8 +358,8 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
 		
 		assertEquals(2, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
-		assertEquals("Test1 Module" + ":MODULE_UNLOAD:true", testModuleEventListener.events.get(1));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_STOP:true", testModuleEventListener.events.get(0));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_UNLOAD:true", testModuleEventListener.events.get(1));
 
 	}
 
@@ -374,8 +374,8 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		assertThrows(ModuleMustStartException.class, () -> ModuleFactory.unloadModule(test1));
 
 		assertEquals(2, testModuleEventListener.events.size());
-		assertEquals("Test1 Module" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
-		assertEquals("Test1 Module" + ":MODULE_UNLOAD:false", testModuleEventListener.events.get(1));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
+		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_UNLOAD:false", testModuleEventListener.events.get(1));
 	}
 
 	private Module loadModule(String location, String moduleName, boolean replace) {
@@ -407,7 +407,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 
 		@EventListener
 		public void onModuleEvent(ModuleActionEvent moduleEvent) {
-			events.add(moduleEvent.getModuleName() + ":" + moduleEvent.getActionType() + ":" + moduleEvent.isSuccess());
+			events.add(moduleEvent.getModuleId() + ":" + moduleEvent.getModuleName() + ":" + moduleEvent.getModuleVersion() + ":" + moduleEvent.getActionType() + ":" + moduleEvent.isSuccess());
 		}
 
 		public void clear() {
