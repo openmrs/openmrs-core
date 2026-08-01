@@ -82,7 +82,7 @@
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
 		<commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
 		<commonsFileupload2JakartaVersion>2.0.0-M5</commonsFileupload2JakartaVersion>
-		<commonsValidatorVersion>1.10.1</commonsValidatorVersion>
+		<commonsValidatorVersion>1.11.0</commonsValidatorVersion>
 
 		<!-- Velocity -->
 		<velocityVersion>2.4.1</velocityVersion>
