@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.lucene.search.BooleanQuery;
@@ -23,7 +24,9 @@ import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.hibernate.search.engine.search.query.SearchQuery;
 import org.hibernate.search.engine.search.query.SearchScroll;
 import org.hibernate.search.engine.search.query.SearchScrollResult;
+import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
 import org.hibernate.search.mapper.orm.scope.SearchScope;
+import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 
@@ -67,6 +70,8 @@ public class SearchQueryUnique<T, R> {
 
 	String uniqueKey;
 
+	Consumer<SearchLoadingOptionsStep> loadingOptions;
+
 	SearchQueryUnique<?, R> joinedQuery;
 
 	public SearchQueryUnique(Class<? extends T> scope, Function<SearchPredicateFactory, SearchPredicate> search,
@@ -96,6 +101,27 @@ public class SearchQueryUnique<T, R> {
 
 	public SearchQueryUnique<?, R> getJoinedQuery() {
 		return joinedQuery;
+	}
+
+	public Consumer<SearchLoadingOptionsStep> getLoadingOptions() {
+		return loadingOptions;
+	}
+
+	/**
+	 * Customizes how the hits of this sub-query are loaded, for this query only.
+	 * <p>
+	 * Where the index type reaches the returned entity through a default-eager <code>@ManyToOne</code>,
+	 * Hibernate Search resolves it once per hit while loading the page, before the page mapper can
+	 * batch-load anything. An empty {@link org.hibernate.graph.GraphSemantic#FETCH} graph leaves it an
+	 * uninitialized proxy so the mapper's batched load is the one that reaches the database. Applies to
+	 * the page fetch only, and does not change the mapped fetch strategy outside this query.
+	 *
+	 * @param loadingOptions the loading options to apply, or <code>null</code> for the defaults
+	 * @return this query, for chaining
+	 */
+	public SearchQueryUnique<T, R> withLoadingOptions(Consumer<SearchLoadingOptionsStep> loadingOptions) {
+		this.loadingOptions = loadingOptions;
+		return this;
 	}
 
 	/**
@@ -299,7 +325,7 @@ public class SearchQueryUnique<T, R> {
 			SearchScope<?> scope = searchSession.scope(nextQuery.getScope());
 			SearchPredicateFactory predicateFactory = scope.predicate();
 			SearchPredicate searchPredicate = nextQuery.getSearch().apply(predicateFactory);
-			SearchQuery<?> query;
+			SearchQueryOptionsStep<?, ?, ?, SearchLoadingOptionsStep, ?, ?> queryOptions;
 
 			final Collection<Object> previousQueryUniqueKeys = new ArrayList<>(uniqueKeys);
 			DeduplicationResult dedup = null;
@@ -328,7 +354,7 @@ public class SearchQueryUnique<T, R> {
 					uniqueKeys = new LinkedHashSet<>(new ArrayList<>(uniqueKeys).subList(0, maxClauseCount));
 				}
 
-				query = searchSession.search(scope).where(f -> f.bool().with(b -> {
+				queryOptions = searchSession.search(scope).where(f -> f.bool().with(b -> {
 					b.must(searchPredicate);
 					if (!duplicateIds.isEmpty()) {
 						b.filter(f.not(f.id().matchingAny(duplicateIds)));
@@ -337,10 +363,18 @@ public class SearchQueryUnique<T, R> {
 					if (!previousQueryUniqueKeys.isEmpty()) {
 						b.filter(f.not(f.terms().field(uniqueKey).matchingAny(previousQueryUniqueKeys)));
 					}
-				})).toQuery();
+				}));
 			} else {
-				query = searchSession.search(scope).where(searchPredicate).toQuery();
+				queryOptions = searchSession.search(scope).where(searchPredicate);
 			}
+
+			// Page fetch only: the deduplication scroll above projects index fields and never loads
+			// entities, so loading options are meaningless there.
+			if (nextQuery.getLoadingOptions() != null) {
+				queryOptions.loading(nextQuery.getLoadingOptions());
+			}
+
+			SearchQuery<?> query = queryOptions.toQuery();
 
 			List<?> partialResults;
 			if (currentOffset != null) {
