@@ -174,9 +174,6 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional
 	public void deleteVisit(Visit visit) throws DAOException {
-		if (visit == null) {
-			throw new DAOException("Visit must not be null");
-		}
 		getCurrentSession().remove(visit);
 	}
 
