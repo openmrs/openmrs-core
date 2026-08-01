@@ -22,6 +22,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.module.DaemonToken;
@@ -72,6 +73,7 @@ public final class Daemon {
 		HibernateContextDAO.setDaemonCallerKey(CALLER_KEY);
 		ModuleFactory.setDaemonCallerKey(CALLER_KEY);
 		JobRequestHandlerAdapter.setDaemonCallerKey(CALLER_KEY);
+		RolePrivilegeCache.setDaemonCallerKey(CALLER_KEY);
 		// WebDaemon lives in the web module, which the api module cannot reference at compile time, so
 		// hand it the key reflectively.
 		try {
@@ -301,6 +303,24 @@ public final class Daemon {
 		requireDaemonCaller(callerKey, "runNewDaemonTask can only be called by an authorized daemon entry point");
 
 		return runInDaemonThreadInternal(runnable);
+	}
+
+	/**
+	 * Runs the given task on a new daemon thread, authorized by a {@link CallerKey}, and returns a
+	 * {@link Future} for its result without blocking. This exists strictly for internal use by trusted
+	 * core entry points that must launch daemon work from a non-daemon thread and want to await the
+	 * result themselves (for example coalescing concurrent callers onto a single future).
+	 *
+	 * @param callable what to run in a new daemon thread
+	 * @param callerKey the {@link CallerKey} proving the caller is a trusted daemon entry point
+	 * @return a future that completes with the task's result
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	@SuppressWarnings("squid:S1217")
+	public static <T> Future<T> runNewDaemonTask(final Callable<T> callable, CallerKey callerKey) {
+		requireDaemonCaller(callerKey, "runNewDaemonTask can only be called by an authorized daemon entry point");
+
+		return runInDaemonThreadInternal(callable);
 	}
 
 	/**

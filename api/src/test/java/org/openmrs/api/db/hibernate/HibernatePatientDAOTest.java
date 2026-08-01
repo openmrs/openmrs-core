@@ -23,6 +23,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -51,6 +52,15 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	private HibernatePatientDAO hibernatePatientDao;
 
 	private HibernatePersonDAO hibernatePersonDAO;
+
+	/**
+	 * Restricts search-index rebuilds to the entity types patient searches actually query, instead of
+	 * rebuilding every indexed type on each test.
+	 */
+	@Override
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { PersonName.class, PersonAttribute.class, PatientIdentifier.class };
+	}
 
 	@BeforeEach
 	public void beforeEach() {

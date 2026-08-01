@@ -252,6 +252,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * @see org.openmrs.api.UserService#purgePrivilege(org.openmrs.Privilege)
 	 */
 	@Override
+	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public void purgePrivilege(Privilege privilege) throws APIException {
 		if (OpenmrsUtil.getCorePrivileges().keySet().contains(privilege.getPrivilege())) {
 			throw new APIException("Privilege.cannot.delete.core", (Object[]) null);
@@ -264,6 +265,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * @see org.openmrs.api.UserService#savePrivilege(org.openmrs.Privilege)
 	 */
 	@Override
+	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public Privilege savePrivilege(Privilege privilege) throws APIException {
 		return dao.savePrivilege(privilege);
 	}
@@ -290,6 +292,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * @see org.openmrs.api.UserService#purgeRole(org.openmrs.Role)
 	 */
 	@Override
+	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public void purgeRole(Role role) throws APIException {
 		if (role == null || role.getRole() == null) {
 			return;
@@ -310,6 +313,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * @see org.openmrs.api.UserService#saveRole(org.openmrs.Role)
 	 */
 	@Override
+	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public Role saveRole(Role role) throws APIException {
 		// make sure one of the parents of this role isn't itself...this would
 		// cause an infinite loop
