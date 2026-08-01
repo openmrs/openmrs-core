@@ -164,7 +164,7 @@ public class ModuleFactory {
 			isModuleLoaded = true;
 			
 		} finally {
-			publishModuleEvents(ModuleEventType.MODULE_LOAD, module.getName(), isModuleLoaded);
+			publishModuleEvents(ModuleEventType.MODULE_LOAD, module, isModuleLoaded);
 		}
 		return module;
 	}
@@ -565,7 +565,7 @@ public class ModuleFactory {
 		}
 		finally {
 			String startUpErrorMsg = module.getStartupErrorMessage();
-			publishModuleEvents(ModuleEventType.MODULE_START, module.getName(), 
+			publishModuleEvents(ModuleEventType.MODULE_START, module, 
 				isSuccess && isModuleStarted(module) && (startUpErrorMsg==null || startUpErrorMsg.isEmpty()));
 		}
 		return startedModule;
@@ -1058,7 +1058,7 @@ public class ModuleFactory {
 			isStoppedSuccess = false;
 			throw ex;
 		} finally {
-			publishModuleEvents(ModuleEventType.MODULE_STOP, mod.getName(), isStoppedSuccess && !isModuleStarted(mod));
+			publishModuleEvents(ModuleEventType.MODULE_STOP, mod, isStoppedSuccess && !isModuleStarted(mod));
 		}
 		return dependentModulesStopped;
 	}
@@ -1269,7 +1269,7 @@ public class ModuleFactory {
 			isEventSuccess = false;
 			throw ex;
 		} finally {
-			publishModuleEvents(ModuleEventType.MODULE_UNLOAD, mod != null ? mod.getName() : null, isEventSuccess);
+			publishModuleEvents(ModuleEventType.MODULE_UNLOAD, mod, isEventSuccess);
 		}
 	}
 	
@@ -1682,17 +1682,18 @@ public class ModuleFactory {
 	 * Helper method to publish the module events
 	 * 
 	 * @param eventType for what action done on the module
-	 * @param moduleName defines the module name on which we're performing the action 
+	 * @param mod defines the module on which we're performing the action 
 	 * @param isSuccess defines whether the module event got successfully executed or not
 	 * @since 2.7.10
 	 */
-	private static void publishModuleEvents(ModuleEventType eventType, String moduleName, boolean isSuccess) {
+	private static void publishModuleEvents(ModuleEventType eventType, Module mod, boolean isSuccess) {
 		try {
-			if (moduleName == null || moduleName.isEmpty() || eventType == null) {
+			if (mod == null) {
 				return;
 			}
 			ApplicationEventPublisher applicationEventPublisher = ServiceContext.getInstance().getApplicationContext();
-			ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, eventType, moduleName, isSuccess);
+			ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, eventType, mod.getModuleId(),
+				mod.getName(), mod.getVersion(), isSuccess);
 			if (applicationEventPublisher != null) {
 				applicationEventPublisher.publishEvent(event);
 			}
