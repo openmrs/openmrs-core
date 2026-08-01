@@ -21,14 +21,21 @@ public class ModuleActionEvent extends ApplicationEvent {
 	
 	private ModuleEventType eventType;
 	
+	private String moduleId;
+	
 	private String moduleName;
+	
+	private String moduleVersion;
 	
 	private boolean isSuccess;
 	
-	public ModuleActionEvent(Object source, ModuleEventType eventType, String moduleName, boolean isSuccess) {
+	public ModuleActionEvent(Object source, ModuleEventType eventType, String moduleId, String moduleName,
+	    String moduleVersion, boolean isSuccess) {
 		super(source);
 		this.eventType = eventType;
+		this.moduleId = moduleId;
 		this.moduleName = moduleName;
+		this.moduleVersion = moduleVersion;
 		this.isSuccess = isSuccess;
 	}
 	
@@ -36,8 +43,16 @@ public class ModuleActionEvent extends ApplicationEvent {
 		return eventType;
 	}
 	
+	public String getModuleId() {
+		return moduleId;
+	}
+	
 	public String getModuleName() {
 		return moduleName;
+	}
+	
+	public String getModuleVersion() {
+		return moduleVersion;
 	}
 	
 	public boolean isSuccess() {
