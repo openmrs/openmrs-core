@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.db;
 
-import java.lang.reflect.Method;
 import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +27,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -232,11 +232,29 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void updateLoginCredential_shouldNotAllowUpdatingLoginCredentialFromUnknownCaller() {
-		Context.getUserService().changePassword(userJoe, PASSWORD);
+	public void changeQuestionAnswer_shouldNotAllowChangingQuestionAnswerFromUnknownCaller() {
+		Exception caughtException = assertThrows(DAOException.class,
+		    () -> dao.changeQuestionAnswer(userJoe, "question", "answer"));
+
+		assertThat(caughtException.getMessage(), is("Illegal attempt to change user password from unknown caller"));
+		assertNull(dao.getLoginCredential(userJoe).getSecretQuestion(), "secret question should not have been set");
+	}
+
+	@Test
+	public void changeQuestionAnswerString_shouldNotAllowChangingQuestionAnswerFromUnknownCaller() {
+		Context.authenticate(userJoe.getUsername(), PASSWORD);
+		Exception caughtException = assertThrows(DAOException.class,
+		    () -> dao.changeQuestionAnswer(PASSWORD, "question", "answer"));
+
+		assertThat(caughtException.getMessage(), is("Illegal attempt to change user password from unknown caller"));
+		assertNull(dao.getLoginCredential(userJoe).getSecretQuestion(), "secret question should not have been set");
+	}
+
+	@Test
+	public void setUserActivationKey_shouldNotAllowSettingActivationKeyFromUnknownCaller() {
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 
-		Exception caughtException = assertThrows(DAOException.class, () -> dao.updateLoginCredential(lc));
+		Exception caughtException = assertThrows(DAOException.class, () -> dao.setUserActivationKey(lc));
 
 		assertThat(caughtException.getMessage(), is("Illegal attempt to change user password from unknown caller"));
 	}
@@ -259,16 +277,10 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void changePasswordString_shouldAllowChangingPasswordWhenPermitIsHeld() throws Exception {
-		Method enter = getGuardMethod("enter");
-		Method exit = getGuardMethod("exit");
-
+	public void changePasswordString_shouldAllowChangingPasswordWhenPermitIsHeld() {
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
-		enter.invoke(null);
-		try {
+		try (var permit = UserServiceImpl.UserPasswordGuard.acquire()) {
 			dao.changePassword(PASSWORD, PASSWORD + "foo");
-		} finally {
-			exit.invoke(null);
 		}
 
 		assertFalse(UserServiceImpl.UserPasswordGuard.isPermitted());
@@ -276,33 +288,16 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void userPasswordGuard_shouldAllowNestedPermitAcquisition() throws Exception {
-		Method enter = getGuardMethod("enter");
-		Method exit = getGuardMethod("exit");
-
-		enter.invoke(null);
-		enter.invoke(null);
-		try {
-			dao.saveUser(userJoe, PASSWORD);
-			assertTrue(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should be held at depth 2");
-
-			exit.invoke(null);
-			assertTrue(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should still be held at depth 1");
-
-			exit.invoke(null);
-			assertFalse(UserServiceImpl.UserPasswordGuard.isPermitted(),
-			    "permit should be released after the outermost exit");
-		} finally {
-			while (UserServiceImpl.UserPasswordGuard.isPermitted()) {
-				exit.invoke(null);
+	public void userPasswordGuard_shouldAllowNestedPermitAcquisition() {
+		try (var outer = UserServiceImpl.UserPasswordGuard.acquire()) {
+			assertTrue(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should be held at depth 1");
+			try (var nested = UserServiceImpl.UserPasswordGuard.acquire()) {
+				dao.saveUser(userJoe, PASSWORD);
+				assertTrue(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should be held at depth 2");
 			}
+			assertTrue(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should still be held at depth 1");
 		}
-	}
-
-	private Method getGuardMethod(String name) throws Exception {
-		Method method = UserServiceImpl.UserPasswordGuard.class.getDeclaredMethod(name);
-		method.setAccessible(true);
-		return method;
+		assertFalse(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should be released after the outermost close");
 	}
 
 }

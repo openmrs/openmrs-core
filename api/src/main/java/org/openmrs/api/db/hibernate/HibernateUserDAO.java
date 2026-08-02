@@ -450,6 +450,10 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changeQuestionAnswer(User u, String question, String answer) throws DAOException {
+		if (!UserServiceImpl.UserPasswordGuard.isPermitted()) {
+			throw new DAOException("Illegal attempt to change user password from unknown caller");
+		}
+
 		log.info("Updating secret question and answer for " + u.getUsername());
 
 		LoginCredential credentials = getLoginCredential(u);
@@ -611,10 +615,6 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void updateLoginCredential(LoginCredential credential) {
-		if (!UserServiceImpl.UserPasswordGuard.isPermitted()) {
-			throw new DAOException("Illegal attempt to change user password from unknown caller");
-		}
-
 		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credential);
 	}
 
@@ -748,6 +748,10 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void setUserActivationKey(LoginCredential credentials) {
+		if (!UserServiceImpl.UserPasswordGuard.isPermitted()) {
+			throw new DAOException("Illegal attempt to change user password from unknown caller");
+		}
+
 		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credentials);
 	}
 
