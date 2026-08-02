@@ -237,6 +237,12 @@
 		<createIndex indexName="idx_obs_archive_date_voided" tableName="obs_archive">
 			<column name="date_voided"/>
 		</createIndex>
+		<createIndex indexName="idx_obs_archive_person_id" tableName="obs_archive">
+			<column name="person_id"/>
+		</createIndex>
+		<createIndex indexName="idx_obs_archive_concept_id" tableName="obs_archive">
+			<column name="concept_id"/>
+		</createIndex>
 	</changeSet>
 
 	<changeSet id="TRUNK-6649-register-archiving-task" author="shivvani-r">
