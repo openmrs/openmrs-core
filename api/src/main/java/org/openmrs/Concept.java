@@ -1745,10 +1745,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return true if the rule was removed, otherwise false
 	 */
 	public boolean removeInterpretationRule(ConceptInterpretationRule interpretationRule) {
-		if (interpretationRule != null) {
+		if (interpretationRule != null && getInterpretationRules().remove(interpretationRule)) {
 			interpretationRule.setConcept(null);
+			return true;
 		}
-		return getInterpretationRules().remove(interpretationRule);
+		return false;
 	}
 
 }

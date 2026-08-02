@@ -21,10 +21,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
-import org.hibernate.type.SqlTypes;
 
 /**
  * A concept interpretation rule defines the criteria used to determine the
@@ -49,11 +47,10 @@ public class ConceptInterpretationRule extends BaseOpenmrsObject {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptInterpretationRuleId;
 
-	@Column(name = "criteria", columnDefinition = "TEXT")
+	@Column(name = "criteria", length = 65535)
 	private String criteria;
 
 	@Enumerated(EnumType.STRING)
-	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(nullable = false)
 	private Obs.Interpretation interpretation;
 
