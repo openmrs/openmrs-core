@@ -76,6 +76,24 @@ public class ObsArchiveHelper {
 		}
 	}
 
+	public List<Obs> getArchivedChildObs(Integer obsGroupId) {
+		if (obsGroupId == null) {
+			return Collections.emptyList();
+		}
+		try {
+			return withManualFlush(() -> {
+				Session session = sessionFactory.getCurrentSession();
+				List<ObsArchive> archives = session
+				        .createQuery("FROM ObsArchive a WHERE a.obsGroupId = :obsGroupId", ObsArchive.class)
+				        .setParameter("obsGroupId", obsGroupId).list();
+				return archives.stream().map(this::convertToObs).collect(Collectors.toList());
+			});
+		} catch (HibernateException e) {
+			log.debug("Failed to get archived child obs for obs group {}.", obsGroupId, e);
+			return Collections.emptyList();
+		}
+	}
+
 	public List<Obs> getArchivedObsByEncounterId(Integer encounterId) {
 		if (encounterId == null) {
 			return Collections.emptyList();
