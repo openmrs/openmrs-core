@@ -601,4 +601,43 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		// Verify restored columns in active table and entity
 		assertActive(testObsId);
 	}
+
+	@Test
+	public void archiveAndRestore_shouldPreserveFormNamespaceAndPath() throws Exception {
+		Obs obs = createSingleObs(50.0);
+		String formPath = "htmlformentry^path/to/form";
+		obs.setFormNamespaceAndPath(formPath);
+		obs = obsService.saveObs(obs, "initial save");
+		createdObsIds.add(obs.getObsId());
+		int testObsId = obs.getObsId();
+
+		// Void the observation
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		// Run archiving
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		// Verify archived
+		assertArchived(testObsId);
+
+		// Verify transparent retrieval via service retains the path
+		Context.clearSession();
+		Obs archivedObs = obsService.getObs(testObsId);
+		assertNotNull(archivedObs);
+		assertEquals(formPath, archivedObs.getFormNamespaceAndPath(), "Archived obs should retain form namespace and path");
+
+		// Unvoid the observation to trigger restore
+		obsService.unvoidObs(archivedObs);
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify restored in active table and retains the field
+		assertActive(testObsId);
+		Obs restoredObs = obsService.getObs(testObsId);
+		assertNotNull(restoredObs);
+		assertEquals(formPath, restoredObs.getFormNamespaceAndPath(), "Restored obs should retain form namespace and path");
+	}
 }
