@@ -143,7 +143,7 @@
 	</changeSet>
 
 	<changeSet id="TRUNK-6723-2026-07-29" author="mujuzi">
-		<preConditions onFail="HALT">
+		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept"/>
 			<not>
 				<tableExists tableName="concept_interpretation_rule"/>
@@ -167,14 +167,6 @@
 			<column name="uuid" type="char(38)">
 				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="creator" type="INT">
-				<constraints nullable="false"/>
-			</column>
-			<column name="date_created" type="datetime">
-				<constraints nullable="false"/>
-			</column>
-			<column name="changed_by" type="INT"/>
-			<column name="date_changed" type="datetime"/>
 		</createTable>
 		
 		<addForeignKeyConstraint baseTableName="concept_interpretation_rule" baseColumnNames="concept_id" 

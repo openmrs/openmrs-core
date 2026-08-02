@@ -1316,4 +1316,22 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		assertFalse(concept.getInterpretationRules().contains(rule));
 		assertNull(rule.getConcept());
 	}
+
+	/**
+	 * @see Concept#removeInterpretationRule(ConceptInterpretationRule)
+	 */
+	@Test
+	public void removeInterpretationRule_shouldNotClearConceptWhenRuleIsNotAssociated() {
+		Concept concept = new Concept();
+		Concept otherConcept = new Concept();
+		ConceptInterpretationRule rule = new ConceptInterpretationRule();
+		rule.setInterpretation(Obs.Interpretation.NORMAL);
+		rule.setPriority(1);
+		rule.setCriteria("true");
+
+		otherConcept.addInterpretationRule(rule);
+
+		assertFalse(concept.removeInterpretationRule(rule));
+		assertEquals(otherConcept, rule.getConcept());
+	}
 }

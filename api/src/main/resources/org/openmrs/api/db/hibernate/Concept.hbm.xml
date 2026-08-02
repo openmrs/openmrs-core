@@ -116,7 +116,7 @@
         </set>
 
 		<set name="interpretationRules" lazy="true" inverse="true" cascade="all,delete-orphan" batch-size="25" 
-			 order-by="priority asc">
+			 order-by="priority asc, concept_interpretation_rule_id asc">
 
 			<key column="concept_id" not-null="true"/>
 			<one-to-many class="ConceptInterpretationRule"/>
