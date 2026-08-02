@@ -32,6 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -317,6 +318,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 		List<Integer> ids = patients.stream().map(Patient::getPatientId).collect(Collectors.toList());
 
+		// Patient 432 is voided. This overload currently doesn't filter voided patients, so we assert the current
+		// behavior. Fixing that should be handled separately
 		assertThat(ids, hasItems(2, 6, 432));
 		// Patients with a different identifier type should not be returned.
 		assertThat(ids, not(hasItem(7)));
@@ -348,5 +351,58 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 		assertThat(ids, hasItems(2, 6));
 		assertThat(ids, not(hasItem(432))); // voided patient excluded
+
+		// A type name pasted from the admin UI screen may include surrounding whitespace.
+		List<Patient> padded = hibernatePatientDao.findPatients("  Old Identification Number  ", false, null, null);
+
+		assertThat(padded.stream().map(Patient::getPatientId).collect(Collectors.toList()), hasItems(2, 6));
+	}
+
+	/**
+	 * @see HibernatePatientDAO#findPatients(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void findPatients_shouldFindPatientsByRetiredIdentifierTypeName() {
+		PatientIdentifierType retiredType = Context.getPatientService().getPatientIdentifierType(4);
+		Patient patient = Context.getPatientService().getPatient(7);
+
+		// Associate the patient with a retired identifier type.
+		PatientIdentifier identifier = new PatientIdentifier();
+		identifier.setPatient(patient);
+		identifier.setIdentifier("RETIRED-TYPE-001");
+		identifier.setIdentifierType(retiredType);
+		identifier.setLocation(Context.getLocationService().getLocation(1));
+		identifier.setPreferred(false);
+
+		Context.getPatientService().savePatientIdentifier(identifier);
+		updateSearchIndex();
+
+		// Searching by the retired identifier type name should still find the patient.
+		List<Patient> patients = hibernatePatientDao.findPatients(retiredType.getName(), false, null, null);
+
+		assertThat(patients.stream().map(Patient::getPatientId).collect(Collectors.toList()), hasItem(7));
+	}
+
+	/**
+	 * @see HibernatePatientDAO#getPatients(String, List, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldNotMatchIdentifierTypeNameWhenMatchingIdentifierExactly() {
+		String identifierTypeName = "Old Identification Number";
+		PatientIdentifierType type = Context.getPatientService().getPatientIdentifierTypeByName(identifierTypeName);
+
+		List<Patient> patients = hibernatePatientDao.getPatients(identifierTypeName, singletonList(type), true, null, null);
+
+		assertThat(patients, is(emptyList()));
+	}
+
+	/**
+	 * @see HibernatePatientDAO#findPatients(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void findPatients_shouldNotMatchPartialIdentifierTypeName() {
+		List<Patient> patients = hibernatePatientDao.findPatients("Number", false, null, null);
+
+		assertThat(patients, is(emptyList()));
 	}
 }
