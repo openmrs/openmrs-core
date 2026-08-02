@@ -199,6 +199,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 			                && child.getDateVoided().getTime() == originalDateVoided.getTime());
 			if (datesMatch) {
 				Context.getObsService().unvoidObs(child);
+				if (child.hasGroupMembers(true)) {
+					unvoidArchivedChildren(child, originalDateVoided);
+				}
 			}
 		}
 	}
