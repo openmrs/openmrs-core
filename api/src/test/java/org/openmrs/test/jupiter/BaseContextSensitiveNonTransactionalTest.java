@@ -232,7 +232,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 	@BeforeEach
 	public void checkNotModule() throws Exception {
 		if (this.getClass().getPackage().toString().contains("org.openmrs.module.")
-		        && !(this instanceof BaseContextSensitiveTest)) {
+		        && !(this instanceof BaseModuleContextSensitiveNonTransactionalTest)) {
 			throw new RuntimeException(
 			        "Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
 		}

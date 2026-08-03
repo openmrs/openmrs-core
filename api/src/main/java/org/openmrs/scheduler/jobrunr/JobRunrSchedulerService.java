@@ -52,7 +52,6 @@ import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.scheduler.TaskDetails;
 import org.openmrs.scheduler.TaskState;
 import org.openmrs.scheduler.db.SchedulerDAO;
-import org.openmrs.scheduler.tasks.ObsArchivingTaskData;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
