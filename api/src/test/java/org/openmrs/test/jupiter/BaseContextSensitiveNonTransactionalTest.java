@@ -232,7 +232,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 	@BeforeEach
 	public void checkNotModule() throws Exception {
 		if (this.getClass().getPackage().toString().contains("org.openmrs.module.")
-		        && !(this instanceof BaseModuleContextSensitiveNonTransactionalTest)) {
+		        && !(this instanceof BaseContextSensitiveTest)) {
 			throw new RuntimeException(
 			        "Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
 		}
@@ -598,7 +598,6 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		            + "locked_at TIMESTAMP NOT NULL, " + "locked_by VARCHAR(255) NOT NULL, " + "PRIMARY KEY (name))")
 		        .execute();
 
-<<<<<<< HEAD
 		getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS obs_archive (" + "obs_id INT NOT NULL PRIMARY KEY, "
 		        + "person_id INT NOT NULL, " + "concept_id INT NOT NULL DEFAULT 0, " + "encounter_id INT DEFAULT NULL, "
 		        + "order_id INT DEFAULT NULL, " + "obs_datetime DATETIME NOT NULL, " + "location_id INT DEFAULT NULL, "
@@ -630,8 +629,6 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		} catch (Exception e) {
 			// Ignore if table doesn't exist yet
 		}
-=======
->>>>>>> d2a78bd30 (Implement Hibernate for obs_archive and Address review comments)
 		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the
 		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from
 		//person.creator column, historically this was to allow inserting the very first row. Ideally, this should not
