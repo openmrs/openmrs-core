@@ -136,7 +136,7 @@ public final class OpenmrsLoggingUtil {
 			// Fall back to global property only if a session is open
 		} else if (logLevel != null && logLevelGp != null) {
 			StatusLogger.getLogger().info("Ignoring GP value \"{}\" as a system or runtime property is already set",
-			    logLevelGp);
+			    sanitize(logLevelGp));
 		} else if (logLevel == null && Context.isSessionOpen()) {
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			try {
@@ -165,7 +165,7 @@ public final class OpenmrsLoggingUtil {
 					if (classAndLevel.length > 2) {
 						StatusLogger.getLogger().warn(
 						    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO",
-						    level);
+						    sanitize(level));
 					}
 					applyLogLevelInternal(classAndLevel[0].trim(), classAndLevel[1].trim());
 				}
@@ -297,7 +297,7 @@ public final class OpenmrsLoggingUtil {
 				break;
 			default:
 				log.warn("Log level {} is invalid. " + "Valid values are trace, debug, info, warn, error or fatal",
-				    logLevel);
+				    sanitize(logLevel));
 				if (logClass != null && logClass.equals(OpenmrsConstants.LOG_CLASS_DEFAULT)) {
 					level = Level.INFO;
 				} else {
@@ -320,4 +320,21 @@ public final class OpenmrsLoggingUtil {
 
 		return ((Logger) rootLogger).getContext();
 	}
+
+	/**
+	 * Sanitizes a string for logging by replacing newline and carriage return characters with
+	 * underscores.
+	 *
+	 * @param value the string to sanitize
+	 * @return the sanitized string
+	 * @since 2.4.4, 2.5.1, 2.6.0
+	 */
+	@Logging(ignore = true)
+	public static String sanitize(Object value) {
+		if (value == null) {
+			return null;
+		}
+		return value.toString().replaceAll("[\n\r]", "_");
+	}
+
 }

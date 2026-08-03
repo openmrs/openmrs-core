@@ -40,6 +40,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.SearchAnalysis;
+import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -299,10 +300,12 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 				return null;
 			}
 
-			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), e);
+			log.warn(
+			    "Unable to hydrate value: " + OpenmrsLoggingUtil.sanitize(getValue()) + " for type: " + getAttributeType(),
+			    e);
 		}
 
-		log.debug("Returning value: '" + getValue() + "'");
+		log.debug("Returning value: '" + OpenmrsLoggingUtil.sanitize(getValue()) + "'");
 		return getValue();
 	}
 

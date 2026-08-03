@@ -60,6 +60,7 @@ import org.openmrs.api.VisitService;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.event.outbox.tasks.OutboxTaskSchedulerInitializer;
 import org.openmrs.hl7.HL7Service;
+import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.ModuleMustStartException;
@@ -374,7 +375,7 @@ public class Context {
 	 * @throws ContextAuthenticationException
 	 */
 	public static void becomeUser(String systemId) throws ContextAuthenticationException {
-		log.info("systemId: {}", systemId);
+		log.info("systemId: {}", OpenmrsLoggingUtil.sanitize(systemId));
 
 		getUserContext().becomeUser(systemId);
 	}
@@ -714,7 +715,7 @@ public class Context {
 		if (!isSessionOpen()) {
 			return; // fail early if there isn't even a session open
 		}
-		log.debug("Logging out : {}", getAuthenticatedUser());
+		log.debug("Logging out : {}", OpenmrsLoggingUtil.sanitize(getAuthenticatedUser()));
 
 		getUserContext().logout();
 

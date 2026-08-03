@@ -469,4 +469,34 @@ class OpenmrsLoggingUtilTest {
 		// This exercises the reconfigure path; we just verify it doesn't throw
 		OpenmrsLoggingUtil.reloadLoggingConfiguration();
 	}
+
+	// --- sanitize ---
+
+	/**
+	 * @see OpenmrsLoggingUtil#sanitize(Object)
+	 */
+	@Test
+	void sanitize_shouldReplaceNewlinesWithUnderscores() {
+		assertThat(OpenmrsLoggingUtil.sanitize("some\ndata"), equalTo("some_data"));
+		assertThat(OpenmrsLoggingUtil.sanitize("some\rdata"), equalTo("some_data"));
+		assertThat(OpenmrsLoggingUtil.sanitize("some\r\ndata"), equalTo("some__data"));
+		assertThat(OpenmrsLoggingUtil.sanitize("no_newlines"), equalTo("no_newlines"));
+	}
+
+	/**
+	 * @see OpenmrsLoggingUtil#sanitize(Object)
+	 */
+	@Test
+	void sanitize_shouldHandleNullValue() {
+		assertThat(OpenmrsLoggingUtil.sanitize(null), nullValue());
+	}
+
+	/**
+	 * @see OpenmrsLoggingUtil#sanitize(Object)
+	 */
+	@Test
+	void sanitize_shouldHandleNonStringObjects() {
+		assertThat(OpenmrsLoggingUtil.sanitize(123), equalTo("123"));
+	}
+
 }
