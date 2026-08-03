@@ -559,7 +559,7 @@ public class ModuleFactory {
 		try {
 			startedModule = startModule(module, false, null);
 		}
-		catch (ModuleException e) {
+		catch (Exception e) {
 			isSuccess = false;
 			throw e;
 		}
@@ -1054,7 +1054,7 @@ public class ModuleFactory {
 		boolean isStoppedSuccess = true;
 		try {
 			dependentModulesStopped = doStopModule(mod, skipOverStartedProperty, isFailedStartup);
-		} catch(ModuleMustStartException ex) {
+		} catch (Exception ex){
 			isStoppedSuccess = false;
 			throw ex;
 		} finally {
@@ -1079,7 +1079,7 @@ public class ModuleFactory {
 	 *         never be null.
 	 */
 	private static List<Module> doStopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
-		throws ModuleMustStartException {
+		throws ModuleMustStartException{
 		List<Module> dependentModulesStopped = new ArrayList<>();
 
 		try {
@@ -1265,7 +1265,7 @@ public class ModuleFactory {
 					log.warn("Could not delete " + file.getAbsolutePath());
 				}
 			}
-		} catch(ModuleMustStartException ex) {
+		} catch(Exception ex) {
 			isEventSuccess = false;
 			throw ex;
 		} finally {
