@@ -25,15 +25,21 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
+
+	protected static final String PATIENT_SEARCH_XML = "org/openmrs/api/db/hibernate/include/HibernatePatientDAOTest-patientSearchRanking.xml";
 
 	private HibernatePatientDAO hibernatePatientDao;
 
@@ -298,5 +304,75 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 		// then
 		assertThat(duplicatePatients.size(), equalTo(2));
+	}
+
+	/**
+	 * @see HibernatePatientDAO#getPatients(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldPreferExactNameMatchesOverPrefixMatches() throws Exception {
+		executeDataSet(PATIENT_SEARCH_XML);
+		updateSearchIndex();
+
+		List<Patient> patients = hibernatePatientDao.getPatients("Jane Smith", false, null, null);
+
+		assertThat(patients.size(), greaterThanOrEqualTo(2));
+		assertThat(patients.get(0).getGivenName(), is("Jane"));
+		assertThat(patients.get(1).getGivenName(), is("Janet"));
+	}
+
+	/**
+	 * @see HibernatePatientDAO#getPatients(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldPreferPrefixMatchesOverAnywhereMatches() {
+		executeDataSet(PATIENT_SEARCH_XML);
+
+		var original = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+
+		try {
+			// set the global property so that anywhere is included
+			Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+			    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE);
+
+			updateSearchIndex();
+
+			List<Patient> patients = hibernatePatientDao.getPatients("Jane", false, null, null);
+
+			assertThat(patients.get(0).getGivenName(), is("Jane"));
+			assertThat(patients.get(1).getGivenName(), is("Janet"));
+			assertThat(patients.get(2).getGivenName(), is("Maryjane"));
+		} finally {
+			Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+			    original);
+		}
+	}
+
+	/**
+	 * @see HibernatePatientDAO#getPatients(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldPreferExactPersonAttributeMatchesOverPartialMatches() {
+		executeDataSet(PATIENT_SEARCH_XML);
+		updateSearchIndex();
+
+		List<Patient> patients = hibernatePatientDao.getPatients("Doctor", false, null, null);
+
+		assertThat(patients.get(0).getPatientId(), is(101));
+		assertThat(patients.get(1).getPatientId(), is(102));
+	}
+
+	/**
+	 * @see HibernatePatientDAO#getPatients(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldNotReturnPatientsMatchingOnlyFilters() {
+		executeDataSet(PATIENT_SEARCH_XML);
+		updateSearchIndex();
+
+		List<Patient> patients = hibernatePatientDao.getPatients("ThisNameDoesNotExist", false, null, null);
+
+		assertThat(patients, is(empty()));
 	}
 }
