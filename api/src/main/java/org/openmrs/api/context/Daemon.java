@@ -134,7 +134,7 @@ public final class Daemon {
 		try {
 			return moduleStartFuture.get();
 		} catch (InterruptedException e) {
-			// ignore
+			Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
 			if (e.getCause() instanceof ModuleException) {
 				throw (ModuleException) e.getCause();
@@ -184,7 +184,7 @@ public final class Daemon {
 		try {
 			return userFuture.get();
 		} catch (InterruptedException e) {
-			// ignore
+			Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
 			if (e.getCause() instanceof Exception) {
 				throw (Exception) e.getCause();
@@ -245,7 +245,9 @@ public final class Daemon {
 		// do not return until the thread is actually started to emulate the previous behaviour
 		try {
 			countDownLatch.await();
-		} catch (InterruptedException ignored) {}
+		} catch (InterruptedException ignored) {
+			Thread.currentThread().interrupt();
+		}
 
 		return thread;
 	}
@@ -350,7 +352,7 @@ public final class Daemon {
 		try {
 			future.get();
 		} catch (InterruptedException e) {
-			// ignore
+			Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
 			if (e.getCause() instanceof ModuleException) {
 				throw (ModuleException) e.getCause();
@@ -450,7 +452,9 @@ public final class Daemon {
 
 		try {
 			daemonThread.get();
-		} catch (InterruptedException | ExecutionException e) {
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		} catch (ExecutionException e) {
 			// Ignored
 		}
 	}
@@ -496,7 +500,9 @@ public final class Daemon {
 
 		try {
 			countDownLatch.await();
-		} catch (InterruptedException ignored) {}
+		} catch (InterruptedException ignored) {
+			Thread.currentThread().interrupt();
+		}
 
 		return result;
 	}
