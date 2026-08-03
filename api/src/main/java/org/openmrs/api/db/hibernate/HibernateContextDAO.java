@@ -207,7 +207,7 @@ public class HibernateContextDAO implements ContextDAO {
 				// Lazy rehash: if password is legacy, upgrade to Argon2id transparently
                 if (Security.isLegacyHash(passwordOnRecord)) {
 	            	try {
-		                self.upgradePasswordHash(candidateUser, password);	                }
+		                self.upgradePasswordHash(candidateUser, password, saltOnRecord);	                }
 	                catch (Exception e) {
 		                log.error("Failed to upgrade password hash for user {}: {}",
 			                candidateUser.getUsername(), e.getMessage());
@@ -372,12 +372,21 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @since 2.8.9
 	 */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void upgradePasswordHash(User user, String rawPassword) {
+    public void upgradePasswordHash(User user, String rawPassword, String salt) {
 		LoginCredential credential = userDao.getLoginCredential(user);
 		if (!Security.isLegacyHash(credential.getHashedPassword())) {
 			log.debug("Password hash for user {} was already upgraded — skipping", user.getUsername());
 			return;
 		}
+
+		log.warn("DEBUG upgradePasswordHash: storedHash='{}', salt='{}', rawPassword='{}'",
+    		credential.getHashedPassword(), salt, rawPassword);
+		if (!Security.passwordMatches(credential.getHashedPassword(), rawPassword, salt)) {
+			log.warn("Refusing to upgrade password hash for user {}: the supplied password does not match the stored hash",
+				user.getUsername());
+			return;
+		}
+
 		String newHash = Security.encodePassword(rawPassword);
 		boolean upgraded = ((HibernateUserDAO) userDao).conditionallyUpdateUserPassword(
 			user.getUserId(),
