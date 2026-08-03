@@ -83,7 +83,18 @@ public class ModuleResourcesServlet extends HttpServlet {
 
 		String path = request.getPathInfo();
 
-		Module module = ModuleUtil.getModuleForPath(path);
+		if (path == null || path.indexOf((char) 0) >= 0) {
+			log.warn("Rejected request with null or null-byte path");
+			return null;
+		}
+
+		Module module;
+		try {
+			module = ModuleUtil.getModuleForPath(path);
+		} catch (IllegalArgumentException ex) {
+			log.warn("Rejected request with malformed path: " + path);
+			return null;
+		}
 		if (module == null) {
 			log.warn("No module handles the path: " + path);
 			return null;
