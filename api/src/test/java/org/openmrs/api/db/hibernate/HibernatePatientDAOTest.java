@@ -13,6 +13,7 @@ import java.sql.Date;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
@@ -327,14 +328,34 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		// The first search of the process carries one-off warm-up, so prime it before measuring.
 		hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, identifierTypes, false, 0, SMALL_PAGE);
 
-		int smallPageTrips = countDatabaseTrips(identifierTypes, SMALL_PAGE);
-		int largePageTrips = countDatabaseTrips(identifierTypes, LARGE_PAGE);
+		int smallPageTrips = countDatabaseTrips(SMALL_PAGE,
+		    page -> hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, identifierTypes, false, 0, page));
+		int largePageTrips = countDatabaseTrips(LARGE_PAGE,
+		    page -> hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, identifierTypes, false, 0, page));
 
-		assertTrue(largePageTrips <= smallPageTrips + PAGE_GROWTH_ALLOWANCE,
-		    String.format(
-		        "identifier search should cost a bounded number of database trips regardless of page size, "
-		                + "but a page of %d cost %d trips against %d for a page of %d",
-		        LARGE_PAGE, largePageTrips, smallPageTrips, SMALL_PAGE));
+		assertPageGrowthIsBounded("identifier search", smallPageTrips, largePageTrips);
+	}
+
+	/**
+	 * The joined search behind the main patient search reaches the identifier sub-query too, so it
+	 * carries the same guarantee as
+	 * {@link #getPatients_shouldNotIssueMoreDatabaseTripsAsTheIdentifierSearchPageGrows}. The fixture
+	 * fills the whole page from that first sub-query, so this measures the identifier leg as the joined
+	 * search runs it.
+	 */
+	@Test
+	public void getPatients_shouldNotIssueMoreDatabaseTripsAsTheJoinedSearchPageGrows() {
+		createIdentifierSearchFixture();
+
+		// The first search of the process carries one-off warm-up, so prime it before measuring.
+		hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, false, 0, SMALL_PAGE);
+
+		int smallPageTrips = countDatabaseTrips(SMALL_PAGE,
+		    page -> hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, false, 0, page));
+		int largePageTrips = countDatabaseTrips(LARGE_PAGE,
+		    page -> hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, false, 0, page));
+
+		assertPageGrowthIsBounded("joined search", smallPageTrips, largePageTrips);
 	}
 
 	/**
@@ -356,14 +377,22 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		}
 	}
 
-	private int countDatabaseTrips(List<PatientIdentifierType> identifierTypes, int pageSize) {
+	private void assertPageGrowthIsBounded(String searchName, int smallPageTrips, int largePageTrips) {
+		assertTrue(largePageTrips <= smallPageTrips + PAGE_GROWTH_ALLOWANCE,
+		    String.format(
+		        "%s should cost a bounded number of database trips regardless of page size, "
+		                + "but a page of %d cost %d trips against %d for a page of %d",
+		        searchName, LARGE_PAGE, largePageTrips, smallPageTrips, SMALL_PAGE));
+	}
+
+	private int countDatabaseTrips(int pageSize, IntFunction<List<Patient>> search) {
 		Context.flushSession();
 		Context.clearSession();
 
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		sessionFactory.getStatistics().clear();
 
-		List<Patient> results = hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, identifierTypes, false, 0, pageSize);
+		List<Patient> results = search.apply(pageSize);
 
 		assertEquals(pageSize, results.size(), "fixture should be large enough to fill the requested page");
 
