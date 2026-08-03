@@ -103,7 +103,7 @@
 		<angusMailVersion>2.0.5</angusMailVersion>
 
 		<!-- Database -->
-		<mysqlConnectorVersion>9.7.0</mysqlConnectorVersion>
+		<mysqlConnectorVersion>26.7.0</mysqlConnectorVersion>
 		<mariadbClientVersion>3.5.10</mariadbClientVersion>
 		<postgresqlVersion>42.7.13</postgresqlVersion>
 		<liquibaseVersion>4.32.0</liquibaseVersion>
