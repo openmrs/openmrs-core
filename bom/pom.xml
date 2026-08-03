@@ -82,7 +82,7 @@
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
 		<commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
 		<commonsFileupload2JakartaVersion>2.0.0-M5</commonsFileupload2JakartaVersion>
-		<commonsValidatorVersion>1.10.1</commonsValidatorVersion>
+		<commonsValidatorVersion>1.11.0</commonsValidatorVersion>
 
 		<!-- Velocity -->
 		<velocityVersion>2.4.1</velocityVersion>
@@ -125,7 +125,7 @@
 		<mockitoVersion>5.23.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<h2Version>2.3.232</h2Version>
-		<dbunitVersion>3.3.0</dbunitVersion>
+		<dbunitVersion>3.4.0</dbunitVersion>
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.5</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
