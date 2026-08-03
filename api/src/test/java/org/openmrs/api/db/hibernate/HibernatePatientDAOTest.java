@@ -328,7 +328,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldPreferPrefixMatchesOverAnywhereMatches() {
 		executeDataSet(PATIENT_SEARCH_XML);
 
-		var original = Context.getAdministrationService()
+		String original = Context.getAdministrationService()
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 
 		try {
