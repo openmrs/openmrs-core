@@ -213,10 +213,10 @@
 
 	<context:component-scan base-package="org.openmrs">
 		<context:include-filter type="annotation" expression="org.openmrs.annotation.Handler"/>
-		<context:include-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileIncludeFilter"/>
-		<!-- Excludes classes with unit test super classes -->
-		<context:exclude-filter type="custom"
-								expression="org.openmrs.util.TestTypeFilter"/>
-		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter"/>
+		<!-- OpenmrsProfileIncludeFilter and OpenmrsProfileExcludeFilter removed:
+			@OpenmrsProfile now meta-annotates @Component (for inclusion) and
+			@Conditional(OpenmrsProfileCondition.class) (for exclusion), making both
+			TypeFilters redundant across all component-scans, including module scans. -->
+		<context:exclude-filter type="custom" expression="org.openmrs.util.TestTypeFilter"/>
 	</context:component-scan>
 </beans>
