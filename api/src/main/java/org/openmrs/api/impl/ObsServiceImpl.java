@@ -434,10 +434,11 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	}
 
 	/**
-	 * @deprecated as of 2.9.0, use {@link #getObservations(ObsSearchCriteria)}
+	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "3.0.0")
+	@SuppressWarnings("squid:S1133")
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,

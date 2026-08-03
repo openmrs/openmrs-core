@@ -23,7 +23,7 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
  * The search parameter object for observations. A convenience interface for building instances is
  * provided by {@link ObsSearchCriteriaBuilder}.
  *
- * @since 2.9.0
+ * @since 3.0.0
  * @see ObsSearchCriteriaBuilder
  */
 public class ObsSearchCriteria {
@@ -83,6 +83,7 @@ public class ObsSearchCriteria {
 	 * @param startIndex the starting index of the result set (optional, 0-based)
 	 * @param maxResults the maximum number of results to return (optional)
 	 */
+	@SuppressWarnings("squid:S107")
 	public ObsSearchCriteria(List<Person> whom, List<Encounter> encounters, List<Concept> questions, List<Concept> answers,
 	    List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort, List<Visit> visits, Integer mostRecentN,
 	    Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber, Integer startIndex,

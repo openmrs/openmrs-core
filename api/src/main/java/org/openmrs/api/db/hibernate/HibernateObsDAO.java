@@ -172,10 +172,11 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @deprecated as of 2.9.0, use {@link #getObservations(ObsSearchCriteria)}
+	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "3.0.0")
+	@SuppressWarnings("squid:S1133")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,

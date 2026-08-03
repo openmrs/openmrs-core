@@ -539,7 +539,7 @@ public interface ObsService extends OpenmrsService {
 	 *
 	 * @param obsSearchCriteria the search criteria for the observations query
 	 * @return list of Observations that match all of the criteria given in the search criteria
-	 * @since 2.9.0
+	 * @since 3.0.0
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
 	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws APIException;
@@ -547,7 +547,7 @@ public interface ObsService extends OpenmrsService {
 	/**
 	 * Gets observations with paging support. If mostRecentN is set, the paging parameters are ignored.
 	 *
-	 * @deprecated as of 2.9.0, use {@link #getObservations(ObsSearchCriteria)}
+	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
 	 * @param whom List&lt;Person&gt; to restrict obs to (optional)
 	 * @param encounters List&lt;Encounter&gt; to restrict obs to (optional)
 	 * @param questions List&lt;Concept&gt; to restrict the obs to (optional)
@@ -566,9 +566,10 @@ public interface ObsService extends OpenmrsService {
 	 * @param accessionNumber accession number (optional)
 	 * @param startIndex the starting index of the result set (optional, 0-based)
 	 * @param maxResults the maximum number of results to return (optional)
-	 * @since 2.9.0
+	 * @since 3.0.0
 	 */
-	@Deprecated
+	@Deprecated(since = "3.0.0")
+	@SuppressWarnings({ "squid:S107", "squid:S1133" })
 	@Authorized(PrivilegeConstants.GET_OBS)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
