@@ -11,6 +11,7 @@ package org.openmrs.layout.name;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -80,7 +81,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 		List<NameTemplate> list = new ArrayList<>();
 		// filter out unaffected templates to keep
 		list.addAll(getLayoutTemplates().stream()
-		        .filter(existingTemplate -> existingTemplate.getCodeName() != nameTemplate.getCodeName())
+		        .filter(existingTemplate -> !Objects.equals(existingTemplate.getCodeName(), nameTemplate.getCodeName()))
 		        .collect(Collectors.toList()));
 		list.add(nameTemplate);
 		setLayoutTemplates(list);
