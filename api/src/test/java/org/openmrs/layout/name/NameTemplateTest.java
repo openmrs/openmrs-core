@@ -126,4 +126,54 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 		assertEquals("Moses Mujuzi", nameTemplate.format(personName));
 	}
 
+	@Test
+	public void shouldResolveAllStandardTokensDirectly() {
+
+		NameTemplate nameTemplate = new NameTemplate();
+
+		List<String> lineByLineFormat = new ArrayList<>();
+		lineByLineFormat.add("prefix");
+		lineByLineFormat.add("familyNamePrefix");
+		lineByLineFormat.add("familyName2");
+		lineByLineFormat.add("givenName");
+		lineByLineFormat.add("middleName");
+		lineByLineFormat.add("familyName");
+		lineByLineFormat.add("familyNameSuffix");
+		lineByLineFormat.add("degree");
+		nameTemplate.setLineByLineFormat(lineByLineFormat);
+
+		Map<String, String> nameMappings = new HashMap<>();
+		nameMappings.put("prefix", "prefix");
+		nameMappings.put("familyNamePrefix", "familyNamePrefix");
+		nameMappings.put("familyName2", "familyName2");
+		nameMappings.put("givenName", "givenName");
+		nameMappings.put("middleName", "middleName");
+		nameMappings.put("familyName", "familyName");
+		nameMappings.put("familyNameSuffix", "familyNameSuffix");
+		nameMappings.put("degree", "degree");
+		nameTemplate.setNameMappings(nameMappings);
+
+		Map<String, String> sizeMappings = new HashMap<>();
+		for (String token : nameMappings.keySet()) {
+			sizeMappings.put(token, "30");
+		}
+		nameTemplate.setSizeMappings(sizeMappings);
+
+		nameSupport.setLayoutTemplates(Collections.singletonList(nameTemplate));
+
+		PersonName personName = new PersonName();
+		personName.setPrefix("Mr.");
+		personName.setFamilyNamePrefix("Ganege");
+		personName.setFamilyName2("Ralalage");
+		personName.setGivenName("Ranidu");
+		personName.setMiddleName("Nethma");
+		personName.setFamilyName("Rathnayaka");
+		personName.setFamilyNameSuffix("(Contributor)");
+		personName.setDegree("BSc");
+
+		String formattedName = nameTemplate.format(personName);
+
+		assertEquals("Mr. Ganege Ralalage Ranidu Nethma Rathnayaka (Contributor) BSc", formattedName);
+	}
+
 }
