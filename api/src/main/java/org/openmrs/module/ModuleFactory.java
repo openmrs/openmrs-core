@@ -163,7 +163,8 @@ public class ModuleFactory {
 			getLoadedModulesMap().put(module.getModuleId(), module);
 			isModuleLoaded = true;
 			
-		} finally {
+		}
+		finally {
 			publishModuleEvents(ModuleEventType.MODULE_LOAD, module, isModuleLoaded);
 		}
 		return module;
@@ -1050,18 +1051,21 @@ public class ModuleFactory {
 		if (mod == null || !ModuleFactory.isModuleStarted(mod)) {
 			return dependentModulesStopped;
 		}
-		
+
 		boolean isStoppedSuccess = true;
 		try {
 			dependentModulesStopped = doStopModule(mod, skipOverStartedProperty, isFailedStartup);
-		} catch (Exception ex){
+		}
+		catch (Exception ex){
 			isStoppedSuccess = false;
 			throw ex;
-		} finally {
+		}
+		finally {
 			publishModuleEvents(ModuleEventType.MODULE_STOP, mod, isStoppedSuccess && !isModuleStarted(mod));
 		}
 		return dependentModulesStopped;
 	}
+
 
 	/**
 	 * Runs through the advice and extension points and removes from api.<br>
@@ -1079,7 +1083,8 @@ public class ModuleFactory {
 	 *         never be null.
 	 */
 	private static List<Module> doStopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
-		throws ModuleMustStartException{
+		throws ModuleMustStartException {
+		
 		List<Module> dependentModulesStopped = new ArrayList<>();
 
 		try {
@@ -1087,7 +1092,8 @@ public class ModuleFactory {
 			if (mod.getModuleActivator() != null) {
 				mod.getModuleActivator().willStop();
 			}
-		} catch (Exception t) {
+		}
+		catch (Exception t) {
 			log.warn("Unable to call module's Activator.willStop() method", t);
 		}
 
@@ -1147,11 +1153,13 @@ public class ModuleFactory {
 							log.debug("Adding advice: " + aopObject.getClass());
 							Context.removeAdvice(cls, (Advice) aopObject);
 						}
-					} catch (Exception t) {
+					}
+					catch (Exception t) {
 						log.warn("Could not remove advice point: " + advice.getPoint(), t);
 					}
 				}
-			} catch (Exception t) {
+			}
+			catch (Exception t) {
 				log.warn("Error while getting advicePoints from module: " + moduleId, t);
 			}
 
@@ -1163,11 +1171,13 @@ public class ModuleFactory {
 						List<Extension> tmpExtensions = getExtensions(extId);
 						tmpExtensions.remove(ext);
 						getExtensionMap().put(extId, tmpExtensions);
-					} catch (Exception exterror) {
+					}
+					catch (Exception exterror) {
 						log.warn("Error while getting extension: " + ext, exterror);
 					}
 				}
-			} catch (Exception t) {
+			}
+			catch (Exception t) {
 				log.warn("Error while getting extensions from module: " + moduleId, t);
 			}
 		}
@@ -1184,7 +1194,8 @@ public class ModuleFactory {
 			if (mod.getModuleActivator() != null) {// extends BaseModuleActivator
 				mod.getModuleActivator().stopped();
 			}
-		} catch (Exception t) {
+		}
+		catch (Exception t) {
 			log.warn("Unable to call module's Activator.shutdown() method", t);
 		}
 
@@ -1210,10 +1221,12 @@ public class ModuleFactory {
 			File tmpModuleDir = new File(folder, moduleId);
 			try {
 				OpenmrsUtil.deleteDirectory(tmpModuleDir);
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				log.warn("Unable to delete libcachefolder for " + moduleId);
 			}
 		}
+		
 		return dependentModulesStopped;
 	}
 	
@@ -1259,16 +1272,20 @@ public class ModuleFactory {
 			if (mod != null) {
 				// remove the file from the module repository
 				File file = mod.getFile();
+				
 				boolean deleted = file.delete();
 				if (!deleted) {
 					file.deleteOnExit();
 					log.warn("Could not delete " + file.getAbsolutePath());
 				}
 			}
-		} catch(Exception ex) {
+			
+		}
+		catch(Exception ex) {
 			isEventSuccess = false;
 			throw ex;
-		} finally {
+		}
+		finally {
 			publishModuleEvents(ModuleEventType.MODULE_UNLOAD, mod, isEventSuccess);
 		}
 	}
@@ -1697,7 +1714,8 @@ public class ModuleFactory {
 			if (applicationEventPublisher != null) {
 				applicationEventPublisher.publishEvent(event);
 			}
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			log.warn("Unable to publish module event", e);
 		}
 	}
