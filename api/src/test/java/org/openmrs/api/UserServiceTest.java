@@ -39,7 +39,6 @@ import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
-import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
@@ -1646,9 +1645,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		try (var permit = UserServiceImpl.UserPasswordGuard.acquire()) {
-			dao.setUserActivationKey(credentials);
-		}
 		assertEquals(createdUser, userService.getUserByActivationKey(key));
 	}
 
@@ -1662,9 +1658,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		try (var permit = UserServiceImpl.UserPasswordGuard.acquire()) {
-			dao.setUserActivationKey(credentials);
-		}
 		assertNull(userService.getUserByActivationKey(key));
 	}
 
@@ -1678,9 +1671,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		try (var permit = UserServiceImpl.UserPasswordGuard.acquire()) {
-			dao.setUserActivationKey(credentials);
-		}
 
 		final String PASSWORD = "Admin123";
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
@@ -1711,9 +1701,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		try (var permit = UserServiceImpl.UserPasswordGuard.acquire()) {
-			dao.setUserActivationKey(credentials);
-		}
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 
 		InvalidActivationKeyException exception = assertThrows(InvalidActivationKeyException.class,

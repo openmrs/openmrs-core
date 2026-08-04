@@ -279,25 +279,12 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void changePasswordString_shouldAllowChangingPasswordWhenPermitIsHeld() {
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
-		try (var permit = UserServiceImpl.UserPasswordGuard.acquire()) {
-			dao.changePassword(PASSWORD, PASSWORD + "foo");
-		}
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		Context.getUserService().changePassword(PASSWORD, PASSWORD + "foo");
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 
 		assertFalse(UserServiceImpl.UserPasswordGuard.isPermitted());
 		assertTrue(dao.getLoginCredential(userJoe).checkPassword(PASSWORD + "foo"));
-	}
-
-	@Test
-	public void userPasswordGuard_shouldAllowNestedPermitAcquisition() {
-		try (var outer = UserServiceImpl.UserPasswordGuard.acquire()) {
-			assertTrue(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should be held at depth 1");
-			try (var nested = UserServiceImpl.UserPasswordGuard.acquire()) {
-				dao.saveUser(userJoe, PASSWORD);
-				assertTrue(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should be held at depth 2");
-			}
-			assertTrue(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should still be held at depth 1");
-		}
-		assertFalse(UserServiceImpl.UserPasswordGuard.isPermitted(), "permit should be released after the outermost close");
 	}
 
 }

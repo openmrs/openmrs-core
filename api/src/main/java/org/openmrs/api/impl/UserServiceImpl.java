@@ -865,8 +865,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 	/**
 	 * Guards the password- and credential-mutating methods on {@link UserDAO} so they can only be
-	 * invoked by service code that holds a permit for the current thread. A permit is acquired with
-	 * {@link #acquire()} and released when the returned instance is closed, normally via a
+	 * invoked by service code that holds a permit for the current thread. The service acquires a permit
+	 * before calling the DAO and releases it when the returned instance is closed, normally via a
 	 * try-with-resources statement. Permits are re-entrant: each acquisition deepens the held permit by
 	 * one level and only the outermost close releases it.
 	 *
@@ -884,9 +884,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		 * done, typically with try-with-resources, to release the acquired level.
 		 *
 		 * @return the acquired permit
-		 * @since 3.0.0
 		 */
-		public static UserPasswordGuard acquire() {
+		private static UserPasswordGuard acquire() {
 			DEPTH.set(DEPTH.get() + 1);
 			return new UserPasswordGuard();
 		}
