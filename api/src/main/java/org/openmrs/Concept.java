@@ -16,13 +16,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jakarta.persistence.Cacheable;
 
@@ -402,7 +405,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 		preferredName.setLocalePreferred(true);
 		//add this name, if it is new or not among this concept's names
-		if (preferredName.getConceptNameId() == null || !getNames().contains(preferredName)) {
+		if (preferredName.getConceptNameId() == null || nonVoidedNames().noneMatch(n -> n.equals(preferredName))) {
 			addName(preferredName);
 		}
 	}
@@ -415,14 +418,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return the tagged name, or null if no name has the tag
 	 */
 	public ConceptName findNameTaggedWith(ConceptNameTag conceptNameTag) {
-		ConceptName taggedName = null;
-		for (ConceptName possibleName : getNames()) {
-			if (possibleName.hasTag(conceptNameTag)) {
-				taggedName = possibleName;
-				break;
-			}
-		}
-		return taggedName;
+		return nonVoidedNames().filter(n -> n.hasTag(conceptNameTag)).findFirst().orElse(null);
 	}
 
 	/**
@@ -466,7 +462,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @see Concept#getPreferredName(Locale) for the preferred name (if any)
 	 */
 	public ConceptName getName() {
-		if (getNames().isEmpty()) {
+		if (!hasNonVoidedNames()) {
 			log.debug("there are no names defined for: {}", conceptId);
 			return null;
 		}
@@ -497,20 +493,14 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 		}
 
-		for (ConceptName cn : getNames()) {
-			if (cn.isFullySpecifiedName()) {
-				return cn;
-			}
+		// fallback: first fully specified name in any locale
+		Optional<ConceptName> anyFullySpecified = nonVoidedNames().filter(ConceptName::isFullySpecifiedName).findFirst();
+		if (anyFullySpecified.isPresent()) {
+			return anyFullySpecified.get();
 		}
 
-		if (!getSynonyms().isEmpty()) {
-			return getSynonyms().iterator().next();
-		}
-
-		// we don't expect to get here since every concept name must have at least
-		// one fully specified name, but just in case (probably inconsistent data)
-
-		return null;
+		// fallback: first synonym in any locale
+		return nonVoidedNames().filter(ConceptName::isSynonym).findFirst().orElse(null);
 	}
 
 	/**
@@ -528,21 +518,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (name == null) {
 			return false;
 		}
-
-		Collection<ConceptName> currentNames;
-		if (locale == null) {
-			currentNames = getNames();
-		} else {
-			currentNames = getNames(locale);
-		}
-
-		for (ConceptName currentName : currentNames) {
-			if (name.equalsIgnoreCase(currentName.getName())) {
-				return true;
-			}
-		}
-
-		return false;
+		Stream<ConceptName> candidates = (locale == null) ? nonVoidedNames() : nonVoidedNamesIn(locale);
+		return candidates.anyMatch(n -> name.equalsIgnoreCase(n.getName()));
 	}
 
 	/**
@@ -564,34 +541,30 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @since 1.9
 	 **/
 	public ConceptName getName(Locale locale, ConceptNameType ofType, ConceptNameTag havingTag) {
-		Collection<ConceptName> namesInLocale = getNames(locale);
-		if (!namesInLocale.isEmpty()) {
-			//Pass the possible candidates through a stream and save the ones that match requirements to the list
-			List<ConceptName> matches = namesInLocale.stream().filter(
-			    c -> (ofType == null || ofType.equals(c.getConceptNameType())) && (havingTag == null || c.hasTag(havingTag)))
-			        .collect(Collectors.toList());
-
-			// if we have any matches, we'll return one of them
-			if (matches.size() == 1) {
-				return matches.get(0);
-			} else if (matches.size() > 1) {
-				for (ConceptName match : matches) {
-					if (match.getLocalePreferred()) {
-						return match;
-					}
-				}
-				// none was explicitly marked as preferred
-				return matches.get(0);
+		ConceptName firstMatch = null;
+		Iterator<ConceptName> candidates = nonVoidedNamesIn(locale).filter(
+		    c -> (ofType == null || ofType.equals(c.getConceptNameType())) && (havingTag == null || c.hasTag(havingTag)))
+		        .iterator();
+		while (candidates.hasNext()) {
+			ConceptName candidate = candidates.next();
+			if (candidate.getLocalePreferred()) {
+				return candidate;
+			}
+			if (firstMatch == null) {
+				firstMatch = candidate;
 			}
 		}
 
-		// if we reach here, there were no matching names, so try to look in the parent locale
+		if (firstMatch != null) {
+			return firstMatch;
+		}
+
+		// no matching names in this locale — try the parent locale
 		Locale parent = new Locale(locale.getLanguage());
 		if (!parent.equals(locale)) {
 			return getName(parent, ofType, havingTag);
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	/**
@@ -608,7 +581,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public ConceptName getName(Locale locale, boolean exact) {
 
 		// fail early if this concept has no names defined
-		if (getNames().isEmpty()) {
+		if (!hasNonVoidedNames()) {
 			log.debug("there are no names defined for: {}", conceptId);
 			return null;
 		}
@@ -644,11 +617,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		ConceptName fullySpecifiedName = getFullySpecifiedName(locale);
 		if (fullySpecifiedName != null) {
 			return fullySpecifiedName;
-		} else if (!getSynonyms(locale).isEmpty()) {
-			return getSynonyms(locale).iterator().next();
 		}
 
-		return null;
+		return nonVoidedNamesIn(locale).filter(ConceptName::isSynonym).findFirst().orElse(null);
 	}
 
 	public ConceptName getPreferredName(Locale forLocale) {
@@ -678,36 +649,36 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return null;
 		}
 
-		for (ConceptName nameInLocale : getNames(forLocale)) {
-			if (ObjectUtils.nullSafeEquals(nameInLocale.getLocalePreferred(), true)) {
-				return nameInLocale;
-			}
+		// exact locale match — find a name explicitly marked as locale-preferred
+		Optional<ConceptName> preferred = nonVoidedNamesIn(forLocale)
+		        .filter(n -> ObjectUtils.nullSafeEquals(n.getLocalePreferred(), true)).findFirst();
+		if (preferred.isPresent()) {
+			return preferred.get();
 		}
 
 		if (exact) {
 			return null;
-		} else {
-			// look for partially locale match - any language matches takes precedence over country matches.
-			ConceptName bestMatch = null;
-
-			for (ConceptName nameInLocale : getPartiallyCompatibleNames(forLocale)) {
-				if (ObjectUtils.nullSafeEquals(nameInLocale.getLocalePreferred(), true)) {
-					Locale nameLocale = nameInLocale.getLocale();
-					if (forLocale.getLanguage().equals(nameLocale.getLanguage())) {
-						return nameInLocale;
-					} else {
-						bestMatch = nameInLocale;
-					}
-
-				}
-			}
-
-			if (bestMatch != null) {
-				return bestMatch;
-			}
-
-			return getFullySpecifiedName(forLocale);
 		}
+
+		// partial locale fallback — language match takes precedence over country match
+		ConceptName bestMatch = null;
+		Iterator<ConceptName> partials = partiallyCompatibleNamesFor(forLocale)
+		        .filter(n -> ObjectUtils.nullSafeEquals(n.getLocalePreferred(), true)).iterator();
+		while (partials.hasNext()) {
+			ConceptName candidate = partials.next();
+			if (forLocale.getLanguage().equals(candidate.getLocale().getLanguage())) {
+				return candidate;
+			}
+			if (bestMatch == null) {
+				bestMatch = candidate;
+			}
+		}
+
+		if (bestMatch != null) {
+			return bestMatch;
+		}
+
+		return getFullySpecifiedName(forLocale);
 	}
 
 	/**
@@ -719,30 +690,30 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return the name explicitly marked as fully specified for the locale
 	 */
 	public ConceptName getFullySpecifiedName(Locale locale) {
-		if (locale != null && !getNames(locale).isEmpty()) {
-			//get the first fully specified name, since every concept must have a fully specified name,
-			//then, this loop will have to return a name
-			for (ConceptName conceptName : getNames(locale)) {
-				if (ObjectUtils.nullSafeEquals(conceptName.isFullySpecifiedName(), true)) {
-					return conceptName;
-				}
-			}
-
-			// look for partially locale match - any language matches takes precedence over country matches.
-			ConceptName bestMatch = null;
-			for (ConceptName conceptName : getPartiallyCompatibleNames(locale)) {
-				if (ObjectUtils.nullSafeEquals(conceptName.isFullySpecifiedName(), true)) {
-					Locale nameLocale = conceptName.getLocale();
-					if (locale.getLanguage().equals(nameLocale.getLanguage())) {
-						return conceptName;
-					}
-					bestMatch = conceptName;
-				}
-			}
-			return bestMatch;
-
+		if (locale == null || nonVoidedNamesIn(locale).findAny().isEmpty()) {
+			return null;
 		}
-		return null;
+
+		// exact locale match
+		Optional<ConceptName> exact = nonVoidedNamesIn(locale).filter(ConceptName::isFullySpecifiedName).findFirst();
+		if (exact.isPresent()) {
+			return exact.get();
+		}
+
+		// partial locale fallback — language match takes precedence over country match
+		ConceptName bestMatch = null;
+		Iterator<ConceptName> partials = partiallyCompatibleNamesFor(locale).filter(ConceptName::isFullySpecifiedName)
+		        .iterator();
+		while (partials.hasNext()) {
+			ConceptName candidate = partials.next();
+			if (locale.getLanguage().equals(candidate.getLocale().getLanguage())) {
+				return candidate;
+			}
+			if (bestMatch == null) {
+				bestMatch = candidate;
+			}
+		}
+		return bestMatch;
 	}
 
 	/**
@@ -755,23 +726,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Collection<ConceptName> getNames(Locale locale) {
 		return getNames().stream().filter(n -> n.getLocale().equals(locale)).collect(Collectors.toSet());
-	}
-
-	/**
-	 * Returns all names available for locale language "or" country. <br>
-	 * <br>
-	 *
-	 * @param locale locale for which names should be returned
-	 * @return Collection of ConceptNames with the given locale language or country
-	 */
-	private Collection<ConceptName> getPartiallyCompatibleNames(Locale locale) {
-		String language = locale.getLanguage();
-		String country = locale.getCountry();
-
-		return getNames().stream()
-		        .filter(n -> language.equals(n.getLocale().getLanguage())
-		                || StringUtils.isNotBlank(country) && country.equals(n.getLocale().getCountry()))
-		        .collect(Collectors.toSet());
 	}
 
 	/**
@@ -796,12 +750,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 
 		if (compatibleNames == null) {
-			compatibleNames = new ArrayList<>();
-			for (ConceptName possibleName : getNames()) {
-				if (LocaleUtility.areCompatible(possibleName.getLocale(), desiredLocale)) {
-					compatibleNames.add(possibleName);
-				}
-			}
+			compatibleNames = nonVoidedNames().filter(n -> LocaleUtility.areCompatible(n.getLocale(), desiredLocale))
+			        .collect(Collectors.toList());
 			compatibleCache.put(desiredLocale, compatibleNames);
 		}
 		return compatibleNames;
@@ -830,7 +780,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		fullySpecifiedName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		//add this name, if it is new or not among this concept's names
-		if (fullySpecifiedName.getConceptNameId() == null || !getNames().contains(fullySpecifiedName)) {
+		if (fullySpecifiedName.getConceptNameId() == null || nonVoidedNames().noneMatch(n -> n.equals(fullySpecifiedName))) {
 			addName(fullySpecifiedName);
 		}
 	}
@@ -857,7 +807,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 			shortName.setConceptNameType(ConceptNameType.SHORT);
 			if (StringUtils.isNotBlank(shortName.getName())
-			        && (shortName.getConceptNameId() == null || !getNames().contains(shortName))) {
+			        && (shortName.getConceptNameId() == null || nonVoidedNames().noneMatch(n -> n.equals(shortName)))) {
 				//add this name, if it is new or not among this concept's names
 				addName(shortName);
 			}
@@ -873,20 +823,24 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return the short name, or null if none has been explicitly set
 	 */
 	public ConceptName getShortNameInLocale(Locale locale) {
+		if (locale == null) {
+			return null;
+		}
+
 		ConceptName bestMatch = null;
-		if (locale != null && !getShortNames().isEmpty()) {
-			for (ConceptName shortName : getShortNames()) {
-				Locale nameLocale = shortName.getLocale();
-				if (nameLocale.equals(locale)) {
-					return shortName;
-				}
-				// test for partially locale match - any language matches takes precedence over country matches.
-				if (OpenmrsUtil.nullSafeEquals(locale.getLanguage(), nameLocale.getLanguage())) {
-					bestMatch = shortName;
-				} else if (bestMatch == null && StringUtils.isNotBlank(locale.getCountry())
-				        && locale.getCountry().equals(nameLocale.getCountry())) {
-					bestMatch = shortName;
-				}
+		Iterator<ConceptName> shorts = nonVoidedNames().filter(ConceptName::isShort).iterator();
+		while (shorts.hasNext()) {
+			ConceptName shortName = shorts.next();
+			Locale nameLocale = shortName.getLocale();
+			if (nameLocale.equals(locale)) {
+				return shortName;
+			}
+			// partially locale match - language takes precedence over country
+			if (OpenmrsUtil.nullSafeEquals(locale.getLanguage(), nameLocale.getLanguage())) {
+				bestMatch = shortName;
+			} else if (bestMatch == null && StringUtils.isNotBlank(locale.getCountry())
+			        && locale.getCountry().equals(nameLocale.getCountry())) {
+				bestMatch = shortName;
 			}
 		}
 		return bestMatch;
@@ -940,7 +894,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		ConceptName shortestNameForConcept = null;
 
 		if (locale != null) {
-			for (ConceptName possibleName : getNames()) {
+			Iterator<ConceptName> allNames = nonVoidedNames().iterator();
+			while (allNames.hasNext()) {
+				ConceptName possibleName = allNames.next();
 				if (possibleName.getLocale().equals(locale) && ((shortestNameForLocale == null)
 				        || (possibleName.getName().length() < shortestNameForLocale.getName().length()))) {
 					shortestNameForLocale = possibleName;
@@ -968,7 +924,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return whether this concept has the given name in any locale
 	 */
 	public boolean isNamed(String name) {
-		return getNames().stream().anyMatch(cn -> name.equals(cn.getName()));
+		return nonVoidedNames().anyMatch(n -> name.equals(n.getName()));
 	}
 
 	/**
@@ -1009,6 +965,45 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 
 		return names.stream().filter(n -> includeVoided || !n.getVoided()).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Returns a stream of non-voided names from the underlying collection. For internal use only —
+	 * avoids the defensive copy produced by {@link #getNames()}.
+	 */
+	private Stream<ConceptName> nonVoidedNames() {
+		return names == null ? Stream.empty() : names.stream().filter(n -> !n.getVoided());
+	}
+
+	/**
+	 * Returns a stream of non-voided names whose locale exactly matches the given locale. For internal
+	 * use only — avoids the defensive copy produced by {@link #getNames(Locale)}.
+	 */
+	private Stream<ConceptName> nonVoidedNamesIn(Locale locale) {
+		return nonVoidedNames().filter(n -> n.getLocale().equals(locale));
+	}
+
+	/**
+	 * Returns a stream of non-voided names with a partially compatible locale: matching language OR (if
+	 * the requested locale specifies a country) matching country. For internal use only — avoids
+	 * creating intermediate collections during name resolution.
+	 */
+	private Stream<ConceptName> partiallyCompatibleNamesFor(Locale locale) {
+		String language = locale.getLanguage();
+		String country = locale.getCountry();
+		return nonVoidedNames().filter(n -> {
+			Locale nameLocale = n.getLocale();
+			return language.equals(nameLocale.getLanguage())
+			        || (StringUtils.isNotBlank(country) && country.equals(nameLocale.getCountry()));
+		});
+	}
+
+	/**
+	 * Returns {@code true} if this concept has at least one non-voided name. For internal use only —
+	 * avoids the defensive copy produced by {@link #getNames()}.
+	 */
+	private boolean hasNonVoidedNames() {
+		return names != null && names.stream().anyMatch(n -> !n.getVoided());
 	}
 
 	/**
