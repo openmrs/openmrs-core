@@ -21,7 +21,7 @@ import org.openmrs.OpenmrsObject;
  * and if that fails using its uuid.
  * </p>
  *
- * @param <T> the openmrs object to convert to and from
+ * @param <T> the OpenMRS object to convert to and from
  * @since 2.2.0
  * @see org.openmrs.OpenmrsObject
  */
