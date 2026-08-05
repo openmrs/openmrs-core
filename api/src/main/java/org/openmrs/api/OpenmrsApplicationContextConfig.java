@@ -43,7 +43,7 @@ import org.springframework.transaction.TransactionManager;
 
 import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.app.MessageTypeRouter;
-import ca.uhn.hl7v2.parser.GenericParser;
+import ca.uhn.hl7v2.parser.PipeParser;
 
 /**
  * Provides OpenMRS Application Context Spring Configuration. It's a replacement for
@@ -129,9 +129,16 @@ public class OpenmrsApplicationContextConfig {
 		return configurer;
 	}
 
+	/**
+	 * OpenMRS only ever produces and consumes pipe-delimited (ER7) HL7v2 messages. A {@link PipeParser}
+	 * is used here instead of a {@code GenericParser} so that XML-encoded payloads are rejected
+	 * outright rather than being routed to HAPI's XML parser, which can expose XML external entity
+	 * (XXE) processing - external file reads, SSRF and entity-expansion DoS - when its underlying JAXP
+	 * factory is not hardened. See HL7Service#parseHL7String.
+	 */
 	@Bean
-	public GenericParser hL7Parser() {
-		return new GenericParser();
+	public PipeParser hL7Parser() {
+		return new PipeParser();
 	}
 
 	@Bean

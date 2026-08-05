@@ -188,6 +188,27 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * The {@code hL7Parser} bean is a {@link ca.uhn.hl7v2.parser.PipeParser} (not a
+	 * {@code GenericParser}), so an XML-encoded payload is rejected outright with an unsupported
+	 * encoding error instead of being routed to HAPI's XML parser, which can expose XML external entity
+	 * (XXE) processing when its underlying JAXP factory is not hardened. This guards against a
+	 * regression that reintroduces XML parsing of inbound HL7. The DOCTYPE/external entity below is
+	 * never resolved because the message is refused before any XML processing occurs.
+	 *
+	 * @see HL7Service#parseHL7String(String)
+	 */
+	@Test
+	public void parseHL7String_shouldRejectXmlEncodedMessages() {
+		HL7Service hl7service = Context.getHL7Service();
+		String xmlHl7 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+		        + "<!DOCTYPE ORU_R01 [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>\n"
+		        + "<ORU_R01 xmlns=\"urn:hl7-org:v2xml\">\n" + "  <MSH><MSH.1>|</MSH.1><MSH.2>^~\\&amp;</MSH.2></MSH>\n"
+		        + "  <PID><PID.5><XPN.1>&xxe;</XPN.1></PID.5></PID>\n" + "</ORU_R01>";
+		HL7Exception thrown = assertThrows(HL7Exception.class, () -> hl7service.parseHL7String(xmlHl7));
+		assertEquals("HL7 encoding not supported", thrown.getMessage());
+	}
+
+	/**
 	 * @see HL7Service#processHL7Message(Message)
 	 */
 	@Test

@@ -788,6 +788,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param patient the patient
 	 * @return the allergies object
 	 */
+	@Authorized({ PrivilegeConstants.GET_ALLERGIES })
 	Allergies getAllergies(Patient patient);
 
 	/**
@@ -815,6 +816,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param allergies the allergies
 	 * @return the saved allergies
 	 */
+	@Authorized({ PrivilegeConstants.ADD_ALLERGIES, PrivilegeConstants.EDIT_ALLERGIES })
 	Allergies setAllergies(Patient patient, Allergies allergies);
 
 	/**
@@ -879,6 +881,9 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Return the number of unvoided patients with names or patient identifiers or searchable person
 	 * attributes starting with or equal to the specified text
+	 * <p>
+	 * Note that after {@code person.searchMaxResults}, the count will be an upper bound, but not
+	 * necessarily an accurate count.
 	 * <p>
 	 * <strong>Should</strong> return the right count when a patient has multiple matching person
 	 * names<br/>

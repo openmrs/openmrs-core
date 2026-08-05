@@ -43,7 +43,7 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 	@Disabled
 	public void shouldCheckThatAMethodIsNotRolledBackInCaseOfAnErrorInAnotherInvokedInsideIt()
 	        throws SerializationException {
-		//TODO FIx why this test fails when run with other tests
+		//TODO Fix why this test fails when run with other tests
 		PatientService patientService = Context.getPatientService();
 		EncounterService encounterService = Context.getEncounterService();
 		ProgramWorkflowService programService = Context.getProgramWorkflowService();

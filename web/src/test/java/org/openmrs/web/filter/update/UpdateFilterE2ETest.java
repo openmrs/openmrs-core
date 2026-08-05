@@ -40,6 +40,9 @@ class UpdateFilterE2ETest {
 
 	private MockHttpServletResponse response;
 
+	/** Must match {@code UpdateFilter.AUTHENTICATED_SUCCESSFULLY}. */
+	private static final String AUTHENTICATED_SUCCESSFULLY_ATTR = "updateFilter.authenticatedSuccessfully";
+
 	/**
 	 * Testable subclass that overrides renderTemplate and authenticateAsSuperUser to avoid Velocity
 	 * rendering and database access.
@@ -77,7 +80,6 @@ class UpdateFilterE2ETest {
 				this.changes = null;
 			}
 		});
-		setAuthenticatedSuccessfully(false);
 		setDatabaseUpdateInProgress(false);
 		UpdateFilter.setLockReleased(false);
 
@@ -88,7 +90,6 @@ class UpdateFilterE2ETest {
 	@AfterEach
 	void cleanup() throws Exception {
 		setDatabaseUpdateInProgress(false);
-		setAuthenticatedSuccessfully(false);
 		UpdateFilter.setUpdatesRequired(true);
 		UpdateFilter.setLockReleased(false);
 	}
@@ -179,6 +180,23 @@ class UpdateFilterE2ETest {
 		setAuthenticatedSuccessfully(false);
 		request.setParameter("page", "reviewchanges.vm");
 
+		filter.doPost(request, response);
+
+		assertEquals("maintenance.vm", filter.lastRenderedTemplate);
+	}
+
+	@Test
+	void reviewChangesPage_shouldNotReuseAnotherSessionsAuthentication() throws Exception {
+		// one super user authenticates in their own session
+		filter.authResult = true;
+		MockHttpServletRequest authRequest = new MockHttpServletRequest();
+		authRequest.setParameter("page", "maintenance.vm");
+		authRequest.setParameter("username", "admin");
+		authRequest.setParameter("password", "Admin123");
+		filter.doPost(authRequest, new MockHttpServletResponse());
+
+		// a different, unauthenticated session must not inherit that authentication
+		request.setParameter("page", "reviewchanges.vm");
 		filter.doPost(request, response);
 
 		assertEquals("maintenance.vm", filter.lastRenderedTemplate);
@@ -431,20 +449,23 @@ class UpdateFilterE2ETest {
 	}
 
 	private void resetRequest() {
+		// carry the session forward so a follow-up request represents the same client (same session)
+		MockHttpServletRequest previous = request;
 		request = new MockHttpServletRequest();
+		request.setSession(previous.getSession());
 		response = new MockHttpServletResponse();
 	}
 
-	private void setAuthenticatedSuccessfully(boolean value) throws Exception {
-		Field field = UpdateFilter.class.getDeclaredField("authenticatedSuccessfully");
-		field.setAccessible(true);
-		field.setBoolean(filter, value);
+	private void setAuthenticatedSuccessfully(boolean value) {
+		if (value) {
+			request.getSession().setAttribute(AUTHENTICATED_SUCCESSFULLY_ATTR, Boolean.TRUE);
+		} else {
+			request.getSession().removeAttribute(AUTHENTICATED_SUCCESSFULLY_ATTR);
+		}
 	}
 
-	private boolean getAuthenticatedSuccessfully() throws Exception {
-		Field field = UpdateFilter.class.getDeclaredField("authenticatedSuccessfully");
-		field.setAccessible(true);
-		return field.getBoolean(filter);
+	private boolean getAuthenticatedSuccessfully() {
+		return Boolean.TRUE.equals(request.getSession().getAttribute(AUTHENTICATED_SUCCESSFULLY_ATTR));
 	}
 
 	private void setDatabaseUpdateInProgress(boolean value) throws Exception {
