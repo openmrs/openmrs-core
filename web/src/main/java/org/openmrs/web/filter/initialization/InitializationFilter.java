@@ -204,9 +204,31 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
-	private static boolean initializationComplete = false;
+	private static volatile boolean initializationComplete = false;
 
-	protected synchronized void setInitializationComplete(boolean initializationComplete) {
+	/**
+	 * Set to true once the installation has finished so that the progress page can keep polling for the
+	 * final {@code initializationComplete = true} response and leave the wizard. Cleared by
+	 * {@link #skipFilter(HttpServletRequest)} once that response has been delivered and the page has
+	 * moved on to the application.
+	 */
+	private static volatile boolean servingInitializationProgress = false;
+
+	/**
+	 * Set when the filter has written a progress response confirming that initialization is complete.
+	 * Guards against ending the progress window before the page has received the final state.
+	 */
+	private static volatile boolean initializationProgressResponseDelivered = false;
+
+	private static void setServingInitializationProgress(boolean value) {
+		servingInitializationProgress = value;
+	}
+
+	private static void setInitializationProgressResponseDelivered(boolean value) {
+		initializationProgressResponseDelivered = value;
+	}
+
+	protected static void setInitializationComplete(boolean initializationComplete) {
 		InitializationFilter.initializationComplete = initializationComplete;
 	}
 
@@ -252,6 +274,9 @@ public class InitializationFilter extends StartupFilter {
 				}
 
 				result.put("initializationComplete", isInitializationComplete());
+				if (isInitializationComplete()) {
+					setInitializationProgressResponseDelivered(true);
+				}
 				result.put("message", initJob.getMessage());
 				result.put("actionCounter", initJob.getStepsComplete());
 				if (!isInitializationComplete()) {
@@ -1097,10 +1122,23 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
-		// If progress.vm makes an ajax request even immediately after initialization has completed
-		// let the request pass in order to let progress.vm load the start page of OpenMRS
-		// (otherwise progress.vm is displayed "forever")
-		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page")) && !initializationRequired();
+		if (initializationRequired()) {
+			// the wizard handles every request until initialization completes
+			return false;
+		}
+		if (servingInitializationProgress) {
+			// The installation just finished. The progress page may still be polling for the final
+			// "initializationComplete = true" response so it can leave the wizard. Keep serving
+			// those requests until the response has been delivered and the page has moved on to the
+			// application (seen as the next non-AJAX request).
+			if (PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))) {
+				return false;
+			}
+			if (initializationProgressResponseDelivered) {
+				setServingInitializationProgress(false);
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -1267,7 +1305,7 @@ public class InitializationFilter extends StartupFilter {
 	 *
 	 * @return true if this has been run already
 	 */
-	private static synchronized boolean isInitializationComplete() {
+	private static boolean isInitializationComplete() {
 		return initializationComplete;
 	}
 
@@ -1878,6 +1916,8 @@ public class InitializationFilter extends StartupFilter {
 						reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
 					} finally {
 						if (!hasErrors()) {
+							// keep serving the progress page's final poll so it can leave the wizard
+							setServingInitializationProgress(true);
 							// set this so that the wizard isn't run again on next page load
 							setInitializationComplete(true);
 							// we should also try to store selected by user language

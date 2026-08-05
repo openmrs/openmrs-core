@@ -19,11 +19,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openmrs.web.filter.StartupFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -81,6 +83,8 @@ class UpdateFilterE2ETest {
 			}
 		});
 		setDatabaseUpdateInProgress(false);
+		setServingUpdateProgress(false);
+		setUpdateProgressResponseDelivered(false);
 		UpdateFilter.setLockReleased(false);
 
 		request = new MockHttpServletRequest();
@@ -90,6 +94,8 @@ class UpdateFilterE2ETest {
 	@AfterEach
 	void cleanup() throws Exception {
 		setDatabaseUpdateInProgress(false);
+		setServingUpdateProgress(false);
+		setUpdateProgressResponseDelivered(false);
 		UpdateFilter.setUpdatesRequired(true);
 		UpdateFilter.setLockReleased(false);
 	}
@@ -425,14 +431,74 @@ class UpdateFilterE2ETest {
 	}
 
 	@Test
-	void skipFilter_shouldReturnFalseForAjaxProgressRequestEvenWhenNoUpdatesRequired() {
+	void skipFilter_shouldReturnFalseForAjaxProgressRequestWhileProgressIsBeingServed() throws Exception {
 		UpdateFilter.setUpdatesRequired(false);
+		setServingUpdateProgress(true);
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		req.setParameter("page", "updateProgress.vm.ajaxRequest");
 
 		boolean result = filter.skipFilter(req);
 
 		assertEquals(false, result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForAjaxProgressRequestOnceProgressHasEnded() throws Exception {
+		UpdateFilter.setUpdatesRequired(false);
+		setServingUpdateProgress(false);
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setParameter("page", "updateProgress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(req);
+
+		assertEquals(true, result);
+	}
+
+	@Test
+	void skipFilter_shouldKeepServingProgressUntilFinalResponseIsDeliveredAndPageMovesOn() throws Exception {
+		UpdateFilter.setUpdatesRequired(false);
+		setServingUpdateProgress(true);
+		setUpdateProgressResponseDelivered(false);
+		MockHttpServletRequest nonAjaxReq = new MockHttpServletRequest();
+		MockHttpServletRequest ajaxReq = new MockHttpServletRequest();
+		ajaxReq.setParameter("page", "updateProgress.vm.ajaxRequest");
+
+		// a non-AJAX request before the final response was delivered must not end the progress window
+		assertEquals(true, filter.skipFilter(nonAjaxReq));
+		assertEquals(false, filter.skipFilter(ajaxReq));
+
+		// once the final response has been delivered, the next non-AJAX request ends the window
+		setUpdateProgressResponseDelivered(true);
+		assertEquals(true, filter.skipFilter(nonAjaxReq));
+		assertEquals(true, filter.skipFilter(ajaxReq));
+	}
+
+	// ========== progress AJAX wiring ==========
+
+	@Test
+	void progressAjax_shouldSetResponseDeliveredWhenUpdatesNoLongerRequired() throws Exception {
+		UpdateFilter.setUpdatesRequired(false);
+		setUpdateProgressResponseDelivered(false);
+		setUpdateJob(mockUpdateFilterCompletion());
+		request.setParameter("page", "updateProgress.vm.ajaxRequest");
+		MockHttpServletResponse realResponse = new MockHttpServletResponse();
+
+		filter.doPost(request, realResponse);
+
+		assertTrue(getUpdateProgressResponseDelivered());
+	}
+
+	@Test
+	void progressAjax_shouldNotSetResponseDeliveredWhenUpdatesStillRequired() throws Exception {
+		UpdateFilter.setUpdatesRequired(true);
+		setUpdateProgressResponseDelivered(false);
+		setUpdateJob(mockUpdateFilterCompletion());
+		request.setParameter("page", "updateProgress.vm.ajaxRequest");
+		MockHttpServletResponse realResponse = new MockHttpServletResponse();
+
+		filter.doPost(request, realResponse);
+
+		assertFalse(getUpdateProgressResponseDelivered());
 	}
 
 	// ========== Helper Methods ==========
@@ -472,6 +538,40 @@ class UpdateFilterE2ETest {
 		Field field = UpdateFilter.class.getDeclaredField("isDatabaseUpdateInProgress");
 		field.setAccessible(true);
 		field.setBoolean(null, value);
+	}
+
+	private void setServingUpdateProgress(boolean value) throws Exception {
+		Field field = UpdateFilter.class.getDeclaredField("servingUpdateProgress");
+		field.setAccessible(true);
+		field.setBoolean(null, value);
+	}
+
+	private void setUpdateProgressResponseDelivered(boolean value) throws Exception {
+		Field field = UpdateFilter.class.getDeclaredField("updateProgressResponseDelivered");
+		field.setAccessible(true);
+		field.setBoolean(null, value);
+	}
+
+	private boolean getUpdateProgressResponseDelivered() throws Exception {
+		Field field = UpdateFilter.class.getDeclaredField("updateProgressResponseDelivered");
+		field.setAccessible(true);
+		return field.getBoolean(null);
+	}
+
+	private void setUpdateJob(Object updateJob) throws Exception {
+		Field field = UpdateFilter.class.getDeclaredField("updateJob");
+		field.setAccessible(true);
+		field.set(filter, updateJob);
+	}
+
+	/**
+	 * The {@code UpdateFilterCompletion} inner class is private, so the mock is created from the
+	 * dynamically-resolved class rather than a type literal. The real constructor submits the update
+	 * runnable to the thread executor, so it must not be instantiated in tests.
+	 */
+	private Object mockUpdateFilterCompletion() throws Exception {
+		Class<?> clazz = Class.forName("org.openmrs.web.filter.update.UpdateFilter$UpdateFilterCompletion");
+		return Mockito.mock(clazz);
 	}
 
 	private void setUpdateFilterModel(UpdateFilterModel model) throws Exception {

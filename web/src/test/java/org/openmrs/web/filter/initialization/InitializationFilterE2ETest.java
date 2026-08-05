@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.filter.StartupFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -69,7 +70,7 @@ class InitializationFilterE2ETest {
 	}
 
 	@BeforeEach
-	void setup() {
+	void setup() throws Exception {
 		filter = new TestableInitializationFilter();
 		filter.wizardModel = new InitializationWizardModel();
 		request = new MockHttpServletRequest();
@@ -79,11 +80,18 @@ class InitializationFilterE2ETest {
 		// since SchedulerConfig.dataSource() reads them at bean-creation time.
 		originalRuntimeProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(new Properties());
+		filter.setInitializationComplete(false);
+		InitializationFilter.setInstallationStarted(false);
+		setServingInitializationProgress(false);
+		setInitializationProgressResponseDelivered(false);
 	}
 
 	@AfterEach
-	void cleanup() {
+	void cleanup() throws Exception {
 		InitializationFilter.setInstallationStarted(false);
+		filter.setInitializationComplete(false);
+		setServingInitializationProgress(false);
+		setInitializationProgressResponseDelivered(false);
 		Context.setRuntimeProperties(originalRuntimeProperties);
 	}
 
@@ -931,6 +939,95 @@ class InitializationFilterE2ETest {
 		assertTrue(getErrors().containsKey("install.error.dbUserPswd"));
 	}
 
+	// ========== skipFilter ==========
+
+	@Test
+	void skipFilter_shouldReturnFalseWhenInitializationRequired() {
+		filter.setInitializationComplete(false);
+
+		boolean result = filter.skipFilter(request);
+
+		assertFalse(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueWhenInitializationComplete() {
+		filter.setInitializationComplete(true);
+
+		boolean result = filter.skipFilter(request);
+
+		assertTrue(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnFalseForAjaxProgressRequestWhileProgressIsBeingServed() throws Exception {
+		filter.setInitializationComplete(true);
+		setServingInitializationProgress(true);
+		request.setParameter("page", "progress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(request);
+
+		assertFalse(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForAjaxProgressRequestOnceProgressHasEnded() throws Exception {
+		filter.setInitializationComplete(true);
+		setServingInitializationProgress(false);
+		request.setParameter("page", "progress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(request);
+
+		assertTrue(result);
+	}
+
+	@Test
+	void skipFilter_shouldKeepServingProgressUntilFinalResponseIsDeliveredAndPageMovesOn() throws Exception {
+		filter.setInitializationComplete(true);
+		setServingInitializationProgress(true);
+		setInitializationProgressResponseDelivered(false);
+		MockHttpServletRequest nonAjaxReq = new MockHttpServletRequest();
+		MockHttpServletRequest ajaxReq = new MockHttpServletRequest();
+		ajaxReq.setParameter("page", "progress.vm.ajaxRequest");
+
+		// a non-AJAX request before the final response was delivered must not end the progress window
+		assertTrue(filter.skipFilter(nonAjaxReq));
+		assertFalse(filter.skipFilter(ajaxReq));
+
+		// once the final response has been delivered, the next non-AJAX request ends the window
+		setInitializationProgressResponseDelivered(true);
+		assertTrue(filter.skipFilter(nonAjaxReq));
+		assertTrue(filter.skipFilter(ajaxReq));
+	}
+
+	// ========== progress AJAX wiring ==========
+
+	@Test
+	void progressAjax_shouldSetResponseDeliveredWhenInitializationComplete() throws Exception {
+		filter.setInitializationComplete(true);
+		setInitializationProgressResponseDelivered(false);
+		setInitJob(mockInitializationCompletion());
+		request.setParameter("page", "progress.vm.ajaxRequest");
+		MockHttpServletResponse realResponse = new MockHttpServletResponse();
+
+		filter.doGet(request, realResponse);
+
+		assertTrue(getInitializationProgressResponseDelivered());
+	}
+
+	@Test
+	void progressAjax_shouldNotSetResponseDeliveredWhenInitializationNotComplete() throws Exception {
+		filter.setInitializationComplete(false);
+		setInitializationProgressResponseDelivered(false);
+		setInitJob(mockInitializationCompletion());
+		request.setParameter("page", "progress.vm.ajaxRequest");
+		MockHttpServletResponse realResponse = new MockHttpServletResponse();
+
+		filter.doGet(request, realResponse);
+
+		assertFalse(getInitializationProgressResponseDelivered());
+	}
+
 	/**
 	 * Access the errors map from the filter via reflection since it is protected in StartupFilter.
 	 */
@@ -939,6 +1036,41 @@ class InitializationFilterE2ETest {
 		Field errorsField = StartupFilter.class.getDeclaredField("errors");
 		errorsField.setAccessible(true);
 		return (Map<String, Object[]>) errorsField.get(filter);
+	}
+
+	private void setServingInitializationProgress(boolean value) throws Exception {
+		Field field = InitializationFilter.class.getDeclaredField("servingInitializationProgress");
+		field.setAccessible(true);
+		field.setBoolean(null, value);
+	}
+
+	private void setInitializationProgressResponseDelivered(boolean value) throws Exception {
+		Field field = InitializationFilter.class.getDeclaredField("initializationProgressResponseDelivered");
+		field.setAccessible(true);
+		field.setBoolean(null, value);
+	}
+
+	private boolean getInitializationProgressResponseDelivered() throws Exception {
+		Field field = InitializationFilter.class.getDeclaredField("initializationProgressResponseDelivered");
+		field.setAccessible(true);
+		return field.getBoolean(null);
+	}
+
+	private void setInitJob(Object initJob) throws Exception {
+		Field field = InitializationFilter.class.getDeclaredField("initJob");
+		field.setAccessible(true);
+		field.set(filter, initJob);
+	}
+
+	/**
+	 * The {@code InitializationCompletion} inner class is private, so the mock is created from the
+	 * dynamically-resolved class rather than a type literal. The real constructor submits the
+	 * installation runnable to the thread executor, so it must not be instantiated in tests.
+	 */
+	private Object mockInitializationCompletion() throws Exception {
+		Class<?> clazz = Class
+		        .forName("org.openmrs.web.filter.initialization.InitializationFilter$InitializationCompletion");
+		return Mockito.mock(clazz);
 	}
 
 	/**

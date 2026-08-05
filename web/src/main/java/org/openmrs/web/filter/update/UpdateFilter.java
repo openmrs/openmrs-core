@@ -96,7 +96,7 @@ public class UpdateFilter extends StartupFilter {
 	 * Variable set as soon as the update is done or verified to not be needed so that future calls
 	 * through this filter are a simple boolean check
 	 */
-	private static boolean updatesRequired = true;
+	private static volatile boolean updatesRequired = true;
 
 	private UpdateFilterCompletion updateJob;
 
@@ -105,6 +105,28 @@ public class UpdateFilter extends StartupFilter {
 	 * thread should only be accesses through the synchronized method.
 	 */
 	private static boolean isDatabaseUpdateInProgress = false;
+
+	/**
+	 * Set to true once the updates have finished so that the progress page can keep polling for the
+	 * final {@code updatesRequired = false} response and leave the wizard. Cleared by
+	 * {@link #skipFilter(HttpServletRequest)} once that response has been delivered and the page has
+	 * moved on to the application.
+	 */
+	private static volatile boolean servingUpdateProgress = false;
+
+	/**
+	 * Set when the filter has written a progress response confirming that the updates are complete.
+	 * Guards against ending the progress window before the page has received the final state.
+	 */
+	private static volatile boolean updateProgressResponseDelivered = false;
+
+	private static void setServingUpdateProgress(boolean value) {
+		servingUpdateProgress = value;
+	}
+
+	private static void setUpdateProgressResponseDelivered(boolean value) {
+		updateProgressResponseDelivered = value;
+	}
 
 	/**
 	 * Variable set to true when the db lock is released. It's needed to prevent repeatedly releasing
@@ -268,6 +290,9 @@ public class UpdateFilter extends StartupFilter {
 				}
 
 				result.put("updatesRequired", updatesRequired());
+				if (!updatesRequired()) {
+					setUpdateProgressResponseDelivered(true);
+				}
 				result.put("message", updateJob.getMessage());
 				result.put("changesetIds", updateJob.getChangesetIds());
 				result.put("executingChangesetId", updateJob.getExecutingChangesetId());
@@ -527,7 +552,23 @@ public class UpdateFilter extends StartupFilter {
 	 */
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
-		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page")) && !updatesRequired();
+		if (updatesRequired()) {
+			// the wizard handles every request while updates are pending
+			return false;
+		}
+		if (servingUpdateProgress) {
+			// The updates just finished. The progress page may still be polling for the final
+			// "updatesRequired = false" response so it can leave the wizard. Keep serving those
+			// requests until the response has been delivered and the page has moved on to the
+			// application (seen as the next non-AJAX request).
+			if (PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))) {
+				return false;
+			}
+			if (updateProgressResponseDelivered) {
+				setServingUpdateProgress(false);
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -538,14 +579,14 @@ public class UpdateFilter extends StartupFilter {
 	 * @see Listener#isSetupNeeded()
 	 * @see Listener#contextInitialized(ServletContextEvent)
 	 */
-	public static synchronized boolean updatesRequired() {
+	public static boolean updatesRequired() {
 		return updatesRequired;
 	}
 
 	/**
 	 * @param updatesRequired the updatesRequired to set
 	 */
-	public static synchronized void setUpdatesRequired(boolean updatesRequired) {
+	public static void setUpdatesRequired(boolean updatesRequired) {
 		UpdateFilter.updatesRequired = updatesRequired;
 	}
 
@@ -762,6 +803,8 @@ public class UpdateFilter extends StartupFilter {
 							return;
 						}
 
+						// keep serving the progress page's final poll so it can leave the wizard
+						setServingUpdateProgress(true);
 						// set this so that the wizard isn't run again on next page load
 						setUpdatesRequired(false);
 					} finally {

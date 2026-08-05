@@ -252,8 +252,24 @@
 
 <script>		
     var updateTimer = null;
+    var numberUnsuccessfulJQueryAttempts = 0;
     function showProgress() {
+        // schedule the next update check first so we're sure it happens (in case an error occurs)
+        // only check the server again if the last request was successful
+        // (assumes checking the server takes less than 1 second)
+        if (numberUnsuccessfulJQueryAttempts < 5) {
+            setTimeout("showProgress()", 1000);
+            numberUnsuccessfulJQueryAttempts += 1; // this is to be reset in the jquery.get success func callback
+        } else {
+            // after enough consecutive failed polls (e.g. the installation finished and another
+            // tab has already navigated away, closing the progress window), fall back to the
+            // application instead of polling forever
+            window.location = "index.htm#if($localeToSave)?lang=$localeToSave#end";
+            return;
+        }
+
         jQuery.get("${setupPageUrl}", {page: "progress.vm.ajaxRequest"} , function(data) {
+            numberUnsuccessfulJQueryAttempts = 0;
             if(data){
                 if(data.initializationComplete) {
                     window.location="index.htm#if($localeToSave)?lang=$localeToSave#end";
@@ -322,8 +338,6 @@
             }
             
         }, "json");
-        
-        setTimeout("showProgress()", 1000);
     }
             
     function updateProgressBar(progressBarId, completedPercentage){
