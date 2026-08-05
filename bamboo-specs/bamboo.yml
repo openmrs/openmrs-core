@@ -598,3 +598,11 @@ plan-permissions:
           - anonymous
       permissions:
           - view
+    - roles:
+          - logged-in
+      permissions:
+          - view
+          - edit
+          - build
+          - clone
+          - admin
