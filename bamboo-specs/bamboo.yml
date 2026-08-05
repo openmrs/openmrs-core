@@ -234,13 +234,10 @@ Deploy to docker JDK 17:
                       export JDK_IMAGE="amazoncorretto-17"
                       export RUNTIME_JDK="jdk17-corretto"
                       
-                      export IMAGE=${bamboo.docker.image.id}
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
                       export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev-${JDK_IMAGE}
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
-                      
-                      docker pull $IMAGE
                       
                       docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
                         --target dev \
