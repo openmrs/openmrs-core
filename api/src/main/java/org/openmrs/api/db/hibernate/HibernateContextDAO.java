@@ -379,8 +379,6 @@ public class HibernateContextDAO implements ContextDAO {
 			return;
 		}
 
-		log.warn("DEBUG upgradePasswordHash: storedHash='{}', salt='{}', rawPassword='{}'",
-    		credential.getHashedPassword(), salt, rawPassword);
 		if (!Security.passwordMatches(credential.getHashedPassword(), rawPassword, salt)) {
 			log.warn("Refusing to upgrade password hash for user {}: the supplied password does not match the stored hash",
 				user.getUsername());
