@@ -436,7 +436,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		//two objects that were just constructed are distinct, and stay distinct as far as
 		//equals and hashCode are concerned
 		assertNotEquals(o.getUuid(), other.getUuid());
-		assertFalse(o.equals(other));
+		assertNotEquals(o, other);
 		assertEquals(o.getUuid().hashCode(), o.hashCode());
 	}
 
