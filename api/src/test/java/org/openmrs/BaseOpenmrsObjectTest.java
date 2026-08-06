@@ -466,7 +466,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		//a newly constructed object of the same type does not collide with the hydrated one
 		Location constructed = new Location();
 		assertNotEquals(uuid, constructed.getUuid());
-		assertFalse(location.equals(constructed));
+		assertNotEquals(location, constructed);
 	}
 
 	/**
