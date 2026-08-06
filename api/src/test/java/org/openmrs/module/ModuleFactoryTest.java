@@ -407,7 +407,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 
 		@EventListener
 		public void onModuleEvent(ModuleActionEvent moduleEvent) {
-			events.add(moduleEvent.getModuleId() + ":" + moduleEvent.getModuleName() + ":" + moduleEvent.getModuleVersion() + ":" + moduleEvent.getActionType() + ":" + moduleEvent.isSuccess());
+			events.add(moduleEvent.getModuleId() + ":" + moduleEvent.getModuleName() + ":" + moduleEvent.getModuleVersion() + ":" + moduleEvent.getEventType() + ":" + moduleEvent.isSuccess());
 		}
 
 		public void clear() {
