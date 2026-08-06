@@ -250,7 +250,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	void loadModule_shouldPublishFailStopUnloadLoadAndModuleEventIfErrorOccurWhileStoppingExistingModule_AndReplaceExistingIsTrue() {
+	void loadModule_shouldPublishFailStopUnloadAndLoadModuleEventIfErrorOccurWhileStoppingExistingModule_AndReplaceExistingIsTrue() {
 		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
 		testModuleEventListener.events.clear();
 		
@@ -271,6 +271,21 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_STOP:false", testModuleEventListener.events.get(0));
 		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_UNLOAD:false", testModuleEventListener.events.get(1));
 		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_LOAD:false", testModuleEventListener.events.get(2));
+	}
+	
+	@Test
+	void loadModule_shouldPublishFailLoadModuleEventIfModuleFileIsInvalidAndExceptionOccurWhileParsingFile() {
+		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
+		testModuleEventListener.events.clear();
+
+		File moduleFile = new File("webservices.rest-2.50.0.0.omok");
+
+		assertThrows(
+			ModuleException.class,
+			() -> ModuleFactory.loadModule(moduleFile, false));
+		
+		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals("null:webservices.rest:2.50.0.0" + ":MODULE_LOAD:false", testModuleEventListener.events.get(0));
 	}
 
 	@Test
