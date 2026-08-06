@@ -19,11 +19,11 @@ import liquibase.statement.AbstractSqlStatement;
  */
 public class ModifyColumnStatement extends AbstractSqlStatement {
 
-	private String schemaName;
+	private final String schemaName;
 
-	private String tableName;
+	private final String tableName;
 
-	private ColumnConfig[] columns;
+	private final ColumnConfig[] columns;
 
 	public ModifyColumnStatement(String schemaName, String tableName, ColumnConfig... columns) {
 		this.schemaName = schemaName;

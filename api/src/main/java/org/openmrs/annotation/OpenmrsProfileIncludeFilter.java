@@ -21,7 +21,7 @@ import org.springframework.core.type.filter.TypeFilter;
  */
 public class OpenmrsProfileIncludeFilter implements TypeFilter {
 
-	private OpenmrsProfileExcludeFilter openmrsProfileExcludeFilter = new OpenmrsProfileExcludeFilter();
+	private final OpenmrsProfileExcludeFilter openmrsProfileExcludeFilter = new OpenmrsProfileExcludeFilter();
 
 	/**
 	 * <p>
