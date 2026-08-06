@@ -19,15 +19,15 @@ import org.springframework.context.ApplicationEvent;
  */
 public class ModuleActionEvent extends ApplicationEvent {
 	
-	private ModuleEventType eventType;
+	private final ModuleEventType eventType;
 	
-	private String moduleId;
+	private final String moduleId;
 	
-	private String moduleName;
+	private final String moduleName;
 	
-	private String moduleVersion;
+	private final String moduleVersion;
 	
-	private boolean isSuccess;
+	private final boolean isSuccess;
 	
 	public ModuleActionEvent(Object source, ModuleEventType eventType, String moduleId, String moduleName,
 	    String moduleVersion, boolean isSuccess) {
@@ -39,7 +39,7 @@ public class ModuleActionEvent extends ApplicationEvent {
 		this.isSuccess = isSuccess;
 	}
 	
-	public ModuleEventType getActionType() {
+	public ModuleEventType getEventType() {
 		return eventType;
 	}
 	
