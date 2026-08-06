@@ -62,7 +62,7 @@ public class ModuleUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
 
-	private static final Pattern MODULE_FILNAME_PATTERN = Pattern.compile("^(.*?)(?:-([0-9][\\w.-]*?))?(?:\\.([a-zA-Z0-9]+))?$");
+	private static final Pattern MODULE_FILNAME_PATTERN = Pattern.compile("^(.+?)(?:-(\\d[\\w.-]*?))?(?:\\.([a-zA-Z0-9]+))?$");
 	
 	/**
 	 * Start up the module system with the given properties.
