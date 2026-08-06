@@ -29,14 +29,17 @@ public class ModuleActionEvent extends ApplicationEvent {
 	
 	private final boolean isSuccess;
 	
+	private final String failureReason;
+	
 	public ModuleActionEvent(Object source, ModuleEventType eventType, String moduleId, String moduleName,
-	    String moduleVersion, boolean isSuccess) {
+	    String moduleVersion, boolean isSuccess, String failureReason) {
 		super(source);
 		this.eventType = eventType;
 		this.moduleId = moduleId;
 		this.moduleName = moduleName;
 		this.moduleVersion = moduleVersion;
 		this.isSuccess = isSuccess;
+		this.failureReason = failureReason;
 	}
 	
 	public ModuleEventType getEventType() {
@@ -57,6 +60,10 @@ public class ModuleActionEvent extends ApplicationEvent {
 	
 	public boolean isSuccess() {
 		return isSuccess;
+	}
+	
+	public String getFailureReason() {
+		return failureReason;
 	}
 	
 }
