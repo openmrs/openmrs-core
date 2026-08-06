@@ -112,10 +112,41 @@ public class ModuleFactory {
 	 * @return Module
 	 */
 	public static Module loadModule(File moduleFile, Boolean replaceIfExists) throws ModuleException {
-		Module module = new ModuleFileParser(Context.getMessageSourceService()).parse(moduleFile);
-		
-		if (module != null) {
-			loadModule(module, replaceIfExists);
+
+		Module module = null;
+		Module laodedModule = null;
+		boolean isModuleLoaded = true;
+		String fileName;
+
+		try {
+			module = new ModuleFileParser(Context.getMessageSourceService()).parse(moduleFile);
+
+			if (module != null) {
+				laodedModule = loadModule(module, replaceIfExists);
+			}
+		} catch (Exception ex) {
+			isModuleLoaded = false;
+			throw ex;
+		} finally {
+			   if (laodedModule != null) {
+				   Module oldModule = getLoadedModulesMap().get(module.getModuleId());
+				   if (oldModule != null) {
+					   int versionComparison = ModuleUtil.compareVersion(oldModule.getVersion(), module.getVersion());
+					   if (versionComparison > 0) {
+						   isModuleLoaded = false;
+					   }
+				   }
+			   } 
+			   if(module == null) {
+				   fileName = ModuleUtil.getModuleNameAndVersionFromFileName(moduleFile.getName());
+				   isModuleLoaded = false;
+				   String[] parts = fileName.split(":");
+
+				   String name = parts[0];
+				   String version = (parts.length > 1) ? parts[1] : null;
+				   module = new Module(name, null, null, null, null, version, null);
+			   }
+			   publishModuleEvents(ModuleEventType.MODULE_LOAD, module, isModuleLoaded);
 		}
 		
 		return module;
@@ -137,36 +168,29 @@ public class ModuleFactory {
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		
 		log.debug("Adding module {} to the module queue", module.getName());
-		boolean isModuleLoaded = false;
 		
-		try {
-			Module oldModule = getLoadedModulesMap().get(module.getModuleId());
-			if (oldModule != null) {
-				int versionComparison = ModuleUtil.compareVersion(oldModule.getVersion(), module.getVersion());
-				if (versionComparison < 0) {
-					// if oldModule version is lower, unload it and use the new
+		Module oldModule = getLoadedModulesMap().get(module.getModuleId());
+		if (oldModule != null) {
+			int versionComparison = ModuleUtil.compareVersion(oldModule.getVersion(), module.getVersion());
+			if (versionComparison < 0) {
+				// if oldModule version is lower, unload it and use the new
+				unloadModule(oldModule);
+			} else if (versionComparison == 0) {
+				if (replaceIfExists) {
+					// if the versions are the same and we're told to replaceIfExists, use the new
 					unloadModule(oldModule);
-				} else if (versionComparison == 0) {
-					if (replaceIfExists) {
-						// if the versions are the same and we're told to replaceIfExists, use the new
-						unloadModule(oldModule);
-					} else {
-						// if the versions are equal and we're not told to replaceIfExists, jump out of here in a bad way
-						throw new ModuleException("A module with the same id and version already exists", module.getModuleId());
-					}
 				} else {
-					// if the older (already loaded) module is newer, keep that original one that was loaded. return that one.
-					return oldModule;
+					// if the versions are equal and we're not told to replaceIfExists, jump out of here in a bad way
+					throw new ModuleException("A module with the same id and version already exists", module.getModuleId());
 				}
+			} else {
+				// if the older (already loaded) module is newer, keep that original one that was loaded. return that one.
+				return oldModule;
 			}
-
-			getLoadedModulesMap().put(module.getModuleId(), module);
-			isModuleLoaded = true;
-			
 		}
-		finally {
-			publishModuleEvents(ModuleEventType.MODULE_LOAD, module, isModuleLoaded);
-		}
+		
+		getLoadedModulesMap().put(module.getModuleId(), module);
+		
 		return module;
 	}
 	
