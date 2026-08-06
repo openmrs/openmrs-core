@@ -460,7 +460,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 		assertNotSame(location, reloaded);
 		assertEquals(uuid, reloaded.getUuid());
-		assertTrue(location.equals(reloaded));
+		assertEquals(location, reloaded);
 		assertEquals(location.hashCode(), reloaded.hashCode());
 
 		//a newly constructed object of the same type does not collide with the hydrated one
