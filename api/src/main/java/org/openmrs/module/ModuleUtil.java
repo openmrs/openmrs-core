@@ -61,6 +61,8 @@ public class ModuleUtil {
 	}
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
+
+	private static final Pattern MODULE_FILNAME_PATTERN = Pattern.compile("^(.+?)(?:-(\\d[\\w.-]*?))?(?:\\.([a-zA-Z0-9]+))?$");
 	
 	/**
 	 * Start up the module system with the given properties.
@@ -1249,5 +1251,32 @@ public class ModuleUtil {
 		}
 		
 		return null;
+	}
+
+	/**
+	 * Gets the module name and version if possible from the filename 
+	 * 
+	 * @param fileName gets the file name from the uploaded module file
+	 * @return the module name and version in format like event:1.0.0 or just the original filename
+	 */
+	public static String getModuleNameAndVersionFromFileName(String fileName) {
+
+		if (fileName == null || fileName.isEmpty()) {
+			return null;
+		}
+		
+		Matcher matcher = MODULE_FILNAME_PATTERN.matcher(fileName);
+		
+		if (matcher.matches()) {
+			String name = matcher.group(1);
+			String version = matcher.group(2);
+			if (version != null && !version.isEmpty()) {
+				return name + ":" + version;	
+			} else {
+				return  name;
+			}
+		}
+		
+		return fileName;
 	}
 }
