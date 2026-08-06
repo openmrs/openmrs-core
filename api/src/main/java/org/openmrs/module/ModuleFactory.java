@@ -116,6 +116,7 @@ public class ModuleFactory {
 		Module module = null;
 		Module laodedModule = null;
 		boolean isModuleLoaded = true;
+		String failureReason = null;
 		String fileName;
 
 		try {
@@ -126,6 +127,7 @@ public class ModuleFactory {
 			}
 		} catch (Exception ex) {
 			isModuleLoaded = false;
+			failureReason = ex.getMessage();
 			throw ex;
 		} finally {
 			   if (laodedModule != null) {
@@ -134,6 +136,7 @@ public class ModuleFactory {
 					   int versionComparison = ModuleUtil.compareVersion(oldModule.getVersion(), module.getVersion());
 					   if (versionComparison > 0) {
 						   isModuleLoaded = false;
+						   failureReason = "There exists a same module with latest version than this module version";
 					   }
 				   }
 			   } 
@@ -146,7 +149,7 @@ public class ModuleFactory {
 				   String version = (parts.length > 1) ? parts[1] : null;
 				   module = new Module(name, null, null, null, null, version, null);
 			   }
-			   publishModuleEvents(ModuleEventType.MODULE_LOAD, module, isModuleLoaded);
+			   publishModuleEvents(ModuleEventType.MODULE_LOAD, module, isModuleLoaded, failureReason);
 		}
 		
 		return module;
@@ -581,17 +584,20 @@ public class ModuleFactory {
 	public static Module startModule(Module module) throws ModuleException {
 		Module startedModule;
 		boolean isSuccess = true;
+		String failureReason = null;
 		try {
 			startedModule = startModule(module, false, null);
 		}
 		catch (Exception e) {
 			isSuccess = false;
+			failureReason = e.getMessage();
 			throw e;
 		}
 		finally {
 			String startUpErrorMsg = module.getStartupErrorMessage();
 			publishModuleEvents(ModuleEventType.MODULE_START, module, 
-				isSuccess && isModuleStarted(module) && (startUpErrorMsg==null || startUpErrorMsg.isEmpty()));
+				isSuccess && isModuleStarted(module) && (startUpErrorMsg==null || startUpErrorMsg.isEmpty()),
+				failureReason == null ? startUpErrorMsg : failureReason);
 		}
 		return startedModule;
 	}
@@ -718,7 +724,7 @@ public class ModuleFactory {
 				
 				// Sort this module's extensions, and merge them into the full extensions map
 				Comparator<Extension> sortOrder = (e1, e2) -> Integer.valueOf(e1.getOrder()).compareTo(e2.getOrder());
-				for (Map.Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
+				for (Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
 					// Sort this module's extensions for current extension point
 					List<Extension> sortedModuleExtensions = moduleExtensionEntry.getValue();
 					sortedModuleExtensions.sort(sortOrder);
@@ -745,7 +751,7 @@ public class ModuleFactory {
 					// be nobody because this is being run at startup)
 					Context.addProxyPrivilege("");
 					
-					for (Map.Entry<String, String> entry : diffs.entrySet()) {
+					for (Entry<String, String> entry : diffs.entrySet()) {
 						String version = entry.getKey();
 						String sql = entry.getValue();
 						if (StringUtils.hasText(sql)) {
@@ -1077,15 +1083,17 @@ public class ModuleFactory {
 		}
 
 		boolean isStoppedSuccess = true;
+		String failureReason = null;
 		try {
 			dependentModulesStopped = doStopModule(mod, skipOverStartedProperty, isFailedStartup);
 		}
 		catch (Exception ex){
 			isStoppedSuccess = false;
+			failureReason = ex.getMessage();
 			throw ex;
 		}
 		finally {
-			publishModuleEvents(ModuleEventType.MODULE_STOP, mod, isStoppedSuccess && !isModuleStarted(mod));
+			publishModuleEvents(ModuleEventType.MODULE_STOP, mod, isStoppedSuccess && !isModuleStarted(mod), failureReason);
 		}
 		return dependentModulesStopped;
 	}
@@ -1284,6 +1292,7 @@ public class ModuleFactory {
 	 */
 	public static void unloadModule(Module mod) {
 		boolean isEventSuccess = true;
+		String failureReason = null;
 		try {
 			// remove this module's advice and extensions
 			if (isModuleStarted(mod)) {
@@ -1307,10 +1316,11 @@ public class ModuleFactory {
 		}
 		catch(Exception ex) {
 			isEventSuccess = false;
+			failureReason = ex.getMessage();
 			throw ex;
 		}
 		finally {
-			publishModuleEvents(ModuleEventType.MODULE_UNLOAD, mod, isEventSuccess);
+			publishModuleEvents(ModuleEventType.MODULE_UNLOAD, mod, isEventSuccess, failureReason);
 		}
 	}
 	
@@ -1334,7 +1344,7 @@ public class ModuleFactory {
 		// if this pointId doesn't contain the separator character, search
 		// for this point prepended with each MEDIA TYPE
 		if (!pointId.contains(Extension.EXTENSION_ID_SEPARATOR)) {
-			for (MEDIA_TYPE mediaType : Extension.MEDIA_TYPE.values()) {
+			for (MEDIA_TYPE mediaType : MEDIA_TYPE.values()) {
 				
 				// get all extensions for this type and point id
 				List<Extension> tmpExtensions = extensionMap.get(Extension.toExtensionId(pointId, mediaType));
@@ -1362,7 +1372,7 @@ public class ModuleFactory {
 	 * @param type Extension.MEDIA_TYPE
 	 * @return List of extensions
 	 */
-	public static List<Extension> getExtensions(String pointId, Extension.MEDIA_TYPE type) {
+	public static List<Extension> getExtensions(String pointId, MEDIA_TYPE type) {
 		String key = Extension.toExtensionId(pointId, type);
 		List<Extension> extensions = getExtensionMap().get(key);
 		if (extensions != null) {
@@ -1727,14 +1737,14 @@ public class ModuleFactory {
 	 * @param isSuccess defines whether the module event got successfully executed or not
 	 * @since 2.7.10
 	 */
-	private static void publishModuleEvents(ModuleEventType eventType, Module mod, boolean isSuccess) {
+	private static void publishModuleEvents(ModuleEventType eventType, Module mod, boolean isSuccess, String failureReason) {
 		try {
 			if (mod == null) {
 				return;
 			}
 			ApplicationEventPublisher applicationEventPublisher = ServiceContext.getInstance().getApplicationContext();
 			ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, eventType, mod.getModuleId(),
-				mod.getName(), mod.getVersion(), isSuccess);
+				mod.getName(), mod.getVersion(), isSuccess, failureReason);
 			if (applicationEventPublisher != null) {
 				applicationEventPublisher.publishEvent(event);
 			}
