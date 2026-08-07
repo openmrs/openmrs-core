@@ -49,6 +49,7 @@
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
 		<mapping class="org.openmrs.event.outbox.OutboxEvent"/>
+		<mapping class="org.openmrs.ConceptInterpretationRule"/>
   </session-factory>
 
 </hibernate-configuration>

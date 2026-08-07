@@ -1264,4 +1264,74 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		assertThat(concept.getSetMembers(), hasItem(setMember3));
 		assertThat(concept.getSetMembers().size(), is(3));
 	}
+
+	/**
+	 * @see Concept#addInterpretationRule(ConceptInterpretationRule)
+	 */
+	@Test
+	public void addInterpretationRule_shouldAddRuleToConcept() {
+		Concept concept = new Concept();
+		ConceptInterpretationRule rule = new ConceptInterpretationRule();
+		rule.setInterpretation(Obs.Interpretation.NORMAL);
+		rule.setPriority(1);
+		rule.setCriteria("true");
+
+		concept.addInterpretationRule(rule);
+
+		assertTrue(concept.getInterpretationRules().contains(rule));
+		assertEquals(concept, rule.getConcept());
+	}
+
+	/**
+	 * @see Concept#addInterpretationRule(ConceptInterpretationRule)
+	 */
+	@Test
+	public void addInterpretationRule_shouldNotAddDuplicateRule() {
+		Concept concept = new Concept();
+		ConceptInterpretationRule rule = new ConceptInterpretationRule();
+		rule.setInterpretation(Obs.Interpretation.NORMAL);
+		rule.setPriority(1);
+		rule.setCriteria("true");
+
+		concept.addInterpretationRule(rule);
+		concept.addInterpretationRule(rule);
+
+		assertEquals(1, concept.getInterpretationRules().size());
+	}
+
+	/**
+	 * @see Concept#removeInterpretationRule(ConceptInterpretationRule)
+	 */
+	@Test
+	public void removeInterpretationRule_shouldRemoveRule() {
+		Concept concept = new Concept();
+		ConceptInterpretationRule rule = new ConceptInterpretationRule();
+		rule.setInterpretation(Obs.Interpretation.NORMAL);
+		rule.setPriority(1);
+		rule.setCriteria("true");
+
+		concept.addInterpretationRule(rule);
+
+		assertTrue(concept.removeInterpretationRule(rule));
+		assertFalse(concept.getInterpretationRules().contains(rule));
+		assertNull(rule.getConcept());
+	}
+
+	/**
+	 * @see Concept#removeInterpretationRule(ConceptInterpretationRule)
+	 */
+	@Test
+	public void removeInterpretationRule_shouldNotClearConceptWhenRuleIsNotAssociated() {
+		Concept concept = new Concept();
+		Concept otherConcept = new Concept();
+		ConceptInterpretationRule rule = new ConceptInterpretationRule();
+		rule.setInterpretation(Obs.Interpretation.NORMAL);
+		rule.setPriority(1);
+		rule.setCriteria("true");
+
+		otherConcept.addInterpretationRule(rule);
+
+		assertFalse(concept.removeInterpretationRule(rule));
+		assertEquals(otherConcept, rule.getConcept());
+	}
 }
