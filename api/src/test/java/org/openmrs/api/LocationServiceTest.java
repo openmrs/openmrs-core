@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -1444,6 +1445,48 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 
 		assertEquals(1, paged.size());
 		assertEquals(filtered.get(1).getLocationId(), paged.get(0).getLocationId());
+	}
+
+	@Test
+	public void shouldLazyLoadLocationParentLocation() {
+		Location l = Context.getLocationService().getLocation(1);
+
+		// Associate the Location with an existing parent Location. Flush and clear the session so the entity is
+		// reloaded from the database instead of being returned from Hibernate's first-level cache.
+		l.setParentLocation(Context.getLocationService().getLocation(2));
+		Context.flushSession();
+		Context.clearSession();
+
+		Location location = Context.getLocationService().getLocation(1);
+
+		// The associated parent Location should not be loaded when the Location is retrieved.
+		assertFalse(Hibernate.isInitialized(location.getParentLocation()));
+
+		// Accessing the association should initialize the lazy proxy.
+		location.getParentLocation().getName();
+
+		assertTrue(Hibernate.isInitialized(location.getParentLocation()));
+	}
+
+	@Test
+	public void shouldLazyLoadLocationType() {
+		Location l = Context.getLocationService().getLocation(1);
+
+		// Associate the Location with an existing Concept as its type. Flush and clear the session so the entity is
+		// reloaded from the database instead of being returned from Hibernate's first-level cache.
+		l.setType(Context.getConceptService().getConcept(1));
+		Context.flushSession();
+		Context.clearSession();
+
+		Location location = Context.getLocationService().getLocation(1);
+
+		// The associated Concept should remain an uninitialized until it is explicitly accessed.
+		assertFalse(Hibernate.isInitialized(location.getType()));
+
+		// Accessing the Type should initialize the lazy association.
+		location.getType().getName();
+
+		assertTrue(Hibernate.isInitialized(location.getType()));
 	}
 
 }
