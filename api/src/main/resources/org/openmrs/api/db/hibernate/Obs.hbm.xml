@@ -96,7 +96,8 @@
 			<key column="obs_group_id" />
 			<one-to-many class="Obs" />
 		</set> 
-		<many-to-one name="previousVersion" class="Obs" column="previous_version" unique="true" />
+		<property name="previousVersionId" column="previous_version" type="java.lang.Integer" access="field" />
+		<many-to-one name="previousVersion" class="Obs" column="previous_version" unique="true" insert="false" update="false" access="field" foreign-key="none" />
 
 		<one-to-one name="referenceRange" class="org.openmrs.ObsReferenceRange" cascade="all"  />
 	</class>

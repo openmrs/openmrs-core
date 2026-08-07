@@ -117,6 +117,8 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		User user = getDefaultUser();
 
+		userService.removeUserProperty(user, OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP);
+
 		user.getAllRoles().forEach(user::removeRole);
 
 		user.setDateCreated(new Date(System.currentTimeMillis() - TWENTY_THREE_HOURS_IN_MILLISECONDS));
@@ -132,6 +134,8 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 		    new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, ONE_DAY_PROPERTY_VALUE));
 
 		User user = getDefaultUser();
+
+		userService.removeUserProperty(user, OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP);
 
 		user.getAllRoles().forEach(user::removeRole);
 

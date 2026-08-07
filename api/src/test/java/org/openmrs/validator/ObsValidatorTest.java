@@ -16,11 +16,15 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.CoreMatchers;
+import org.hibernate.FlushMode;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Drug;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.ObsReferenceRange;
 import org.openmrs.Person;
@@ -961,6 +965,41 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(valueNumeric);
 		obs.setObsDatetime(new Date());
 		return obs;
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfParentObsHasValuesWhenChildrenAreArchived() {
+		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty("obs.archive.enabled", "true"));
+		Obs obs = Context.getObsService().getObs(7);
+
+		// Set a value on the obs so that it fails validation IF it's considered an obsGroup
+		obs.setValueNumeric(10.0);
+
+		Integer parentId = obs.getObsId();
+		SessionFactory sessionFactory = Context.getRegisteredComponents(SessionFactory.class).get(0);
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode originalFlushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+
+		try {
+			// Simulate archived child by inserting directly into obs_archive
+			session.createNativeQuery(
+			    "INSERT INTO obs_archive (obs_id, person_id, concept_id, obs_datetime, creator, date_created, voided, status, uuid, obs_group_id) VALUES "
+			            + "(-999, 2, 5089, '2000-01-01', 1, '2000-01-01', true, 'FINAL', 'dummy-archived-child-uuid', :parentId)")
+			        .setParameter("parentId", parentId).executeUpdate();
+
+			Errors errors = new BindException(obs, "obs");
+			obsValidator.validate(obs, errors);
+
+			assertTrue(errors.hasFieldErrors("valueNumeric"),
+			    "Should fail validation because it has archived children and a valueNumeric");
+		} finally {
+			session.setHibernateFlushMode(originalFlushMode);
+			session.createNativeQuery("DELETE FROM obs_archive WHERE uuid = 'dummy-archived-child-uuid'").executeUpdate();
+		}
 	}
 
 }
