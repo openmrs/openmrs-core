@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Patient;
@@ -22,9 +24,11 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
+import org.openmrs.PatientState;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -32,12 +36,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 	private HibernatePatientDAO hibernatePatientDao;
 
 	private HibernatePersonDAO hibernatePersonDAO;
+	
+	@Autowired
+	private SessionFactory sessionFactory;
 
 	/**
 	 * Restricts search-index rebuilds to the entity types patient searches actually query, instead of
@@ -48,6 +58,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		return new Class<?>[] { PersonName.class, PersonAttribute.class, PatientIdentifier.class };
 	}
 
+	
 	@BeforeEach
 	public void beforeEach() {
 		updateSearchIndex();
@@ -298,5 +309,24 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 		// then
 		assertThat(duplicatePatients.size(), equalTo(2));
+	}
+
+	@Test
+	public void getPatientState_shouldLazyLoadRelationshipAssociations() {
+		PatientState patientState = sessionFactory.getCurrentSession().find(PatientState.class, 1);
+
+		assertNotNull(patientState.getPatientProgram(), "Test requires patientState.patientProgram");
+		assertNotNull(patientState.getState(), "Test requires patientState.state");
+
+		assertFalse(Hibernate.isInitialized(patientState.getPatientProgram()));
+		assertFalse(Hibernate.isInitialized(patientState.getState()));
+
+		// Trigger lazy initialization
+		patientState.getPatientProgram().getId();
+		patientState.getState().getId();
+
+		assertTrue(Hibernate.isInitialized(patientState.getPatientProgram()));
+		assertTrue(Hibernate.isInitialized(patientState.getState()));
+
 	}
 }

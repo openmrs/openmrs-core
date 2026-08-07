@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class HibernateLocationDAOTest extends BaseContextSensitiveTest {
 
@@ -113,4 +116,22 @@ public class HibernateLocationDAOTest extends BaseContextSensitiveTest {
 		    "Expected selective filtering to avoid loading the full location table");
 	}
 
+	@Test
+	public void getLocation_shouldLazyLoadLocationAssociations() {
+		Location location = dao.getLocation(7);
+
+		assertNotNull(location.getParentLocation(), "Test requires location.parentLocation");
+		assertNotNull(location.getType(), "Test requires location.type");
+
+		assertFalse(Hibernate.isInitialized(location.getParentLocation()));
+		assertFalse(Hibernate.isInitialized(location.getType()));
+
+		// Trigger lazy initialization
+		location.getParentLocation().getId();
+		location.getType().getId();
+
+		assertTrue(Hibernate.isInitialized(location.getParentLocation()));
+		assertTrue(Hibernate.isInitialized(location.getType()));
+
+	}
 }

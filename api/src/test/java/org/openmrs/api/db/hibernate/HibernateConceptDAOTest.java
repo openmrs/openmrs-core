@@ -12,9 +12,11 @@ package org.openmrs.api.db.hibernate;
 import java.util.List;
 import java.util.Locale;
 
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -35,6 +37,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 
@@ -305,5 +308,23 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 
 		// Then
 		assertTrue(savedConceptReferenceRange.isEmpty());
+	}
+
+	@Test
+	public void getConceptAnswer_shouldLazyLoadConceptAnswerAssociations() {
+		ConceptAnswer answer = dao.getConceptAnswer(4);
+
+		assertNotNull(answer.getConcept(), "Test requires answer.concept");
+		assertNotNull(answer.getAnswerConcept(), "Test requires answer.answerConcept");
+
+		assertFalse(Hibernate.isInitialized(answer.getConcept()));
+		assertFalse(Hibernate.isInitialized(answer.getAnswerConcept()));
+
+		// Trigger lazy initialization
+		answer.getConcept().getId();
+		answer.getAnswerConcept().getId();
+
+		assertTrue(Hibernate.isInitialized(answer.getConcept()));
+		assertTrue(Hibernate.isInitialized(answer.getAnswerConcept()));
 	}
 }
