@@ -837,7 +837,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		if (User.class.equals(type)) {
 			return (T) getUserByUuid(uuid);
 		}
-		throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+		throw new APIException("Unsupported type for getRefByUuid: " + (type != null ? type.getName() : "null"));
 	}
 
 	@Override
