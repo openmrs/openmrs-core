@@ -123,7 +123,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		// TODO Check required fields for user!!
 		OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
 
-		return dao.saveUser(user, password);
+		try (var permit = UserPasswordGuard.acquire()) {
+			return dao.saveUser(user, password);
+		}
 	}
 
 	/**
@@ -184,7 +186,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			        "Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
 		}
 
-		return dao.saveUser(user, null);
+		try (var permit = UserPasswordGuard.acquire()) {
+			return dao.saveUser(user, null);
+		}
 	}
 
 	public User voidUser(User user, String reason) throws APIException {
@@ -340,7 +344,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException {
-		dao.changeHashedPassword(user, hashedPassword, salt);
+		try (var permit = UserPasswordGuard.acquire()) {
+			dao.changeHashedPassword(user, hashedPassword, salt);
+		}
 	}
 
 	/**
@@ -348,7 +354,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void changeQuestionAnswer(User u, String question, String answer) throws APIException {
-		dao.changeQuestionAnswer(u, question, answer);
+		try (var permit = UserPasswordGuard.acquire()) {
+			dao.changeQuestionAnswer(u, question, answer);
+		}
 	}
 
 	/**
@@ -357,7 +365,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void changeQuestionAnswer(String pw, String q, String a) {
-		dao.changeQuestionAnswer(pw, q, a);
+		try (var permit = UserPasswordGuard.acquire()) {
+			dao.changeQuestionAnswer(pw, q, a);
+		}
 	}
 
 	/**
@@ -622,7 +632,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			throw new APIException("no.authenticated.user.found", (Object[]) null);
 		}
 		user.setUserProperty(key, value);
-		return dao.saveUser(user, null);
+		try (var permit = UserPasswordGuard.acquire()) {
+			return dao.saveUser(user, null);
+		}
 	}
 
 	@Override
@@ -635,7 +647,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		for (Map.Entry<String, String> entry : properties.entrySet()) {
 			user.setUserProperty(entry.getKey(), entry.getValue());
 		}
-		return dao.saveUser(user, null);
+		try (var permit = UserPasswordGuard.acquire()) {
+			return dao.saveUser(user, null);
+		}
 	}
 
 	/**
@@ -688,7 +702,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 	private void updatePassword(User user, String newPassword) {
 		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
-		dao.changePassword(user, newPassword);
+		try (var permit = UserPasswordGuard.acquire()) {
+			dao.changePassword(user, newPassword);
+		}
 	}
 
 	@Override
@@ -746,7 +762,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		String activationKey = hashedKey + ":" + time;
 		LoginCredential credentials = dao.getLoginCredential(user);
 		credentials.setActivationKey(activationKey);
-		dao.setUserActivationKey(credentials);
+		try (var permit = UserPasswordGuard.acquire()) {
+			dao.setUserActivationKey(credentials);
+		}
 
 		MessageSourceService messages = Context.getMessageSourceService();
 		AdministrationService adminService = Context.getAdministrationService();
@@ -845,4 +863,57 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		return Arrays.asList(Role.class, Privilege.class, User.class);
 	}
 
+	/**
+	 * Guards the password- and credential-mutating methods on {@link UserDAO} so they can only be
+	 * invoked by service code that holds a permit for the current thread. The service acquires a permit
+	 * before calling the DAO and releases it when the returned instance is closed, normally via a
+	 * try-with-resources statement. Permits are re-entrant: each acquisition deepens the held permit by
+	 * one level and only the outermost close releases it.
+	 *
+	 * @since 3.0.0
+	 */
+	public static final class UserPasswordGuard implements AutoCloseable {
+
+		private static final ThreadLocal<Integer> DEPTH = ThreadLocal.withInitial(() -> 0);
+
+		private UserPasswordGuard() {
+		}
+
+		/**
+		 * Acquires one level of permit for the current thread. The returned permit must be closed when
+		 * done, typically with try-with-resources, to release the acquired level.
+		 *
+		 * @return the acquired permit
+		 */
+		private static UserPasswordGuard acquire() {
+			DEPTH.set(DEPTH.get() + 1);
+			return new UserPasswordGuard();
+		}
+
+		/**
+		 * Releases one level of the permit held by the current thread. When the outermost permit is closed
+		 * the thread-local state is cleared.
+		 *
+		 * @since 3.0.0
+		 */
+		@Override
+		public void close() {
+			int depth = DEPTH.get() - 1;
+			if (depth <= 0) {
+				DEPTH.remove();
+			} else {
+				DEPTH.set(depth);
+			}
+		}
+
+		/**
+		 * Returns whether the current thread holds a permit.
+		 *
+		 * @return true if the current thread holds a permit
+		 * @since 3.0.0
+		 */
+		public static boolean isPermitted() {
+			return DEPTH.get() > 0;
+		}
+	}
 }
