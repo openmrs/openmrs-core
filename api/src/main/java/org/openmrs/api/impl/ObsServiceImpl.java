@@ -86,6 +86,15 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	}
 
 	/**
+	 * @see org.openmrs.api.ObsService#getObsVersionHistory(Obs)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Obs> getObsVersionHistory(Obs obs) {
+		return dao.getObsVersionHistory(obs);
+	}
+
+	/**
 	 * Clean up after this class. Set the static var to null so that the classloader can reclaim the
 	 * space.
 	 *
