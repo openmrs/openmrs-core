@@ -845,11 +845,18 @@ public class HibernatePatientDAO implements PatientDAO {
 	        boolean matchExactly) {
 		List<String> tokens = tokenizeIdentifierQuery(removeIdentifierPadding(paramQuery));
 		final String query = StringUtils.join(tokens, " | ");
-		//TODO: hibernate search identifierType?
-		//fields.add("identifierType");
+
+		final List<Integer> typeIdsMatchingQuery = matchExactly ? Collections.emptyList()
+		        : getIdentifierTypeIdsByName(paramQuery);
+
 		return f.bool().with(b -> {
 			b.minimumShouldMatchNumber(1);
 			b.should(f.simpleQueryString().field("identifierPhrase").matching(query).boost(8f));
+
+			if (!typeIdsMatchingQuery.isEmpty()) {
+				b.should(f.terms().field("identifierType.patientIdentifierTypeId").matchingAny(typeIdsMatchingQuery));
+			}
+
 			String matchMode = Context.getAdministrationService()
 			        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
 			if (matchExactly) {
@@ -861,6 +868,14 @@ public class HibernatePatientDAO implements PatientDAO {
 			}
 		}).toPredicate();
 
+	}
+
+	private List<Integer> getIdentifierTypeIdsByName(String name) {
+		return sessionFactory.getCurrentSession()
+		        .createQuery("select pit.patientIdentifierTypeId " + "from PatientIdentifierType pit "
+		                + "where lower(pit.name) = lower(:name)",
+		            Integer.class)
+		        .setParameter("name", name.trim()).getResultList();
 	}
 
 	private SearchPredicate newPatientIdentifierSearchPredicate(SearchPredicateFactory predicateFactory, String query,
