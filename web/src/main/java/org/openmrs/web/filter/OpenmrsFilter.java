@@ -10,6 +10,7 @@
 package org.openmrs.web.filter;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -59,9 +60,6 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 
 		HttpSession httpSession = httpRequest.getSession();
 
-		// used by htmlInclude tag
-		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(System.currentTimeMillis()));
-
 		log.debug("requestURI {}", httpRequest.getRequestURI());
 		log.debug("requestURL {}", httpRequest.getRequestURL());
 		log.debug("request path info {}", httpRequest.getPathInfo());
@@ -71,8 +69,8 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		// 		 prevent stack traces being shown to non-authenticated users
 		UserContext userContext = (UserContext) httpSession.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
 
-		// default the session username attribute to anonymous
-		httpSession.setAttribute("username", "-anonymous user-");
+		// determine the username that should be stored in the session
+		String sessionUsername = "-anonymous user-";
 
 		// if there isn't a userContext on the session yet, create one
 		// and set it onto the session
@@ -82,16 +80,21 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 
 			log.debug("Just set user context {} as attribute on session", userContext);
 		} else {
-			// set username as attribute on session so parent servlet container
-			// can identify sessions easier
+			// determine the username for authenticated users
 			User user = userContext.getAuthenticatedUser();
 			if (user != null) {
-				httpSession.setAttribute("username", user.getUsername());
+				sessionUsername = user.getUsername();
 			}
 		}
 
-		// set the locale on the session (for the servlet container as well)
-		httpSession.setAttribute("locale", userContext.getLocale());
+		// only update the session if the username has changed
+		if (!Objects.equals(httpSession.getAttribute("username"), sessionUsername)) {
+			httpSession.setAttribute("username", sessionUsername);
+		}
+		// update the session locale only when it has changed
+		if (!Objects.equals(httpSession.getAttribute("locale"), userContext.getLocale())) {
+			httpSession.setAttribute("locale", userContext.getLocale());
+		}
 
 		//TODO We do not cache the csrfguard javascript file because it contains the
 		//csrf token that is dynamically embedded in forms. For this to work,
