@@ -25,8 +25,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -42,6 +44,92 @@ public class Security {
 	private static final Random RANDOM = new SecureRandom();
 
 	private Security() {
+	}
+
+	private static PasswordEncoder getPasswordEncoder() {
+		try {
+			if (ServiceContext.getInstance().getApplicationContext() == null) {
+				log.debug("Spring context not initialized; falling back to legacy password encoder");
+				return new LegacyOpenmrsPasswordEncoder();
+			}
+			return Context.getRegisteredComponent("openmrsPasswordEncoder", PasswordEncoder.class);
+		}
+		catch (RuntimeException e) {
+			log.debug("Falling back to legacy password encoder", e);
+			return new LegacyOpenmrsPasswordEncoder();
+		}
+	}
+
+	/**
+	 * Encodes a password with the configured {@code openmrsPasswordEncoder} and splits the result
+	 * into the two columns OpenMRS stores it in. With the default {@link LegacyOpenmrsPasswordEncoder}
+	 * that is SHA-512 over {@code password + salt}; any other encoder keeps its own salt inside the
+	 * encoded value, so no separate salt comes back.
+	 *
+	 * @param rawPassword the cleartext password
+	 * @return String[] where [0] is the hashed password and [1] is the salt, empty for an encoder
+	 *         that does not keep a separate salt
+	 * @since 2.8.9
+	 */
+	public static String[] encodePassword(String rawPassword) {
+		String encoded = getPasswordEncoder().encode(rawPassword);
+		return parseEncodedPassword(encoded);
+	}
+
+	/**
+	 * Encodes a password using a specific salt instead of generating a new one.
+	 * Used for password changes where the existing salt must be preserved
+	 * (e.g., to keep secret-answer hashes valid).
+	 *
+	 * @param rawPassword the cleartext password
+	 * @param salt the salt to use
+	 * @return String[] where [0] is the hashed password and [1] is the salt
+	 * @since 2.8.9
+	 */
+	public static String[] encodePasswordWithSalt(String rawPassword, String salt) {
+		PasswordEncoder encoder = getPasswordEncoder();
+		if (encoder instanceof LegacyOpenmrsPasswordEncoder) {
+			String encoded = ((LegacyOpenmrsPasswordEncoder) encoder).encodeWithSalt(rawPassword, salt);
+			return parseEncodedPassword(encoded);
+		}
+		// A non-legacy encoder keeps its own salt inside the encoded value, so the salt passed in is
+		// dropped and the salt column ends up empty. Any secret answer hashed over the old salt
+		// (changeQuestionAnswer/isSecretAnswer) stops matching the first time this branch runs.
+		return encodePassword(rawPassword);
+	}
+
+	/**
+	 * Splits a colon-delimited {@code hash:salt} string into its components.
+	 *
+	 * @param encodedPassword the encoded password string
+	 * @return String[] where [0] is the hash and [1] is the salt (empty string if absent)
+	 * @since 2.8.9
+	 */
+	static String[] parseEncodedPassword(String encodedPassword) {
+		if (encodedPassword == null) {
+			return new String[] { "", "" };
+		}
+		String[] parts = encodedPassword.split(":", 2);
+		return new String[] { parts[0], parts.length > 1 ? parts[1] : "" };
+	}
+
+	/**
+	 * Checks a raw password against a stored hash and salt using the configured PasswordEncoder.
+	 *
+	 * @param rawPassword the cleartext password
+	 * @param storedHash the stored hashed password
+	 * @param storedSalt the stored salt
+	 * @return true if the password matches
+	 * @since 2.8.9
+	 */
+	public static boolean checkPassword(String rawPassword, String storedHash, String storedSalt) {
+		if (rawPassword == null || storedHash == null) {
+			return false;
+		}
+		String encodedPassword = storedSalt != null && !storedSalt.isEmpty()
+			? storedHash + ":" + storedSalt
+			: storedHash;
+		return getPasswordEncoder().matches(rawPassword, encodedPassword);
 	}
 
 	/**
@@ -70,7 +158,6 @@ public class Security {
 	}
 
 	/**
-	 /**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
 	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
 	 *
