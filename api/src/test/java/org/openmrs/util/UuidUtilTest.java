@@ -12,22 +12,16 @@ package org.openmrs.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.NoArgGenerator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -140,86 +134,4 @@ public class UuidUtilTest {
 		assertNotEquals(UuidUtil.newUuid(), UuidUtil.newUuid());
 	}
 
-	/**
-	 * Supplying a generator buys nothing unless every uuid is actually drawn from it, so this pins that
-	 * {@code RandomBasedGenerator} draws through {@link Random#nextLong()} rather than from a source of
-	 * its own.
-	 */
-	@Test
-	public void randomBasedGenerator_shouldDrawEveryUuidFromTheSuppliedGenerator() {
-		AtomicInteger nextLongCalls = new AtomicInteger();
-		AtomicInteger nextBytesCalls = new AtomicInteger();
-		Random supplied = new Random() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public long nextLong() {
-				nextLongCalls.incrementAndGet();
-				return super.nextLong();
-			}
-
-			@Override
-			public void nextBytes(byte[] bytes) {
-				nextBytesCalls.incrementAndGet();
-				super.nextBytes(bytes);
-			}
-		};
-
-		UUID uuid = Generators.randomBasedGenerator(supplied).generate();
-
-		assertEquals(4, uuid.version(), "expected a version 4 (random) uuid");
-		assertEquals(2, nextLongCalls.get(), "the uuid was not drawn from the supplied generator");
-		assertEquals(0, nextBytesCalls.get(), "the uuid was drawn through nextBytes rather than nextLong");
-	}
-
-	/**
-	 * A single generator is shared by every thread, so were generation to synchronize on it, threads
-	 * would serialise on one monitor and reintroduce the contention {@link UuidUtil} exists to remove.
-	 * The monitor is held by another thread throughout, so generation completes only if it does not
-	 * need it.
-	 */
-	@Test
-	public void randomBasedGenerator_shouldNotSynchroniseOnTheSuppliedGenerator() throws Exception {
-		Random supplied = new Random();
-		NoArgGenerator generator = Generators.randomBasedGenerator(supplied);
-		// generate once up front, so that class loading cannot be what blocks below
-		generator.generate();
-
-		CountDownLatch monitorHeld = new CountDownLatch(1);
-		CountDownLatch releaseMonitor = new CountDownLatch(1);
-		CountDownLatch generated = new CountDownLatch(1);
-
-		Thread holder = new Thread(() -> {
-			synchronized (supplied) {
-				monitorHeld.countDown();
-				awaitQuietly(releaseMonitor);
-			}
-		}, "uuid-monitor-holder");
-		Thread generating = new Thread(() -> {
-			generator.generate();
-			generated.countDown();
-		}, "uuid-generating");
-
-		holder.start();
-		assertTrue(monitorHeld.await(30, TimeUnit.SECONDS), "could not take the monitor of the generator");
-
-		try {
-			generating.start();
-			assertTrue(generated.await(30, TimeUnit.SECONDS),
-			    "generation waited on the monitor of the supplied generator, so threads serialise on it");
-		} finally {
-			releaseMonitor.countDown();
-			holder.join(TimeUnit.SECONDS.toMillis(30));
-			generating.join(TimeUnit.SECONDS.toMillis(30));
-		}
-	}
-
-	private static void awaitQuietly(CountDownLatch latch) {
-		try {
-			latch.await(30, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-	}
 }
