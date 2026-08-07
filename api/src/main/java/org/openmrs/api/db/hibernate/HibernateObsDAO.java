@@ -40,6 +40,7 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.Visit;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
@@ -77,10 +78,10 @@ public class HibernateObsDAO implements ObsDAO {
 	@Override
 	public List<Obs> getObsVersionHistory(Obs obs) {
 		if (obs == null) {
-			throw new IllegalArgumentException("Obs must not be null");
+			throw new APIException("Obs must not be null");
 		}
 		if (obs.getObsId() == null) {
-			throw new IllegalArgumentException("Obs must have an obsId");
+			throw new APIException("Obs must be persisted before its version history can be retrieved");
 		}
 
 		// Use a single recursive CTE to collect all obs_ids in the previousVersion chain,

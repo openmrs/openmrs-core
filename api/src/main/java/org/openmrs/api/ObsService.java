@@ -46,12 +46,12 @@ public interface ObsService extends OpenmrsService {
 	 * is the version immediately before it, so passing an intermediate revision returns the history up
 	 * to that revision rather than the whole chain.
 	 *
-	 * @param obs the Obs whose version history is to be retrieved; must not be null and must have a
-	 *            non-null obsId. The traversal walks backwards from this Obs via the
-	 *            {@code previousVersion} association.
+	 * @param obs the Obs whose version history is to be retrieved; must not be null and must be
+	 *            persisted (i.e. have a database-assigned obsId). The traversal walks backwards from
+	 *            this Obs via the {@code previousVersion} association.
 	 * @return a List of Obs representing the full version history up to and including the supplied obs,
 	 *         or an empty List if no obs with the given obsId exists
-	 * @throws IllegalArgumentException if obs is null or obsId is null
+	 * @throws APIException if obs is null or is not persisted (has no database-assigned obsId)
 	 * @since 3.0.0, 2.9.0
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)

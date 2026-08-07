@@ -2258,17 +2258,17 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * @see ObsService#getObsVersionHistory(Obs)
 	 */
 	@Test
-	public void getObsVersionHistory_shouldThrowIllegalArgumentExceptionForNullObs() {
-		assertThrows(IllegalArgumentException.class, () -> obsService.getObsVersionHistory(null));
+	public void getObsVersionHistory_shouldThrowAPIExceptionForNullObs() {
+		assertThrows(APIException.class, () -> obsService.getObsVersionHistory(null));
 	}
 
 	/**
 	 * @see ObsService#getObsVersionHistory(Obs)
 	 */
 	@Test
-	public void getObsVersionHistory_shouldThrowIllegalArgumentExceptionForObsWithoutId() {
+	public void getObsVersionHistory_shouldThrowAPIExceptionForUnsavedObs() {
 		Obs unsavedObs = new Obs();
-		assertThrows(IllegalArgumentException.class, () -> obsService.getObsVersionHistory(unsavedObs));
+		assertThrows(APIException.class, () -> obsService.getObsVersionHistory(unsavedObs));
 	}
 
 	/**
