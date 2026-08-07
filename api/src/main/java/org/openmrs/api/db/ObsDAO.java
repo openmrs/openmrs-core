@@ -20,6 +20,7 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.Visit;
 import org.openmrs.api.ObsService;
+import org.openmrs.parameter.ObsSearchCriteria;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 
 /**
@@ -99,6 +100,25 @@ public interface ObsDAO {
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	        boolean includeVoidedObs, String accessionNumber) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(ObsSearchCriteria)
+	 */
+	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws DAOException;
+
+	/**
+	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
+	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean,
+	 *      java.lang.String, java.lang.Integer, java.lang.Integer)
+	 */
+	@Deprecated(since = "3.0.0")
+	@SuppressWarnings({ "squid:S107", "squid:S1133" })
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws DAOException;
 
 	/**
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,

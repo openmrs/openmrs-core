@@ -35,6 +35,8 @@ import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.parameter.ObsSearchCriteria;
+import org.openmrs.parameter.ObsSearchCriteriaBuilder;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
@@ -390,6 +392,32 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	        boolean includeVoidedObs, String accessionNumber) throws APIException {
 
+		ObsSearchCriteriaBuilder builder = new ObsSearchCriteriaBuilder();
+		builder.setWhom(whom);
+		builder.setEncounters(encounters);
+		builder.setQuestions(questions);
+		builder.setAnswers(answers);
+		builder.setPersonTypes(personTypes);
+		builder.setLocations(locations);
+		builder.setSort(sort);
+		builder.setVisits(visits);
+		builder.setMostRecentN(mostRecentN);
+		builder.setObsGroupId(obsGroupId);
+		builder.setFromDate(fromDate);
+		builder.setToDate(toDate);
+		builder.setIncludeVoidedObs(includeVoidedObs);
+		builder.setAccessionNumber(accessionNumber);
+
+		return this.getObservations(builder.createObsSearchCriteria());
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws APIException {
+		List<String> sort = obsSearchCriteria.getSort();
 		if (sort == null) {
 			sort = new ArrayList<>();
 		}
@@ -397,8 +425,45 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 			sort.add("obsDatetime");
 		}
 
-		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, visits, mostRecentN,
-		    obsGroupId, fromDate, toDate, includeVoidedObs, accessionNumber);
+		return dao.getObservations(obsSearchCriteria.getWhom(), obsSearchCriteria.getEncounters(),
+		    obsSearchCriteria.getQuestions(), obsSearchCriteria.getAnswers(), obsSearchCriteria.getPersonTypes(),
+		    obsSearchCriteria.getLocations(), sort, obsSearchCriteria.getVisits(), obsSearchCriteria.getMostRecentN(),
+		    obsSearchCriteria.getObsGroupId(), obsSearchCriteria.getFromDate(), obsSearchCriteria.getToDate(),
+		    obsSearchCriteria.getIncludeVoidedObs(), obsSearchCriteria.getAccessionNumber(),
+		    obsSearchCriteria.getStartIndex(), obsSearchCriteria.getMaxResults());
+	}
+
+	/**
+	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
+	 */
+	@Override
+	@Deprecated(since = "3.0.0")
+	@SuppressWarnings("squid:S1133")
+	@Transactional(readOnly = true)
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws APIException {
+
+		ObsSearchCriteriaBuilder builder = new ObsSearchCriteriaBuilder();
+		builder.setWhom(whom);
+		builder.setEncounters(encounters);
+		builder.setQuestions(questions);
+		builder.setAnswers(answers);
+		builder.setPersonTypes(personTypes);
+		builder.setLocations(locations);
+		builder.setSort(sort);
+		builder.setVisits(visits);
+		builder.setMostRecentN(mostRecentN);
+		builder.setObsGroupId(obsGroupId);
+		builder.setFromDate(fromDate);
+		builder.setToDate(toDate);
+		builder.setIncludeVoidedObs(includeVoidedObs);
+		builder.setAccessionNumber(accessionNumber);
+		builder.setStartIndex(startIndex);
+		builder.setMaxResults(maxResults);
+
+		return this.getObservations(builder.createObsSearchCriteria());
 	}
 
 	/**
