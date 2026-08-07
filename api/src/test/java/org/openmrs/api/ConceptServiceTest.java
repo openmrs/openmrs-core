@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -1032,6 +1033,44 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		String uuid = "b1230431-2fe5-49fc-b535-ae42bc849747";
 		ConceptAnswer conceptAnswer = Context.getConceptService().getConceptAnswerByUuid(uuid);
 		assertEquals(1, (int) conceptAnswer.getConceptAnswerId());
+	}
+
+	@Test
+	public void shouldLazyLoadConceptAnswerAssociations() {
+		// Loading a ConceptAnswer should not eagerly load the related Concept entities. The old Hibernate mappings
+		// used lazy many-to-one associations, so these should remain uninitialized until they are explicitly accessed.
+		ConceptAnswer conceptAnswer = Context.getConceptService().getConceptAnswer(1);
+
+		// The associated Concepts should not be loaded when the ConceptAnswer is retrieved.
+		assertFalse(Hibernate.isInitialized(conceptAnswer.getConcept()));
+		assertFalse(Hibernate.isInitialized(conceptAnswer.getAnswerConcept()));
+
+		// Accessing the associated Concept should trigger initialization of the lazy proxy.
+		conceptAnswer.getConcept().getName();
+
+		assertTrue(Hibernate.isInitialized(conceptAnswer.getConcept()));
+	}
+
+	@Test
+	public void shouldLazyLoadAnswerDrugAssociation() {
+		ConceptAnswer ca = Context.getConceptService().getConceptAnswer(1);
+
+		// Associate the ConceptAnswer with an existing Drug so that the optional relationship can be verified. Flush
+		// and clear the session to ensure the entity is reloaded from the database rather than returned from Hibernate's
+		// first-level cache.
+		ca.setAnswerDrug(Context.getConceptService().getDrug(2));
+		Context.flushSession();
+		Context.clearSession();
+
+		ConceptAnswer conceptAnswer = Context.getConceptService().getConceptAnswer(1);
+
+		// The associated Drug should not be loaded when the ConceptAnswer is retrieved.
+		assertFalse(Hibernate.isInitialized(conceptAnswer.getAnswerDrug()));
+
+		// Accessing the Drug should initialize the lazy association.
+		conceptAnswer.getAnswerDrug().getName();
+
+		assertTrue(Hibernate.isInitialized(conceptAnswer.getAnswerDrug()));
 	}
 
 	/**
