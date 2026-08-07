@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -418,6 +419,43 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 		                .newQuery(PersonName.class, matchingPredicate(FAMILY_B), "person.personId", personMapper()));
 
 		assertThrows(IllegalStateException.class, () -> SearchQueryUnique.search(searchSessionFactory, query, 0, 10));
+	}
+
+	@Test
+	public void search_shouldApplyLoadingOptionsOncePerSubQuery() {
+		// Exactly once also pins them to the page fetch: the deduplication scroll runs in the same
+		// iteration, so applying them there too would show up here as a second invocation.
+		AtomicInteger applied = new AtomicInteger();
+		SearchQueryUnique<PersonName, Person> query = personNameQuery()
+		        .withLoadingOptions(options -> applied.incrementAndGet());
+
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory, query, 0, 5);
+
+		assertEquals(5, results.size());
+		assertEquals(1, applied.get(), "loading options should be applied to the page fetch exactly once");
+	}
+
+	@Test
+	public void searchCount_shouldNotApplyLoadingOptions() {
+		AtomicInteger applied = new AtomicInteger();
+		SearchQueryUnique<PersonName, Person> query = personNameQuery()
+		        .withLoadingOptions(options -> applied.incrementAndGet());
+
+		Long count = SearchQueryUnique.searchCount(searchSessionFactory, query);
+
+		assertEquals(Long.valueOf(PERSON_COUNT), count);
+		assertEquals(0, applied.get(), "the count path loads no entities, so loading options are meaningless there");
+	}
+
+	@Test
+	public void search_shouldBeUnaffectedWhenNoLoadingOptionsAreSet() {
+		// Every other caller leaves them unset, so that path must behave exactly as before.
+		List<Person> withoutOptions = SearchQueryUnique.search(searchSessionFactory, personNameQuery(), 0, 5);
+		List<Person> withNullOptions = SearchQueryUnique.search(searchSessionFactory,
+		    personNameQuery().withLoadingOptions(null), 0, 5);
+
+		assertEquals(5, withoutOptions.size());
+		assertEquals(personIds(withoutOptions), personIds(withNullOptions));
 	}
 
 	private SearchQuery<List<?>> uniqueKeyQuery() {
