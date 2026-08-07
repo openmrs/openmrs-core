@@ -1465,6 +1465,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertThrows(APIException.class, () -> Context.getObsService().purgeObs(new Obs(1), true));
 	}
 
+	@Test
+	public void purgeObs_shouldThrowIllegalArgumentExceptionWhenObsIsNull() {
+		// purgeObs throws IllegalArgumentException when obs is null; null must not reach the DAO layer.
+		assertThrows(IllegalArgumentException.class, () -> Context.getObsService().purgeObs(null));
+		assertThrows(IllegalArgumentException.class, () -> Context.getObsService().purgeObs(null, true));
+	}
+
 	/**
 	 * @see ObsService#saveObs(Obs,String)
 	 */
