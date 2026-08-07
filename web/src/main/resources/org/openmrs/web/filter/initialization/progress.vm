@@ -339,7 +339,7 @@
             
         }, "json");
     }
-            
+
     function updateProgressBar(progressBarId, completedPercentage){
         var newPercentage = Number(completedPercentage);
         var currentValue = jQuery("#"+progressBarId+"_progressbar").progressbar("option","value");

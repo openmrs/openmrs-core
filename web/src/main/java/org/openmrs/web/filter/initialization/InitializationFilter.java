@@ -208,24 +208,14 @@ public class InitializationFilter extends StartupFilter {
 
 	/**
 	 * Set to true once the installation has finished so that the progress page can keep polling for the
-	 * final {@code initializationComplete = true} response and leave the wizard. Cleared by
-	 * {@link #skipFilter(HttpServletRequest)} once that response has been delivered and the page has
-	 * moved on to the application.
+	 * final {@code initializationComplete = true} response and leave the wizard. It is not cleared
+	 * again: once an install has run, the progress page's polls keep being served for the life of the
+	 * JVM so that an open page can always get its final answer.
 	 */
 	private static volatile boolean servingInitializationProgress = false;
 
-	/**
-	 * Set when the filter has written a progress response confirming that initialization is complete.
-	 * Guards against ending the progress window before the page has received the final state.
-	 */
-	private static volatile boolean initializationProgressResponseDelivered = false;
-
 	private static void setServingInitializationProgress(boolean value) {
 		servingInitializationProgress = value;
-	}
-
-	private static void setInitializationProgressResponseDelivered(boolean value) {
-		initializationProgressResponseDelivered = value;
 	}
 
 	protected static void setInitializationComplete(boolean initializationComplete) {
@@ -274,9 +264,6 @@ public class InitializationFilter extends StartupFilter {
 				}
 
 				result.put("initializationComplete", isInitializationComplete());
-				if (isInitializationComplete()) {
-					setInitializationProgressResponseDelivered(true);
-				}
 				result.put("message", initJob.getMessage());
 				result.put("actionCounter", initJob.getStepsComplete());
 				if (!isInitializationComplete()) {
@@ -1126,17 +1113,12 @@ public class InitializationFilter extends StartupFilter {
 			// the wizard handles every request until initialization completes
 			return false;
 		}
-		if (servingInitializationProgress) {
-			// The installation just finished. The progress page may still be polling for the final
-			// "initializationComplete = true" response so it can leave the wizard. Keep serving
-			// those requests until the response has been delivered and the page has moved on to the
-			// application (seen as the next non-AJAX request).
-			if (PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))) {
-				return false;
-			}
-			if (initializationProgressResponseDelivered) {
-				setServingInitializationProgress(false);
-			}
+		if (servingInitializationProgress && PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))) {
+			// The installation has finished. Keep serving the progress page's polls until it has the
+			// final "initializationComplete = true" response and leaves the wizard. The window is not
+			// closed on some later request: an unrelated client, or a headless install with no one on
+			// the page, must never be able to end it before that page has its final answer.
+			return false;
 		}
 		return true;
 	}

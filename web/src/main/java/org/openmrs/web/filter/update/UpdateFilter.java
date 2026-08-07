@@ -108,24 +108,14 @@ public class UpdateFilter extends StartupFilter {
 
 	/**
 	 * Set to true once the updates have finished so that the progress page can keep polling for the
-	 * final {@code updatesRequired = false} response and leave the wizard. Cleared by
-	 * {@link #skipFilter(HttpServletRequest)} once that response has been delivered and the page has
-	 * moved on to the application.
+	 * final {@code updatesRequired = false} response and leave the wizard. It is not cleared again:
+	 * once a wizard job has run, the progress page's polls keep being served for the life of the JVM so
+	 * that an open page can always get its final answer.
 	 */
 	private static volatile boolean servingUpdateProgress = false;
 
-	/**
-	 * Set when the filter has written a progress response confirming that the updates are complete.
-	 * Guards against ending the progress window before the page has received the final state.
-	 */
-	private static volatile boolean updateProgressResponseDelivered = false;
-
 	private static void setServingUpdateProgress(boolean value) {
 		servingUpdateProgress = value;
-	}
-
-	private static void setUpdateProgressResponseDelivered(boolean value) {
-		updateProgressResponseDelivered = value;
 	}
 
 	/**
@@ -290,9 +280,6 @@ public class UpdateFilter extends StartupFilter {
 				}
 
 				result.put("updatesRequired", updatesRequired());
-				if (!updatesRequired()) {
-					setUpdateProgressResponseDelivered(true);
-				}
 				result.put("message", updateJob.getMessage());
 				result.put("changesetIds", updateJob.getChangesetIds());
 				result.put("executingChangesetId", updateJob.getExecutingChangesetId());
@@ -556,17 +543,12 @@ public class UpdateFilter extends StartupFilter {
 			// the wizard handles every request while updates are pending
 			return false;
 		}
-		if (servingUpdateProgress) {
-			// The updates just finished. The progress page may still be polling for the final
-			// "updatesRequired = false" response so it can leave the wizard. Keep serving those
-			// requests until the response has been delivered and the page has moved on to the
-			// application (seen as the next non-AJAX request).
-			if (PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))) {
-				return false;
-			}
-			if (updateProgressResponseDelivered) {
-				setServingUpdateProgress(false);
-			}
+		if (servingUpdateProgress && PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))) {
+			// The updates have finished. Keep serving the progress page's polls until it has the final
+			// "updatesRequired = false" response and leaves the wizard. The window is not closed on
+			// some later request: an unrelated client or the page's own non-AJAX requests must never
+			// be able to end it before that page has its final answer.
+			return false;
 		}
 		return true;
 	}
@@ -802,13 +784,11 @@ public class UpdateFilter extends StartupFilter {
 							reportError(ErrorMessageConstants.UPDATE_ERROR_COMPLETE_STARTUP, e.getMessage());
 							return;
 						}
-
-						// keep serving the progress page's final poll so it can leave the wizard
-						setServingUpdateProgress(true);
-						// set this so that the wizard isn't run again on next page load
-						setUpdatesRequired(false);
 					} finally {
 						if (!hasErrors()) {
+							// keep serving the progress page's final poll so it can leave the wizard
+							setServingUpdateProgress(true);
+							// set this so that the wizard isn't run again on next page load
 							setUpdatesRequired(false);
 						}
 						//reset to let other user's make requests after updates are run
