@@ -206,9 +206,8 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		Application classInstance = c.newInstance();
 		HashMap<String, Application> map = new HashMap<>();
 		map.put("ADR_A19", classInstance);
-		HL7ServiceImpl.getInstance().setHL7Handlers(map);
-		
-		HL7Service hl7service = Context.getHL7Service();
+		HL7ServiceImpl hl7service = (HL7ServiceImpl) Context.getHL7Service();
+		hl7service.setHL7Handlers(map);
 		Message message = hl7service
 		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ADR^A19|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
 		                + "PID|||3^^^^||John3^Doe^||\r"
@@ -258,9 +257,8 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		Application classInstance = c.newInstance();
 		HashMap<String, Application> map = new HashMap<>();
 		map.put("ORU_R01", classInstance);
-		HL7ServiceImpl.getInstance().setHL7Handlers(map);
-		
-		HL7Service hl7service = Context.getHL7Service();
+		HL7ServiceImpl hl7service = (HL7ServiceImpl) Context.getHL7Service();
+		hl7service.setHL7Handlers(map);
 		HL7InQueue queueItem = hl7service.getHL7InQueue(1); // a valid ORU_R01
 		
 		// this will create 1 HL7InError item

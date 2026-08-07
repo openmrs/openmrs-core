@@ -27,6 +27,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.Application;
+import ca.uhn.hl7v2.app.ApplicationException;
+import ca.uhn.hl7v2.app.MessageTypeRouter;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.datatype.ID;
+import ca.uhn.hl7v2.model.v25.datatype.PL;
+import ca.uhn.hl7v2.model.v25.datatype.TS;
+import ca.uhn.hl7v2.model.v25.datatype.XCN;
+import ca.uhn.hl7v2.model.v25.datatype.XPN;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.PID;
+import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
+import ca.uhn.hl7v2.parser.GenericParser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openmrs.Location;
@@ -60,22 +75,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.app.MessageTypeRouter;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.datatype.CX;
-import ca.uhn.hl7v2.model.v25.datatype.ID;
-import ca.uhn.hl7v2.model.v25.datatype.PL;
-import ca.uhn.hl7v2.model.v25.datatype.TS;
-import ca.uhn.hl7v2.model.v25.datatype.XCN;
-import ca.uhn.hl7v2.model.v25.datatype.XPN;
-import ca.uhn.hl7v2.model.v25.segment.NK1;
-import ca.uhn.hl7v2.model.v25.segment.PID;
-import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
-import ca.uhn.hl7v2.parser.GenericParser;
-
 /**
  * OpenMRS HL7 API default methods This class shouldn't be instantiated by itself. Use the
  * {@link org.openmrs.api.context.Context}
@@ -87,34 +86,12 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
 	private static final Logger log = LoggerFactory.getLogger(HL7ServiceImpl.class);
 	
-	private static HL7ServiceImpl instance;
-	
 	protected HL7DAO dao;
 	
 	private GenericParser parser;
 	
 	private MessageTypeRouter router;
-	
-	/**
-	 * Private constructor to only support on singleton instance.
-	 *
-	 * @see #getInstance()
-	 */
-	private HL7ServiceImpl() {
-	}
-	
-	/**
-	 * Singleton Factory method
-	 *
-	 * @return a singleton instance of this HL7ServiceImpl class
-	 */
-	public static HL7ServiceImpl getInstance() {
-		if (instance == null) {
-			instance = new HL7ServiceImpl();
-		}
-		return instance;
-	}
-	
+
 	/**
 	 * @see org.openmrs.hl7.HL7Service#setHL7DAO(org.openmrs.hl7.db.HL7DAO)
 	 */
