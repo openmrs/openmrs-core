@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import java.util.UUID;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,8 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
@@ -416,6 +420,53 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		assertTrue(testObjsameuuid.equals(testObj));
 		assertTrue(anotherTestObjectsameUuid.equals(anotherTestObj));
 
+	}
+
+	/**
+	 * @see BaseOpenmrsObject#getUuid()
+	 */
+	@Test
+	public void getUuid_shouldGiveEveryNewlyConstructedObjectItsOwnValidUuid() {
+		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
+		BaseOpenmrsObject other = new BaseOpenmrsObjectMock();
+
+		assertEquals(4, UUID.fromString(o.getUuid()).version());
+		assertTrue(o.getUuid().length() <= 38, "the uuid has to fit the uuid column");
+
+		//two objects that were just constructed are distinct, and stay distinct as far as
+		//equals and hashCode are concerned
+		assertNotEquals(o.getUuid(), other.getUuid());
+		assertNotEquals(o, other);
+		assertEquals(o.getUuid().hashCode(), o.hashCode());
+	}
+
+	/**
+	 * Hibernate overwrites the uuid generated in the field initialiser with the one read from the
+	 * database, so hydrated objects have to keep comparing equal by their stored uuid.
+	 *
+	 * @see BaseOpenmrsObject#equals(Object)
+	 */
+	@Test
+	public void equals_shouldUseTheUuidReadFromTheDatabaseForHydratedObjects() {
+		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
+		Session session = sessionFactory.getCurrentSession();
+
+		Location location = session.get(Location.class, 1);
+		String uuid = location.getUuid();
+
+		//drop the first level cache so that the row is hydrated into a second instance
+		session.clear();
+		Location reloaded = session.get(Location.class, 1);
+
+		assertNotSame(location, reloaded);
+		assertEquals(uuid, reloaded.getUuid());
+		assertEquals(location, reloaded);
+		assertEquals(location.hashCode(), reloaded.hashCode());
+
+		//a newly constructed object of the same type does not collide with the hydrated one
+		Location constructed = new Location();
+		assertNotEquals(uuid, constructed.getUuid());
+		assertNotEquals(location, constructed);
 	}
 
 	/**
