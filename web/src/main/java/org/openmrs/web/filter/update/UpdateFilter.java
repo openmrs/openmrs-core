@@ -96,7 +96,7 @@ public class UpdateFilter extends StartupFilter {
 	 * Variable set as soon as the update is done or verified to not be needed so that future calls
 	 * through this filter are a simple boolean check
 	 */
-	private static boolean updatesRequired = true;
+	private static volatile boolean updatesRequired = true;
 
 	private UpdateFilterCompletion updateJob;
 
@@ -105,6 +105,18 @@ public class UpdateFilter extends StartupFilter {
 	 * thread should only be accesses through the synchronized method.
 	 */
 	private static boolean isDatabaseUpdateInProgress = false;
+
+	/**
+	 * Set to true once the updates have finished so that the progress page can keep polling for the
+	 * final {@code updatesRequired = false} response and leave the wizard. It is not cleared again:
+	 * once a wizard job has run, the progress page's polls keep being served for the life of the JVM so
+	 * that an open page can always get its final answer.
+	 */
+	private static volatile boolean servingUpdateProgress = false;
+
+	private static void setServingUpdateProgress(boolean value) {
+		servingUpdateProgress = value;
+	}
 
 	/**
 	 * Variable set to true when the db lock is released. It's needed to prevent repeatedly releasing
@@ -527,7 +539,18 @@ public class UpdateFilter extends StartupFilter {
 	 */
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
-		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page")) && !updatesRequired();
+		if (updatesRequired()) {
+			// the wizard handles every request while updates are pending
+			return false;
+		}
+		if (servingUpdateProgress && PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))) {
+			// The updates have finished. Keep serving the progress page's polls until it has the final
+			// "updatesRequired = false" response and leaves the wizard. The window is not closed on
+			// some later request: an unrelated client or the page's own non-AJAX requests must never
+			// be able to end it before that page has its final answer.
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -538,14 +561,14 @@ public class UpdateFilter extends StartupFilter {
 	 * @see Listener#isSetupNeeded()
 	 * @see Listener#contextInitialized(ServletContextEvent)
 	 */
-	public static synchronized boolean updatesRequired() {
+	public static boolean updatesRequired() {
 		return updatesRequired;
 	}
 
 	/**
 	 * @param updatesRequired the updatesRequired to set
 	 */
-	public static synchronized void setUpdatesRequired(boolean updatesRequired) {
+	public static void setUpdatesRequired(boolean updatesRequired) {
 		UpdateFilter.updatesRequired = updatesRequired;
 	}
 
@@ -761,11 +784,11 @@ public class UpdateFilter extends StartupFilter {
 							reportError(ErrorMessageConstants.UPDATE_ERROR_COMPLETE_STARTUP, e.getMessage());
 							return;
 						}
-
-						// set this so that the wizard isn't run again on next page load
-						setUpdatesRequired(false);
 					} finally {
 						if (!hasErrors()) {
+							// keep serving the progress page's final poll so it can leave the wizard
+							setServingUpdateProgress(true);
+							// set this so that the wizard isn't run again on next page load
 							setUpdatesRequired(false);
 						}
 						//reset to let other user's make requests after updates are run

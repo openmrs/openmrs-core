@@ -204,9 +204,21 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
-	private static boolean initializationComplete = false;
+	private static volatile boolean initializationComplete = false;
 
-	protected synchronized void setInitializationComplete(boolean initializationComplete) {
+	/**
+	 * Set to true once the installation has finished so that the progress page can keep polling for the
+	 * final {@code initializationComplete = true} response and leave the wizard. It is not cleared
+	 * again: once an install has run, the progress page's polls keep being served for the life of the
+	 * JVM so that an open page can always get its final answer.
+	 */
+	private static volatile boolean servingInitializationProgress = false;
+
+	private static void setServingInitializationProgress(boolean value) {
+		servingInitializationProgress = value;
+	}
+
+	protected static void setInitializationComplete(boolean initializationComplete) {
 		InitializationFilter.initializationComplete = initializationComplete;
 	}
 
@@ -1097,10 +1109,18 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
-		// If progress.vm makes an ajax request even immediately after initialization has completed
-		// let the request pass in order to let progress.vm load the start page of OpenMRS
-		// (otherwise progress.vm is displayed "forever")
-		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page")) && !initializationRequired();
+		if (initializationRequired()) {
+			// the wizard handles every request until initialization completes
+			return false;
+		}
+		if (servingInitializationProgress && PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))) {
+			// The installation has finished. Keep serving the progress page's polls until it has the
+			// final "initializationComplete = true" response and leaves the wizard. The window is not
+			// closed on some later request: an unrelated client, or a headless install with no one on
+			// the page, must never be able to end it before that page has its final answer.
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -1267,7 +1287,7 @@ public class InitializationFilter extends StartupFilter {
 	 *
 	 * @return true if this has been run already
 	 */
-	private static synchronized boolean isInitializationComplete() {
+	private static boolean isInitializationComplete() {
 		return initializationComplete;
 	}
 
@@ -1878,6 +1898,8 @@ public class InitializationFilter extends StartupFilter {
 						reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
 					} finally {
 						if (!hasErrors()) {
+							// keep serving the progress page's final poll so it can leave the wizard
+							setServingInitializationProgress(true);
 							// set this so that the wizard isn't run again on next page load
 							setInitializationComplete(true);
 							// we should also try to store selected by user language

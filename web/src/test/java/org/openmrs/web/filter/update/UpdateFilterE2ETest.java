@@ -81,6 +81,7 @@ class UpdateFilterE2ETest {
 			}
 		});
 		setDatabaseUpdateInProgress(false);
+		setServingUpdateProgress(false);
 		UpdateFilter.setLockReleased(false);
 
 		request = new MockHttpServletRequest();
@@ -90,6 +91,7 @@ class UpdateFilterE2ETest {
 	@AfterEach
 	void cleanup() throws Exception {
 		setDatabaseUpdateInProgress(false);
+		setServingUpdateProgress(false);
 		UpdateFilter.setUpdatesRequired(true);
 		UpdateFilter.setLockReleased(false);
 	}
@@ -425,14 +427,43 @@ class UpdateFilterE2ETest {
 	}
 
 	@Test
-	void skipFilter_shouldReturnFalseForAjaxProgressRequestEvenWhenNoUpdatesRequired() {
+	void skipFilter_shouldReturnFalseForAjaxProgressRequestWhileProgressIsBeingServed() throws Exception {
 		UpdateFilter.setUpdatesRequired(false);
+		setServingUpdateProgress(true);
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		req.setParameter("page", "updateProgress.vm.ajaxRequest");
 
 		boolean result = filter.skipFilter(req);
 
 		assertEquals(false, result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForAjaxProgressRequestOnceProgressHasEnded() throws Exception {
+		UpdateFilter.setUpdatesRequired(false);
+		setServingUpdateProgress(false);
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setParameter("page", "updateProgress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(req);
+
+		assertEquals(true, result);
+	}
+
+	@Test
+	void skipFilter_shouldKeepServingProgressRequestWhileProgressWindowIsOpen() throws Exception {
+		UpdateFilter.setUpdatesRequired(false);
+		setServingUpdateProgress(true);
+		MockHttpServletRequest nonAjaxReq = new MockHttpServletRequest();
+		MockHttpServletRequest ajaxReq = new MockHttpServletRequest();
+		ajaxReq.setParameter("page", "updateProgress.vm.ajaxRequest");
+
+		// a non-AJAX request passes through but never ends the progress window
+		assertEquals(true, filter.skipFilter(nonAjaxReq));
+		assertEquals(false, filter.skipFilter(ajaxReq));
+
+		// the window stays open regardless of what else was served in between
+		assertEquals(false, filter.skipFilter(ajaxReq));
 	}
 
 	// ========== Helper Methods ==========
@@ -470,6 +501,12 @@ class UpdateFilterE2ETest {
 
 	private void setDatabaseUpdateInProgress(boolean value) throws Exception {
 		Field field = UpdateFilter.class.getDeclaredField("isDatabaseUpdateInProgress");
+		field.setAccessible(true);
+		field.setBoolean(null, value);
+	}
+
+	private void setServingUpdateProgress(boolean value) throws Exception {
+		Field field = UpdateFilter.class.getDeclaredField("servingUpdateProgress");
 		field.setAccessible(true);
 		field.setBoolean(null, value);
 	}

@@ -69,7 +69,7 @@ class InitializationFilterE2ETest {
 	}
 
 	@BeforeEach
-	void setup() {
+	void setup() throws Exception {
 		filter = new TestableInitializationFilter();
 		filter.wizardModel = new InitializationWizardModel();
 		request = new MockHttpServletRequest();
@@ -79,11 +79,16 @@ class InitializationFilterE2ETest {
 		// since SchedulerConfig.dataSource() reads them at bean-creation time.
 		originalRuntimeProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(new Properties());
+		filter.setInitializationComplete(false);
+		InitializationFilter.setInstallationStarted(false);
+		setServingInitializationProgress(false);
 	}
 
 	@AfterEach
-	void cleanup() {
+	void cleanup() throws Exception {
 		InitializationFilter.setInstallationStarted(false);
+		filter.setInitializationComplete(false);
+		setServingInitializationProgress(false);
 		Context.setRuntimeProperties(originalRuntimeProperties);
 	}
 
@@ -931,14 +936,76 @@ class InitializationFilterE2ETest {
 		assertTrue(getErrors().containsKey("install.error.dbUserPswd"));
 	}
 
-	/**
-	 * Access the errors map from the filter via reflection since it is protected in StartupFilter.
-	 */
+	// ========== skipFilter ==========
+
+	@Test
+	void skipFilter_shouldReturnFalseWhenInitializationRequired() {
+		filter.setInitializationComplete(false);
+
+		boolean result = filter.skipFilter(request);
+
+		assertFalse(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueWhenInitializationComplete() {
+		filter.setInitializationComplete(true);
+
+		boolean result = filter.skipFilter(request);
+
+		assertTrue(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnFalseForAjaxProgressRequestWhileProgressIsBeingServed() throws Exception {
+		filter.setInitializationComplete(true);
+		setServingInitializationProgress(true);
+		request.setParameter("page", "progress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(request);
+
+		assertFalse(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForAjaxProgressRequestOnceProgressHasEnded() throws Exception {
+		filter.setInitializationComplete(true);
+		setServingInitializationProgress(false);
+		request.setParameter("page", "progress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(request);
+
+		assertTrue(result);
+	}
+
+	@Test
+	void skipFilter_shouldKeepServingProgressRequestWhileProgressWindowIsOpen() throws Exception {
+		filter.setInitializationComplete(true);
+		setServingInitializationProgress(true);
+		MockHttpServletRequest nonAjaxReq = new MockHttpServletRequest();
+		MockHttpServletRequest ajaxReq = new MockHttpServletRequest();
+		ajaxReq.setParameter("page", "progress.vm.ajaxRequest");
+
+		// a non-AJAX request passes through but never ends the progress window
+		assertTrue(filter.skipFilter(nonAjaxReq));
+		assertFalse(filter.skipFilter(ajaxReq));
+
+		// the window stays open regardless of what else was served in between
+		assertFalse(filter.skipFilter(ajaxReq));
+	}
+
+	// ========== Helper Methods ==========
 	@SuppressWarnings("unchecked")
 	private Map<String, Object[]> getErrors() throws Exception {
 		Field errorsField = StartupFilter.class.getDeclaredField("errors");
 		errorsField.setAccessible(true);
 		return (Map<String, Object[]>) errorsField.get(filter);
+	}
+
+	private void setServingInitializationProgress(boolean value) throws Exception {
+		Field field = InitializationFilter.class.getDeclaredField("servingInitializationProgress");
+		field.setAccessible(true);
+		field.setBoolean(null, value);
 	}
 
 	/**
