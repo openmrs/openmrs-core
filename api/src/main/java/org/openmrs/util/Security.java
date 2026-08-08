@@ -14,12 +14,13 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Random;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
@@ -40,6 +41,16 @@ public class Security {
 
 	private static final Random RANDOM = new SecureRandom();
 
+	private static final int GCM_TAG_LENGTH_BITS = 128;
+
+	private static final int GCM_TAG_LENGTH_BYTES = GCM_TAG_LENGTH_BITS / 8;
+
+	private static final int GCM_IV_LENGTH_BYTES = 12;
+
+	private static final byte ENCRYPTION_VERSION_GCM_WITH_IV = 1;
+
+	private static final String GCM_CIPHER_ALGORITHM = "AES/GCM/NoPadding";
+
 	private Security() {
 	}
 
@@ -49,15 +60,13 @@ public class Security {
 	 * <br>
 	 * This should be used so that this class can compare against the new correct hashing algorithm and
 	 * the old incorrect hashing algorithm.
-	 * <p>
-	 * <strong>Should</strong> match strings hashed with incorrect sha1 algorithm<br/>
-	 * <strong>Should</strong> match strings hashed with sha1 algorithm<br/>
-	 * <strong>Should</strong> match strings hashed with sha512 algorithm and 128 characters salt
 	 *
 	 * @param hashedPassword a stored password that has been hashed previously
 	 * @param passwordToHash a string to encode/hash and compare to hashedPassword
 	 * @return true/false whether the two are equal
-	 * @since 1.5
+	 * @since 1.5 <strong>Should</strong> match strings hashed with incorrect sha1 algorithm
+	 *        <strong>Should</strong> match strings hashed with sha1 algorithm <strong>Should</strong>
+	 *        match strings hashed with sha512 algorithm and 128 characters salt
 	 */
 	public static boolean hashMatches(String hashedPassword, String passwordToHash) {
 		if (hashedPassword == null || passwordToHash == null) {
@@ -71,11 +80,10 @@ public class Security {
 	/**
 	 * /** This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
 	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
-	 * <p>
-	 * <strong>Should</strong> encode strings to 128 characters
 	 *
 	 * @param strToEncode string to encode
-	 * @return the SHA-512 encryption of a given string
+	 * @return the SHA-512 encryption of a given string <strong>Should</strong> encode strings to 128
+	 *         characters
 	 */
 	public static String encodeString(String strToEncode) throws APIException {
 		return encodeString(strToEncode, "SHA-512");
@@ -184,37 +192,37 @@ public class Security {
 	 * @since 1.9
 	 */
 	public static String encrypt(String text, byte[] initVector, byte[] secretKey) {
-		IvParameterSpec initVectorSpec = new IvParameterSpec(initVector);
-		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
-		byte[] encrypted;
-		String result;
-
 		try {
-			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
-			cipher.init(Cipher.ENCRYPT_MODE, secret, initVectorSpec);
-			encrypted = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
-			result = new String(Base64.getEncoder().encode(encrypted), StandardCharsets.UTF_8);
+			byte[] encrypted = encryptBytes(text.getBytes(StandardCharsets.UTF_8), initVector, secretKey);
+			return new String(Base64.getEncoder().encode(encrypted), StandardCharsets.UTF_8);
 		} catch (GeneralSecurityException e) {
 			throw new APIException("could.not.encrypt.text", null, e);
 		}
-
-		return result;
 	}
 
 	/**
 	 * encrypt text using stored initVector and securityKey
-	 * <p>
-	 * <strong>Should</strong> encrypt short and long text
 	 *
 	 * @param text the text to encrypt
 	 * @return encrypted text
-	 * @since 1.9
+	 * @since 1.9 <strong>Should</strong> encrypt short and long text
 	 * @deprecated As of version 2.4.0, this method is not referenced in openmrs-core or any other
 	 *             projects under the GitHub OpenMRS organisation.
 	 */
 	@Deprecated
 	public static String encrypt(String text) {
-		return Security.encrypt(text, Security.getSavedInitVector(), Security.getSavedSecretKey());
+		byte[] secretKey = Security.getSavedSecretKey();
+		byte[] initVector = generateNewInitVector();
+		try {
+			byte[] encrypted = encryptBytes(text.getBytes(StandardCharsets.UTF_8), initVector, secretKey);
+			byte[] combined = new byte[1 + initVector.length + encrypted.length];
+			combined[0] = ENCRYPTION_VERSION_GCM_WITH_IV;
+			System.arraycopy(initVector, 0, combined, 1, initVector.length);
+			System.arraycopy(encrypted, 0, combined, 1 + initVector.length, encrypted.length);
+			return new String(Base64.getEncoder().encode(combined), StandardCharsets.UTF_8);
+		} catch (GeneralSecurityException e) {
+			throw new APIException("could.not.encrypt.text", null, e);
+		}
 	}
 
 	/**
@@ -229,36 +237,63 @@ public class Security {
 	 * @since 1.9
 	 */
 	public static String decrypt(String text, byte[] initVector, byte[] secretKey) {
-		IvParameterSpec initVectorSpec = new IvParameterSpec(initVector);
-		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
-		String decrypted;
-
 		try {
-			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
-			cipher.init(Cipher.DECRYPT_MODE, secret, initVectorSpec);
-			byte[] original = cipher.doFinal(Base64.getDecoder().decode(text));
-			decrypted = new String(original, StandardCharsets.UTF_8);
+			byte[] cipherText = Base64.getDecoder().decode(text);
+			byte[] original = decryptBytes(cipherText, initVector, secretKey);
+			return new String(original, StandardCharsets.UTF_8);
 		} catch (GeneralSecurityException e) {
 			throw new APIException("could.not.decrypt.text", null, e);
 		}
-
-		return decrypted;
 	}
 
 	/**
 	 * decrypt text using stored initVector and securityKey
-	 * <p>
-	 * <strong>Should</strong> decrypt short and long text
 	 *
 	 * @param text text to be decrypted
 	 * @return decrypted text
-	 * @since 1.9
+	 * @since 1.9 <strong>Should</strong> decrypt short and long text
 	 * @deprecated As of version 2.4.0, this method is not referenced in openmrs-core or any other
 	 *             projects under the GitHub OpenMRS organisation.
 	 */
 	@Deprecated
 	public static String decrypt(String text) {
-		return Security.decrypt(text, Security.getSavedInitVector(), Security.getSavedSecretKey());
+		byte[] secretKey = Security.getSavedSecretKey();
+		byte[] decoded;
+		try {
+			decoded = Base64.getDecoder().decode(text);
+		} catch (IllegalArgumentException e) {
+			throw new APIException("could.not.decrypt.text", null, e);
+		}
+
+		if (decoded.length >= 1 + GCM_IV_LENGTH_BYTES + GCM_TAG_LENGTH_BYTES
+		        && decoded[0] == ENCRYPTION_VERSION_GCM_WITH_IV) {
+			byte[] initVector = Arrays.copyOfRange(decoded, 1, 1 + GCM_IV_LENGTH_BYTES);
+			byte[] cipherText = Arrays.copyOfRange(decoded, 1 + GCM_IV_LENGTH_BYTES, decoded.length);
+			try {
+				byte[] original = decryptBytes(cipherText, initVector, secretKey);
+				return new String(original, StandardCharsets.UTF_8);
+			} catch (GeneralSecurityException e) {
+				// fall back to other formats below
+			}
+		}
+
+		if (decoded.length >= GCM_IV_LENGTH_BYTES + GCM_TAG_LENGTH_BYTES) {
+			byte[] initVector = Arrays.copyOfRange(decoded, 0, GCM_IV_LENGTH_BYTES);
+			byte[] cipherText = Arrays.copyOfRange(decoded, GCM_IV_LENGTH_BYTES, decoded.length);
+			try {
+				byte[] original = decryptBytes(cipherText, initVector, secretKey);
+				return new String(original, StandardCharsets.UTF_8);
+			} catch (GeneralSecurityException e) {
+				// fall back to legacy format below
+			}
+		}
+
+		try {
+			byte[] original = decryptBytes(decoded, Security.getSavedInitVector(), secretKey);
+			return new String(original, StandardCharsets.UTF_8);
+		} catch (GeneralSecurityException e) {
+			throw new APIException("could.not.decrypt.text", null, e);
+		}
 	}
 
 	/**
@@ -282,12 +317,12 @@ public class Security {
 	 * generate a new cipher initialization vector; should only be called once in order to not
 	 * invalidate all encrypted data
 	 *
-	 * @return a random array of 16 bytes
+	 * @return a random array of 12 bytes
 	 * @since 1.9
 	 */
 	public static byte[] generateNewInitVector() {
-		// initialize the init vector with 16 random bytes
-		byte[] initVector = new byte[16];
+		// initialize the init vector with random bytes
+		byte[] initVector = new byte[GCM_IV_LENGTH_BYTES];
 		RANDOM.nextBytes(initVector);
 
 		return initVector;
@@ -331,6 +366,24 @@ public class Security {
 		SecretKey skey = kgen.generateKey();
 
 		return skey.getEncoded();
+	}
+
+	private static byte[] encryptBytes(byte[] plainText, byte[] initVector, byte[] secretKey)
+	        throws GeneralSecurityException {
+		GCMParameterSpec initVectorSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, initVector);
+		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
+		Cipher cipher = Cipher.getInstance(GCM_CIPHER_ALGORITHM);
+		cipher.init(Cipher.ENCRYPT_MODE, secret, initVectorSpec);
+		return cipher.doFinal(plainText);
+	}
+
+	private static byte[] decryptBytes(byte[] cipherText, byte[] initVector, byte[] secretKey)
+	        throws GeneralSecurityException {
+		GCMParameterSpec initVectorSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, initVector);
+		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
+		Cipher cipher = Cipher.getInstance(GCM_CIPHER_ALGORITHM);
+		cipher.init(Cipher.DECRYPT_MODE, secret, initVectorSpec);
+		return cipher.doFinal(cipherText);
 	}
 
 }
