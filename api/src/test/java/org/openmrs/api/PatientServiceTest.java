@@ -297,6 +297,22 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 	}
 
+	@Test
+	public void mergePatients_shouldCreateOnlyOnePersonMergeLogPerMerge() throws Exception {
+		int initialLogCount = Context.getPersonService().getAllPersonMergeLogs(false).size();
+
+		Patient preferred = Context.getPatientService().getPatient(2);
+		Patient notPreferred = Context.getPatientService().getPatient(6);
+
+		// Perform the merge
+		Context.getPatientService().mergePatients(preferred, notPreferred);
+
+		// Verify that exactly one new PersonMergeLog was added
+		List<PersonMergeLog> allLogs = Context.getPersonService().getAllPersonMergeLogs(false);
+		int newLogsCount = allLogs.size() - initialLogCount;
+		assertEquals(1, newLogsCount, "There should be exactly one person merge log created per merge.");
+	}
+
 	/**
 	 * Tests creating patients with identifiers that are or are not validated.
 	 *
