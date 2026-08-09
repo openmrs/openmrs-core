@@ -142,14 +142,13 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="TRUNK-6738-add-obs-archive-tables" author="shivvani-r">
+	<changeSet id="TRUNK-6738-add-tables-for-obs-archiving" author="shivvani-r">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="obs_archive"/>
 			</not>
 		</preConditions>
-		<comment>Add obs_archive and obs_archive_reference_range tables and global properties for Archiving Observations</comment>
-
+		<comment>Add obs_archive and obs_archive_reference_range tables for Archiving Observations</comment>
 		<createTable tableName="obs_archive">
 			<column name="obs_id" type="INT">
 				<constraints nullable="false" primaryKey="true"/>
@@ -199,8 +198,6 @@
 				<constraints nullable="false"/>
 			</column>
 			<column name="interpretation" type="VARCHAR(32)"/>
-			<column defaultValueComputed="NULL" name="changed_by" type="INT"/>
-			<column defaultValueComputed="NULL" name="date_changed" type="DATETIME"/>
 			<column defaultValueComputed="NULL" name="archived_by" type="INT"/>
 			<column defaultValueComputed="NULL" name="date_archived" type="DATETIME"/>
 		</createTable>
@@ -225,9 +222,6 @@
 			<column defaultValueComputed="NULL" name="date_archived" type="DATETIME"/>
 		</createTable>
 		
-		<createIndex indexName="idx_obs_archive_uuid" tableName="obs_archive">
-			<column name="uuid"/>
-		</createIndex>
 		<createIndex indexName="idx_obs_archive_obs_group_id" tableName="obs_archive">
 			<column name="obs_group_id"/>
 		</createIndex>
@@ -243,41 +237,6 @@
 		<createIndex indexName="idx_obs_archive_concept_id" tableName="obs_archive">
 			<column name="concept_id"/>
 		</createIndex>
-	</changeSet>
-
-	<changeSet id="TRUNK-6738-register-archiving-task" author="shivvani-r">
-		<preConditions onFail="MARK_RAN">
-			<and>
-				<not>
-					<sqlCheck expectedResult="1">
-						SELECT COUNT(1) FROM scheduler_task_config WHERE name = 'Observation Archiving Job'
-					</sqlCheck>
-				</not>
-				<sqlCheck expectedResult="1">
-					SELECT COUNT(1) FROM users WHERE user_id = 1
-				</sqlCheck>
-			</and>
-		</preConditions>
-		<comment>Register the Observation Archiving task in the legacy scheduler table so it is visible in the Admin UI</comment>
-		<insert tableName="scheduler_task_config">
-			<column name="name" value="Observation Archiving Job"/>
-			<column name="description" value="Periodically archives voided observations to the archive tables."/>
-			<column name="schedulable_class" value="org.openmrs.scheduler.tasks.ObsArchivingTask"/>
-			<column name="repeat_interval" valueNumeric="86400"/> <!-- 24 hours -->
-			<column name="start_on_startup" valueBoolean="true"/>
-			<column name="started" valueBoolean="false"/>
-			<column name="date_created" valueDate="2026-06-07T00:00:00"/>
-			<column name="created_by" valueNumeric="1"/>
-			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702344"/>
-		</insert>
-	</changeSet>
-
-	<changeSet id="TRUNK-6738-drop-previous-version-fk" author="shivvani-r">
-		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyTableName="obs" foreignKeyName="previous_version"/>
-		</preConditions>
-		<comment>Drop the previous_version foreign key constraint on the obs table to allow archiving old versions</comment>
-		<dropForeignKeyConstraint baseTableName="obs" constraintName="previous_version"/>
 	</changeSet>
 
 
