@@ -9,7 +9,8 @@
  */
 package org.openmrs.test.jupiter;
 
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Modules using the unit test framework should use this class instead of the general
@@ -22,8 +23,8 @@ import org.springframework.test.context.ContextConfiguration;
  *
  * @since 2.4.0
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:TestingApplicationContext.xml",
-        "classpath*:moduleApplicationContext.xml" }, inheritLocations = false)
-public abstract class BaseModuleContextSensitiveTest extends BaseContextSensitiveTest {
+@Transactional
+@Rollback
+public abstract class BaseModuleContextSensitiveTest extends BaseModuleContextSensitiveNonTransactionalTest {
 
 }

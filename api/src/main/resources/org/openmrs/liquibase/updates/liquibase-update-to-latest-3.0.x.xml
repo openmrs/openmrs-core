@@ -148,7 +148,7 @@
 				<tableExists tableName="obs_archive"/>
 			</not>
 		</preConditions>
-		<comment>Add obs_archive and obs_archive_reference_range tables for Archiving Observations</comment>
+		<comment>Add obs_archive and obs_reference_range_archive tables for Archiving Observations</comment>
 		<createTable tableName="obs_archive">
 			<column name="obs_id" type="INT">
 				<constraints nullable="false" primaryKey="true"/>
@@ -202,7 +202,7 @@
 			<column defaultValueComputed="NULL" name="date_archived" type="DATETIME"/>
 		</createTable>
 
-		<createTable tableName="obs_archive_reference_range">
+		<createTable tableName="obs_reference_range_archive">
 			<column name="obs_reference_range_id" type="INT" autoIncrement="true">
 				<constraints nullable="false" primaryKey="true"/>
 			</column>
