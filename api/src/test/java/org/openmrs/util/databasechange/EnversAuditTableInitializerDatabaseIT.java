@@ -198,8 +198,7 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 		List<Class<?>> auditedClasses = new ArrayList<>();
 
 		for (Class<?> entityClass : entityClasses) {
-			if (entityClass.equals(OrderServiceTest.SomeTestOrder.class) || entityClass.equals(org.openmrs.ObsArchive.class)
-			        || entityClass.equals(org.openmrs.ObsArchiveReferenceRange.class)) {
+			if (entityClass.equals(OrderServiceTest.SomeTestOrder.class)) {
 				continue;
 			}
 			if (isAudited(entityClass)) {

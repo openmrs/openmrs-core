@@ -91,7 +91,7 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 				archiveAndDeleteBatch(batchIds);
 				lastProcessedId = batchIds.get(batchIds.size() - 1);
 				saveLastProcessedId(lastProcessedId);
-			} catch (DataAccessException | TransactionException e) {
+			} catch (Exception e) {
 				log.warn("Batch failed, falling back to row-by-row archiving for batch starting at {}", lastProcessedId, e);
 				handleBatchFailure(batchIds);
 				lastProcessedId = batchIds.get(batchIds.size() - 1);
@@ -225,6 +225,9 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 				session.remove(obs);
 			}
 
+			session.flush();
+			session.clear();
+
 			return null;
 		});
 	}
@@ -233,7 +236,7 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 		for (Integer obsId : batchIds) {
 			try {
 				archiveAndDeleteBatch(List.of(obsId));
-			} catch (DataAccessException | TransactionException e) {
+			} catch (Exception e) {
 				log.warn("Skipping observation {} due to constraint violation during archiving.", obsId, e);
 			}
 		}

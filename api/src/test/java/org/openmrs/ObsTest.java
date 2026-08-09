@@ -56,7 +56,7 @@ public class ObsTest {
 	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID", "DATE_TIME_PATTERN",
 	    "TIME_PATTERN", "DATE_PATTERN", "FORM_NAMESPACE_PATH_SEPARATOR", "FORM_NAMESPACE_PATH_MAX_LENGTH", "obsId",
 	    "groupMembers", "uuid", "changedBy", "dateChanged", "voided", "voidedBy", "voidReason", "dateVoided",
-	    "formNamespaceAndPath", "$jacocoData", "referenceRange", "previousVersionId");
+	    "formNamespaceAndPath", "$jacocoData", "referenceRange");
 
 	private void resetObs(Obs obs) throws Exception {
 		Field field = Obs.class.getDeclaredField("dirty");
@@ -78,6 +78,17 @@ public class ObsTest {
 			}
 			setFieldValue(obs, field, false);
 		}
+		if (obs.getPreviousVersion() != null) {
+			obs.setPreviousVersionId(obs.getPreviousVersion().getObsId());
+		}
+
+		Field dirtyField = Reflect.getAllFields(Obs.class).stream().filter(f -> f.getName().equals("dirty")).findFirst()
+		        .orElse(null);
+		if (dirtyField != null) {
+			dirtyField.setAccessible(true);
+			dirtyField.set(obs, false);
+		}
+
 		assertFalse(obs.isDirty());
 		return obs;
 	}

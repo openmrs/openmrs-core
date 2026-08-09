@@ -1223,6 +1223,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	}
 
 	public void setPreviousVersionId(Integer previousVersionId) {
+		markAsDirty(this.previousVersionId, previousVersionId);
 		this.previousVersionId = previousVersionId;
 	}
 

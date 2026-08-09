@@ -148,7 +148,7 @@
 				<tableExists tableName="obs_archive"/>
 			</not>
 		</preConditions>
-		<comment>Add obs_archive and obs_archive_reference_range tables and global properties for Archiving Observations</comment>
+		<comment>Add obs_archive and obs_archive_reference_range tables for Archiving Observations</comment>
 
 		<createTable tableName="obs_archive">
 			<column name="obs_id" type="INT">
