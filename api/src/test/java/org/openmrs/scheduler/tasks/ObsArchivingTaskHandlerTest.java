@@ -97,6 +97,19 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		} catch (DataAccessException e) {
 			// Best-effort cleanup
 		}
+
+		GlobalProperty p = adminService.getGlobalPropertyObject("obs.archive.enabled");
+		if (p != null)
+			adminService.purgeGlobalProperty(p);
+		p = adminService.getGlobalPropertyObject("obs.archive.retention_days");
+		if (p != null)
+			adminService.purgeGlobalProperty(p);
+		p = adminService.getGlobalPropertyObject("obs.archive.last_processed_obs_id");
+		if (p != null)
+			adminService.purgeGlobalProperty(p);
+
+		Context.getUserService().removeUserProperty(Context.getAuthenticatedUser(),
+		    OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP);
 	}
 
 	private void assertArchived(int obsId) {

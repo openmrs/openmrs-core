@@ -24,6 +24,7 @@ import org.openmrs.api.impl.ObsArchiveHelper;
 import org.openmrs.scheduler.tasks.ObsArchivingTaskData;
 import org.openmrs.scheduler.tasks.ObsArchivingTaskHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -178,6 +179,19 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			}
 		}
 		createdObsIds.clear();
+
+		GlobalProperty p = adminService.getGlobalPropertyObject("obs.archive.enabled");
+		if (p != null)
+			adminService.purgeGlobalProperty(p);
+		p = adminService.getGlobalPropertyObject("obs.archive.retention_days");
+		if (p != null)
+			adminService.purgeGlobalProperty(p);
+		p = adminService.getGlobalPropertyObject("obs.archive.last_processed_obs_id");
+		if (p != null)
+			adminService.purgeGlobalProperty(p);
+
+		Context.getUserService().removeUserProperty(Context.getAuthenticatedUser(),
+		    OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP);
 	}
 
 	@Test
@@ -289,6 +303,8 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		assertTrue(obsService.getObs(id2).getVoided());
 		assertFalse(obsService.getObs(id3).getVoided());
 
+		Context.clearSession();
+
 		// 2. Run archiving - should move voided (obs1, obs2) to archive
 		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
 		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
@@ -335,7 +351,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		assertNotNull(fetchedPrevOfObs2);
 		assertEquals(id1, fetchedPrevOfObs2.getObsId());
 		assertTrue(fetchedPrevOfObs2.getVoided());
-
+		Context.clearSession();
 	}
 
 	@Test
@@ -382,6 +398,72 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		assertNotNull(restoredChild);
 		assertFalse(restoredChild.getVoided());
 
+	}
+
+	@Test
+	public void unvoidObs_shouldRestoreThreeLevelTreeFromArchive() throws Exception {
+		// 1. Create a parent obs, a child obs, and a grandchild obs
+		Obs parent = createSingleObs(null);
+		Obs child = createSingleObs(null);
+		Obs grandchild = createSingleObs(30.0);
+
+		child.addGroupMember(grandchild);
+		parent.addGroupMember(child);
+
+		parent = obsService.saveObs(parent, "save 3-level tree");
+
+		// Add to cleanup list
+		Integer parentId = parent.getObsId();
+		Integer childId = parent.getGroupMembers(true).iterator().next().getObsId();
+		Integer grandchildId = parent.getGroupMembers(true).iterator().next().getGroupMembers(true).iterator().next()
+		        .getObsId();
+		createdObsIds.add(parentId);
+		createdObsIds.add(childId);
+		createdObsIds.add(grandchildId);
+
+		// 2. Void parent (this automatically voids children and grandchildren too)
+		obsService.voidObs(parent, "void parent");
+		Context.flushSession();
+		Context.clearSession();
+
+		assertTrue(obsService.getObs(parentId).getVoided());
+		assertTrue(obsService.getObs(childId).getVoided());
+		assertTrue(obsService.getObs(grandchildId).getVoided());
+
+		// 3. Run archiving - moves all to obs_archive
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		// Verify all are in archive
+		assertArchived(parentId);
+		assertArchived(childId);
+		assertArchived(grandchildId);
+
+		// 4. Unvoid the parent observation from archive
+		Context.clearSession();
+		Obs archivedParent = obsService.getObs(parentId);
+		assertNotNull(archivedParent);
+
+		obsService.unvoidObs(archivedParent);
+		Context.flushSession();
+		Context.clearSession();
+
+		// 5. Verify all are restored and unvoided
+		assertActive(parentId);
+		assertActive(childId);
+		assertActive(grandchildId);
+
+		Obs restoredParent = obsService.getObs(parentId);
+		assertNotNull(restoredParent);
+		assertFalse(restoredParent.getVoided());
+
+		Obs restoredChild = obsService.getObs(childId);
+		assertNotNull(restoredChild);
+		assertFalse(restoredChild.getVoided());
+
+		Obs restoredGrandchild = obsService.getObs(grandchildId);
+		assertNotNull(restoredGrandchild);
+		assertFalse(restoredGrandchild.getVoided());
 	}
 
 	@Test
