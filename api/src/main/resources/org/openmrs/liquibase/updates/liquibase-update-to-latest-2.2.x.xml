@@ -374,5 +374,4 @@
             </column>
         </addColumn>
     </changeSet>
-
 </databaseChangeLog>
