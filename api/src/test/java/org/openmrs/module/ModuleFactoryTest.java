@@ -288,6 +288,21 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		assertEquals(1, testModuleEventListener.events.size());
 		assertEquals("null:webservices.rest:2.50.0.0" + ":MODULE_LOAD:false:" + exception.getMessage(), testModuleEventListener.events.get(0));
 	}
+	
+	@Test
+	void loadModule_shouldPublishFailLoadModuleEventWithNullModuleMetadataIfModuleFileNameIsEmpty() {
+		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
+		testModuleEventListener.events.clear();
+		
+		File moduleFile = new File(" ");
+		
+		ModuleException exception = assertThrows(
+			ModuleException.class,
+			() -> ModuleFactory.loadModule(moduleFile, false)
+		);
+		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals("null:null:null:" + "MODULE_LOAD:false:" + exception.getMessage(), testModuleEventListener.events.get(0));
+	}
 
 	@Test
 	public void startModule_shouldPublishSuccessStartModuleEvent() {
