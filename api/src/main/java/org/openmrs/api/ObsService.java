@@ -52,7 +52,7 @@ public interface ObsService extends OpenmrsService {
 	 * @return a List of Obs representing the full version history up to and including the supplied obs,
 	 *         or an empty List if no obs with the given obsId exists
 	 * @throws APIException if obs is null or is not persisted (has no database-assigned obsId)
-	 * @since 3.0.0, 2.9.0
+	 * @since 2.9.0, 3.0.0
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
 	List<Obs> getObsVersionHistory(Obs obs);
