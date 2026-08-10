@@ -1261,7 +1261,7 @@ public class ModuleUtil {
 	 */
 	public static String getModuleNameAndVersionFromFileName(String fileName) {
 
-		if (fileName == null || fileName.isEmpty()) {
+		if (fileName == null || fileName.trim().isEmpty()) {
 			return null;
 		}
 		
