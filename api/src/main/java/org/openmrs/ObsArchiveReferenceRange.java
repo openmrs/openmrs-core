@@ -30,7 +30,7 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-@Table(name = "obs_archive_reference_range")
+@Table(name = "obs_reference_range_archive")
 public class ObsArchiveReferenceRange extends BaseReferenceRange {
 
 	private static final long serialVersionUID = 473300L;
