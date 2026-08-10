@@ -142,18 +142,13 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="TRUNK-6738-add-tables-for-obs-archiving" author="shivvani-r">
+	<changeSet id="TRUNK-6738-add-obs_archive" author="shivvani-r">
 		<preConditions onFail="MARK_RAN">
-			<and>
-				<not>
-					<tableExists tableName="obs_archive"/>
-				</not>
 				<not>
 					<tableExists tableName="obs_reference_range_archive"/>
 				</not>
-			</and>
 		</preConditions>
-		<comment>Add obs_archive and obs_reference_range_archive tables for Archiving Observations</comment>
+		<comment>Add obs_archive table for Archiving Observations</comment>
 		<createTable tableName="obs_archive">
 			<column name="obs_id" type="INT">
 				<constraints nullable="false" primaryKey="true"/>
@@ -206,26 +201,6 @@
 			<column name="archived_by" type="INT"/>
 			<column name="date_archived" type="DATETIME"/>
 		</createTable>
-
-		<createTable tableName="obs_reference_range_archive">
-			<column name="obs_reference_range_id" type="INT">
-				<constraints nullable="false" primaryKey="true"/>
-			</column>
-			<column name="obs_id" type="INT">
-				<constraints nullable="false" unique="true"/>
-			</column>
-			<column name="hi_absolute" type="DOUBLE"/>
-			<column name="hi_critical" type="DOUBLE"/>
-			<column name="hi_normal" type="DOUBLE"/>
-			<column name="low_absolute" type="DOUBLE"/>
-			<column name="low_critical" type="DOUBLE"/>
-			<column name="low_normal" type="DOUBLE"/>
-			<column name="uuid" type="CHAR(38)">
-				<constraints nullable="false" unique="true"/>
-			</column>
-			<column name="archived_by" type="INT"/>
-			<column name="date_archived" type="DATETIME"/>
-		</createTable>
 		
 		<createIndex indexName="idx_obs_archive_obs_group_id" tableName="obs_archive">
 			<column name="obs_group_id"/>
@@ -244,5 +219,32 @@
 		</createIndex>
 	</changeSet>
 
+	<changeSet id="TRUNK-6738-add-obs_reference_range_archive" author="shivvani-r">
+	<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="obs_reference_range_archive"/>
+			</not>
+	</preConditions>
+	<comment>Add obs_reference_range_archive table for Archiving Observations</comment>
+	<createTable tableName="obs_reference_range_archive">
+		<column name="obs_reference_range_id" type="INT">
+			<constraints nullable="false" primaryKey="true"/>
+		</column>
+		<column name="obs_id" type="INT">
+			<constraints nullable="false" unique="true"/>
+		</column>
+		<column name="hi_absolute" type="DOUBLE"/>
+		<column name="hi_critical" type="DOUBLE"/>
+		<column name="hi_normal" type="DOUBLE"/>
+		<column name="low_absolute" type="DOUBLE"/>
+		<column name="low_critical" type="DOUBLE"/>
+		<column name="low_normal" type="DOUBLE"/>
+		<column name="uuid" type="CHAR(38)">
+			<constraints nullable="false" unique="true"/>
+		</column>
+		<column name="archived_by" type="INT"/>
+		<column name="date_archived" type="DATETIME"/>
+	</createTable>
+	</changeSet>
 
 </databaseChangeLog>
