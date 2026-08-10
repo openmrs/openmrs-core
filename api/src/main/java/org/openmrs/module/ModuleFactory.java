@@ -140,16 +140,22 @@ public class ModuleFactory {
 					   }
 				   }
 			   } 
+			   Module moduleToPublish = module;
 			   if(module == null) {
 				   fileName = ModuleUtil.getModuleNameAndVersionFromFileName(moduleFile.getName());
 				   isModuleLoaded = false;
-				   String[] parts = fileName.split(":");
+				   String name = null;
+				   String version = null;
+				   
+				   if( fileName != null) {
+					   String[] parts = fileName.split(":");
 
-				   String name = parts[0];
-				   String version = (parts.length > 1) ? parts[1] : null;
-				   module = new Module(name, null, null, null, null, version, null);
+					   name = parts[0];
+					   version = (parts.length > 1) ? parts[1] : null;
+				   }
+				   moduleToPublish = new Module(name, null, null, null, null, version, null);
 			   }
-			   publishModuleEvents(ModuleEventType.MODULE_LOAD, module, isModuleLoaded, failureReason);
+			   publishModuleEvents(ModuleEventType.MODULE_LOAD, moduleToPublish, isModuleLoaded, failureReason);
 		}
 		
 		return module;
