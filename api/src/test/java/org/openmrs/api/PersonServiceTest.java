@@ -64,6 +64,15 @@ import static org.openmrs.test.TestUtil.containsId;
  */
 public class PersonServiceTest extends BaseContextSensitiveTest {
 
+	/**
+	 * Restricts search-index rebuilds to the entity types person searches actually query, instead of
+	 * rebuilding every indexed type on each test.
+	 */
+	@Override
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { PersonName.class, PersonAttribute.class };
+	}
+
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
 
 	protected static final String CREATE_RELATIONSHIP_XML = "org/openmrs/api/include/PersonServiceTest-createRelationship.xml";

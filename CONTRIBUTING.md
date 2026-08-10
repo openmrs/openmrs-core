@@ -90,7 +90,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
 
   Make sure all unit tests still pass:
 
-        mvn clean package
+        ./mvnw clean package
 
   Push changes to your fork:
 

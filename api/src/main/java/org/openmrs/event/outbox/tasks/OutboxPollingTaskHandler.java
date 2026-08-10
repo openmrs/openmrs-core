@@ -104,7 +104,7 @@ public class OutboxPollingTaskHandler implements TaskHandler<OutboxPollingTaskDa
 
 				Set<String> completedListeners = new LinkedHashSet<>();
 				try {
-					Class<?> eventClass = Class.forName(item.getEventType());
+					Class<?> eventClass = Context.loadClass(item.getEventType());
 					Object event;
 					if (EventPayload.class.isAssignableFrom(eventClass)) {
 						event = eventClass.getDeclaredConstructor().newInstance();
