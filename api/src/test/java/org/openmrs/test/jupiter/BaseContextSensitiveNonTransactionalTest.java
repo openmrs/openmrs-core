@@ -612,7 +612,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		        + "form_namespace_and_path VARCHAR(255), " + "status VARCHAR(16) NOT NULL DEFAULT 'FINAL', "
 		        + "interpretation VARCHAR(32)" + ")").execute();
 
-		getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS obs_archive_reference_range ("
+		getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS obs_reference_range_archive ("
 		        + "obs_reference_range_id INT NOT NULL PRIMARY KEY, " + "obs_id INT NOT NULL UNIQUE, "
 		        + "hi_absolute DOUBLE DEFAULT NULL, " + "hi_critical DOUBLE DEFAULT NULL, "
 		        + "hi_normal DOUBLE DEFAULT NULL, " + "low_absolute DOUBLE DEFAULT NULL, "

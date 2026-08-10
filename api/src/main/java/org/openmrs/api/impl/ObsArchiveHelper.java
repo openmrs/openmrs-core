@@ -252,11 +252,11 @@ public class ObsArchiveHelper {
 		session.createNativeQuery("INSERT INTO obs_reference_range (obs_id, hi_absolute, hi_critical, hi_normal, "
 		        + "low_absolute, low_critical, low_normal, uuid) "
 		        + "SELECT obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, "
-		        + "low_critical, low_normal, uuid FROM obs_archive_reference_range WHERE obs_id = :obsId")
+		        + "low_critical, low_normal, uuid FROM obs_reference_range_archive WHERE obs_id = :obsId")
 		        .setParameter(PARAM_OBS_ID, obsId).executeUpdate();
 
 		// 3. Delete from archive reference range
-		session.createNativeQuery("DELETE FROM obs_archive_reference_range WHERE obs_id = :obsId")
+		session.createNativeQuery("DELETE FROM obs_reference_range_archive WHERE obs_id = :obsId")
 		        .setParameter(PARAM_OBS_ID, obsId).executeUpdate();
 
 		// 4. Delete from archive obs

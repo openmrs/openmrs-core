@@ -63,7 +63,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 		jdbcTemplate = new JdbcTemplate(dataSource);
 		try {
 			jdbcTemplate.execute("DELETE FROM obs_archive");
-			jdbcTemplate.execute("DELETE FROM obs_archive_reference_range");
+			jdbcTemplate.execute("DELETE FROM obs_reference_range_archive");
 		} catch (DataAccessException e) {
 			// Tables may not exist yet on first run
 		}
@@ -89,7 +89,7 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 			            + "date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, "
 			            + "form_namespace_and_path, status, interpretation FROM obs_archive a "
 			            + "WHERE NOT EXISTS (SELECT 1 FROM obs o WHERE o.obs_id = a.obs_id)");
-			jdbcTemplate.execute("DELETE FROM obs_archive_reference_range");
+			jdbcTemplate.execute("DELETE FROM obs_reference_range_archive");
 			jdbcTemplate.execute("DELETE FROM obs_archive");
 			// Reset voided state on any obs we voided during setup
 			jdbcTemplate.execute(

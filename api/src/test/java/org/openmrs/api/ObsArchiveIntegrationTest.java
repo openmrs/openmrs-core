@@ -68,7 +68,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		jdbcTemplate = new JdbcTemplate(dataSource);
 		try {
 			jdbcTemplate.execute("DELETE FROM obs_archive");
-			jdbcTemplate.execute("DELETE FROM obs_archive_reference_range");
+			jdbcTemplate.execute("DELETE FROM obs_reference_range_archive");
 		} catch (DataAccessException e) {
 			// Tables may not exist yet on first run
 		}
@@ -153,7 +153,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			            + "date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, "
 			            + "form_namespace_and_path, status, interpretation FROM obs_archive a "
 			            + "WHERE NOT EXISTS (SELECT 1 FROM obs o WHERE o.obs_id = a.obs_id)");
-			jdbcTemplate.execute("DELETE FROM obs_archive_reference_range");
+			jdbcTemplate.execute("DELETE FROM obs_reference_range_archive");
 			jdbcTemplate.execute("DELETE FROM obs_archive");
 		} catch (DataAccessException e) {
 			// Best-effort cleanup
@@ -170,7 +170,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 
 		for (Integer id : createdObsIds) {
 			try {
-				jdbcTemplate.update("DELETE FROM obs_archive_reference_range WHERE obs_id = ?", id);
+				jdbcTemplate.update("DELETE FROM obs_reference_range_archive WHERE obs_id = ?", id);
 				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", id);
 				jdbcTemplate.update("DELETE FROM obs_reference_range WHERE obs_id = ?", id);
 				jdbcTemplate.update("DELETE FROM obs WHERE obs_id = ?", id);
