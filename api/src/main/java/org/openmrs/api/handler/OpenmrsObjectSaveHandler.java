@@ -12,7 +12,6 @@ package org.openmrs.api.handler;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
-import java.util.UUID;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.Obs;
@@ -24,6 +23,7 @@ import org.openmrs.annotation.AllowLeadingOrTrailingWhitespace;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
+import org.openmrs.util.UuidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 	@Override
 	public void handle(OpenmrsObject openmrsObject, User creator, Date dateCreated, String reason) {
 		if (openmrsObject.getUuid() == null) {
-			openmrsObject.setUuid(UUID.randomUUID().toString());
+			openmrsObject.setUuid(UuidUtil.newUuidString());
 		}
 		
 		//Set all empty string properties, that do not have the AllowEmptyStrings annotation, to null.

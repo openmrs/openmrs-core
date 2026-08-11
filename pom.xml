@@ -576,6 +576,11 @@
 				<version>33.4.8-jre</version>
 			</dependency>
 			<dependency>
+				<groupId>com.fasterxml.uuid</groupId>
+				<artifactId>java-uuid-generator</artifactId>
+				<version>5.2.0</version>
+			</dependency>
+			<dependency>
 			    <groupId>jakarta.xml.bind</groupId>
 			    <artifactId>jakarta.xml.bind-api</artifactId>
 			    <version>4.0.2</version>
