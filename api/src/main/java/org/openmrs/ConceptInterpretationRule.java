@@ -47,7 +47,7 @@ public class ConceptInterpretationRule extends BaseOpenmrsObject {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptInterpretationRuleId;
 
-	@Column(name = "criteria", length = 65535)
+	@Column(name = "criteria", length = 65535, nullable = false)
 	private String criteria;
 
 	@Enumerated(EnumType.STRING)

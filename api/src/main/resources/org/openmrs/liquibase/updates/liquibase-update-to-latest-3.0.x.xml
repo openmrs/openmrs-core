@@ -157,7 +157,9 @@
 			<column name="concept_id" type="int">
 				<constraints nullable="false"/>
 			</column>
-			<column name="criteria" type="text"/>
+			<column name="criteria" type="text">
+				<constraints nullable="false"/>
+			</column>
 			<column name="interpretation" type="varchar(50)">
 				<constraints nullable="false"/>
 			</column>

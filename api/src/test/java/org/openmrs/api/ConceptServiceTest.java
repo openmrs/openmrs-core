@@ -4120,13 +4120,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		// Create the first interpretation rule.
 		ConceptInterpretationRule firstRule = new ConceptInterpretationRule();
 		firstRule.setInterpretation(Obs.Interpretation.NORMAL);
-		firstRule.setPriority(1);
+		firstRule.setPriority(2); // Added first, but evaluated after the second rule.
 		firstRule.setCriteria("true");
 
 		// Create the second interpretation rule.
 		ConceptInterpretationRule secondRule = new ConceptInterpretationRule();
 		secondRule.setInterpretation(Obs.Interpretation.ABNORMAL);
-		secondRule.setPriority(2);
+		secondRule.setPriority(1); // Lower priority should come first when the rules are loaded.
 		secondRule.setCriteria("false");
 
 		// Add both rules to the concept.

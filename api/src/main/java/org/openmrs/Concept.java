@@ -1709,6 +1709,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * Gets the interpretation rules for this concept.
 	 *
 	 * @return the interpretation rules
+	 * @since 3.0.0
 	 */
 	public Set<ConceptInterpretationRule> getInterpretationRules() {
 		if (interpretationRules == null) {
@@ -1721,6 +1722,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * Sets the interpretation rules for this concept.
 	 *
 	 * @param interpretationRules the interpretation rules to set
+	 * @since 3.0.0
 	 */
 	public void setInterpretationRules(Set<ConceptInterpretationRule> interpretationRules) {
 		this.interpretationRules = interpretationRules;
@@ -1730,6 +1732,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * Adds the given interpretation rule to this concept.
 	 *
 	 * @param interpretationRule the interpretation rule to add
+	 * @since 3.0.0
 	 */
 	public void addInterpretationRule(ConceptInterpretationRule interpretationRule) {
 		if (interpretationRule != null && !getInterpretationRules().contains(interpretationRule)) {
@@ -1743,6 +1746,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 *
 	 * @param interpretationRule the interpretation rule to remove
 	 * @return true if the rule was removed, otherwise false
+	 * @since 3.0.0
 	 */
 	public boolean removeInterpretationRule(ConceptInterpretationRule interpretationRule) {
 		if (interpretationRule != null && getInterpretationRules().remove(interpretationRule)) {
