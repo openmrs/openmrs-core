@@ -91,11 +91,14 @@ public interface ObsDAO {
 	public Obs.Status getSavedStatus(Obs obs);
 
 	/**
+	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
 	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
 	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean,
 	 *      java.lang.String)
 	 */
+	@Deprecated(since = "3.0.0")
+	@SuppressWarnings("squid:S1133")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
@@ -107,14 +110,12 @@ public interface ObsDAO {
 	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws DAOException;
 
 	/**
-	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
 	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
 	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean,
 	 *      java.lang.String, java.lang.Integer, java.lang.Integer)
 	 */
-	@Deprecated(since = "3.0.0")
-	@SuppressWarnings({ "squid:S107", "squid:S1133" })
+	@SuppressWarnings("squid:S107")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,

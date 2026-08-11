@@ -106,6 +106,7 @@ public class HibernateObsDAO implements ObsDAO {
 	 *      Integer, Date, Date, boolean, String)
 	 */
 	@Override
+	@SuppressWarnings("deprecation")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
@@ -116,16 +117,19 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
+	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
 	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List, List,
 	 *      Integer, Integer, Date, Date, boolean, String)
 	 */
 	@Override
+	@Deprecated(since = "3.0.0")
+	@SuppressWarnings("squid:S1133")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	        boolean includeVoidedObs, String accessionNumber) throws DAOException {
-		return getObservations(whom, encounters, questions, answers, personTypes, locations, sortList, visits, mostRecentN,
-		    obsGroupId, fromDate, toDate, includeVoidedObs, accessionNumber, null, null);
+		return this.getObservations(new ObsSearchCriteria(whom, encounters, questions, answers, personTypes, locations,
+		        sortList, visits, mostRecentN, obsGroupId, fromDate, toDate, includeVoidedObs, accessionNumber, null, null));
 	}
 
 	/**
@@ -146,7 +150,15 @@ public class HibernateObsDAO implements ObsDAO {
 
 		cq.where(predicates.toArray(new Predicate[] {}));
 
-		cq.orderBy(createOrderList(cb, root, obsSearchCriteria.getSort()));
+		List<String> sort = obsSearchCriteria.getSort();
+		if (sort == null || sort.isEmpty()) {
+			sort = new ArrayList<>();
+		}
+		if (sort.isEmpty()) {
+			sort.add("obsDatetime");
+		}
+
+		cq.orderBy(createOrderList(cb, root, sort));
 
 		TypedQuery<Obs> query = session.createQuery(cq);
 
@@ -155,7 +167,7 @@ public class HibernateObsDAO implements ObsDAO {
 		Integer maxResults = obsSearchCriteria.getMaxResults();
 
 		if (mostRecentN != null && mostRecentN > 0) {
-			if (startIndex != null || (maxResults != null && maxResults > 0)) {
+			if (startIndex != null || maxResults != null) {
 				log.warn("mostRecentN is set, startIndex and maxResults will be ignored");
 			}
 			query.setMaxResults(mostRecentN);
@@ -172,11 +184,11 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List, List,
+	 *      Integer, Integer, Date, Date, boolean, String, Integer, Integer)
 	 */
 	@Override
-	@Deprecated(since = "3.0.0")
-	@SuppressWarnings("squid:S1133")
+	@SuppressWarnings("squid:S107")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,

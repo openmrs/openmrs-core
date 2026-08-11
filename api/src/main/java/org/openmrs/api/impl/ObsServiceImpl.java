@@ -370,6 +370,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 *      java.util.Date, java.util.Date, boolean, java.lang.String)
 	 */
 	@Override
+	@SuppressWarnings("deprecation")
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
@@ -381,34 +382,29 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	}
 
 	/**
+	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
 	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
 	 *      java.util.List, List, List, java.util.List, java.util.List, java.lang.Integer,
 	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean, java.lang.String)
 	 */
 	@Override
+	@Deprecated(since = "3.0.0")
+	@SuppressWarnings("squid:S1133")
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	        boolean includeVoidedObs, String accessionNumber) throws APIException {
 
-		ObsSearchCriteriaBuilder builder = new ObsSearchCriteriaBuilder();
-		builder.setWhom(whom);
-		builder.setEncounters(encounters);
-		builder.setQuestions(questions);
-		builder.setAnswers(answers);
-		builder.setPersonTypes(personTypes);
-		builder.setLocations(locations);
-		builder.setSort(sort);
-		builder.setVisits(visits);
-		builder.setMostRecentN(mostRecentN);
-		builder.setObsGroupId(obsGroupId);
-		builder.setFromDate(fromDate);
-		builder.setToDate(toDate);
-		builder.setIncludeVoidedObs(includeVoidedObs);
-		builder.setAccessionNumber(accessionNumber);
+		if (sort == null) {
+			sort = new ArrayList<>();
+		}
+		if (sort.isEmpty()) {
+			sort.add("obsDatetime");
+		}
 
-		return this.getObservations(builder.createObsSearchCriteria());
+		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, visits, mostRecentN,
+		    obsGroupId, fromDate, toDate, includeVoidedObs, accessionNumber);
 	}
 
 	/**
@@ -417,28 +413,17 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	@Override
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws APIException {
-		List<String> sort = obsSearchCriteria.getSort();
-		if (sort == null) {
-			sort = new ArrayList<>();
-		}
-		if (sort.isEmpty()) {
-			sort.add("obsDatetime");
-		}
-
-		return dao.getObservations(obsSearchCriteria.getWhom(), obsSearchCriteria.getEncounters(),
-		    obsSearchCriteria.getQuestions(), obsSearchCriteria.getAnswers(), obsSearchCriteria.getPersonTypes(),
-		    obsSearchCriteria.getLocations(), sort, obsSearchCriteria.getVisits(), obsSearchCriteria.getMostRecentN(),
-		    obsSearchCriteria.getObsGroupId(), obsSearchCriteria.getFromDate(), obsSearchCriteria.getToDate(),
-		    obsSearchCriteria.getIncludeVoidedObs(), obsSearchCriteria.getAccessionNumber(),
-		    obsSearchCriteria.getStartIndex(), obsSearchCriteria.getMaxResults());
+		return dao.getObservations(obsSearchCriteria);
 	}
 
 	/**
-	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
+	 *      java.util.List, List, List, java.util.List, java.util.List, java.lang.Integer,
+	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean, java.lang.String,
+	 *      java.lang.Integer, java.lang.Integer)
 	 */
 	@Override
-	@Deprecated(since = "3.0.0")
-	@SuppressWarnings("squid:S1133")
+	@SuppressWarnings("squid:S107")
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,

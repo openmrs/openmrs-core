@@ -52,6 +52,8 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.obs.handler.BinaryDataHandler;
 import org.openmrs.obs.handler.ImageHandler;
 import org.openmrs.obs.handler.TextHandler;
+import org.openmrs.parameter.ObsSearchCriteria;
+import org.openmrs.parameter.ObsSearchCriteriaBuilder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -1090,6 +1092,109 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> result = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
 		    false, null, null, null);
 		assertEquals(5, result.size());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldReturnRequestedPageOfResultsUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(0)
+		        .setMaxResults(2).createObsSearchCriteria();
+		List<Obs> page1 = obsService.getObservations(criteria);
+		assertEquals(2, page1.size());
+		assertEquals(Integer.valueOf(1), page1.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), page1.get(1).getObsId());
+
+		criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(2).setMaxResults(2)
+		        .createObsSearchCriteria();
+		List<Obs> page2 = obsService.getObservations(criteria);
+		assertEquals(2, page2.size());
+		assertEquals(Integer.valueOf(11), page2.get(0).getObsId());
+		assertEquals(Integer.valueOf(17), page2.get(1).getObsId());
+
+		criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(4).setMaxResults(2)
+		        .createObsSearchCriteria();
+		List<Obs> page3 = obsService.getObservations(criteria);
+		assertEquals(1, page3.size());
+		assertEquals(Integer.valueOf(18), page3.get(0).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldReturnEmptyListWhenStartIndexBeyondResultsUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(10)
+		        .setMaxResults(5).createObsSearchCriteria();
+
+		List<Obs> result = obsService.getObservations(criteria);
+		assertTrue(result.isEmpty());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldIgnorePagingWhenMostRecentNIsSetUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setMostRecentN(2)
+		        .setStartIndex(0).setMaxResults(10).createObsSearchCriteria();
+
+		List<Obs> result = obsService.getObservations(criteria);
+		assertEquals(2, result.size());
+		assertEquals(Integer.valueOf(1), result.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), result.get(1).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldReturnAllResultsWhenPagingParamsAreNullUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).createObsSearchCriteria();
+
+		List<Obs> result = obsService.getObservations(criteria);
+		assertEquals(5, result.size());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldSortByObsDatetimeWhenSortIsEmptyUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(Collections.singletonList(new Person(8)))
+		        .createObsSearchCriteria();
+
+		List<Obs> obss = obsService.getObservations(criteria);
+
+		assertEquals(8, obss.get(0).getObsId().intValue());
+		assertEquals(7, obss.get(1).getObsId().intValue());
 	}
 
 	/**

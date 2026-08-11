@@ -525,9 +525,12 @@ public interface ObsService extends OpenmrsService {
 	 *      java.util.Date, java.util.Date, boolean, java.lang.String) This method works exactly the
 	 *      same; it only adds visits to the search criteria. It effectively surpasses the above method;
 	 *      the old one is however kept for backward compatibility reasons.
+	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
 	 * @param visits List&lt;Visit&gt; to restrict obs to (optional)
 	 * @since 2.7.0
 	 */
+	@Deprecated(since = "3.0.0")
+	@SuppressWarnings("squid:S1133")
 	@Authorized(PrivilegeConstants.GET_OBS)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
@@ -547,7 +550,6 @@ public interface ObsService extends OpenmrsService {
 	/**
 	 * Gets observations with paging support. If mostRecentN is set, the paging parameters are ignored.
 	 *
-	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
 	 * @param whom List&lt;Person&gt; to restrict obs to (optional)
 	 * @param encounters List&lt;Encounter&gt; to restrict obs to (optional)
 	 * @param questions List&lt;Concept&gt; to restrict the obs to (optional)
@@ -568,8 +570,7 @@ public interface ObsService extends OpenmrsService {
 	 * @param maxResults the maximum number of results to return (optional)
 	 * @since 3.0.0
 	 */
-	@Deprecated(since = "3.0.0")
-	@SuppressWarnings({ "squid:S107", "squid:S1133" })
+	@SuppressWarnings("squid:S107")
 	@Authorized(PrivilegeConstants.GET_OBS)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
