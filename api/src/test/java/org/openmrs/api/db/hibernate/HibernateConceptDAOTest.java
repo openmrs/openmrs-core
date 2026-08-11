@@ -45,6 +45,15 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	@Autowired
 	private HibernateConceptDAO dao;
 
+	/**
+	 * Restricts search-index rebuilds to the entity types concept searches actually query, instead of
+	 * rebuilding every indexed type on each test.
+	 */
+	@Override
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { ConceptName.class, Drug.class };
+	}
+
 	@BeforeEach
 	public void setUp() {
 		executeDataSet(PROVIDERS_INITIAL_XML);
