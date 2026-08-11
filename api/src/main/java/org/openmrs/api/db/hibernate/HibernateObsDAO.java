@@ -57,6 +57,8 @@ public class HibernateObsDAO implements ObsDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(HibernateObsDAO.class);
 
+	private static final String OBS_DATETIME = "obsDatetime";
+
 	protected final SessionFactory sessionFactory;
 
 	@Autowired
@@ -155,7 +157,7 @@ public class HibernateObsDAO implements ObsDAO {
 			sort = new ArrayList<>();
 		}
 		if (sort.isEmpty()) {
-			sort.add("obsDatetime");
+			sort.add(OBS_DATETIME);
 		}
 
 		cq.orderBy(createOrderList(cb, root, sort));
@@ -295,11 +297,11 @@ public class HibernateObsDAO implements ObsDAO {
 		}
 
 		if (fromDate != null) {
-			predicates.add(cb.greaterThanOrEqualTo(root.get("obsDatetime"), fromDate));
+			predicates.add(cb.greaterThanOrEqualTo(root.get(OBS_DATETIME), fromDate));
 		}
 
 		if (toDate != null) {
-			predicates.add(cb.lessThanOrEqualTo(root.get("obsDatetime"), toDate));
+			predicates.add(cb.lessThanOrEqualTo(root.get(OBS_DATETIME), toDate));
 		}
 
 		if (CollectionUtils.isNotEmpty(valueCodedNameAnswers)) {
