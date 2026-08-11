@@ -11,9 +11,9 @@ package org.openmrs.util.databasechange;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.UUID;
 
 import org.openmrs.AllergySeverity;
+import org.openmrs.util.UuidUtil;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -139,7 +139,7 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 						reactionInsertStatement.setInt(1, rs2.getInt(1));
 					}
 					reactionInsertStatement.setInt(2, rs.getInt("reaction_concept_id"));
-					reactionInsertStatement.setString(3, UUID.randomUUID().toString());
+					reactionInsertStatement.setString(3, UuidUtil.newUuidString());
 
 					//some active lists do not have reactions recorded
 					if (!rs.wasNull()) {

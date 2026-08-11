@@ -292,6 +292,10 @@
 			<artifactId>guava</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.fasterxml.uuid</groupId>
+			<artifactId>java-uuid-generator</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
 			<scope>runtime</scope>
