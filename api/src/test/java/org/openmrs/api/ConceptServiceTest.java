@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -33,6 +34,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptInterpretationRule;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
@@ -4035,6 +4037,118 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(50.0, savedConceptNumeric.getHiAbsolute(), 0);
 		assertEquals(1, savedConceptNumeric.getReferenceRanges().size());
 		assertEquals(50.0, savedConceptNumeric.getReferenceRanges().stream().findFirst().get().getHiAbsolute());
+	}
+
+	/**
+	 * @see ConceptService#saveConcept(Concept)
+	 */
+	@Test
+	public void saveConcept_shouldCascadeSaveInterpretationRules() {
+		Concept concept = conceptService.getConcept(18);
+
+		ConceptInterpretationRule rule = new ConceptInterpretationRule();
+		rule.setInterpretation(Obs.Interpretation.NORMAL);
+		rule.setPriority(1);
+		rule.setCriteria("true");
+
+		// Verify that the concept does not already contain the rule.
+		assertFalse(concept.getInterpretationRules().contains(rule));
+
+		concept.addInterpretationRule(rule);
+		conceptService.saveConcept(concept);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		Concept loaded = conceptService.getConcept(concept.getId());
+		ConceptInterpretationRule loadedRule = loaded.getInterpretationRules().iterator().next();
+
+		// Verify that the interpretation rule was cascade-saved with the concept.
+		assertEquals(Obs.Interpretation.NORMAL, loadedRule.getInterpretation());
+		assertEquals(Integer.valueOf(1), loadedRule.getPriority());
+		assertEquals("true", loadedRule.getCriteria());
+		assertEquals(loaded, loadedRule.getConcept());
+	}
+
+	/**
+	 * @see ConceptService#saveConcept(Concept)
+	 */
+	@Test
+	public void saveConcept_shouldDeleteOrphanedInterpretationRule() {
+		Concept concept = conceptService.getConcept(18);
+
+		ConceptInterpretationRule rule = new ConceptInterpretationRule();
+		rule.setInterpretation(Obs.Interpretation.NORMAL);
+		rule.setPriority(1);
+		rule.setCriteria("true");
+
+		concept.addInterpretationRule(rule);
+		conceptService.saveConcept(concept);
+
+		// Verify that the concept contains the rule.
+		assertTrue(concept.getInterpretationRules().contains(rule));
+
+		Context.flushSession();
+		Context.clearSession();
+
+		concept = conceptService.getConcept(18);
+		ConceptInterpretationRule persistedRule = concept.getInterpretationRules().iterator().next();
+
+		// Verify that the rule exists in the database.
+		assertNotNull(Context.getRegisteredComponent("sessionFactory", SessionFactory.class).getCurrentSession()
+		        .find(ConceptInterpretationRule.class, persistedRule.getId()));
+
+		// Remove the rule from the concept and save the change.
+		concept.removeInterpretationRule(persistedRule);
+		conceptService.saveConcept(concept);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify that the orphaned rule has been deleted from the database.
+		assertNull(Context.getRegisteredComponent("sessionFactory", SessionFactory.class).getCurrentSession()
+		        .find(ConceptInterpretationRule.class, persistedRule.getId()));
+	}
+
+	/**
+	 * @see ConceptService#saveConcept(Concept)
+	 */
+	@Test
+	public void saveConcept_shouldPersistMultipleInterpretationRulesForConcept() {
+		Concept concept = conceptService.getConcept(18);
+
+		// Create the first interpretation rule.
+		ConceptInterpretationRule firstRule = new ConceptInterpretationRule();
+		firstRule.setInterpretation(Obs.Interpretation.NORMAL);
+		firstRule.setPriority(2); // Added first, but evaluated after the second rule.
+		firstRule.setCriteria("true");
+
+		// Create the second interpretation rule.
+		ConceptInterpretationRule secondRule = new ConceptInterpretationRule();
+		secondRule.setInterpretation(Obs.Interpretation.ABNORMAL);
+		secondRule.setPriority(1); // Lower priority should come first when the rules are loaded.
+		secondRule.setCriteria("false");
+
+		// Add both rules to the concept.
+		concept.addInterpretationRule(firstRule);
+		concept.addInterpretationRule(secondRule);
+
+		// Save the concept. The rules should be cascade-saved.
+		conceptService.saveConcept(concept);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		Concept loaded = conceptService.getConcept(concept.getId());
+
+		// Verify that both rules were persisted.
+		assertEquals(2, loaded.getInterpretationRules().size());
+
+		List<ConceptInterpretationRule> rules = new ArrayList<>(loaded.getInterpretationRules());
+
+		// Verify the rules are ordered by priority ascending.
+		assertEquals(Integer.valueOf(1), rules.get(0).getPriority());
+		assertEquals(Integer.valueOf(2), rules.get(1).getPriority());
 	}
 
 	@Test
