@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.openmrs.api.context.Context;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -81,14 +82,12 @@ class InitializationFilterE2ETest {
 		Context.setRuntimeProperties(new Properties());
 		filter.setInitializationComplete(false);
 		InitializationFilter.setInstallationStarted(false);
-		setServingInitializationProgress(false);
 	}
 
 	@AfterEach
 	void cleanup() throws Exception {
 		InitializationFilter.setInstallationStarted(false);
 		filter.setInitializationComplete(false);
-		setServingInitializationProgress(false);
 		Context.setRuntimeProperties(originalRuntimeProperties);
 	}
 
@@ -957,9 +956,9 @@ class InitializationFilterE2ETest {
 	}
 
 	@Test
-	void skipFilter_shouldReturnFalseForAjaxProgressRequestWhileProgressIsBeingServed() throws Exception {
+	void skipFilter_shouldReturnFalseForProgressPollOnSetupPage() {
 		filter.setInitializationComplete(true);
-		setServingInitializationProgress(true);
+		request.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
 		request.setParameter("page", "progress.vm.ajaxRequest");
 
 		boolean result = filter.skipFilter(request);
@@ -968,9 +967,9 @@ class InitializationFilterE2ETest {
 	}
 
 	@Test
-	void skipFilter_shouldReturnTrueForAjaxProgressRequestOnceProgressHasEnded() throws Exception {
+	void skipFilter_shouldReturnTrueForProgressPollOffSetupPage() {
 		filter.setInitializationComplete(true);
-		setServingInitializationProgress(false);
+		request.setServletPath("/openmrs");
 		request.setParameter("page", "progress.vm.ajaxRequest");
 
 		boolean result = filter.skipFilter(request);
@@ -979,19 +978,28 @@ class InitializationFilterE2ETest {
 	}
 
 	@Test
-	void skipFilter_shouldKeepServingProgressRequestWhileProgressWindowIsOpen() throws Exception {
+	void skipFilter_shouldReturnTrueForSetupPageRequestThatIsNotTheProgressPoll() {
 		filter.setInitializationComplete(true);
-		setServingInitializationProgress(true);
-		MockHttpServletRequest nonAjaxReq = new MockHttpServletRequest();
-		MockHttpServletRequest ajaxReq = new MockHttpServletRequest();
-		ajaxReq.setParameter("page", "progress.vm.ajaxRequest");
+		request.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
 
-		// a non-AJAX request passes through but never ends the progress window
-		assertTrue(filter.skipFilter(nonAjaxReq));
-		assertFalse(filter.skipFilter(ajaxReq));
+		boolean result = filter.skipFilter(request);
 
-		// the window stays open regardless of what else was served in between
-		assertFalse(filter.skipFilter(ajaxReq));
+		assertTrue(result);
+	}
+
+	@Test
+	void skipFilter_shouldKeepServingProgressPollRegardlessOfOtherRequests() {
+		filter.setInitializationComplete(true);
+		MockHttpServletRequest pollReq = new MockHttpServletRequest();
+		pollReq.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
+		pollReq.setParameter("page", "progress.vm.ajaxRequest");
+		MockHttpServletRequest otherReq = new MockHttpServletRequest();
+		otherReq.setServletPath("/module/x/y.form");
+
+		// an unrelated request passes through but never affects the poll
+		assertTrue(filter.skipFilter(otherReq));
+		assertFalse(filter.skipFilter(pollReq));
+		assertFalse(filter.skipFilter(pollReq));
 	}
 
 	// ========== Helper Methods ==========
@@ -1000,12 +1008,6 @@ class InitializationFilterE2ETest {
 		Field errorsField = StartupFilter.class.getDeclaredField("errors");
 		errorsField.setAccessible(true);
 		return (Map<String, Object[]>) errorsField.get(filter);
-	}
-
-	private void setServingInitializationProgress(boolean value) throws Exception {
-		Field field = InitializationFilter.class.getDeclaredField("servingInitializationProgress");
-		field.setAccessible(true);
-		field.setBoolean(null, value);
 	}
 
 	/**

@@ -206,18 +206,6 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	private static volatile boolean initializationComplete = false;
 
-	/**
-	 * Set to true once the installation has finished so that the progress page can keep polling for the
-	 * final {@code initializationComplete = true} response and leave the wizard. It is not cleared
-	 * again: once an install has run, the progress page's polls keep being served for the life of the
-	 * JVM so that an open page can always get its final answer.
-	 */
-	private static volatile boolean servingInitializationProgress = false;
-
-	private static void setServingInitializationProgress(boolean value) {
-		servingInitializationProgress = value;
-	}
-
 	protected static void setInitializationComplete(boolean initializationComplete) {
 		InitializationFilter.initializationComplete = initializationComplete;
 	}
@@ -1113,14 +1101,15 @@ public class InitializationFilter extends StartupFilter {
 			// the wizard handles every request until initialization completes
 			return false;
 		}
-		if (servingInitializationProgress && PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))) {
-			// The installation has finished. Keep serving the progress page's polls until it has the
-			// final "initializationComplete = true" response and leaves the wizard. The window is not
-			// closed on some later request: an unrelated client, or a headless install with no one on
-			// the page, must never be able to end it before that page has its final answer.
-			return false;
+		// Once initialization is done, the only request left to answer is the progress page's poll,
+		// which always arrives on the setup page. getServletPath() never parses parameters, so every
+		// other request is skipped without touching the query string or a POST body.
+		if (!("/" + WebConstants.SETUP_PAGE_URL).equals(httpRequest.getServletPath())) {
+			return true;
 		}
-		return true;
+		// let the poll through so progress.vm can pick up the final
+		// "initializationComplete = true" response and leave the wizard
+		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"));
 	}
 
 	/**
@@ -1898,8 +1887,6 @@ public class InitializationFilter extends StartupFilter {
 						reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
 					} finally {
 						if (!hasErrors()) {
-							// keep serving the progress page's final poll so it can leave the wizard
-							setServingInitializationProgress(true);
 							// set this so that the wizard isn't run again on next page load
 							setInitializationComplete(true);
 							// we should also try to store selected by user language

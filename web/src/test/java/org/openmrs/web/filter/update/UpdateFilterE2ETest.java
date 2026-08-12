@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -81,7 +82,6 @@ class UpdateFilterE2ETest {
 			}
 		});
 		setDatabaseUpdateInProgress(false);
-		setServingUpdateProgress(false);
 		UpdateFilter.setLockReleased(false);
 
 		request = new MockHttpServletRequest();
@@ -91,7 +91,6 @@ class UpdateFilterE2ETest {
 	@AfterEach
 	void cleanup() throws Exception {
 		setDatabaseUpdateInProgress(false);
-		setServingUpdateProgress(false);
 		UpdateFilter.setUpdatesRequired(true);
 		UpdateFilter.setLockReleased(false);
 	}
@@ -427,10 +426,10 @@ class UpdateFilterE2ETest {
 	}
 
 	@Test
-	void skipFilter_shouldReturnFalseForAjaxProgressRequestWhileProgressIsBeingServed() throws Exception {
+	void skipFilter_shouldReturnFalseForProgressPollOnSetupPage() {
 		UpdateFilter.setUpdatesRequired(false);
-		setServingUpdateProgress(true);
 		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
 		req.setParameter("page", "updateProgress.vm.ajaxRequest");
 
 		boolean result = filter.skipFilter(req);
@@ -439,10 +438,10 @@ class UpdateFilterE2ETest {
 	}
 
 	@Test
-	void skipFilter_shouldReturnTrueForAjaxProgressRequestOnceProgressHasEnded() throws Exception {
+	void skipFilter_shouldReturnTrueForProgressPollOffSetupPage() {
 		UpdateFilter.setUpdatesRequired(false);
-		setServingUpdateProgress(false);
 		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setServletPath("/openmrs");
 		req.setParameter("page", "updateProgress.vm.ajaxRequest");
 
 		boolean result = filter.skipFilter(req);
@@ -451,19 +450,29 @@ class UpdateFilterE2ETest {
 	}
 
 	@Test
-	void skipFilter_shouldKeepServingProgressRequestWhileProgressWindowIsOpen() throws Exception {
+	void skipFilter_shouldReturnTrueForSetupPageRequestThatIsNotTheProgressPoll() {
 		UpdateFilter.setUpdatesRequired(false);
-		setServingUpdateProgress(true);
-		MockHttpServletRequest nonAjaxReq = new MockHttpServletRequest();
-		MockHttpServletRequest ajaxReq = new MockHttpServletRequest();
-		ajaxReq.setParameter("page", "updateProgress.vm.ajaxRequest");
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
 
-		// a non-AJAX request passes through but never ends the progress window
-		assertEquals(true, filter.skipFilter(nonAjaxReq));
-		assertEquals(false, filter.skipFilter(ajaxReq));
+		boolean result = filter.skipFilter(req);
 
-		// the window stays open regardless of what else was served in between
-		assertEquals(false, filter.skipFilter(ajaxReq));
+		assertEquals(true, result);
+	}
+
+	@Test
+	void skipFilter_shouldKeepServingProgressPollRegardlessOfOtherRequests() {
+		UpdateFilter.setUpdatesRequired(false);
+		MockHttpServletRequest pollReq = new MockHttpServletRequest();
+		pollReq.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
+		pollReq.setParameter("page", "updateProgress.vm.ajaxRequest");
+		MockHttpServletRequest otherReq = new MockHttpServletRequest();
+		otherReq.setServletPath("/module/x/y.form");
+
+		// an unrelated request passes through but never affects the poll
+		assertEquals(true, filter.skipFilter(otherReq));
+		assertEquals(false, filter.skipFilter(pollReq));
+		assertEquals(false, filter.skipFilter(pollReq));
 	}
 
 	// ========== Helper Methods ==========
@@ -501,12 +510,6 @@ class UpdateFilterE2ETest {
 
 	private void setDatabaseUpdateInProgress(boolean value) throws Exception {
 		Field field = UpdateFilter.class.getDeclaredField("isDatabaseUpdateInProgress");
-		field.setAccessible(true);
-		field.setBoolean(null, value);
-	}
-
-	private void setServingUpdateProgress(boolean value) throws Exception {
-		Field field = UpdateFilter.class.getDeclaredField("servingUpdateProgress");
 		field.setAccessible(true);
 		field.setBoolean(null, value);
 	}

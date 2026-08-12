@@ -46,6 +46,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.openmrs.web.Listener;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebDaemon;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.initialization.InitializationFilter;
@@ -105,18 +106,6 @@ public class UpdateFilter extends StartupFilter {
 	 * thread should only be accesses through the synchronized method.
 	 */
 	private static boolean isDatabaseUpdateInProgress = false;
-
-	/**
-	 * Set to true once the updates have finished so that the progress page can keep polling for the
-	 * final {@code updatesRequired = false} response and leave the wizard. It is not cleared again:
-	 * once a wizard job has run, the progress page's polls keep being served for the life of the JVM so
-	 * that an open page can always get its final answer.
-	 */
-	private static volatile boolean servingUpdateProgress = false;
-
-	private static void setServingUpdateProgress(boolean value) {
-		servingUpdateProgress = value;
-	}
 
 	/**
 	 * Variable set to true when the db lock is released. It's needed to prevent repeatedly releasing
@@ -543,14 +532,15 @@ public class UpdateFilter extends StartupFilter {
 			// the wizard handles every request while updates are pending
 			return false;
 		}
-		if (servingUpdateProgress && PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))) {
-			// The updates have finished. Keep serving the progress page's polls until it has the final
-			// "updatesRequired = false" response and leaves the wizard. The window is not closed on
-			// some later request: an unrelated client or the page's own non-AJAX requests must never
-			// be able to end it before that page has its final answer.
-			return false;
+		// Once the updates are done, the only request left to answer is the progress page's poll,
+		// which always arrives on the setup page. getServletPath() never parses parameters, so every
+		// other request is skipped without touching the query string or a POST body.
+		if (!("/" + WebConstants.SETUP_PAGE_URL).equals(httpRequest.getServletPath())) {
+			return true;
 		}
-		return true;
+		// let the poll through so reviewchanges.vm can pick up the final
+		// "updatesRequired = false" response and leave the wizard
+		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"));
 	}
 
 	/**
@@ -786,8 +776,6 @@ public class UpdateFilter extends StartupFilter {
 						}
 					} finally {
 						if (!hasErrors()) {
-							// keep serving the progress page's final poll so it can leave the wizard
-							setServingUpdateProgress(true);
 							// set this so that the wizard isn't run again on next page load
 							setUpdatesRequired(false);
 						}
