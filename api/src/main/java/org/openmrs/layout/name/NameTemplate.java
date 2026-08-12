@@ -75,26 +75,17 @@ public class NameTemplate extends LayoutTemplate {
 	}
 
 	private static String resolveToken(PersonName pn, String codeName) throws Exception {
-		switch (codeName) {
-			case "prefix":
-				return pn.getPrefix();
-			case "givenName":
-				return pn.getGivenName();
-			case "middleName":
-				return pn.getMiddleName();
-			case "familyNamePrefix":
-				return pn.getFamilyNamePrefix();
-			case "familyName":
-				return pn.getFamilyName();
-			case "familyName2":
-				return pn.getFamilyName2();
-			case "familyNameSuffix":
-				return pn.getFamilyNameSuffix();
-			case "degree":
-				return pn.getDegree();
-			default:
-				// custom-configured token: keep old behavior as a rare fallback
-				return BeanUtils.getProperty(pn, codeName);
-		}
+		return switch (codeName) {
+			case "prefix" -> pn.getPrefix();
+			case "givenName" -> pn.getGivenName();
+			case "middleName" -> pn.getMiddleName();
+			case "familyNamePrefix" -> pn.getFamilyNamePrefix();
+			case "familyName" -> pn.getFamilyName();
+			case "familyName2" -> pn.getFamilyName2();
+			case "familyNameSuffix" -> pn.getFamilyNameSuffix();
+			case "degree" -> pn.getDegree();
+			// custom-configured token: keep old behavior as a rare fallback
+			default -> BeanUtils.getProperty(pn, codeName);
+		};
 	}
 }
