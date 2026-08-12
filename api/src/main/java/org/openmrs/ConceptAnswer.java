@@ -67,7 +67,7 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	@JoinColumn(name = "answer_drug")
 	private Drug answerDrug;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 

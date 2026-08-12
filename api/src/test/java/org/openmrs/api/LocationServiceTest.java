@@ -1449,15 +1449,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldLazyLoadLocationParentLocation() {
-		Location l = Context.getLocationService().getLocation(1);
-
-		// Associate the Location with an existing parent Location. Flush and clear the session so the entity is
-		// reloaded from the database instead of being returned from Hibernate's first-level cache.
-		l.setParentLocation(Context.getLocationService().getLocation(2));
-		Context.flushSession();
-		Context.clearSession();
-
-		Location location = Context.getLocationService().getLocation(1);
+		Location location = Context.getLocationService().getLocation(2);
 
 		// The associated parent Location should not be loaded when the Location is retrieved.
 		assertFalse(Hibernate.isInitialized(location.getParentLocation()));
@@ -1470,17 +1462,9 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldLazyLoadLocationType() {
-		Location l = Context.getLocationService().getLocation(1);
+		Location location = Context.getLocationService().getLocation(7);
 
-		// Associate the Location with an existing Concept as its type. Flush and clear the session so the entity is
-		// reloaded from the database instead of being returned from Hibernate's first-level cache.
-		l.setType(Context.getConceptService().getConcept(1));
-		Context.flushSession();
-		Context.clearSession();
-
-		Location location = Context.getLocationService().getLocation(1);
-
-		// The associated Concept should remain an uninitialized until it is explicitly accessed.
+		// The associated Concept should remain uninitialized until it is explicitly accessed.
 		assertFalse(Hibernate.isInitialized(location.getType()));
 
 		// Accessing the Type should initialize the lazy association.

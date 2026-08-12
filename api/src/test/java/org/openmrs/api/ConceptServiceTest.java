@@ -1039,7 +1039,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void shouldLazyLoadConceptAnswerAssociations() {
 		// Loading a ConceptAnswer should not eagerly load the related Concept entities. The old Hibernate mappings
 		// used lazy many-to-one associations, so these should remain uninitialized until they are explicitly accessed.
-		ConceptAnswer conceptAnswer = Context.getConceptService().getConceptAnswer(1);
+		ConceptAnswer conceptAnswer = conceptService.getConceptAnswer(1);
 
 		// The associated Concepts should not be loaded when the ConceptAnswer is retrieved.
 		assertFalse(Hibernate.isInitialized(conceptAnswer.getConcept()));
@@ -1053,16 +1053,16 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldLazyLoadAnswerDrugAssociation() {
-		ConceptAnswer ca = Context.getConceptService().getConceptAnswer(1);
+		ConceptAnswer ca = conceptService.getConceptAnswer(1);
 
 		// Associate the ConceptAnswer with an existing Drug so that the optional relationship can be verified. Flush
 		// and clear the session to ensure the entity is reloaded from the database rather than returned from Hibernate's
 		// first-level cache.
-		ca.setAnswerDrug(Context.getConceptService().getDrug(2));
+		ca.setAnswerDrug(conceptService.getDrug(2));
 		Context.flushSession();
 		Context.clearSession();
 
-		ConceptAnswer conceptAnswer = Context.getConceptService().getConceptAnswer(1);
+		ConceptAnswer conceptAnswer = conceptService.getConceptAnswer(1);
 
 		// The associated Drug should not be loaded when the ConceptAnswer is retrieved.
 		assertFalse(Hibernate.isInitialized(conceptAnswer.getAnswerDrug()));
@@ -1071,6 +1071,19 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptAnswer.getAnswerDrug().getName();
 
 		assertTrue(Hibernate.isInitialized(conceptAnswer.getAnswerDrug()));
+	}
+
+	@Test
+	public void shouldLazyLoadCreator() {
+		ConceptAnswer conceptAnswer = conceptService.getConceptAnswer(1);
+
+		// The creator should remain unloaded when the ConceptAnswer is retrieved.
+		assertFalse(Hibernate.isInitialized(conceptAnswer.getCreator()));
+
+		// Accessing the creator should initialize the lazy association.
+		conceptAnswer.getCreator().getUsername();
+
+		assertTrue(Hibernate.isInitialized(conceptAnswer.getCreator()));
 	}
 
 	/**
