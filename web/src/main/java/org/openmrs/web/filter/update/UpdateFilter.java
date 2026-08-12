@@ -772,7 +772,6 @@ public class UpdateFilter extends StartupFilter {
 						} catch (Exception e) {
 							log.error("Unable to complete the startup.", e);
 							reportError(ErrorMessageConstants.UPDATE_ERROR_COMPLETE_STARTUP, e.getMessage());
-							return;
 						}
 					} finally {
 						if (!hasErrors()) {

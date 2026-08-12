@@ -85,7 +85,7 @@ class InitializationFilterE2ETest {
 	}
 
 	@AfterEach
-	void cleanup() throws Exception {
+	void cleanup() {
 		InitializationFilter.setInstallationStarted(false);
 		filter.setInitializationComplete(false);
 		Context.setRuntimeProperties(originalRuntimeProperties);
