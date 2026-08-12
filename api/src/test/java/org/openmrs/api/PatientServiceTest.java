@@ -313,6 +313,42 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, newLogsCount, "There should be exactly one person merge log created per merge.");
 	}
 
+	@Test
+	public void mergePatients_shouldNotDuplicateAttributeUuidsInCreatedList() throws Exception {
+		// Use fresh patients without existing attributes
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7); // Changed from 2 to 7
+		voidOrders(Collections.singleton(notPreferred));
+
+		// Add ONE new attribute to notPreferred
+		PersonAttribute attribute = new PersonAttribute();
+		attribute.setValue("TEST-MERGE-ATTR");
+		attribute.setAttributeType(personService.getPersonAttributeType(1));
+		notPreferred.addAttribute(attribute);
+		patientService.savePatient(notPreferred);
+
+		// Count existing attributes BEFORE merge
+		int existingAttributesCount = 0;
+		for (PersonAttribute attr : notPreferred.getAttributes()) {
+			if (!attr.getVoided()) {
+				existingAttributesCount++;
+			}
+		}
+
+		// Perform merge and get audit
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		// Assert: No duplicate UUIDs in createdAttributes
+		List<String> createdAttributeUuids = audit.getPersonMergeLogData().getCreatedAttributes();
+		assertEquals(existingAttributesCount, createdAttributeUuids.size(),
+		    "Should have exactly one created attribute UUID per non-voided attribute, not duplicates");
+
+		// Verify no duplicate UUIDs
+		Set<String> uniqueUuids = new HashSet<>(createdAttributeUuids);
+		assertEquals(createdAttributeUuids.size(), uniqueUuids.size(),
+		    "Created attribute UUIDs should be unique - no duplicates");
+	}
+
 	/**
 	 * Tests creating patients with identifiers that are or are not validated.
 	 *
