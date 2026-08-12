@@ -144,9 +144,9 @@
 	
 	<changeSet id="TRUNK-6738-add-obs_archive" author="shivvani-r">
 		<preConditions onFail="MARK_RAN">
-				<not>
-					<tableExists tableName="obs_archive"/>
-				</not>
+			<not>
+				<tableExists tableName="obs_archive"/>
+			</not>
 		</preConditions>
 		<comment>Add obs_archive table for Archiving Observations</comment>
 		<createTable tableName="obs_archive">
@@ -198,6 +198,8 @@
 				<constraints nullable="false"/>
 			</column>
 			<column name="interpretation" type="VARCHAR(32)"/>
+			<column name="changed_by" type="INT"/>
+			<column name="date_changed" type="DATETIME"/>
 			<column name="archived_by" type="INT"/>
 			<column name="date_archived" type="DATETIME"/>
 		</createTable>
@@ -217,14 +219,50 @@
 		<createIndex indexName="idx_obs_archive_concept_id" tableName="obs_archive">
 			<column name="concept_id"/>
 		</createIndex>
+
+		<addForeignKeyConstraint constraintName="fk_obs_archive_person" baseTableName="obs_archive"
+								 baseColumnNames="person_id" referencedTableName="person"
+								 referencedColumnNames="person_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_archive_concept" baseTableName="obs_archive"
+								 baseColumnNames="concept_id" referencedTableName="concept"
+								 referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_archive_encounter" baseTableName="obs_archive"
+								 baseColumnNames="encounter_id" referencedTableName="encounter"
+								 referencedColumnNames="encounter_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_archive_location" baseTableName="obs_archive"
+								 baseColumnNames="location_id" referencedTableName="location"
+								 referencedColumnNames="location_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_archive_order" baseTableName="obs_archive"
+								 baseColumnNames="order_id" referencedTableName="orders"
+								 referencedColumnNames="order_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_archive_value_coded" baseTableName="obs_archive"
+								 baseColumnNames="value_coded" referencedTableName="concept"
+								 referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_archive_value_coded_name" baseTableName="obs_archive"
+								 baseColumnNames="value_coded_name_id" referencedTableName="concept_name"
+								 referencedColumnNames="concept_name_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_archive_value_drug" baseTableName="obs_archive"
+								 baseColumnNames="value_drug" referencedTableName="drug"
+								 referencedColumnNames="drug_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_archive_creator" baseTableName="obs_archive"
+								 baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_archive_voided_by" baseTableName="obs_archive"
+								 baseColumnNames="voided_by" referencedTableName="users"
+								 referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_archive_changed_by" baseTableName="obs_archive"
+								 baseColumnNames="changed_by" referencedTableName="users"
+								 referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_archive_archived_by" baseTableName="obs_archive"
+								 baseColumnNames="archived_by" referencedTableName="users"
+								 referencedColumnNames="user_id"/>
 	</changeSet>
 
 	<changeSet id="TRUNK-6738-add-obs_reference_range_archive" author="shivvani-r">
-	<preConditions onFail="MARK_RAN">
+		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="obs_reference_range_archive"/>
 			</not>
-	</preConditions>
+		</preConditions>
 	<comment>Add obs_reference_range_archive table for Archiving Observations</comment>
 	<createTable tableName="obs_reference_range_archive">
 		<column name="obs_reference_range_id" type="INT">
@@ -245,6 +283,9 @@
 		<column name="archived_by" type="INT"/>
 		<column name="date_archived" type="DATETIME"/>
 	</createTable>
+		<addForeignKeyConstraint constraintName="fk_obs_reference_range_archive_obs_id" baseTableName="obs_reference_range_archive" baseColumnNames="obs_id" referencedTableName="obs_archive" referencedColumnNames="obs_id"/>
+		<addForeignKeyConstraint constraintName="fk_obs_reference_range_archive_archived_by" baseTableName="obs_reference_range_archive" baseColumnNames="archived_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 
 </databaseChangeLog>
