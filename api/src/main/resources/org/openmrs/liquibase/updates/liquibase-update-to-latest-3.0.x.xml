@@ -145,7 +145,7 @@
 	<changeSet id="TRUNK-6738-add-obs_archive" author="shivvani-r">
 		<preConditions onFail="MARK_RAN">
 				<not>
-					<tableExists tableName="obs_reference_range_archive"/>
+					<tableExists tableName="obs_archive"/>
 				</not>
 		</preConditions>
 		<comment>Add obs_archive table for Archiving Observations</comment>
