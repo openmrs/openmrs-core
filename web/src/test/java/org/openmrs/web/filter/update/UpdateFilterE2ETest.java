@@ -475,6 +475,21 @@ class UpdateFilterE2ETest {
 		assertEquals(false, filter.skipFilter(pollReq));
 	}
 
+	@Test
+	void skipFilter_shouldNotReadRequestParametersOnceUpdatesNoLongerRequired() {
+		UpdateFilter.setUpdatesRequired(false);
+		MockHttpServletRequest req = new MockHttpServletRequest() {
+
+			@Override
+			public String getParameter(String name) {
+				throw new AssertionError("skipFilter parsed request parameters once updates are no longer required");
+			}
+		};
+		req.setServletPath("/index.htm");
+
+		assertEquals(true, filter.skipFilter(req));
+	}
+
 	// ========== Helper Methods ==========
 
 	@SuppressWarnings("unchecked")

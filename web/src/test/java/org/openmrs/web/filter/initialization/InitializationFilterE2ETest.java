@@ -1002,6 +1002,21 @@ class InitializationFilterE2ETest {
 		assertFalse(filter.skipFilter(pollReq));
 	}
 
+	@Test
+	void skipFilter_shouldNotReadRequestParametersOnceInitializationIsComplete() {
+		filter.setInitializationComplete(true);
+		MockHttpServletRequest req = new MockHttpServletRequest() {
+
+			@Override
+			public String getParameter(String name) {
+				throw new AssertionError("skipFilter parsed request parameters after initialization completed");
+			}
+		};
+		req.setServletPath("/index.htm");
+
+		assertTrue(filter.skipFilter(req));
+	}
+
 	// ========== Helper Methods ==========
 	@SuppressWarnings("unchecked")
 	private Map<String, Object[]> getErrors() throws Exception {
