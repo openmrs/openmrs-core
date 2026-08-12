@@ -29,7 +29,13 @@ public class TimerSchedulerTask extends TimerTask {
 	
 	/** Logger */
 	private static final Logger log = LoggerFactory.getLogger(TimerSchedulerTask.class);
-	
+
+	/**
+	 * The capability that proves to {@link Daemon} this class is allowed to act with daemon
+     * permissions.
+	 */
+	private static volatile Daemon.CallerKey daemonCallerKey;
+
 	/** * Public constructor */
 	public TimerSchedulerTask(Task task) {
 		this.task = task;
@@ -43,7 +49,7 @@ public class TimerSchedulerTask extends TimerTask {
 	@Override
 	public void run() {
 		try {
-			Daemon.executeScheduledTask(task);
+			Daemon.executeScheduledTask(task, daemonCallerKey());
 		}
 		catch (Exception t) {
 			// Fix #862: IllegalStateException: Timer already cancelled.
@@ -96,7 +102,32 @@ public class TimerSchedulerTask extends TimerTask {
 			task.execute();
 		} catch (InterruptedException | ExecutionException e) {
 			// ignored
-		} 
+		}
 		saveLastExecutionTime(task);
+	}
+
+	/**
+	 * Receives the {@link Daemon} caller key. Called only by {@link Daemon} during its initialization.
+	 *
+	 * @param callerKey the caller key issued by {@link Daemon}
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public static void setDaemonCallerKey(Daemon.CallerKey callerKey) {
+		if (callerKey != null && daemonCallerKey == null) {
+			daemonCallerKey = callerKey;
+		}
+	}
+
+	/**
+	 * @return the {@link Daemon} caller key. Protected so that {@link TimerSchedulerTask} subclasses,
+	 *         which the old caller check also permitted, can present it when running scheduled tasks.
+	 */
+	protected static Daemon.CallerKey daemonCallerKey() {
+		if (daemonCallerKey == null) {
+			// Guarantee Daemon has initialized and therefore handed us the key, regardless of the order in
+			// which the two classes were first loaded.
+			Daemon.ensureInitialized();
+		}
+		return daemonCallerKey;
 	}
 }

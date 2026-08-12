@@ -234,13 +234,10 @@ Deploy to docker JDK 17:
                       export JDK_IMAGE="amazoncorretto-17"
                       export RUNTIME_JDK="jdk17-corretto"
                       
-                      export IMAGE=${bamboo.docker.image.id}
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
                       export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev-${JDK_IMAGE}
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
-                      
-                      docker pull $IMAGE
                       
                       docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
                         --target dev \
@@ -258,6 +255,7 @@ Deploy to docker JDK 17:
                         --build-arg MVN_ARGS="clean install -DskipTests" \
                         --build-arg DEV_JDK="${JDK_IMAGE}" \
                         --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+                        -t ${IMAGE_NIGHTLY} .
               description: Deploy to docker
     artifact-subscriptions: []
 Deploy to docker JDK 21:
@@ -470,7 +468,7 @@ Release JDK 11 image:
               description: Build and push JDK 11 images
     artifact-subscriptions: []
 Release JDK 17 image:
-    key: RTD11
+    key: RTD17
     tasks:
         - checkout:
               force-clean-build: 'false'
@@ -510,7 +508,7 @@ Release JDK 17 image:
                       --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
                       --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE}-${JDK_IMAGE} .
               
-              description: Build and push JDK 11 images
+              description: Build and push JDK 17 images
     artifact-subscriptions: []
 Release JDK 21 image:
     key: RTD21
@@ -594,9 +592,17 @@ other:
 ---
 version: 2
 plan:
-    key: TRUNK-MASTER
+    key: TRUNK-OC28
 plan-permissions:
     - roles:
           - anonymous
       permissions:
           - view
+    - roles:
+          - logged-in
+      permissions:
+          - view
+          - edit
+          - build
+          - clone
+          - admin
