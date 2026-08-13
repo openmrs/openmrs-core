@@ -100,10 +100,9 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		jobRunrServerLifecycle.openmrsStarted();
 		for (TaskDefinition taskDefinition : schedulerDAO.getTasks()) {
 			if (Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
-				String scheduledBy = taskDefinition.getCreator() != null ? taskDefinition.getCreator().getSystemId()
-				        : "daemon";
+				String scheduledBy = getValidCreatorSystemId(taskDefinition);
 				JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(taskDefinition.getUuid()),
-				    new JobRequestAdapter(taskDefinition, taskDefinition.getCreator().getSystemId()));
+				    new JobRequestAdapter(taskDefinition, scheduledBy));
 				String name = taskDefinition.getName();
 				if (name == null) {
 					name = taskDefinition.getTaskClass();

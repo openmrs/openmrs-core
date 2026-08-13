@@ -10,8 +10,11 @@
 package org.openmrs.scheduler.tasks;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -91,7 +94,7 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 				archiveAndDeleteBatch(batchIds);
 				lastProcessedId = batchIds.get(batchIds.size() - 1);
 				saveLastProcessedId(lastProcessedId);
-			} catch (Exception e) {
+			} catch (org.hibernate.HibernateException | DataAccessException | TransactionException e) {
 				log.warn("Batch failed, falling back to row-by-row archiving for batch starting at {}", lastProcessedId, e);
 				handleBatchFailure(batchIds);
 				lastProcessedId = batchIds.get(batchIds.size() - 1);
@@ -128,16 +131,11 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 			        .setParameter("batchIds", batchIds).list();
 
 			List<Integer> idsToProcess = new ArrayList<>();
+			Set<Integer> batchIdSet = new HashSet<>(batchIds);
 			for (Obs obs : obsList) {
-				if (obs.hasGroupMembers(true)) {
-					Number activeChildrenCount = (Number) session.createQuery(
-					    "SELECT count(c) FROM Obs c WHERE c.obsGroup.obsId = :parentId AND c.obsId NOT IN (:batchIds)")
-					        .setParameter("parentId", obs.getObsId()).setParameter("batchIds", batchIds).uniqueResult();
-					if (activeChildrenCount != null && activeChildrenCount.intValue() > 0) {
-						log.debug("Skipping parent obs {} because it still has active children in the obs table",
-						    obs.getObsId());
-						continue;
-					}
+				if (hasIneligibleDescendants(obs, batchIdSet)) {
+					log.debug("Skipping parent obs {} because it has descendants not in the current batch", obs.getObsId());
+					continue;
 				}
 				idsToProcess.add(obs.getObsId());
 			}
@@ -146,10 +144,10 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 				return null;
 			}
 
-			idsToProcess.sort(java.util.Comparator.reverseOrder());
+			idsToProcess.sort(Comparator.reverseOrder());
 
 			for (Integer obsId : idsToProcess) {
-				Obs obs = session.get(Obs.class, obsId);
+				Obs obs = session.find(Obs.class, obsId);
 				if (obs == null) {
 					continue;
 				}
@@ -218,11 +216,13 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 				}
 
 				session.persist(archive);
+			}
 
-				if (obs.getReferenceRange() != null) {
-					session.remove(obs.getReferenceRange());
-				}
-				session.remove(obs);
+			if (!idsToProcess.isEmpty()) {
+				session.createQuery("DELETE FROM ObsReferenceRange WHERE obs.obsId IN (:ids)")
+				        .setParameterList("ids", idsToProcess).executeUpdate();
+				session.createQuery("DELETE FROM Obs WHERE obsId IN (:ids)").setParameterList("ids", idsToProcess)
+				        .executeUpdate();
 			}
 
 			session.flush();
@@ -236,8 +236,8 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 		for (Integer obsId : batchIds) {
 			try {
 				archiveAndDeleteBatch(List.of(obsId));
-			} catch (Exception e) {
-				log.warn("Skipping observation {} due to constraint violation during archiving.", obsId, e);
+			} catch (org.hibernate.HibernateException | DataAccessException | TransactionException e) {
+				log.warn("Skipping observation {} due to failure during archiving.", obsId, e);
 			}
 		}
 	}
@@ -250,5 +250,20 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 		}
+	}
+
+	private boolean hasIneligibleDescendants(Obs obs, java.util.Set<Integer> batchIds) {
+		if (!obs.hasGroupMembers(true)) {
+			return false;
+		}
+		for (Obs child : obs.getGroupMembers(true)) {
+			if (!batchIds.contains(child.getObsId())) {
+				return true;
+			}
+			if (hasIneligibleDescendants(child, batchIds)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
