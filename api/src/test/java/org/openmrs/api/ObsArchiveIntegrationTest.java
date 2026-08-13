@@ -789,4 +789,81 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		    "Restored obs should retain the exact low_absolute");
 		assertEquals(originalUuid, restoredObs.getReferenceRange().getUuid(), "Restored obs should retain the exact uuid");
 	}
+
+	@Test
+	public void getArchivedChildObs_shouldReturnArchivedChildren() {
+		Obs parent = new Obs();
+		parent.setPerson(Context.getPersonService().getPerson(7));
+		parent.setConcept(Context.getConceptService().getConcept(30));
+		parent.setObsDatetime(new java.util.Date());
+		parent.setLocation(Context.getLocationService().getLocation(1));
+
+		Obs child = createSingleObs(10.0);
+		parent.addGroupMember(child);
+		obsService.saveObs(parent, "saving parent with child");
+		Integer parentId = parent.getObsId();
+		Integer childId = child.getObsId();
+
+		obsService.voidObs(parent, "voiding parent");
+		Context.flushSession();
+		Context.clearSession();
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(parentId);
+		assertArchived(childId);
+
+		List<Obs> archivedChildren = obsArchiveHelper.getArchivedChildObs(parentId);
+		assertEquals(1, archivedChildren.size());
+		assertEquals(childId, archivedChildren.get(0).getObsId());
+	}
+
+	@Test
+	public void getArchivedObsByPersonId_shouldReturnAllArchivedObsForPerson() {
+		Obs obs1 = createAndSaveSingleObs(5.0);
+		Obs obs2 = createAndSaveSingleObs(15.0);
+		Integer personId = obs1.getPersonId();
+
+		obsService.voidObs(obs1, "voiding");
+		obsService.voidObs(obs2, "voiding");
+		Context.flushSession();
+		Context.clearSession();
+		Context.flushSession();
+		Context.clearSession();
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		List<Obs> personObs = obsArchiveHelper.getArchivedObsByPersonId(personId);
+		assertTrue(personObs.stream().anyMatch(o -> o.getObsId().equals(obs1.getObsId())));
+		assertTrue(personObs.stream().anyMatch(o -> o.getObsId().equals(obs2.getObsId())));
+	}
+
+	@Test
+	public void getArchivedObsByPersonIdAndConceptId_shouldReturnMatchingArchivedObs() {
+		Obs obs1 = createAndSaveSingleObs(5.0);
+
+		Obs obs2 = createSingleObs(15.0);
+		obs2.setConcept(Context.getConceptService().getConcept(5497));
+		obs2 = obsService.saveObs(obs2, "different concept");
+
+		Integer personId = obs1.getPersonId();
+		Integer conceptId1 = obs1.getConcept().getConceptId();
+		Integer conceptId2 = obs2.getConcept().getConceptId();
+
+		obsService.voidObs(obs1, "voiding");
+		obsService.voidObs(obs2, "voiding");
+		Context.flushSession();
+		Context.clearSession();
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		List<Obs> concept1Obs = obsArchiveHelper.getArchivedObsByPersonIdAndConceptId(personId, conceptId1);
+		List<Obs> concept2Obs = obsArchiveHelper.getArchivedObsByPersonIdAndConceptId(personId, conceptId2);
+
+		Integer obs1Id = obs1.getObsId();
+		Integer obs2Id = obs2.getObsId();
+
+		assertTrue(concept1Obs.stream().anyMatch(o -> o.getObsId().equals(obs1Id)));
+		assertTrue(concept2Obs.stream().anyMatch(o -> o.getObsId().equals(obs2Id)));
+	}
 }

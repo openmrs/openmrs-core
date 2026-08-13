@@ -218,11 +218,10 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 				session.persist(archive);
 			}
 
-			if (!idsToProcess.isEmpty()) {
-				session.createQuery("DELETE FROM ObsReferenceRange WHERE obs.obsId IN (:ids)")
-				        .setParameterList("ids", idsToProcess).executeUpdate();
-				session.createQuery("DELETE FROM Obs WHERE obsId IN (:ids)").setParameterList("ids", idsToProcess)
+			for (Integer obsId : idsToProcess) {
+				session.createQuery("DELETE FROM ObsReferenceRange WHERE obs.obsId = :id").setParameter("id", obsId)
 				        .executeUpdate();
+				session.createQuery("DELETE FROM Obs WHERE obsId = :id").setParameter("id", obsId).executeUpdate();
 			}
 
 			session.flush();

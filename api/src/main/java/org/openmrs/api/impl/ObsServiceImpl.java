@@ -35,7 +35,6 @@ import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
-import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.parameter.ObsSearchCriteria;
@@ -76,13 +75,11 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	@Qualifier("handlers")
 	private Map<String, ComplexObsHandler> handlers;
 
+	private ObsArchiveHelper archiveHelper;
+
 	/**
 	 * Default empty constructor for this obs service
 	 */
-	private CustomDatatypeUtil customDatatypeUtil;
-
-	private ObsArchiveHelper archiveHelper;
-
 	public ObsServiceImpl() {
 	}
 
