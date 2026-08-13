@@ -13,12 +13,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
+import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -673,6 +675,30 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		List<RelationshipType> relationshipTypes = hibernatePersonDAO.getRelationshipTypes("", true);
 		assertNotNull(relationshipTypes);
 		assertTrue(relationshipTypes.isEmpty(), "Should return an empty list for empty relationshipTypeName");
+	}
+
+	@Test
+	public void getRelationship_shouldLazyLoadRelationshipAssociations() {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredRelationship.xml");
+		Relationship relationship = hibernatePersonDAO.getRelationship(6);
+
+		assertNotNull(relationship.getPersonA(), "Test requires relationship.personA");
+		assertNotNull(relationship.getPersonB(), "Test requires relationship.personB");
+		assertNotNull(relationship.getRelationshipType(), "Test requires relationship.relationshipType");
+
+		assertFalse(Hibernate.isInitialized(relationship.getPersonA()));
+		assertFalse(Hibernate.isInitialized(relationship.getPersonB()));
+		assertFalse(Hibernate.isInitialized(relationship.getRelationshipType()));
+
+		// Trigger lazy initialization
+		relationship.getPersonA().getId();
+		relationship.getPersonB().getId();
+		relationship.getRelationshipType().getId();
+
+		assertTrue(Hibernate.isInitialized(relationship.getPersonA()));
+		assertTrue(Hibernate.isInitialized(relationship.getPersonB()));
+		assertTrue(Hibernate.isInitialized(relationship.getRelationshipType()));
+
 	}
 
 }
