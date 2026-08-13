@@ -608,30 +608,31 @@ public interface UserService extends OpenmrsService {
 	@Authorized
 	String getLastLoginTime(User user);
 
-		/**
+	/**
 	 * Generates a deterministic bootstrap password for a user.
 	 * 
-	 * The password is derived from the user's UUID and a system-wide salt using PBKDF2.
+	 * The password is derived from the user's UUID and a system-wide pepper using PBKDF2.
 	 * It is not stored in the database and can be regenerated at any time.
 	 * 
 	 * @param user the user for whom to generate the bootstrap password
 	 * @return the generated bootstrap password
-	 * @throws APIException if the user is null, has no UUID, or system salt is not configured
-	 * @since 2.8.8
+	 * @throws APIException if the user is null, has no UUID, or pepper is not configured
+	 * @since 2.8.9
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })   
 	String generateBootstrapPassword(User user);
 	
 	/**
-	 * Validates a password against a user's bootstrap password.
-	 * 
-	 * @param user the user
-	 * @param password the password to validate
-	 * @return true if the password matches the user's bootstrap password
-	 * @since 2.8.8
-	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
-	boolean validateBootstrapPassword(User user, String password);
+     * Validates a password against a user's bootstrap password.
+     * 
+     * @param user the user
+     * @param password the password to validate
+     * @return true if the password matches the user's bootstrap password
+     * @since 2.8.9
+     */
+    @Authorized( { PrivilegeConstants.GET_USERS })
+    @Logging(ignoredArgumentIndexes = { 1 })
+    boolean validateBootstrapPassword(User user, String password);
 	
 	/**
 	 * Forces a user to change their password on next login.
@@ -639,7 +640,7 @@ public interface UserService extends OpenmrsService {
 	 * This is typically called after a user successfully logs in with a bootstrap password.
 	 * 
 	 * @param user the user whose password change should be forced
-	 * @since 2.8.8
+	 * @since 2.8.9
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
 	void forcePasswordChange(User user);
@@ -652,7 +653,7 @@ public interface UserService extends OpenmrsService {
 	 * 
 	 * @param user the user
 	 * @return true if the bootstrap password is expired
-	 * @since 2.8.8
+	 * @since 2.8.9
 	 */
 	@Authorized( { PrivilegeConstants.GET_USERS })
 	boolean isBootstrapPasswordExpired(User user);
