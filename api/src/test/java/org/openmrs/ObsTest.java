@@ -79,14 +79,10 @@ public class ObsTest {
 			setFieldValue(obs, field, false);
 		}
 		if (obs.getPreviousVersion() != null) {
-			obs.setPreviousVersionId(obs.getPreviousVersion().getObsId());
-		}
-
-		Field dirtyField = Reflect.getAllFields(Obs.class).stream().filter(f -> f.getName().equals("dirty")).findFirst()
-		        .orElse(null);
-		if (dirtyField != null) {
-			dirtyField.setAccessible(true);
-			dirtyField.set(obs, false);
+			Field prevVersionIdField = Reflect.getAllFields(Obs.class).stream()
+			        .filter(f -> f.getName().equals("previousVersionId")).findFirst().orElseThrow(RuntimeException::new);
+			prevVersionIdField.setAccessible(true);
+			prevVersionIdField.set(obs, obs.getPreviousVersion().getObsId());
 		}
 
 		assertFalse(obs.isDirty());
