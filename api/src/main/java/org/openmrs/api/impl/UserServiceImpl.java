@@ -826,14 +826,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public String getLastLoginTime(User user) {
 		return dao.getLastLoginTime(user);
 	}
-
-	/**
-	 * @see org.openmrs.api.UserService#generateBootstrapPassword(User)
-	 */
-	@Override
-	public String generateBootstrapPassword(User user) {
-		return Security.generateBootstrapPassword(user);
-	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#validateBootstrapPassword(User, String)
@@ -848,12 +840,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
      */
     @Override
     @Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
-    public void forcePasswordChange(User user) {
-        if (user != null) {
-            Security.forcePasswordChange(user); // Sets the property
-            dao.saveUser(user, null);
-        }
-    }
+	public void forcePasswordChange(User user) {
+		if (user != null) {
+			Security.forcePasswordChange(user);
+			Context.getUserService().saveUser(user);  
+		}
+	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#isBootstrapPasswordExpired(User)
@@ -862,4 +854,15 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public boolean isBootstrapPasswordExpired(User user) {
 		return Security.isBootstrapPasswordExpired(user);
 	}
+
+	/**
+     * {@inheritDoc}
+     * 
+     * @see org.openmrs.api.UserService#generateBootstrapPassword(org.openmrs.User)
+     */
+    @Override
+    @Authorized(PrivilegeConstants.EDIT_USER_PASSWORDS)
+    public String generateBootstrapPassword(User user) throws APIException {
+        return Security.generateBootstrapPassword(user);
+    }
 }

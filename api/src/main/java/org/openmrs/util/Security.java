@@ -78,23 +78,20 @@ public class Security {
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
 	}
 
-	    /**
-     * Generates a deterministic hash using PBKDF2.
+	/**
+     * Generates a deterministic bootstrap password for a user.
      * 
-     * This method is used for bootstrap password generation, where deterministic output is required
-     * for a given user (same user → same password). The UUID serves as a per-user salt, while the
-     * pepper (system secret) is concatenated into the input string. This ensures that even if the
-     * pepper is compromised, each user's password remains unique due to the per-user salt.
+     * The password is derived from the user's UUID and the system pepper using PBKDF2.
+     * The UUID acts as a per-user salt, ensuring uniqueness per user, while the pepper
+     * (stored in runtime.properties) provides system-wide secrecy.
      * 
-     * Unlike {@link #encodeString(String)}, which uses SHA-512, this method uses PBKDF2 with a high
-     * iteration count, making it suitable for password derivation.
+     * The resulting password is Base64-encoded and truncated to a user-friendly length
+     * of {@value #BOOTSTRAP_MAX_PASSWORD_LENGTH} characters.
      * 
-     * @param input      the input string to derive from (typically user UUID + system pepper)
-     * @param salt       the per-user salt (typically the user's UUID) to make each derivation unique
-     * @param iterations the number of PBKDF2 iterations (use 0 to apply the default)
-     * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
-     * @throws APIException if input or salt is null
-     * @since 2.8.8
+     * @param user the user for whom to generate the bootstrap password
+     * @return the generated bootstrap password (a user-friendly string)
+     * @throws APIException if user is null, has no UUID, or the pepper is not configured
+     * @since 2.8.9
      */
 	public static String generateBootstrapPassword(org.openmrs.User user) {
 		if (user == null) {
@@ -128,7 +125,7 @@ public class Security {
 	 * @param salt  the per-user salt (typically the user's UUID)
 	 * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
 	 * @throws APIException if input or salt is null
-	 * @since 2.8.8
+	 * @since 2.8.9
 	 */
 	public static String generateDeterministicHash(String input, String salt) {
 		return generateDeterministicHash(input, salt, PBKDF2_DEFAULT_ITERATIONS);
@@ -150,7 +147,7 @@ public class Security {
 	 * @param iterations the number of PBKDF2 iterations (use 0 to apply the default)
 	 * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
 	 * @throws APIException if input or salt is null
-	 * @since 2.8.8
+	 * @since 2.8.9
 	 */
 	public static String generateDeterministicHash(String input, String salt, int iterations) {
 		if (input == null || salt == null) {
@@ -185,7 +182,7 @@ public class Security {
      *The pepper is read from the runtime property "openmrs.bootstrap.pepper".
      * 
      * @return the pepper, or null if not configured
-     * @since 2.8.8
+     * @since 2.8.9
      */
 		public static String getBootstrapPepper() {
 		return Context.getRuntimeProperties()
@@ -199,27 +196,25 @@ public class Security {
      * Falls back to default (600,000) if not configured or invalid.
      * 
      * @return the number of iterations (always > 0)
-     * @since 2.8.8
+     * @since 2.8.9
      */
     public static int getBootstrapIterations() {
-        try {
-            String value = Context.getAdministrationService()
-                .getGlobalProperty(OpenmrsConstants.GP_BOOTSTRAP_ITERATIONS);
-            
-            if (StringUtils.hasText(value)) {
-                int iterations = Integer.parseInt(value.trim());
-                if (iterations > 0) {
-                    return iterations;
-                }
-                log.warn("Invalid bootstrap iterations value (must be > 0): {}, using default: {}", 
-                         value, PBKDF2_DEFAULT_ITERATIONS);
-            }
-        } catch (Exception e) {
-            log.debug("Could not read bootstrap iterations from global properties", e);
-        }
-        
-        return PBKDF2_DEFAULT_ITERATIONS;
-    }
+		String value = Context.getRuntimeProperties().getProperty("openmrs.bootstrap.iterations");
+		if (StringUtils.hasText(value)) {
+			try {
+				int iterations = Integer.parseInt(value.trim());
+				if (iterations > 0) {
+					return iterations;
+				}
+				log.warn("Invalid bootstrap iterations value (must be > 0): {}, using default: {}", 
+						value, PBKDF2_DEFAULT_ITERATIONS);
+			} catch (NumberFormatException e) {
+				log.warn("Invalid bootstrap iterations format: {}, using default: {}", 
+						value, PBKDF2_DEFAULT_ITERATIONS);
+			}
+		}
+		return PBKDF2_DEFAULT_ITERATIONS;
+	}
 
 	/**
 	 * Validates a password against a user's bootstrap password.
@@ -227,7 +222,7 @@ public class Security {
 	 * @param user the user
 	 * @param password the password to validate
 	 * @return true if the password matches the user's bootstrap password and the user has not been forced to change
-	 * @since 2.8.8
+	 * @since 2.8.9
 	 */
 	public static boolean validateBootstrapPassword(org.openmrs.User user, String password) {
 		if (user == null || password == null) {
@@ -258,7 +253,7 @@ public class Security {
      * 
      * @param user the user
      * @return true if the bootstrap password is expired
-     * @since 2.8.8
+     * @since 2.8.9
      */
     public static boolean isBootstrapPasswordExpired(org.openmrs.User user) {
         if (user == null) {
@@ -275,7 +270,7 @@ public class Security {
      * The user will be redirected to change password on next login.
      * 
      * @param user the user whose password change should be forced
-     * @since 2.8.8
+     * @since 2.8.9
      */
     public static void forcePasswordChange(org.openmrs.User user) {
         if (user != null) {
