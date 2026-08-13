@@ -11,13 +11,23 @@ package org.openmrs.web;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.BaseOpenmrsObject;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.ContextMockHelper;
+import org.openmrs.util.Format;
+import org.openmrs.util.OpenmrsConstants;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests methods on the {@link WebUtil} class.
@@ -159,4 +169,81 @@ public class WebUtilTest {
 		}
 		return false;
 	}
+
+	private final ContextMockHelper contextMockHelper = new ContextMockHelper();
+
+	private final AdministrationService administrationService = mock(AdministrationService.class);
+
+	private TimeZone originalTimeZone;
+
+	@BeforeEach
+	public void setup() {
+		originalTimeZone = TimeZone.getDefault();
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
+		contextMockHelper.setAdministrationService(administrationService);
+	}
+
+	@AfterEach
+	public void tearDown() {
+		TimeZone.setDefault(originalTimeZone);
+	}
+
+	@Test
+	public void formatDate_shouldFormatDate() {
+		Date date = new Date(1460323539000L);
+
+		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("");
+
+		assertEquals("Apr 10, 2016", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.DATE));
+	}
+
+	@Test
+	public void formatDate_shouldFormatTime() {
+		Date date = new Date(1460323539000L);
+
+		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("");
+
+		assertEquals("9:25:39\u202fPM", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIME));
+	}
+
+	@Test
+	public void formatDate_shouldFormatTimestamp() {
+		Date date = new Date(1460323539000L);
+
+		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("");
+
+		assertEquals("April 10, 2016, 9:25:39\u202fPM UTC",
+		    WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIMESTAMP));
+	}
+
+	@Test
+	public void formatDate_shouldUseConfiguredFormatForDate() {
+		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT))
+		        .thenReturn("yyyy-MM-dd");
+
+		Date date = new Date(1460323539000L);
+
+		assertEquals("2016-04-10", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.DATE));
+	}
+
+	@Test
+	public void formatDate_shouldUseConfiguredFormatForTime() {
+		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("HH:mm:ss");
+
+		Date date = new Date(1460323539000L);
+
+		assertEquals("21:25:39", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIME));
+	}
+
+	@Test
+	public void formatDate_shouldUseConfiguredFormatForTimestamp() {
+		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT))
+		        .thenReturn("yyyy-MM-dd HH:mm:ss");
+
+		Date date = new Date(1460323539000L);
+
+		assertEquals("2016-04-10 21:25:39", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIMESTAMP));
+	}
+
 }
