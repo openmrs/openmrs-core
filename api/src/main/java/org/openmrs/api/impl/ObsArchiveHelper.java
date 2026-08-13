@@ -101,9 +101,10 @@ public class ObsArchiveHelper {
 		try {
 			return withManualFlush(() -> {
 				Session session = sessionFactory.getCurrentSession();
-				List<ObsArchive> archives = session
-				        .createQuery("FROM ObsArchive a WHERE a.encounter.encounterId = :encId", ObsArchive.class)
-				        .setParameter("encId", encounterId).list();
+				List<ObsArchive> archives = session.createQuery("FROM ObsArchive a WHERE a.encounter.encounterId = :encId "
+				        + "OR a.obsGroupId IN (SELECT o.obsId FROM Obs o WHERE o.encounter.encounterId = :encId) "
+				        + "OR a.obsGroupId IN (SELECT oa.obsId FROM ObsArchive oa WHERE oa.encounter.encounterId = :encId)",
+				    ObsArchive.class).setParameter("encId", encounterId).list();
 				return archives.stream().map(this::convertToObs).collect(Collectors.toList());
 			});
 		} catch (HibernateException e) {
@@ -249,10 +250,11 @@ public class ObsArchiveHelper {
 		        .setParameter(PARAM_OBS_ID, obsId).executeUpdate();
 
 		// 2. Move reference range using native query
-		session.createNativeQuery("INSERT INTO obs_reference_range (obs_id, hi_absolute, hi_critical, hi_normal, "
-		        + "low_absolute, low_critical, low_normal, uuid) "
-		        + "SELECT obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, "
-		        + "low_critical, low_normal, uuid FROM obs_reference_range_archive WHERE obs_id = :obsId")
+		session.createNativeQuery(
+		    "INSERT INTO obs_reference_range (obs_reference_range_id, obs_id, hi_absolute, hi_critical, hi_normal, "
+		            + "low_absolute, low_critical, low_normal, uuid) "
+		            + "SELECT obs_reference_range_id, obs_id, hi_absolute, hi_critical, hi_normal, low_absolute, "
+		            + "low_critical, low_normal, uuid FROM obs_reference_range_archive WHERE obs_id = :obsId")
 		        .setParameter(PARAM_OBS_ID, obsId).executeUpdate();
 
 		// 3. Delete from archive reference range

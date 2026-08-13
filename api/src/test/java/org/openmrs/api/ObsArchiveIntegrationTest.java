@@ -97,6 +97,18 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		return obs;
 	}
 
+	private Obs createAndSaveSingleObsWithReferenceRange(Double value) {
+		Obs obs = createSingleObs(value);
+		org.openmrs.ObsReferenceRange range = new org.openmrs.ObsReferenceRange();
+		range.setHiAbsolute(100.0);
+		range.setLowAbsolute(0.0);
+		range.setObs(obs);
+		obs.setReferenceRange(range);
+		obs = obsService.saveObs(obs, "initial save with range");
+		createdObsIds.add(obs.getObsId());
+		return obs;
+	}
+
 	private Obs createAndSaveObsTree(Double... childValues) {
 		Obs parent = new Obs();
 		parent.setPerson(Context.getPersonService().getPerson(7));
@@ -721,5 +733,60 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		Obs restoredObs = obsService.getObs(testObsId);
 		assertNotNull(restoredObs);
 		assertEquals(formPath, restoredObs.getFormNamespaceAndPath(), "Restored obs should retain form namespace and path");
+	}
+
+	@Test
+	public void archiveAndRestore_shouldPreserveReferenceRangeIdAndFields() throws Exception {
+		Obs obs = createAndSaveSingleObsWithReferenceRange(50.0);
+		int testObsId = obs.getObsId();
+		assertNotNull(obs.getReferenceRange());
+		org.openmrs.ObsReferenceRange originalRange = obs.getReferenceRange();
+		int originalRangeId = originalRange.getObsReferenceRangeId();
+		Double originalHiAbsolute = originalRange.getHiAbsolute();
+		Double originalLowAbsolute = originalRange.getLowAbsolute();
+		String originalUuid = originalRange.getUuid();
+
+		// Void the observation
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		// Run archiving
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		// Verify archived
+		assertArchived(testObsId);
+
+		// Verify transparent retrieval via service retains the reference range and its exact data
+		Context.clearSession();
+		Obs archivedObs = obsService.getObs(testObsId);
+		assertNotNull(archivedObs);
+		assertNotNull(archivedObs.getReferenceRange());
+		assertEquals(originalRangeId, archivedObs.getReferenceRange().getObsReferenceRangeId(),
+		    "Archived obs should retain the exact obs_reference_range_id");
+		assertEquals(originalHiAbsolute, archivedObs.getReferenceRange().getHiAbsolute(),
+		    "Archived obs should retain the exact hi_absolute");
+		assertEquals(originalLowAbsolute, archivedObs.getReferenceRange().getLowAbsolute(),
+		    "Archived obs should retain the exact low_absolute");
+		assertEquals(originalUuid, archivedObs.getReferenceRange().getUuid(), "Archived obs should retain the exact uuid");
+
+		// Unvoid the observation to trigger restore
+		obsService.unvoidObs(archivedObs);
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify restored in active table and retains the exact ID and fields
+		assertActive(testObsId);
+		Obs restoredObs = obsService.getObs(testObsId);
+		assertNotNull(restoredObs);
+		assertNotNull(restoredObs.getReferenceRange());
+		assertEquals(originalRangeId, restoredObs.getReferenceRange().getObsReferenceRangeId(),
+		    "Restored obs should retain the exact obs_reference_range_id");
+		assertEquals(originalHiAbsolute, restoredObs.getReferenceRange().getHiAbsolute(),
+		    "Restored obs should retain the exact hi_absolute");
+		assertEquals(originalLowAbsolute, restoredObs.getReferenceRange().getLowAbsolute(),
+		    "Restored obs should retain the exact low_absolute");
+		assertEquals(originalUuid, restoredObs.getReferenceRange().getUuid(), "Restored obs should retain the exact uuid");
 	}
 }

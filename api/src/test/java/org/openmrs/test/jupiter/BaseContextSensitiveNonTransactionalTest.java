@@ -618,17 +618,6 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		        + "hi_normal DOUBLE DEFAULT NULL, " + "low_absolute DOUBLE DEFAULT NULL, "
 		        + "low_critical DOUBLE DEFAULT NULL, " + "low_normal DOUBLE DEFAULT NULL, " + "uuid CHAR(38) UNIQUE" + ")")
 		        .execute();
-
-		// Hibernate's @MapsId on ObsReferenceRange causes it to omit obs_reference_range_id from DDL.
-		// However, it exists in Liquibase and MySQL, and our archiving SQL queries expect it.
-		try {
-			getConnection()
-			        .prepareStatement(
-			            "ALTER TABLE obs_reference_range ADD COLUMN IF NOT EXISTS obs_reference_range_id INT AUTO_INCREMENT")
-			        .execute();
-		} catch (Exception e) {
-			// Ignore if table doesn't exist yet
-		}
 		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the
 		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from
 		//person.creator column, historically this was to allow inserting the very first row. Ideally, this should not
