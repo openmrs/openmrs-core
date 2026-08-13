@@ -65,7 +65,7 @@ which will tell you what version Maven is using. Refer to the [Maven docs](https
 Install the version control tool [git](https://git-scm.com/) and clone this repository with
 
 ```bash
-git clone https://github.com/openmrs/openmrs-core.git
+git clone https://github.com/biruksolomon/openmrs-core.git
 ```
 
 ### Build Command
