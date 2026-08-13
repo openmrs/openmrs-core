@@ -9,7 +9,13 @@
  */
 package org.openmrs.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +25,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -34,6 +42,12 @@ public class ConfigUtilTest extends BaseContextSensitiveTest {
 	@Autowired
 	@Qualifier("adminService")
 	AdministrationService administrationService;
+
+	@Autowired
+	ApplicationContext applicationContext;
+
+	@Autowired
+	ConfigUtil configUtil;
 
 	static {
 		System.setProperty("inRuntimeAndSystem", "system-property-value");
@@ -82,6 +96,55 @@ public class ConfigUtilTest extends BaseContextSensitiveTest {
 		GlobalProperty p = administrationService.getGlobalPropertyObject("mail.user");
 		administrationService.purgeGlobalProperty(p);
 		assertThat(ConfigUtil.getGlobalProperty("mail.user"), nullValue());
+	}
+
+	@Test
+	public void shouldNotCacheMissingPropertiesPermanently() {
+		assertThat(ConfigUtil.getGlobalProperty("module.new.property"), nullValue());
+		administrationService.executeSQL(
+		    "INSERT INTO global_property (property, property_value) VALUES ('module.new.property', 'created-later')", false);
+		Context.flushSession();
+		Context.clearSession();
+		assertThat(ConfigUtil.getGlobalProperty("module.new.property"), is("created-later"));
+	}
+
+	@Test
+	public void shouldClearCacheOnContextRefresh() {
+		assertThat(ConfigUtil.getGlobalProperty("mail.user"), is("user1@test.com"));
+		administrationService.executeSQL(
+		    "UPDATE global_property SET property_value = 'refreshed-value' WHERE property = 'mail.user'", false);
+		Context.flushSession();
+		Context.clearSession();
+		assertThat(ConfigUtil.getGlobalProperty("mail.user"), is("user1@test.com"));
+		configUtil.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
+		assertThat(ConfigUtil.getGlobalProperty("mail.user"), is("refreshed-value"));
+	}
+
+	@Test
+	public void shouldNotCorruptCacheUnderConcurrentAccess() throws Exception {
+		ConfigUtil.getGlobalProperty("mail.user");
+		ExecutorService executor = Executors.newFixedThreadPool(8);
+		List<Callable<Void>> tasks = new ArrayList<>();
+		for (int i = 0; i < 8; i++) {
+			tasks.add(() -> {
+				for (int j = 0; j < 200; j++) {
+					ConfigUtil.getGlobalProperty("mail.user");
+					configUtil.globalPropertyChanged(new GlobalProperty("mail.user", "user" + j + "@test.com"));
+					configUtil.globalPropertyChanged(new GlobalProperty("mail.password", "pass" + j));
+					configUtil.globalPropertyDeleted("mail.password");
+				}
+				return null;
+			});
+		}
+		try {
+			List<Future<Void>> results = executor.invokeAll(tasks);
+			for (Future<Void> result : results) {
+				result.get();
+			}
+		} finally {
+			executor.shutdownNow();
+		}
+		assertTrue(ConfigUtil.getGlobalProperty("mail.user").matches("user\\d+@test\\.com"));
 	}
 
 	@Test

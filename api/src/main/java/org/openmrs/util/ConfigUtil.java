@@ -9,35 +9,51 @@
  */
 package org.openmrs.util;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 /**
  * A utility class for working with configuration properties
  */
-public class ConfigUtil implements GlobalPropertyListener {
+public class ConfigUtil implements GlobalPropertyListener, ApplicationListener<ContextRefreshedEvent> {
 
 	/**
 	 * Cache of global property key/value pairs to enable lookups that do not require accessing the
-	 * service each time
+	 * service each time. Uses a concurrent map so that concurrent reads and updates from the
+	 * {@link GlobalPropertyListener} callbacks cannot corrupt it. Missing properties are deliberately
+	 * not cached so that a property created after the first read is picked up rather than being pinned
+	 * to null.
 	 */
-	private static final Map<String, String> globalPropertyCache = new HashMap<>();
+	private static final Map<String, String> globalPropertyCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Gets the value of the given OpenMRS global property
 	 */
 	public static String getGlobalProperty(String propertyName) {
-		if (globalPropertyCache.containsKey(propertyName)) {
-			return globalPropertyCache.get(propertyName);
+		String cachedValue = globalPropertyCache.get(propertyName);
+		if (cachedValue != null) {
+			return cachedValue;
 		}
 		String value = Context.getAdministrationService().getGlobalProperty(propertyName);
-		globalPropertyCache.put(propertyName, value);
+		if (value != null) {
+			globalPropertyCache.putIfAbsent(propertyName, value);
+		}
 		return value;
+	}
+
+	/**
+	 * Clears the cache of global property values. Invoked on context refresh via
+	 * {@link #onApplicationEvent} so that cached values cannot outlive the context that populated them.
+	 */
+	public static void clearGlobalPropertyCache() {
+		globalPropertyCache.clear();
 	}
 
 	/**
@@ -118,7 +134,11 @@ public class ConfigUtil implements GlobalPropertyListener {
 
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		globalPropertyCache.put(newValue.getProperty(), newValue.getPropertyValue());
+		if (newValue.getPropertyValue() == null) {
+			globalPropertyCache.remove(newValue.getProperty());
+		} else {
+			globalPropertyCache.put(newValue.getProperty(), newValue.getPropertyValue());
+		}
 	}
 
 	@Override
@@ -129,5 +149,10 @@ public class ConfigUtil implements GlobalPropertyListener {
 	@Override
 	public boolean supportsPropertyName(String propertyName) {
 		return true;
+	}
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		clearGlobalPropertyCache();
 	}
 }
