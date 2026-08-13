@@ -867,7 +867,6 @@ public class HibernatePatientDAO implements PatientDAO {
 				b.should(f.simpleQueryString().field("identifierAnywhere").matching(query));
 			}
 		}).toPredicate();
-
 	}
 
 	private List<Integer> getIdentifierTypeIdsByName(String name) {
