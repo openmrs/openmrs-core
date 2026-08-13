@@ -16,8 +16,6 @@ The following dependencies are licensed under the [Apache License, Version 2.0](
 
 - Apache Commons BeanUtils (`commons-beanutils:commons-beanutils`)
 - Apache Commons Collections (`commons-collections:commons-collections`)
-- Apache Commons FileUpload (`commons-fileupload:commons-fileupload`)
-- Apache Commons FileUpload2 (`org.apache.commons:commons-fileupload2-jakarta-servlet6`)
 - Apache Commons IO (`commons-io:commons-io`)
 - Apache Commons Lang (`org.apache.commons:commons-lang3`)
 - Apache Commons Validator (`commons-validator:commons-validator`)
