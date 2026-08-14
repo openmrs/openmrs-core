@@ -44,7 +44,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.VoidHandler;
 import org.openmrs.api.impl.ObsArchiveHelper;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -308,14 +307,9 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		}
 		if (this.getEncounterId() != null) {
 			try {
-				String lastProcessedId = Context.getAdministrationService()
-				        .getGlobalProperty(OpenmrsConstants.GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID);
-				if (lastProcessedId != null && !lastProcessedId.trim().isEmpty()) {
-					ObsArchiveHelper archiveHelper = Context.getRegisteredComponent("obsArchiveHelper",
-					    ObsArchiveHelper.class);
-					if (archiveHelper != null) {
-						ret.addAll(archiveHelper.getArchivedObsByEncounterId(this.getEncounterId()));
-					}
+				ObsArchiveHelper archiveHelper = Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class);
+				if (archiveHelper != null) {
+					ret.addAll(archiveHelper.getArchivedObsByEncounterId(this.getEncounterId()));
 				}
 			} catch (APIException | DataAccessException e) {
 				// archive table may not exist yet or context not available, degrade gracefully
