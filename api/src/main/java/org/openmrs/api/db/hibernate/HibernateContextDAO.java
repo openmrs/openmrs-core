@@ -80,6 +80,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Autowired
 	private SearchSessionFactory searchSessionFactory;
 	
+	@Autowired
 	private UserDAO userDao;
 	@Autowired
 	@Lazy
@@ -206,14 +207,15 @@ public class HibernateContextDAO implements ContextDAO {
 
 				// Lazy rehash: if password is legacy, upgrade to Argon2id transparently
                 if (Security.isLegacyHash(passwordOnRecord)) {
-	            	try {
-		                self.upgradePasswordHash(candidateUser, password, saltOnRecord);	                }
-	                catch (Exception e) {
-		                log.error("Failed to upgrade password hash for user {}: {}",
-			                candidateUser.getUsername(), e.getMessage());
-		        // login still succeeds — upgrade failure is non-fatal
-	                }
-                }
+					try {
+						self.upgradePasswordHash(candidateUser, password, saltOnRecord);
+					}
+					catch (Exception e) {
+						log.error("Failed to upgrade password hash for user {}: {}",
+							candidateUser.getUsername(), e);
+						// login still succeeds — upgrade failure is non-fatal
+					}
+				}
 
 				// skip out of the method early (instead of throwing the exception)
 				// to indicate that this is the valid user

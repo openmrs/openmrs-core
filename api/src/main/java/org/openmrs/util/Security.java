@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -42,6 +43,8 @@ public class Security {
 	private static final Logger log = LoggerFactory.getLogger(Security.class);
 	
 	private static final Random RANDOM = new SecureRandom();
+
+	private static final Pattern HEX_PATTERN = Pattern.compile("[a-f0-9]+");
 
 	private Security() {
 	}
@@ -72,12 +75,14 @@ public class Security {
 	}
 
 	public static boolean isLegacyHash(String storedHash) {
-	    if (storedHash == null) return false;
+	    if (storedHash == null) {
+			return false;
+		}
 	    // SHA-512 → exactly 128 lowercase hex characters
 	    // SHA-1 correct → exactly 40 hex chars
 	    // SHA-1 buggy   → fewer than 40 hex chars (ticket #1178 leading-zero-drop bug)
 	    return (storedHash.length() == 128 || storedHash.length() <= 40)
-		    && storedHash.matches("[a-f0-9]+");
+		    && HEX_PATTERN.matcher(storedHash).matches();
 	}
 
 	/**
