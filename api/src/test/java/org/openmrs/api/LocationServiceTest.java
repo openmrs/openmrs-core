@@ -1448,7 +1448,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldLoadLocationParentLazily() throws Exception {
+	public void getLocation_shouldLoadLocationParentLazily() throws Exception {
 		LocationService ls = Context.getLocationService();
 		Location child = new Location();
 		child.setName("Child");
