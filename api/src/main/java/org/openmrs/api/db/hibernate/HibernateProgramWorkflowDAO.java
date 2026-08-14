@@ -16,10 +16,15 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import org.apache.commons.lang3.StringUtils;
 
 import org.hibernate.Session;
@@ -487,25 +492,94 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		}
 		String commaSeperatedPatientIds = StringUtils.join(patientIds, ",");
 		List<Object> list = sessionFactory.getCurrentSession().createSQLQuery(
-				"SELECT p.patient_id as person_id, " +
-						" concat('{',group_concat(DISTINCT (coalesce(concat('\"',ppt.name,'\":\"', COALESCE (cn.name, ppa.value_reference),'\"'))) SEPARATOR ','),'}') AS patientProgramAttributeValue  " +
+				"SELECT p.patient_id as person_id, ppt.name as attributeName, " +
+						" ppa.value_reference as attributeValue, ppt.datatype as attributeDatatype " +
 						" from patient p " +
 						" join patient_program pp on p.patient_id = pp.patient_id and p.patient_id in (" + commaSeperatedPatientIds + ")" +
-						" join patient_program_attribute ppa on pp.patient_program_id = ppa.patient_program_id and ppa.voided=0" +
-						" join program_attribute_type ppt on ppa.attribute_type_id = ppt.program_attribute_type_id and ppt.name = :attributeName "+
-						" LEFT OUTER JOIN concept_name cn on ppa.value_reference = cn.concept_id and cn.concept_name_type= 'FULLY_SPECIFIED' and cn.voided=0 and ppt.datatype like '%ConceptDataType%'" +
-						" group by p.patient_id")
+						" join patient_program_attribute ppa on pp.patient_program_id = ppa.patient_program_id and ppa.voided = false" +
+						" join program_attribute_type ppt on ppa.attribute_type_id = ppt.program_attribute_type_id and ppt.name = :attributeName " +
+						" order by 1, 2, 3")
 				.addScalar("person_id", StandardBasicTypes.INTEGER)
-				.addScalar("patientProgramAttributeValue", StandardBasicTypes.STRING)
+				.addScalar("attributeName", StandardBasicTypes.STRING)
+				.addScalar("attributeValue", StandardBasicTypes.STRING)
+				.addScalar("attributeDatatype", StandardBasicTypes.STRING)
 				.setParameter("attributeName", attributeName)
 				.list();
 
+		Map<Integer, String> conceptNames = resolveConceptNames(list);
+
+		// LinkedHashSet reproduces group_concat(DISTINCT ...): de-duplicated, insertion-ordered. The
+		// query orders its rows so the rendered JSON is identical across database engines.
+		Map<Integer, Set<String>> pairsByPatient = new LinkedHashMap<>();
+		JsonStringEncoder encoder = JsonStringEncoder.getInstance();
 		for (Object o : list) {
-			Object[] arr = (Object[]) o;
-			patientProgramAttributes.put(arr[0], arr[1]);
+			Object[] row = (Object[]) o;
+			String value = (String) row[2];
+			if (value == null) {
+				// concat() yields NULL for a NULL value and group_concat skipped those rows
+				continue;
+			}
+			Integer conceptId = asConceptId(value, (String) row[3]);
+			if (conceptId != null && conceptNames.containsKey(conceptId)) {
+				value = conceptNames.get(conceptId);
+			}
+			String pair = "\"" + new String(encoder.quoteAsString((String) row[1])) + "\":\""
+					+ new String(encoder.quoteAsString(value)) + "\"";
+			pairsByPatient.computeIfAbsent((Integer) row[0], k -> new LinkedHashSet<>()).add(pair);
+		}
+
+		for (Map.Entry<Integer, Set<String>> entry : pairsByPatient.entrySet()) {
+			patientProgramAttributes.put(entry.getKey(), "{" + String.join(",", entry.getValue()) + "}");
 		}
 
 		return patientProgramAttributes;
+	}
 
+	/**
+	 * @return the value parsed as a concept id, or null when the attribute is not concept-coded or the
+	 *         stored value is not numeric
+	 */
+	private Integer asConceptId(String value, String datatype) {
+		if (datatype == null || !datatype.contains("ConceptDataType")) {
+			return null;
+		}
+		try {
+			return Integer.valueOf(value.trim());
+		}
+		catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	private Map<Integer, String> resolveConceptNames(List<Object> rows) {
+		Set<Integer> conceptIds = new LinkedHashSet<>();
+		for (Object o : rows) {
+			Object[] row = (Object[]) o;
+			if (row[2] != null) {
+				Integer conceptId = asConceptId((String) row[2], (String) row[3]);
+				if (conceptId != null) {
+					conceptIds.add(conceptId);
+				}
+			}
+		}
+		if (conceptIds.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		List<Object> names = sessionFactory.getCurrentSession().createSQLQuery(
+				"SELECT cn.concept_id as conceptId, cn.name as conceptName from concept_name cn " +
+						" where cn.concept_id in (:conceptIds) and cn.concept_name_type = 'FULLY_SPECIFIED'" +
+						" and cn.voided = false")
+				.addScalar("conceptId", StandardBasicTypes.INTEGER)
+				.addScalar("conceptName", StandardBasicTypes.STRING)
+				.setParameterList("conceptIds", conceptIds)
+				.list();
+
+		Map<Integer, String> conceptNames = new HashMap<>();
+		for (Object o : names) {
+			Object[] row = (Object[]) o;
+			conceptNames.put((Integer) row[0], (String) row[1]);
+		}
+		return conceptNames;
 	}
 }
