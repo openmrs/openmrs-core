@@ -11,6 +11,7 @@ package org.openmrs;
 
 import org.hibernate.envers.Audited;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,6 +28,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "provider_role")
 @Audited
+@AttributeOverride(name = "description", column = @Column(name = "description", length = 1000))
 public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
 
 	private static final long serialVersionUID = 1L;

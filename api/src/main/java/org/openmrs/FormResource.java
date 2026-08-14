@@ -32,7 +32,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 
 /**
  * A FormResource is meant as a way for modules to add arbitrary information to
@@ -72,21 +71,18 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	@Column(name = "name", length = 255, nullable = true)
 	private String name;
 
-	@Lob
 	@Column(name = "value_reference", length = 65535, nullable = true)
 	private String valueReference;
 
 	@Column(name = "datatype", length = 255)
 	private String datatypeClassname;
 
-	@Lob
 	@Column(name = "datatype_config", length = 65535)
 	private String datatypeConfig;
 
 	@Column(name = "preferred_handler", length = 255)
 	private String preferredHandlerClassname;
 
-	@Lob
 	@Column(name = "handler_config", length = 65535)
 	private String handlerConfig;
 	

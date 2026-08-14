@@ -12,7 +12,6 @@ package org.openmrs;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import java.util.Date;
@@ -42,7 +41,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	private String name;
 	
 	@Column(name = "description", length = 255)
-	@Lob
 	private String description;
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)

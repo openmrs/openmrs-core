@@ -43,6 +43,7 @@ import java.util.Set;
 @Entity
 @Table(name = "order_type")
 @Audited
+@AttributeOverride(name = "description", column = @Column(name = "description", length = 65535, columnDefinition = "text"))
 public class OrderType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 23232L;

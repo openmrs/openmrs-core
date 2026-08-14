@@ -19,7 +19,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.Table;
 
 /**
@@ -48,8 +47,7 @@ public class HL7InError extends HL7QueueItem {
 	@Column(name = "error", nullable = false)
 	private String error;
 	
-	@Column(name = "error_details", columnDefinition = "mediumtext")
-	@Lob
+	@Column(name = "error_details", columnDefinition = "mediumtext", length = 16777215)
 	private String errorDetails;
 	
 	/**

@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -32,6 +33,7 @@ import org.openmrs.util.OpenmrsUtil;
 @Entity
 @Table(name = "person_attribute_type")
 @Audited
+@AttributeOverride(name = "description", column = @Column(name = "description", length = 65535, columnDefinition = "text"))
 public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Comparable<PersonAttributeType> {
 	
 	public static final long serialVersionUID = 2112313431211L;

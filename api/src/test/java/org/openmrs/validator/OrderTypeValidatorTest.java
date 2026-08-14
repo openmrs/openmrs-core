@@ -239,7 +239,9 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		assertTrue(errors.hasFieldErrors("name"));
 		assertTrue(errors.hasFieldErrors("javaClassName"));
-		assertTrue(errors.hasFieldErrors("description"));
+		// description maps to a TEXT column (65535) rather than the 255 the other fields use, so a
+		// string this length is valid and must not be rejected
+		assertFalse(errors.hasFieldErrors("description"));
 		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,6 +28,7 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(name = "visit_type")
 @Audited
+@AttributeOverride(name = "description", column = @Column(name = "description", length = 1024))
 public class VisitType extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;

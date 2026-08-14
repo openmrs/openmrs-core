@@ -16,7 +16,6 @@ import org.openmrs.BaseOpenmrsObject;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
@@ -39,8 +38,7 @@ public abstract class HL7QueueItem extends BaseOpenmrsObject {
 	@Column(name = "hl7_source_key", length = 1024)
 	private String hl7SourceKey;
 	
-	@Column(name = "hl7_data", nullable = false,  columnDefinition = "text")
-	@Lob
+	@Column(name = "hl7_data", nullable = false,  columnDefinition = "text", length = 65535)
 	private String hl7Data;
 
 	@Column(name = "date_created", nullable = false, length = 19)

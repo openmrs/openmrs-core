@@ -10,7 +10,6 @@
 package org.openmrs.attribute;
 
 import javax.persistence.Column;
-import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
 
 import org.hibernate.envers.Audited;
@@ -36,14 +35,12 @@ public abstract class BaseAttributeType<OwningType extends Customizable<?>> exte
 	private String datatypeClassname;
 	
 	@Column(name = "datatype_config", length = 65535 )
-	@Lob
 	private String datatypeConfig;
 	
 	@Column(name = "preferred_handler", length = 255)
 	private String preferredHandlerClassname;
 	
 	@Column(name = "handler_config", length = 65535 )
-	@Lob
 	private String handlerConfig;
 	
 	/**
