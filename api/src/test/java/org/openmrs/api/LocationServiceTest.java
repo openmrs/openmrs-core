@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -1402,6 +1403,22 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, result.size());
 		assertTrue(result.contains(ls.getLocation(4)));
 		assertTrue(result.contains(ls.getLocation(7)));
+	}
+
+	@Test
+	public void getLocation_shouldLoadLocationParentLazily() throws Exception {
+		LocationService ls = Context.getLocationService();
+		Location child = new Location();
+		child.setName("Child");
+		Location parent = ls.getLocation(1);
+		child.setParentLocation(parent);
+		ls.saveLocation(child);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		Location fetchedChild = ls.getLocation(child.getId());
+		assertFalse(Hibernate.isInitialized(fetchedChild.getParentLocation()), "Parent Location should be loaded lazily");
 	}
 
 }

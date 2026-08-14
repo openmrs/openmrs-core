@@ -21,6 +21,7 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -65,7 +66,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "java_class_name", nullable = false)
 	private String javaClassName;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent")
 	private OrderType parent;
 	
