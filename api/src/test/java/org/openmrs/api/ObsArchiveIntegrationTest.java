@@ -164,7 +164,11 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			            + "value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, "
 			            + "date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, "
 			            + "form_namespace_and_path, status, interpretation FROM obs_archive a "
-			            + "WHERE NOT EXISTS (SELECT 1 FROM obs o WHERE o.obs_id = a.obs_id)");
+			            + "WHERE NOT EXISTS (SELECT 1 FROM obs o WHERE o.obs_id = a.obs_id) ORDER BY obs_id ASC");
+		} catch (DataAccessException e) {
+			// Best-effort cleanup
+		}
+		try {
 			jdbcTemplate.execute("DELETE FROM obs_reference_range_archive");
 			jdbcTemplate.execute("DELETE FROM obs_archive");
 		} catch (DataAccessException e) {
@@ -788,6 +792,11 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		assertEquals(originalLowAbsolute, restoredObs.getReferenceRange().getLowAbsolute(),
 		    "Restored obs should retain the exact low_absolute");
 		assertEquals(originalUuid, restoredObs.getReferenceRange().getUuid(), "Restored obs should retain the exact uuid");
+
+		Integer directDbId = jdbcTemplate.queryForObject(
+		    "SELECT obs_reference_range_id FROM obs_reference_range WHERE obs_id = ?", Integer.class, testObsId);
+		assertEquals(originalRangeId, directDbId,
+		    "Restored obs_reference_range_id should be properly persisted in the DB column");
 	}
 
 	@Test
@@ -803,6 +812,8 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		obsService.saveObs(parent, "saving parent with child");
 		Integer parentId = parent.getObsId();
 		Integer childId = child.getObsId();
+		createdObsIds.add(parentId);
+		createdObsIds.add(childId);
 
 		obsService.voidObs(parent, "voiding parent");
 		Context.flushSession();
@@ -845,6 +856,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		Obs obs2 = createSingleObs(15.0);
 		obs2.setConcept(Context.getConceptService().getConcept(5497));
 		obs2 = obsService.saveObs(obs2, "different concept");
+		createdObsIds.add(obs2.getObsId());
 
 		Integer personId = obs1.getPersonId();
 		Integer conceptId1 = obs1.getConcept().getConceptId();
