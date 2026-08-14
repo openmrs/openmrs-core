@@ -9,7 +9,9 @@
  */
 package org.openmrs.util;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -22,7 +24,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalTime;
 import org.openmrs.Concept;
 import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.Obs;
@@ -75,9 +76,18 @@ public class ConceptReferenceRangeUtility {
 	        .forPropertyAccessors(new MapAccessor(), DataBindingPropertyAccessor.forReadOnlyAccess())
 	        .withMethodResolvers(DataBindingMethodResolver.forInstanceMethodInvocation()).build();
 
-	private final CriteriaFunctions functions = new CriteriaFunctions();
+	private final Clock clock;
+
+	private final CriteriaFunctions functions;
 
 	public ConceptReferenceRangeUtility() {
+		this(Clock.systemDefaultZone());
+
+	}
+
+	ConceptReferenceRangeUtility(Clock clock) {
+		this.clock = clock;
+		this.functions = new CriteriaFunctions(clock);
 	}
 
 	/**
@@ -164,6 +174,12 @@ public class ConceptReferenceRangeUtility {
 
 		private final long NULL_DATE_RETURN_VALUE = -1;
 
+		private final Clock clock;
+
+		CriteriaFunctions(Clock clock) {
+			this.clock = clock;
+		}
+
 		/**
 		 * Gets the latest Obs by concept.
 		 *
@@ -195,7 +211,7 @@ public class ConceptReferenceRangeUtility {
 		 * @return the hour of the day in 24hr format (e.g. 14 to mean 2pm)
 		 */
 		public int getCurrentHour() {
-			return LocalTime.now().getHourOfDay();
+			return LocalTime.now(clock).getHour();
 		}
 
 		/**
