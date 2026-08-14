@@ -73,3 +73,29 @@ jobs:
           CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
         run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+
+
+  # Test core against supported databases
+  database:
+    strategy:
+      # each db is independent
+      fail-fast: false
+      matrix:
+        database:
+          - mysql
+          - mariadb
+          - postgres
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: 'temurin'
+          java-version: 8
+          cache: 'maven'
+      - name: Install dependencies
+        run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+      - name: Run API tests against ${{ matrix.database }}
+        run: mvn -pl api test -Ddatabase=${{ matrix.database }} -DuseInMemoryDatabase=false --batch-mode --file pom.xml
