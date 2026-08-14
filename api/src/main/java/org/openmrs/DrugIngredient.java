@@ -14,6 +14,7 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -45,7 +46,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	private Double strength;
 	
 	@JoinColumn(name = "units")
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Concept units;
 	
 	// Constructors
