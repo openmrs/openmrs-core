@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
@@ -74,6 +75,11 @@ public class ConfigUtilTest extends BaseContextSensitiveTest {
 		administrationService.setGlobalProperty("inGlobalOnly", "global-property-value");
 	}
 
+	@AfterEach
+	public void tearDownGlobalPropertyCache() {
+		ConfigUtil.clearGlobalPropertyCache();
+	}
+
 	@Test
 	public void shouldGetGlobalProperty() {
 		assertThat(ConfigUtil.getGlobalProperty("mail.user"), is("user1@test.com"));
@@ -99,13 +105,25 @@ public class ConfigUtilTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldNotCacheMissingPropertiesPermanently() {
+	public void shouldPickUpGlobalPropertyCreatedAfterMiss() {
 		assertThat(ConfigUtil.getGlobalProperty("module.new.property"), nullValue());
+		administrationService.setGlobalProperty("module.new.property", "created-later");
+		assertThat(ConfigUtil.getGlobalProperty("module.new.property"), is("created-later"));
+	}
+
+	@Test
+	public void shouldCacheMissingGlobalPropertyUntilChanged() {
+		assertThat(ConfigUtil.getGlobalProperty("module.still.missing"), nullValue());
+		// a change made behind the listener's back stays masked by the recorded miss...
 		administrationService.executeSQL(
-		    "INSERT INTO global_property (property, property_value) VALUES ('module.new.property', 'created-later')", false);
+		    "INSERT INTO global_property (property, property_value) VALUES ('module.still.missing', 'appears-later')",
+		    false);
 		Context.flushSession();
 		Context.clearSession();
-		assertThat(ConfigUtil.getGlobalProperty("module.new.property"), is("created-later"));
+		assertThat(ConfigUtil.getGlobalProperty("module.still.missing"), nullValue());
+		// ...until the context refresh resets the miss cache
+		configUtil.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
+		assertThat(ConfigUtil.getGlobalProperty("module.still.missing"), is("appears-later"));
 	}
 
 	@Test
@@ -123,12 +141,14 @@ public class ConfigUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldNotCorruptCacheUnderConcurrentAccess() throws Exception {
 		ConfigUtil.getGlobalProperty("mail.user");
+		ConfigUtil.getGlobalProperty("module.nonexistent");
 		ExecutorService executor = Executors.newFixedThreadPool(8);
 		List<Callable<Void>> tasks = new ArrayList<>();
 		for (int i = 0; i < 8; i++) {
 			tasks.add(() -> {
 				for (int j = 0; j < 200; j++) {
 					ConfigUtil.getGlobalProperty("mail.user");
+					ConfigUtil.getGlobalProperty("module.nonexistent");
 					configUtil.globalPropertyChanged(new GlobalProperty("mail.user", "user" + j + "@test.com"));
 					configUtil.globalPropertyChanged(new GlobalProperty("mail.password", "pass" + j));
 					configUtil.globalPropertyDeleted("mail.password");

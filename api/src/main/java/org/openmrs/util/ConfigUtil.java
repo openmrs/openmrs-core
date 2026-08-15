@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,17 +27,25 @@ public class ConfigUtil implements GlobalPropertyListener, ApplicationListener<C
 
 	/**
 	 * Cache of global property key/value pairs to enable lookups that do not require accessing the
-	 * service each time. Uses a concurrent map so that concurrent reads and updates from the
-	 * {@link GlobalPropertyListener} callbacks cannot corrupt it. Missing properties are deliberately
-	 * not cached so that a property created after the first read is picked up rather than being pinned
-	 * to null.
+	 * service each time.
 	 */
 	private static final Map<String, String> globalPropertyCache = new ConcurrentHashMap<>();
+
+	/**
+	 * Tracks global property lookups that came back empty, mirroring {@link #globalPropertyCache} for
+	 * cache misses so that a genuinely absent property is not re-queried on every read. Cleared
+	 * together with {@link #globalPropertyCache} when the property changes, is deleted, or when the
+	 * context is refreshed.
+	 */
+	private static final Set<String> missedGlobalProperties = ConcurrentHashMap.newKeySet();
 
 	/**
 	 * Gets the value of the given OpenMRS global property
 	 */
 	public static String getGlobalProperty(String propertyName) {
+		if (missedGlobalProperties.contains(propertyName)) {
+			return null;
+		}
 		String cachedValue = globalPropertyCache.get(propertyName);
 		if (cachedValue != null) {
 			return cachedValue;
@@ -44,16 +53,18 @@ public class ConfigUtil implements GlobalPropertyListener, ApplicationListener<C
 		String value = Context.getAdministrationService().getGlobalProperty(propertyName);
 		if (value != null) {
 			globalPropertyCache.putIfAbsent(propertyName, value);
+		} else {
+			missedGlobalProperties.add(propertyName);
 		}
 		return value;
 	}
 
 	/**
-	 * Clears the cache of global property values. Invoked on context refresh via
-	 * {@link #onApplicationEvent} so that cached values cannot outlive the context that populated them.
+	 * Clears the cached global property values and recorded cache misses.
 	 */
-	public static void clearGlobalPropertyCache() {
+	static void clearGlobalPropertyCache() {
 		globalPropertyCache.clear();
+		missedGlobalProperties.clear();
 	}
 
 	/**
@@ -134,16 +145,19 @@ public class ConfigUtil implements GlobalPropertyListener, ApplicationListener<C
 
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
+		String property = newValue.getProperty();
 		if (newValue.getPropertyValue() == null) {
-			globalPropertyCache.remove(newValue.getProperty());
+			globalPropertyCache.remove(property);
 		} else {
-			globalPropertyCache.put(newValue.getProperty(), newValue.getPropertyValue());
+			globalPropertyCache.put(property, newValue.getPropertyValue());
 		}
+		missedGlobalProperties.remove(property);
 	}
 
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
 		globalPropertyCache.remove(propertyName);
+		missedGlobalProperties.add(propertyName);
 	}
 
 	@Override
