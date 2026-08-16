@@ -41,7 +41,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
  * Please see {@link SchedulerConfig} for how it is configured and ScheduledWithLockTest.TestTask
  * for usage.
  *
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

@@ -90,6 +90,15 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	private PersonAttributeHelper personAttributeHelper;
 
 	/**
+	 * Restricts search-index rebuilds to the entity types patient searches actually query, instead of
+	 * rebuilding every indexed type on each test.
+	 */
+	@Override
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { PersonName.class, PersonAttribute.class, PatientIdentifier.class };
+	}
+
+	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
 	 *

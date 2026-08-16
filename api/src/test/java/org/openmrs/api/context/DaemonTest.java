@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.context;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
@@ -49,7 +50,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	@Test
 	public void executeScheduledTask_shouldNotBeCalledFromOtherMethodsOtherThanTimerSchedulerTask() throws Throwable {
 		try {
-			Daemon.executeScheduledTaskAsUser("", () -> {});
+			Daemon.executeScheduledTaskAsUser("", () -> {}, null);
 			fail("Should not be here, an exception should have been thrown in the line above");
 		} catch (APIException e) {
 			assertThat(e.getMessage(),
@@ -64,9 +65,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		// verify
 
 		// replay
-		APIException exception = assertThrows(APIException.class, () -> Daemon.createUser(new User(), "password", null));
+		APIException exception = assertThrows(APIException.class,
+		    () -> Daemon.createUser(new User(), "password", null, null));
 		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("Context.DAO.only",
-		    new Object[] { this.getClass().getName() }, Locale.ENGLISH)));
+		    new Object[] { "an unauthorized caller" }, Locale.ENGLISH)));
 	}
 
 	@Test
@@ -135,6 +137,29 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		} catch (APIAuthenticationException ex) {
 			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 		}
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldThrowWhenCalledWithoutCallerKey() {
+		assertThrows(APIException.class, () -> Daemon.runNewDaemonTask(() -> {}, null));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldThrowWhenCalledWithAForgedCallerKey() throws Exception {
+		// A CallerKey minted outside Daemon (here via reflection) must be rejected: the guard compares
+		// against the genuine singleton by identity, so a non-null but foreign key does not pass.
+		Constructor<Daemon.CallerKey> constructor = Daemon.CallerKey.class.getDeclaredConstructor();
+		constructor.setAccessible(true);
+		Daemon.CallerKey forgedKey = constructor.newInstance();
+
+		assertThrows(APIException.class, () -> Daemon.runNewDaemonTask(() -> {}, forgedKey));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldRunTheTaskWhenGivenTheGenuineCallerKey() throws Exception {
+		AtomicBoolean wasRun = new AtomicBoolean(false);
+		Daemon.runNewDaemonTask(() -> wasRun.set(true), Daemon.callerKey()).get();
+		assertThat(wasRun.get(), is(true));
 	}
 
 	/**
