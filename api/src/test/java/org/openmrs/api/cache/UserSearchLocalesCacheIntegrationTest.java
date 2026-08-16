@@ -19,7 +19,7 @@ import org.springframework.cache.CacheManager;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ConceptServiceCacheIntegrationTest extends BaseContextSensitiveTest {
+public class UserSearchLocalesCacheIntegrationTest extends BaseContextSensitiveTest {
 
 	private CacheManager cacheManager;
 
@@ -29,16 +29,16 @@ public class ConceptServiceCacheIntegrationTest extends BaseContextSensitiveTest
 	}
 
 	@Test
-	public void conceptIdsByMappingCache_shouldHaveExpectedConfiguration() {
-		Cache cache = cacheManager.getCache("conceptIdsByMapping");
+	public void userSearchLocalesCache_shouldHaveExpectedConfiguration() {
+		Cache cache = cacheManager.getCache("userSearchLocales");
 
-		assertNotNull(cache, "conceptIdsByMapping cache should be configured");
+		assertNotNull(cache, "userSearchLocales cache should be configured");
 
-		// Access the native Infinispan cache to verify its underlying cache configuration.
+		// Verify the underlying Infinispan configuration.
 		org.infinispan.Cache<?, ?> nativeCache = (org.infinispan.Cache<?, ?>) cache.getNativeCache();
 
-		assertEquals(-1L, nativeCache.getCacheConfiguration().expiration().maxIdle());
-		assertEquals(-1L, nativeCache.getCacheConfiguration().expiration().lifespan());
-		assertEquals(10000L, nativeCache.getCacheConfiguration().memory().maxCount());
+		assertEquals(300000L, nativeCache.getCacheConfiguration().expiration().maxIdle());
+		assertEquals(300000L, nativeCache.getCacheConfiguration().expiration().lifespan());
+		assertEquals(500L, nativeCache.getCacheConfiguration().memory().maxCount());
 	}
 }

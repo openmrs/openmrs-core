@@ -43,5 +43,13 @@
 			<memory max-count="10000"/>
 		</invalidation-cache-configuration>
 
+		<invalidation-cache-configuration name="user-search-locales" remote-timeout="20000" statistics="false">
+			<encoding media-type="application/x-java-object"/>
+			<locking concurrency-level="1000" acquire-timeout="15000"/>
+			<transaction mode="NONE"/>
+			<expiration max-idle="300000" lifespan="300000" interval="5000"/>
+			<memory max-count="500"/>
+		</invalidation-cache-configuration>
+
 	</cache-container>
 </infinispan>

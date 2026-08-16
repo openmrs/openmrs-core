@@ -279,6 +279,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#purgeConcept(Concept)
 	 */
 	@Override
+	@CacheEvict(value = CONCEPT_IDS_BY_MAPPING_CACHE_NAME, allEntries = true)
 	public void purgeConcept(Concept concept) throws APIException {
 		checkIfLocked();
 

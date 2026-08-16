@@ -25,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class HibernateCacheIntegrationTest extends BaseContextSensitiveTest {
 
+	private static final long ONE_HOUR = 3600000L;
+
 	private CacheImplementor cacheImplementor;
 
 	@BeforeEach
@@ -36,18 +38,30 @@ public class HibernateCacheIntegrationTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void secondLevelCaches_shouldHaveExpectedConfiguration() {
-		assertCacheConfiguration("org.openmrs.Concept", 10_000);
-		assertCacheConfiguration("org.openmrs.GlobalProperty", 1_000);
-		assertCacheConfiguration("org.openmrs.User", 100);
+		assertCacheConfiguration("org.openmrs.Concept", 10000);
+		assertCacheConfiguration("org.openmrs.GlobalProperty", 1000);
+		assertCacheConfiguration("org.openmrs.User", 10000);
 		assertCacheConfiguration("org.openmrs.Role", 100);
 		assertCacheConfiguration("org.openmrs.Privilege", 500);
-		assertCacheConfiguration("org.openmrs.Person", 100);
-		assertCacheConfiguration("org.openmrs.PersonName", 100);
-		assertCacheConfiguration("org.openmrs.PersonAddress", 100);
-		assertCacheConfiguration("org.openmrs.PersonAttribute", 100);
+		assertCacheConfiguration("org.openmrs.Person", 10000);
+		assertCacheConfiguration("org.openmrs.PersonName", 10000);
+		assertCacheConfiguration("org.openmrs.PersonAddress", 10000);
+		assertCacheConfiguration("org.openmrs.PersonAttribute", 10000);
 		assertCacheConfiguration("org.openmrs.ConceptDatatype", 100);
 		assertCacheConfiguration("org.openmrs.ConceptClass", 100);
-		assertCacheConfiguration("org.openmrs.Location", 100);
+		assertCacheConfiguration("org.openmrs.Location", 10000);
+	}
+
+	@Test
+	public void collectionCaches_shouldHaveExpectedExpiration() {
+		assertCacheExpiration("org.openmrs.Person.names", -1);
+		assertCacheExpiration("org.openmrs.Person.addresses", -1);
+		assertCacheExpiration("org.openmrs.Person.attributes", -1);
+
+		assertCacheExpiration("org.openmrs.User.roles", ONE_HOUR);
+		assertCacheExpiration("org.openmrs.Role.privileges", ONE_HOUR);
+		assertCacheExpiration("org.openmrs.Role.inheritedRoles", ONE_HOUR);
+		assertCacheExpiration("org.openmrs.Role.childRoles", ONE_HOUR);
 	}
 
 	private void assertCacheConfiguration(String regionName, long maxEntries) {
@@ -62,4 +76,17 @@ public class HibernateCacheIntegrationTest extends BaseContextSensitiveTest {
 		assertEquals(-1L, nativeCache.getCacheConfiguration().expiration().lifespan());
 		assertEquals(maxEntries, nativeCache.getCacheConfiguration().memory().maxCount());
 	}
+
+	private void assertCacheExpiration(String regionName, long lifespan) {
+		Region region = cacheImplementor.getRegion(regionName);
+
+		assertNotNull(region, "Cache region should be configured: " + regionName);
+
+		InfinispanBaseRegion infinispanRegion = (InfinispanBaseRegion) region;
+		AdvancedCache nativeCache = infinispanRegion.getCache();
+
+		assertEquals(-1L, nativeCache.getCacheConfiguration().expiration().maxIdle());
+		assertEquals(lifespan, nativeCache.getCacheConfiguration().expiration().lifespan());
+	}
+
 }

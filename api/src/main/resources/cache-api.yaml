@@ -1,6 +1,6 @@
 caches:
     userSearchLocales:
-        configuration: "entity"
+        configuration: "user-search-locales"
     conceptIdsByMapping:
         configuration: "concept-ids-by-mapping"
     serializerWhiteListTypes:

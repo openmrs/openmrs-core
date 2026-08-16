@@ -37,5 +37,12 @@
 			<memory max-count="10000"/>
 		</local-cache-configuration>
 
+		<local-cache-configuration name="user-search-locales" simple-cache="true" statistics="false">
+			<encoding media-type="application/x-java-object"/>
+			<transaction mode="NONE"/>
+			<expiration max-idle="300000" lifespan="300000" interval="5000"/>
+			<memory max-count="500"/>
+		</local-cache-configuration>
+
 	</cache-container>
 </infinispan>
