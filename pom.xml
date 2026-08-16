@@ -94,7 +94,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.5.5</version>
+					<version>3.5.6</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -117,7 +117,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.5.0</version>
+					<version>3.5.1</version>
 					<configuration>
 						<archive>
 							<manifestEntries>
@@ -143,7 +143,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.10.0</version>
+					<version>3.11.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -169,7 +169,7 @@
 				<plugin>
 					<groupId>com.diffplug.spotless</groupId>
 					<artifactId>spotless-maven-plugin</artifactId>
-					<version>3.4.0</version>
+					<version>3.9.0</version>
 					<configuration>
 						<java>
 							<eclipse>
@@ -210,7 +210,7 @@
 				<plugin>
 					<groupId>com.github.spotbugs</groupId>
 					<artifactId>spotbugs-maven-plugin</artifactId>
-					<version>4.9.8.3</version>
+					<version>4.10.3.0</version>
 					<configuration>
 						<excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
 						<effort>Max</effort>
@@ -346,12 +346,12 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.6.0.6792</version>
+					<version>5.7.0.6970</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.14</version>
+					<version>0.8.15</version>
 					<configuration>
 						<includes>
 							<include>org/openmrs/**</include>
@@ -376,9 +376,16 @@
 				<plugin>
 					<groupId>com.mycila</groupId>
 					<artifactId>license-maven-plugin</artifactId>
-					<version>3.0</version>
+					<version>5.1.1</version>
 					<configuration>
 						<header>/org/openmrs/license/license-header.txt</header>
+						<!-- license-maven-plugin 4.x changed the default header style for
+						     .java files from JAVADOC_STYLE (/** */) to SLASHSTAR_STYLE (/* */).
+						     All existing sources use /**, so keep the old style to avoid
+						     flagging every file. Do not remove. -->
+						<mapping>
+							<java>JAVADOC_STYLE</java>
+						</mapping>
 						<includes>
 							<include>**/*.java</include>
 							<include>**/*.txt</include>

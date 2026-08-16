@@ -24,7 +24,7 @@ see https://issues.openmrs.org/browse/TRUNK-
 
   No? -> write tests and add them to this commit `git add . && git commit --amend`
 
-- [ ] I ran `mvn clean package` right before creating this pull request and
+- [ ] I ran `./mvnw clean package` right before creating this pull request and
   added all formatting changes to my commit.
 
   No? -> execute above command

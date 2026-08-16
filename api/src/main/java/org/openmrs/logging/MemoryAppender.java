@@ -11,13 +11,13 @@ package org.openmrs.logging;
 
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.core.Appender;
@@ -32,6 +32,8 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
+import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.ThreadSafeCircularFifoQueue;
 
@@ -39,26 +41,34 @@ import org.openmrs.util.ThreadSafeCircularFifoQueue;
  * This class stores a configurable number lines of the output from the log file.
  * <p/>
  * Note that this class is implemented as a single-buffer-per-appender-name meaning that each
- * appender name can only support a single configuration (the most recent applied)
+ * appender name can only support a single buffer size (the most recently applied)
  */
 @Plugin(name = "Memory", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class MemoryAppender extends AbstractAppender {
 
-	// we store the MemoryAppenders by name, using SoftReferences to allow them to be garbage collected
-	// as an implementation detail, we expect this class to only have a single instance, so our map
-	// is only allocated an initial capacity of 1
-	private static final Map<String, SoftReference<MemoryAppender>> APPENDERS = new HashMap<>(1);
+	// we store the buffers by name, using SoftReferences to allow them to be garbage collected
+	// this is a HashMap as it is only accessed from a synchronized method
+	private static final Map<String, SoftReference<AtomicReference<ThreadSafeCircularFifoQueue<LogEvent>>>> BUFFERS = new HashMap<>(
+	        1);
 
-	private ThreadSafeCircularFifoQueue<LogEvent> buffer;
+	private final AtomicReference<ThreadSafeCircularFifoQueue<LogEvent>> bufferRef;
 
-	private int bufferSize;
+	private final int bufferSize;
+
+	protected MemoryAppender(String name, Filter filter, StringLayout layout, boolean ignoreExceptions,
+	    Property[] properties, AtomicReference<ThreadSafeCircularFifoQueue<LogEvent>> bufferRef) {
+		super(name, filter, layout, ignoreExceptions, properties);
+
+		this.bufferRef = bufferRef;
+		this.bufferSize = bufferRef.get().capacity();
+	}
 
 	protected MemoryAppender(String name, Filter filter, StringLayout layout, boolean ignoreExceptions,
 	    Property[] properties, int bufferSize) {
 		super(name, filter, layout, ignoreExceptions, properties);
 
-		this.buffer = new ThreadSafeCircularFifoQueue<>(bufferSize);
-		this.bufferSize = bufferSize;
+		this.bufferRef = getBufferRef(name, bufferSize);
+		this.bufferSize = bufferRef.get().capacity();
 	}
 
 	public static MemoryAppenderBuilder newBuilder() {
@@ -72,33 +82,18 @@ public class MemoryAppender extends AbstractAppender {
 	        @PluginAttribute(value = "ignoreExceptions", defaultBoolean = true) final boolean ignoreExceptions,
 	        @PluginElement("Filter") final Filter filter, @PluginElement("Layout") final StringLayout layout) {
 		final int theBufferSize = bufferSize <= 0 ? 100 : bufferSize;
-		MemoryAppender appender = null;
-		if (APPENDERS.containsKey(name)) {
-			appender = APPENDERS.get(name).get();
+		AtomicReference<ThreadSafeCircularFifoQueue<LogEvent>> buffer = getBufferRef(name, theBufferSize);
 
-			if (appender != null && appender.bufferSize != theBufferSize) {
-				LogEvent[] oldBuffer = appender.buffer.toArray(new LogEvent[0]);
-				appender.buffer = new ThreadSafeCircularFifoQueue<>(theBufferSize);
-				appender.bufferSize = theBufferSize;
-				appender.buffer.addAll(Arrays.asList(oldBuffer));
-			}
-		}
-
-		if (appender == null) {
-			appender = new MemoryAppender(name, filter, layout, ignoreExceptions, null, theBufferSize);
-			APPENDERS.put(name, new SoftReference<>(appender));
-		}
-
+		MemoryAppender appender = new MemoryAppender(name, filter, layout, ignoreExceptions, null, buffer);
 		if (!appender.isStarted()) {
 			appender.start();
 		}
-
 		return appender;
 	}
 
 	@Override
 	public void append(LogEvent logEvent) {
-		buffer.add(logEvent.toImmutable());
+		bufferRef.get().add(logEvent.toImmutable());
 	}
 
 	public int getBufferSize() {
@@ -106,16 +101,19 @@ public class MemoryAppender extends AbstractAppender {
 	}
 
 	public List<String> getLogLines() {
-		if (buffer == null) {
-			return new ArrayList<>(0);
-		}
-
-		LogEvent[] events = buffer.toArray(new LogEvent[0]);
+		LogEvent[] events = bufferRef.get().toArray(new LogEvent[0]);
 		if (events.length == 0) {
 			return Collections.emptyList();
 		}
 
-		return Arrays.stream(events).filter(Objects::nonNull).map(((StringLayout) getLayout())::toSerializable)
+		Layout<? extends Serializable> layout = getLayout();
+		if (!(layout instanceof StringLayout)) {
+			StatusLogger.getLogger().warn(
+			    "MemoryAppender {} is not configured with a StringLayout; defaulting to standard OpenMRS pattern", this);
+			layout = PatternLayout.newBuilder().setPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
+		}
+
+		return Arrays.stream(events).filter(Objects::nonNull).map(((StringLayout) layout)::toSerializable)
 		        .collect(Collectors.toList());
 	}
 
@@ -123,7 +121,8 @@ public class MemoryAppender extends AbstractAppender {
 
 		private int bufferSize = 100;
 
-		private StringLayout layout;
+		private StringLayout layout = PatternLayout.newBuilder().setPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN)
+		        .build();
 
 		public MemoryAppenderBuilder() {
 			super();
@@ -135,7 +134,7 @@ public class MemoryAppender extends AbstractAppender {
 				throw new IllegalArgumentException("bufferSize must be a positive number or 0");
 			}
 
-			this.bufferSize = bufferSize;
+			this.bufferSize = bufferSize == 0 ? 100 : bufferSize;
 			return asBuilder();
 		}
 
@@ -159,8 +158,43 @@ public class MemoryAppender extends AbstractAppender {
 		}
 
 		public MemoryAppender build() {
-			return new MemoryAppender(getName(), getFilter(), layout, isIgnoreExceptions(), getPropertyArray(), bufferSize);
+			String name = getName();
+			AtomicReference<ThreadSafeCircularFifoQueue<LogEvent>> buffer = getBufferRef(name, bufferSize);
+			return new MemoryAppender(name, getFilter(), layout, isIgnoreExceptions(), getPropertyArray(), buffer);
 		}
+	}
+
+	private static synchronized AtomicReference<ThreadSafeCircularFifoQueue<LogEvent>> getBufferRef(String name,
+	        int bufferSize) {
+		// clean-up
+		BUFFERS.values().removeIf(ref -> ref.get() == null);
+
+		AtomicReference<ThreadSafeCircularFifoQueue<LogEvent>> bufferRef = null;
+		SoftReference<AtomicReference<ThreadSafeCircularFifoQueue<LogEvent>>> ref = BUFFERS.get(name);
+		if (ref != null) {
+			bufferRef = ref.get();
+		}
+
+		if (bufferRef == null) {
+			ThreadSafeCircularFifoQueue<LogEvent> queue = new ThreadSafeCircularFifoQueue<>(bufferSize);
+			bufferRef = new AtomicReference<>(queue);
+			BUFFERS.put(name, new SoftReference<>(bufferRef));
+		} else {
+			ThreadSafeCircularFifoQueue<LogEvent> queue = bufferRef.get();
+			if (queue.capacity() != bufferSize) {
+				ThreadSafeCircularFifoQueue<LogEvent> resized = new ThreadSafeCircularFifoQueue<>(bufferSize);
+				LogEvent[] snapshot = queue.toArray(new LogEvent[0]);
+				// retain up to the bufferSize most recent messages when shrinking, since this is a FIFO queue
+				int messagesToMove = Math.min(snapshot.length, bufferSize);
+				int start = Math.max(0, snapshot.length - messagesToMove);
+				for (int i = start; i < snapshot.length; i++) {
+					resized.add(snapshot[i]);
+				}
+				bufferRef.set(resized);
+			}
+		}
+
+		return bufferRef;
 	}
 
 }

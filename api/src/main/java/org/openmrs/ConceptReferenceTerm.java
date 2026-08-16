@@ -26,6 +26,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -38,6 +39,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
  * @since 1.9
  */
 @Audited
+@BatchSize(size = 25)
 @Entity
 @Table(name = "concept_reference_term")
 @AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true)) })

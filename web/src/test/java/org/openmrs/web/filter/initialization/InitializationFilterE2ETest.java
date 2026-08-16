@@ -44,9 +44,13 @@ class InitializationFilterE2ETest {
 
 	private MockHttpServletResponse response;
 
+	private Properties originalRuntimeProperties;
+
 	/**
 	 * Testable subclass that overrides renderTemplate to capture which template was rendered instead of
-	 * actually invoking Velocity.
+	 * actually invoking Velocity, and stubs startInstallation so the real InitializationCompletion
+	 * background thread (which performs the real setup and overwrites Context.runtimeProperties with
+	 * wizard-defaulted values) doesn't race with subsequent tests in the same JVM.
 	 */
 	static class TestableInitializationFilter extends InitializationFilter {
 
@@ -57,6 +61,11 @@ class InitializationFilterE2ETest {
 		        HttpServletResponse httpResponse) throws IOException {
 			this.lastRenderedTemplate = templateName;
 		}
+
+		@Override
+		protected void startInstallation() {
+			setInstallationStarted(true);
+		}
 	}
 
 	@BeforeEach
@@ -65,13 +74,17 @@ class InitializationFilterE2ETest {
 		filter.wizardModel = new InitializationWizardModel();
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
-		// Clear runtime properties to avoid state leaking from other test classes
+		// Save and clear runtime properties to avoid state leaking from other test classes.
+		// Subsequent context-loading tests in the same JVM rely on these being restored,
+		// since SchedulerConfig.dataSource() reads them at bean-creation time.
+		originalRuntimeProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(new Properties());
 	}
 
 	@AfterEach
 	void cleanup() {
 		InitializationFilter.setInstallationStarted(false);
+		Context.setRuntimeProperties(originalRuntimeProperties);
 	}
 
 	// ========== Language Selection (chooselang.vm) ==========
@@ -816,6 +829,20 @@ class InitializationFilterE2ETest {
 		assertEquals("jdbc:h2:mem:test", filter.wizardModel.databaseConnection);
 		assertEquals("my_openmrs", filter.wizardModel.databaseName);
 		assertTrue(filter.wizardModel.hasCurrentOpenmrsDatabase);
+	}
+
+	@Test
+	void isCurrentDatabase_shouldReturnTrueForMariaDBUrl() {
+		filter.wizardModel.databaseConnection = "jdbc:mariadb://localhost:3306/openmrs";
+		assertTrue(filter.isCurrentDatabase("mariadb"));
+		assertFalse(filter.isCurrentDatabase("mysql"));
+	}
+
+	@Test
+	void isCurrentDatabase_shouldReturnTrueForMySQLUrl() {
+		filter.wizardModel.databaseConnection = "jdbc:mysql://localhost:3306/openmrs";
+		assertTrue(filter.isCurrentDatabase("mysql"));
+		assertFalse(filter.isCurrentDatabase("mariadb"));
 	}
 
 	// ========== goBack via image click (back.x / back.y) ==========

@@ -45,6 +45,15 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	@Autowired
 	private HibernateConceptDAO dao;
 
+	/**
+	 * Restricts search-index rebuilds to the entity types concept searches actually query, instead of
+	 * rebuilding every indexed type on each test.
+	 */
+	@Override
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { ConceptName.class, Drug.class };
+	}
+
 	@BeforeEach
 	public void setUp() {
 		executeDataSet(PROVIDERS_INITIAL_XML);
@@ -120,6 +129,39 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		List<Drug> drugList = dao.getDrugs("VOIDED", concept4, true, true, false, 0, 10);
 		assertEquals(1, drugList.size());
 
+	}
+
+	/**
+	 * When a concept is supplied, the concept-name full-text lookup is skipped (TRUNK-6683), so drugs
+	 * belonging to other concepts whose names match the phrase are not returned - only the supplied
+	 * concept's drugs and drugs whose own name matches.
+	 *
+	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)
+	 */
+	@Test
+	public void getDrugs_shouldNotSearchConceptNamesWhenConceptIsSupplied() {
+		// concept 3 is "COUGH SYRUP"; "ZEBRACONCEPT" only matches the name of concept 20 (drug "Placebo-X"),
+		// never a drug name. With a concept supplied the concept-name lookup must not run, so Placebo-X is absent.
+		Concept concept = dao.getConcept(3);
+
+		List<Drug> drugList = dao.getDrugs("ZEBRACONCEPT", concept, true, true, false, 0, 10);
+
+		assertEquals(1, drugList.size());
+		assertTrue(drugList.stream().noneMatch(drug -> "Placebo-X".equals(drug.getName())));
+	}
+
+	/**
+	 * The concept-name full-text lookup still runs when no concept is supplied, so a phrase that only
+	 * matches a concept name (not any drug name) still returns that concept's drugs.
+	 *
+	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)
+	 */
+	@Test
+	public void getDrugs_shouldSearchConceptNamesWhenNoConceptIsSupplied() {
+		List<Drug> drugList = dao.getDrugs("ZEBRACONCEPT", null, true, true, false, 0, 10);
+
+		assertEquals(1, drugList.size());
+		assertEquals("Placebo-X", drugList.get(0).getName());
 	}
 
 	/**

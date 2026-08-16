@@ -20,7 +20,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
@@ -30,6 +33,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
@@ -75,6 +79,7 @@ import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.search.SearchQueryUnique;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
+import org.openmrs.parameter.ConceptSearchCriteria;
 import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
@@ -96,6 +101,12 @@ import static java.util.stream.Collectors.toList;
 public class HibernateConceptDAO implements ConceptDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(HibernateConceptDAO.class);
+
+	private static final String CONCEPT_REFERENCE_TERM = "conceptReferenceTerm";
+
+	private static final String CONCEPT_SOURCE = "conceptSource";
+
+	private static final String HL7_CODE = "hl7Code";
 
 	private final SessionFactory sessionFactory;
 
@@ -603,7 +614,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		            SearchQueryUnique.newQuery(
 		                ConceptName.class, f -> newConceptNamePredicate(f, name, !searchOnPhrase,
 		                    Collections.singletonList(locale), false, false, classes, null, datatypes, null, null),
-		                "concept.conceptId", ConceptName::getConcept));
+		                "concept.conceptId", this::multiLoadConcepts));
 	}
 
 	private LinkedHashSet<Concept> transformNamesToConcepts(List<ConceptName> names) {
@@ -1144,6 +1155,110 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 
 	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConcepts(ConceptSearchCriteria)
+	 */
+	@Override
+	public List<Concept> getConcepts(ConceptSearchCriteria criteria) {
+		if (criteria == null) {
+			return Collections.emptyList();
+		}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Concept> cq = cb.createQuery(Concept.class);
+		Root<Concept> root = cq.from(Concept.class);
+
+		List<Predicate> orPredicates = new ArrayList<>();
+
+		if (criteria.getUuids() != null && !criteria.getUuids().isEmpty()) {
+			orPredicates.add(root.get("uuid").in(criteria.getUuids()));
+		}
+
+		if (criteria.getConceptIds() != null && !criteria.getConceptIds().isEmpty()) {
+			orPredicates.add(root.get("conceptId").in(criteria.getConceptIds()));
+		}
+
+		if (criteria.getMappings() != null && !criteria.getMappings().isEmpty()) {
+			boolean caseSensitive = Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive();
+			for (String mapping : criteria.getMappings()) {
+				buildMappingExistsPredicate(cq, root, cb, mapping, caseSensitive).ifPresent(orPredicates::add);
+			}
+		}
+
+		if (criteria.getNames() != null && !criteria.getNames().isEmpty()) {
+			boolean caseSensitive = Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive();
+			Locale locale = Context.getLocale();
+			Locale language = new Locale(locale.getLanguage() + "%");
+			for (String name : criteria.getNames()) {
+				orPredicates.add(buildNameExistsPredicate(cq, root, cb, name, caseSensitive, locale, language));
+			}
+		}
+
+		if (orPredicates.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		Predicate combined = cb.or(orPredicates.toArray(new Predicate[0]));
+		if (!criteria.getIncludeRetired()) {
+			combined = cb.and(combined, cb.isFalse(root.get("retired")));
+		}
+		cq.where(combined);
+
+		return session.createQuery(cq).getResultList().stream().distinct().collect(toList());
+	}
+
+	// mapping is assumed to be in the form "source:code"
+	private Optional<Predicate> buildMappingExistsPredicate(CriteriaQuery<Concept> cq, Root<Concept> root,
+	        CriteriaBuilder cb, String mapping, boolean caseSensitive) {
+		int idx = mapping.indexOf(":");
+		if (idx < 0 || idx >= mapping.length() - 1) {
+			return Optional.empty();
+		}
+		String sourceName = mapping.substring(0, idx).trim();
+		String code = mapping.substring(idx + 1).trim();
+		if (sourceName.isEmpty() || code.isEmpty()) {
+			return Optional.empty();
+		}
+
+		Subquery<ConceptMap> sub = cq.subquery(ConceptMap.class);
+		Root<ConceptMap> mapRoot = sub.from(ConceptMap.class);
+		Join<ConceptMap, ConceptReferenceTerm> termJoin = mapRoot.join(CONCEPT_REFERENCE_TERM);
+		Join<ConceptReferenceTerm, ConceptSource> sourceJoin = termJoin.join(CONCEPT_SOURCE);
+
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(cb.equal(mapRoot.get("concept"), root));
+		if (caseSensitive) {
+			predicates.add(cb.equal(cb.lower(termJoin.get("code")), code.toLowerCase()));
+			predicates.add(cb.or(cb.equal(cb.lower(sourceJoin.get("name")), sourceName.toLowerCase()),
+			    cb.equal(cb.lower(sourceJoin.get(HL7_CODE)), sourceName.toLowerCase())));
+		} else {
+			predicates.add(cb.equal(termJoin.get("code"), code));
+			predicates.add(
+			    cb.or(cb.equal(sourceJoin.get("name"), sourceName), cb.equal(sourceJoin.get(HL7_CODE), sourceName)));
+		}
+		sub.select(mapRoot).where(predicates.toArray(new Predicate[0]));
+		return Optional.of(cb.exists(sub));
+	}
+
+	private Predicate buildNameExistsPredicate(CriteriaQuery<Concept> cq, Root<Concept> root, CriteriaBuilder cb,
+	        String name, boolean caseSensitive, Locale locale, Locale language) {
+		Subquery<ConceptName> sub = cq.subquery(ConceptName.class);
+		Root<ConceptName> nameRoot = sub.from(ConceptName.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(cb.equal(nameRoot.get("concept"), root));
+		predicates.add(cb.or(cb.equal(nameRoot.get("locale"), locale),
+		    cb.like(nameRoot.get("locale").as(String.class), language.toString())));
+		if (caseSensitive) {
+			predicates.add(cb.like(cb.lower(nameRoot.get("name")), name.toLowerCase()));
+		} else {
+			predicates.add(cb.equal(nameRoot.get("name"), name));
+		}
+		predicates.add(cb.isFalse(nameRoot.get("voided")));
+		sub.select(nameRoot).where(predicates.toArray(new Predicate[0]));
+		return cb.exists(sub);
+	}
+
+	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptClassByUuid(java.lang.String)
 	 */
 	@Override
@@ -1252,9 +1367,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 		CriteriaQuery<ConceptMap> cq = cb.createQuery(ConceptMap.class);
 
 		Root<ConceptMap> root = cq.from(ConceptMap.class);
-		Join<ConceptMap, ConceptReferenceTerm> conceptReferenceTermJoin = root.join("conceptReferenceTerm");
+		Join<ConceptMap, ConceptReferenceTerm> conceptReferenceTermJoin = root.join(CONCEPT_REFERENCE_TERM);
 
-		cq.where(cb.equal(conceptReferenceTermJoin.get("conceptSource"), conceptSource));
+		cq.where(cb.equal(conceptReferenceTermJoin.get(CONCEPT_SOURCE), conceptSource));
 
 		return session.createQuery(cq).getResultList();
 	}
@@ -1307,7 +1422,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		CriteriaQuery<ConceptSource> cq = cb.createQuery(ConceptSource.class);
 		Root<ConceptSource> root = cq.from(ConceptSource.class);
 
-		cq.where(cb.equal(root.get("hl7Code"), hl7Code));
+		cq.where(cb.equal(root.get(HL7_CODE), hl7Code));
 
 		return session.createQuery(cq).uniqueResult();
 	}
@@ -1464,7 +1579,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		final Collection<Locale> locales = Collections.singletonList(locale == null ? Context.getLocale() : locale);
 
 		final List<Object> conceptIds;
-		if (searchDrugConceptNames) {
+		// If a concept is supplied, skip the relatively expensive concept-name full-text search
+		if (searchDrugConceptNames && concept == null) {
 			SearchSession searchSession = searchSessionFactory.getSearchSession();
 			SearchScope<ConceptName> scope = searchSession.scope(ConceptName.class);
 
@@ -1522,7 +1638,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 		    SearchQueryUnique.newQuery(ConceptName.class,
 		        f -> newConceptNamePredicate(f, phrase, true, locales, false, includeRetired, requireClasses, excludeClasses,
 		            requireDatatypes, excludeDatatypes, answersToConcept),
-		        "concept.conceptId", n -> new ConceptSearchResult(phrase, n.getConcept(), n)),
+		        "concept.conceptId", (List<ConceptName> names) -> {
+			        Map<Integer, Concept> conceptsById = multiLoadConceptsByHit(names);
+			        return names.stream().map(n -> {
+				        Concept concept = conceptsById.get(n.getConcept().getConceptId());
+				        return concept == null ? null : new ConceptSearchResult(phrase, concept, n);
+			        }).filter(Objects::nonNull).collect(Collectors.toList());
+		        }),
 		    start, size);
 	}
 
@@ -1701,7 +1823,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		CriteriaQuery<ConceptReferenceTerm> cq = cb.createQuery(ConceptReferenceTerm.class);
 		Root<ConceptReferenceTerm> root = cq.from(ConceptReferenceTerm.class);
 
-		cq.where(cb.equal(root.get("conceptSource"), conceptSource));
+		cq.where(cb.equal(root.get(CONCEPT_SOURCE), conceptSource));
 
 		return session.createQuery(cq).getResultList();
 	}
@@ -1718,7 +1840,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Root<ConceptReferenceTerm> root = cq.from(ConceptReferenceTerm.class);
 
 		Predicate namePredicate = cb.like(cb.lower(root.get("name")), MatchMode.EXACT.toLowerCasePattern(name));
-		Predicate sourcePredicate = cb.equal(root.get("conceptSource"), conceptSource);
+		Predicate sourcePredicate = cb.equal(root.get(CONCEPT_SOURCE), conceptSource);
 
 		cq.where(cb.and(namePredicate, sourcePredicate));
 
@@ -1771,7 +1893,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(cb.equal(root.get("code"), code));
-		predicates.add(cb.equal(root.get("conceptSource"), conceptSource));
+		predicates.add(cb.equal(root.get(CONCEPT_SOURCE), conceptSource));
 
 		if (!includeRetired) {
 			predicates.add(cb.isFalse(root.get("retired")));
@@ -1844,7 +1966,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		List<Predicate> predicates = new ArrayList<>();
 
 		if (conceptSource != null) {
-			predicates.add(cb.equal(root.get("conceptSource"), conceptSource));
+			predicates.add(cb.equal(root.get(CONCEPT_SOURCE), conceptSource));
 		}
 		if (!includeRetired) {
 			predicates.add(cb.isFalse(root.get("retired")));
@@ -1886,7 +2008,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		CriteriaQuery<Long> conceptMapQuery = cb.createQuery(Long.class);
 		Root<ConceptMap> conceptMapRoot = conceptMapQuery.from(ConceptMap.class);
 		conceptMapQuery.select(cb.count(conceptMapRoot));
-		conceptMapQuery.where(cb.equal(conceptMapRoot.get("conceptReferenceTerm"), term));
+		conceptMapQuery.where(cb.equal(conceptMapRoot.get(CONCEPT_REFERENCE_TERM), term));
 
 		Long conceptMapCount = session.createQuery(conceptMapQuery).uniqueResult();
 		if (conceptMapCount > 0) {
@@ -1953,7 +2075,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return SearchQueryUnique.search(searchSessionFactory,
 		    SearchQueryUnique.newQuery(ConceptName.class,
 		        f -> newConceptNamePredicate(f, name, true, locales, searchExactLocale, false, null, null, null, null, null),
-		        "concept.conceptId", ConceptName::getConcept));
+		        "concept.conceptId", this::multiLoadConcepts));
 	}
 
 	/**
@@ -2119,7 +2241,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Root<Drug> drugRoot = cq.from(Drug.class);
 
 		Join<Drug, DrugReferenceMap> drugReferenceMapJoin = drugRoot.join("drugReferenceMaps");
-		Join<DrugReferenceMap, ConceptReferenceTerm> termJoin = drugReferenceMapJoin.join("conceptReferenceTerm");
+		Join<DrugReferenceMap, ConceptReferenceTerm> termJoin = drugReferenceMapJoin.join(CONCEPT_REFERENCE_TERM);
 		List<Predicate> basePredicates = createSearchDrugByMappingPredicates(cb, drugRoot, drugReferenceMapJoin, termJoin,
 		    code, conceptSource, includeRetired);
 
@@ -2150,7 +2272,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				Root<Drug> drugRoot = cq.from(Drug.class);
 
 				Join<Drug, DrugReferenceMap> drugReferenceMapJoin = drugRoot.join("drugReferenceMaps");
-				Join<DrugReferenceMap, ConceptReferenceTerm> termJoin = drugReferenceMapJoin.join("conceptReferenceTerm");
+				Join<DrugReferenceMap, ConceptReferenceTerm> termJoin = drugReferenceMapJoin.join(CONCEPT_REFERENCE_TERM);
 
 				List<Predicate> basePredicates = createSearchDrugByMappingPredicates(cb, drugRoot, drugReferenceMapJoin,
 				    termJoin, code, conceptSource, true);
@@ -2172,7 +2294,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			Root<Drug> drugRoot = cq.from(Drug.class);
 
 			Join<Drug, DrugReferenceMap> drugReferenceMapJoin = drugRoot.join("drugReferenceMaps");
-			Join<DrugReferenceMap, ConceptReferenceTerm> termJoin = drugReferenceMapJoin.join("conceptReferenceTerm");
+			Join<DrugReferenceMap, ConceptReferenceTerm> termJoin = drugReferenceMapJoin.join(CONCEPT_REFERENCE_TERM);
 
 			List<Predicate> basePredicates = createSearchDrugByMappingPredicates(cb, drugRoot, drugReferenceMapJoin,
 			    termJoin, code, conceptSource, true);
@@ -2315,7 +2437,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			predicates.add(cb.equal(termJoin.get("code"), code));
 		}
 		if (conceptSource != null) {
-			predicates.add(cb.equal(termJoin.get("conceptSource"), conceptSource));
+			predicates.add(cb.equal(termJoin.get(CONCEPT_SOURCE), conceptSource));
 		}
 		if (!includeRetired) {
 			predicates.add(cb.isFalse(drugRoot.get("retired")));
@@ -2328,7 +2450,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	        String sourceName, boolean includeRetired) {
 		List<Predicate> predicates = new ArrayList<>();
 
-		Join<ConceptMap, ConceptReferenceTerm> termJoin = root.join("conceptReferenceTerm");
+		Join<ConceptMap, ConceptReferenceTerm> termJoin = root.join(CONCEPT_REFERENCE_TERM);
 
 		// Match the source code to the passed code
 		if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
@@ -2338,14 +2460,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 
 		// Join to concept reference source and match to the hl7Code or source name
-		Join<ConceptReferenceTerm, ConceptSource> sourceJoin = termJoin.join("conceptSource");
+		Join<ConceptReferenceTerm, ConceptSource> sourceJoin = termJoin.join(CONCEPT_SOURCE);
 
 		Predicate namePredicate = Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()
 		        ? cb.equal(cb.lower(sourceJoin.get("name")), sourceName.toLowerCase())
 		        : cb.equal(sourceJoin.get("name"), sourceName);
 		Predicate hl7CodePredicate = Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()
-		        ? cb.equal(cb.lower(sourceJoin.get("hl7Code")), sourceName.toLowerCase())
-		        : cb.equal(sourceJoin.get("hl7Code"), sourceName);
+		        ? cb.equal(cb.lower(sourceJoin.get(HL7_CODE)), sourceName.toLowerCase())
+		        : cb.equal(sourceJoin.get(HL7_CODE), sourceName);
 
 		predicates.add(cb.or(namePredicate, hl7CodePredicate));
 
@@ -2401,5 +2523,46 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public void purgeConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
 		sessionFactory.getCurrentSession().remove(conceptReferenceRange);
+	}
+
+	/**
+	 * Loads the concepts referenced by a page of concept-name search hits with a single
+	 * {@code findMultiple} instead of one {@code get} per hit, so a page issues a bounded number of
+	 * entity loads and Hibernate's collection batch fetching (see the {@code batch-size} on the concept
+	 * collections in Concept.hbm.xml) can span the whole page. The concepts are returned keyed by id so
+	 * callers can pair each hit with its concept and preserve hit order themselves; concepts no longer
+	 * present in the database (a stale search-index entry) are absent from the map.
+	 *
+	 * @param names the page of concept-name hits
+	 * @return the concepts referenced by the hits, keyed by concept id
+	 */
+	private Map<Integer, Concept> multiLoadConceptsByHit(List<ConceptName> names) {
+		List<Integer> conceptIds = names.stream().map(n -> n.getConcept().getConceptId()).collect(Collectors.toList());
+		List<Concept> concepts = sessionFactory.getCurrentSession().findMultiple(Concept.class, conceptIds);
+		Map<Integer, Concept> conceptsById = new HashMap<>();
+		for (Concept concept : concepts) {
+			if (concept != null) {
+				conceptsById.put(concept.getConceptId(), concept);
+			}
+		}
+		if (conceptsById.size() < conceptIds.size()) {
+			log.debug("Dropped {} concept search hit(s) with no matching row (stale search index?)",
+			    conceptIds.size() - conceptsById.size());
+		}
+		return conceptsById;
+	}
+
+	/**
+	 * Order-preserving list form of {@link #multiLoadConceptsByHit(List)} for searches that return the
+	 * concepts directly rather than pairing them into a {@link ConceptSearchResult}. Hits whose concept
+	 * is no longer present in the database - a stale index entry - are dropped from the results.
+	 *
+	 * @param names the page of concept-name hits, in the order they should appear in the results
+	 * @return the concepts for the page, in hit order, with missing rows removed
+	 */
+	private List<Concept> multiLoadConcepts(List<ConceptName> names) {
+		Map<Integer, Concept> conceptsById = multiLoadConceptsByHit(names);
+		return names.stream().map(n -> conceptsById.get(n.getConcept().getConceptId())).filter(Objects::nonNull)
+		        .collect(Collectors.toList());
 	}
 }

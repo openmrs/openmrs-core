@@ -10,11 +10,14 @@
 package org.openmrs.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -25,6 +28,7 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
+import org.openmrs.parameter.LocationSearchCriteria;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -1197,4 +1201,265 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		assertFalse(tag.getRetired());
 	}
 
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_withDescendantOf_shouldReturnAllDescendantsWhenIncludeRetiredIsTrue() {
+		LocationService ls = Context.getLocationService();
+
+		// Location 1 → {2, 3}, Location 3 → {4, 7}
+		Location root = ls.getLocation(1);
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setDescendantOfLocation(root);
+		criteria.setIncludeRetired(true);
+		List<Location> result = ls.getLocations(criteria);
+
+		assertEquals(4, result.size());
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+		assertTrue(result.contains(ls.getLocation(4)));
+		assertTrue(result.contains(ls.getLocation(7)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_withDescendantOf_shouldExcludeRetiredSubtreesWhenIncludeRetiredIsFalse() {
+		LocationService ls = Context.getLocationService();
+
+		// Build: root → childA (active) → childB (retired) → grandchild (active)
+		Location root = new Location();
+		root.setName("Descendant Test Root");
+		ls.saveLocation(root);
+
+		Location childA = new Location();
+		childA.setName("Active Child");
+		childA.setParentLocation(root);
+		ls.saveLocation(childA);
+
+		Location childB = new Location();
+		childB.setName("Retired Child");
+		childB.setParentLocation(childA);
+		ls.saveLocation(childB);
+		ls.retireLocation(childB, "test");
+
+		Location grandchild = new Location();
+		grandchild.setName("Child of Retired");
+		grandchild.setParentLocation(childB);
+		ls.saveLocation(grandchild);
+
+		LocationSearchCriteria withRetiredCriteria = new LocationSearchCriteria();
+		withRetiredCriteria.setDescendantOfLocation(root);
+		withRetiredCriteria.setIncludeRetired(true);
+		List<Location> withRetired = ls.getLocations(withRetiredCriteria);
+		assertEquals(3, withRetired.size());
+		assertTrue(withRetired.contains(childA));
+		assertTrue(withRetired.contains(childB));
+		assertTrue(withRetired.contains(grandchild));
+
+		LocationSearchCriteria withoutRetiredCriteria = new LocationSearchCriteria();
+		withoutRetiredCriteria.setDescendantOfLocation(root);
+		withoutRetiredCriteria.setIncludeRetired(false);
+		List<Location> withoutRetired = ls.getLocations(withoutRetiredCriteria);
+		assertEquals(1, withoutRetired.size());
+		assertTrue(withoutRetired.contains(childA));
+		assertFalse(withoutRetired.contains(childB));
+		assertFalse(withoutRetired.contains(grandchild));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_withDescendantOf_shouldReturnEmptyListForLeafLocation() {
+		LocationService ls = Context.getLocationService();
+
+		// Location 2 has no children in the fixture
+		Location leaf = ls.getLocation(2);
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setDescendantOfLocation(leaf);
+		criteria.setIncludeRetired(true);
+		List<Location> result = ls.getLocations(criteria);
+
+		assertTrue(result.isEmpty());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldReturnAllNonRetiredLocationsForEmptyCriteria() {
+		LocationService ls = Context.getLocationService();
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		// Fixture has 7 locations total; location 5 is retired → 6 non-retired
+		assertEquals(6, ls.getLocations(criteria).size());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldIncludeRetiredLocationsWhenFlagIsSet() {
+		LocationService ls = Context.getLocationService();
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setIncludeRetired(true);
+		assertEquals(7, ls.getLocations(criteria).size());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldFilterByNameFragment() {
+		LocationService ls = Context.getLocationService();
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setNameFragment("Test Level A");
+		List<Location> result = ls.getLocations(criteria);
+		assertEquals(2, result.size());
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldFilterByDescendantOf() {
+		LocationService ls = Context.getLocationService();
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setDescendantOfLocation(ls.getLocation(1));
+		List<Location> result = ls.getLocations(criteria);
+		// Descendants of location 1: 2, 3, 4, 7
+		assertEquals(4, result.size());
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+		assertTrue(result.contains(ls.getLocation(4)));
+		assertTrue(result.contains(ls.getLocation(7)));
+		assertFalse(result.contains(ls.getLocation(1)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldFilterByAllTags() {
+		LocationService ls = Context.getLocationService();
+		// Tags 3 and 4 are both on locations 2 and 3 only
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setLocationTags(new HashSet<>(Arrays.asList(ls.getLocationTag(3), ls.getLocationTag(4))));
+		List<Location> result = ls.getLocations(criteria);
+		assertEquals(2, result.size());
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldFilterByAnyTag() {
+		LocationService ls = Context.getLocationService();
+		// Tag 1 is on location 1; tag 3 is on locations 2 and 3
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setLocationTags(new HashSet<>(Arrays.asList(ls.getLocationTag(1), ls.getLocationTag(3))));
+		criteria.setTagMatchMode(LocationSearchCriteria.TagMatchMode.ANY);
+		List<Location> result = ls.getLocations(criteria);
+		assertEquals(3, result.size());
+		assertTrue(result.contains(ls.getLocation(1)));
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldCombineDescendantOfAndTags() {
+		LocationService ls = Context.getLocationService();
+		// Descendants of location 1 that also have tag 3: locations 2 and 3
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setDescendantOfLocation(ls.getLocation(1));
+		criteria.setLocationTags(new HashSet<>(Arrays.asList(ls.getLocationTag(3))));
+		List<Location> result = ls.getLocations(criteria);
+		assertEquals(2, result.size());
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldCombineDescendantOfAndNameFragment() {
+		LocationService ls = Context.getLocationService();
+		// Descendants of location 1 whose name starts with "Test Level B": locations 4 and 7
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setDescendantOfLocation(ls.getLocation(1));
+		criteria.setNameFragment("Test Level B");
+		List<Location> result = ls.getLocations(criteria);
+		assertEquals(2, result.size());
+		assertTrue(result.contains(ls.getLocation(4)));
+		assertTrue(result.contains(ls.getLocation(7)));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldApplyPaginationWhenProvided() {
+		LocationService ls = Context.getLocationService();
+
+		LocationSearchCriteria allCriteria = new LocationSearchCriteria();
+		allCriteria.setIncludeRetired(true);
+		List<Location> all = ls.getLocations(allCriteria);
+
+		LocationSearchCriteria pagedCriteria = new LocationSearchCriteria();
+		pagedCriteria.setIncludeRetired(true);
+		pagedCriteria.setStartIndex(1);
+		pagedCriteria.setMaxResults(2);
+		List<Location> paged = ls.getLocations(pagedCriteria);
+
+		assertEquals(2, paged.size());
+		assertEquals(all.get(1).getLocationId(), paged.get(0).getLocationId());
+		assertEquals(all.get(2).getLocationId(), paged.get(1).getLocationId());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldApplyPaginationAfterOtherFilters() {
+		LocationService ls = Context.getLocationService();
+
+		LocationSearchCriteria filteredCriteria = new LocationSearchCriteria();
+		filteredCriteria.setNameFragment("Test Level A");
+		List<Location> filtered = ls.getLocations(filteredCriteria);
+
+		LocationSearchCriteria pagedCriteria = new LocationSearchCriteria();
+		pagedCriteria.setNameFragment("Test Level A");
+		pagedCriteria.setStartIndex(1);
+		pagedCriteria.setMaxResults(1);
+		List<Location> paged = ls.getLocations(pagedCriteria);
+
+		assertEquals(1, paged.size());
+		assertEquals(filtered.get(1).getLocationId(), paged.get(0).getLocationId());
+	}
+
+	@Test
+	public void getLocation_shouldLoadLocationParentLazily() throws Exception {
+		LocationService ls = Context.getLocationService();
+		Location child = new Location();
+		child.setName("Child");
+		Location parent = ls.getLocation(1);
+		child.setParentLocation(parent);
+		ls.saveLocation(child);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		Location fetchedChild = ls.getLocation(child.getId());
+		assertFalse(Hibernate.isInitialized(fetchedChild.getParentLocation()), "Parent Location should be loaded lazily");
+	}
 }

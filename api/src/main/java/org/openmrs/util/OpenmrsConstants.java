@@ -788,7 +788,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_LOG_LOCATION, "",
 		        "A directory where the OpenMRS log file appender is stored. The log file name is 'openmrs.log'."));
 
-		props.add(new GlobalProperty(GP_LOG_LAYOUT, "%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n",
+		props.add(new GlobalProperty(GP_LOG_LAYOUT, DEFAULT_LOG_LAYOUT_PATTERN,
 		        "A log layout pattern which is used by the OpenMRS file appender."));
 
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR, LUHN_IDENTIFIER_VALIDATOR,
@@ -1164,6 +1164,13 @@ public final class OpenmrsConstants {
 	 * @since 1.9.2
 	 */
 	public static final String GP_LOG_LAYOUT = "log.layout";
+
+	/**
+	 * This is the default logging pattern we use in OpenMRS
+	 *
+	 * @since 2.9.0, 2.8.7
+	 */
+	public static final String DEFAULT_LOG_LAYOUT_PATTERN = "%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n";
 
 	/**
 	 * It specifies a default name of the OpenMRS file appender. .

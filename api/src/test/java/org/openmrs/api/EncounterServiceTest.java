@@ -135,8 +135,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 		Context.clearSession();
 
-		updateSearchIndex();
-
 		enc = es.getEncounter(100);
 
 		Set<Obs> obsAtTopLevelUpdated = enc.getObsAtTopLevel(true);
@@ -970,6 +968,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getEncountersByPatientIdentifier_shouldNotGetVoidedEncounters() {
 		EncounterService encounterService = Context.getEncounterService();
+
+		// getEncountersByPatientIdentifier resolves the patient through the search index, so it must
+		// reflect the identifiers loaded by this class's dataset rather than the base data.
+		updateSearchIndex();
 
 		List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier("12345");
 		assertEquals(2, encounters.size());
