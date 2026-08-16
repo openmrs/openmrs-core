@@ -17,6 +17,8 @@ import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonName;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -44,6 +46,15 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	private PersonAttributeHelper personAttributeHelper;
 
 	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
+
+	/**
+	 * Restricts search-index rebuilds to the entity types person searches actually query, instead of
+	 * rebuilding every indexed type on each test.
+	 */
+	@Override
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { PersonName.class, PersonAttribute.class };
+	}
 
 	@BeforeEach
 	public void getPersonDAO() {

@@ -31,8 +31,7 @@ import org.openmrs.serialization.JacksonConfig;
  * <p>
  * If you need a custom serialization, you may extend the class and implement {@link EventPayload}.
  * <p>
- * Values from headers are always serialized to simple values or in case of complex objects to JSON
- * with {@link JacksonConfig#objectMapper()}.
+ * Values from headers are always serialized as simple values.
  * <p>
  * Default broker identifier is configured via runtime property: {@code event.broker.default}.
  *

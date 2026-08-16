@@ -228,30 +228,12 @@ public class ModuleClassLoader extends URLClassLoader {
 		if (devDir == null) {
 			File tmpModuleJar = new File(tmpModuleDir, module.getModuleId() + ".jar");
 
-			if (!tmpModuleJar.exists()) {
-				try {
-					tmpModuleJar.createNewFile();
-				} catch (IOException io) {
-					log.warn("Unable to create tmpModuleFile", io);
-				}
-			}
-
 			// copy the module jar into that temporary folder
-			FileInputStream in = null;
-			FileOutputStream out = null;
-			try {
-				in = new FileInputStream(module.getFile());
-				out = new FileOutputStream(tmpModuleJar);
+			try (FileInputStream in = new FileInputStream(module.getFile());
+			        FileOutputStream out = new FileOutputStream(tmpModuleJar)) {
 				OpenmrsUtil.copyFile(in, out);
 			} catch (IOException io) {
 				log.warn("Unable to copy tmpModuleFile", io);
-			} finally {
-				try {
-					in.close();
-				} catch (Exception e) { /* pass */}
-				try {
-					out.close();
-				} catch (Exception e) { /* pass */}
 			}
 
 			// add the module jar as a url in the classpath of the classloader
@@ -456,27 +438,29 @@ public class ModuleClassLoader extends URLClassLoader {
 			long moduleLastModified = module.getFile().lastModified();
 			File moduleLastModifiedFile = new File(tmpModuleDir, ".moduleLastModified");
 
+			boolean deleted = true;
 			if (Context.isOptimizedStartup() && moduleLastModifiedFile.exists()) {
 				// Re-create tmpModuleDir if module changed
 				try {
 					String savedLastModified = FileUtils.readFileToString(moduleLastModifiedFile, Charset.defaultCharset());
 					if (!Long.valueOf(savedLastModified).equals(moduleLastModified)) {
 						log.debug("Deleting {} since the module was modified", tmpModuleDir.getAbsolutePath());
-						tmpModuleDir.delete();
+						deleted = deleteLibCacheDir(tmpModuleDir, module.getModuleId());
 					}
 				} catch (IOException | NumberFormatException e) {
 					log.warn("Error while reading module last modified file: {}", moduleLastModifiedFile, e);
+					deleted = deleteLibCacheDir(tmpModuleDir, module.getModuleId());
 				}
 			} else {
 				log.debug("Optimized startup disabled or {} does not exist, deleting {}", moduleLastModifiedFile,
 				    tmpModuleDir);
-				tmpModuleDir.delete();
+				deleted = deleteLibCacheDir(tmpModuleDir, module.getModuleId());
 			}
 
 			tmpModuleDir.mkdirs();
 			libCacheFolders.put(module.getModuleId(), tmpModuleDir);
 
-			if (moduleLastModified != 0L) {
+			if (deleted && moduleLastModified != 0L) {
 				try {
 					FileUtils.writeStringToFile(moduleLastModifiedFile, moduleLastModified + "", Charset.defaultCharset());
 				} catch (IOException e) {
@@ -485,6 +469,16 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 
 			return tmpModuleDir;
+		}
+	}
+
+	private static boolean deleteLibCacheDir(File dir, String moduleId) {
+		try {
+			FileUtils.deleteDirectory(dir);
+			return true;
+		} catch (IOException e) {
+			log.warn("Failed to delete lib cache dir {} for module {}", dir, moduleId, e);
+			return false;
 		}
 	}
 
