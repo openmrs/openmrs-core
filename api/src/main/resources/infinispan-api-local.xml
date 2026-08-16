@@ -29,6 +29,13 @@
 			<expiration lifespan="3600000" max-idle="100000" interval="5000"/>
 			<memory max-count="10000"/>
 		</local-cache-configuration>
+		
+		<local-cache-configuration name="concept-ids-by-mapping" simple-cache="true" statistics="false">
+			<encoding media-type="application/x-java-object"/>
+			<transaction mode="NONE"/>
+			<expiration max-idle="-1" interval="5000"/>
+			<memory max-count="10000"/>
+		</local-cache-configuration>
 
 	</cache-container>
 </infinispan>
