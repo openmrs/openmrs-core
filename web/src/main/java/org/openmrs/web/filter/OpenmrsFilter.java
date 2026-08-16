@@ -59,6 +59,8 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 	        throws ServletException, IOException {
 
 		HttpSession httpSession = httpRequest.getSession();
+		// used by htmlInclude tag
+		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(System.currentTimeMillis()));
 
 		log.debug("requestURI {}", httpRequest.getRequestURI());
 		log.debug("requestURL {}", httpRequest.getRequestURL());

@@ -108,4 +108,24 @@ class OpenmrsFilterTest {
 
 		verify(session, never()).setAttribute("username", "admin");
 	}
+
+	@Test
+	void shouldUpdateLocaleWhenLocaleChanges() throws Exception {
+		UserContext userContext = mock(UserContext.class);
+
+		when(userContext.getLocale()).thenReturn(Locale.ENGLISH);
+
+		MockHttpSession session = new MockHttpSession();
+		session.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
+		session.setAttribute("locale", Locale.FRENCH);
+
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setSession(session);
+
+		MockHttpServletResponse response = new MockHttpServletResponse();
+
+		new OpenmrsFilter().doFilter(request, response, new MockFilterChain());
+
+		assertEquals(Locale.ENGLISH, session.getAttribute("locale"));
+	}
 }

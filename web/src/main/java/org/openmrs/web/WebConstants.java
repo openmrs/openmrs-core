@@ -19,6 +19,8 @@ public class WebConstants {
 
 	public static final String OPENMRS_CONTEXT_HTTPSESSION_ATTR = "__openmrs_context";
 
+	public static final String INIT_REQ_UNIQUE_ID = "__INIT_REQ_UNIQUE_ID__";
+
 	public static final String OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR = "__openmrs_user_context";
 
 	public static final String OPENMRS_CLIENT_IP_HTTPSESSION_ATTR = "__openmrs_client_ip";
