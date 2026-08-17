@@ -168,7 +168,7 @@ class OpenmrsConfigurationFactoryTest {
 		Files.writeString(unreadable, "<Configuration/>");
 		unreadable.toFile().setReadable(false);
 		Assumptions.assumeFalse(unreadable.toFile().canRead(),
-			"Cannot make file unreadable to this process (e.g., running as root); skipping test");
+		    "Cannot make file unreadable to this process (e.g., running as root); skipping test");
 
 		try {
 			openmrsUtilMock.when(OpenmrsUtil::getApplicationDataDirectoryAsFile).thenReturn(tempDir.toFile());
