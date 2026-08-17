@@ -19,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -76,6 +75,7 @@ import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.UuidUtil;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -811,7 +811,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				tmpIdentifier.setVoided(false);
 				tmpIdentifier.setVoidedBy(null);
 				tmpIdentifier.setVoidReason(null);
-				tmpIdentifier.setUuid(UUID.randomUUID().toString());
+				tmpIdentifier.setUuid(UuidUtil.newUuidString());
 				// we don't want to change the preferred identifier of the preferred patient
 				tmpIdentifier.setPreferred(false);
 				preferred.addIdentifier(tmpIdentifier);
@@ -856,7 +856,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			if (!attr.getVoided()) {
 				PersonAttribute tmpAttr = attr.copy();
 				tmpAttr.setPerson(null);
-				tmpAttr.setUuid(UUID.randomUUID().toString());
+				tmpAttr.setUuid(UuidUtil.newUuidString());
 				preferred.addAttribute(tmpAttr);
 				mergedData.addCreatedAttribute(tmpAttr.getUuid());
 			}
@@ -899,12 +899,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		tmpName.setVoidReason(null);
 		// we don't want to change the preferred name of the preferred patient
 		tmpName.setPreferred(false);
-		tmpName.setUuid(UUID.randomUUID().toString());
+		tmpName.setUuid(UuidUtil.newUuidString());
 		return tmpName;
 	}
 
-	private void mergeAddresses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData)
-	        throws SerializationException {
+	private void mergeAddresses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all addresses
 		for (PersonAddress newAddress : notPreferred.getAddresses()) {
 			boolean containsAddress = false;
@@ -920,8 +919,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				tmpAddress.setVoided(false);
 				tmpAddress.setVoidedBy(null);
 				tmpAddress.setVoidReason(null);
-				tmpAddress.setPreferred(false);
-				tmpAddress.setUuid(UUID.randomUUID().toString());
+				tmpAddress.setPreferred(false); // addresses from non-preferred patient shouldn't be marked as preferred
+				tmpAddress.setUuid(UuidUtil.newUuidString());
 				preferred.addAddress(tmpAddress);
 				mergedData.addCreatedAddress(tmpAddress.getUuid());
 				log.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPatientId());
