@@ -28,8 +28,10 @@
             http://www.springframework.org/schema/util/spring-util-3.0.xsd
 			http://www.springframework.org/schema/cache
 			http://www.springframework.org/schema/cache/spring-cache.xsd">
-	
+
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
+
+	<bean id="openmrsPasswordEncoder" class="org.openmrs.util.Security" factory-method="createDelegatingPasswordEncoder"/>
 
 	<!--  **************************  EVENT LISTENERS ***************************** -->
 

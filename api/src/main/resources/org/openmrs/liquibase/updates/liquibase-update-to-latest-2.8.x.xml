@@ -126,5 +126,13 @@
 		<comment>Changing concept_reference_range.criteria from VARCHAR(255) to TEXT</comment>
 		<modifyDataType tableName="concept_reference_range" columnName="criteria" newDataType="TEXT" />
 	</changeSet>
-	
+
+	<changeSet id="TRUNK-6662-2026-08-15-1" author="julietwamalwa">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="users" columnName="password"></columnExists>
+		</preConditions>
+		<comment>Widening users.password to accommodate full Spring encoded password strings</comment>
+		<modifyDataType tableName="users" columnName="password" newDataType="varchar(512)" />
+	</changeSet>
+
 </databaseChangeLog>
