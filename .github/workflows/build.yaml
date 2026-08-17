@@ -67,3 +67,41 @@ jobs:
         continue-on-error: true
         with:
           use_oidc: true
+
+  context-sensitive-real-db:
+    strategy:
+      matrix:
+        database: [mysql, postgres]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Setup JDK
+        uses: actions/setup-java@v5.7.0
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: 'maven'
+      - name: Install dependencies
+        run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+      - name: Test context-sensitive suite against ${{ matrix.database }}
+        run: mvn test -DuseInMemoryDatabase=false -Ddatabase=${{ matrix.database }} --batch-mode --file pom.xml
+
+  integration-test-real-db:
+    strategy:
+      matrix:
+        database: [mysql, postgres]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Setup JDK
+        uses: actions/setup-java@v5.7.0
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: 'maven'
+      - name: Install dependencies
+        run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+      - name: Test integration suite against ${{ matrix.database }}
+        run: mvn test -Pintegration-test -Pskip-default-test -DuseInMemoryDatabase=false -Ddatabase=${{ matrix.database }} --batch-mode --file pom.xml
