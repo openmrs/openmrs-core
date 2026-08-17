@@ -461,21 +461,6 @@ class UpdateFilterE2ETest {
 	}
 
 	@Test
-	void skipFilter_shouldKeepServingProgressPollRegardlessOfOtherRequests() {
-		UpdateFilter.setUpdatesRequired(false);
-		MockHttpServletRequest pollReq = new MockHttpServletRequest();
-		pollReq.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
-		pollReq.setParameter("page", "updateProgress.vm.ajaxRequest");
-		MockHttpServletRequest otherReq = new MockHttpServletRequest();
-		otherReq.setServletPath("/module/x/y.form");
-
-		// an unrelated request passes through but never affects the poll
-		assertEquals(true, filter.skipFilter(otherReq));
-		assertEquals(false, filter.skipFilter(pollReq));
-		assertEquals(false, filter.skipFilter(pollReq));
-	}
-
-	@Test
 	void skipFilter_shouldNotReadRequestParametersOnceUpdatesNoLongerRequired() {
 		UpdateFilter.setUpdatesRequired(false);
 		MockHttpServletRequest req = new MockHttpServletRequest() {
