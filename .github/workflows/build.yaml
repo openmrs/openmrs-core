@@ -2,19 +2,14 @@
 # to the OpenMRS maven repository on pushes to release-line branches
 name: Build with Maven
 
-# trigger build on branches that *should* support both Java 8 and Java 11
+# trigger build on 2.9.x branch
 on:
   push:
-    # Keep this list in sync with the branch allowlist in the deploy-snapshot job below.
     branches:
-      - master
       - 2.9.x
-      - 2.8.x
   pull_request:
     branches:
-      - master
       - 2.9.x
-      - 2.8.x
   workflow_dispatch:
 
 permissions: read-all
