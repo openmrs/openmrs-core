@@ -119,7 +119,7 @@
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 		<jobrunrVersion>8.8.1</jobrunrVersion>
-		<shedlockVersion>7.7.0</shedlockVersion>
+		<shedlockVersion>7.8.0</shedlockVersion>
 
 		<!-- Testing -->
 		<junitVersion>6.1.3</junitVersion>
