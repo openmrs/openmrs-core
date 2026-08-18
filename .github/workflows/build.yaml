@@ -5,11 +5,9 @@ name: Build with Maven
 on:
   push:
     branches:
-      - master
       - 2.8.x
   pull_request:
     branches:
-      - master
       - 2.8.x
   workflow_dispatch:
 
@@ -43,9 +41,9 @@ jobs:
     # 9-21 minutes, so this leaves roughly 3x headroom for degraded runners
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
