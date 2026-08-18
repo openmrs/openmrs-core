@@ -52,9 +52,9 @@ jobs:
     # 9-21 minutes, so this leaves roughly 3x headroom for degraded runners
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
@@ -98,7 +98,7 @@ jobs:
     if: >-
       ${{ github.repository == 'openmrs/openmrs-core'
       && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-      && contains(fromJSON('["master", "2.9.x", "2.8.x"]'), github.ref_name) }}
+      && contains(fromJSON('["2.9.x"]'), github.ref_name) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -110,9 +110,9 @@ jobs:
       group: deploy-snapshot-${{ github.ref }}
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'temurin'
           # Deploy with the oldest supported JDK on this line (javaCompilerVersion is 1.8)
