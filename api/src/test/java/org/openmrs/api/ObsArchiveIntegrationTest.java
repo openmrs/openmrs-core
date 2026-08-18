@@ -9,6 +9,7 @@
  */
 package org.openmrs.api;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
@@ -17,9 +18,11 @@ import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.ConceptProposal;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ObsArchiveHelper;
 import org.openmrs.scheduler.tasks.ObsArchivingTaskData;
@@ -100,7 +103,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 
 	private Obs createAndSaveSingleObsWithReferenceRange(Double value) {
 		Obs obs = createSingleObs(value);
-		org.openmrs.ObsReferenceRange range = new org.openmrs.ObsReferenceRange();
+		ObsReferenceRange range = new ObsReferenceRange();
 		range.setHiAbsolute(100.0);
 		range.setLowAbsolute(0.0);
 		range.setObs(obs);
@@ -745,7 +748,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		Obs obs = createAndSaveSingleObsWithReferenceRange(50.0);
 		int testObsId = obs.getObsId();
 		assertNotNull(obs.getReferenceRange());
-		org.openmrs.ObsReferenceRange originalRange = obs.getReferenceRange();
+		ObsReferenceRange originalRange = obs.getReferenceRange();
 		int originalRangeId = originalRange.getObsReferenceRangeId();
 		Double originalHiAbsolute = originalRange.getHiAbsolute();
 		Double originalLowAbsolute = originalRange.getLowAbsolute();
@@ -1073,12 +1076,12 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		Context.clearSession();
 
 		// 3. Create a ConceptProposal linked to this obs
-		org.openmrs.ConceptProposal proposal = new org.openmrs.ConceptProposal();
+		ConceptProposal proposal = new ConceptProposal();
 		proposal.setOriginalText("Test Proposal");
 		proposal.setEncounter(Context.getEncounterService().getEncounter(3));
 		// Need to get the obs again in the new session to set it on proposal
 		proposal.setObs(obsService.getObs(obsId));
-		proposal.setState(org.openmrs.util.OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
+		proposal.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
 		Context.getConceptService().saveConceptProposal(proposal);
 		Context.flushSession();
 		Context.clearSession();
@@ -1095,5 +1098,53 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		// Clean up the concept proposal manually so it doesn't affect other tests
 		Context.getConceptService()
 		        .purgeConceptProposal(Context.getConceptService().getConceptProposal(proposal.getConceptProposalId()));
+	}
+
+	@Test
+	public void volatileCache_shouldShortCircuitAndRecoverViaNotificationOrTTL() throws Exception {
+		// First, get a real archived obs into the database
+		Obs obs = createAndSaveSingleObs(42.0);
+		int archivedObsId = obs.getObsId();
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertTrue(obsArchiveHelper.isArchived(archivedObsId), "Sanity check: obs should be archived");
+
+		// Extract fields for reflection to manipulate the internal cache
+		Field hasDataField = ObsArchiveHelper.class.getDeclaredField("archiveHasData");
+		hasDataField.setAccessible(true);
+		Field timestampField = ObsArchiveHelper.class.getDeclaredField("archiveHasDataTimestamp");
+		timestampField.setAccessible(true);
+
+		// 1. Simulate a stale cache (archiveHasData = false) as if this node hasn't seen the data yet
+		hasDataField.set(obsArchiveHelper, false);
+		timestampField.set(obsArchiveHelper, System.currentTimeMillis());
+
+		assertFalse(obsArchiveHelper.isArchived(archivedObsId),
+		    "Should short-circuit and return false due to stale cache, despite data existing in DB");
+
+		// 2. Simulate TTL expiry by backdating the timestamp (TTL is 60s, we backdate by 65s)
+		timestampField.set(obsArchiveHelper, System.currentTimeMillis() - 65_000);
+
+		assertTrue(obsArchiveHelper.isArchived(archivedObsId),
+		    "Should hit the DB and return true because the stale cache TTL expired");
+
+		// Verify the cache automatically updated itself after the query
+		assertTrue((Boolean) hasDataField.get(obsArchiveHelper), "Cache should have updated itself to true after query");
+
+		// 3. Reset cache to false again to test the explicit notification mechanism
+		hasDataField.set(obsArchiveHelper, false);
+		timestampField.set(obsArchiveHelper, System.currentTimeMillis());
+
+		assertFalse(obsArchiveHelper.isArchived(archivedObsId), "Sanity check: short-circuiting again");
+
+		// 4. Call markArchiveHasData (simulating the task handler finishing a sweep on this node)
+		obsArchiveHelper.markArchiveHasData();
+
+		assertTrue(obsArchiveHelper.isArchived(archivedObsId),
+		    "Should return true immediately, bypassing the TTL, because of explicit notification");
 	}
 }

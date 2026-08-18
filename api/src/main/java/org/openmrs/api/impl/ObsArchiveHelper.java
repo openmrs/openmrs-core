@@ -24,6 +24,7 @@ import org.openmrs.Obs;
 import org.openmrs.ObsArchive;
 import org.openmrs.ObsReferenceRange;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.api.APIException;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,14 +40,61 @@ public class ObsArchiveHelper {
 
 	private static final String PARAM_OBS_ID = "obsId";
 
+	/** TTL for the archive-emptiness cache. Bounds the staleness window on multi-node deployments. */
+	private static final long CACHE_TTL_MS = 60_000;
+
 	private final SessionFactory sessionFactory;
+
+	/** Null until first check, then true/false. Flipped to true by the archiving task. */
+	private volatile Boolean archiveHasData;
+
+	private volatile long archiveHasDataTimestamp;
 
 	public ObsArchiveHelper(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
+	/**
+	 * Called by {@link org.openmrs.scheduler.tasks.ObsArchivingTaskHandler} after it persists archive
+	 * rows, so this node learns immediately without waiting for the TTL.
+	 */
+	public void markArchiveHasData() {
+		this.archiveHasData = true;
+		this.archiveHasDataTimestamp = System.currentTimeMillis();
+	}
+
+	/**
+	 * Returns true if obs_archive contains at least one row. The result is cached with a short TTL so
+	 * that deployments that have never archived anything pay zero per-save cost, while multi-node
+	 * deployments where the sweep runs on a different replica discover the data within one TTL window.
+	 */
+	private boolean doesArchiveHaveData() {
+		Boolean cached = archiveHasData;
+		if (cached != null) {
+			if (cached) {
+				return true;
+			}
+			if (System.currentTimeMillis() - archiveHasDataTimestamp < CACHE_TTL_MS) {
+				return false;
+			}
+		}
+		try {
+			return withManualFlush(() -> {
+				Object result = sessionFactory.getCurrentSession().createQuery("SELECT 1 FROM ObsArchive").setMaxResults(1)
+				        .uniqueResult();
+				boolean hasData = result != null;
+				archiveHasData = hasData;
+				archiveHasDataTimestamp = System.currentTimeMillis();
+				return hasData;
+			});
+		} catch (HibernateException e) {
+			log.warn("Failed to check archive emptiness. Assuming archive has data.", e);
+			return true;
+		}
+	}
+
 	public boolean isArchived(Integer obsId) {
-		if (obsId == null) {
+		if (obsId == null || !doesArchiveHaveData()) {
 			return false;
 		}
 		try {
@@ -60,7 +108,7 @@ public class ObsArchiveHelper {
 	}
 
 	public boolean hasArchivedChildren(Integer obsId) {
-		if (obsId == null) {
+		if (obsId == null || !doesArchiveHaveData()) {
 			return false;
 		}
 		try {
@@ -77,7 +125,7 @@ public class ObsArchiveHelper {
 	}
 
 	public List<Obs> getArchivedChildObs(Integer obsGroupId) {
-		if (obsGroupId == null) {
+		if (obsGroupId == null || !doesArchiveHaveData()) {
 			return Collections.emptyList();
 		}
 		try {
@@ -95,7 +143,7 @@ public class ObsArchiveHelper {
 	}
 
 	public List<Obs> getArchivedObsByEncounterId(Integer encounterId) {
-		if (encounterId == null) {
+		if (encounterId == null || !doesArchiveHaveData()) {
 			return Collections.emptyList();
 		}
 		try {
@@ -114,7 +162,7 @@ public class ObsArchiveHelper {
 	}
 
 	public List<Obs> getArchivedObsByPersonId(Integer personId) {
-		if (personId == null) {
+		if (personId == null || !doesArchiveHaveData()) {
 			return Collections.emptyList();
 		}
 		try {
@@ -132,7 +180,7 @@ public class ObsArchiveHelper {
 	}
 
 	public List<Obs> getArchivedObsByPersonIdAndConceptId(Integer personId, Integer conceptId) {
-		if (personId == null || conceptId == null) {
+		if (personId == null || conceptId == null || !doesArchiveHaveData()) {
 			return Collections.emptyList();
 		}
 		try {
@@ -150,7 +198,7 @@ public class ObsArchiveHelper {
 	}
 
 	public Obs getObsFromArchive(Integer obsId) {
-		if (obsId == null) {
+		if (obsId == null || !doesArchiveHaveData()) {
 			return null;
 		}
 		try {
@@ -166,7 +214,7 @@ public class ObsArchiveHelper {
 	}
 
 	public Obs getObsFromArchiveByUuid(String uuid) {
-		if (uuid == null) {
+		if (uuid == null || !doesArchiveHaveData()) {
 			return null;
 		}
 		try {
@@ -429,7 +477,7 @@ public class ObsArchiveHelper {
 			});
 		} catch (HibernateException e) {
 			log.warn("Failed to purge obs {} from archive", obsId, e);
-			throw new org.openmrs.api.APIException("Failed to purge archived obs", e);
+			throw new APIException("Failed to purge archived obs", e);
 		}
 	}
 }
