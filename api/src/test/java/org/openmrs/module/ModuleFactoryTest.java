@@ -115,13 +115,11 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Module newModule = loadModule(MODULE1_UPDATE_PATH, MODULE1, true);
 		
 		//first upgrade to a newer version so a revert can be tried
-		assertNotNull(ModuleFactory.getLoadedModules().contains(newModule));
+		assertTrue(ModuleFactory.getLoadedModules().contains(newModule));
 		
-		//now verify that a rollback simply returns the newer version's module.
-		Module oldModule = loadModule(MODULE1_PATH, MODULE1, true);
-		
-		assertEquals(newModule, oldModule);
-		assertNotNull(ModuleFactory.getLoadedModules().contains(oldModule));
+		// now verify that a rollback to an older version fails and keeps the newer module loaded.
+		assertThrows(ModuleException.class, () -> loadModule(MODULE1_PATH, MODULE1, true));
+		assertTrue(ModuleFactory.getLoadedModules().contains(newModule));
 	}
 	
 	@Test

@@ -114,7 +114,6 @@ public class ModuleFactory {
 	public static Module loadModule(File moduleFile, Boolean replaceIfExists) throws ModuleException {
 
 		Module module = null;
-		Module loadedModule = null;
 		boolean isModuleLoaded = true;
 		String failureReason = null;
 		String fileName;
@@ -123,39 +122,30 @@ public class ModuleFactory {
 			module = new ModuleFileParser(Context.getMessageSourceService()).parse(moduleFile);
 
 			if (module != null) {
-				loadedModule = loadModule(module, replaceIfExists);
+				loadModule(module, replaceIfExists);
 			}
 		} catch (Exception ex) {
 			isModuleLoaded = false;
 			failureReason = ex.getMessage();
 			throw ex;
 		} finally {
-			   if (loadedModule != null) {
-				   Module oldModule = getLoadedModulesMap().get(module.getModuleId());
-				   if (oldModule != null) {
-					   int versionComparison = ModuleUtil.compareVersion(oldModule.getVersion(), module.getVersion());
-					   if (versionComparison > 0) {
-						   isModuleLoaded = false;
-						   failureReason = "There exists a same module with latest version than this module version";
-					   }
-				   }
-			   } 
-			   Module moduleToPublish = module;
-			   if(module == null) {
-				   fileName = ModuleUtil.getModuleNameAndVersionFromFileName(moduleFile.getName());
-				   isModuleLoaded = false;
-				   String name = null;
-				   String version = null;
-				   
-				   if( fileName != null) {
-					   String[] parts = fileName.split(":");
+			Module moduleToPublish = module;
+			if (module == null) {
+				fileName = ModuleUtil.getModuleNameAndVersionFromFileName(moduleFile.getName());
+				isModuleLoaded = false;
+				String name = null;
+				String version = null;
 
-					   name = parts[0];
-					   version = (parts.length > 1) ? parts[1] : null;
-				   }
-				   moduleToPublish = new Module(name, null, null, null, null, version, null);
-			   }
-			   publishModuleEvents(new ModuleLoadEvent(ModuleFactory.class, moduleToPublish.getModuleId(), moduleToPublish.getName(), moduleToPublish.getVersion(), isModuleLoaded, failureReason));
+				if (fileName != null) {
+					String[] parts = fileName.split(":");
+
+					name = parts[0];
+					version = (parts.length > 1) ? parts[1] : null;
+				}
+				moduleToPublish = new Module(name, null, null, null, null, version, null);
+			}
+			publishModuleEvents(new ModuleLoadEvent(ModuleFactory.class, moduleToPublish.getModuleId(), moduleToPublish.getName(),
+			    moduleToPublish.getVersion(), isModuleLoaded, failureReason));
 		}
 		
 		return module;
@@ -193,8 +183,7 @@ public class ModuleFactory {
 					throw new ModuleException("A module with the same id and version already exists", module.getModuleId());
 				}
 			} else {
-				// if the older (already loaded) module is newer, keep that original one that was loaded. return that one.
-				return oldModule;
+				throw new ModuleException("There exists a same module with latest version than this module version");
 			}
 		}
 		
