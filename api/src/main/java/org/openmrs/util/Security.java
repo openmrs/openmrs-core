@@ -90,7 +90,7 @@ public class Security {
 	 *
 	 * @param strToEncode {@code password + salt} to encode
 	 * @return the encoded value to store
-	 * @since 2.9.0, 3.0.0
+	 * @since 2.8.9, 2.9.0, 3.0.0
 	 */
 	public static String encodePassword(String strToEncode) {
 		return getPasswordEncoder().encode(strToEncode);
@@ -108,7 +108,7 @@ public class Security {
 	 * @param storedEncodedPassword the stored encoded password
 	 * @param rawPassword the raw password, with the salt already concatenated
 	 * @return true if the password matches
-	 * @since 2.9.0, 3.0.0
+	 * @since 2.8.9, 2.9.0, 3.0.0
 	 */
 	public static boolean checkPassword(String storedEncodedPassword, String rawPassword) {
 		if (rawPassword == null || storedEncodedPassword == null) {

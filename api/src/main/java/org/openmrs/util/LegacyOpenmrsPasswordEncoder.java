@@ -23,7 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * accepts that same shape, as well as a bare hash with no salt part for values written by older
  * OpenMRS versions.
  *
- * @since 2.9.0, 3.0.0
+ * @since 2.8.9, 2.9.0, 3.0.0
  */
 public class LegacyOpenmrsPasswordEncoder implements PasswordEncoder {
 
