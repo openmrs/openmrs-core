@@ -1254,10 +1254,15 @@ public class ModuleUtil {
 	}
 
 	/**
-	 * Gets the module name and version if possible from the filename 
-	 * 
-	 * @param fileName gets the file name from the uploaded module file
-	 * @return the module name and version in format like event:1.0.0 or just the original filename
+	 *Gets the module name and version from the filename if possible. 
+	 * <p>
+	 * This is a fallback helper for cases where module descriptor parsing fails before a
+	 * {@link Module} object can be created. 
+	 * </p>
+	 *
+	 * @param fileName the module file name
+	 * @return name:version if version can be found, name only if no version is found, or null
+	 *         for null/empty input
 	 */
 	public static String getModuleNameAndVersionFromFileName(String fileName) {
 

@@ -241,10 +241,11 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 
 		String newModuleLocation = ModuleUtil.class.getClassLoader().getResource(MODULE1_PATH).getPath();
 		File newModuleToLoad = new File(newModuleLocation);
-		ModuleFactory.loadModule(newModuleToLoad);
+		ModuleException exception = assertThrows(ModuleException.class, () -> ModuleFactory.loadModule(newModuleToLoad));
 
 		String failureReason = "There exists a same module with latest version than this module version";
 		assertEquals(1, testModuleEventListener.events.size());
+		assertEquals(failureReason, exception.getMessage());
 		assertEquals("test1:Test1 Module:1.0-SNAPSHOT" + ":MODULE_LOAD:false:" + failureReason, testModuleEventListener.events.get(0));
 	}
 	
