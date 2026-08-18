@@ -460,6 +460,16 @@ public class ObsArchiveHelper {
 			withManualFlush(() -> {
 				Session session = sessionFactory.getCurrentSession();
 
+				// Find and purge children first to ensure cascading delete
+				List<Integer> childIds = session
+				        .createNativeQuery("SELECT obs_id FROM obs_archive WHERE obs_group_id = :obsId", Integer.class)
+				        .setParameter("obsId", obsId).getResultList();
+				if (childIds != null) {
+					for (Integer childId : childIds) {
+						purgeObsFromArchive(childId);
+					}
+				}
+
 				// Ensure FK order: delete reference range archive first
 				session.createNativeQuery("DELETE FROM obs_reference_range_archive WHERE obs_id = :obsId")
 				        .setParameter("obsId", obsId).executeUpdate();
