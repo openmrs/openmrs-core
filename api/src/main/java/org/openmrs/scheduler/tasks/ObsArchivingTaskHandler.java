@@ -24,6 +24,7 @@ import org.openmrs.ObsArchive;
 import org.openmrs.ObsArchiveReferenceRange;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.ObsArchiveHelper;
 import org.openmrs.scheduler.TaskContext;
 import org.openmrs.scheduler.TaskHandler;
 import org.openmrs.util.OpenmrsConstants;
@@ -229,6 +230,17 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 
 			session.flush();
 			session.clear();
+
+			// Notify the in-memory cache so this node knows the archive
+			// is no longer empty, without waiting for the TTL to expire.
+			try {
+				ObsArchiveHelper archiveHelper = Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class);
+				if (archiveHelper != null) {
+					archiveHelper.markArchiveHasData();
+				}
+			} catch (Exception e) {
+				log.debug("Could not notify ObsArchiveHelper cache", e);
+			}
 
 			return null;
 		});
