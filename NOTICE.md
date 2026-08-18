@@ -17,6 +17,7 @@ The following dependencies are licensed under the [Apache License, Version 2.0](
 - Apache Commons BeanUtils (`commons-beanutils:commons-beanutils`)
 - Apache Commons Collections (`commons-collections:commons-collections`)
 - Apache Commons IO (`commons-io:commons-io`)
+- Apache Commons FileUpload2 (`org.apache.commons:commons-fileupload2-jakarta-servlet6`)
 - Apache Commons Lang (`org.apache.commons:commons-lang3`)
 - Apache Commons Validator (`commons-validator:commons-validator`)
 - Apache Log4j (`org.apache.logging.log4j:log4j-core`, `log4j-slf4j-impl`, `log4j-1.2-api`)

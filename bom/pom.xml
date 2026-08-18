@@ -80,6 +80,7 @@
 		<commonsIoVersion>2.22.0</commonsIoVersion>
 		<commonsLang3Version>3.20.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
+		<commonsFileupload2JakartaVersion>2.0.0-M5</commonsFileupload2JakartaVersion>
 		<commonsValidatorVersion>1.11.0</commonsValidatorVersion>
 
 		<!-- Velocity -->
@@ -376,6 +377,11 @@
 						<artifactId>commons-logging</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
+				<version>${commonsFileupload2JakartaVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-validator</groupId>
