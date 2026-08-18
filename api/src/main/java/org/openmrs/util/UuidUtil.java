@@ -22,8 +22,6 @@ import com.fasterxml.uuid.NoArgGenerator;
  * It is preferable to use this class to generate random UUIDs, as the JDK's default implementation
  * can be slow under a high volume of requests. The uuids it generates are not suitable for
  * security-sensitive purposes.
- *
- * @since 2.8.9, 2.9.0, 3.0.0
  */
 public class UuidUtil {
 
@@ -36,7 +34,6 @@ public class UuidUtil {
 	 * Generates a new uuid.
 	 *
 	 * @return a newly generated version 4 uuid
-	 * @since 2.8.9, 3.0.0, 2.9.0
 	 */
 	public static UUID newUuid() {
 		return UUID_GENERATOR.generate();
@@ -47,7 +44,6 @@ public class UuidUtil {
 	 * example {@code 6e9a0b1c-6d3a-4f0e-8a1b-2c3d4e5f6a7b}.
 	 *
 	 * @return a newly generated version 4 uuid as a string
-	 * @since 2.8.9, 3.0.0, 2.9.0
 	 */
 	public static String newUuidString() {
 		return newUuid().toString();

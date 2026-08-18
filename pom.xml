@@ -63,12 +63,12 @@
 	<dependencyManagement>
 		<dependencies>
 			<!-- OpenMRS Dependencies -->
-		<dependency>
-			<groupId>org.openmrs.tools</groupId>
-			<artifactId>openmrs-tools</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
+			<dependency>
+				<groupId>org.openmrs.tools</groupId>
+				<artifactId>openmrs-tools</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.openmrs.test</groupId>
 				<artifactId>openmrs-test</artifactId>
 				<version>${project.version}</version>
