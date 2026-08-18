@@ -35,15 +35,6 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 	protected List<String> specialTokens;
 
 	/**
-	 * @return the current special token configuration version, for use by
-	 *         {@link LayoutTemplate#getLines()} in deciding whether its cache is still valid
-	 * @since 2.8.10
-	 */
-	public int getConfigurationVersion() {
-		return configurationVersion.get();
-	}
-
-	/**
 	 * @return Returns the layoutTemplates.
 	 */
 	public List<T> getLayoutTemplates() {
@@ -93,7 +84,7 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			for (T at : this.layoutTemplates) {
 				if (at != null && templateName.equalsIgnoreCase(at.getCodeName())) {
 					ret = at;
-					log.debug("Found Layout Template named '{}'", at.getDisplayName());
+					log.debug("Found Layout Template named " + at.getDisplayName());
 				}
 			}
 
@@ -111,7 +102,7 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			for (T at : this.layoutTemplates) {
 				if (at != null && templateName.equalsIgnoreCase(at.getCountry())) {
 					ret = at;
-					log.debug("Found Layout Template named '{}'", at.getDisplayName());
+					log.debug("Found Layout Template named " + at.getDisplayName());
 				}
 			}
 
@@ -129,7 +120,7 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			for (T at : this.layoutTemplates) {
 				if (at != null && templateName.equalsIgnoreCase(at.getDisplayName())) {
 					ret = at;
-					log.debug("Found Layout Template named '{}'", at.getDisplayName());
+					log.debug("Found Layout Template named " + at.getDisplayName());
 				}
 			}
 
@@ -167,4 +158,12 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 		this.defaultLayoutFormat = defaultLayoutFormat;
 	}
 
+	/**
+	 * @return the current special token configuration version, for use by
+	 *         {@link LayoutTemplate#getLines()} in deciding whether its cache is still valid
+	 * @since 2.8.10
+	 */
+	int getConfigurationVersion() {
+		return configurationVersion.get();
+	}
 }
