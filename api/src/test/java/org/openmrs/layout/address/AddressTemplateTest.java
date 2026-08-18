@@ -33,8 +33,10 @@ public class AddressTemplateTest extends BaseContextSensitiveTest {
 	public void setUp() {
 		// the same shape as OpenmrsConstants.DEFAULT_ADDRESS_TEMPLATE
 		addressTemplate = new AddressTemplate("address1");
-		addressTemplate
-		        .setLineByLineFormat(Arrays.asList("address1", "address2", "cityVillage stateProvince country postalCode"));
+		// a real ArrayList rather than an Arrays.asList view: the latter is a JDK-internal type that
+		// XStream can only handle reflectively, which the module system blocks on Java 11 and later
+		addressTemplate.setLineByLineFormat(
+		    new ArrayList<>(Arrays.asList("address1", "address2", "cityVillage stateProvince country postalCode")));
 
 		Map<String, String> nameMappings = new HashMap<>();
 		Map<String, String> sizeMappings = new HashMap<>();
