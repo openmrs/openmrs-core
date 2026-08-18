@@ -10,15 +10,14 @@
 package org.openmrs.module;
 
 /**
- * Defines the types of actions that can happen to a module.
- * 
+ * Event published after a module start attempt completes.
+ *
  * @since 2.7.10
  */
-public enum ModuleEventType {
-
-	MODULE_START,
-	MODULE_STOP,
-	MODULE_LOAD,
-	MODULE_UNLOAD;
+public class ModuleStartEvent extends AbstractModuleEvent {
 	
+	public ModuleStartEvent(Object source, String moduleId, String moduleName, String moduleVersion, boolean isSuccess,
+	    String failureReason) {
+		super(source, moduleId, moduleName, moduleVersion, isSuccess, failureReason);
+	}
 }

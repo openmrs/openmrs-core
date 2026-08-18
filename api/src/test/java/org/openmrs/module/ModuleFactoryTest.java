@@ -437,9 +437,25 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		public List<String> events = new ArrayList<>();
 
 		@EventListener
-		public void onModuleEvent(ModuleActionEvent moduleEvent) {
+		public void onModuleEvent(AbstractModuleEvent moduleEvent) {
 			events.add(moduleEvent.getModuleId() + ":" + moduleEvent.getModuleName() + ":" + moduleEvent.getModuleVersion() + ":" 
-				+ moduleEvent.getEventType() + ":" + moduleEvent.isSuccess() + ":" + moduleEvent.getFailureReason());
+				+ getEventTypeLabel(moduleEvent) + ":" + moduleEvent.isSuccess() + ":" + moduleEvent.getFailureReason());
+		}
+
+		private String getEventTypeLabel(AbstractModuleEvent moduleEvent) {
+			if (moduleEvent instanceof ModuleLoadEvent) {
+				return "MODULE_LOAD";
+			}
+			if (moduleEvent instanceof ModuleStartEvent) {
+				return "MODULE_START";
+			}
+			if (moduleEvent instanceof ModuleStopEvent) {
+				return "MODULE_STOP";
+			}
+			if (moduleEvent instanceof ModuleUnloadEvent) {
+				return "MODULE_UNLOAD";
+			}
+			return moduleEvent.getClass().getSimpleName();
 		}
 
 		public void clear() {

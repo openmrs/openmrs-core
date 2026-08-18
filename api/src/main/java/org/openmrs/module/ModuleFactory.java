@@ -114,7 +114,7 @@ public class ModuleFactory {
 	public static Module loadModule(File moduleFile, Boolean replaceIfExists) throws ModuleException {
 
 		Module module = null;
-		Module laodedModule = null;
+		Module loadedModule = null;
 		boolean isModuleLoaded = true;
 		String failureReason = null;
 		String fileName;
@@ -123,14 +123,14 @@ public class ModuleFactory {
 			module = new ModuleFileParser(Context.getMessageSourceService()).parse(moduleFile);
 
 			if (module != null) {
-				laodedModule = loadModule(module, replaceIfExists);
+				loadedModule = loadModule(module, replaceIfExists);
 			}
 		} catch (Exception ex) {
 			isModuleLoaded = false;
 			failureReason = ex.getMessage();
 			throw ex;
 		} finally {
-			   if (laodedModule != null) {
+			   if (loadedModule != null) {
 				   Module oldModule = getLoadedModulesMap().get(module.getModuleId());
 				   if (oldModule != null) {
 					   int versionComparison = ModuleUtil.compareVersion(oldModule.getVersion(), module.getVersion());
@@ -155,7 +155,7 @@ public class ModuleFactory {
 				   }
 				   moduleToPublish = new Module(name, null, null, null, null, version, null);
 			   }
-			   publishModuleEvents(ModuleEventType.MODULE_LOAD, moduleToPublish, isModuleLoaded, failureReason);
+			   publishModuleEvents(new ModuleLoadEvent(ModuleFactory.class, moduleToPublish.getModuleId(), moduleToPublish.getName(), moduleToPublish.getVersion(), isModuleLoaded, failureReason));
 		}
 		
 		return module;
@@ -601,9 +601,9 @@ public class ModuleFactory {
 		}
 		finally {
 			String startUpErrorMsg = module.getStartupErrorMessage();
-			publishModuleEvents(ModuleEventType.MODULE_START, module, 
+			publishModuleEvents(new ModuleStartEvent(ModuleFactory.class, module.getModuleId(), module.getName(), module.getVersion(),
 				isSuccess && isModuleStarted(module) && (startUpErrorMsg==null || startUpErrorMsg.isEmpty()),
-				failureReason == null ? startUpErrorMsg : failureReason);
+				failureReason == null ? startUpErrorMsg : failureReason));
 		}
 		return startedModule;
 	}
@@ -1099,7 +1099,7 @@ public class ModuleFactory {
 			throw ex;
 		}
 		finally {
-			publishModuleEvents(ModuleEventType.MODULE_STOP, mod, isStoppedSuccess && !isModuleStarted(mod), failureReason);
+			publishModuleEvents(new ModuleStopEvent(ModuleFactory.class, mod.getModuleId(), mod.getName(), mod.getVersion(), isStoppedSuccess && !isModuleStarted(mod), failureReason));
 		}
 		return dependentModulesStopped;
 	}
@@ -1326,7 +1326,13 @@ public class ModuleFactory {
 			throw ex;
 		}
 		finally {
-			publishModuleEvents(ModuleEventType.MODULE_UNLOAD, mod, isEventSuccess, failureReason);
+			if (mod == null) {
+				publishModuleEvents(new ModuleUnloadEvent(ModuleFactory.class, null, null, null,  isEventSuccess, failureReason));
+			} 
+			else {
+				publishModuleEvents(new ModuleUnloadEvent(ModuleFactory.class, mod.getModuleId(), mod.getName(), mod.getVersion(),  isEventSuccess, failureReason));
+
+			}
 		}
 	}
 	
@@ -1738,21 +1744,17 @@ public class ModuleFactory {
 	/**
 	 * Helper method to publish the module events
 	 * 
-	 * @param eventType for what action done on the module
-	 * @param mod defines the module on which we're performing the action 
-	 * @param isSuccess defines whether the module event got successfully executed or not
+	 * @param moduleEvent of AbstractModuleEvent type for the different module actions
 	 * @since 2.7.10
 	 */
-	private static void publishModuleEvents(ModuleEventType eventType, Module mod, boolean isSuccess, String failureReason) {
+	private static void publishModuleEvents(AbstractModuleEvent  moduleEvent) {
 		try {
-			if (mod == null) {
+			if (moduleEvent == null) {
 				return;
 			}
 			ApplicationEventPublisher applicationEventPublisher = ServiceContext.getInstance().getApplicationContext();
-			ModuleActionEvent event = new ModuleActionEvent(ModuleFactory.class, eventType, mod.getModuleId(),
-				mod.getName(), mod.getVersion(), isSuccess, failureReason);
 			if (applicationEventPublisher != null) {
-				applicationEventPublisher.publishEvent(event);
+				applicationEventPublisher.publishEvent(moduleEvent);
 			}
 		} 
 		catch (Exception e) {
