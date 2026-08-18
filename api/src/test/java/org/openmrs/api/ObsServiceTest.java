@@ -2209,6 +2209,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		// lookup is measured
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		sessionFactory.getCurrentSession().flush();
+		sessionFactory.getCurrentSession().clear();
 		Statistics stats = sessionFactory.getStatistics();
 		stats.clear();
 

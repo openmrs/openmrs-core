@@ -99,7 +99,8 @@ public class HibernateObsDAO implements ObsDAO {
 			return Collections.emptyList();
 		}
 
-		List<Obs> loaded = session.createQuery("FROM Obs o WHERE o.obsId IN (:obsIds)", Obs.class)
+		List<Obs> loaded = session
+		        .createQuery("FROM Obs o LEFT JOIN FETCH o.referenceRange WHERE o.obsId IN (:obsIds)", Obs.class)
 		        .setParameter("obsIds", ids).getResultList();
 		Map<Integer, Obs> byId = new java.util.HashMap<>();
 		for (Obs o : loaded) {
