@@ -26,7 +26,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.Form;
 import org.openmrs.FormField;
-import org.openmrs.hl7.HL7Constants;
+
 
 /**
  * OpenMRS utilities related to forms.
@@ -220,7 +220,7 @@ public class FormUtil {
 	 * @return String representation of the given concept
 	 */
 	public static String conceptToString(Concept concept, ConceptName localizedName) {
-		return concept.getConceptId() + "^" + localizedName.getName() + "^" + HL7Constants.HL7_LOCAL_CONCEPT; // + "^"
+		return concept.getConceptId() + "^" + localizedName.getName() + "^" + "99DCT"; // + "^"
 	}
 
 	/**
@@ -230,6 +230,6 @@ public class FormUtil {
 	 * @return String representation of the given drug
 	 */
 	public static String drugToString(Drug drug) {
-		return drug.getDrugId() + "^" + drug.getName() + "^" + HL7Constants.HL7_LOCAL_DRUG;
+		return drug.getDrugId() + "^" + drug.getName() + "^" + "99RX";
 	}
 }

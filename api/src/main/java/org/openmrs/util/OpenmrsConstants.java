@@ -249,7 +249,8 @@ public final class OpenmrsConstants {
 
 	public static final String GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME = "user.requireEmailAsUsername";
 
-	public static final String GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY = "hl7_archive.dir";
+	// FOR TRUNK-6775
+	// public static final String GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY = "hl7_archive.dir";
 
 	public static final String GLOBAL_PROPERTY_DEFAULT_THEME = "default_theme";
 
@@ -344,8 +345,9 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE = "providerSearch.matchMode";
 
 	public static final String GLOBAL_PROPERTY_DEFAULT_SERIALIZER = "serialization.defaultSerializer";
-
-	public static final String GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS = "hl7_processor.ignore_missing_patient_non_local";
+	
+// FOR TRUNK-6775 
+	// public static final String GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS = "hl7_processor.ignore_missing_patient_non_local";
 
 	public static final String GLOBAL_PROPERTY_TRUE_CONCEPT = "concept.true";
 
@@ -842,9 +844,10 @@ public final class OpenmrsConstants {
 		        "Configure whether passwords must contain both upper and lower case characters", BooleanDatatype.class,
 		        null));
 
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
-		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",
-		        BooleanDatatype.class, null));
+		// FOR TRUNK-6775 
+		// props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
+		       //  "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",
+		       //  BooleanDatatype.class, null));
 
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_SHOW_PATIENT_NAME, "false",
 		        "Whether or not to display the patient name in the patient dashboard title. Note that enabling this could be security risk if multiple users operate on the same computer.",
@@ -852,9 +855,9 @@ public final class OpenmrsConstants {
 
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_THEME, "",
 		        "Default theme for users.  OpenMRS ships with themes of 'green', 'orange', 'purple', and 'legacy'"));
-
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY, HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME,
-		        "The default name or absolute path for the folder where to write the hl7_in_archives."));
+		// FOR TRUNK-6775 
+		// props.add(new GlobalProperty(GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY, HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME,
+		       // "The default name or absolute path for the folder where to write the hl7_in_archives."));
 
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_BUG_URL, "http://errors.openmrs.org/scrap",
 		        "The openmrs url where to submit bug reports"));
