@@ -80,7 +80,6 @@ public class HibernateContextDAO implements ContextDAO {
 	@Autowired
 	private SearchSessionFactory searchSessionFactory;
 	
-	@Autowired
 	private UserDAO userDao;
 	@Autowired
 	@Lazy

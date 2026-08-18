@@ -239,11 +239,11 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void changePassword_shouldNotInvalidateSecretAnswer() {
 		dao.saveUser(userJoe, PASSWORD);
+		Context.flushSession();
+		Context.clearSession();
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
-		
 		dao.changePassword(userJoe, "Openmr6zz");
-		
 		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER),
 			"secret answer must still verify after a password change");
 	}

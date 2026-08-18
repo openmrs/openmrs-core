@@ -349,7 +349,10 @@ public class HibernateUserDAO implements UserDAO {
 		// Encode using Argon2id — salt is embedded internally by the encoder
 		String newHashedPassword = Security.encodePassword(pw);
 		// Preserve existing salt for secret answer verification
-		String salt = getLoginCredential(u).getSalt();
+		sessionFactory.getCurrentSession().flush();
+		LoginCredential lc = getLoginCredential(u);
+		sessionFactory.getCurrentSession().refresh(lc);
+		String salt = lc.getSalt();
 		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
 	}
 	
@@ -398,10 +401,10 @@ public class HibernateUserDAO implements UserDAO {
 		
 		sessionFactory.getCurrentSession().merge(credentials);
 		
-		// reset lockout 
+		// reset lockout
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
-		saveUser(changeForUser, null);
+		sessionFactory.getCurrentSession().merge(changeForUser);
 	}
 
 	/**
@@ -460,6 +463,9 @@ public class HibernateUserDAO implements UserDAO {
 		String newHashedPassword = Security.encodePassword(newPassword);
 		// Preserve existing salt for secret answer verification
 		String salt = credentials.getSalt();
+		if (StringUtils.isBlank(salt)) {
+			salt = Security.getRandomToken();
+		}
 		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
 	}
 	
