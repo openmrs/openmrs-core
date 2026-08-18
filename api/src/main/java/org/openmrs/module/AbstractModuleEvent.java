@@ -12,14 +12,16 @@ package org.openmrs.module;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * A POJO representing a module action event which
- * carries data for module-related events so they can be published across the app.
+ * Base {@link ApplicationEvent} for module lifecycle actions executed by {@link ModuleFactory}.
+ * Subclasses represent concrete lifecycle actions such as load, start, stop, and unload.
+ * <p>
+ * The payload includes the event payload and the final action outcome.
+ * It will use by listener to get the module event metadata. 
+ * </p>
  * 
  * @since 2.7.10
  */
-public class ModuleActionEvent extends ApplicationEvent {
-	
-	private final ModuleEventType eventType;
+public abstract class AbstractModuleEvent extends ApplicationEvent {
 	
 	private final String moduleId;
 	
@@ -31,19 +33,14 @@ public class ModuleActionEvent extends ApplicationEvent {
 	
 	private final String failureReason;
 	
-	public ModuleActionEvent(Object source, ModuleEventType eventType, String moduleId, String moduleName,
-	    String moduleVersion, boolean isSuccess, String failureReason) {
+	public AbstractModuleEvent(Object source, String moduleId, String moduleName, String moduleVersion, boolean isSuccess,
+	    String failureReason) {
 		super(source);
-		this.eventType = eventType;
 		this.moduleId = moduleId;
 		this.moduleName = moduleName;
 		this.moduleVersion = moduleVersion;
 		this.isSuccess = isSuccess;
 		this.failureReason = failureReason;
-	}
-	
-	public ModuleEventType getEventType() {
-		return eventType;
 	}
 	
 	public String getModuleId() {
@@ -65,5 +62,4 @@ public class ModuleActionEvent extends ApplicationEvent {
 	public String getFailureReason() {
 		return failureReason;
 	}
-	
 }
