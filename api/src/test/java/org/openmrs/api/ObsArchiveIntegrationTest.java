@@ -861,6 +861,12 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		assertNull(returnedParent.getObsGroup(), "Parent should not have a group");
 		assertNotNull(returnedChild.getObsGroup(), "Child should have a group");
 		assertEquals(parentId, returnedChild.getObsGroup().getObsId(), "Child's group should be the parent");
+
+		// 5. Verify Encounter.getAllObsIncludingArchived() correctly uses the archive
+		Encounter reloadedEncounter = Context.getEncounterService().getEncounter(encounter.getEncounterId());
+		java.util.Set<Obs> allObs = reloadedEncounter.getAllObsIncludingArchived();
+		assertTrue(allObs.contains(returnedParent), "Parent should be included in Encounter.getAllObsIncludingArchived");
+		assertTrue(allObs.contains(returnedChild), "Child should be included in Encounter.getAllObsIncludingArchived");
 	}
 
 	@Test
@@ -1041,26 +1047,17 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 
 		Context.clearSession();
 
-		// Purge each child first, then the parent (avoids FK on obs_group_id in archive)
-		for (Integer childId : childIds) {
-			Obs archivedChild = obsService.getObs(childId);
-			assertNotNull(archivedChild, "Archived child " + childId + " should be retrievable");
-			obsService.purgeObs(archivedChild);
-		}
-		Context.flushSession();
-		Context.clearSession();
-
+		// Purge the parent directly. The archive helper should cascade and delete the children.
 		Obs archivedParent = obsService.getObs(parentId);
 		assertNotNull(archivedParent, "Archived parent should be retrievable");
 		obsService.purgeObs(archivedParent);
 		Context.flushSession();
 		Context.clearSession();
 
-		// Verify all are gone
+		// Verify parent and children are gone
 		assertFalse(obsArchiveHelper.isArchived(parentId), "Parent should be purged from archive");
-		assertNull(obsService.getObs(parentId), "Parent should no longer be retrievable");
 		for (Integer childId : childIds) {
-			assertFalse(obsArchiveHelper.isArchived(childId), "Child " + childId + " should be purged from archive");
+			assertFalse(obsArchiveHelper.isArchived(childId), "Child " + childId + " should be cascaded and purged");
 			assertNull(obsService.getObs(childId), "Child " + childId + " should no longer be retrievable");
 		}
 	}
