@@ -263,26 +263,26 @@
 				<tableExists tableName="obs_reference_range_archive"/>
 			</not>
 		</preConditions>
-	<comment>Add obs_reference_range_archive table for Archiving Observations</comment>
-	<createTable tableName="obs_reference_range_archive">
-		<column name="obs_reference_range_id" type="INT">
-			<constraints nullable="false" primaryKey="true"/>
-		</column>
-		<column name="obs_id" type="INT">
-			<constraints nullable="false" unique="true"/>
-		</column>
-		<column name="hi_absolute" type="DOUBLE"/>
-		<column name="hi_critical" type="DOUBLE"/>
-		<column name="hi_normal" type="DOUBLE"/>
-		<column name="low_absolute" type="DOUBLE"/>
-		<column name="low_critical" type="DOUBLE"/>
-		<column name="low_normal" type="DOUBLE"/>
-		<column name="uuid" type="CHAR(38)">
-			<constraints nullable="false" unique="true"/>
-		</column>
-		<column name="archived_by" type="INT"/>
-		<column name="date_archived" type="DATETIME"/>
-	</createTable>
+		<comment>Add obs_reference_range_archive table for Archiving Observations</comment>
+		<createTable tableName="obs_reference_range_archive">
+			<column name="obs_reference_range_id" type="INT">
+					<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="obs_id" type="INT">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="hi_absolute" type="DOUBLE"/>
+			<column name="hi_critical" type="DOUBLE"/>
+			<column name="hi_normal" type="DOUBLE"/>
+			<column name="low_absolute" type="DOUBLE"/>
+			<column name="low_critical" type="DOUBLE"/>
+			<column name="low_normal" type="DOUBLE"/>
+			<column name="uuid" type="CHAR(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="archived_by" type="INT"/>
+			<column name="date_archived" type="DATETIME"/>
+		</createTable>
 		<addForeignKeyConstraint constraintName="fk_obs_reference_range_archive_obs_id" baseTableName="obs_reference_range_archive" baseColumnNames="obs_id" referencedTableName="obs_archive" referencedColumnNames="obs_id"/>
 		<addForeignKeyConstraint constraintName="fk_obs_reference_range_archive_archived_by" baseTableName="obs_reference_range_archive" baseColumnNames="archived_by"
 								 referencedTableName="users" referencedColumnNames="user_id"/>
