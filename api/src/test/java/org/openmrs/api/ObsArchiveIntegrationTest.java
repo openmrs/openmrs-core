@@ -17,6 +17,7 @@ import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
@@ -800,6 +801,99 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 	}
 
 	@Test
+	public void getArchivedObsByEncounterId_shouldReturnArchivedObsAndResolveGroups() throws Exception {
+		// 1. Create a parent obs linked to an encounter, and a child obs WITHOUT an explicit encounter.
+		// The child must be found via the OR clause in the HQL query (obsGroupId-based union),
+		// not via a direct encounter match, to properly exercise the full query.
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+
+		Obs parent = createSingleObs(null);
+		parent.setEncounter(encounter);
+
+		Obs child = createSingleObs(42.0);
+		// Deliberately NOT setting child.setEncounter(encounter) so the child has no direct
+		// encounter link. The query must find it through:
+		//   OR a.obsGroupId IN (SELECT oa.obsId FROM ObsArchive oa WHERE oa.encounter.encounterId = :encId)
+
+		parent.addGroupMember(child);
+
+		parent = obsService.saveObs(parent, "save parent with child for encounter");
+		Integer parentId = parent.getObsId();
+		Integer childId = parent.getGroupMembers(true).iterator().next().getObsId();
+		createdObsIds.add(parentId);
+		createdObsIds.add(childId);
+
+		// 2. Void parent (this automatically voids children too)
+		obsService.voidObs(parent, "void parent");
+		Context.flushSession();
+		Context.clearSession();
+
+		// 3. Run archiving
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(parentId);
+		assertArchived(childId);
+
+		// 4. Call getArchivedObsByEncounterId
+		List<Obs> archivedObs = obsArchiveHelper.getArchivedObsByEncounterId(encounter.getEncounterId());
+
+		assertNotNull(archivedObs);
+		assertTrue(archivedObs.size() >= 2, "Should return at least the parent and child obs");
+
+		Obs returnedParent = null;
+		Obs returnedChild = null;
+		for (Obs o : archivedObs) {
+			if (o.getObsId().equals(parentId)) {
+				returnedParent = o;
+			} else if (o.getObsId().equals(childId)) {
+				returnedChild = o;
+			}
+		}
+
+		assertNotNull(returnedParent, "Parent should be in the returned list");
+		assertNotNull(returnedChild, "Child should be in the returned list (found via obsGroupId union)");
+
+		assertNull(returnedParent.getObsGroup(), "Parent should not have a group");
+		assertNotNull(returnedChild.getObsGroup(), "Child should have a group");
+		assertEquals(parentId, returnedChild.getObsGroup().getObsId(), "Child's group should be the parent");
+	}
+
+	@Test
+	public void purgeObs_shouldDeleteFromArchiveWhenArchived() throws Exception {
+		Obs obs = createAndSaveSingleObs(50.0);
+		int testObsId = obs.getObsId();
+
+		// Void the observation
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		// Run archiving
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(testObsId);
+
+		Context.clearSession();
+		Obs archivedObs = obsService.getObs(testObsId);
+		assertNotNull(archivedObs);
+
+		// Purge the archived obs
+		obsService.purgeObs(archivedObs);
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify it's no longer in archive
+		assertFalse(obsArchiveHelper.isArchived(testObsId), "Purged obs should be removed from archive");
+		assertEquals(0,
+		    jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = ?", Integer.class, testObsId),
+		    "obs " + testObsId + " should NOT be in archive table");
+
+		assertNull(obsService.getObs(testObsId), "Purged obs should no longer exist");
+	}
+
+	@Test
 	public void getArchivedChildObs_shouldReturnArchivedChildren() {
 		Obs parent = new Obs();
 		parent.setPerson(Context.getPersonService().getPerson(7));
@@ -877,5 +971,129 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 
 		assertTrue(concept1Obs.stream().anyMatch(o -> o.getObsId().equals(obs1Id)));
 		assertTrue(concept2Obs.stream().anyMatch(o -> o.getObsId().equals(obs2Id)));
+	}
+
+	@Test
+	public void purgeObs_shouldDeleteArchivedObsWithReferenceRange() throws Exception {
+		// Create obs WITH a reference range, so both obs_archive and obs_reference_range_archive rows exist
+		Obs obs = createAndSaveSingleObsWithReferenceRange(72.5);
+		int testObsId = obs.getObsId();
+
+		// Void and archive it
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(testObsId);
+
+		// Confirm reference range was also archived
+		assertEquals(1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_reference_range_archive WHERE obs_id = ?",
+		    Integer.class, testObsId), "reference range should be in archive");
+
+		Context.clearSession();
+		Obs archivedObs = obsService.getObs(testObsId);
+		assertNotNull(archivedObs);
+
+		// Purge — this must delete obs_reference_range_archive BEFORE obs_archive (FK order)
+		obsService.purgeObs(archivedObs);
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify both archive tables are clean
+		assertFalse(obsArchiveHelper.isArchived(testObsId), "Purged obs should be removed from archive");
+		assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_reference_range_archive WHERE obs_id = ?",
+		    Integer.class, testObsId), "reference range should also be purged from archive");
+		assertEquals(0,
+		    jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs_archive WHERE obs_id = ?", Integer.class, testObsId),
+		    "obs should be purged from archive");
+		assertNull(obsService.getObs(testObsId), "Purged obs should no longer be retrievable");
+	}
+
+	@Test
+	public void purgeObs_shouldDeleteArchivedObsGroupParent() throws Exception {
+		// Create a parent obs with two children
+		Obs parent = createAndSaveObsTree(10.0, 20.0);
+		int parentId = parent.getObsId();
+		List<Integer> childIds = new ArrayList<>();
+		for (Obs child : parent.getGroupMembers(true)) {
+			childIds.add(child.getObsId());
+		}
+
+		// Void parent (cascades to children) and archive all
+		obsService.voidObs(parent, "test voiding group");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(parentId);
+		for (Integer childId : childIds) {
+			assertArchived(childId);
+		}
+
+		Context.clearSession();
+
+		// Purge each child first, then the parent (avoids FK on obs_group_id in archive)
+		for (Integer childId : childIds) {
+			Obs archivedChild = obsService.getObs(childId);
+			assertNotNull(archivedChild, "Archived child " + childId + " should be retrievable");
+			obsService.purgeObs(archivedChild);
+		}
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs archivedParent = obsService.getObs(parentId);
+		assertNotNull(archivedParent, "Archived parent should be retrievable");
+		obsService.purgeObs(archivedParent);
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify all are gone
+		assertFalse(obsArchiveHelper.isArchived(parentId), "Parent should be purged from archive");
+		assertNull(obsService.getObs(parentId), "Parent should no longer be retrievable");
+		for (Integer childId : childIds) {
+			assertFalse(obsArchiveHelper.isArchived(childId), "Child " + childId + " should be purged from archive");
+			assertNull(obsService.getObs(childId), "Child " + childId + " should no longer be retrievable");
+		}
+	}
+
+	@Test
+	public void fetchNextBatch_shouldExcludeObsLinkedToConceptProposal() throws Exception {
+		// 1. Create and save a new obs
+		Obs obs = createAndSaveSingleObs(42.0);
+		int obsId = obs.getObsId();
+
+		// 2. Void the obs so it becomes eligible for archiving
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		// 3. Create a ConceptProposal linked to this obs
+		org.openmrs.ConceptProposal proposal = new org.openmrs.ConceptProposal();
+		proposal.setOriginalText("Test Proposal");
+		proposal.setEncounter(Context.getEncounterService().getEncounter(3));
+		// Need to get the obs again in the new session to set it on proposal
+		proposal.setObs(obsService.getObs(obsId));
+		proposal.setState(org.openmrs.util.OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
+		Context.getConceptService().saveConceptProposal(proposal);
+		Context.flushSession();
+		Context.clearSession();
+
+		// 4. Run archiving task
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		// 5. Verify the obs is NOT archived, because the ConceptProposal link excluded it from the batch
+		assertFalse(obsArchiveHelper.isArchived(obsId), "Obs linked to ConceptProposal should not be archived");
+		assertEquals(1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class, obsId),
+		    "Obs linked to ConceptProposal should remain in the active table");
+
+		// Clean up the concept proposal manually so it doesn't affect other tests
+		Context.getConceptService()
+		        .purgeConceptProposal(Context.getConceptService().getConceptProposal(proposal.getConceptProposalId()));
 	}
 }

@@ -108,11 +108,14 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 		Query<Integer> query;
 		if (lastProcessedId == -1) {
 			query = session.createQuery(
-			    "SELECT o.obsId FROM Obs o WHERE o.voided = :voided AND o.dateVoided < :cutoffDate ORDER BY o.obsId DESC",
+			    "SELECT o.obsId FROM Obs o WHERE o.voided = :voided AND o.dateVoided < :cutoffDate "
+			            + "AND NOT EXISTS (SELECT 1 FROM ConceptProposal cp WHERE cp.obs = o) ORDER BY o.obsId DESC",
 			    Integer.class);
 		} else {
 			query = session.createQuery(
-			    "SELECT o.obsId FROM Obs o WHERE o.voided = :voided AND o.dateVoided < :cutoffDate AND o.obsId < :lastProcessedId ORDER BY o.obsId DESC",
+			    "SELECT o.obsId FROM Obs o WHERE o.voided = :voided AND o.dateVoided < :cutoffDate "
+			            + "AND o.obsId < :lastProcessedId "
+			            + "AND NOT EXISTS (SELECT 1 FROM ConceptProposal cp WHERE cp.obs = o) ORDER BY o.obsId DESC",
 			    Integer.class).setParameter("lastProcessedId", (int) lastProcessedId);
 		}
 		return query.setParameter("voided", true).setParameter("cutoffDate", cutoffDate).setMaxResults(batchSize).list();

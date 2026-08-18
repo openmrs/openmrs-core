@@ -403,4 +403,33 @@ public class ObsArchiveHelper {
 		return (d1 instanceof Date d1Date && d2 instanceof Date d2Date) ? OpenmrsUtil.compare(d1Date, d2Date) == 0
 		        : d1.equals(d2);
 	}
+
+	public void purgeObsFromArchive(Integer obsId) {
+		if (obsId == null) {
+			return;
+		}
+		try {
+			withManualFlush(() -> {
+				Session session = sessionFactory.getCurrentSession();
+
+				// Ensure FK order: delete reference range archive first
+				session.createNativeQuery("DELETE FROM obs_reference_range_archive WHERE obs_id = :obsId")
+				        .setParameter("obsId", obsId).executeUpdate();
+
+				// Delete from main archive table
+				session.createNativeQuery("DELETE FROM obs_archive WHERE obs_id = :obsId").setParameter("obsId", obsId)
+				        .executeUpdate();
+
+				// Evict from L1 cache if it was loaded during this session
+				ObsArchive cached = session.get(ObsArchive.class, obsId);
+				if (cached != null) {
+					session.evict(cached);
+				}
+				return null;
+			});
+		} catch (HibernateException e) {
+			log.warn("Failed to purge obs {} from archive", obsId, e);
+			throw new org.openmrs.api.APIException("Failed to purge archived obs", e);
+		}
+	}
 }
