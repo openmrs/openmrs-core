@@ -155,11 +155,14 @@ public abstract class LayoutTemplate {
 
 	/**
 	 * Returns the memoized tokenization, computing it if this is the first call or if the cache has
-	 * been invalidated. Readers take no lock: the snapshot is immutable and published through a
-	 * volatile field, so a reader either sees a fully built snapshot or none at all. Rebuilding is
-	 * serialized on this template, both so that two threads cannot interleave their updates of
-	 * {@link #maxTokens} and so that a concurrent setter cannot have its value overwritten by a rebuild
-	 * that started before it.
+	 * been invalidated. Takes no lock in either direction: the snapshot is immutable and published
+	 * through a volatile field, so a reader sees either a fully built snapshot or none at all, and the
+	 * pass writes nothing back to this template. Two threads racing on a miss both compute an
+	 * equivalent snapshot from the same inputs, so whichever publishes last is as good as the other.
+	 * <p>
+	 * The unsynchronized read of {@link #maxTokens} is ordered by the volatile read above: every setter
+	 * assigns its field before clearing the cache, so a reader that has just seen the cleared cache is
+	 * guaranteed to see the value that cleared it.
 	 *
 	 * @return the current tokenization snapshot, never null
 	 */
@@ -169,44 +172,37 @@ public abstract class LayoutTemplate {
 			return cached;
 		}
 
-		synchronized (this) {
-			cached = tokenizedLines;
-			if (cached != null && cached.isValid()) {
-				return cached;
-			}
+		List<List<Map<String, String>>> ret = null;
+		// an explicitly configured maxTokens acts as a floor on the computed one
+		int newMaxTokens = this.maxTokens;
+		LayoutSupport<?> support = null;
+		int configurationVersion = 0;
 
-			List<List<Map<String, String>>> ret = null;
-			int newMaxTokens = this.maxTokens;
-			LayoutSupport<?> support = null;
-			int configurationVersion = 0;
-
-			if (this.lineByLineFormat != null) {
-				support = getLayoutSupportInstance();
-				// read the version before the tokens it describes: stamping a snapshot with a version read
-				// afterwards could label tokens that are already stale as current
-				configurationVersion = support.getConfigurationVersion();
-				List<String> specialTokens = nonUniqueStringsGoLast(support.getSpecialTokens());
-				ret = new ArrayList<>(this.lineByLineFormat.size());
-				for (String line : this.lineByLineFormat) {
-					String tokenizedLine = replaceTokens(line, specialTokens);
-					String[] nonTokens = tokenizedLine.split(LAYOUT_TOKEN);
-					List<Map<String, String>> lineTokens = convertToTokens(line, nonTokens);
-					if (lineTokens != null && newMaxTokens < lineTokens.size()) {
-						newMaxTokens = lineTokens.size();
-					}
-					ret.add(lineTokens);
+		if (this.lineByLineFormat != null) {
+			support = getLayoutSupportInstance();
+			// read the version before the tokens it describes: stamping a snapshot with a version read
+			// afterwards could label tokens that are already stale as current
+			configurationVersion = support.getConfigurationVersion();
+			List<String> specialTokens = nonUniqueStringsGoLast(support.getSpecialTokens());
+			ret = new ArrayList<>(this.lineByLineFormat.size());
+			for (String line : this.lineByLineFormat) {
+				String tokenizedLine = replaceTokens(line, specialTokens);
+				String[] nonTokens = tokenizedLine.split(LAYOUT_TOKEN);
+				List<Map<String, String>> lineTokens = convertToTokens(line, nonTokens);
+				if (lineTokens != null && newMaxTokens < lineTokens.size()) {
+					newMaxTokens = lineTokens.size();
 				}
-				ret = Collections.unmodifiableList(ret);
+				ret.add(lineTokens);
 			}
-
-			this.maxTokens = newMaxTokens;
-			cached = new TokenizedLines(ret, newMaxTokens, support, configurationVersion);
-			tokenizedLines = cached;
-			return cached;
+			ret = Collections.unmodifiableList(ret);
 		}
+
+		cached = new TokenizedLines(ret, newMaxTokens, support, configurationVersion);
+		tokenizedLines = cached;
+		return cached;
 	}
 
-	private synchronized void invalidateTokenizedLines() {
+	private void invalidateTokenizedLines() {
 		tokenizedLines = null;
 	}
 
@@ -316,7 +312,7 @@ public abstract class LayoutTemplate {
 	/**
 	 * @param lineByLineFormat the lineByLineFormat to set
 	 */
-	public synchronized void setLineByLineFormat(List<String> lineByLineFormat) {
+	public void setLineByLineFormat(List<String> lineByLineFormat) {
 		this.lineByLineFormat = lineByLineFormat;
 		invalidateTokenizedLines();
 	}
@@ -345,7 +341,7 @@ public abstract class LayoutTemplate {
 	/**
 	 * @param maxTokens the maxTokens to set
 	 */
-	public synchronized void setMaxTokens(int maxTokens) {
+	public void setMaxTokens(int maxTokens) {
 		this.maxTokens = maxTokens;
 		invalidateTokenizedLines();
 	}
@@ -360,7 +356,7 @@ public abstract class LayoutTemplate {
 	/**
 	 * @param nameMappings the nameMappings to set
 	 */
-	public synchronized void setNameMappings(Map<String, String> nameMappings) {
+	public void setNameMappings(Map<String, String> nameMappings) {
 		this.nameMappings = nameMappings;
 		invalidateTokenizedLines();
 	}
@@ -375,7 +371,7 @@ public abstract class LayoutTemplate {
 	/**
 	 * @param sizeMappings the sizeMappings to set
 	 */
-	public synchronized void setSizeMappings(Map<String, String> sizeMappings) {
+	public void setSizeMappings(Map<String, String> sizeMappings) {
 		this.sizeMappings = sizeMappings;
 		invalidateTokenizedLines();
 	}

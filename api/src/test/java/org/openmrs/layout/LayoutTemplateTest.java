@@ -204,6 +204,23 @@ public class LayoutTemplateTest {
 		template.setLineByLineFormat(Arrays.asList("familyNamePrefix familyName familyName2 familyNameSuffix"));
 
 		assertEquals(8, template.getMaxTokens());
+
+		// the computed value is derived fresh from each format rather than kept as a high-water mark,
+		// so a format with shorter lines lowers it again
+		template.setLineByLineFormat(Arrays.asList("givenName"));
+
+		assertEquals(2, template.getMaxTokens());
+	}
+
+	@Test
+	public void getMaxTokens_shouldTreatAnExplicitlyConfiguredValueAsAFloor() {
+		template.setMaxTokens(9);
+
+		assertEquals(9, template.getMaxTokens());
+
+		template.setMaxTokens(0);
+
+		assertEquals(3, template.getMaxTokens());
 	}
 
 	@Test
