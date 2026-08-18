@@ -73,6 +73,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		try {
 			jdbcTemplate.execute("DELETE FROM obs_archive");
 			jdbcTemplate.execute("DELETE FROM obs_reference_range_archive");
+			jdbcTemplate.execute("DELETE FROM outbox_event");
 		} catch (DataAccessException e) {
 			// Tables may not exist yet on first run
 		}
