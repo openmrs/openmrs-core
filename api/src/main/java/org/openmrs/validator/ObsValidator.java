@@ -117,7 +117,13 @@ public class ObsValidator implements Validator {
 		}
 
 		boolean isObsGroup = obs.hasGroupMembers(true);
-		if (!isObsGroup && obs.getObsId() != null) {
+
+		boolean hasNoValue = obs.getValueBoolean() == null && obs.getValueCoded() == null && obs.getValueCodedName() == null
+		        && obs.getValueComplex() == null && obs.getValueDatetime() == null && obs.getValueDrug() == null
+		        && obs.getValueModifier() == null && obs.getValueNumeric() == null && obs.getValueText() == null
+		        && obs.getComplexData() == null;
+
+		if (!isObsGroup && hasNoValue && obs.getObsId() != null) {
 			try {
 				ObsArchiveHelper archiveHelper = Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class);
 				if (archiveHelper != null && archiveHelper.hasArchivedChildren(obs.getObsId())) {
@@ -164,10 +170,7 @@ public class ObsValidator implements Validator {
 
 		}
 		// if this is NOT an obs group, make sure that it has at least one value set (not counting obsGroupId)
-		else if (obs.getValueBoolean() == null && obs.getValueCoded() == null && obs.getValueCodedName() == null
-		        && obs.getValueComplex() == null && obs.getValueDatetime() == null && obs.getValueDrug() == null
-		        && obs.getValueModifier() == null && obs.getValueNumeric() == null && obs.getValueText() == null
-		        && obs.getComplexData() == null) {
+		else if (hasNoValue) {
 			errors.reject("error.noValue");
 		}
 
