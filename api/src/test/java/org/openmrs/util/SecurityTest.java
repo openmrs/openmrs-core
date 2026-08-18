@@ -17,13 +17,12 @@ import java.util.Base64;
 import java.util.Base64.Decoder;
 
 import org.junit.jupiter.api.Test;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.util.StringUtils;
 
 /**
  * Tests the methods on the {@link Security} class
  */
-public class SecurityTest extends BaseContextSensitiveTest {
+public class SecurityTest {
 
 	private static final int HASH_LENGTH = 128;
 

@@ -204,6 +204,12 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void changePassword_shouldStoreTheEncoderFormattedValue() {
+		dao.changePassword(userJoe, PASSWORD);
+		assertTrue(dao.getLoginCredential(userJoe).getHashedPassword().startsWith("{legacy}"));
+	}
+
+	@Test
 	public void isSecretAnswer_shouldReturnTrueWhenTheAnswerMatches() {
 		dao.saveUser(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);

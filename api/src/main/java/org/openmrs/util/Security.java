@@ -49,7 +49,7 @@ public class Security {
 	private Security() {
 	}
 
-	private static final PasswordEncoder FALLBACK_ENCODER = createDelegatingPasswordEncoder();
+	static final PasswordEncoder FALLBACK_ENCODER = createDelegatingPasswordEncoder();
 
 	private static PasswordEncoder getPasswordEncoder() {
 		if (!ServiceContext.isInstantiated()
@@ -69,7 +69,7 @@ public class Security {
 	 */
 	public static PasswordEncoder createDelegatingPasswordEncoder() {
 		LegacyOpenmrsPasswordEncoder legacy = new LegacyOpenmrsPasswordEncoder();
-		Map<String, PasswordEncoder> idToEncoder = new java.util.HashMap<>();
+		Map<String, PasswordEncoder> idToEncoder = new HashMap<>();
 		idToEncoder.put("legacy", legacy);
 		DelegatingPasswordEncoder delegating = new DelegatingPasswordEncoder("legacy", idToEncoder);
 		delegating.setDefaultPasswordEncoderForMatches(legacy);

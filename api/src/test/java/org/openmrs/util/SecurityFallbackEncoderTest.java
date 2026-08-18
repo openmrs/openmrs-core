@@ -49,13 +49,12 @@ class SecurityFallbackEncoderTest {
 
 	@Test
 	void fallbackEncoder_matchesLegacyPrefixedValueWrittenByBean() {
-		PasswordEncoder fallback = Security.createDelegatingPasswordEncoder();
 		PasswordEncoder bean = Security.createDelegatingPasswordEncoder();
 		String salt = Security.getRandomToken();
 		String rawPassword = "password" + salt;
 		String encoded = bean.encode(rawPassword);
 
-		assertTrue(fallback.matches(rawPassword, encoded));
-		assertFalse(fallback.matches("wrong" + salt, encoded));
+		assertTrue(Security.FALLBACK_ENCODER.matches(rawPassword, encoded));
+		assertFalse(Security.FALLBACK_ENCODER.matches("wrong" + salt, encoded));
 	}
 }

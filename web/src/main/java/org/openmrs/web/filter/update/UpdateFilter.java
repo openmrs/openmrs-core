@@ -387,8 +387,8 @@ public class UpdateFilter extends StartupFilter {
 								DatabaseUpdater.setAuthenticatedUserId(userId);
 								String storedPassword = results.getString(2);
 								String salt = results.getString(3);
-							return Security.checkPassword(storedPassword, password + salt)
-							        && isSuperUser(connection, userId);
+								return Security.checkPassword(storedPassword, password + salt)
+								        && isSuperUser(connection, userId);
 							}
 						}
 						finally {
