@@ -67,7 +67,7 @@ public class Security {
 	 *
 	 * @return a delegating encoder whose default id is {@code "legacy"}
 	 */
-	public static PasswordEncoder createDelegatingPasswordEncoder() {
+	static PasswordEncoder createDelegatingPasswordEncoder() {
 		LegacyOpenmrsPasswordEncoder legacy = new LegacyOpenmrsPasswordEncoder();
 		Map<String, PasswordEncoder> idToEncoder = new HashMap<>();
 		idToEncoder.put("legacy", legacy);
