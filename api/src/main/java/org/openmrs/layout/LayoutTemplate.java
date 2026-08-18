@@ -408,16 +408,16 @@ public abstract class LayoutTemplate {
 	 * support singleton itself, which for {@link org.openmrs.layout.address.AddressTemplate} means
 	 * entering a synchronized block.
 	 */
-		private record TokenizedLines(List<List<Map<String, String>>> lines, int maxTokens, LayoutSupport<?> support,
-		                              int configurationVersion) {
+	private record TokenizedLines(List<List<Map<String, String>>> lines, int maxTokens, LayoutSupport<?> support,
+													  int configurationVersion) {
 
-			/**
-			 * A snapshot built without a support is one for a template that has no line-by-line format: there
-			 * is nothing for the special tokens to affect, so it stays valid until a setter clears it.
-			 */
-			private boolean isValid() {
-				return support == null || support.getConfigurationVersion() == configurationVersion;
-			}
+		/**
+		 * A snapshot built without a support is one for a template that has no line-by-line format: there
+		 * is nothing for the special tokens to affect, so it stays valid until a setter clears it.
+		 */
+		private boolean isValid() {
+			return support == null || support.getConfigurationVersion() == configurationVersion;
 		}
+	}
 
 }
