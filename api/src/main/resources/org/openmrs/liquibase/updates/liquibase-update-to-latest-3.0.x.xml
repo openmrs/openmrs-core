@@ -266,7 +266,7 @@
 		<comment>Add obs_reference_range_archive table for Archiving Observations</comment>
 		<createTable tableName="obs_reference_range_archive">
 			<column name="obs_reference_range_id" type="INT">
-					<constraints nullable="false" primaryKey="true"/>
+				<constraints nullable="false" primaryKey="true"/>
 			</column>
 			<column name="obs_id" type="INT">
 				<constraints nullable="false" unique="true"/>
