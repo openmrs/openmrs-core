@@ -76,17 +76,13 @@ public class ConceptReferenceRangeUtility {
 	        .forPropertyAccessors(new MapAccessor(), DataBindingPropertyAccessor.forReadOnlyAccess())
 	        .withMethodResolvers(DataBindingMethodResolver.forInstanceMethodInvocation()).build();
 
-	private final Clock clock;
-
 	private final CriteriaFunctions functions;
 
 	public ConceptReferenceRangeUtility() {
 		this(Clock.systemDefaultZone());
-
 	}
 
 	ConceptReferenceRangeUtility(Clock clock) {
-		this.clock = clock;
 		this.functions = new CriteriaFunctions(clock);
 	}
 

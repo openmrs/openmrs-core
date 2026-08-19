@@ -595,7 +595,6 @@
 				<artifactId>tomcat-jasper</artifactId>
 				<version>${tomcatVersion}</version>
 			</dependency>
-			
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>

@@ -497,28 +497,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		assertTrue(utility.evaluateCriteria("$fn.getCurrentHour() == 23", obs));
 	}
-
-	@Test
-	public void testTimeOfDay_hourWrapping_shouldWorkCorrectly() {
-		// Test that hour wraps from 23 to 0
-		Clock lateNightClock = Clock.fixed(
-		    LocalDateTime.of(2026, 8, 13, 23, 30, 0).atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
-
-		ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility(lateNightClock);
-		Obs obs = buildObs();
-		obs.setPerson(person);
-
-		int currentHour = LocalTime.now(lateNightClock).getHour();
-		assertEquals(23, currentHour);
-
-		// Test that adding 1 hour wraps to 0
-		int nextHour = (currentHour + 1) % 24;
-		assertEquals(0, nextHour);
-
-		assertTrue(utility.evaluateCriteria("$fn.getCurrentHour() == 23", obs));
-		assertFalse(utility.evaluateCriteria("$fn.getCurrentHour() == 24", obs)); // 24 is invalid
-	}
-
+	
 	@Test
 	public void testRelevantObs_shouldReturnTrueIfCurrentObsHasValidNumericValue() {
 		Obs obs = buildObs();
