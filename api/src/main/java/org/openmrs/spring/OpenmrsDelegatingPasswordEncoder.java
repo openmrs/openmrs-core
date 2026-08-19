@@ -26,15 +26,11 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 	
 	private final PasswordEncoder defaultEncoder;
 	
-	private final PasswordEncoder fallbackEncoder;
-	
 	private final String idForEncode;
 	
 	private final Map<String, PasswordEncoder> idToPasswordEncoder;
 	
 	public OpenmrsDelegatingPasswordEncoder(String idForEncode, Map<String, PasswordEncoder> idToPasswordEncoder, PasswordEncoder fallbackEncoder) {
-		this.fallbackEncoder = fallbackEncoder;
-		
 		if (idForEncode == null || idForEncode.isEmpty()) {
 			this.defaultEncoder = fallbackEncoder;
 		} else if (!idToPasswordEncoder.containsKey(idForEncode)) {
@@ -49,7 +45,7 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 
 	@Override
 	public String encode(CharSequence rawPassword) {
-		if (defaultEncoder == fallbackEncoder) {
+		if (idForEncode == null || idForEncode.isEmpty() || defaultEncoder instanceof LegacyOpenmrsPasswordEncoder) {
 			return defaultEncoder.encode(rawPassword);
 		}
 		

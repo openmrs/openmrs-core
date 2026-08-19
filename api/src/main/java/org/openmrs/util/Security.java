@@ -63,19 +63,11 @@ public class Security {
 
 	/**
 	 * Encodes a password using the configured {@code openmrsPasswordEncoder} and returns the
-	 * full encoded value to persist (e.g. {@code {legacy}hash:salt}). The caller passes the
-	 * salt as part of the string to encode (historically OpenMRS hashes {@code password + salt});
-	 * this method never parses the encoded value back into a hash and a salt, and never returns
-	 * a salt. The full value returned here is what should be stored in the database, so the
-	 * exact same call works regardless of the password encoder configured.
-	 * <p>
-	 * <b>Note:</b> this method is for passwords only. Secret answers are still encoded via
-	 * {@link #encodeString(String)} because {@code isSecretAnswer} compares against the bare
-	 * digest; routing secret answers through this method would break that comparison.
+	 * full encoded value to persist.
 	 *
 	 * @param strToEncode {@code password + salt} to encode
 	 * @return the encoded value to store
-	 * @since 2.8.10, 2.9.0, 3.0.0
+	 * @since 2.8.10
 	 */
 	public static String encodePassword(String strToEncode) {
 		return getPasswordEncoder().encode(strToEncode);
@@ -83,17 +75,12 @@ public class Security {
 
 	/**
 	 * Checks a raw password against a stored encoded password using the configured
-	 * {@code PasswordEncoder}. Callers are responsible for concatenating the salt onto the
-	 * raw password before calling this method ({@code password + salt}), matching the
-	 * convention used by {@link #encodePassword(String)}. The stored value is the full
-	 * string produced by {@link #encodePassword(String)}; values written by older OpenMRS
-	 * versions (a bare SHA digest in the password column) still match, because the configured
-	 * encoder falls back to the legacy comparisons.
+	 * {@code PasswordEncoder}.
 	 *
 	 * @param storedEncodedPassword the stored encoded password
 	 * @param rawPassword the raw password, with the salt already concatenated
 	 * @return true if the password matches
-	 * @since 2.8.10, 2.9.0, 3.0.0
+	 * @since 2.8.10
 	 */
 	public static boolean checkPassword(String storedEncodedPassword, String rawPassword) {
 		if (rawPassword == null || storedEncodedPassword == null) {
@@ -103,11 +90,7 @@ public class Security {
 	}
 
 	/**
-	 * Compare the given hash and the given string-to-hash to see if they are equal. The
-	 * string-to-hash is usually of the form password + salt. <br>
-	 * <br>
-	 * Delegates to the configured {@code openmrsPasswordEncoder}, whose default encoder for matches
-	 * runs the legacy comparisons, so both the old and the current hashing algorithms are accepted.
+	 * Compare the given hash and the given string-to-hash to see if they are equal.
 	 *
 	 * @param hashedPassword a stored password that has been hashed previously
 	 * @param passwordToHash a string to encode/hash and compare to hashedPassword
@@ -129,7 +112,7 @@ public class Security {
 
 	/**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
-	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
+	 * OpenMRS's preferred algorithm is hard-coded to be SHA-512.
 	 *
 	 * @param strToEncode string to encode
 	 * @return the SHA-512 encryption of a given string

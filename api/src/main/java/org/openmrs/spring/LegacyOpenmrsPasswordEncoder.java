@@ -16,13 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * Wraps OpenMRS's historical password hashing behind Spring Security's {@link PasswordEncoder}:
  * SHA-512 over {@code password + salt}, with the older SHA-1 variants still accepted so existing
  * rows keep authenticating.
- * <p>
- * Callers combine the secret with the salt themselves ({@code secret + salt}) before calling this
- * encoder. {@link #encode(CharSequence)} generates a fresh salt and returns the digest joined with
- * it as {@code hash:salt}; that value is what {@link Security#encodePassword(String)} persists
- * (prefixed with the encoder id, e.g. {@code {legacy}}). {@link #matches(CharSequence, String)}
- * accepts that same shape, as well as a bare hash with no salt part for values written by older
- * OpenMRS versions.
  *
  * @since 2.8.10
  */
