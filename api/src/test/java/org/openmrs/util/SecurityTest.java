@@ -72,16 +72,7 @@ public class SecurityTest {
 		assertTrue(Security.hashMatches("4a1750c8607dfa237de36c6305715c223415189", "test"
 		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
 	}
-
-	/**
-	 * @see Security#encodePassword(String)
-	 */
-	@Test
-	public void encodePassword_shouldReturnACompleteEncodedValueWithTheEncoderIdPrefix() {
-		String encoded = Security.encodePassword("testPassword");
-		assertTrue(encoded.startsWith("{legacy}"));
-	}
-
+	
 	/**
 	 * @see Security#encodePassword(String)
 	 * @see Security#checkPassword(String,String)

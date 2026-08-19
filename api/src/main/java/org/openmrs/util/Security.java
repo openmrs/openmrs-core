@@ -28,6 +28,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
+import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
@@ -46,34 +47,18 @@ public class Security {
 
 	private static final Random RANDOM = new SecureRandom();
 
+	// required so we can hash passwords at startup.
+	private static final PasswordEncoder FALLBACK_ENCODER = new LegacyOpenmrsPasswordEncoder();
+	
 	private Security() {
 	}
-
-	static final PasswordEncoder FALLBACK_ENCODER = createDelegatingPasswordEncoder();
-
-	private static PasswordEncoder getPasswordEncoder() {
+	
+	static PasswordEncoder getPasswordEncoder() {
 		if (!ServiceContext.isInstantiated()
 				|| ServiceContext.getInstance().getApplicationContext() == null) {
 			return FALLBACK_ENCODER;
 		}
 		return Context.getRegisteredComponent("openmrsPasswordEncoder", PasswordEncoder.class);
-	}
-
-	/**
-	 * Builds the same {@code DelegatingPasswordEncoder} that
-	 * {@code applicationContext-service.xml} registers as the {@code openmrsPasswordEncoder}
-	 * bean. Called once to seed {@link #FALLBACK_ENCODER} and available as a
-	 * {@code factory-method} for the bean so that the two definitions cannot drift apart.
-	 *
-	 * @return a delegating encoder whose default id is {@code "legacy"}
-	 */
-	static PasswordEncoder createDelegatingPasswordEncoder() {
-		LegacyOpenmrsPasswordEncoder legacy = new LegacyOpenmrsPasswordEncoder();
-		Map<String, PasswordEncoder> idToEncoder = new HashMap<>();
-		idToEncoder.put("legacy", legacy);
-		DelegatingPasswordEncoder delegating = new DelegatingPasswordEncoder("legacy", idToEncoder);
-		delegating.setDefaultPasswordEncoderForMatches(legacy);
-		return delegating;
 	}
 
 	/**
@@ -137,40 +122,9 @@ public class Security {
 			throw new APIException("password.cannot.be.null", (Object[]) null);
 		}
 
-		return getPasswordEncoder().matches(passwordToHash, hashedPassword);
-	}
-
-	/**
-	 * Compares a raw password against a stored legacy-encoded value (either a bare hash or a
-	 * {@code hash:salt} pair produced by {@link LegacyOpenmrsPasswordEncoder#encode(CharSequence)}).
-	 * Accepts SHA-512, SHA-1 and the old incorrect SHA-1 variant. Does not consult the
-	 * configured password encoder, so it can be called from
-	 * {@link LegacyOpenmrsPasswordEncoder#matches(CharSequence, String)} without recursing back
-	 * into {@link #hashMatches(String, String)}.
-	 *
-	 * @param rawPassword the cleartext password
-	 * @param storedEncodedPassword a bare hash or {@code hash:salt} string
-	 * @return true/false whether the two are equal
-	 */
-	static boolean hashMatchesLegacy(String rawPassword, String storedEncodedPassword) {
-		if (rawPassword == null || storedEncodedPassword == null) {
-			return false;
-		}
-
-		String storedHash;
-		String salt = "";
-		int colon = storedEncodedPassword.indexOf(':');
-		if (colon >= 0) {
-			storedHash = storedEncodedPassword.substring(0, colon);
-			salt = storedEncodedPassword.substring(colon + 1);
-		} else {
-			storedHash = storedEncodedPassword;
-		}
-
-		String passwordToHash = rawPassword + salt;
-		return storedHash.equals(encodeString(passwordToHash))
-			|| storedHash.equals(encodeStringSHA1(passwordToHash))
-			|| storedHash.equals(incorrectlyEncodeString(passwordToHash));
+		return hashedPassword.equals(encodeString(passwordToHash))
+			|| hashedPassword.equals(encodeStringSHA1(passwordToHash))
+			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
 	}
 
 	/**

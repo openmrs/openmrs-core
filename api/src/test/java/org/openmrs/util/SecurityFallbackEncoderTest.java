@@ -27,7 +27,7 @@ class SecurityFallbackEncoderTest {
 
 	@Test
 	void fallbackEncoder_matchesBareHash() {
-		PasswordEncoder fallback = Security.createDelegatingPasswordEncoder();
+		PasswordEncoder fallback = Security.getPasswordEncoder();
 		String salt = Security.getRandomToken();
 		String rawPassword = "password" + salt;
 		String bareHash = Security.encodeString(rawPassword);
@@ -38,23 +38,23 @@ class SecurityFallbackEncoderTest {
 
 	@Test
 	void fallbackEncoder_matchesLegacyPrefixedValue() {
-		PasswordEncoder fallback = Security.createDelegatingPasswordEncoder();
+		PasswordEncoder fallback = Security.getPasswordEncoder();
 		String salt = Security.getRandomToken();
 		String rawPassword = "password" + salt;
 		String encoded = fallback.encode(rawPassword);
 
-		assertTrue(encoded.startsWith("{legacy}"));
+		assertFalse(encoded.startsWith("{legacy}"));
 		assertTrue(fallback.matches(rawPassword, encoded));
 	}
 
 	@Test
 	void fallbackEncoder_matchesLegacyPrefixedValueWrittenByBean() {
-		PasswordEncoder bean = Security.createDelegatingPasswordEncoder();
+		PasswordEncoder bean = Security.getPasswordEncoder();
 		String salt = Security.getRandomToken();
 		String rawPassword = "password" + salt;
 		String encoded = bean.encode(rawPassword);
 
-		assertTrue(Security.FALLBACK_ENCODER.matches(rawPassword, encoded));
-		assertFalse(Security.FALLBACK_ENCODER.matches("wrong" + salt, encoded));
+		assertTrue(Security.checkPassword(encoded, rawPassword));
+		assertFalse(Security.checkPassword(encoded,"wrong" + salt));
 	}
 }

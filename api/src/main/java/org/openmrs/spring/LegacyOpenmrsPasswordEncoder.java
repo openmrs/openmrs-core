@@ -7,8 +7,9 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.util;
+package org.openmrs.spring;
 
+import org.openmrs.util.Security;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -23,13 +24,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * accepts that same shape, as well as a bare hash with no salt part for values written by older
  * OpenMRS versions.
  *
- * @since 2.8.10, 2.9.0, 3.0.0
+ * @since 2.8.10
  */
 public class LegacyOpenmrsPasswordEncoder implements PasswordEncoder {
 
 	@Override
 	public String encode(CharSequence rawPassword) {
-		return hashAndFormat(rawPassword, Security.getRandomToken());
+		return Security.encodeString(rawPassword.toString());
 	}
 
 	@Override
@@ -37,19 +38,7 @@ public class LegacyOpenmrsPasswordEncoder implements PasswordEncoder {
 		if (encodedPassword == null || rawPassword == null) {
 			return false;
 		}
-		return Security.hashMatchesLegacy(rawPassword.toString(), encodedPassword);
-	}
-
-	/**
-	 * Computes the SHA-512 sum of {@code rawPassword + salt} and returns it joined with the salt as
-	 * {@code hash:salt}.
-	 *
-	 * @param rawPassword the raw password
-	 * @param salt the salt to use for this encoding
-	 * @return the joined value, {@code hash:salt}
-	 */
-	private String hashAndFormat(CharSequence rawPassword, String salt) {
-		String encoded = Security.encodeString(rawPassword.toString() + salt);
-		return encoded + ":" + salt;
+		
+		return Security.hashMatches(encodedPassword, rawPassword.toString());
 	}
 }

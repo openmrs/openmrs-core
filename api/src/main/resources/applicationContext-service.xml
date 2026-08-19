@@ -31,7 +31,14 @@
 
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
-	<bean id="openmrsPasswordEncoder" class="org.openmrs.util.Security" factory-method="createDelegatingPasswordEncoder"/>
+	<bean id="openmrsLegacyPasswordEncoder" class="org.openmrs.spring.LegacyOpenmrsPasswordEncoder" />
+	<bean id="openmrsPasswordEncoder" class="org.openmrs.spring.OpenmrsDelegatingPasswordEncoder">
+		<constructor-arg type="java.lang.String" value="" />
+		<constructor-arg>
+			<map />
+		</constructor-arg>
+		<constructor-arg ref="openmrsLegacyPasswordEncoder" />
+	</bean>
 
 	<!--  **************************  EVENT LISTENERS ***************************** -->
 
