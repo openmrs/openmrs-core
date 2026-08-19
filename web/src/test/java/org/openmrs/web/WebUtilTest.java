@@ -18,9 +18,10 @@ import java.util.TimeZone;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.ContextMockHelper;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.Format;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 /**
@@ -171,80 +173,96 @@ public class WebUtilTest {
 		return false;
 	}
 
-	private final ContextMockHelper contextMockHelper = new ContextMockHelper();
-
-	private final AdministrationService administrationService = mock(AdministrationService.class);
-
 	private TimeZone originalTimeZone;
 
 	@BeforeEach
 	public void setup() {
 		originalTimeZone = TimeZone.getDefault();
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-
-		contextMockHelper.setAdministrationService(administrationService);
 	}
 
 	@AfterEach
 	public void tearDown() {
 		TimeZone.setDefault(originalTimeZone);
-		contextMockHelper.revertMocks();
 	}
 
 	@Test
 	public void formatDate_shouldFormatDate() {
-		Date date = new Date(1460323539000L);
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("");
 
-		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("");
+			Date date = new Date(1460323539000L);
 
-		assertEquals("Apr 10, 2016", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.DATE));
+			assertEquals("Apr 10, 2016", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.DATE));
+		}
 	}
 
 	@Test
 	public void formatDate_shouldFormatTime() {
-		Date date = new Date(1460323539000L);
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("");
 
-		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("");
+			Date date = new Date(1460323539000L);
 
-		assertFalse(WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIME).isEmpty());
+			assertFalse(WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIME).isEmpty());
+		}
 	}
 
 	@Test
 	public void formatDate_shouldFormatTimestamp() {
-		Date date = new Date(1460323539000L);
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("");
 
-		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("");
+			Date date = new Date(1460323539000L);
 
-		assertFalse(WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIMESTAMP).isEmpty());
+			assertFalse(WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIMESTAMP).isEmpty());
+		}
 	}
 
 	@Test
 	public void formatDate_shouldUseConfiguredFormatForDate() {
-		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT))
-		        .thenReturn("yyyy-MM-dd");
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("yyyy-MM-dd");
 
-		Date date = new Date(1460323539000L);
+			Date date = new Date(1460323539000L);
 
-		assertEquals("2016-04-10", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.DATE));
+			assertEquals("2016-04-10", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.DATE));
+		}
 	}
 
 	@Test
 	public void formatDate_shouldUseConfiguredFormatForTime() {
-		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("HH:mm:ss");
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("HH:mm:ss");
 
-		Date date = new Date(1460323539000L);
+			Date date = new Date(1460323539000L);
 
-		assertEquals("21:25:39", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIME));
+			assertEquals("21:25:39", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIME));
+		}
 	}
 
 	@Test
 	public void formatDate_shouldUseConfiguredFormatForTimestamp() {
-		when(administrationService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT))
-		        .thenReturn("yyyy-MM-dd HH:mm:ss");
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT))
+			        .thenReturn("yyyy-MM-dd HH:mm:ss");
 
-		Date date = new Date(1460323539000L);
+			Date date = new Date(1460323539000L);
 
-		assertEquals("2016-04-10 21:25:39", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIMESTAMP));
+			assertEquals("2016-04-10 21:25:39", WebUtil.formatDate(date, Locale.US, Format.FORMAT_TYPE.TIMESTAMP));
+		}
 	}
 
 }
