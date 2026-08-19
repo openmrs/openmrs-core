@@ -15,15 +15,25 @@ import java.sql.ResultSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
+import org.openmrs.liquibase.ChangeLogVersionFinder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ObsArchiveSchemaDatabaseIT extends BaseContextSensitiveNonTransactionalTest {
+public class ObsArchiveSchemaDatabaseIT extends DatabaseIT {
+
+	@BeforeEach
+	@Override
+	public void setup() throws Exception {
+		DatabaseIT.CONNECTION_URL = "jdbc:h2:mem:obs_archive_test;DB_CLOSE_DELAY=-1;MODE=LEGACY;NON_KEYWORDS=VALUE";
+		super.setup();
+	}
 
 	@Test
 	public void shouldCarryEveryColumnOfTheirSourceTable() throws Exception {
+		ChangeLogVersionFinder finder = new ChangeLogVersionFinder();
+		updateDatabase(finder.getChangeLogCombinations().get(finder.getLatestSnapshotVersion().orElseThrow()));
 		assertMirrors("OBS", "OBS_ARCHIVE", "CHANGED_BY", "DATE_CHANGED", "ARCHIVED_BY", "DATE_ARCHIVED");
 		assertMirrors("OBS_REFERENCE_RANGE", "OBS_REFERENCE_RANGE_ARCHIVE", "ARCHIVED_BY", "DATE_ARCHIVED");
 	}
@@ -37,9 +47,9 @@ public class ObsArchiveSchemaDatabaseIT extends BaseContextSensitiveNonTransacti
 
 	private Set<String> columnsOf(String table) throws Exception {
 		Set<String> columns = new TreeSet<>();
-		Connection connection = getConnection();
-		try (PreparedStatement statement = connection
-		        .prepareStatement("SELECT column_name FROM information_schema.columns WHERE UPPER(table_name) = ?")) {
+		try (Connection connection = getConnection();
+		        PreparedStatement statement = connection.prepareStatement(
+		            "SELECT column_name FROM information_schema.columns WHERE UPPER(table_name) = ?")) {
 			statement.setString(1, table);
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
