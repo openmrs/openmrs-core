@@ -52,11 +52,11 @@
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.3.Final</hibernateValidatorVersion>
-		<luceneVersion>10.5.0</luceneVersion>
+		<luceneVersion>10.5.1</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.6.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
-		<jacksonVersion>2.22.1</jacksonVersion>
+		<jacksonVersion>2.22.2</jacksonVersion>
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.26.1</log4jVersion>
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
@@ -94,7 +94,6 @@
 		<!-- XML/Serialization -->
 		<dom4jVersion>2.1.4</dom4jVersion>
 		<jaxenVersion>2.0.6</jaxenVersion>
-		<xercesVersion>2.12.2</xercesVersion>
 		<xstreamVersion>1.4.21</xstreamVersion>
 		<jaxbRuntimeVersion>4.0.9</jaxbRuntimeVersion>
 
@@ -113,7 +112,7 @@
 		<javassistVersion>3.32.0-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
-		<tomcatVersion>11.0.24</tomcatVersion>
+		<tomcatVersion>11.0.25</tomcatVersion>
 		<jodaTimeVersion>2.14.3</jodaTimeVersion>
 		<guavaVersion>33.7.0-jre</guavaVersion>
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
@@ -126,7 +125,7 @@
 		<mockitoVersion>5.23.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<h2Version>2.3.232</h2Version>
-		<dbunitVersion>3.4.0</dbunitVersion>
+		<dbunitVersion>3.5.0</dbunitVersion>
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.5</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
@@ -482,11 +481,6 @@
 				<groupId>jaxen</groupId>
 				<artifactId>jaxen</artifactId>
 				<version>${jaxenVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>xerces</groupId>
-				<artifactId>xercesImpl</artifactId>
-				<version>${xercesVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.thoughtworks.xstream</groupId>
