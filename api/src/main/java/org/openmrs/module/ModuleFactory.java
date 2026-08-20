@@ -40,6 +40,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
+import org.openmrs.api.context.ServiceContext;
 import org.openmrs.module.Extension.MEDIA_TYPE;
 import org.openmrs.util.CycleException;
 import org.openmrs.util.DatabaseUpdater;
@@ -52,6 +53,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.Advisor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.util.StringUtils;
 
@@ -110,10 +112,40 @@ public class ModuleFactory {
 	 * @return Module
 	 */
 	public static Module loadModule(File moduleFile, Boolean replaceIfExists) throws ModuleException {
-		Module module = new ModuleFileParser(Context.getMessageSourceService()).parse(moduleFile);
-		
-		if (module != null) {
-			loadModule(module, replaceIfExists);
+
+		Module module = null;
+		boolean isModuleLoaded = true;
+		String failureReason = null;
+		String fileName;
+
+		try {
+			module = new ModuleFileParser(Context.getMessageSourceService()).parse(moduleFile);
+
+			if (module != null) {
+				loadModule(module, replaceIfExists);
+			}
+		} catch (Exception ex) {
+			isModuleLoaded = false;
+			failureReason = ex.getMessage();
+			throw ex;
+		} finally {
+			Module moduleToPublish = module;
+			if (module == null) {
+				fileName = ModuleUtil.getModuleNameAndVersionFromFileName(moduleFile.getName());
+				isModuleLoaded = false;
+				String name = null;
+				String version = null;
+
+				if (fileName != null) {
+					String[] parts = fileName.split(":");
+
+					name = parts[0];
+					version = (parts.length > 1) ? parts[1] : null;
+				}
+				moduleToPublish = new Module(name, null, null, null, null, version, null);
+			}
+			publishModuleEvents(new ModuleLoadEvent(ModuleFactory.class, moduleToPublish.getModuleId(), moduleToPublish.getName(),
+			    moduleToPublish.getVersion(), isModuleLoaded, failureReason));
 		}
 		
 		return module;
@@ -151,8 +183,7 @@ public class ModuleFactory {
 					throw new ModuleException("A module with the same id and version already exists", module.getModuleId());
 				}
 			} else {
-				// if the older (already loaded) module is newer, keep that original one that was loaded. return that one.
-				return oldModule;
+				throw new ModuleException("There exists a same module with latest version than this module version");
 			}
 		}
 		
@@ -546,7 +577,24 @@ public class ModuleFactory {
 	 * @see Daemon#startModule(Module)
 	 */
 	public static Module startModule(Module module) throws ModuleException {
-		return startModule(module, false, null);
+		Module startedModule;
+		boolean isSuccess = true;
+		String failureReason = null;
+		try {
+			startedModule = startModule(module, false, null);
+		}
+		catch (Exception e) {
+			isSuccess = false;
+			failureReason = e.getMessage();
+			throw e;
+		}
+		finally {
+			String startUpErrorMsg = module.getStartupErrorMessage();
+			publishModuleEvents(new ModuleStartEvent(ModuleFactory.class, module.getModuleId(), module.getName(), module.getVersion(),
+				isSuccess && isModuleStarted(module) && (startUpErrorMsg==null || startUpErrorMsg.isEmpty()),
+				failureReason == null ? startUpErrorMsg : failureReason));
+		}
+		return startedModule;
 	}
 	
 	/**
@@ -671,7 +719,7 @@ public class ModuleFactory {
 				
 				// Sort this module's extensions, and merge them into the full extensions map
 				Comparator<Extension> sortOrder = (e1, e2) -> Integer.valueOf(e1.getOrder()).compareTo(e2.getOrder());
-				for (Map.Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
+				for (Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
 					// Sort this module's extensions for current extension point
 					List<Extension> sortedModuleExtensions = moduleExtensionEntry.getValue();
 					sortedModuleExtensions.sort(sortOrder);
@@ -698,7 +746,7 @@ public class ModuleFactory {
 					// be nobody because this is being run at startup)
 					Context.addProxyPrivilege("");
 					
-					for (Map.Entry<String, String> entry : diffs.entrySet()) {
+					for (Entry<String, String> entry : diffs.entrySet()) {
 						String version = entry.getKey();
 						String sql = entry.getValue();
 						if (StringUtils.hasText(sql)) {
@@ -1016,7 +1064,36 @@ public class ModuleFactory {
 	public static void stopModule(Module mod, boolean isShuttingDown) {
 		stopModule(mod, isShuttingDown, false);
 	}
-	
+
+	/**
+	 * It's a wrapper over {@link ModuleFactory#doStopModule}, 
+	 * which needed to separate the event publish part from the actual stop module logic.
+	 */
+	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
+		throws ModuleMustStartException {
+		List<Module> dependentModulesStopped = new ArrayList<>();
+
+		if (mod == null || !ModuleFactory.isModuleStarted(mod)) {
+			return dependentModulesStopped;
+		}
+
+		boolean isStoppedSuccess = true;
+		String failureReason = null;
+		try {
+			dependentModulesStopped = doStopModule(mod, skipOverStartedProperty, isFailedStartup);
+		}
+		catch (Exception ex){
+			isStoppedSuccess = false;
+			failureReason = ex.getMessage();
+			throw ex;
+		}
+		finally {
+			publishModuleEvents(new ModuleStopEvent(ModuleFactory.class, mod.getModuleId(), mod.getName(), mod.getVersion(), isStoppedSuccess && !isModuleStarted(mod), failureReason));
+		}
+		return dependentModulesStopped;
+	}
+
+
 	/**
 	 * Runs through the advice and extension points and removes from api.<br>
 	 * <code>skipOverStartedProperty</code> should only be true when openmrs is stopping modules because
@@ -1032,155 +1109,148 @@ public class ModuleFactory {
 	 * @return list of dependent modules that were stopped because this module was stopped. This will
 	 *         never be null.
 	 */
-	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
+	private static List<Module> doStopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
 		throws ModuleMustStartException {
 		
 		List<Module> dependentModulesStopped = new ArrayList<>();
-		
-		if (mod != null) {
-			
-			if (!ModuleFactory.isModuleStarted(mod)) {
-				return dependentModulesStopped;
+
+		try {
+			// if extends BaseModuleActivator
+			if (mod.getModuleActivator() != null) {
+				mod.getModuleActivator().willStop();
 			}
-			
+		}
+		catch (Exception t) {
+			log.warn("Unable to call module's Activator.willStop() method", t);
+		}
+
+		String moduleId = mod.getModuleId();
+
+		// don't allow mandatory modules to be stopped
+		// don't use database checks here because spring might be in a bad state
+		if (!isFailedStartup && mod.isMandatory()) {
+			throw new MandatoryModuleException(moduleId);
+		}
+
+		if (!isFailedStartup && ModuleConstants.CORE_MODULES.containsKey(moduleId)) {
+			throw new OpenmrsCoreModuleException(moduleId);
+		}
+
+		String modulePackage = mod.getPackageName();
+
+		// stop all dependent modules
+		// copy modules to new list to avoid "concurrent modification exception"
+		List<Module> startedModulesCopy = new ArrayList<>(getStartedModules());
+		for (Module dependentModule : startedModulesCopy) {
+			if (dependentModule != null && !dependentModule.equals(mod)
+				&& isModuleRequiredByAnother(dependentModule, modulePackage)) {
+				dependentModulesStopped.add(dependentModule);
+				dependentModulesStopped.addAll(stopModule(dependentModule, skipOverStartedProperty, isFailedStartup));
+			}
+		}
+
+		getStartedModulesMap().remove(moduleId);
+		if (actualStartupOrder != null) {
+			actualStartupOrder.remove(moduleId);
+			for (Module depModule : dependentModulesStopped) {
+				actualStartupOrder.remove(depModule.getModuleId());
+			}
+		}
+
+		if (!skipOverStartedProperty && !Context.isRefreshingContext()) {
+			saveGlobalProperty(moduleId + ".started", "false", getGlobalPropertyStartedDescription(moduleId));
+		}
+
+		ModuleClassLoader moduleClassLoader = getModuleClassLoaderMap().get(mod);
+		if (moduleClassLoader != null) {
+			unregisterProvidedPackages(moduleClassLoader);
+
+			log.debug("Mod was in classloader map.  Removing advice and extensions.");
+			// remove all advice by this module
 			try {
-				// if extends BaseModuleActivator
-				if (mod.getModuleActivator() != null) {
-					mod.getModuleActivator().willStop();
+				for (AdvicePoint advice : mod.getAdvicePoints()) {
+					Class cls;
+					try {
+						cls = Context.loadClass(advice.getPoint());
+						Object aopObject = advice.getClassInstance();
+						if (aopObject instanceof Advisor) {
+							log.debug("adding advisor: " + aopObject.getClass());
+							Context.removeAdvisor(cls, (Advisor) aopObject);
+						} else {
+							log.debug("Adding advice: " + aopObject.getClass());
+							Context.removeAdvice(cls, (Advice) aopObject);
+						}
+					}
+					catch (Exception t) {
+						log.warn("Could not remove advice point: " + advice.getPoint(), t);
+					}
 				}
 			}
 			catch (Exception t) {
-				log.warn("Unable to call module's Activator.willStop() method", t);
+				log.warn("Error while getting advicePoints from module: " + moduleId, t);
 			}
-			
-			String moduleId = mod.getModuleId();
-			
-			// don't allow mandatory modules to be stopped
-			// don't use database checks here because spring might be in a bad state
-			if (!isFailedStartup && mod.isMandatory()) {
-				throw new MandatoryModuleException(moduleId);
-			}
-			
-			if (!isFailedStartup && ModuleConstants.CORE_MODULES.containsKey(moduleId)) {
-				throw new OpenmrsCoreModuleException(moduleId);
-			}
-			
-			String modulePackage = mod.getPackageName();
-			
-			// stop all dependent modules
-			// copy modules to new list to avoid "concurrent modification exception"
-			List<Module> startedModulesCopy = new ArrayList<>(getStartedModules());
-			for (Module dependentModule : startedModulesCopy) {
-				if (dependentModule != null && !dependentModule.equals(mod)
-					&& isModuleRequiredByAnother(dependentModule, modulePackage)) {
-					dependentModulesStopped.add(dependentModule);
-					dependentModulesStopped.addAll(stopModule(dependentModule, skipOverStartedProperty, isFailedStartup));
-				}
-			}
-			
-			getStartedModulesMap().remove(moduleId);
-			if (actualStartupOrder != null) {
-				actualStartupOrder.remove(moduleId);
-				for (Module depModule : dependentModulesStopped) {
-					actualStartupOrder.remove(depModule.getModuleId());
-				}
-			}
-			
-			if (!skipOverStartedProperty && !Context.isRefreshingContext()) {
-				saveGlobalProperty(moduleId + ".started", "false", getGlobalPropertyStartedDescription(moduleId));
-			}
-			
-			ModuleClassLoader moduleClassLoader = getModuleClassLoaderMap().get(mod);
-			if (moduleClassLoader != null) {
-				unregisterProvidedPackages(moduleClassLoader);
-				
-				log.debug("Mod was in classloader map.  Removing advice and extensions.");
-				// remove all advice by this module
-				try {
-					for (AdvicePoint advice : mod.getAdvicePoints()) {
-						Class cls;
-						try {
-							cls = Context.loadClass(advice.getPoint());
-							Object aopObject = advice.getClassInstance();
-							if (aopObject instanceof Advisor) {
-								log.debug("adding advisor: " + aopObject.getClass());
-								Context.removeAdvisor(cls, (Advisor) aopObject);
-							} else {
-								log.debug("Adding advice: " + aopObject.getClass());
-								Context.removeAdvice(cls, (Advice) aopObject);
-							}
-						}
-						catch (Exception t) {
-							log.warn("Could not remove advice point: " + advice.getPoint(), t);
-						}
-					}
-				}
-				catch (Exception t) {
-					log.warn("Error while getting advicePoints from module: " + moduleId, t);
-				}
-				
-				// remove all extensions by this module
-				try {
-					for (Extension ext : mod.getExtensions()) {
-						String extId = ext.getExtensionId();
-						try {
-							List<Extension> tmpExtensions = getExtensions(extId);
-							tmpExtensions.remove(ext);
-							getExtensionMap().put(extId, tmpExtensions);
-						}
-						catch (Exception exterror) {
-							log.warn("Error while getting extension: " + ext, exterror);
-						}
-					}
-				}
-				catch (Exception t) {
-					log.warn("Error while getting extensions from module: " + moduleId, t);
-				}
-			}
-			
-			//Run the onShutdown() method for openmrs services in this module.
-			List<OpenmrsService> services = Context.getModuleOpenmrsServices(modulePackage);
-			if (services != null) {
-				for (OpenmrsService service : services) {
-					service.onShutdown();
-				}
-			}
-			
+
+			// remove all extensions by this module
 			try {
-				if (mod.getModuleActivator() != null) {// extends BaseModuleActivator
-					mod.getModuleActivator().stopped();
+				for (Extension ext : mod.getExtensions()) {
+					String extId = ext.getExtensionId();
+					try {
+						List<Extension> tmpExtensions = getExtensions(extId);
+						tmpExtensions.remove(ext);
+						getExtensionMap().put(extId, tmpExtensions);
+					}
+					catch (Exception exterror) {
+						log.warn("Error while getting extension: " + ext, exterror);
+					}
 				}
 			}
 			catch (Exception t) {
-				log.warn("Unable to call module's Activator.shutdown() method", t);
+				log.warn("Error while getting extensions from module: " + moduleId, t);
 			}
-			
-			//Since extensions are loaded by the module class loader which is about to be disposed,
-			//we need to clear them, else we shall never be able to unload the class loader until
-			//when we unload the module, hence resulting into two problems:
-			// 1) Memory leakage for start/stop module.
-			// 2) Calls to Context.getService(Service.class) which are made within these extensions 
-			//	  will throw APIException("Service not found: ") because their calls to Service.class
-			//    will pass in a Class from the old module class loader (which loaded them) yet the
-			//    ServiceContext will have new services from a new module class loader.
-			//
-			//Same thing applies to activator, moduleActivator and AdvicePoint classInstance.
-			mod.getExtensions().clear();
-			mod.setModuleActivator(null);
-			mod.disposeAdvicePointsClassInstance();
-			
-			ModuleClassLoader cl = removeClassLoader(mod);
-			if (cl != null) {
-				cl.dispose();
-				// remove files from lib cache
-				File folder = OpenmrsClassLoader.getLibCacheFolder();
-				File tmpModuleDir = new File(folder, moduleId);
-				try {
-					OpenmrsUtil.deleteDirectory(tmpModuleDir);
-				}
-				catch (IOException e) {
-					log.warn("Unable to delete libcachefolder for " + moduleId);
-				}
+		}
+
+		//Run the onShutdown() method for openmrs services in this module.
+		List<OpenmrsService> services = Context.getModuleOpenmrsServices(modulePackage);
+		if (services != null) {
+			for (OpenmrsService service : services) {
+				service.onShutdown();
+			}
+		}
+
+		try {
+			if (mod.getModuleActivator() != null) {// extends BaseModuleActivator
+				mod.getModuleActivator().stopped();
+			}
+		}
+		catch (Exception t) {
+			log.warn("Unable to call module's Activator.shutdown() method", t);
+		}
+
+		//Since extensions are loaded by the module class loader which is about to be disposed,
+		//we need to clear them, else we shall never be able to unload the class loader until
+		//when we unload the module, hence resulting into two problems:
+		// 1) Memory leakage for start/stop module.
+		// 2) Calls to Context.getService(Service.class) which are made within these extensions 
+		//	  will throw APIException("Service not found: ") because their calls to Service.class
+		//    will pass in a Class from the old module class loader (which loaded them) yet the
+		//    ServiceContext will have new services from a new module class loader.
+		//
+		//Same thing applies to activator, moduleActivator and AdvicePoint classInstance.
+		mod.getExtensions().clear();
+		mod.setModuleActivator(null);
+		mod.disposeAdvicePointsClassInstance();
+
+		ModuleClassLoader cl = removeClassLoader(mod);
+		if (cl != null) {
+			cl.dispose();
+			// remove files from lib cache
+			File folder = OpenmrsClassLoader.getLibCacheFolder();
+			File tmpModuleDir = new File(folder, moduleId);
+			try {
+				OpenmrsUtil.deleteDirectory(tmpModuleDir);
+			}
+			catch (IOException e) {
+				log.warn("Unable to delete libcachefolder for " + moduleId);
 			}
 		}
 		
@@ -1216,25 +1286,42 @@ public class ModuleFactory {
 	 * @param mod module to unload
 	 */
 	public static void unloadModule(Module mod) {
-		
-		// remove this module's advice and extensions
-		if (isModuleStarted(mod)) {
-			stopModule(mod, true);
-		}
-		
-		// remove from list of loaded modules
-		getLoadedModules().remove(mod);
-		
-		if (mod != null) {
-			// remove the file from the module repository
-			File file = mod.getFile();
-			
-			boolean deleted = file.delete();
-			if (!deleted) {
-				file.deleteOnExit();
-				log.warn("Could not delete " + file.getAbsolutePath());
+		boolean isEventSuccess = true;
+		String failureReason = null;
+		try {
+			// remove this module's advice and extensions
+			if (isModuleStarted(mod)) {
+				stopModule(mod, true);
+			}
+
+			// remove from list of loaded modules
+			getLoadedModules().remove(mod);
+
+			if (mod != null) {
+				// remove the file from the module repository
+				File file = mod.getFile();
+				
+				boolean deleted = file.delete();
+				if (!deleted) {
+					file.deleteOnExit();
+					log.warn("Could not delete " + file.getAbsolutePath());
+				}
 			}
 			
+		}
+		catch(Exception ex) {
+			isEventSuccess = false;
+			failureReason = ex.getMessage();
+			throw ex;
+		}
+		finally {
+			if (mod == null) {
+				publishModuleEvents(new ModuleUnloadEvent(ModuleFactory.class, null, null, null,  isEventSuccess, failureReason));
+			} 
+			else {
+				publishModuleEvents(new ModuleUnloadEvent(ModuleFactory.class, mod.getModuleId(), mod.getName(), mod.getVersion(),  isEventSuccess, failureReason));
+
+			}
 		}
 	}
 	
@@ -1258,7 +1345,7 @@ public class ModuleFactory {
 		// if this pointId doesn't contain the separator character, search
 		// for this point prepended with each MEDIA TYPE
 		if (!pointId.contains(Extension.EXTENSION_ID_SEPARATOR)) {
-			for (MEDIA_TYPE mediaType : Extension.MEDIA_TYPE.values()) {
+			for (MEDIA_TYPE mediaType : MEDIA_TYPE.values()) {
 				
 				// get all extensions for this type and point id
 				List<Extension> tmpExtensions = extensionMap.get(Extension.toExtensionId(pointId, mediaType));
@@ -1286,7 +1373,7 @@ public class ModuleFactory {
 	 * @param type Extension.MEDIA_TYPE
 	 * @return List of extensions
 	 */
-	public static List<Extension> getExtensions(String pointId, Extension.MEDIA_TYPE type) {
+	public static List<Extension> getExtensions(String pointId, MEDIA_TYPE type) {
 		String key = Extension.toExtensionId(pointId, type);
 		List<Extension> extensions = getExtensionMap().get(key);
 		if (extensions != null) {
@@ -1642,4 +1729,26 @@ public class ModuleFactory {
 		}
 		return dependentModules;
 	}
+
+	/**
+	 * Helper method to publish the module events
+	 * 
+	 * @param moduleEvent of AbstractModuleEvent type for the different module actions
+	 * @since 2.7.10
+	 */
+	private static void publishModuleEvents(AbstractModuleEvent  moduleEvent) {
+		try {
+			if (moduleEvent == null) {
+				return;
+			}
+			ApplicationEventPublisher applicationEventPublisher = ServiceContext.getInstance().getApplicationContext();
+			if (applicationEventPublisher != null) {
+				applicationEventPublisher.publishEvent(moduleEvent);
+			}
+		} 
+		catch (Exception e) {
+			log.warn("Unable to publish module event", e);
+		}
+	}
+	
 }
