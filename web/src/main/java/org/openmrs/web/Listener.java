@@ -206,6 +206,18 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	}
 
 	/**
+	 * Sets whether OpenMRS is started.
+	 * <p>
+	 * Package-private for testing so that {@link ListenerTest} can exercise the HttpSessionListener
+	 * caching behavior without requiring a full OpenMRS startup.
+	 *
+	 * @param started true if OpenMRS is started, otherwise false
+	 */
+	static void setOpenmrsStarted(boolean started) {
+		openmrsStarted = started;
+	}
+
+	/**
 	 * This method is called when the servlet context is initialized(when the Web Application is
 	 * deployed). You can initialize servlet context related data here.
 	 *

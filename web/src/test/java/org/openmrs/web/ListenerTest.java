@@ -9,6 +9,7 @@
  */
 package org.openmrs.web;
 
+import java.util.Collections;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSessionListener;
@@ -16,12 +17,16 @@ import jakarta.servlet.http.HttpSessionListener;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.openmrs.api.context.Context;
 import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
 
 public class ListenerTest extends BaseWebContextSensitiveTest {
 
@@ -66,12 +71,49 @@ public class ListenerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void onApplicationEvent_shouldClearHttpSessionListeners() {
-		RegisteredHttpSessionListenerCache cache = applicationContext.getBean(RegisteredHttpSessionListenerCache.class);
+		try (MockedStatic<Context> contextMock = Mockito.mockStatic(Context.class)) {
+			contextMock.when(() -> Context.getRegisteredComponents(HttpSessionListener.class))
+			        .thenReturn(Collections.emptyList());
 
-		cache.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
+			Listener.setOpenmrsStarted(true);
 
-		// The event handler should invalidate the Listener cache.
-		assertNotNull(cache);
+			listener.getHttpSessionListeners();
+
+			RegisteredHttpSessionListenerCache cache = applicationContext.getBean(RegisteredHttpSessionListenerCache.class);
+			cache.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
+
+			listener.getHttpSessionListeners();
+
+			// The refresh invalidates the cached listeners and causes a new lookup.
+			contextMock.verify(() -> Context.getRegisteredComponents(HttpSessionListener.class), times(2));
+		} finally {
+			Listener.setOpenmrsStarted(false);
+		}
+	}
+
+	/**
+	 * @see RegisteredHttpSessionListenerCache#onApplicationEvent(ContextRefreshedEvent)
+	 */
+	@Test
+	public void onApplicationEvent_shouldInvalidateHttpSessionListenerCache() {
+		try (MockedStatic<Context> contextMock = Mockito.mockStatic(Context.class)) {
+			contextMock.when(() -> Context.getRegisteredComponents(HttpSessionListener.class))
+			        .thenReturn(Collections.emptyList());
+
+			Listener.setOpenmrsStarted(true);
+
+			List<HttpSessionListener> first = listener.getHttpSessionListeners();
+
+			RegisteredHttpSessionListenerCache cache = applicationContext.getBean(RegisteredHttpSessionListenerCache.class);
+			cache.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
+
+			List<HttpSessionListener> second = listener.getHttpSessionListeners();
+
+			// Clearing the cache should cause the next lookup to return a new list.
+			assertNotSame(first, second);
+		} finally {
+			Listener.setOpenmrsStarted(false);
+		}
 	}
 
 }

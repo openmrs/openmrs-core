@@ -199,8 +199,8 @@ public class ServiceContext implements ApplicationContextAware {
 		}
 
 		if (ServiceContextHolder.instance != null) {
-			ServiceContextHolder.instance.applicationContext = null;
 			ServiceContextHolder.instance.clearCachedListeners();
+			ServiceContextHolder.instance.applicationContext = null;
 
 			if (ServiceContextHolder.instance.moduleOpenmrsServices != null) {
 				ServiceContextHolder.instance.moduleOpenmrsServices.clear();
@@ -935,7 +935,7 @@ public class ServiceContext implements ApplicationContextAware {
 			}
 
 			Map<String, T> components = getRegisteredComponents(applicationContext, type);
-			List<T> listeners = Collections.unmodifiableList(new ArrayList<>(components.values()));
+			List<T> listeners = List.copyOf(components.values());
 
 			Map<Class<?>, List<?>> newCachedListeners = new HashMap<>(cachedListeners);
 			newCachedListeners.put(type, listeners);
