@@ -59,6 +59,12 @@ public class HibernateObsDAO implements ObsDAO {
 
 	private static final String OBS_DATETIME = "obsDatetime";
 
+	private static final String OBS_ID = "obsId";
+
+	private static final String ASCENDING = "asc";
+
+	private static final String DESCENDING = "desc";
+
 	protected final SessionFactory sessionFactory;
 
 	@Autowired
@@ -108,7 +114,6 @@ public class HibernateObsDAO implements ObsDAO {
 	 *      Integer, Date, Date, boolean, String)
 	 */
 	@Override
-	@SuppressWarnings("deprecation")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
@@ -119,13 +124,10 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @deprecated as of 3.0.0, use {@link #getObservations(ObsSearchCriteria)}
 	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List, List,
 	 *      Integer, Integer, Date, Date, boolean, String)
 	 */
 	@Override
-	@Deprecated(since = "3.0.0")
-	@SuppressWarnings("squid:S1133")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
@@ -148,41 +150,119 @@ public class HibernateObsDAO implements ObsDAO {
 		    obsSearchCriteria.getEncounters(), obsSearchCriteria.getQuestions(), obsSearchCriteria.getAnswers(),
 		    obsSearchCriteria.getPersonTypes(), obsSearchCriteria.getLocations(), obsSearchCriteria.getObsGroupId(),
 		    obsSearchCriteria.getFromDate(), obsSearchCriteria.getToDate(), null, obsSearchCriteria.getVisits(),
-		    obsSearchCriteria.getIncludeVoidedObs(), obsSearchCriteria.getAccessionNumber());
+		    obsSearchCriteria.isIncludeVoidedObs(), obsSearchCriteria.getAccessionNumber());
 
 		cq.where(predicates.toArray(new Predicate[] {}));
 
-		List<String> sort = obsSearchCriteria.getSort();
-		if (sort == null || sort.isEmpty()) {
-			sort = new ArrayList<>();
-		}
-		if (sort.isEmpty()) {
-			sort.add(OBS_DATETIME);
-		}
+		// the bounds decide the sort keys as well as the LIMIT/OFFSET, so they are resolved in one place:
+		// resolved separately, the two could drift apart and cost paged callers their stable ordering
+		ResultBounds bounds = resolveResultBounds(obsSearchCriteria);
 
-		cq.orderBy(createOrderList(cb, root, sort));
+		cq.orderBy(createOrderList(cb, root, createSortList(obsSearchCriteria.getSort(), bounds.paged)));
 
 		TypedQuery<Obs> query = session.createQuery(cq);
 
+		if (bounds.firstResult != null) {
+			query.setFirstResult(bounds.firstResult);
+		}
+		if (bounds.maxRows != null) {
+			query.setMaxResults(bounds.maxRows);
+		}
+
+		return query.getResultList();
+	}
+
+	/**
+	 * Builds the list of sort instructions to apply to an observation query.
+	 * <p>
+	 * The caller's list is copied rather than modified in place, since callers may hand us an immutable
+	 * or shared list.
+	 * <p>
+	 * A paged query also gets a trailing sort on the obs id, so that its ordering is total: rows tied
+	 * on the requested sort columns would otherwise come back in whatever order the database happens to
+	 * produce, which lets a row appear on two pages, or on none, as a client walks through the pages of
+	 * one result set. The tiebreaker follows the direction of the last requested sort key, so that it
+	 * reads as a continuation of that key rather than reversing it. Unpaged queries are left with
+	 * exactly the ordering they have always had, since callers already depend on how ties happen to
+	 * fall today.
+	 *
+	 * @param requestedSort the sort instructions requested by the caller, may be null or empty
+	 * @param paged whether the caller is walking the result set a page at a time
+	 * @return sort instructions in the form understood by
+	 *         {@link #createOrderList(CriteriaBuilder, Root, List)}
+	 */
+	private List<String> createSortList(List<String> requestedSort, boolean paged) {
+		List<String> sortList = new ArrayList<>();
+
+		if (requestedSort != null) {
+			for (String sort : requestedSort) {
+				if (StringUtils.isNotBlank(sort)) {
+					sortList.add(sort.trim());
+				}
+			}
+		}
+
+		if (sortList.isEmpty()) {
+			sortList.add(OBS_DATETIME);
+		}
+
+		if (paged) {
+			String lastSort = sortList.get(sortList.size() - 1);
+			boolean sortedByObsId = sortList.stream().anyMatch(sort -> OBS_ID.equals(getSortField(sort)));
+
+			if (!sortedByObsId) {
+				sortList.add(ASCENDING.equals(getSortDirection(lastSort)) ? OBS_ID + " " + ASCENDING : OBS_ID);
+			}
+		}
+
+		return sortList;
+	}
+
+	/**
+	 * Works out which rows the database should return, so that only those rows are hydrated instead of
+	 * every matching observation being loaded and then discarded.
+	 * <p>
+	 * A positive mostRecentN predates the paging parameters and is the only bound the older
+	 * getObservations() signatures can express, so it wins when both are supplied. Bounds that cannot
+	 * bound anything are logged and ignored rather than rejected, to match how a non-positive
+	 * mostRecentN has always been treated; since that lets a call return more rows than were asked for,
+	 * every ignored value gets a warning.
+	 *
+	 * @param obsSearchCriteria the criteria carrying the requested bounds
+	 * @return the bounds to apply to the query
+	 */
+	private ResultBounds resolveResultBounds(ObsSearchCriteria obsSearchCriteria) {
 		Integer mostRecentN = obsSearchCriteria.getMostRecentN();
 		Integer startIndex = obsSearchCriteria.getStartIndex();
 		Integer maxResults = obsSearchCriteria.getMaxResults();
 
+		// supplying either paging parameter at all means the caller is walking a result set and needs a
+		// total ordering, even on the first page, where the start index is 0 or absent. Only the paging
+		// signatures can supply them, so the older ones are unaffected
+		boolean paged = startIndex != null || maxResults != null;
+
 		if (mostRecentN != null && mostRecentN > 0) {
-			if (startIndex != null || maxResults != null) {
-				log.warn("mostRecentN is set, startIndex and maxResults will be ignored");
+			// a startIndex of 0 asks for the same rows the query already starts with, so being ignored
+			// costs the caller nothing worth warning about
+			if ((startIndex != null && startIndex != 0) || maxResults != null) {
+				log.info("mostRecentN is set to {}, so the requested startIndex ({}) and maxResults ({}) will be ignored",
+				    mostRecentN, startIndex, maxResults);
 			}
-			query.setMaxResults(mostRecentN);
-		} else {
-			if (startIndex != null && startIndex >= 0) {
-				query.setFirstResult(startIndex);
-			}
-			if (maxResults != null && maxResults > 0) {
-				query.setMaxResults(maxResults);
-			}
+
+			return new ResultBounds(null, mostRecentN, false);
 		}
 
-		return query.getResultList();
+		if (startIndex != null && startIndex < 0) {
+			log.warn("A startIndex of {} is not a valid offset, so results will be returned from the first row", startIndex);
+		}
+
+		if (maxResults != null && maxResults <= 0) {
+			log.warn("A maxResults of {} is not a valid page size, so every matching observation will be returned",
+			    maxResults);
+		}
+
+		return new ResultBounds(startIndex != null && startIndex > 0 ? startIndex : null,
+		        maxResults != null && maxResults > 0 ? maxResults : null, paged);
 	}
 
 	/**
@@ -323,13 +403,10 @@ public class HibernateObsDAO implements ObsDAO {
 		List<Order> orders = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sortList)) {
 			for (String sort : sortList) {
-				if (StringUtils.isNotEmpty(sort)) {
-					// Split the sort, the field name shouldn't contain space char, so it's safe
-					String[] split = sort.split(" ", 2);
-					String fieldName = split[0];
+				if (StringUtils.isNotBlank(sort)) {
+					String fieldName = getSortField(sort);
 
-					if (split.length == 2 && "asc".equals(split[1])) {
-						/* If asc is specified */
+					if (ASCENDING.equals(getSortDirection(sort))) {
 						orders.add(cb.asc(root.get(fieldName)));
 					} else {
 						/* If the field hasn't got ordering or desc is specified */
@@ -339,6 +416,47 @@ public class HibernateObsDAO implements ObsDAO {
 			}
 		}
 		return orders;
+	}
+
+	/**
+	 * Reads the field name out of a sort instruction such as <code>"obsDatetime asc"</code>. A field
+	 * name cannot contain a space, so the first token is the whole of it.
+	 *
+	 * @param sort a non-blank, trimmed sort instruction
+	 * @return the name of the field to sort on
+	 */
+	private static String getSortField(String sort) {
+		return sort.split(" ", 2)[0];
+	}
+
+	/**
+	 * Reads the direction out of a sort instruction such as <code>"obsDatetime asc"</code>.
+	 * <p>
+	 * An instruction that names no direction, or names one this method does not recognise, has always
+	 * meant descending here, and callers depend on that; only exactly <code>"asc"</code> asks for
+	 * ascending, so <code>"ASC"</code> and <code>"obsDatetime&nbsp;&nbsp;asc"</code> both sort
+	 * descending. A direction that is present but unrecognised is worth a warning, because paging turns
+	 * a misread direction into a different set of rows rather than merely a different order.
+	 *
+	 * @param sort a non-blank, trimmed sort instruction
+	 * @return either {@link #ASCENDING} or {@link #DESCENDING}
+	 */
+	private static String getSortDirection(String sort) {
+		String[] split = sort.split(" ", 2);
+		if (split.length < 2) {
+			return DESCENDING;
+		}
+
+		if (ASCENDING.equals(split[1])) {
+			return ASCENDING;
+		}
+
+		if (!DESCENDING.equals(split[1])) {
+			log.warn("'{}' in the sort instruction '{}' is not a recognised direction; sorting descending. Use '{}' or '{}'",
+			    split[1], sort, ASCENDING, DESCENDING);
+		}
+
+		return DESCENDING;
 	}
 
 	/**
@@ -411,6 +529,27 @@ public class HibernateObsDAO implements ObsDAO {
 			return Obs.Status.valueOf(sql.uniqueResult());
 		} finally {
 			session.setHibernateFlushMode(flushMode);
+		}
+	}
+
+	/**
+	 * The row bounds resolved from a set of search criteria: which row to start at, how many rows to
+	 * return, and whether that amounts to a page the caller means to walk through. Nothing outside
+	 * {@link #resolveResultBounds(ObsSearchCriteria)} interprets the criteria's bounds, so the sort
+	 * keys and the LIMIT/OFFSET are always chosen from the same reading of them.
+	 */
+	private static final class ResultBounds {
+
+		private final Integer firstResult;
+
+		private final Integer maxRows;
+
+		private final boolean paged;
+
+		private ResultBounds(Integer firstResult, Integer maxRows, boolean paged) {
+			this.firstResult = firstResult;
+			this.maxRows = maxRows;
+			this.paged = paged;
 		}
 	}
 }

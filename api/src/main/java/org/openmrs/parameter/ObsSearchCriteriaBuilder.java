@@ -24,6 +24,7 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
  * desired values and finally call {@link #createObsSearchCriteria()} to create the actual search
  * criteria instance.
  *
+ * @since 2.8.10
  * @see ObsSearchCriteria
  */
 public class ObsSearchCriteriaBuilder {
@@ -97,8 +98,8 @@ public class ObsSearchCriteriaBuilder {
 	}
 
 	/**
-	 * @param personTypes List&lt;PERSON_TYPE&gt; objects to restrict this to. Only used if
-	 *            <code>whom</code> is an empty list
+	 * @param personTypes List&lt;PERSON_TYPE&gt; objects to restrict the obs to, applied in addition to
+	 *            any restriction {@link #setWhom(List)} imposes
 	 * @return this builder instance
 	 */
 	public ObsSearchCriteriaBuilder setPersonTypes(List<PERSON_TYPE> personTypes) {
@@ -116,8 +117,8 @@ public class ObsSearchCriteriaBuilder {
 	}
 
 	/**
-	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to
-	 *            obsDatetime
+	 * @param sort list of column names to sort on (obsId, obsDatetime, etc), each optionally followed
+	 *            by " asc"; if null or empty, defaults to obsDatetime descending
 	 * @return this builder instance
 	 */
 	public ObsSearchCriteriaBuilder setSort(List<String> sort) {
@@ -135,7 +136,9 @@ public class ObsSearchCriteriaBuilder {
 	}
 
 	/**
-	 * @param mostRecentN restrict the number of obs returned to this size
+	 * @param mostRecentN restrict the number of obs returned to this size. This bound predates
+	 *            {@link #setStartIndex(Integer)} and {@link #setMaxResults(Integer)} and takes
+	 *            precedence over them, so setting it means the paging parameters are ignored
 	 * @return this builder instance
 	 */
 	public ObsSearchCriteriaBuilder setMostRecentN(Integer mostRecentN) {
@@ -189,7 +192,8 @@ public class ObsSearchCriteriaBuilder {
 	}
 
 	/**
-	 * @param startIndex the starting index of the result set (0-based)
+	 * @param startIndex the 0-based index of the first row to return. A negative value cannot be an
+	 *            offset and is ignored, as is any value set alongside {@link #setMostRecentN(Integer)}
 	 * @return this builder instance
 	 */
 	public ObsSearchCriteriaBuilder setStartIndex(Integer startIndex) {
@@ -198,7 +202,9 @@ public class ObsSearchCriteriaBuilder {
 	}
 
 	/**
-	 * @param maxResults the maximum number of results to return
+	 * @param maxResults the maximum number of rows to return. A value of zero or less cannot be a page
+	 *            size and is ignored, meaning every matching observation is returned, as is any value
+	 *            set alongside {@link #setMostRecentN(Integer)}
 	 * @return this builder instance
 	 */
 	public ObsSearchCriteriaBuilder setMaxResults(Integer maxResults) {

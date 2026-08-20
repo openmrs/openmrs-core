@@ -23,42 +23,42 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
  * The search parameter object for observations. A convenience interface for building instances is
  * provided by {@link ObsSearchCriteriaBuilder}.
  *
- * @since 3.0.0
+ * @since 2.8.10
  * @see ObsSearchCriteriaBuilder
  */
 public class ObsSearchCriteria {
 
-	private List<Person> whom;
+	private final List<Person> whom;
 
-	private List<Encounter> encounters;
+	private final List<Encounter> encounters;
 
-	private List<Concept> questions;
+	private final List<Concept> questions;
 
-	private List<Concept> answers;
+	private final List<Concept> answers;
 
-	private List<PERSON_TYPE> personTypes;
+	private final List<PERSON_TYPE> personTypes;
 
-	private List<Location> locations;
+	private final List<Location> locations;
 
-	private List<String> sort;
+	private final List<String> sort;
 
-	private List<Visit> visits;
+	private final List<Visit> visits;
 
-	private Integer mostRecentN;
+	private final Integer mostRecentN;
 
-	private Integer obsGroupId;
+	private final Integer obsGroupId;
 
-	private Date fromDate;
+	private final Date fromDate;
 
-	private Date toDate;
+	private final Date toDate;
 
-	private boolean includeVoidedObs;
+	private final boolean includeVoidedObs;
 
-	private String accessionNumber;
+	private final String accessionNumber;
 
-	private Integer startIndex;
+	private final Integer startIndex;
 
-	private Integer maxResults;
+	private final Integer maxResults;
 
 	/**
 	 * Instead of calling this constructor directly, it is recommended to use
@@ -68,20 +68,24 @@ public class ObsSearchCriteria {
 	 * @param encounters List&lt;Encounter&gt; to restrict obs to (optional)
 	 * @param questions List&lt;Concept&gt; to restrict the obs to (optional)
 	 * @param answers List&lt;Concept&gt; to restrict the valueCoded to (optional)
-	 * @param personTypes List&lt;PERSON_TYPE&gt; objects to restrict this to. Only used if
-	 *            <code>whom</code> is an empty list (optional)
+	 * @param personTypes List&lt;PERSON_TYPE&gt; objects to restrict the obs to, applied in addition to
+	 *            any restriction <code>whom</code> imposes (optional)
 	 * @param locations The org.openmrs.Location objects to restrict to (optional)
-	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to
-	 *            obsDatetime (optional)
+	 * @param sort list of column names to sort on (obsId, obsDatetime, etc), each optionally followed
+	 *            by " asc"; if null or empty, defaults to obsDatetime descending (optional)
 	 * @param visits List&lt;Visit&gt; to restrict obs to (optional)
-	 * @param mostRecentN restrict the number of obs returned to this size (optional)
+	 * @param mostRecentN restrict the number of obs returned to this size. This bound predates
+	 *            <code>startIndex</code> and <code>maxResults</code> and takes precedence over them, so
+	 *            setting it means the paging parameters are ignored (optional)
 	 * @param obsGroupId the Obs.getObsGroupId() to this integer (optional)
 	 * @param fromDate the earliest Obs date to get (optional)
 	 * @param toDate the latest Obs date to get (optional)
 	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
 	 * @param accessionNumber accession number (optional)
-	 * @param startIndex the starting index of the result set (optional, 0-based)
-	 * @param maxResults the maximum number of results to return (optional)
+	 * @param startIndex the 0-based index of the first row to return; a negative value cannot be an
+	 *            offset and is ignored (optional)
+	 * @param maxResults the maximum number of rows to return; a value of zero or less cannot be a page
+	 *            size and is ignored, meaning every matching observation is returned (optional)
 	 */
 	@SuppressWarnings("squid:S107")
 	public ObsSearchCriteria(List<Person> whom, List<Encounter> encounters, List<Concept> questions, List<Concept> answers,
@@ -194,6 +198,13 @@ public class ObsSearchCriteria {
 	 * @return whether to include the voided obs or not
 	 */
 	public boolean getIncludeVoidedObs() {
+		return includeVoidedObs;
+	}
+
+	/**
+	 * @return whether to include the voided obs or not
+	 */
+	public boolean isIncludeVoidedObs() {
 		return includeVoidedObs;
 	}
 
