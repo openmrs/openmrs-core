@@ -71,4 +71,15 @@
 	   <cve>CVE-2026-54399</cve>
 	   <cve>CVE-2026-54428</cve>
 	</suppress>
+	<suppress>
+	   <notes><![CDATA[
+	   False positive. CVE-2026-0994 is a denial-of-service in Python's
+	   google.protobuf.json_format.ParseDict() (recursion depth bypass in
+	   nested Any messages). The Java artifact com.google.protobuf:protobuf-java
+	   is not affected. Dependency-Check matches it via the shared
+	   protobuf:protobuf CPE.
+	   ]]></notes>
+	   <gav>com.google.protobuf:protobuf-java</gav>
+	   <cve>CVE-2026-0994</cve>
+	</suppress>
 </suppressions>
