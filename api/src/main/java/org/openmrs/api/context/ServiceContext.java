@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.aopalliance.aop.Advice;
+import org.openmrs.PrivilegeListener;
+import org.openmrs.UserSessionListener;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
@@ -128,6 +130,17 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 
 	/**
+	 * Listener types whose registered components are cached because they are looked up on hot paths.
+	 */
+	private static final Set<Class<?>> CACHED_LISTENER_TYPES = Set.of(PrivilegeListener.class, UserSessionListener.class);
+
+	/**
+	 * Cached registered listener components, replaced atomically whenever the cache is updated or
+	 * cleared.
+	 */
+	private volatile Map<Class<?>, List<?>> cachedListeners = Collections.emptyMap();
+
+	/**
 	 * There should only be one ServiceContext per openmrs (java virtual machine). This method should be
 	 * used when wanting to fetch the service context Note: The ServiceContext shouldn't be used
 	 * independently. All calls should go through the Context
@@ -187,6 +200,7 @@ public class ServiceContext implements ApplicationContextAware {
 
 		if (ServiceContextHolder.instance != null) {
 			ServiceContextHolder.instance.applicationContext = null;
+			ServiceContextHolder.instance.clearCachedListeners();
 
 			if (ServiceContextHolder.instance.moduleOpenmrsServices != null) {
 				ServiceContextHolder.instance.moduleOpenmrsServices.clear();
@@ -887,11 +901,50 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return a List of all registered Beans that are valid instances of the passed type
 	 * @since 1.5
 	 */
-
 	public <T> List<T> getRegisteredComponents(Class<T> type) {
+		if (CACHED_LISTENER_TYPES.contains(type)) {
+			return getCachedListeners(type);
+		}
+
 		Map<String, T> m = getRegisteredComponents(applicationContext, type);
 		log.trace("getRegisteredComponents({}) = {}", type, m);
 		return new ArrayList<>(m.values());
+	}
+
+	/**
+	 * Clears cached listener registrations so that listeners from the current application and module
+	 * contexts are discovered again after a context refresh.
+	 *
+	 * @since 3.0.0
+	 */
+	public void clearCachedListeners() {
+		cachedListeners = Collections.emptyMap();
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> List<T> getCachedListeners(Class<T> type) {
+		List<?> cached = cachedListeners.get(type);
+		if (cached != null) {
+			return (List<T>) cached;
+		}
+
+		synchronized (this) {
+			cached = cachedListeners.get(type);
+			if (cached != null) {
+				return (List<T>) cached;
+			}
+
+			Map<String, T> components = getRegisteredComponents(applicationContext, type);
+			List<T> listeners = Collections.unmodifiableList(new ArrayList<>(components.values()));
+
+			Map<Class<?>, List<?>> newCachedListeners = new HashMap<>(cachedListeners);
+			newCachedListeners.put(type, listeners);
+			cachedListeners = Collections.unmodifiableMap(newCachedListeners);
+
+			log.trace("Cached registered listeners of type {}: {}", type, listeners);
+
+			return listeners;
+		}
 	}
 
 	/**

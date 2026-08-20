@@ -10,6 +10,7 @@
 package org.openmrs.api.context;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -18,21 +19,28 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.PrivilegeListener;
+import org.openmrs.UserSessionListener;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
+import org.springframework.context.ApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 public class ServiceContextTest extends BaseContextSensitiveTest {
@@ -212,4 +220,92 @@ public class ServiceContextTest extends BaseContextSensitiveTest {
 	 * Service interface that is never registered, used to exercise the not-found path of getService.
 	 */
 	public interface UnregisteredService {}
+
+	/**
+	 * @see ServiceContext#getRegisteredComponents(Class)
+	 */
+	@Test
+	public void getRegisteredComponents_shouldCachePrivilegeAndUserSessionListeners() {
+		// Repeated lookups for the same listener type should return the cached registration.
+		List<PrivilegeListener> firstPrivilegeListener = serviceContext.getRegisteredComponents(PrivilegeListener.class);
+		List<PrivilegeListener> secondPrivilegeListener = serviceContext.getRegisteredComponents(PrivilegeListener.class);
+
+		List<UserSessionListener> firstUserSessionListener = serviceContext
+		        .getRegisteredComponents(UserSessionListener.class);
+		List<UserSessionListener> secondUserSessionListener = serviceContext
+		        .getRegisteredComponents(UserSessionListener.class);
+
+		assertSame(firstUserSessionListener, secondUserSessionListener);
+		assertSame(firstPrivilegeListener, secondPrivilegeListener);
+	}
+
+	/**
+	 * @see ServiceContext#getRegisteredComponents(Class)
+	 */
+	@Test
+	public void getRegisteredComponents_shouldCacheEmptyListenerList() {
+		ApplicationContext originalContext = serviceContext.getApplicationContext();
+		ApplicationContext context = mock(ApplicationContext.class);
+
+		when(context.getBeansOfType(PrivilegeListener.class)).thenReturn(Collections.emptyMap());
+
+		try {
+			serviceContext.setApplicationContext(context);
+			serviceContext.clearCachedListeners();
+
+			List<PrivilegeListener> first = serviceContext.getRegisteredComponents(PrivilegeListener.class);
+			List<PrivilegeListener> second = serviceContext.getRegisteredComponents(PrivilegeListener.class);
+
+			// An empty result should be cached as well, rather than causing another Spring lookup.
+			assertTrue(first.isEmpty());
+			assertSame(first, second);
+
+			verify(context, times(1)).getBeansOfType(PrivilegeListener.class);
+		} finally {
+			// Restore the context
+			serviceContext.setApplicationContext(originalContext);
+			serviceContext.clearCachedListeners();
+		}
+	}
+
+	/**
+	 * @see ServiceContext#getRegisteredComponents(Class)
+	 */
+	@Test
+	public void getRegisteredComponents_shouldReturnCachedImmutablePrivilegeListenerList() {
+		List<PrivilegeListener> listeners = serviceContext.getRegisteredComponents(PrivilegeListener.class);
+
+		// Cached registrations must not be modified by callers.
+		assertThrows(UnsupportedOperationException.class, listeners::clear);
+	}
+
+	/**
+	 * @see ServiceContext#clearCachedListeners()
+	 */
+	@Test
+	public void clearCachedListeners_shouldCauseListenerLookupAgain() {
+		ApplicationContext originalContext = serviceContext.getApplicationContext();
+		ApplicationContext context = mock(ApplicationContext.class);
+
+		when(context.getBeansOfType(PrivilegeListener.class)).thenReturn(Collections.emptyMap());
+
+		try {
+			serviceContext.setApplicationContext(context);
+			serviceContext.clearCachedListeners();
+
+			// The first lookup populates the cache.
+			serviceContext.getRegisteredComponents(PrivilegeListener.class);
+
+			// Clearing the cache should force the next lookup to query the context again.
+			serviceContext.clearCachedListeners();
+			serviceContext.getRegisteredComponents(PrivilegeListener.class);
+
+			verify(context, times(2)).getBeansOfType(PrivilegeListener.class);
+		} finally {
+			// Restore the application context.
+			serviceContext.setApplicationContext(originalContext);
+			serviceContext.clearCachedListeners();
+		}
+	}
+
 }

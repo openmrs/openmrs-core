@@ -87,6 +87,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 
 	private static boolean openmrsStarted = false;
 
+	private static volatile List<HttpSessionListener> httpSessionListeners;
+
 	/**
 	 * Boolean flag set on webapp startup marking whether there is a runtime properties file or not. If
 	 * there is not, then the {@link InitializationFilter} takes over any openmrs url and redirects to
@@ -175,18 +177,32 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 *
 	 * @see HttpSessionListener#sessionDestroyed(HttpSessionEvent)
 	 */
-	private List<HttpSessionListener> getHttpSessionListeners() {
-		List<HttpSessionListener> httpSessionListeners = Collections.emptyList();
-
-		if (openmrsStarted) {
-			try {
-				httpSessionListeners = Context.getRegisteredComponents(HttpSessionListener.class);
-			} catch (Exception e) {
-				log.warn("An error occurred trying to retrieve HttpSessionListener beans from the context", e);
-			}
+	List<HttpSessionListener> getHttpSessionListeners() {
+		if (!openmrsStarted) {
+			return Collections.emptyList();
 		}
 
-		return httpSessionListeners;
+		List<HttpSessionListener> listeners = httpSessionListeners;
+		if (listeners != null) {
+			return listeners;
+		}
+
+		try {
+			listeners = Collections.unmodifiableList(Context.getRegisteredComponents(HttpSessionListener.class));
+			httpSessionListeners = listeners;
+			return listeners;
+		} catch (Exception e) {
+			log.warn("An error occurred trying to retrieve HttpSessionListener beans from the context", e);
+			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * Clears the cached HttpSessionListeners so that listeners from refreshed module contexts are
+	 * discovered again.
+	 */
+	static void clearHttpSessionListeners() {
+		httpSessionListeners = null;
 	}
 
 	/**
@@ -599,6 +615,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 
 		try {
 			openmrsStarted = false;
+			clearHttpSessionListeners();
 			Context.openSession();
 
 			Context.shutdown();
