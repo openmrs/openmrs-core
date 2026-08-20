@@ -62,7 +62,7 @@ public class ModuleUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
 
-	private static final Pattern MODULE_FILNAME_PATTERN = Pattern.compile("^(.+?)(?:-(\\d[\\w.-]*?))?(?:\\.([a-zA-Z0-9]+))?$");
+	private static final Pattern MODULE_FILENAME_PATTERN = Pattern.compile("^(.+?)(?:-(\\d[\\w.-]*?))?(?:\\.([a-zA-Z0-9]+))?$");
 	
 	/**
 	 * Start up the module system with the given properties.
@@ -1270,7 +1270,7 @@ public class ModuleUtil {
 			return null;
 		}
 		
-		Matcher matcher = MODULE_FILNAME_PATTERN.matcher(fileName);
+		Matcher matcher = MODULE_FILENAME_PATTERN.matcher(fileName);
 		
 		if (matcher.matches()) {
 			String name = matcher.group(1);
