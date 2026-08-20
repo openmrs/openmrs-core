@@ -451,6 +451,11 @@
 							<requireMavenVersion>
 								<version>3.8.0</version>
 							</requireMavenVersion>
+							<bannedDependencies>
+								<excludes>
+									<exclude>xerces:xercesImpl</exclude>
+								</excludes>
+							</bannedDependencies>
 						</rules>
 					</configuration>
 				</plugin>
