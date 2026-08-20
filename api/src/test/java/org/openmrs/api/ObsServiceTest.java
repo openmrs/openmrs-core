@@ -1233,7 +1233,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * For paging, we use the obs_id to provide "total-ordering" of the results ensuring pages are
+	 * For paging, we use the obsid to provide "total-ordering" of the results ensuring pages are
 	 * consistent across requests in the absence of data changes. These test verify that it is applied.
 	 *
 	 * @see ObsService#getObservations(ObsSearchCriteria)
@@ -1246,16 +1246,16 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		String pagedOrderBy = getOrderByClauseOf(
 		    new ObsSearchCriteriaBuilder().setWhom(whom).setMaxResults(2).createObsSearchCriteria());
-		assertTrue(pagedOrderBy.contains("obs_id"),
+		assertTrue(pagedOrderBy.contains("obsid"),
 		    "a paged query should break ties on the obs id, but sorted by " + pagedOrderBy);
 
 		String unpagedOrderBy = getOrderByClauseOf(new ObsSearchCriteriaBuilder().setWhom(whom).createObsSearchCriteria());
-		assertFalse(unpagedOrderBy.contains("obs_id"),
+		assertFalse(unpagedOrderBy.contains("obsid"),
 		    "an unpaged query should sort exactly as it did before, but sorted by " + unpagedOrderBy);
 
 		String mostRecentNOrderBy = getOrderByClauseOf(
 		    new ObsSearchCriteriaBuilder().setWhom(whom).setMostRecentN(2).setMaxResults(2).createObsSearchCriteria());
-		assertFalse(mostRecentNOrderBy.contains("obs_id"),
+		assertFalse(mostRecentNOrderBy.contains("obsid"),
 		    "mostRecentN wins over paging, so that query is not paged, but it sorted by " + mostRecentNOrderBy);
 	}
 
@@ -1272,7 +1272,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		        .setSort(Collections.singletonList("obsDatetime asc")).setMaxResults(2).createObsSearchCriteria());
 
 		// ascending is SQL's default, so it is rendered by the absence of "desc" rather than by "asc"
-		assertTrue(ascendingOrderBy.contains("obs_id"),
+		assertTrue(ascendingOrderBy.contains("obsid"),
 		    "a paged query should break ties on the obs id, but sorted by " + ascendingOrderBy);
 		assertFalse(ascendingOrderBy.contains("desc"),
 		    "the tiebreaker should follow the direction of the requested sort, but sorted by " + ascendingOrderBy);
@@ -1280,7 +1280,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		String descendingOrderBy = getOrderByClauseOf(new ObsSearchCriteriaBuilder().setWhom(whom)
 		        .setSort(Collections.singletonList("obsDatetime")).setMaxResults(2).createObsSearchCriteria());
 
-		assertTrue(descendingOrderBy.contains("obs_id desc"),
+		assertTrue(descendingOrderBy.contains("obsid desc"),
 		    "the tiebreaker should follow the direction of the requested sort, but sorted by " + descendingOrderBy);
 	}
 
@@ -1297,7 +1297,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		        .setSort(Collections.singletonList("obsId asc")).setMaxResults(2).createObsSearchCriteria());
 
 		// the caller's own sort already gives a total order, so no tiebreaker is needed on top of it
-		assertEquals(orderBy.indexOf("obs_id"), orderBy.lastIndexOf("obs_id"),
+		assertEquals(orderBy.indexOf("obsid"), orderBy.lastIndexOf("obsid"),
 		    "the obs id should be sorted on once, but sorted by " + orderBy);
 		assertFalse(orderBy.contains("desc"), "the caller asked to sort ascending, but sorted by " + orderBy);
 	}
@@ -1317,7 +1317,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		String firstPageOrderBy = getOrderByClauseOf(
 		    new ObsSearchCriteriaBuilder().setWhom(whom).setStartIndex(0).createObsSearchCriteria());
 
-		assertTrue(firstPageOrderBy.contains("obs_id"),
+		assertTrue(firstPageOrderBy.contains("obsid"),
 		    "a start index of 0 is still the first page of a walk, but sorted by " + firstPageOrderBy);
 	}
 
