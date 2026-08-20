@@ -935,7 +935,7 @@ public class ServiceContext implements ApplicationContextAware {
 			}
 
 			Map<String, T> components = getRegisteredComponents(applicationContext, type);
-			List<T> listeners = Collections.unmodifiableList(new ArrayList<>(components.values()));
+			List<T> listeners = List.copyOf(components.values());
 
 			Map<Class<?>, List<?>> newCachedListeners = new HashMap<>(cachedListeners);
 			newCachedListeners.put(type, listeners);
