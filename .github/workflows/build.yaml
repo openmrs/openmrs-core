@@ -69,6 +69,7 @@ jobs:
           use_oidc: true
 
   context-sensitive-real-db:
+    needs: build
     strategy:
       matrix:
         database: [mysql, postgres]
