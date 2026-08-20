@@ -3,106 +3,112 @@ name: Build with Maven
 
 # trigger build master branch *should* support Java 21 and above
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-  workflow_dispatch:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
+    workflow_dispatch:
 
 permissions:
-  contents: read
-  id-token: write
+    contents: read
+    id-token: write
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        platform:
-          - ubuntu-latest
-          - windows-latest
-        java-version:
-          - 21
-          - 25
-        isPR:
-            - ${{ github.event_name == 'pull_request' }}
-        test-profile: ["", "-Pintegration-test -Pskip-default-test", "-Pperformance-test -Pskip-default-test"]
-        exclude:
-          # Do not run integration tests on Windows
-          - test-profile: '-Pintegration-test -Pskip-default-test'
-            platform: windows-latest
-          # Do not run performance tests on Windows
-          - test-profile: '-Pperformance-test -Pskip-default-test'
-            platform: windows-latest
-          # Do not run performance tests on PRs
-          - test-profile: '-Pperformance-test -Pskip-default-test'
-            isPR: true
-    runs-on: ${{ matrix.platform }}
-    # a wedged test otherwise runs until the 6 hour GitHub default; normal jobs finish in
-    # 9-21 minutes, so this leaves roughly 3x headroom for degraded runners
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v7.0.1
-      - name: Setup JDK
-        uses: actions/setup-java@v5.7.0
-        with:
-          distribution: 'temurin'
-          java-version: ${{ matrix.java-version }}
-          cache: 'maven'
-      - name: Install dependencies
-        run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true -D"spotbugs.skip"=${{ matrix.java-version != '21' || matrix.platform != 'ubuntu-latest' }} --batch-mode --show-version --file pom.xml
-      - name: Test
-        run: mvn test ${{ matrix.test-profile }} --batch-mode --file pom.xml
-      - name: Upload SpotBugs reports
-        if: ${{ matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' && (success() || failure()) }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: spotbugs-reports
-          path: '**/target/spotbugsXml.xml'
-          retention-days: 14
-      - name: Upload coverage to Codecov
-        if: ${{ matrix.test-profile == '' && matrix.java-version == '25' && matrix.platform == 'ubuntu-latest' }}
-        uses: codecov/codecov-action@v7
-        continue-on-error: true
-        with:
-          use_oidc: true
+    build:
+        strategy:
+            matrix:
+                platform:
+                    - ubuntu-latest
+                    - windows-latest
+                java-version:
+                    - 21
+                    - 25
+                isPR:
+                    - ${{ github.event_name == 'pull_request' }}
+                test-profile:
+                    [
+                        "",
+                        "-Pintegration-test -Pskip-default-test",
+                        "-Pperformance-test -Pskip-default-test",
+                    ]
+                exclude:
+                    # Do not run integration tests on Windows
+                    - test-profile: "-Pintegration-test -Pskip-default-test"
+                      platform: windows-latest
+                    # Do not run performance tests on Windows
+                    - test-profile: "-Pperformance-test -Pskip-default-test"
+                      platform: windows-latest
+                    # Do not run performance tests on PRs
+                    - test-profile: "-Pperformance-test -Pskip-default-test"
+                      isPR: true
+        runs-on: ${{ matrix.platform }}
+        # a wedged test otherwise runs until the 6 hour GitHub default; normal jobs finish in
+        # 9-21 minutes, so this leaves roughly 3x headroom for degraded runners
+        timeout-minutes: 60
+        steps:
+            - uses: actions/checkout@v7.0.1
+            - name: Setup JDK
+              uses: actions/setup-java@v5.7.0
+              with:
+                  distribution: "temurin"
+                  java-version: ${{ matrix.java-version }}
+                  cache: "maven"
+            - name: Install dependencies
+              run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true -D"spotbugs.skip"=${{ matrix.java-version != '21' || matrix.platform != 'ubuntu-latest' }} --batch-mode --show-version --file pom.xml
+            - name: Test
+              run: mvn test ${{ matrix.test-profile }} --batch-mode --file pom.xml
+            - name: Upload SpotBugs reports
+              if: ${{ matrix.test-profile == '' && matrix.java-version == '21' && matrix.platform == 'ubuntu-latest' && (success() || failure()) }}
+              uses: actions/upload-artifact@v7
+              with:
+                  name: spotbugs-reports
+                  path: "**/target/spotbugsXml.xml"
+                  retention-days: 14
+            - name: Upload coverage to Codecov
+              if: ${{ matrix.test-profile == '' && matrix.java-version == '25' && matrix.platform == 'ubuntu-latest' }}
+              uses: codecov/codecov-action@v7
+              continue-on-error: true
+              with:
+                  use_oidc: true
 
-  context-sensitive-real-db:
-    needs: build
-    strategy:
-      matrix:
-        database: [mysql, postgres]
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@v7.0.1
-      - name: Setup JDK
-        uses: actions/setup-java@v5.7.0
-        with:
-          distribution: 'temurin'
-          java-version: 21
-          cache: 'maven'
-      - name: Install dependencies
-        run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
-      - name: Test context-sensitive suite against ${{ matrix.database }}
-        run: mvn test -DuseInMemoryDatabase=false -Ddatabase=${{ matrix.database }} --batch-mode --file pom.xml
+    context-sensitive-real-db:
+        needs: build
+        strategy:
+            matrix:
+                database: [mysql, postgres]
+        runs-on: ubuntu-latest
+        timeout-minutes: 90
+        steps:
+            - uses: actions/checkout@v7.0.1
+            - name: Setup JDK
+              uses: actions/setup-java@v5.7.0
+              with:
+                  distribution: "temurin"
+                  java-version: 21
+                  cache: "maven"
+            - name: Install dependencies
+              run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+            - name: Test context-sensitive suite against ${{ matrix.database }}
+              run: mvn test -DuseInMemoryDatabase=false -Ddatabase=${{ matrix.database }} --batch-mode --file pom.xml
 
-  integration-test-real-db:
-    strategy:
-      matrix:
-        database: [mysql, postgres]
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@v7.0.1
-      - name: Setup JDK
-        uses: actions/setup-java@v5.7.0
-        with:
-          distribution: 'temurin'
-          java-version: 21
-          cache: 'maven'
-      - name: Install dependencies
-        run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
-      - name: Test integration suite against ${{ matrix.database }}
-        run: mvn test -Pintegration-test -Pskip-default-test -DuseInMemoryDatabase=false -Ddatabase=${{ matrix.database }} --batch-mode --file pom.xml
+    integration-test-real-db:
+        needs: build
+        strategy:
+            matrix:
+                database: [mysql, postgres]
+        runs-on: ubuntu-latest
+        timeout-minutes: 90
+        steps:
+            - uses: actions/checkout@v7.0.1
+            - name: Setup JDK
+              uses: actions/setup-java@v5.7.0
+              with:
+                  distribution: "temurin"
+                  java-version: 21
+                  cache: "maven"
+            - name: Install dependencies
+              run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+            - name: Test integration suite against ${{ matrix.database }}
+              run: mvn test -Pintegration-test -Pskip-default-test -DuseInMemoryDatabase=false -Ddatabase=${{ matrix.database }} --batch-mode --file pom.xml
