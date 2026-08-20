@@ -561,8 +561,8 @@ public interface ObsService extends OpenmrsService {
 	 * behaves exactly like
 	 * {@link #getObservations(List, List, List, List, List, List, List, List, Integer, Integer, Date, Date, boolean, String)}
 	 * when startIndex and maxResults are both null. Otherwise, the results will be paged. When paged
-	 * results append the obsId as a sort parameter to guarantee stable views between page loads,
-	 * at least assuming the underlying data doesn't change.
+	 * results append the obsId as a sort parameter to guarantee stable views between page loads, at
+	 * least assuming the underlying data doesn't change.
 	 * <p>
 	 * mostRecentN and the paging parameters express the same bound in two different ways, so a positive
 	 * mostRecentN takes precedence and the paging parameters are ignored.
@@ -612,12 +612,11 @@ public interface ObsService extends OpenmrsService {
 	        throws APIException;
 
 	/**
-	 * Counts the observations matching the given search criteria. Paging parameters and mostRecentN
-	 * are ignored for these purposes.
+	 * Counts the observations matching the given search criteria. Paging parameters and mostRecentN are
+	 * ignored for these purposes.
 	 *
 	 * @param obsSearchCriteria the search criteria for the observations query, required
-	 * @return the number of Observations that match criteria given, ignoring their sort and
-	 *         row bounds
+	 * @return the number of Observations that match criteria given, ignoring their sort and row bounds
 	 * @throws APIException
 	 * @throws IllegalArgumentException if obsSearchCriteria is null, or if the count exceeds
 	 *             {@link Integer#MAX_VALUE}

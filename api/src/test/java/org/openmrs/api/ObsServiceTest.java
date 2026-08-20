@@ -1203,8 +1203,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * These tests exist to ensure we're pushing the paging parameters down to
-	 * the Hibernate level (and ultimately, the DB level).
+	 * These tests exist to ensure we're pushing the paging parameters down to the Hibernate level (and
+	 * ultimately, the DB level).
 	 *
 	 * @see ObsService#getObservations(ObsSearchCriteria)
 	 */
@@ -1233,9 +1233,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * For paging, we use the obs_id to provide "total-ordering" of the results
-	 * ensuring pages are consistent across requests in the absence of data
-	 * changes. These test verify that it is applied.
+	 * For paging, we use the obs_id to provide "total-ordering" of the results ensuring pages are
+	 * consistent across requests in the absence of data changes. These test verify that it is applied.
 	 *
 	 * @see ObsService#getObservations(ObsSearchCriteria)
 	 */
