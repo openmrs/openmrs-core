@@ -15,7 +15,6 @@ import java.sql.ResultSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 
@@ -23,15 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ObsArchiveSchemaDatabaseIT extends DatabaseIT {
 
-	@BeforeEach
-	@Override
-	public void setup() throws Exception {
-		DatabaseIT.CONNECTION_URL = "jdbc:h2:mem:obs_archive_test;DB_CLOSE_DELAY=-1;MODE=LEGACY;NON_KEYWORDS=VALUE";
-		super.setup();
-	}
-
 	@Test
 	public void shouldCarryEveryColumnOfTheirSourceTable() throws Exception {
+		/*
+		 * Drop all database objects before running the test as previously run tests may have left tables behind.
+		 */
+		this.dropAllDatabaseObjects();
+
 		ChangeLogVersionFinder finder = new ChangeLogVersionFinder();
 		updateDatabase(finder.getChangeLogCombinations().get(finder.getLatestSnapshotVersion().orElseThrow()));
 		assertMirrors("OBS", "OBS_ARCHIVE", "CHANGED_BY", "DATE_CHANGED", "ARCHIVED_BY", "DATE_ARCHIVED");
