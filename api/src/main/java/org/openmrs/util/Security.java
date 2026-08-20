@@ -31,7 +31,6 @@ import org.openmrs.api.context.ServiceContext;
 import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
