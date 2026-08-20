@@ -373,7 +373,7 @@ public class HibernateObsDAO implements ObsDAO {
 		}
 
 		if (obsGroupId != null) {
-			predicates.add(cb.equal(root.get("obsGroup").get("obsId"), obsGroupId));
+			predicates.add(cb.equal(root.get("obsGroup").get(OBS_ID), obsGroupId));
 		}
 
 		if (fromDate != null) {
