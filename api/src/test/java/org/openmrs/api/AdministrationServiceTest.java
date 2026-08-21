@@ -9,6 +9,7 @@
  */
 package org.openmrs.api;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -57,6 +58,7 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -412,7 +414,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void getAllGlobalProperties_shouldReturnAllGlobalPropertiesInTheDatabase() {
 		int allGlobalPropertiesSize = adminService.getAllGlobalProperties().size();
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
-		assertEquals(allGlobalPropertiesSize + 9, adminService.getAllGlobalProperties().size());
+		assertEquals(allGlobalPropertiesSize + 15, adminService.getAllGlobalProperties().size());
 	}
 
 	@Test
@@ -532,12 +534,93 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedDoubleType() {
 		// put the global property into the database
-		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
 
 		Object retValue = adminService.getGlobalPropertyValue("valid.double", 4.34);
 
-		assertTrue(retValue instanceof Double);
+		assertInstanceOf(Double.class, retValue);
 		assertEquals(1234.54, retValue);
+	}
+
+	@Test
+	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedStringType() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+
+		Object retValue = adminService.getGlobalPropertyValue("valid.string", "default");
+
+		assertInstanceOf(String.class, retValue);
+		assertEquals("test-string", retValue);
+	}
+
+	@Test
+	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedBooleanType() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+
+		Object retValue = adminService.getGlobalPropertyValue("valid.boolean", false);
+
+		assertInstanceOf(Boolean.class, retValue);
+		assertEquals(true, retValue);
+	}
+
+	@Test
+	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedLongType() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+
+		Object retValue = adminService.getGlobalPropertyValue("valid.long", 41241325325L);
+
+		assertInstanceOf(Long.class, retValue);
+		assertEquals(1234567890123L, retValue);
+	}
+
+	@Test
+	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedFloatType() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+
+		Object retValue = adminService.getGlobalPropertyValue("valid.float", 3245.123f);
+
+		assertInstanceOf(Float.class, retValue);
+		assertEquals(1234.56f, retValue);
+	}
+
+	@Test
+	public void getGlobalPropertyValue_shouldReturnDefaultValueWhenStoredValueIsUnparseable() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+
+		Object retValue = adminService.getGlobalPropertyValue("invalid.integer", 42);
+
+		assertInstanceOf(Integer.class, retValue);
+		assertEquals(42, retValue);
+	}
+
+	@Test
+	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedEnumType() {
+		enum TestEnum{FIRST, SECOND}
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+
+		Object retValue = adminService.getGlobalPropertyValue("valid.enum", TestEnum.FIRST);
+
+		assertInstanceOf(TestEnum.class, retValue);
+		assertEquals(TestEnum.SECOND, retValue);
+	}
+
+	@Test
+	public void getGlobalPropertyValue_shouldReturnValueForBigInteger() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+
+		Object retValue = adminService.getGlobalPropertyValue("valid.integer", BigInteger.ZERO);
+
+		assertInstanceOf(BigInteger.class, retValue);
+		assertEquals(new BigInteger("1234"), retValue);
+	}
+
+	@Test
+	public void getGlobalPropertyValue_shouldThrowExceptionForUnsupportedType() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		class UnsupportedType {}
+		APIException exception = assertThrows(APIException.class,
+		    () -> adminService.getGlobalPropertyValue("valid.integer", new UnsupportedType()));
+
+		assertEquals(UnsupportedType.class.getName() + " does not have a string constructor", exception.getMessage());
 	}
 
 	@Test
