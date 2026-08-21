@@ -697,8 +697,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		// TODO Auto-generated method stub
-
+		if (propertyName.equals(
+			OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)) {
+			presentationLocales = null;
+		}
 	}
 
 	/**
