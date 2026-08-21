@@ -12,7 +12,6 @@ package org.openmrs.util;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -421,7 +420,7 @@ public class ConceptReferenceRangeUtility {
 		 * @since 2.7.0
 		 */
 		public long getDays(Date fromDate) {
-			return getDaysBetween(fromDate, new Date());
+			return getDaysBetween(fromDate, Date.from(clock.instant()));
 		}
 
 		/**
@@ -432,7 +431,7 @@ public class ConceptReferenceRangeUtility {
 		 * @since 2.7.0
 		 */
 		public long getWeeks(Date fromDate) {
-			return getWeeksBetween(fromDate, new Date());
+			return getWeeksBetween(fromDate, Date.from(clock.instant()));
 		}
 
 		/**
@@ -443,7 +442,7 @@ public class ConceptReferenceRangeUtility {
 		 * @since 2.7.0
 		 */
 		public long getMonths(Date fromDate) {
-			return getMonthsBetween(fromDate, new Date());
+			return getMonthsBetween(fromDate, Date.from(clock.instant()));
 		}
 
 		/**
@@ -454,7 +453,7 @@ public class ConceptReferenceRangeUtility {
 		 * @since 2.7.0
 		 */
 		public long getYears(Date fromDate) {
-			return getYearsBetween(fromDate, new Date());
+			return getYearsBetween(fromDate, Date.from(clock.instant()));
 		}
 
 		/**
@@ -509,12 +508,12 @@ public class ConceptReferenceRangeUtility {
 		}
 
 		private LocalDate toLocalDate(Date date) {
-			return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			return date.toInstant().atZone(clock.getZone()).toLocalDate();
 		}
 
 		private List<PatientProgram> getPatientPrograms(Patient patient, Date onDate) {
 			if (onDate == null) {
-				onDate = new Date();
+				onDate = Date.from(clock.instant());
 			}
 			return Context.getProgramWorkflowService().getPatientPrograms(patient, null, null, onDate, onDate, null, false);
 		}

@@ -497,7 +497,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		assertTrue(utility.evaluateCriteria("$fn.getCurrentHour() == 23", obs));
 	}
-	
+
 	@Test
 	public void testRelevantObs_shouldReturnTrueIfCurrentObsHasValidNumericValue() {
 		Obs obs = buildObs();
