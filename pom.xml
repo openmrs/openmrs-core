@@ -169,7 +169,7 @@
 				<plugin>
 					<groupId>com.diffplug.spotless</groupId>
 					<artifactId>spotless-maven-plugin</artifactId>
-					<version>3.9.0</version>
+					<version>3.10.0</version>
 					<configuration>
 						<java>
 							<eclipse>
@@ -210,7 +210,7 @@
 				<plugin>
 					<groupId>com.github.spotbugs</groupId>
 					<artifactId>spotbugs-maven-plugin</artifactId>
-					<version>4.10.3.0</version>
+					<version>4.10.4.0</version>
 					<configuration>
 						<excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
 						<effort>Max</effort>
@@ -451,6 +451,11 @@
 							<requireMavenVersion>
 								<version>3.8.0</version>
 							</requireMavenVersion>
+							<bannedDependencies>
+								<excludes>
+									<exclude>xerces:xercesImpl</exclude>
+								</excludes>
+							</bannedDependencies>
 						</rules>
 					</configuration>
 				</plugin>

@@ -56,7 +56,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	@Column(name = "form_resource_id")
 	private Integer formResourceId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "form_id", nullable = false)
 	private Form form;
 
