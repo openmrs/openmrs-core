@@ -12,6 +12,7 @@ package org.openmrs.api.db.hibernate;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.Location;
 import org.openmrs.Role;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -20,6 +21,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -149,5 +151,30 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(role, "type");
 		dao.validate(role, errors);
 		assertFalse(errors.hasFieldErrors("role"));
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getMaximumPropertyLength(Class, String)
+	 */
+	@Test
+	public void getMaximumPropertyLength_shouldReturnNegativeOneWhenTheClassIsNotAMappedEntity() {
+		// A missing entity binding must degrade to "unknown length" rather than throw, since validate()
+		// calls this on every save and only enforces the limit when the returned value is non-negative.
+		assertEquals(-1L, dao.getMaximumPropertyLength(UnmappedType.class, "uuid"));
+	}
+
+	/**
+	 * An {@link org.openmrs.OpenmrsObject} that is deliberately not registered as a hibernate entity.
+	 */
+	public static class UnmappedType extends BaseOpenmrsObject {
+
+		@Override
+		public Integer getId() {
+			return null;
+		}
+
+		@Override
+		public void setId(Integer id) {
+		}
 	}
 }
