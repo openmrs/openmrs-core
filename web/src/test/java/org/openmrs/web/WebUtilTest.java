@@ -145,6 +145,22 @@ public class WebUtilTest {
 	}
 
 	/**
+	 * @see WebUtil#sanitizeForLogging(String)
+	 */
+	@Test
+	void sanitizeForLogging_shouldReturnNullIfInputIsNull() {
+		assertNull(WebUtil.sanitizeForLogging(null));
+	}
+
+	/**
+	 * @see WebUtil#sanitizeForLogging(String)
+	 */
+	@Test
+	void sanitizeForLogging_shouldReplaceCarriageReturnAndLineFeedCharacters() {
+		assertEquals("abc__def_ghi_jkl", WebUtil.sanitizeForLogging("abc\r\ndef\nghi\rjkl"));
+	}
+
+	/**
 	 * Utility method to check if a list contains a BaseOpenmrsObject using the id
 	 *
 	 * @param list
