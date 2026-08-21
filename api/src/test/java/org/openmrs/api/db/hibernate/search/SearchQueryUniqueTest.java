@@ -202,9 +202,11 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 
 		int scannedHitCount = SearchQueryUnique.collectUniqueKeys(uniqueKeyOnlyQuery(), uniqueKeys, cap, chunkSize);
 
+		int worstCaseScannedHits = cap + 1 + DUPLICATE_COUNT;
+
 		assertEquals(cap + 1, uniqueKeys.size(), "should collect one key past the cap and then stop");
-		assertTrue(scannedHitCount <= chunkSize,
-		    "expected the scroll to stop within the first chunk but scanned " + scannedHitCount);
+		assertTrue(scannedHitCount <= worstCaseScannedHits,
+		    "expected the scroll to stop once the cap was exceeded but scanned " + scannedHitCount);
 		assertTrue(scannedHitCount < TOTAL_NAME_HITS, "expected fewer scanned hits than the full result set");
 	}
 
