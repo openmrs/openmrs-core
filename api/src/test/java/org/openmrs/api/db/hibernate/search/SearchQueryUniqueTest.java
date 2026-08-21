@@ -126,6 +126,41 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * The projected counterpart of {@link #personMapper()}: it is handed the person ids straight from
+	 * the index, so it batch-loads them the way the DAOs do rather than walking loaded hits.
+	 */
+	private Function<List<Object>, List<Person>> personKeyMapper() {
+		return personIds -> personIds.stream().map(id -> personService.getPerson((Integer) id)).collect(Collectors.toList());
+	}
+
+	private SearchQueryUnique<PersonName, Person> projectedPersonNameQuery() {
+		return SearchQueryUnique.newProjectedQuery(PersonName.class, matchingPredicate(), "person.personId",
+		    personKeyMapper());
+	}
+
+	/**
+	 * A projected query whose mapper records the keys it was handed, so a test can assert on what the
+	 * page fetch actually read out of the index.
+	 */
+	private SearchQueryUnique<PersonName, Person> projectedPersonNameQuery(List<Object> seenKeys) {
+		Function<List<Object>, List<Person>> mapper = personKeyMapper();
+		return SearchQueryUnique.newProjectedQuery(PersonName.class, matchingPredicate(), "person.personId", personIds -> {
+			seenKeys.addAll(personIds);
+			return mapper.apply(personIds);
+		});
+	}
+
+	/**
+	 * The projected counterpart of {@link #joinedQuery()}.
+	 */
+	private SearchQueryUnique<?, Person> projectedJoinedQuery() {
+		return SearchQueryUnique
+		        .newProjectedQuery(PersonName.class, matchingPredicate(FAMILY_A), "person.personId", personKeyMapper())
+		        .join(SearchQueryUnique.newProjectedQuery(PersonName.class, matchingPredicate(FAMILY_B), "person.personId",
+		            personKeyMapper()));
+	}
+
+	/**
 	 * Builds a two-sub-query join over PersonName: the first sub-query matches {@link #FAMILY_A}, the
 	 * second {@link #FAMILY_B}. Persons matching both must be returned/counted once across the join.
 	 */
@@ -419,6 +454,70 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 		                .newQuery(PersonName.class, matchingPredicate(FAMILY_B), "person.personId", personMapper()));
 
 		assertThrows(IllegalStateException.class, () -> SearchQueryUnique.search(searchSessionFactory, query, 0, 10));
+	}
+
+	@Test
+	public void search_shouldHandProjectedUniqueKeysToTheMapperInsteadOfHits() {
+		// The point of projecting: the mapper is handed the unique key values themselves, so the hit
+		// entities never have to be loaded to reach the results.
+		List<Object> seen = new ArrayList<>();
+
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory, projectedPersonNameQuery(seen), 0, 5);
+
+		assertEquals(5, results.size());
+		assertEquals(5, seen.size(), "the mapper should receive the whole page in one call");
+		assertEquals(personIds(results), seen.stream().map(key -> (Integer) key).collect(Collectors.toList()));
+	}
+
+	@Test
+	public void search_shouldReturnTheSameResultsProjectedAsLoaded() {
+		// Projecting changes how the page is read, not what it contains, and the order must survive too
+		// because it is what pagination is built on.
+		List<Person> loaded = SearchQueryUnique.search(searchSessionFactory, personNameQuery(), 0, 5);
+		List<Person> projected = SearchQueryUnique.search(searchSessionFactory, projectedPersonNameQuery(), 0, 5);
+
+		assertEquals(5, loaded.size());
+		assertEquals(personIds(loaded), personIds(projected));
+	}
+
+	@Test
+	public void search_shouldDeduplicateProjectedQueriesAcrossAJoin() {
+		// Deduplication works off the unique key either way, so a projected join must collapse the persons
+		// matching both sub-queries exactly as a loading join does.
+		createJoinedFixture();
+
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory, projectedJoinedQuery(), 0, RAW_JOINED);
+
+		assertEquals(DISTINCT_JOINED, results.size());
+		assertEquals(DISTINCT_JOINED, new LinkedHashSet<>(personIds(results)).size(), "results must be distinct persons");
+	}
+
+	@Test
+	public void search_shouldPaginateProjectedQueriesAcrossAJoin() {
+		// The offset carried to the next sub-query is derived from the unique keys the previous one
+		// contributed, which projection must not disturb.
+		createJoinedFixture();
+
+		List<Integer> whole = personIds(
+		    SearchQueryUnique.search(searchSessionFactory, projectedJoinedQuery(), 0, DISTINCT_JOINED));
+		List<Integer> firstPage = personIds(SearchQueryUnique.search(searchSessionFactory, projectedJoinedQuery(), 0, 4));
+		List<Integer> secondPage = personIds(SearchQueryUnique.search(searchSessionFactory, projectedJoinedQuery(), 4, 4));
+
+		assertEquals(whole.subList(0, 4), firstPage);
+		assertEquals(whole.subList(4, 8), secondPage);
+	}
+
+	@Test
+	public void newProjectedQuery_shouldRejectAMissingUniqueKey() {
+		// A projected query reads nothing but its unique key, so without one there is nothing to project.
+		assertThrows(IllegalArgumentException.class,
+		    () -> SearchQueryUnique.newProjectedQuery(PersonName.class, matchingPredicate(), null, personKeyMapper()));
+	}
+
+	@Test
+	public void newProjectedQuery_shouldRejectAMissingMapper() {
+		assertThrows(IllegalArgumentException.class,
+		    () -> SearchQueryUnique.newProjectedQuery(PersonName.class, matchingPredicate(), "person.personId", null));
 	}
 
 	private SearchQuery<List<?>> uniqueKeyQuery() {
