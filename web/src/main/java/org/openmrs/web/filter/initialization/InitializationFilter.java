@@ -204,9 +204,9 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
-	private static boolean initializationComplete = false;
+	private static volatile boolean initializationComplete = false;
 
-	protected synchronized void setInitializationComplete(boolean initializationComplete) {
+	protected static void setInitializationComplete(boolean initializationComplete) {
 		InitializationFilter.initializationComplete = initializationComplete;
 	}
 
@@ -1097,10 +1097,19 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
-		// If progress.vm makes an ajax request even immediately after initialization has completed
-		// let the request pass in order to let progress.vm load the start page of OpenMRS
-		// (otherwise progress.vm is displayed "forever")
-		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page")) && !initializationRequired();
+		if (initializationRequired()) {
+			// the wizard handles every request until initialization completes
+			return false;
+		}
+		// Once initialization is done, the only request left to answer is the progress page's poll,
+		// which always arrives on the setup page. getServletPath() never parses parameters, so every
+		// other request is skipped without touching the query string or a POST body.
+		if (!("/" + WebConstants.SETUP_PAGE_URL).equals(httpRequest.getServletPath())) {
+			return true;
+		}
+		// let the poll through so progress.vm can pick up the final
+		// "initializationComplete = true" response and leave the wizard
+		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"));
 	}
 
 	/**
@@ -1267,7 +1276,7 @@ public class InitializationFilter extends StartupFilter {
 	 *
 	 * @return true if this has been run already
 	 */
-	private static synchronized boolean isInitializationComplete() {
+	private static boolean isInitializationComplete() {
 		return initializationComplete;
 	}
 

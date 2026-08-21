@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.openmrs.api.context.Context;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -79,11 +80,14 @@ class InitializationFilterE2ETest {
 		// since SchedulerConfig.dataSource() reads them at bean-creation time.
 		originalRuntimeProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(new Properties());
+		InitializationFilter.setInitializationComplete(false);
+		InitializationFilter.setInstallationStarted(false);
 	}
 
 	@AfterEach
 	void cleanup() {
 		InitializationFilter.setInstallationStarted(false);
+		InitializationFilter.setInitializationComplete(false);
 		Context.setRuntimeProperties(originalRuntimeProperties);
 	}
 
@@ -930,6 +934,75 @@ class InitializationFilterE2ETest {
 
 		assertTrue(getErrors().containsKey("install.error.dbUserPswd"));
 	}
+
+	// ========== skipFilter ==========
+
+	@Test
+	void skipFilter_shouldReturnFalseWhenInitializationRequired() {
+		InitializationFilter.setInitializationComplete(false);
+
+		boolean result = filter.skipFilter(request);
+
+		assertFalse(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueWhenInitializationComplete() {
+		InitializationFilter.setInitializationComplete(true);
+
+		boolean result = filter.skipFilter(request);
+
+		assertTrue(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnFalseForProgressPollOnSetupPage() {
+		InitializationFilter.setInitializationComplete(true);
+		request.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
+		request.setParameter("page", "progress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(request);
+
+		assertFalse(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForProgressPollOffSetupPage() {
+		InitializationFilter.setInitializationComplete(true);
+		request.setServletPath("/openmrs");
+		request.setParameter("page", "progress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(request);
+
+		assertTrue(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForSetupPageRequestThatIsNotTheProgressPoll() {
+		InitializationFilter.setInitializationComplete(true);
+		request.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
+
+		boolean result = filter.skipFilter(request);
+
+		assertTrue(result);
+	}
+
+	@Test
+	void skipFilter_shouldNotReadRequestParametersOnceInitializationIsComplete() {
+		InitializationFilter.setInitializationComplete(true);
+		MockHttpServletRequest req = new MockHttpServletRequest() {
+
+			@Override
+			public String getParameter(String name) {
+				throw new AssertionError("skipFilter parsed request parameters after initialization completed");
+			}
+		};
+		req.setServletPath("/index.htm");
+
+		assertTrue(filter.skipFilter(req));
+	}
+
+	// ========== Helper Methods ==========
 
 	/**
 	 * Access the errors map from the filter via reflection since it is protected in StartupFilter.
