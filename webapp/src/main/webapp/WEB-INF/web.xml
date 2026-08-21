@@ -328,6 +328,11 @@
  		<servlet-name>openmrs</servlet-name>
  		<url-pattern>/ws/*</url-pattern>
 	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/index.htm</url-pattern>
+	</servlet-mapping>
 	
 	<servlet-mapping>
 		<servlet-name>openmrs</servlet-name>
