@@ -168,6 +168,28 @@ public class OpenmrsUtilUnitTest {
 	}
 
 	@Test
+	public void stringStartsWith_shouldReturnTrueIfStringStartsWithOneOfTheGivenPrefixes() {
+
+		String[] prefixes = new String[] { "foo", "bar", "baz" };
+
+		assertTrue(OpenmrsUtil.stringStartsWith("barbecue", prefixes));
+	}
+
+	@Test
+	public void stringStartsWith_shouldReturnFalseIfStringStartsWithNoneOfTheGivenPrefixes() {
+
+		String[] prefixes = new String[] { "foo", "bar", "baz" };
+
+		assertFalse(OpenmrsUtil.stringStartsWith("hello", prefixes));
+	}
+
+	@Test
+	public void stringStartsWith_shouldReturnFalseIfPrefixArrayIsEmpty() {
+
+		assertFalse(OpenmrsUtil.stringStartsWith("hello", new String[0]));
+	}
+
+	@Test
 	public void isInNormalNumericRange_shouldReturnFalseIfHiNormalIsNull() {
 
 		ConceptNumeric concept = new ConceptNumeric();
