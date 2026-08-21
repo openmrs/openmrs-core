@@ -20,12 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.EntityGraph;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -39,14 +36,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.graph.GraphSemantic;
 import org.hibernate.persister.entity.AbstractEntityPersister;
 import org.hibernate.query.MutationQuery;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.hibernate.search.engine.search.predicate.SearchPredicate;
 import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
-import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.Location;
@@ -793,7 +788,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 
 		return SearchQueryUnique.search(searchSessionFactory,
-		    SearchQueryUnique.newQuery(PatientIdentifier.class, f -> f.bool().with(b -> {
+		    SearchQueryUnique.newProjectedQuery(PatientIdentifier.class, f -> f.bool().with(b -> {
 			    b.must(getPatientIdentifierSearchPredicate(f, query, matchExactly));
 			    List<Integer> identifierTypeIds = new ArrayList<Integer>();
 			    for (PatientIdentifierType identifierType : identifierTypes) {
@@ -802,10 +797,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			    b.filter(f.terms().field("identifierType.patientIdentifierTypeId").matchingAny(identifierTypeIds));
 			    b.filter(f.match().field("patient.isPatient").matching(true));
 			    b.filter(f.match().field("voided").matching(false));
-		    }).toPredicate(), "patient.personId",
-		        (List<PatientIdentifier> pIs) -> multiLoadPatients(pIs, pI -> pI.getPatient().getPersonId()))
-		            .withLoadingOptions(unfetchedIdentifierHits()),
-		    tmpStart, tmpLength);
+		    }).toPredicate(), "patient.personId", this::multiLoadPatients), tmpStart, tmpLength);
 	}
 
 	public List<Patient> findPatients(String query, boolean includeVoided, Integer start, Integer length) {
@@ -833,19 +825,16 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		PersonQuery personQuery = new PersonQuery();
 
-		patients = SearchQueryUnique.search(searchSessionFactory,
-		    SearchQueryUnique
-		            .newQuery(PatientIdentifier.class,
-		                f -> newPatientIdentifierSearchPredicate(f, query, includeVoided, false), "patient.personId",
-		                (List<PatientIdentifier> pIs) -> multiLoadPatients(pIs, pI -> pI.getPatient().getPersonId()))
-		            .withLoadingOptions(unfetchedIdentifierHits())
-		            .join(SearchQueryUnique
-		                    .newQuery(PersonName.class, f -> personQuery.getPatientNameQuery(f, query, includeVoided),
-		                        "person.personId",
-		                        (List<PersonName> pNs) -> multiLoadPatients(pNs, pN -> pN.getPerson().getPersonId()))
-		                    .join(SearchQueryUnique.newQuery(PersonAttribute.class,
-		                        f -> personQuery.getPatientAttributeQuery(f, query, includeVoided), "person.personId",
-		                        (List<PersonAttribute> pAs) -> multiLoadPatients(pAs, pA -> pA.getPerson().getPersonId())))),
+		patients = SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique
+		        .newProjectedQuery(
+		            PatientIdentifier.class, f -> newPatientIdentifierSearchPredicate(f, query, includeVoided, false),
+		            "patient.personId", this::multiLoadPatients)
+		        .join(SearchQueryUnique
+		                .newProjectedQuery(PersonName.class, f -> personQuery.getPatientNameQuery(f, query, includeVoided),
+		                    "person.personId", this::multiLoadPatients)
+		                .join(SearchQueryUnique.newProjectedQuery(PersonAttribute.class,
+		                    f -> personQuery.getPatientAttributeQuery(f, query, includeVoided), "person.personId",
+		                    this::multiLoadPatients))),
 		    start, length);
 
 		return patients;
@@ -1044,14 +1033,16 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * addresses, and attributes be read in a bounded number of batched selects across the page rather
 	 * than a separate set of selects for every patient. Hits whose patient is no longer present in the
 	 * database (a stale search-index entry) are dropped from the results.
+	 * <p>
+	 * The ids arrive projected out of the search index rather than read off loaded hit entities (see
+	 * {@link SearchQueryUnique#newProjectedQuery}), which is what leaves this the only load a page
+	 * performs: hydrating the hits would resolve their default-eager patient association one hit at a
+	 * time before this ever ran.
 	 *
-	 * @param hits the page of search hits, in the order they should appear in the results
-	 * @param patientIdExtractor extracts the patient id from a hit
-	 * @param <S> the search hit type
+	 * @param patientIds the page's patient ids, in the order they should appear in the results
 	 * @return the patients for the page, in hit order, with missing rows removed
 	 */
-	private <S> List<Patient> multiLoadPatients(List<S> hits, Function<S, Integer> patientIdExtractor) {
-		List<Integer> patientIds = hits.stream().map(patientIdExtractor).collect(Collectors.toList());
+	private List<Patient> multiLoadPatients(List<Object> patientIds) {
 		List<Patient> patients = sessionFactory.getCurrentSession().findMultiple(Patient.class, patientIds).stream()
 		        .filter(Objects::nonNull).collect(Collectors.toList());
 		if (patients.size() < patientIds.size()) {
@@ -1059,21 +1050,5 @@ public class HibernatePatientDAO implements PatientDAO {
 			    patientIds.size() - patients.size());
 		}
 		return patients;
-	}
-
-	/**
-	 * Loading options that stop Hibernate Search from resolving {@link PatientIdentifier#getPatient()}
-	 * while it loads a page of identifier hits.
-	 * <p>
-	 * That association is a default-eager <code>@ManyToOne</code>, so without this every hit's patient
-	 * is fetched individually before {@link #multiLoadPatients(List, Function)} runs, leaving the
-	 * batched load nothing to do. Reading just the id off the resulting proxy, as the mapper does, does
-	 * not initialize it. Scoped to this query; the mapped fetch strategy is unchanged elsewhere.
-	 *
-	 * @return the loading options to apply to an identifier search
-	 */
-	private Consumer<SearchLoadingOptionsStep> unfetchedIdentifierHits() {
-		EntityGraph<PatientIdentifier> graph = sessionFactory.getCurrentSession().createEntityGraph(PatientIdentifier.class);
-		return options -> options.graph(graph, GraphSemantic.FETCH);
 	}
 }

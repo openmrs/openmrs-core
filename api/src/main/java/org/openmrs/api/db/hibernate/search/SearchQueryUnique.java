@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.lucene.search.BooleanQuery;
@@ -24,9 +23,7 @@ import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.hibernate.search.engine.search.query.SearchQuery;
 import org.hibernate.search.engine.search.query.SearchScroll;
 import org.hibernate.search.engine.search.query.SearchScrollResult;
-import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
 import org.hibernate.search.mapper.orm.scope.SearchScope;
-import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 
@@ -70,7 +67,7 @@ public class SearchQueryUnique<T, R> {
 
 	String uniqueKey;
 
-	Consumer<SearchLoadingOptionsStep> loadingOptions;
+	Function<List<Object>, List<R>> uniqueKeyMapper;
 
 	SearchQueryUnique<?, R> joinedQuery;
 
@@ -103,25 +100,14 @@ public class SearchQueryUnique<T, R> {
 		return joinedQuery;
 	}
 
-	public Consumer<SearchLoadingOptionsStep> getLoadingOptions() {
-		return loadingOptions;
-	}
-
 	/**
-	 * Customizes how the hits of this sub-query are loaded, for this query only.
-	 * <p>
-	 * Where the index type reaches the returned entity through a default-eager <code>@ManyToOne</code>,
-	 * Hibernate Search resolves it once per hit while loading the page, before the page mapper can
-	 * batch-load anything. An empty {@link org.hibernate.graph.GraphSemantic#FETCH} graph leaves it an
-	 * uninitialized proxy so the mapper's batched load is the one that reaches the database. Applies to
-	 * the page fetch only, and does not change the mapped fetch strategy outside this query.
+	 * The mapper of a projected query, which receives the page's unique key values rather than its hit
+	 * entities. See {@link #newProjectedQuery(Class, Function, String, Function)}.
 	 *
-	 * @param loadingOptions the loading options to apply, or <code>null</code> for the defaults
-	 * @return this query, for chaining
+	 * @return the unique key mapper, or <code>null</code> if this query loads its hits
 	 */
-	public SearchQueryUnique<T, R> withLoadingOptions(Consumer<SearchLoadingOptionsStep> loadingOptions) {
-		this.loadingOptions = loadingOptions;
-		return this;
+	public Function<List<Object>, List<R>> getUniqueKeyMapper() {
+		return uniqueKeyMapper;
 	}
 
 	/**
@@ -145,7 +131,9 @@ public class SearchQueryUnique<T, R> {
 	 * @param mapper the mapper from a page of index-type hits to result-type items, applied once per
 	 *            page so it can batch-load the results, or <code>null</code> if none. It must preserve
 	 *            the order of the hits (its output is appended directly to the paginated results), so a
-	 *            reordering mapper would corrupt pagination.
+	 *            reordering mapper would corrupt pagination. A mapper that only needs the unique key
+	 *            off each hit belongs on {@link #newProjectedQuery(Class, Function, String, Function)}
+	 *            instead, which skips loading the hits altogether.
 	 * @return the search
 	 * @param <T> the index type
 	 * @param <R> the result type
@@ -168,6 +156,46 @@ public class SearchQueryUnique<T, R> {
 	public static <T, R> SearchQueryUnique<T, R> newQuery(Class<? extends T> scope,
 	        Function<SearchPredicateFactory, SearchPredicate> search, String uniqueKey) {
 		return new SearchQueryUnique<>(scope, search, uniqueKey, null, null);
+	}
+
+	/**
+	 * Creates a query that reads its unique key straight from the index instead of loading the hits.
+	 * <p>
+	 * Use this wherever the results are reached only through the unique key - which is every search
+	 * whose mapper does nothing with a hit but pull the target id off it. Because the hit entities are
+	 * never loaded, nothing eagerly resolves the association the unique key comes from, so the mapper's
+	 * batched load is the only one that reaches the database. Loading the hits instead would cost an
+	 * extra select per page and, where that association is a default-eager <code>@ManyToOne</code>, one
+	 * per hit.
+	 * <p>
+	 * The mapper receives the page's unique key values in hit order and must return the results in that
+	 * same order, exactly as in {@link #newQuery(Class, Function, String, Function)}. A projected query
+	 * requires a unique key, since that is the only field it reads.
+	 *
+	 * @param scope the index type to be searched
+	 * @param search the search predicate
+	 * @param uniqueKey the field to project and use as unique key, which must not be <code>null</code>
+	 * @param uniqueKeyMapper the mapper from a page of unique key values to result-type items, applied
+	 *            once per page so it can batch-load the results. It must preserve the order of the
+	 *            hits.
+	 * @return the search
+	 * @param <T> the index type
+	 * @param <R> the result type
+	 * @throws IllegalArgumentException if <code>uniqueKey</code> or <code>uniqueKeyMapper</code> is
+	 *             <code>null</code>
+	 */
+	public static <T, R> SearchQueryUnique<T, R> newProjectedQuery(Class<? extends T> scope,
+	        Function<SearchPredicateFactory, SearchPredicate> search, String uniqueKey,
+	        Function<List<Object>, List<R>> uniqueKeyMapper) {
+		if (uniqueKey == null) {
+			throw new IllegalArgumentException("A projected SearchQueryUnique requires a unique key to project");
+		}
+		if (uniqueKeyMapper == null) {
+			throw new IllegalArgumentException("A projected SearchQueryUnique requires a unique key mapper");
+		}
+		SearchQueryUnique<T, R> query = new SearchQueryUnique<>(scope, search, uniqueKey, null, null);
+		query.uniqueKeyMapper = uniqueKeyMapper;
+		return query;
 	}
 
 	public static class SearchUniqueResults<T> {
@@ -325,7 +353,7 @@ public class SearchQueryUnique<T, R> {
 			SearchScope<?> scope = searchSession.scope(nextQuery.getScope());
 			SearchPredicateFactory predicateFactory = scope.predicate();
 			SearchPredicate searchPredicate = nextQuery.getSearch().apply(predicateFactory);
-			SearchQueryOptionsStep<?, ?, ?, SearchLoadingOptionsStep, ?, ?> queryOptions;
+			SearchQuery<?> query;
 
 			final Collection<Object> previousQueryUniqueKeys = new ArrayList<>(uniqueKeys);
 			DeduplicationResult dedup = null;
@@ -354,27 +382,24 @@ public class SearchQueryUnique<T, R> {
 					uniqueKeys = new LinkedHashSet<>(new ArrayList<>(uniqueKeys).subList(0, maxClauseCount));
 				}
 
-				queryOptions = searchSession.search(scope).where(f -> f.bool().with(b -> {
-					b.must(searchPredicate);
-					if (!duplicateIds.isEmpty()) {
-						b.filter(f.not(f.id().matchingAny(duplicateIds)));
-					}
-					// Get rid of unique keys that were added to results in a previous query
-					if (!previousQueryUniqueKeys.isEmpty()) {
-						b.filter(f.not(f.terms().field(uniqueKey).matchingAny(previousQueryUniqueKeys)));
-					}
-				}));
+				// A projected query reads the unique key out of the index rather than loading the hits, so
+				// the page fetch selects that one field instead of the hit entities. Only a query with a
+				// unique key can project, which is why this is the only branch that has to consider it.
+				final boolean projectUniqueKey = nextQuery.getUniqueKeyMapper() != null;
+				query = (projectUniqueKey ? searchSession.search(scope).select(f -> f.field(uniqueKey))
+				        : searchSession.search(scope)).where(f -> f.bool().with(b -> {
+					        b.must(searchPredicate);
+					        if (!duplicateIds.isEmpty()) {
+						        b.filter(f.not(f.id().matchingAny(duplicateIds)));
+					        }
+					        // Get rid of unique keys that were added to results in a previous query
+					        if (!previousQueryUniqueKeys.isEmpty()) {
+						        b.filter(f.not(f.terms().field(uniqueKey).matchingAny(previousQueryUniqueKeys)));
+					        }
+				        })).toQuery();
 			} else {
-				queryOptions = searchSession.search(scope).where(searchPredicate);
+				query = searchSession.search(scope).where(searchPredicate).toQuery();
 			}
-
-			// Page fetch only: the deduplication scroll above projects index fields and never loads
-			// entities, so loading options are meaningless there.
-			if (nextQuery.getLoadingOptions() != null) {
-				queryOptions.loading(nextQuery.getLoadingOptions());
-			}
-
-			SearchQuery<?> query = queryOptions.toQuery();
 
 			List<?> partialResults;
 			if (currentOffset != null) {
@@ -386,11 +411,15 @@ public class SearchQueryUnique<T, R> {
 			}
 
 			if (!partialResults.isEmpty()) {
-				if (nextQuery.getMapper() != null) {
-					// The mapper receives the whole page so it can hydrate the results in one batched,
-					// order-preserving load rather than one load per hit. When a unique key is set,
-					// deduplication already ran above, so the page handed to the mapper is free of duplicate
-					// unique keys; without a unique key no deduplication is applied.
+				// Either mapper receives the whole page so it can hydrate the results in one batched,
+				// order-preserving load rather than one load per hit. When a unique key is set,
+				// deduplication already ran above, so the page handed to the mapper is free of duplicate
+				// unique keys; without a unique key no deduplication is applied.
+				if (nextQuery.getUniqueKeyMapper() != null) {
+					// The hits are the projected unique key values themselves.
+					//noinspection unchecked
+					results.addAll(nextQuery.getUniqueKeyMapper().apply((List<Object>) partialResults));
+				} else if (nextQuery.getMapper() != null) {
 					//noinspection unchecked
 					results.addAll(((Function<List<Object>, List<T>>) (Function<?, ?>) nextQuery.getMapper())
 					        .apply((List<Object>) partialResults));

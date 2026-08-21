@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
-import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
+import org.hibernate.proxy.HibernateProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Patient;
@@ -35,6 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
@@ -317,8 +318,9 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 	/**
 	 * Asserts the shape of the cost rather than an absolute number, which would break on any change
-	 * shifting the fixed overhead. Before {@link PatientIdentifier#getPatient()} was left unresolved
-	 * while loading hits, the difference here was roughly one round trip per extra result.
+	 * shifting the fixed overhead. Before the search projected the patient id instead of loading the
+	 * identifier hits - whose {@link PatientIdentifier#getPatient()} is a default-eager
+	 * <code>@ManyToOne</code> - the difference here was roughly one round trip per extra result.
 	 */
 	@Test
 	public void getPatients_shouldNotIssueMoreDatabaseTripsAsTheIdentifierSearchPageGrows() {
@@ -339,9 +341,10 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	/**
 	 * The joined search behind the main patient search reaches the identifier sub-query too, so it
 	 * carries the same guarantee as
-	 * {@link #getPatients_shouldNotIssueMoreDatabaseTripsAsTheIdentifierSearchPageGrows}. The fixture
-	 * fills the whole page from that first sub-query, so this measures the identifier leg as the joined
-	 * search runs it.
+	 * {@link #getPatients_shouldNotIssueMoreDatabaseTripsAsTheIdentifierSearchPageGrows}. Only the
+	 * fixture's identifiers match the search token - its names deliberately do not - so the page can
+	 * only fill from the identifier sub-query, and this cannot quietly end up measuring the name leg
+	 * instead if relative scoring ever shifts.
 	 */
 	@Test
 	public void getPatients_shouldNotIssueMoreDatabaseTripsAsTheJoinedSearchPageGrows() {
@@ -359,21 +362,28 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * The search's loading options are scoped to that search, so any other path must still eagerly
-	 * populate the patient - otherwise callers reading it after the session closes would start failing.
+	 * Because the search loads the patients itself rather than reaching them through a loaded hit, the
+	 * results are the patients themselves and not proxies standing in for them. Reaching them through
+	 * the hits requires suppressing that association's eager fetch, which leaves every result an
+	 * initialized proxy whose {@code getClass()} is no longer {@link Patient} - a difference visible to
+	 * callers that compare types or serialize what they get back.
 	 */
 	@Test
-	public void getPatientIdentifiers_shouldStillEagerlyFetchThePatientOutsideSearch() {
+	public void getPatients_shouldReturnPatientsRatherThanProxies() {
+		List<PatientIdentifierType> identifierTypes = singletonList(Context.getPatientService().getPatientIdentifierType(2));
+		createIdentifierSearchFixture();
+
 		Context.flushSession();
 		Context.clearSession();
 
-		List<PatientIdentifier> identifiers = hibernatePatientDao.getPatientIdentifiers(null,
-		    singletonList(new PatientIdentifierType(2)), emptyList(), emptyList(), null);
+		List<Patient> patients = hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, identifierTypes, false, 0,
+		    SMALL_PAGE);
 
-		assertThat(identifiers.isEmpty(), equalTo(false));
-		for (PatientIdentifier identifier : identifiers) {
-			assertTrue(Hibernate.isInitialized(identifier.getPatient()),
-			    "the mapped eager fetch of PatientIdentifier.patient must be unchanged outside search");
+		assertEquals(SMALL_PAGE, patients.size());
+		for (Patient patient : patients) {
+			assertFalse(patient instanceof HibernateProxy,
+			    "search results must be patients, not proxies standing in for them");
+			assertEquals(Patient.class, patient.getClass());
 		}
 	}
 
@@ -404,7 +414,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 		for (int i = 0; i < SEARCH_FIXTURE_SIZE; i++) {
 			Patient patient = new Patient();
-			patient.addName(new PersonName("Bounded", null, "Patient" + i));
+			// Deliberately unrelated to SEARCH_FIXTURE_TOKEN so only the identifiers match the search.
+			patient.addName(new PersonName("Ada", null, "Lovelace" + i));
 			patient.setGender("F");
 
 			PatientIdentifier identifier = new PatientIdentifier(SEARCH_FIXTURE_TOKEN + String.format("%04d", i),
