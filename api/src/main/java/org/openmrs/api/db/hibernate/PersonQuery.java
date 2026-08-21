@@ -173,6 +173,12 @@ public class PersonQuery {
 			    Arrays.asList("givenNameAnywhere", "middleNameAnywhere", "familyNameAnywhere", "familyName2Anywhere"));
 		}
 
+		boolean nickname = Boolean.parseBoolean(Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_NICKNAME, "false"));
+		if (nickname) {
+			fields.addAll(Arrays.asList("givenNameNickname", "middleNameNickname"));
+		}
+
 		return newPersonNameSearchQuery(predicateFactory, fields, query, orQueryParser, includeVoided, patientsOnly, dead,
 		    null, null);
 	}

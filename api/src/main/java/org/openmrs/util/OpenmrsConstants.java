@@ -341,6 +341,8 @@ public final class OpenmrsConstants {
 
 	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_SOUNDEX = "SOUNDEX";
 
+	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_NICKNAME = "patientSearch.matchMode.nickname";
+
 	public static final String GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE = "providerSearch.matchMode";
 
 	public static final String GLOBAL_PROPERTY_DEFAULT_SERIALIZER = "serialization.defaultSerializer";
@@ -880,6 +882,10 @@ public final class OpenmrsConstants {
 
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE, GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START,
 		        "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
+
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_NICKNAME, "false",
+		        "When set to true, patient name search also matches common English nicknames (e.g. searching 'Bob' finds a patient registered as 'Robert' and vice versa). Additive to the patientSearch.matchMode setting. Requires a search index rebuild to take effect. Defaults to false.",
+		        BooleanDatatype.class, null));
 
 		props.add(new GlobalProperty(GP_ENABLE_CONCEPT_MAP_TYPE_MANAGEMENT, "false",
 		        "Enables or disables management of concept map types", BooleanDatatype.class, null));
