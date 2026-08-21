@@ -29,6 +29,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Initializes Hibernate Envers audit tables when auditing is enabled. This class is responsible for
  * conditionally creating audit tables only when hibernate.integration.envers.enabled=true.
+ * <p>
+ * Data backfill for pre-existing rows is handled separately by
+ * {@link org.openmrs.util.databasechange.BackfillEnversAuditTablesChangeset}, which runs exactly
+ * once via Liquibase.
  */
 public class EnversAuditTableInitializer {
 
@@ -39,8 +43,9 @@ public class EnversAuditTableInitializer {
 	}
 
 	/**
-	 * Checks if Envers is enabled and creates/updates audit tables as needed. This will Create or
-	 * Update audit tables if they don't exist - Update existing audit tables if the schema has changed
+	 * Checks if Envers is enabled and creates/updates audit tables as needed. This will create or
+	 * update audit tables if they don't exist, and update existing audit tables if the schema has
+	 * changed.
 	 *
 	 * @param metadata Hibernate metadata containing entity mappings
 	 * @param hibernateProperties properties containing Envers configuration
