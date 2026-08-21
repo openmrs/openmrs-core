@@ -42,6 +42,15 @@ public class MySQLBooleanTypeTest {
 	}
 
 	@Test
+	public void shouldReturnTinyIntForMariaDBDatabase() {
+		MySQLBooleanType dataType = new MySQLBooleanType();
+		DatabaseDataType actual = dataType.toDatabaseDataType(new MariaDBDatabase());
+
+		String expected = "TINYINT(1)";
+		assertEquals(expected, actual.getType());
+	}
+
+	@Test
 	public void shouldDelegateToLiquibaseDatabases()
 	        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
 		BooleanType booleanType = new BooleanType();
