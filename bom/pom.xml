@@ -113,7 +113,6 @@
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
 		<tomcatVersion>11.0.25</tomcatVersion>
-		<jodaTimeVersion>2.14.3</jodaTimeVersion>
 		<guavaVersion>33.7.0-jre</guavaVersion>
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
@@ -589,11 +588,6 @@
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper</artifactId>
 				<version>${tomcatVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>joda-time</groupId>
-				<artifactId>joda-time</artifactId>
-				<version>${jodaTimeVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.guava</groupId>
