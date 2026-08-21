@@ -735,7 +735,7 @@ public final class OpenmrsConstants {
 
 		props.add(new GlobalProperty(GP_PASSWORD_RESET_URL, "",
 		        "The URL to redirect to after requesting for a password reset. Always provide a place holder in this url with name {activationKey}, it will get substituted by the actual activation key."));
-		
+
 		props.add(new GlobalProperty("mail.transport_protocol", "smtp",
 		        "Transport protocol for the messaging engine. Valid values: smtp"));
 		props.add(new GlobalProperty("mail.smtp_host", "localhost", "SMTP host name"));
