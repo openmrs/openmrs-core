@@ -70,4 +70,10 @@
 			<Bug pattern="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS"/>
 		</Or>
 	</Match>
+
+	<!-- UuidUtil generates identifiers, not secrets, so it deliberately does not use SecureRandom -->
+	<Match>
+		<Class name="~org\.openmrs\.util\.UuidUtil(\$.*)?"/>
+		<Bug pattern="PREDICTABLE_RANDOM"/>
+	</Match>
 </FindBugsFilter>
