@@ -404,7 +404,7 @@ public class HibernateUserDAO implements UserDAO {
 		// reset lockout
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
-		sessionFactory.getCurrentSession().merge(changeForUser);
+		saveUser(changeForUser, null);
 	}
 
 	/**
