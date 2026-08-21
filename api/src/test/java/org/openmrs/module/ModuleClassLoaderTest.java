@@ -15,16 +15,21 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -588,5 +593,83 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 		final URL fileUrl = URI.create(
 			"file:/atomfeed/lib/jackson-mapper-asl-1.9.13.jar").toURL();
 		assertFalse(ModuleClassLoader.isMatchingConditionalResource(moduleWithNullConfigVersions, fileUrl, conditionalResource));
+	}
+
+	/**
+	 * Verifies TRUNK-6509: the /lib folder of an unchanged module must not be re-expanded on every
+	 * restart, while a module that actually changed (TRUNK-6675) still is.
+	 *
+	 * @see ModuleClassLoader#getUrls(Module)
+	 */
+	@Test
+	public void getUrls_shouldNotReExpandLibForUnchangedModuleButShouldForChangedModule() throws Exception {
+		File tempLibCache = Files.createTempDirectory("libcache-test").toFile();
+		Field libCacheFolderField = OpenmrsClassLoader.class.getDeclaredField("libCacheFolder");
+		libCacheFolderField.setAccessible(true);
+		File savedLibCacheFolder = (File) libCacheFolderField.get(null);
+		libCacheFolderField.set(null, tempLibCache);
+
+		Field libCacheFoldersField = ModuleClassLoader.class.getDeclaredField("libCacheFolders");
+		libCacheFoldersField.setAccessible(true);
+		@SuppressWarnings("unchecked")
+		Map<String, File> libCacheFolders = (Map<String, File>) libCacheFoldersField.get(null);
+
+		Method getUrls = ModuleClassLoader.class.getDeclaredMethod("getUrls", Module.class);
+		getUrls.setAccessible(true);
+
+		Properties savedRuntimeProperties = Context.getRuntimeProperties();
+		File omodFile = File.createTempFile("mockmodule", ".omod");
+		try {
+			Properties props = Context.getRuntimeProperties();
+			props.setProperty("optimized.startup", "true");
+			Context.setRuntimeProperties(props);
+
+			long originalLastModified = 1600000000000L;
+			writeOmodWithLibJar(omodFile, "original");
+			omodFile.setLastModified(originalLastModified);
+
+			Module module = new Module("mockmodule", "mockmodule", "org.openmrs.module.mockmodule",
+				"author", "description", "1.0", "1.0");
+			module.setFile(omodFile);
+			module.setRequiredModules(new ArrayList<>());
+			module.setAwareOfModulesMap(new HashMap<>());
+
+			// First startup expands the /lib folder
+			getUrls.invoke(null, module);
+			File expandedJar = new File(new File(tempLibCache, "mockmodule"), "lib/mockmodule-api.jar");
+			assertTrue(expandedJar.exists(), "the module's /lib should be expanded on first startup");
+
+			// Replace the expanded content with a sentinel so a re-expansion can be detected
+			FileUtils.writeStringToFile(expandedJar, "SENTINEL", Charset.defaultCharset());
+
+			// Restart with the SAME (unchanged) module: the sentinel must survive, i.e. no re-expansion
+			libCacheFolders.remove("mockmodule");
+			getUrls.invoke(null, module);
+			assertThat("an unchanged module must not be re-expanded on restart (TRUNK-6509)",
+				FileUtils.readFileToString(expandedJar, Charset.defaultCharset()), is("SENTINEL"));
+
+			// Restart after the module CHANGED: it must be re-expanded (TRUNK-6675)
+			libCacheFolders.remove("mockmodule");
+			writeOmodWithLibJar(omodFile, "updated");
+			omodFile.setLastModified(originalLastModified + 10000);
+			getUrls.invoke(null, module);
+			assertThat("a changed module must be re-expanded on restart (TRUNK-6675)",
+				FileUtils.readFileToString(expandedJar, Charset.defaultCharset()), is("updated"));
+		}
+		finally {
+			Context.setRuntimeProperties(savedRuntimeProperties);
+			libCacheFolderField.set(null, savedLibCacheFolder);
+			libCacheFolders.remove("mockmodule");
+			omodFile.delete();
+			FileUtils.deleteDirectory(tempLibCache);
+		}
+	}
+
+	private static void writeOmodWithLibJar(File omodFile, String libContent) throws Exception {
+		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(omodFile))) {
+			zos.putNextEntry(new ZipEntry("lib/mockmodule-api.jar"));
+			zos.write(libContent.getBytes(Charset.defaultCharset()));
+			zos.closeEntry();
+		}
 	}
 }
