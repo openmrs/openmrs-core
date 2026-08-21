@@ -219,6 +219,12 @@
 <td>jar</td>
 <td><a class="externalLink" href="http://www.opensource.org/licenses/bsd-license.php">New BSD License</a></td></tr>
 <tr class="b">
+<td>org.bouncycastle</td>
+<td><a class="externalLink" href="https://www.bouncycastle.org/java.html">bcprov-jdk18on</a></td>
+<td>1.84</td>
+<td>jar</td>
+<td><a class="externalLink" href="https://www.bouncycastle.org/licence.html">MIT License</a></td></tr>
+<tr class="a">
 <td>org.hibernate</td>
 <td><a class="externalLink" href="http://hibernate.org">hibernate-c3p0</a></td>
 <td>4.3.9.Final</td>
@@ -354,6 +360,12 @@
 <td>org.springframework</td>
 <td><a class="externalLink" href="https://github.com/spring-projects/spring-framework">spring-beans</a></td>
 <td>4.1.4.RELEASE</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
+<tr class="a">
+<td>org.springframework.security</td>
+<td><a class="externalLink" href="https://spring.io/projects/spring-security">spring-security-crypto</a></td>
+<td>5.8.14</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
 <tr class="a">
