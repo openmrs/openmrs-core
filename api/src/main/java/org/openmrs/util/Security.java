@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -29,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+
 /**
  * OpenMRS's security class deals with the hashing of passwords.
  */
@@ -40,6 +43,8 @@ public class Security {
 	private static final Logger log = LoggerFactory.getLogger(Security.class);
 	
 	private static final Random RANDOM = new SecureRandom();
+
+	private static final Pattern HEX_PATTERN = Pattern.compile("[a-f0-9]+");
 
 	private Security() {
 	}
@@ -69,6 +74,47 @@ public class Security {
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
 	}
 
+	public static boolean isLegacyHash(String storedHash) {
+	    if (storedHash == null) {
+			return false;
+		}
+	    // SHA-512 → exactly 128 lowercase hex characters
+	    // SHA-1 correct → exactly 40 hex chars
+	    // SHA-1 buggy   → fewer than 40 hex chars (ticket #1178 leading-zero-drop bug)
+	    return (storedHash.length() == 128 || storedHash.length() <= 40)
+		    && HEX_PATTERN.matcher(storedHash).matches();
+	}
+
+	/**
+ 	 * Verifies a raw password against a stored hash, handling both legacy SHA-based
+ 	 * hashes and modern Argon2id hashes transparently.
+ 	 * <p>
+ 	 * For legacy hashes, the external salt is appended to the raw password before
+ 	 * comparison. For Argon2id hashes, the salt is embedded in the hash itself and
+ 	 * the encoder handles verification directly.
+ 	 *
+ 	 * @param storedHash the hash stored in the database
+ 	 * @param rawPassword the plaintext password to verify
+ 	 * @param salt the legacy salt from the database (preserved after upgrade for
+ 	 *             secret answer verification; ignored for Argon2id hashes)
+ 	 * @return true if the password matches the stored hash
+ 	 * @since 2.8.9
+ 	 */
+	public static boolean passwordMatches(String storedHash, String rawPassword, String salt) {
+    	if (isLegacyHash(storedHash)) {
+        	return hashMatches(storedHash, rawPassword + (salt != null ? salt : ""));
+    	}
+    	return ARGON2_ENCODER.matches(rawPassword, storedHash);
+	}
+
+	/**
+     * The modern password encoder using Argon2id algorithm.
+     * Used for all new password hashing and lazy rehash upgrades.
+     * Parameters: saltLength=16, hashLength=32, parallelism=1, memory=16384, iterations=2
+     */
+	private static final Argon2PasswordEncoder ARGON2_ENCODER = 
+        Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
+
 	/**
 	 /**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
@@ -79,7 +125,12 @@ public class Security {
 	 * <strong>Should</strong> encode strings to 128 characters
 	 */
 	public static String encodeString(String strToEncode) throws APIException {
-		return encodeString(strToEncode, "SHA-512");
+    	return encodeString(strToEncode, "SHA-512");
+	}
+
+	// New method for password hashing only — uses Argon2id internally
+	public static String encodePassword(String password) {
+		return ARGON2_ENCODER.encode(password);
 	}
 
 	/**

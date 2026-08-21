@@ -126,5 +126,20 @@
 		<comment>Changing concept_reference_range.criteria from VARCHAR(255) to TEXT</comment>
 		<modifyDataType tableName="concept_reference_range" columnName="criteria" newDataType="TEXT" />
 	</changeSet>
+
+	<changeSet id="TRUNK-6666-2026-06-26" author="solomonfortune">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<columnExists tableName="users" columnName="password"/>
+		</preConditions>
+		<comment>
+			Increase users.password column length from 128 to 255 characters
+			to accommodate modern password hashing algorithms such as Argon2id,
+			whose encoded output exceeds the current 128-character limit.
+		</comment>
+		<modifyDataType
+			tableName="users"
+			columnName="password"
+			newDataType="varchar(255)"/>
+	</changeSet>
 	
 </databaseChangeLog>
