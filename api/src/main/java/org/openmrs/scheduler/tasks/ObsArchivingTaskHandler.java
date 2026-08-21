@@ -104,6 +104,19 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 		}
 	}
 
+	/**
+	 * Fetches the next batch of voided obs IDs eligible for archiving.
+	 * <p>
+	 * {@code concept_proposal.obs_id} is excluded here via HQL because {@code ConceptProposal} is a
+	 * mapped entity and the FK ({@code ON DELETE RESTRICT}) would abort the batch DELETE.
+	 * <p>
+	 * {@code note.obs_id} carries the same FK shape ({@code obs_note}, {@code ON DELETE RESTRICT}) but
+	 * core no longer has a mapped {@code Note} entity, so it cannot be filtered in HQL. This is
+	 * deliberately out of scope for the current archival feature. If a {@code note} row references a voided obs,
+	 * the batch will fail and {@code handleBatchFailure} will skip that row each sweep. Future options: switch
+	 * this query to native SQL, or filter the returned ids through
+	 * {@code SELECT obs_id FROM note WHERE obs_id IN (...)} behind a table-exists check.
+	 */
 	private List<Integer> fetchNextBatch(long lastProcessedId, Date cutoffDate, int batchSize) {
 		Session session = sessionFactory.getCurrentSession();
 		Query<Integer> query;
