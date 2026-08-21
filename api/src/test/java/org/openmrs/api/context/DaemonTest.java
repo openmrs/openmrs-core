@@ -238,4 +238,12 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		user.setUuid("any other value");
 		assertThat(Daemon.isDaemonUser(user), is(false));
 	}
+
+	@Test
+	public void runNewDaemonTask_shouldRestoreInterruptStatus() {
+		Thread.currentThread().interrupt();
+		Daemon.runNewDaemonTask(() -> {}, Daemon.callerKey());
+		assertThat(Thread.currentThread().isInterrupted(), is(true));
+		Thread.interrupted();
+	}
 }
