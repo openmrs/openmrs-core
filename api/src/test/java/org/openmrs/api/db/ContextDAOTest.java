@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.annotation.Resource;
@@ -32,8 +33,10 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 /**
  * This class tests the {@link ContextDAO} linked to from the Context. Currently that file is the
@@ -267,6 +270,28 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	public void authenticate_shouldAuthenticateWithIncorrectHashedPassword() {
 		dao.authenticate("incorrect", "test");
 	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldSetLegacyPasswordUserPropertyWhenAuthenticatingWithLegacyHash() {
+		User user = dao.authenticate("correct", "test");
+		assertNotNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
+		assertTrue(StringUtils.hasText(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD)));
+
+		User reloadedUser = Context.getUserService().getUser(user.getUserId());
+		assertNotNull(reloadedUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldSetLegacyPasswordUserPropertyWhenAuthenticatingWithIncorrectLegacyHash() {
+		User user = dao.authenticate("incorrect", "test");
+		assertNotNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
+	}
 	
 	/**
 	 * #1580: If you type your password wrong, then log in correctly, the API will not lock you out
@@ -395,6 +420,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		try {
 			Context.authenticate("admin", "wrongPassword");
 		} catch (ContextAuthenticationException e) {
+			// Expected exception for failed login
 		}
 		Context.authenticate("admin", "test");
 		assertThat(testUserSessionListener.logins,
