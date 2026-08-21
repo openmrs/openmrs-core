@@ -408,11 +408,35 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Override
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException {
-		if (sql == null || "".equals(sql.trim())) {
+		if (sql == null || sql.trim().isEmpty()) {
 			return null;
 		}
 
-		return dao.executeSQL(sql, selectOnly);
+		String trimmedSql = sql.trim();
+		String normalized = trimmedSql.toLowerCase();
+
+		if (selectOnly) {
+			// Must start with SELECT
+			if (!normalized.startsWith("select")) {
+				throw new APIException("Only SELECT queries are allowed");
+			}
+
+			// Block dangerous keywords
+			if (normalized.contains(" insert ") ||
+				normalized.contains(" update ") ||
+				normalized.contains(" delete ") ||
+				normalized.contains(" drop ") ||
+				normalized.contains(" alter ") ||
+				normalized.contains(" truncate ") ||
+				normalized.contains(" into outfile ") ||
+				normalized.contains(" into dumpfile ") ||
+				normalized.contains(" load data ")) {
+
+				throw new APIException("Query contains forbidden operations");
+			}
+		}
+
+		return dao.executeSQL(trimmedSql, selectOnly);
 	}
 
 	/**
