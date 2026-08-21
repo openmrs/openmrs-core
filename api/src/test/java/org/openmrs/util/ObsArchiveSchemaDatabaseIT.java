@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.impl.ObsArchiveHelper;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,6 +41,15 @@ public class ObsArchiveSchemaDatabaseIT extends DatabaseIT {
 		expected.addAll(Set.of(archiveOnlyColumns));
 		assertEquals(expected, columnsOf(archive),
 		    archive + " must carry every column of " + source + " plus " + Set.of(archiveOnlyColumns));
+
+		if ("OBS".equals(source)) {
+			Set<String> manualColumns = new TreeSet<>();
+			for (String col : ObsArchiveHelper.RESTORE_OBS_COLUMNS.split(",")) {
+				manualColumns.add(col.trim().toUpperCase());
+			}
+			assertEquals(columnsOf(source), manualColumns,
+			    "RESTORE_OBS_COLUMNS must match exactly the columns of OBS table");
+		}
 	}
 
 	private Set<String> columnsOf(String table) throws Exception {

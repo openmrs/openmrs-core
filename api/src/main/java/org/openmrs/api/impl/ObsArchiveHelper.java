@@ -20,10 +20,12 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.proxy.HibernateProxy;
+import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.ObsArchive;
 import org.openmrs.ObsReferenceRange;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.Order;
 import org.openmrs.api.APIException;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -273,6 +275,12 @@ public class ObsArchiveHelper {
 		return true;
 	}
 
+	public static final String RESTORE_OBS_COLUMNS = "obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, "
+	        + "obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, "
+	        + "value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, "
+	        + "date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, "
+	        + "form_namespace_and_path, status, interpretation";
+
 	private void moveRecordFromArchiveToActiveTable(Integer obsId) {
 		Session session = sessionFactory.getCurrentSession();
 		// Retrieve the entity from the L1 cache, loaded earlier by restoreFromArchive()
@@ -284,18 +292,8 @@ public class ObsArchiveHelper {
 		// WARNING: This method uses native SQL. If the schema of the `obs` or `obs_archive` table
 		// changes (e.g., a column is added or removed), this SQL MUST be updated to match.
 		// 1. Move obs using native query
-		session.createNativeQuery(
-		    "INSERT INTO obs (obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, "
-		            + "obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, "
-		            + "value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, "
-		            + "date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, "
-		            + "form_namespace_and_path, status, interpretation) "
-		            + "SELECT obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, "
-		            + "obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, "
-		            + "value_datetime, value_numeric, value_modifier, value_text, value_complex, comments, creator, "
-		            + "date_created, voided, voided_by, date_voided, void_reason, uuid, previous_version, "
-		            + "form_namespace_and_path, status, interpretation FROM obs_archive WHERE obs_id = :obsId")
-		        .setParameter(PARAM_OBS_ID, obsId).executeUpdate();
+		session.createNativeQuery("INSERT INTO obs (" + RESTORE_OBS_COLUMNS + ") " + "SELECT " + RESTORE_OBS_COLUMNS
+		        + " FROM obs_archive WHERE obs_id = :obsId").setParameter(PARAM_OBS_ID, obsId).executeUpdate();
 
 		// 2. Move reference range using native query
 		session.createNativeQuery(
@@ -450,6 +448,39 @@ public class ObsArchiveHelper {
 		}
 		return (d1 instanceof Date d1Date && d2 instanceof Date d2Date) ? OpenmrsUtil.compare(d1Date, d2Date) == 0
 		        : d1.equals(d2);
+	}
+
+	public void handleArchivedDataOnPurge(OpenmrsObject parent, boolean cascade) {
+		if (parent == null || !doesArchiveHaveData()) {
+			return;
+		}
+
+		List<Integer> obsIds = withManualFlush(() -> {
+			Session session = sessionFactory.getCurrentSession();
+			if (parent instanceof Obs) {
+				return session.createQuery("SELECT a.obsId FROM ObsArchive a WHERE a.obsGroupId = :id", Integer.class)
+				        .setParameter("id", ((Obs) parent).getObsId()).list();
+			} else if (parent instanceof Encounter) {
+				return session
+				        .createQuery("SELECT a.obsId FROM ObsArchive a WHERE a.encounter.encounterId = :id", Integer.class)
+				        .setParameter("id", ((Encounter) parent).getEncounterId()).list();
+			} else if (parent instanceof Order) {
+				return session.createQuery("SELECT a.obsId FROM ObsArchive a WHERE a.order.orderId = :id", Integer.class)
+				        .setParameter("id", ((Order) parent).getOrderId()).list();
+			}
+			return Collections.emptyList();
+		});
+
+		if (obsIds != null && !obsIds.isEmpty()) {
+			if (cascade) {
+				for (Integer obsId : obsIds) {
+					purgeObsFromArchive(obsId);
+				}
+			} else {
+				throw new APIException(
+				        "Cannot purge " + parent.getClass().getSimpleName() + " because it has archived observations");
+			}
+		}
 	}
 
 	public void purgeObsFromArchive(Integer obsId) {

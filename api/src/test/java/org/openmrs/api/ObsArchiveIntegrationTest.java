@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
 
@@ -23,6 +24,8 @@ import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.ObsReferenceRange;
+import org.openmrs.Order;
+import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ObsArchiveHelper;
 import org.openmrs.scheduler.tasks.ObsArchivingTaskData;
@@ -38,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -65,11 +69,16 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 
 	private List<Integer> createdObsIds = new ArrayList<>();
 
+	private List<Integer> createdEncounterIds = new ArrayList<>();
+
+	private List<Integer> createdOrderIds = new ArrayList<>();
+
 	private JdbcTemplate jdbcTemplate;
 
 	@BeforeEach
 	public void setup() {
 		jdbcTemplate = new JdbcTemplate(dataSource);
+
 		try {
 			jdbcTemplate.execute("DELETE FROM obs_archive");
 			jdbcTemplate.execute("DELETE FROM obs_reference_range_archive");
@@ -90,7 +99,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		if (value != null) {
 			obs.setValueNumeric(value);
 		}
-		obs.setObsDatetime(new java.util.Date());
+		obs.setObsDatetime(new Date());
 		obs.setLocation(Context.getLocationService().getLocation(1));
 		return obs;
 	}
@@ -118,7 +127,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		Obs parent = new Obs();
 		parent.setPerson(Context.getPersonService().getPerson(7));
 		parent.setConcept(Context.getConceptService().getConcept(5089));
-		parent.setObsDatetime(new java.util.Date());
+		parent.setObsDatetime(new Date());
 		parent.setLocation(Context.getLocationService().getLocation(1));
 
 		if (childValues != null) {
@@ -129,7 +138,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 				if (val != null) {
 					child.setValueNumeric(val);
 				}
-				child.setObsDatetime(new java.util.Date());
+				child.setObsDatetime(new Date());
 				child.setLocation(Context.getLocationService().getLocation(1));
 				parent.addGroupMember(child);
 			}
@@ -156,8 +165,12 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 
 	@AfterEach
 	public void cleanup() {
-		// Restore any archived obs back and clean up since there is no auto-rollback
+		// Restore any archived obs back and clean up since there is no auto-rollback.
+		// SET REFERENTIAL_INTEGRITY FALSE is needed because archived child obs may have lower IDs
+		// than their parents, and H2 would reject the INSERT due to FK ordering.
+		// This is the same approach used by BaseContextSensitiveNonTransactionalTest for dataset loading.
 		try {
+			jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
 			jdbcTemplate.execute(
 			    "INSERT INTO obs (obs_id, person_id, concept_id, encounter_id, order_id, obs_datetime, location_id, "
 			            + "obs_group_id, accession_number, value_group_id, value_coded, value_coded_name_id, value_drug, "
@@ -172,6 +185,12 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			            + "WHERE NOT EXISTS (SELECT 1 FROM obs o WHERE o.obs_id = a.obs_id) ORDER BY obs_id ASC");
 		} catch (DataAccessException e) {
 			// Best-effort cleanup
+		} finally {
+			try {
+				jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+			} catch (DataAccessException e) {
+				// ignore
+			}
 		}
 		try {
 			jdbcTemplate.execute("DELETE FROM obs_reference_range_archive");
@@ -200,6 +219,26 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			}
 		}
 		createdObsIds.clear();
+
+		for (Integer id : createdEncounterIds) {
+			try {
+				jdbcTemplate.update("UPDATE obs SET encounter_id = NULL WHERE encounter_id = ?", id);
+				jdbcTemplate.update("DELETE FROM encounter WHERE encounter_id = ?", id);
+			} catch (DataAccessException e) {
+				// Best-effort cleanup
+			}
+		}
+		createdEncounterIds.clear();
+
+		for (Integer id : createdOrderIds) {
+			try {
+				jdbcTemplate.update("UPDATE obs SET order_id = NULL WHERE order_id = ?", id);
+				jdbcTemplate.update("DELETE FROM orders WHERE order_id = ?", id);
+			} catch (DataAccessException e) {
+				// Best-effort cleanup
+			}
+		}
+		createdOrderIds.clear();
 
 		GlobalProperty p = adminService.getGlobalPropertyObject("obs.archive.enabled");
 		if (p != null)
@@ -558,9 +597,9 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		Context.flushSession();
 		Context.clearSession();
 
-		java.util.Date child1Voided = jdbcTemplate.queryForObject("SELECT date_voided FROM obs WHERE obs_id = ?",
-		    java.util.Date.class, child1Id);
-		java.util.Date differentDate = new java.util.Date(child1Voided.getTime() - 3600000);
+		Date child1Voided = jdbcTemplate.queryForObject("SELECT date_voided FROM obs WHERE obs_id = ?", Date.class,
+		    child1Id);
+		Date differentDate = new Date(child1Voided.getTime() - 3600000);
 		jdbcTemplate.update("UPDATE obs SET date_voided = ? WHERE obs_id = ?", differentDate, child1Id);
 
 		// 3. Void parent (this cascades voiding to child2)
@@ -745,6 +784,131 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 	}
 
 	@Test
+	public void archiveAndRestore_shouldPreserveAllFields() throws Exception {
+		Obs obs = createSingleObs(50.0);
+		obs.setAccessionNumber("ACC-123");
+		obs.setValueGroupId(999);
+		obs.setValueCoded(Context.getConceptService().getConcept(3));
+		// valueCodedName and valueDrug might require specific concepts in standard test data
+		obs.setValueDatetime(new Date());
+		obs.setValueModifier("MO");
+		obs.setValueText("Some text");
+		obs.setValueComplex("Complex data");
+		obs.setComment("Some comments");
+		obs.setFormNamespaceAndPath("htmlformentry^path/to/form");
+		obs.setStatus(Obs.Status.PRELIMINARY);
+		obs.setInterpretation(Obs.Interpretation.NORMAL);
+		obs.setEncounter(Context.getEncounterService().getEncounter(3));
+
+		obs = obsService.saveObs(obs, "initial save");
+		createdObsIds.add(obs.getObsId());
+		int testObsId = obs.getObsId();
+
+		Obs previousObs = createSingleObs(40.0);
+		previousObs = obsService.saveObs(previousObs, "previous");
+		createdObsIds.add(previousObs.getObsId());
+		obs.setPreviousVersion(previousObs);
+		Obs updatedObs = obsService.saveObs(obs, "update previous");
+		createdObsIds.add(updatedObs.getObsId());
+
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs beforeArchive = obsService.getObs(testObsId);
+		beforeArchive.getPerson().getId();
+		beforeArchive.getConcept().getId();
+		if (beforeArchive.getEncounter() != null)
+			beforeArchive.getEncounter().getId();
+		beforeArchive.getLocation().getId();
+		if (beforeArchive.getValueCoded() != null)
+			beforeArchive.getValueCoded().getId();
+		if (beforeArchive.getValueCodedName() != null)
+			beforeArchive.getValueCodedName().getId();
+		if (beforeArchive.getValueDrug() != null)
+			beforeArchive.getValueDrug().getId();
+		beforeArchive.getCreator().getId();
+		if (beforeArchive.getVoidedBy() != null)
+			beforeArchive.getVoidedBy().getId();
+		if (beforeArchive.getPreviousVersion() != null)
+			beforeArchive.getPreviousVersion().getId();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(testObsId);
+
+		Context.clearSession();
+		Obs archivedObs = obsService.getObs(testObsId);
+		assertAllObsFieldsEqual(beforeArchive, archivedObs);
+
+		obsService.unvoidObs(archivedObs);
+		Context.flushSession();
+		Context.clearSession();
+
+		assertActive(testObsId);
+		Obs restoredObs = obsService.getObs(testObsId);
+
+		// We unvoided, which clears void fields. Let us only compare non-void fields here,
+		// or void it again to compare all fields.
+		obsService.voidObs(restoredObs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+		restoredObs = obsService.getObs(testObsId);
+		assertAllObsFieldsEqual(beforeArchive, restoredObs);
+	}
+
+	private void assertAllObsFieldsEqual(Obs expected, Obs actual) {
+		assertEquals(expected.getObsId(), actual.getObsId());
+		assertEquals(expected.getPerson().getId(), actual.getPerson().getId());
+		assertEquals(expected.getConcept().getId(), actual.getConcept().getId());
+		if (expected.getEncounter() != null)
+			assertEquals(expected.getEncounter().getId(), actual.getEncounter().getId());
+		if (expected.getOrder() != null)
+			assertEquals(expected.getOrder().getId(), actual.getOrder().getId());
+		assertEquals(expected.getObsDatetime(), actual.getObsDatetime());
+		assertEquals(expected.getLocation().getId(), actual.getLocation().getId());
+		assertEquals(expected.getAccessionNumber(), actual.getAccessionNumber());
+		assertEquals(expected.getValueGroupId(), actual.getValueGroupId());
+		if (expected.getValueCoded() != null)
+			assertEquals(expected.getValueCoded().getId(), actual.getValueCoded().getId());
+		if (expected.getValueCodedName() != null)
+			assertEquals(expected.getValueCodedName().getId(), actual.getValueCodedName().getId());
+		if (expected.getValueDrug() != null)
+			assertEquals(expected.getValueDrug().getId(), actual.getValueDrug().getId());
+		assertEquals(expected.getValueDatetime(), actual.getValueDatetime());
+		assertEquals(expected.getValueNumeric(), actual.getValueNumeric());
+		assertEquals(expected.getValueModifier(), actual.getValueModifier());
+		assertEquals(expected.getValueText(), actual.getValueText());
+		assertEquals(expected.getValueComplex(), actual.getValueComplex());
+		assertEquals(expected.getComment(), actual.getComment());
+		assertEquals(expected.getCreator().getId(), actual.getCreator().getId());
+		// Allow a small delta for timestamps (up to 2 seconds) due to DB truncation or test execution time
+		if (expected.getDateCreated() != null && actual.getDateCreated() != null) {
+			assertTrue(Math.abs(expected.getDateCreated().getTime() - actual.getDateCreated().getTime()) <= 2000,
+			    "dateCreated should match");
+		}
+		assertEquals(expected.getVoided(), actual.getVoided());
+		if (expected.getVoidedBy() != null)
+			assertEquals(expected.getVoidedBy().getId(), actual.getVoidedBy().getId());
+		if (expected.getDateVoided() != null && actual.getDateVoided() != null) {
+			assertTrue(Math.abs(expected.getDateVoided().getTime() - actual.getDateVoided().getTime()) <= 2000,
+			    "dateVoided should match");
+		}
+		assertEquals(expected.getVoidReason(), actual.getVoidReason());
+		if (expected.getDateChanged() != null && actual.getDateChanged() != null) {
+			assertTrue(Math.abs(expected.getDateChanged().getTime() - actual.getDateChanged().getTime()) <= 2000,
+			    "dateChanged should match");
+		}
+		assertEquals(expected.getUuid(), actual.getUuid());
+		if (expected.getPreviousVersion() != null)
+			assertEquals(expected.getPreviousVersion().getId(), actual.getPreviousVersion().getId());
+		assertEquals(expected.getFormNamespaceAndPath(), actual.getFormNamespaceAndPath());
+		assertEquals(expected.getStatus(), actual.getStatus());
+		assertEquals(expected.getInterpretation(), actual.getInterpretation());
+	}
+
+	@Test
 	public void archiveAndRestore_shouldPreserveReferenceRangeIdAndFields() throws Exception {
 		Obs obs = createAndSaveSingleObsWithReferenceRange(50.0);
 		int testObsId = obs.getObsId();
@@ -908,14 +1072,14 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		Obs parent = new Obs();
 		parent.setPerson(Context.getPersonService().getPerson(7));
 		parent.setConcept(Context.getConceptService().getConcept(30));
-		parent.setObsDatetime(new java.util.Date());
+		parent.setObsDatetime(new Date());
 		parent.setLocation(Context.getLocationService().getLocation(1));
 
 		Obs child = createSingleObs(10.0);
 		parent.addGroupMember(child);
-		obsService.saveObs(parent, "saving parent with child");
+		parent = obsService.saveObs(parent, "saving parent with child");
 		Integer parentId = parent.getObsId();
-		Integer childId = child.getObsId();
+		Integer childId = parent.getGroupMembers(true).iterator().next().getObsId();
 		createdObsIds.add(parentId);
 		createdObsIds.add(childId);
 
@@ -1060,6 +1224,246 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			assertFalse(obsArchiveHelper.isArchived(childId), "Child " + childId + " should be cascaded and purged");
 			assertNull(obsService.getObs(childId), "Child " + childId + " should no longer be retrievable");
 		}
+	}
+
+	@Test
+	public void purgeObs_shouldCascadeToArchivedChildrenWhenPurgingLiveParent() throws Exception {
+		// Create a parent obs with two children
+		Obs parent = createAndSaveObsTree(10.0, 20.0);
+		int parentId = parent.getObsId();
+		List<Integer> childIds = new ArrayList<>();
+		for (Obs child : parent.getGroupMembers(true)) {
+			childIds.add(child.getObsId());
+		}
+
+		// Void only the children (not the parent), so they become archivable
+		for (Integer childId : childIds) {
+			Obs child = obsService.getObs(childId);
+			obsService.voidObs(child, "test voiding child only");
+		}
+		Context.flushSession();
+		Context.clearSession();
+
+		// Run archiving sweep — only the voided children should be archived
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		// Verify: parent is still live, children are archived
+		assertActive(parentId);
+		for (Integer childId : childIds) {
+			assertArchived(childId);
+		}
+		assertTrue(obsArchiveHelper.hasArchivedChildren(parentId), "Parent should report having archived children");
+
+		Context.clearSession();
+
+		// Purge the live parent — handleArchivedDataOnPurge should cascade to archived children
+		Obs liveParent = obsService.getObs(parentId);
+		assertNotNull(liveParent, "Live parent should be retrievable");
+		assertFalse(obsArchiveHelper.isArchived(parentId), "Parent should NOT be in archive");
+		obsService.purgeObs(liveParent);
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify: parent is gone from obs, archived children are also gone
+		assertNull(obsService.getObs(parentId), "Parent should no longer be retrievable");
+		assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class, parentId),
+		    "Parent should be gone from active table");
+		for (Integer childId : childIds) {
+			assertFalse(obsArchiveHelper.isArchived(childId),
+			    "Archived child " + childId + " should be cascaded and purged");
+			assertNull(obsService.getObs(childId), "Child " + childId + " should no longer be retrievable from anywhere");
+		}
+	}
+
+	@Test
+	public void purgeEncounter_shouldThrowWhenEncounterHasArchivedObsAndCascadeIsFalse() throws Exception {
+		// Create a fresh encounter with one obs
+		Encounter encounter = new Encounter();
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(Context.getPatientService().getPatient(7));
+		encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+		encounter.setLocation(Context.getLocationService().getLocation(1));
+		encounter = Context.getEncounterService().saveEncounter(encounter);
+		createdEncounterIds.add(encounter.getEncounterId());
+		Obs obs = createSingleObs(42.0);
+		obs.setEncounter(encounter);
+		obs = obsService.saveObs(obs, "save for encounter purge test");
+		createdObsIds.add(obs.getObsId());
+		int obsId = obs.getObsId();
+
+		// Void and archive the obs
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(obsId);
+
+		Context.clearSession();
+
+		// Purging without cascade should throw because archived obs still reference this encounter
+		Encounter enc = Context.getEncounterService().getEncounter(encounter.getEncounterId());
+		assertNotNull(enc);
+		assertThrows(APIException.class, () -> Context.getEncounterService().purgeEncounter(enc),
+		    "Should throw because archived obs block the encounter purge");
+
+		// Verify encounter and archived obs are still intact
+		assertNotNull(Context.getEncounterService().getEncounter(encounter.getEncounterId()),
+		    "Encounter should still exist after failed purge");
+		assertTrue(obsArchiveHelper.isArchived(obsId), "Archived obs should still be in archive");
+
+		// Clean up: purge with cascade to leave DB clean
+		Context.clearSession();
+		Encounter encClean = Context.getEncounterService().getEncounter(encounter.getEncounterId());
+		Context.getEncounterService().purgeEncounter(encClean, true);
+	}
+
+	@Test
+	public void purgeEncounter_shouldCascadeToArchivedObsWhenCascadeIsTrue() throws Exception {
+		// Create a fresh encounter with two obs
+		Encounter encounter = new Encounter();
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(Context.getPatientService().getPatient(7));
+		encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+		encounter.setLocation(Context.getLocationService().getLocation(1));
+		encounter = Context.getEncounterService().saveEncounter(encounter);
+		createdEncounterIds.add(encounter.getEncounterId());
+		int encounterId = encounter.getEncounterId();
+
+		Obs obs1 = createSingleObs(10.0);
+		obs1.setEncounter(encounter);
+		obs1 = obsService.saveObs(obs1, "save obs1 for encounter");
+		createdObsIds.add(obs1.getObsId());
+		int obs1Id = obs1.getObsId();
+
+		Obs obs2 = createSingleObs(20.0);
+		obs2.setEncounter(encounter);
+		obs2 = obsService.saveObs(obs2, "save obs2 for encounter");
+		createdObsIds.add(obs2.getObsId());
+		int obs2Id = obs2.getObsId();
+
+		// Void and archive both obs
+		obsService.voidObs(obs1, "test voiding");
+		obsService.voidObs(obs2, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(obs1Id);
+		assertArchived(obs2Id);
+
+		Context.clearSession();
+
+		// Purge encounter with cascade — should remove archived obs first, then the encounter
+		Encounter enc = Context.getEncounterService().getEncounter(encounterId);
+		assertNotNull(enc);
+		Context.getEncounterService().purgeEncounter(enc, true);
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify everything is gone
+		assertNull(Context.getEncounterService().getEncounter(encounterId), "Encounter should be purged");
+		assertFalse(obsArchiveHelper.isArchived(obs1Id), "Archived obs1 should be cascaded and purged");
+		assertFalse(obsArchiveHelper.isArchived(obs2Id), "Archived obs2 should be cascaded and purged");
+	}
+
+	@Test
+	public void purgeOrder_shouldThrowWhenOrderHasArchivedObsAndCascadeIsFalse() throws Exception {
+		// Create a fresh order for this test to avoid modifying the standard test dataset
+		TestOrder order = new TestOrder();
+		order.setConcept(Context.getConceptService().getConcept(5497));
+		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setEncounter(Context.getEncounterService().getEncounter(3));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setCareSetting(Context.getOrderService().getCareSetting(1));
+		order = (TestOrder) Context.getOrderService().saveOrder(order, null);
+		createdOrderIds.add(order.getOrderId());
+		int orderId = order.getOrderId();
+
+		// Create an obs linked to this order
+		Obs obs = createSingleObs(42.0);
+		obs.setOrder(order);
+		obs.setEncounter(order.getEncounter());
+		obs = obsService.saveObs(obs, "save for order purge test");
+		createdObsIds.add(obs.getObsId());
+		int obsId = obs.getObsId();
+
+		// Void and archive the obs
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(obsId);
+
+		Context.clearSession();
+
+		// Purging without cascade should throw because archived obs still reference this order
+		Order ord = Context.getOrderService().getOrder(orderId);
+		assertNotNull(ord);
+		assertThrows(APIException.class, () -> Context.getOrderService().purgeOrder(ord, false),
+		    "Should throw because archived obs block the order purge");
+
+		// Verify order and archived obs are still intact
+		assertNotNull(Context.getOrderService().getOrder(orderId), "Order should still exist after failed purge");
+		assertTrue(obsArchiveHelper.isArchived(obsId), "Archived obs should still be in archive");
+
+		// Clean up: purge order with cascade to leave DB clean
+		Context.clearSession();
+		Order ordClean = Context.getOrderService().getOrder(orderId);
+		Context.getOrderService().purgeOrder(ordClean, true);
+	}
+
+	@Test
+	public void purgeOrder_shouldCascadeToArchivedObsWhenCascadeIsTrue() throws Exception {
+		// Create a fresh order for this test to avoid modifying the standard test dataset
+		TestOrder order = new TestOrder();
+		order.setConcept(Context.getConceptService().getConcept(5497));
+		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setEncounter(Context.getEncounterService().getEncounter(3));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setCareSetting(Context.getOrderService().getCareSetting(1));
+		order = (TestOrder) Context.getOrderService().saveOrder(order, null);
+		createdOrderIds.add(order.getOrderId());
+		int orderId = order.getOrderId();
+
+		// Create an obs linked to this order
+		Obs obs = createSingleObs(42.0);
+		obs.setOrder(order);
+		obs.setEncounter(order.getEncounter());
+		obs = obsService.saveObs(obs, "save for order cascade purge test");
+		createdObsIds.add(obs.getObsId());
+		int obsId = obs.getObsId();
+
+		// Void and archive the obs
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(obsId);
+
+		Context.clearSession();
+
+		// Purge order with cascade — should remove archived obs first, then live obs, then the order
+		Order ord = Context.getOrderService().getOrder(orderId);
+		assertNotNull(ord);
+		Context.getOrderService().purgeOrder(ord, true);
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify archived obs is gone
+		assertFalse(obsArchiveHelper.isArchived(obsId), "Archived obs should be cascaded and purged");
+		assertNull(Context.getOrderService().getOrder(orderId), "Order should be purged");
 	}
 
 	@Test

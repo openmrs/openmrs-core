@@ -427,6 +427,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 				getArchiveHelper().purgeObsFromArchive(obs.getObsId());
 				return;
 			}
+			getArchiveHelper().handleArchivedDataOnPurge(obs, true);
 		}
 
 		dao.deleteObs(obs);

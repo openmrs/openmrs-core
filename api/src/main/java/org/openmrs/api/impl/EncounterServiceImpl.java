@@ -502,6 +502,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new APIException("Encounter.error.privilege.required.purge",
 			        new Object[] { encounter.getEncounterType().getEditPrivilege() });
 		}
+
+		Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class).handleArchivedDataOnPurge(encounter,
+		    false);
+
 		dao.deleteEncounter(encounter);
 	}
 
@@ -516,6 +520,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new APIException("Encounter.error.privilege.required.purge",
 			        new Object[] { encounter.getEncounterType().getEditPrivilege() });
 		}
+
+		Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class).handleArchivedDataOnPurge(encounter,
+		    cascade);
 
 		if (cascade) {
 			ObsService obsService = Context.getObsService();
