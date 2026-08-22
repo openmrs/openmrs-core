@@ -195,6 +195,7 @@
 	-->
 	<bean id="patientServiceTarget" class="org.openmrs.api.impl.PatientServiceImpl">
 		<property name="patientDAO" ref="patientDAO"/>
+		<property name="eventPublisher" ref="eventPublisher"/>
 		<property name="identifierValidators">
 			<map>
 				<entry key="org.openmrs.patient.impl.LuhnIdentifierValidator">
