@@ -96,6 +96,10 @@
   <!-- All DAOs are  now migrated to constructor injection -->
 	<!--  **************************  SESSION FACTORY  *************************  -->
 
+	<bean id="obsArchiveHelper" class="org.openmrs.api.impl.ObsArchiveHelper">
+		<constructor-arg ref="sessionFactory"/>
+	</bean>
+
 	<util:list id="moduleTestingMappingJarLocations">
 
 	</util:list>
