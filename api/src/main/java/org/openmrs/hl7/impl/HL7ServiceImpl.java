@@ -727,11 +727,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service, Re
 			log.debug("Unable to process hl7inqueue: " + hl7InQueue.getHL7InQueueId(), e);
 			log.debug("Hl7inqueue source: " + hl7InQueue.getHL7Source());
 			log.debug("hl7_processor.ignore_missing_patient_non_local? " + Context.getAdministrationService()
-			        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false"));
+			        .getGlobalProperty(HL7Constants.GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false"));
 			if (e.getCause() != null && "Could not resolve patient".equals(e.getCause().getMessage())
 			        && !"local".equals(hl7InQueue.getHL7Source().getName())
 			        && "true".equals(Context.getAdministrationService().getGlobalProperty(
-			            OpenmrsConstants.GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false"))) {
+			            HL7Constants.GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false"))) {
 				skipError = true;
 			}
 			if (!skipError) {

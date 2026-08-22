@@ -56,6 +56,8 @@ public class HL7Constants {
 
 	/**
 	 * Used in hl7 sextuplets: 123^Primary name^99DCT^345^Chosen name^99NAM
+	 * These are  the constants used by FormUtil
+	 * FOR TRUNK-6775
 	 */
 	public static final String HL7_LOCAL_CONCEPT = "99DCT";
 
@@ -79,8 +81,16 @@ public class HL7Constants {
 	 * default name for HL7_archives destination directory
 	 *
 	 * @since 1.7
+	 * 
+	 * FOR TRUNK-6775
 	 */
 	public static final String HL7_ARCHIVE_DIRECTORY_NAME = "hl7_archives";
+
+	public static final String GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY =
+		"hl7_archive.dir";
+
+	public static final String GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS =
+		"hl7_processor.ignore_missing_patient_non_local";
 
 	/**
 	 * @since 1.10
