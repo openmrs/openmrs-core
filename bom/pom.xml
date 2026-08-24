@@ -116,7 +116,7 @@
 		<jodaTimeVersion>2.14.3</jodaTimeVersion>
 		<guavaVersion>33.7.1-jre</guavaVersion>
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
-		<awsSdkS3Version>2.32.13</awsSdkS3Version>
+		<awsSdkS3Version>2.54.1</awsSdkS3Version>
 		<jobrunrVersion>8.8.1</jobrunrVersion>
 		<shedlockVersion>7.8.0</shedlockVersion>
 
