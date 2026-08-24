@@ -15,6 +15,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -25,8 +27,11 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
+import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -38,18 +43,53 @@ public class Security {
 	 * encryption settings
 	 */
 	private static final Logger log = LoggerFactory.getLogger(Security.class);
-	
+
 	private static final Random RANDOM = new SecureRandom();
 
+	// required so we can hash passwords at startup.
+	private static final PasswordEncoder FALLBACK_ENCODER = new LegacyOpenmrsPasswordEncoder();
+	
 	private Security() {
+	}
+	
+	static PasswordEncoder getPasswordEncoder() {
+		if (!ServiceContext.isInstantiated()
+				|| ServiceContext.getInstance().getApplicationContext() == null) {
+			return FALLBACK_ENCODER;
+		}
+		return Context.getRegisteredComponent("openmrsPasswordEncoder", PasswordEncoder.class);
 	}
 
 	/**
-	 * Compare the given hash and the given string-to-hash to see if they are equal. The
-	 * string-to-hash is usually of the form password + salt. <br>
-	 * <br>
-	 * This should be used so that this class can compare against the new correct hashing algorithm
-	 * and the old incorrect hashing algorithm.
+	 * Encodes a password using the configured {@code openmrsPasswordEncoder} and returns the
+	 * full encoded value to persist.
+	 *
+	 * @param strToEncode {@code password + salt} to encode
+	 * @return the encoded value to store
+	 * @since 2.8.10
+	 */
+	public static String encodePassword(String strToEncode) {
+		return getPasswordEncoder().encode(strToEncode);
+	}
+
+	/**
+	 * Checks a raw password against a stored encoded password using the configured
+	 * {@code PasswordEncoder}.
+	 *
+	 * @param storedEncodedPassword the stored encoded password
+	 * @param rawPassword the raw password, with the salt already concatenated
+	 * @return true if the password matches
+	 * @since 2.8.10
+	 */
+	public static boolean checkPassword(String storedEncodedPassword, String rawPassword) {
+		if (rawPassword == null || storedEncodedPassword == null) {
+			return false;
+		}
+		return getPasswordEncoder().matches(rawPassword, storedEncodedPassword);
+	}
+
+	/**
+	 * Compare the given hash and the given string-to-hash to see if they are equal.
 	 *
 	 * @param hashedPassword a stored password that has been hashed previously
 	 * @param passwordToHash a string to encode/hash and compare to hashedPassword
@@ -70,9 +110,8 @@ public class Security {
 	}
 
 	/**
-	 /**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
-	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
+	 * OpenMRS's preferred algorithm is hard-coded to be SHA-512.
 	 *
 	 * @param strToEncode string to encode
 	 * @return the SHA-512 encryption of a given string
