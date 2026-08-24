@@ -492,13 +492,14 @@ public class ConceptReferenceRangeUtility {
 			if (!(person.getIsPatient())) {
 				return false;
 			}
+			Date effectiveDate = onDate != null ? onDate : Date.from(clock.instant());
 
-			List<PatientProgram> patientPrograms = getPatientPrograms((Patient) person, onDate);
+			List<PatientProgram> patientPrograms = getPatientPrograms((Patient) person, effectiveDate);
 			List<PatientState> patientStates = new ArrayList<>();
 
 			for (PatientProgram pp : patientPrograms) {
 				for (PatientState state : pp.getStates()) {
-					if (state.getActive(onDate)) {
+					if (state.getActive(effectiveDate)) {
 						patientStates.add(state);
 					}
 				}
