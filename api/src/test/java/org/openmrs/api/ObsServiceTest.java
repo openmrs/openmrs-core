@@ -30,6 +30,8 @@ import java.io.Reader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -2594,14 +2596,17 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		Obs newObs = Context.getObsService().saveObs(obs, "just testing");
 
-		assertEquals(newObs.getObsDatetime().toString(), newDate.toString());
+		assertEquals(Date.from(Instant.ofEpochMilli(newObs.getObsDatetime().getTime()).truncatedTo(ChronoUnit.SECONDS)),
+			Date.from(Instant.ofEpochMilli(newDate.getTime()).truncatedTo(ChronoUnit.SECONDS)));
 
 		for(Obs member : newObs.getGroupMembers()) {
-			assertEquals(member.getObsDatetime().toString(), newDate.toString());
+			assertEquals(Date.from(Instant.ofEpochMilli(member.getObsDatetime().getTime()).truncatedTo(ChronoUnit.SECONDS)),
+				Date.from(Instant.ofEpochMilli(newDate.getTime()).truncatedTo(ChronoUnit.SECONDS)));
 			if(member.getGroupMembers()!= null) {
 
 				for (Obs memberChild : member.getGroupMembers()) {
-					assertEquals(memberChild.getObsDatetime().toString(), newDate.toString());
+					assertEquals(Date.from(Instant.ofEpochMilli(memberChild.getObsDatetime().getTime()).truncatedTo(ChronoUnit.SECONDS)),
+					Date.from(Instant.ofEpochMilli(newDate.getTime()).truncatedTo(ChronoUnit.SECONDS)));
 					if (memberChild.getValueText()!= null && memberChild.getValueText().equals("NewObs Value")) {
 						count++;
 					}

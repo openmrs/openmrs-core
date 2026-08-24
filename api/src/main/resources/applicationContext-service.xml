@@ -31,8 +31,17 @@
             http://www.springframework.org/schema/util/spring-util-3.0.xsd
 			http://www.springframework.org/schema/cache
 			http://www.springframework.org/schema/cache/spring-cache.xsd">
-	
+
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
+
+	<bean id="openmrsLegacyPasswordEncoder" class="org.openmrs.spring.LegacyOpenmrsPasswordEncoder" />
+	<bean id="openmrsPasswordEncoder" class="org.openmrs.spring.OpenmrsDelegatingPasswordEncoder">
+		<constructor-arg type="java.lang.String" value="" />
+		<constructor-arg>
+			<map />
+		</constructor-arg>
+		<constructor-arg ref="openmrsLegacyPasswordEncoder" />
+	</bean>
 
 	<!--  **************************  EVENT LISTENERS ***************************** -->
 
