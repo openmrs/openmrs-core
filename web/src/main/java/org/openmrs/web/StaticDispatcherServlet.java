@@ -9,6 +9,8 @@
  */
 package org.openmrs.web;
 
+import java.io.Serial;
+
 import jakarta.servlet.ServletException;
 
 import org.openmrs.module.web.WebModuleUtil;
@@ -17,8 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.web.context.support.XmlWebApplicationContext;
-
-import java.io.Serial;
 
 /**
  * This class is only used to get access to the dispatcher servlet that handles static content. <br>

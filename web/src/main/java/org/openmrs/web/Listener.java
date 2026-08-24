@@ -495,7 +495,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 									String tmpAbsolutePath = absolutePath + "/" + f.getName();
 									if (!copyFile(userOverridePath, tmpAbsolutePath)) {
 										log.warn("Unable to copy file in folder defined by runtime property: {}", prop);
-										log.warn("Your source directory (or a file in it) '{} cannot be loaded or destination '{}' cannot be found", userOverridePath, tmpAbsolutePath);
+										log.warn(
+										    "Your source directory (or a file in it) '{} cannot be loaded or destination '{}' cannot be found",
+										    userOverridePath, tmpAbsolutePath);
 									}
 								}
 							}
@@ -504,7 +506,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 						// file is not a directory
 						if (!copyFile(userOverridePath, absolutePath)) {
 							log.warn("Unable to copy file defined by runtime property: {}", prop);
-							log.warn("Your source file '{} cannot be loaded or destination '{}' cannot be found", userOverridePath, absolutePath);
+							log.warn("Your source file '{} cannot be loaded or destination '{}' cannot be found",
+							    userOverridePath, absolutePath);
 						}
 					}
 				}

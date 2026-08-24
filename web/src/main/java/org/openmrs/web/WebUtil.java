@@ -278,8 +278,8 @@ public class WebUtil implements GlobalPropertyListener {
 
 	/**
 	 * This method checks if input locale string contains control characters and tries to clean up
-	 * actually contained ones. Also, it parses locale object from string representation and validates it
-	 * object.
+	 * actually contained ones. Also, it parses locale object from string representation and validates
+	 * it object.
 	 * <p>
 	 * <strong>Should</strong> ignore leading spaces<br/>
 	 * <strong>Should</strong> accept language only locales<br/>
