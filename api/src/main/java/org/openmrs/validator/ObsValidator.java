@@ -223,14 +223,14 @@ public class ObsValidator implements Validator {
 		} else if (dt.isCoded() && obs.getValueCoded() == null) {
 			rejectValueOrGroupMember(errors, atRootNode, "valueCoded", "error.null");
 		} else if (dt.isCoded()) {
-			validateAndInterpret(obs, errors, atRootNode);
+			validateAndInterpret(obs, dt, errors, atRootNode);
 		} else if ((dt.isDateTime() || dt.isDate() || dt.isTime()) && obs.getValueDatetime() == null) {
 			rejectValueOrGroupMember(errors, atRootNode, "valueDatetime", "error.null");
 		} else if (dt.isNumeric() && obs.getValueNumeric() == null) {
 			rejectValueOrGroupMember(errors, atRootNode, "valueNumeric", "error.null");
 		} else if (dt.isNumeric()) {
 			validateNumericPrecision(obs, errors, atRootNode);
-			validateAndInterpret(obs, errors, atRootNode);
+			validateAndInterpret(obs, dt, errors, atRootNode);
 		} else if (dt.isText() && obs.getValueText() == null) {
 			rejectValueOrGroupMember(errors, atRootNode, "valueText", "error.null");
 		}
@@ -287,12 +287,11 @@ public class ObsValidator implements Validator {
 	 * </ul>
 	 *
 	 * @param obs Observation to validate/interpret
+	 * @param dt the datatype of obs' concept, as already resolved by {@link #validateValueForDatatype}
 	 * @param errors Errors to record validation issues
 	 * @param atRootNode whether or not this is the obs that validate() was originally called on
 	 */
-	private void validateAndInterpret(Obs obs, Errors errors, boolean atRootNode) {
-		ConceptDatatype dt = obs.getConcept().getDatatype();
-
+	private void validateAndInterpret(Obs obs, ConceptDatatype dt, Errors errors, boolean atRootNode) {
 		if (dt.isNumeric()) {
 			validateConceptReferenceRange(obs, errors, atRootNode);
 			return;

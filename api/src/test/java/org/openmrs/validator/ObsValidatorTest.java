@@ -997,6 +997,62 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * Verifies first-match semantics: a mapping that does not resolve to a known interpretation is
+	 * skipped in favor of a later mapping that does.
+	 *
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldSetInterpretationFromFirstMatchingConceptMappingWhenEarlierMappingDoesNotMatch() {
+		Concept answer = new Concept();
+		answer.setDatatype(getCodedDatatype());
+		answer.addConceptMapping(newConceptMapWithCode("SOME_THING"));
+		answer.addConceptMapping(newConceptMapWithCode("ABNORMAL"));
+
+		Obs obs = getCodedObs(answer);
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertEquals(Obs.Interpretation.ABNORMAL, obs.getInterpretation());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldNotSetInterpretationForCodedObsWhenConceptMappingHasNullReferenceTerm() {
+		Concept answer = new Concept();
+		answer.setDatatype(getCodedDatatype());
+		ConceptMap conceptMap = new ConceptMap();
+		conceptMap.setConceptReferenceTerm(null);
+		answer.addConceptMapping(conceptMap);
+
+		Obs obs = getCodedObs(answer);
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertNull(obs.getInterpretation());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldNotSetInterpretationForCodedObsWhenConceptMappingHasBlankReferenceTermCode() {
+		Obs obs = getCodedObs(getAnswerConceptMappedTo("   "));
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertNull(obs.getInterpretation());
+	}
+
+	/**
 	 * Coded observations must only be interpreted, never validated as numeric ranges.
 	 *
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
@@ -1070,15 +1126,18 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	private static Concept getAnswerConceptMappedTo(String referenceTermCode) {
 		Concept answer = new Concept();
 		answer.setDatatype(getCodedDatatype());
+		answer.addConceptMapping(newConceptMapWithCode(referenceTermCode));
 
+		return answer;
+	}
+
+	private static ConceptMap newConceptMapWithCode(String referenceTermCode) {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setCode(referenceTermCode);
 
 		ConceptMap conceptMap = new ConceptMap();
 		conceptMap.setConceptReferenceTerm(term);
-		answer.addConceptMapping(conceptMap);
-
-		return answer;
+		return conceptMap;
 	}
 
 	private static Obs getCodedObs(Concept answer) {
