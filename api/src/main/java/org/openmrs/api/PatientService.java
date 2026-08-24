@@ -500,6 +500,20 @@ public interface PatientService extends OpenmrsService {
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws APIException;
 
 	/**
+	 * Returns the patient page and the deduplicated total count in one combined search.
+	 */
+	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	public org.openmrs.collection.ListPart<Patient> getPatientsAndCount(String query, Integer start, Integer length)
+	        throws APIException;
+
+	/**
+	 * Returns the patient page and the deduplicated total count in one combined search.
+	 */
+	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	public org.openmrs.collection.ListPart<Patient> getPatientsAndCount(String query, boolean includeVoided, Integer start,
+	        Integer length) throws APIException;
+
+	/**
 	 * This method tries to find a patient in the database given the attributes on the given
 	 * <code>patientToMatch</code> object. Assumes there could be a PersonAttribute on this Patient with
 	 * PersonAttributeType.name = "Other Matching Information". This PersonAttribute has a "value" that

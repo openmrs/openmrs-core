@@ -121,6 +121,20 @@ public interface PatientDAO {
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws DAOException;
 
 	/**
+	 * Returns the requested patient page together with the total deduplicated count from a single
+	 * SearchQueryUnique traversal.
+	 */
+	public org.openmrs.collection.ListPart<Patient> getPatientsAndCount(String query, Integer start, Integer length)
+	        throws DAOException;
+
+	/**
+	 * Returns the requested patient page together with the total deduplicated count from a single
+	 * SearchQueryUnique traversal.
+	 */
+	public org.openmrs.collection.ListPart<Patient> getPatientsAndCount(String query, boolean includeVoided, Integer start,
+	        Integer length) throws DAOException;
+
+	/**
 	 * @see PatientService#getPatients(String, String, List, boolean, Integer, Integer)
 	 */
 	public List<Patient> getPatients(String name, List<PatientIdentifierType> identifierTypes,

@@ -2562,4 +2562,30 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		System.out.println("Anywhere search for 'uric' attribute limited to 15 results returned in " + time + " ms");
 	}
 
+	/**
+	 * @see HibernatePatientDAO#getPatientsAndCount(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatientsAndCount_shouldMatchSeparateGetPatientsAndGetCount() {
+		String query = "Ben";
+		boolean includeVoided = false;
+		Integer start = 0;
+		Integer length = 3;
+
+		List<Patient> legacyPatients = dao.getPatients(query, includeVoided, start, length);
+		long legacyCount = dao.getCountOfPatients(query, includeVoided);
+
+		org.openmrs.collection.ListPart<Patient> combined = dao.getPatientsAndCount(query, includeVoided, start, length);
+
+		assertNotNull(combined);
+		assertEquals(legacyCount, combined.getTotalElements().longValue());
+		assertTrue(combined.isTotalElementsExact());
+
+		List<Patient> combinedList = combined.getList();
+		assertEquals(legacyPatients.size(), combinedList.size());
+
+		for (int i = 0; i < legacyPatients.size(); i++) {
+			assertEquals(legacyPatients.get(i), combinedList.get(i));
+		}
+	}
 }

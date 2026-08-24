@@ -759,6 +759,49 @@ public class HibernatePatientDAO implements PatientDAO {
 		    HibernatePersonDAO.getMaximumSearchResults());
 	}
 
+	@Override
+	public org.openmrs.collection.ListPart<Patient> getPatientsAndCount(String query, Integer start, Integer length)
+	        throws DAOException {
+		return getPatientsAndCount(query, false, start, length);
+	}
+
+	@Override
+	public org.openmrs.collection.ListPart<Patient> getPatientsAndCount(String query, boolean includeVoided, Integer start,
+	        Integer length) throws DAOException {
+		if (StringUtils.isBlank(query)) {
+			return org.openmrs.collection.ListPart.newListPart(new ArrayList<>(), start == null ? 0L : start.longValue(),
+			    length == null ? 0L : length.longValue(), 0L, true);
+		}
+
+		Integer tmpStart = start;
+		if (tmpStart == null) {
+			tmpStart = 0;
+		}
+		Integer maxLength = HibernatePersonDAO.getMaximumSearchResults();
+		Integer tmpLength = length;
+		if (tmpLength == null || tmpLength > maxLength) {
+			tmpLength = maxLength;
+		}
+
+		PersonQuery personQuery = new PersonQuery();
+		SearchQueryUnique<?, Patient> patientQuery = SearchQueryUnique
+		        .newProjectedQuery(PatientIdentifier.class,
+		            f -> newPatientIdentifierSearchPredicate(f, query, includeVoided, false), "patient.personId",
+		            this::multiLoadPatients)
+		        .join(SearchQueryUnique
+		                .newProjectedQuery(PersonName.class, f -> personQuery.getPatientNameQuery(f, query, includeVoided),
+		                    "person.personId", this::multiLoadPatients)
+		                .join(SearchQueryUnique.newProjectedQuery(PersonAttribute.class,
+		                    f -> personQuery.getPatientAttributeQuery(f, query, includeVoided), "person.personId",
+		                    this::multiLoadPatients)));
+		SearchQueryUnique.SearchUniqueResults<Patient> result = SearchQueryUnique.searchWithResultsAndCount(
+		    searchSessionFactory, patientQuery, start, length, HibernatePersonDAO.getMaximumSearchResults());
+		Long totalElements = result.getTotalHitCount();
+		Boolean totalElementsExact = result.getTotalHitCountExact() == null ? Boolean.TRUE : result.getTotalHitCountExact();
+		return org.openmrs.collection.ListPart.newListPart(result.getResults(), tmpStart.longValue(), tmpLength.longValue(),
+		    totalElements == null ? 0L : totalElements, totalElementsExact);
+	}
+
 	private List<Patient> findPatients(String query, boolean includeVoided) {
 		return findPatients(query, includeVoided, null, null);
 	}

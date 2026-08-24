@@ -256,6 +256,72 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void searchWithResultsAndCount_shouldReturnPageAndTotalFromSingleSharedTraversal() {
+		SearchSession spySession = spy(searchSessionFactory.getSearchSession());
+		SearchSessionFactory spyFactory = () -> spySession;
+
+		SearchQueryUnique.SearchUniqueResults<Person> results = SearchQueryUnique.searchWithResultsAndCount(spyFactory,
+		    personNameQuery(), 0, 5, PERSON_COUNT);
+
+		assertEquals(5, results.getResults().size());
+		assertEquals(Long.valueOf(PERSON_COUNT), results.getTotalHitCount());
+		assertTrue(results.getTotalHitCountExact());
+
+		verify(spySession, times(2)).search(any(SearchScope.class));
+	}
+
+	@Test
+	public void searchWithResultsAndCount_shouldMatchLegacyPageResults() {
+		SearchQueryUnique.SearchUniqueResults<Person> expected = SearchQueryUnique.search(searchSessionFactory,
+		    personNameQuery(), 2, 5, false);
+		SearchQueryUnique.SearchUniqueResults<Person> actual = SearchQueryUnique
+		        .searchWithResultsAndCount(searchSessionFactory, personNameQuery(), 2, 5, PERSON_COUNT);
+
+		assertEquals(personIds(expected.getResults()), personIds(actual.getResults()));
+	}
+
+	@Test
+	public void searchWithResultsAndCount_shouldMatchLegacyCountWhenCapIsNotExceeded() {
+		Long expected = SearchQueryUnique.searchCount(searchSessionFactory, personNameQuery());
+		SearchQueryUnique.SearchUniqueResults<Person> actual = SearchQueryUnique
+		        .searchWithResultsAndCount(searchSessionFactory, personNameQuery(), 0, 5, PERSON_COUNT);
+
+		assertEquals(expected, actual.getTotalHitCount());
+		assertTrue(actual.getTotalHitCountExact());
+	}
+
+	@Test
+	public void searchWithResultsAndCount_shouldMatchLegacyJoinedQueryResultsAndCount() {
+		createJoinedFixture();
+		SearchQueryUnique.SearchUniqueResults<Person> expectedPage = SearchQueryUnique.search(searchSessionFactory,
+		    joinedQuery(), 1, 5, false);
+		SearchSession spySession = spy(searchSessionFactory.getSearchSession());
+		SearchSessionFactory spyFactory = () -> spySession;
+
+		SearchQueryUnique.SearchUniqueResults<Person> actual = SearchQueryUnique.searchWithResultsAndCount(spyFactory,
+		    joinedQuery(), 1, 5, DISTINCT_JOINED);
+		Long expectedCount = SearchQueryUnique.searchCount(searchSessionFactory, joinedQuery());
+
+		assertEquals(personIds(expectedPage.getResults()), personIds(actual.getResults()));
+		assertEquals(expectedCount, actual.getTotalHitCount());
+
+		verify(spySession, times(4)).search(any(SearchScope.class));
+	}
+
+	@Test
+	public void searchWithResultsAndCount_shouldUseRawHitCountFallbackWhenCapIsExceeded() {
+		createJoinedFixture();
+		SearchQueryUnique.SearchUniqueResults<Person> expectedPage = SearchQueryUnique.search(searchSessionFactory,
+		    joinedQuery(), 1, 5, false);
+		SearchQueryUnique.SearchUniqueResults<Person> actual = SearchQueryUnique
+		        .searchWithResultsAndCount(searchSessionFactory, joinedQuery(), 1, 5, BOTH);
+		Long expectedCount = SearchQueryUnique.searchCount(searchSessionFactory, joinedQuery(), BOTH);
+
+		assertEquals(personIds(expectedPage.getResults()), personIds(actual.getResults()));
+		assertEquals(expectedCount, actual.getTotalHitCount());
+	}
+
+	@Test
 	public void search_shouldReturnDeduplicatedResultsForFullResultSet() {
 		List<Person> results = SearchQueryUnique.search(searchSessionFactory, personNameQuery(), 0, PERSON_COUNT);
 

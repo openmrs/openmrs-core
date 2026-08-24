@@ -208,11 +208,19 @@ public class SearchQueryUnique<T, R> {
 
 		Long totalHitCount;
 
+		Boolean totalHitCountExact;
+
 		public SearchUniqueResults(List<T> results, Integer offset, Integer limit, Long totalHitCount) {
+			this(results, offset, limit, totalHitCount, null);
+		}
+
+		public SearchUniqueResults(List<T> results, Integer offset, Integer limit, Long totalHitCount,
+		    Boolean totalHitCountExact) {
 			this.results = results;
 			this.offset = offset;
 			this.limit = limit;
 			this.totalHitCount = totalHitCount;
+			this.totalHitCountExact = totalHitCountExact;
 		}
 
 		public List<T> getResults() {
@@ -229,6 +237,10 @@ public class SearchQueryUnique<T, R> {
 
 		public Long getTotalHitCount() {
 			return totalHitCount;
+		}
+
+		public Boolean getTotalHitCountExact() {
+			return totalHitCountExact;
 		}
 	}
 
@@ -314,10 +326,16 @@ public class SearchQueryUnique<T, R> {
 			// The count path only needs the total number of distinct hits, so it skips fetching and
 			// hydrating a page of results entirely.
 			long totalHitCount = searchTotalHitCount(searchSession, uniqueQuery, UNBOUNDED_DEDUPLICATION);
-			return new SearchUniqueResults<>(new ArrayList<>(), offset, limit, totalHitCount);
+			return new SearchUniqueResults<>(new ArrayList<>(), offset, limit, totalHitCount, true);
 		}
 
 		return searchWithResults(searchSession, uniqueQuery, offset, limit);
+	}
+
+	public static <T> SearchUniqueResults<T> searchWithResultsAndCount(SearchSessionFactory searchSessionFactory,
+	        SearchQueryUnique<?, T> uniqueQuery, final Integer offset, final Integer limit, int deduplicationCap) {
+		return searchWithResultsAndCount(searchSessionFactory.getSearchSession(), uniqueQuery, offset, limit,
+		    deduplicationCap);
 	}
 
 	/**
@@ -333,6 +351,115 @@ public class SearchQueryUnique<T, R> {
 	 * clauses do not affect scoring; do not add an explicit sort to one without the other, or the bound
 	 * no longer holds.
 	 */
+	/**
+	 * Fetches the requested page and deduplicated total hit count while sharing the same deduplication
+	 * scan for each joined query.
+	 */
+	private static <T> SearchUniqueResults<T> searchWithResultsAndCount(SearchSession searchSession,
+	        SearchQueryUnique<?, T> uniqueQuery, final Integer offset, final Integer limit, int deduplicationCap) {
+		List<T> results = new ArrayList<>();
+		Set<Object> fullCountUniqueKeys = new HashSet<>();
+		Set<Object> uniqueKeys = new LinkedHashSet<>(); // Preserve the order for the page-local state.
+		long nonUniqueHitCount = 0;
+		boolean exceededCap = false;
+		final int maxClauseCount = Math.round(BooleanQuery.getMaxClauseCount() / 2.5f);
+		SearchQueryUnique<?, T> nextQuery = uniqueQuery;
+		Integer currentOffset = offset;
+		Integer currentLimit = limit;
+		while (nextQuery != null) {
+			if (nextQuery.getJoinedQuery() != null && nextQuery.getUniqueKey() == null) {
+				throw new IllegalStateException("A joined SearchQueryUnique sub-query must define a unique key");
+			}
+
+			SearchScope<?> scope = searchSession.scope(nextQuery.getScope());
+			SearchPredicateFactory predicateFactory = scope.predicate();
+			SearchPredicate searchPredicate = nextQuery.getSearch().apply(predicateFactory);
+			SearchQuery<?> query;
+
+			final Collection<Object> previousQueryUniqueKeys = new ArrayList<>(uniqueKeys);
+			CombinedDeduplicationResult dedup = null;
+
+			if (nextQuery.getUniqueKey() != null) {
+				final String uniqueKey = nextQuery.getUniqueKey();
+				SearchQuery<List<?>> uniqueKeyQuery = searchSession.search(scope)
+				        .select(f -> f.composite(f.field(uniqueKey), f.id())).where(searchPredicate).toQuery();
+
+				final Integer maxNewUniqueKeys;
+				if (currentLimit == null) {
+					maxNewUniqueKeys = null;
+				} else {
+					maxNewUniqueKeys = (currentOffset == null ? 0 : currentOffset) + currentLimit;
+				}
+				dedup = collectDuplicateIdsAndUniqueKeys(uniqueKeyQuery, fullCountUniqueKeys, uniqueKeys, maxClauseCount,
+				    maxNewUniqueKeys, deduplicationCap, DEFAULT_SCROLL_CHUNK_SIZE);
+				exceededCap = exceededCap || dedup.exceededCap;
+				final List<Object> duplicateIds = dedup.duplicateIds;
+
+				if (uniqueKeys.size() > maxClauseCount) {
+					uniqueKeys = new LinkedHashSet<>(new ArrayList<>(uniqueKeys).subList(0, maxClauseCount));
+				}
+
+				final boolean projectUniqueKey = nextQuery.getUniqueKeyMapper() != null;
+
+				query = (projectUniqueKey ? searchSession.search(scope).select(f -> f.field(uniqueKey))
+				        : searchSession.search(scope)).where(f -> f.bool().with(b -> {
+					        b.must(searchPredicate);
+					        if (!duplicateIds.isEmpty()) {
+						        b.filter(f.not(f.id().matchingAny(duplicateIds)));
+					        }
+					        if (!previousQueryUniqueKeys.isEmpty()) {
+						        b.filter(f.not(f.terms().field(uniqueKey).matchingAny(previousQueryUniqueKeys)));
+					        }
+				        })).toQuery();
+			} else {
+				query = searchSession.search(scope).where(searchPredicate).toQuery();
+			}
+
+			List<?> partialResults;
+			if (currentOffset != null) {
+				partialResults = query.fetchHits(currentOffset, currentLimit);
+			} else if (currentLimit != null) {
+				partialResults = query.fetchHits(currentLimit);
+			} else {
+				partialResults = query.fetchAllHits();
+			}
+
+			if (!partialResults.isEmpty()) {
+				if (nextQuery.getUniqueKeyMapper() != null) {
+					//noinspection unchecked
+					results.addAll(nextQuery.getUniqueKeyMapper().apply((List<Object>) partialResults));
+				} else if (nextQuery.getMapper() != null) {
+					//noinspection unchecked
+					results.addAll(((Function<List<Object>, List<T>>) (Function<?, ?>) nextQuery.getMapper())
+					        .apply((List<Object>) partialResults));
+				} else {
+					//noinspection unchecked
+					results.addAll((Collection<? extends T>) partialResults);
+				}
+			}
+
+			if (nextQuery.getJoinedQuery() != null) {
+				int consumed = dedup == null ? 0 : dedup.newUniqueKeyCount;
+				if (currentLimit != null) {
+					currentLimit = limit - results.size();
+				}
+				if (currentOffset != null) {
+					currentOffset = Math.max(0, currentOffset - consumed);
+				}
+			}
+
+			if (nextQuery.getUniqueKey() == null) {
+				nonUniqueHitCount += fetchTotalHitCount(searchSession, nextQuery);
+			}
+
+			nextQuery = nextQuery.getJoinedQuery();
+		}
+
+		long totalHitCount = exceededCap ? rawHitCount(searchSession, uniqueQuery)
+		        : fullCountUniqueKeys.size() + nonUniqueHitCount;
+		return new SearchUniqueResults<>(results, offset, limit, totalHitCount, !exceededCap);
+	}
+
 	private static <T> SearchUniqueResults<T> searchWithResults(SearchSession searchSession,
 	        SearchQueryUnique<?, T> uniqueQuery, final Integer offset, final Integer limit) {
 		List<T> results = new ArrayList<>();
@@ -596,6 +723,51 @@ public class SearchQueryUnique<T, R> {
 		return new DeduplicationResult(duplicateIds, newUniqueKeyCount, scannedHitCount);
 	}
 
+	static CombinedDeduplicationResult collectDuplicateIdsAndUniqueKeys(SearchQuery<List<?>> uniqueKeyQuery,
+	        Set<Object> fullCountUniqueKeys, Set<Object> pageUniqueKeys, int maxClauseCount, Integer maxNewUniqueKeys,
+	        int deduplicationCap, int chunkSize) {
+		final List<Object> duplicateIds = new ArrayList<>();
+		int newUniqueKeyCount = 0;
+		int scannedHitCount = 0;
+		boolean countExceededCap = false;
+		boolean pageFrozen = false;
+		try (SearchScroll<List<?>> scroll = uniqueKeyQuery.scroll(chunkSize)) {
+			SearchScrollResult<List<?>> chunk = scroll.next();
+			scan: while (chunk.hasHits()) {
+				for (List<?> match : chunk.hits()) {
+					scannedHitCount++;
+					Object key = match.get(0);
+					if (!pageFrozen) {
+						if (pageUniqueKeys.add(key)) {
+							newUniqueKeyCount++;
+							if (maxNewUniqueKeys != null && newUniqueKeyCount >= maxNewUniqueKeys) {
+								pageFrozen = true;
+							}
+						} else {
+							duplicateIds.add(match.get(1));
+							if (duplicateIds.size() > maxClauseCount) {
+								pageFrozen = true;
+							}
+						}
+					}
+					if (!countExceededCap) {
+						if (fullCountUniqueKeys.add(key) && fullCountUniqueKeys.size() > deduplicationCap) {
+							countExceededCap = true;
+						}
+					}
+					if (pageFrozen && countExceededCap) {
+						break scan;
+					}
+				}
+				if (pageFrozen && countExceededCap) {
+					break scan;
+				}
+				chunk = scroll.next();
+			}
+		}
+		return new CombinedDeduplicationResult(duplicateIds, newUniqueKeyCount, scannedHitCount, countExceededCap);
+	}
+
 	/**
 	 * Holds the outcome of {@link #collectDuplicateIds}: the duplicate ids to filter out, the number of
 	 * new unique keys found, and the number of hits actually scanned (which is bounded when the page
@@ -616,6 +788,25 @@ public class SearchQueryUnique<T, R> {
 			this.duplicateIds = duplicateIds;
 			this.newUniqueKeyCount = newUniqueKeyCount;
 			this.scannedHitCount = scannedHitCount;
+		}
+	}
+
+	static final class CombinedDeduplicationResult {
+
+		final List<Object> duplicateIds;
+
+		final int newUniqueKeyCount;
+
+		final int scannedHitCount;
+
+		final boolean exceededCap;
+
+		CombinedDeduplicationResult(List<Object> duplicateIds, int newUniqueKeyCount, int scannedHitCount,
+		    boolean exceededCap) {
+			this.duplicateIds = duplicateIds;
+			this.newUniqueKeyCount = newUniqueKeyCount;
+			this.scannedHitCount = scannedHitCount;
+			this.exceededCap = exceededCap;
 		}
 	}
 
