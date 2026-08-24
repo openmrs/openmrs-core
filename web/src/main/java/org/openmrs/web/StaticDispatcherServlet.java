@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
+import java.io.Serial;
+
 /**
  * This class is only used to get access to the dispatcher servlet that handles static content. <br>
  * <br>
@@ -26,6 +28,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  */
 public class StaticDispatcherServlet extends org.springframework.web.servlet.DispatcherServlet {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger log = LoggerFactory.getLogger(StaticDispatcherServlet.class);
