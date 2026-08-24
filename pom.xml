@@ -15,7 +15,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>2.8.9-SNAPSHOT</version>
+	<version>2.8.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -576,6 +576,11 @@
 				<version>33.4.8-jre</version>
 			</dependency>
 			<dependency>
+				<groupId>com.fasterxml.uuid</groupId>
+				<artifactId>java-uuid-generator</artifactId>
+				<version>5.2.0</version>
+			</dependency>
+			<dependency>
 			    <groupId>jakarta.xml.bind</groupId>
 			    <artifactId>jakarta.xml.bind-api</artifactId>
 			    <version>4.0.2</version>
@@ -869,14 +874,8 @@
 							<include>org/openmrs/**</include>
 						</includes>
 					</configuration>
-					<executions>
-						<execution>
-							<id>prepare-agent</id>
-							<goals>
-								<goal>prepare-agent</goal>
-							</goals>
-						</execution>
-					</executions>
+					<!-- The prepare-agent execution lives in the JDK-8-activated `coverage` profile below,
+					     not here, so the agent only attaches on the coverage baseline. -->
 				</plugin>
 				<plugin>
 					<groupId>org.eluder.coveralls</groupId>
@@ -1162,6 +1161,57 @@
 				<byteBuddyVersion>1.17.6</byteBuddyVersion>
 			</properties>
 		</profile>
+
+		<!-- Collect JaCoCo coverage only on the Java 8 baseline (the JDK whose test run feeds
+		     Coveralls). The agent is deliberately off on newer JDKs: under Temurin 11 it crashes
+		     the forked test VM (moduleEntry.cpp guarantee failure) while instrumenting the
+		     reflection/ByteBuddy DelegatingClassLoader that Mockito's inline mock maker generates,
+		     and it produces coverage data that nothing consumes on those JDKs anyway. -->
+		<profile>
+			<id>coverage</id>
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>prepare-agent</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- Per-JDK test-JVM workarounds for VM bugs hit by Mockito's inline mock maker on older JDKs. -->
+		<profile>
+			<id>jdk8-test-workarounds</id>
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<properties>
+				<!-- Exclude MethodHandle LambdaForms from JIT to dodge a HotSpot 8 compiler SIGSEGV in
+				     ciMemberName::get_vmtarget (crashes both C1 and C2 compiling LambdaForm$BMH::reinvoke). -->
+				<jdkTestArgLine>-XX:CompileCommand=exclude,java/lang/invoke/LambdaForm*.*</jdkTestArgLine>
+			</properties>
+		</profile>
+		<profile>
+			<id>jdk11-test-workarounds</id>
+			<activation>
+				<jdk>11</jdk>
+			</activation>
+			<properties>
+				<!-- Stop reflection inflation from generating a DelegatingClassLoader (moduleEntry.cpp crash). -->
+				<jdkTestArgLine>-Dsun.reflect.inflationThreshold=2147483647</jdkTestArgLine>
+			</properties>
+		</profile>
 	</profiles>
 
 	<reporting>
@@ -1256,12 +1306,15 @@
 
 		<customArgLineForTesting />
 
+		<!-- JDK-specific test-JVM workarounds; populated by the jdk8/jdk11 profiles below. -->
+		<jdkTestArgLine />
+
 		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>		
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
 		<sonar.issuesReport.lightModeOnly>true</sonar.issuesReport.lightModeOnly>
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
 		<sonar.analysis.mode>publish</sonar.analysis.mode>
 
-		<argLine>-Duser.language=en -Duser.region=US -Xmx1g ${customArgLineForTesting} -Djava.locale.providers=COMPAT</argLine>
+		<argLine>-Duser.language=en -Duser.region=US -Xmx1g ${jdkTestArgLine} ${customArgLineForTesting} -Djava.locale.providers=COMPAT</argLine>
 	</properties>
 </project>

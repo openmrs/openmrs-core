@@ -24,6 +24,7 @@ import org.openmrs.Visit;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.parameter.ObsSearchCriteria;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -520,6 +521,68 @@ public interface ObsService extends OpenmrsService {
 			boolean includeVoidedObs, String accessionNumber) throws APIException;
 
 	/**
+	 * Gets observations matching the given search criteria.
+	 * <p>
+	 * A paged query also sorts on the obs id as a final sort key, which gives it a total order so that
+	 * rows tied on the requested sort columns cannot shift between pages. That makes a walk through the
+	 * pages consistent with respect to one snapshot of the data; as with any offset-based paging, obs
+	 * saved or voided part way through a walk still shift the rows that follow. Walking to a deep start
+	 * index costs the database the rows it skips, so prefer narrowing the criteria over paging far in.
+	 * <p>
+	 * mostRecentN and the paging parameters express the same bound in two different ways, so a positive
+	 * mostRecentN takes precedence and the paging parameters are ignored.
+	 *
+	 * @param obsSearchCriteria the search criteria for the observations query, required
+	 * @return list of Observations that match the criteria given in the search criteria
+	 * @throws APIException if an exception occurs processing or generating the result
+	 * @throws IllegalArgumentException if obsSearchCriteria is null
+	 * @since 2.8.10
+	 * @see org.openmrs.parameter.ObsSearchCriteriaBuilder
+	 */
+	@Authorized(PrivilegeConstants.GET_OBS)
+	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws APIException;
+
+	/**
+	 * Gets observations matching the given criteria, bounded to the requested page of results. This
+	 * behaves exactly like
+	 * {@link #getObservations(List, List, List, List, List, List, List, List, Integer, Integer, Date, Date, boolean, String)}
+	 * when startIndex and maxResults are both null. Otherwise, the results will be paged. When paged
+	 * results append the obsId as a sort parameter to guarantee stable views between page loads, at
+	 * least assuming the underlying data doesn't change.
+	 * <p>
+	 * mostRecentN and the paging parameters express the same bound in two different ways, so a positive
+	 * mostRecentN takes precedence and the paging parameters are ignored.
+	 *
+	 * @param whom List&lt;Person&gt; to restrict obs to (optional)
+	 * @param encounters List&lt;Encounter&gt; to restrict obs to (optional)
+	 * @param questions List&lt;Concept&gt; to restrict the obs to (optional)
+	 * @param answers List&lt;Concept&gt; to restrict the valueCoded to (optional)
+	 * @param personTypes List&lt;PERSON_TYPE&gt; objects to restrict the obs to, applied in addition to
+	 *            any restriction <code>whom</code> imposes (optional)
+	 * @param locations The org.openmrs.Location objects to restrict to (optional)
+	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to
+	 *            obsDatetime (optional)
+	 * @param visits List&lt;Visit&gt; to restrict obs to (optional)
+	 * @param mostRecentN restrict the number of obs returned to this size, ignoring the paging
+	 *            parameters (optional)
+	 * @param obsGroupId the Obs.getObsGroupId() to this integer (optional)
+	 * @param fromDate the earliest Obs date to get (optional)
+	 * @param toDate the latest Obs date to get (optional)
+	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
+	 * @param accessionNumber accession number (optional)
+	 * @param startIndex the 0-based index of the first row to return (optional)
+	 * @param maxResults the maximum number of rows to return (optional)
+	 * @return list of Observations that match all of the criteria given
+	 * @since 2.8.10
+	 */
+	@SuppressWarnings("squid:S107")
+	@Authorized(PrivilegeConstants.GET_OBS)
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws APIException;
+
+	/**
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
 	 *      java.util.Date, java.util.Date, boolean, java.lang.String)
@@ -534,7 +597,23 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-			List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<Visit> visits,
-			Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber)
-			throws APIException;
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<Visit> visits,
+	        Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber)
+	        throws APIException;
+
+	/**
+	 * Counts the observations matching the given search criteria. Paging parameters and mostRecentN are
+	 * ignored for these purposes.
+	 *
+	 * @param obsSearchCriteria the search criteria for the observations query, required
+	 * @return the number of Observations that match criteria given, ignoring their sort and row bounds
+	 * @throws APIException
+	 * @throws IllegalArgumentException if obsSearchCriteria is null, or if the count exceeds
+	 *             {@link Integer#MAX_VALUE}
+	 * @since 2.8.10
+	 * @see #getObservations(ObsSearchCriteria)
+	 * @see org.openmrs.parameter.ObsSearchCriteriaBuilder
+	 */
+	@Authorized(PrivilegeConstants.GET_OBS)
+	public Integer getObservationCount(ObsSearchCriteria obsSearchCriteria) throws APIException;
 }

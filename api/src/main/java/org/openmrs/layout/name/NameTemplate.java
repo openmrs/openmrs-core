@@ -47,7 +47,7 @@ public class NameTemplate extends LayoutTemplate {
 				boolean hasToken = false;
 				for (Map<String, String> lineToken : line) {
 					if (lineToken.get("isToken").equals(layoutToken)) {
-						String tokenValue = BeanUtils.getProperty(personName, lineToken.get("codeName"));
+						String tokenValue = resolveToken(personName, lineToken.get("codeName"));
 						if (StringUtils.isNotBlank(tokenValue)) {
 							hasToken = true;
 							nameLine.append(tokenValue);
@@ -74,5 +74,29 @@ public class NameTemplate extends LayoutTemplate {
 	public LayoutSupport<?> getLayoutSupportInstance() {
 		return NameSupport.getInstance();
 	}
-	
+
+	private static String resolveToken(PersonName pn, String codeName) throws Exception {
+		switch (codeName) {
+			case "prefix":
+				return pn.getPrefix();
+			case "givenName":
+				return pn.getGivenName();
+			case "middleName":
+				return pn.getMiddleName();
+			case "familyNamePrefix":
+				return pn.getFamilyNamePrefix();
+			case "familyName":
+				return pn.getFamilyName();
+			case "familyName2":
+				return pn.getFamilyName2();
+			case "familyNameSuffix":
+				return pn.getFamilyNameSuffix();
+			case "degree":
+				return pn.getDegree();
+			default:
+				// custom-configured token: keep old behavior as a rare fallback
+				return BeanUtils.getProperty(pn, codeName);
+		}
+	}
+
 }

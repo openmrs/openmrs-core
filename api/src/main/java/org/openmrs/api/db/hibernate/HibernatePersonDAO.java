@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SQLQuery;
@@ -90,11 +92,12 @@ public class HibernatePersonDAO implements PersonDAO {
 	private Set<Person> executeSoundexOnePersonNameQuery(String name, Integer birthyear, boolean includeVoided , String gender) {
 		PersonQuery personQuery = new PersonQuery();
 
-		List<Person> results = SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(PersonName.class,
-				f -> personQuery.getSoundexPersonNameQuery(f, name, birthyear, includeVoided,
-					gender), "person.personId", PersonName::getPerson), null,
-			HibernatePersonDAO.getMaximumSearchResults());
-		
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory,
+		    SearchQueryUnique.newProjectedQuery(PersonName.class,
+		        f -> personQuery.getSoundexPersonNameQuery(f, name, birthyear, includeVoided, gender), "person.personId",
+		        this::multiLoadPersons),
+		    null, HibernatePersonDAO.getMaximumSearchResults());
+
 		return new LinkedHashSet<>(results);
 	}
 	
@@ -114,11 +117,14 @@ public class HibernatePersonDAO implements PersonDAO {
 															boolean includeVoided , String gender) {
 		PersonQuery personQuery = new PersonQuery();
 
-		List<Person> results = SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(PersonName.class,
-				f -> personQuery.getSoundexPersonNameSearchOnThreeNames(f, name1, name2, name3,
-					birthyear, includeVoided, gender), "person.personId",  PersonName::getPerson),
-			null, HibernatePersonDAO.getMaximumSearchResults());
-		
+		List<Person> results = SearchQueryUnique
+		        .search(searchSessionFactory,
+		            SearchQueryUnique.newProjectedQuery(PersonName.class,
+		                f -> personQuery.getSoundexPersonNameSearchOnThreeNames(f, name1, name2, name3, birthyear,
+		                    includeVoided, gender),
+		                "person.personId", this::multiLoadPersons),
+		            null, HibernatePersonDAO.getMaximumSearchResults());
+
 		return new LinkedHashSet<>(results);
 	}
 	
@@ -136,11 +142,14 @@ public class HibernatePersonDAO implements PersonDAO {
 														  boolean includeVoided , String gender) {
 		PersonQuery personQuery = new PersonQuery();
 
-		List<Person> results = SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(PersonName.class,
-				f -> personQuery.getSoundexPersonNameSearchOnTwoNames(f, searchName1, searchName2,
-					birthyear, includeVoided, gender), "person.personId", PersonName::getPerson), null,
-			HibernatePersonDAO.getMaximumSearchResults());
-		
+		List<Person> results = SearchQueryUnique
+		        .search(searchSessionFactory,
+		            SearchQueryUnique.newProjectedQuery(PersonName.class,
+		                f -> personQuery.getSoundexPersonNameSearchOnTwoNames(f, searchName1, searchName2, birthyear,
+		                    includeVoided, gender),
+		                "person.personId", this::multiLoadPersons),
+		            null, HibernatePersonDAO.getMaximumSearchResults());
+
 		return new LinkedHashSet<>(results);
 	}
 	
@@ -157,11 +166,12 @@ public class HibernatePersonDAO implements PersonDAO {
 														String gender) {
 		PersonQuery personQuery = new PersonQuery();
 
-		List<Person> results = SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(PersonName.class,
-				f -> personQuery.getSoundexPersonNameSearchOnNNames(f, searchNames, birthyear,
-					includeVoided, gender), "person.personId",  PersonName::getPerson), null, 
-			HibernatePersonDAO.getMaximumSearchResults());
-		
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory,
+		    SearchQueryUnique.newProjectedQuery(PersonName.class,
+		        f -> personQuery.getSoundexPersonNameSearchOnNNames(f, searchNames, birthyear, includeVoided, gender),
+		        "person.personId", this::multiLoadPersons),
+		    null, HibernatePersonDAO.getMaximumSearchResults());
+
 		return new LinkedHashSet<>(results);
 		
 	}
@@ -266,12 +276,15 @@ public class HibernatePersonDAO implements PersonDAO {
 
 		PersonQuery personQuery = new PersonQuery();
 
-		return SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(PersonName.class,
-				f -> personQuery.getPersonNameQueryWithOrParser(f, searchString, includeVoided, dead),
-				"person.personId", PersonName::getPerson).join(SearchQueryUnique.newQuery(PersonAttribute.class,
-				f -> personQuery.getPersonAttributeQueryWithOrParser(f, searchString, includeVoided), 
-				"person.personId", PersonAttribute::getPerson)), null,
-			HibernatePersonDAO.getMaximumSearchResults());
+		return SearchQueryUnique.search(searchSessionFactory,
+		    SearchQueryUnique
+		            .newProjectedQuery(PersonName.class,
+		                f -> personQuery.getPersonNameQueryWithOrParser(f, searchString, includeVoided, dead),
+		                "person.personId", this::multiLoadPersons)
+		            .join(SearchQueryUnique.newProjectedQuery(PersonAttribute.class,
+		                f -> personQuery.getPersonAttributeQueryWithOrParser(f, searchString, includeVoided),
+		                "person.personId", this::multiLoadPersons)),
+		    null, HibernatePersonDAO.getMaximumSearchResults());
 	}
 	
 	@Override
@@ -824,5 +837,30 @@ public class HibernatePersonDAO implements PersonDAO {
 		sessionFactory.getCurrentSession().saveOrUpdate(personAddress);
 		return personAddress;
 	}
-	
+
+	/**
+	 * Hydrates a page of full-text search hits into their persons in a single order-preserving
+	 * {@code multiLoad} instead of one {@code get} per hit, so a page issues a bounded number of
+	 * entity loads. Loading the whole page in one operation also lets the eagerly-fetched person names,
+	 * addresses, and attributes be read in a bounded number of batched selects across the page rather
+	 * than a separate set of selects for every person. Hits whose person is no longer present in the
+	 * database (a stale search-index entry) are dropped from the results. The ids arrive projected out
+	 * of the search index rather than read off loaded hit entities (see
+	 * {@link SearchQueryUnique#newProjectedQuery}), so this is the only load a page performs.
+	 *
+	 * @param personIds the page's person ids, in the order they should appear in the results
+	 * @return the persons for the page, in hit order, with missing rows removed
+	 */
+	private List<Person> multiLoadPersons(List<Object> personIds) {
+		// The projected keys arrive untyped, while multiLoad takes a list of the entity's id type.
+		List<Integer> ids = personIds.stream().map(Integer.class::cast).collect(Collectors.toList());
+		List<Person> persons = sessionFactory.getCurrentSession().byMultipleIds(Person.class).multiLoad(ids).stream()
+		        .filter(Objects::nonNull).collect(Collectors.toList());
+		if (persons.size() < personIds.size()) {
+			log.debug("Dropped {} person search hit(s) with no matching row (stale search index?)",
+			    personIds.size() - persons.size());
+		}
+		return persons;
+	}
+
 }

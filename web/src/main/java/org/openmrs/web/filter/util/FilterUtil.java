@@ -13,11 +13,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.util.DatabaseUpdater;
-import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -284,10 +282,14 @@ public class FilterUtil {
 		
 		try {
 			connection = DatabaseUpdater.getConnection();
-			List<List<Object>> results = DatabaseUtil.executeSQL(connection,
-			    "select property_value from global_property where property = '" + globalPropertyName + "'", true);
-			if (results.size() == 1 && results.get(0).size() == 1) {
-				propertyValue = results.get(0).get(0).toString();
+			try (PreparedStatement statement = connection
+			        .prepareStatement("select property_value from global_property where property = ?")) {
+				statement.setString(1, globalPropertyName);
+				try (ResultSet resultSet = statement.executeQuery()) {
+					if (resultSet.next()) {
+						propertyValue = resultSet.getString(1);
+					}
+				}
 			}
 		}
 		catch (Exception e) {

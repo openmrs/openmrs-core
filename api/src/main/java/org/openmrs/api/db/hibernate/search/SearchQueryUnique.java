@@ -16,7 +16,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.lucene.search.BooleanQuery;
 import org.hibernate.search.engine.search.predicate.SearchPredicate;
@@ -64,14 +63,16 @@ public class SearchQueryUnique<T, R> {
 
 	Function<SearchPredicateFactory, SearchPredicate> search;
 
-	Function<T, R> mapper;
+	Function<List<T>, List<R>> mapper;
 
 	String uniqueKey;
+
+	Function<List<Object>, List<R>> uniqueKeyMapper;
 
 	SearchQueryUnique<?, R> joinedQuery;
 
 	public SearchQueryUnique(Class<? extends T> scope, Function<SearchPredicateFactory, SearchPredicate> search,
-	    String uniqueKey, Function<T, R> mapper, SearchQueryUnique<?, R> joinedQuery) {
+	    String uniqueKey, Function<List<T>, List<R>> mapper, SearchQueryUnique<?, R> joinedQuery) {
 		this.scope = scope;
 		this.search = search;
 		this.mapper = mapper;
@@ -87,7 +88,7 @@ public class SearchQueryUnique<T, R> {
 		return search;
 	}
 
-	public Function<T, R> getMapper() {
+	public Function<List<T>, List<R>> getMapper() {
 		return mapper;
 	}
 
@@ -97,6 +98,16 @@ public class SearchQueryUnique<T, R> {
 
 	public SearchQueryUnique<?, R> getJoinedQuery() {
 		return joinedQuery;
+	}
+
+	/**
+	 * The mapper of a projected query, which receives the page's unique key values rather than its hit
+	 * entities. See {@link #newProjectedQuery(Class, Function, String, Function)}.
+	 *
+	 * @return the unique key mapper, or <code>null</code> if this query loads its hits
+	 */
+	public Function<List<Object>, List<R>> getUniqueKeyMapper() {
+		return uniqueKeyMapper;
 	}
 
 	/**
@@ -117,20 +128,25 @@ public class SearchQueryUnique<T, R> {
 	 * @param scope the index type to be searched
 	 * @param search the search predicate
 	 * @param uniqueKey the field to use as unique key, or <code>null</code> if none
-	 * @param mapper the mapper from index type to result type, or <code>null</code> if none
+	 * @param mapper the mapper from a page of index-type hits to result-type items, applied once per
+	 *            page so it can batch-load the results, or <code>null</code> if none. It must preserve
+	 *            the order of the hits (its output is appended directly to the paginated results), so a
+	 *            reordering mapper would corrupt pagination. A mapper that only needs the unique key
+	 *            off each hit belongs on {@link #newProjectedQuery(Class, Function, String, Function)}
+	 *            instead, which skips loading the hits altogether.
 	 * @return the search
 	 * @param <T> the index type
 	 * @param <R> the result type
 	 */
 	public static <T, R> SearchQueryUnique<T, R> newQuery(Class<? extends T> scope,
-	        Function<SearchPredicateFactory, SearchPredicate> search, String uniqueKey, Function<T, R> mapper) {
+	        Function<SearchPredicateFactory, SearchPredicate> search, String uniqueKey, Function<List<T>, List<R>> mapper) {
 		return new SearchQueryUnique<>(scope, search, uniqueKey, mapper, null);
 	}
 
 	/**
 	 * See {@link #newQuery(Class, Function, String, Function)}.
 	 *
-	 * @param scope thh index type to be searched
+	 * @param scope the index type to be searched
 	 * @param search the search predicate
 	 * @param uniqueKey the field to use as unique key, or <code>null</code> if none
 	 * @return the search
@@ -140,6 +156,46 @@ public class SearchQueryUnique<T, R> {
 	public static <T, R> SearchQueryUnique<T, R> newQuery(Class<? extends T> scope,
 	        Function<SearchPredicateFactory, SearchPredicate> search, String uniqueKey) {
 		return new SearchQueryUnique<>(scope, search, uniqueKey, null, null);
+	}
+
+	/**
+	 * Creates a query that reads its unique key straight from the index instead of loading the hits.
+	 * <p>
+	 * Use this wherever the results are reached only through the unique key - which is every search
+	 * whose mapper does nothing with a hit but pull the target id off it. Because the hit entities are
+	 * never loaded, nothing eagerly resolves the association the unique key comes from, so the mapper's
+	 * batched load is the only one that reaches the database. Loading the hits instead would cost an
+	 * extra select per page and, where that association is a default-eager <code>@ManyToOne</code>, one
+	 * per hit.
+	 * <p>
+	 * The mapper receives the page's unique key values in hit order and must return the results in that
+	 * same order, exactly as in {@link #newQuery(Class, Function, String, Function)}. A projected query
+	 * requires a unique key, since that is the only field it reads.
+	 *
+	 * @param scope the index type to be searched
+	 * @param search the search predicate
+	 * @param uniqueKey the field to project and use as unique key, which must not be <code>null</code>
+	 * @param uniqueKeyMapper the mapper from a page of unique key values to result-type items, applied
+	 *            once per page so it can batch-load the results. It must preserve the order of the
+	 *            hits.
+	 * @return the search
+	 * @param <T> the index type
+	 * @param <R> the result type
+	 * @throws IllegalArgumentException if <code>uniqueKey</code> or <code>uniqueKeyMapper</code> is
+	 *             <code>null</code>
+	 */
+	public static <T, R> SearchQueryUnique<T, R> newProjectedQuery(Class<? extends T> scope,
+	        Function<SearchPredicateFactory, SearchPredicate> search, String uniqueKey,
+	        Function<List<Object>, List<R>> uniqueKeyMapper) {
+		if (uniqueKey == null) {
+			throw new IllegalArgumentException("A projected SearchQueryUnique requires a unique key to project");
+		}
+		if (uniqueKeyMapper == null) {
+			throw new IllegalArgumentException("A projected SearchQueryUnique requires a unique key mapper");
+		}
+		SearchQueryUnique<T, R> query = new SearchQueryUnique<>(scope, search, uniqueKey, null, null);
+		query.uniqueKeyMapper = uniqueKeyMapper;
+		return query;
 	}
 
 	public static class SearchUniqueResults<T> {
@@ -326,16 +382,21 @@ public class SearchQueryUnique<T, R> {
 					uniqueKeys = new LinkedHashSet<>(new ArrayList<>(uniqueKeys).subList(0, maxClauseCount));
 				}
 
-				query = searchSession.search(scope).where(f -> f.bool().with(b -> {
-					b.must(searchPredicate);
-					if (!duplicateIds.isEmpty()) {
-						b.filter(f.not(f.id().matchingAny(duplicateIds)));
-					}
-					// Get rid of unique keys that were added to results in a previous query
-					if (!previousQueryUniqueKeys.isEmpty()) {
-						b.filter(f.not(f.terms().field(uniqueKey).matchingAny(previousQueryUniqueKeys)));
-					}
-				})).toQuery();
+				// A projected query reads the unique key out of the index rather than loading the hits, so
+				// the page fetch selects that one field instead of the hit entities. Only a query with a
+				// unique key can project, which is why this is the only branch that has to consider it.
+				final boolean projectUniqueKey = nextQuery.getUniqueKeyMapper() != null;
+				query = (projectUniqueKey ? searchSession.search(scope).select(f -> f.field(uniqueKey))
+				        : searchSession.search(scope)).where(f -> f.bool().with(b -> {
+					        b.must(searchPredicate);
+					        if (!duplicateIds.isEmpty()) {
+						        b.filter(f.not(f.id().matchingAny(duplicateIds)));
+					        }
+					        // Get rid of unique keys that were added to results in a previous query
+					        if (!previousQueryUniqueKeys.isEmpty()) {
+						        b.filter(f.not(f.terms().field(uniqueKey).matchingAny(previousQueryUniqueKeys)));
+					        }
+				        })).toQuery();
 			} else {
 				query = searchSession.search(scope).where(searchPredicate).toQuery();
 			}
@@ -350,10 +411,18 @@ public class SearchQueryUnique<T, R> {
 			}
 
 			if (!partialResults.isEmpty()) {
-				if (nextQuery.getMapper() != null) {
+				// Either mapper receives the whole page so it can hydrate the results in one batched,
+				// order-preserving load rather than one load per hit. When a unique key is set,
+				// deduplication already ran above, so the page handed to the mapper is free of duplicate
+				// unique keys; without a unique key no deduplication is applied.
+				if (nextQuery.getUniqueKeyMapper() != null) {
+					// The hits are the projected unique key values themselves.
 					//noinspection unchecked
-					results.addAll(partialResults.stream().map((Function<Object, T>) nextQuery.getMapper())
-					        .collect(Collectors.toList()));
+					results.addAll(nextQuery.getUniqueKeyMapper().apply((List<Object>) partialResults));
+				} else if (nextQuery.getMapper() != null) {
+					//noinspection unchecked
+					results.addAll(((Function<List<Object>, List<T>>) (Function<?, ?>) nextQuery.getMapper())
+					        .apply((List<Object>) partialResults));
 				} else {
 					//noinspection unchecked
 					results.addAll((Collection<? extends T>) partialResults);
