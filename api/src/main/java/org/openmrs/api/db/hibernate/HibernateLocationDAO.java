@@ -432,13 +432,16 @@ public class HibernateLocationDAO implements LocationDAO {
 	 *
 	 * @param tags A list of LocationTag objects from which to extract the location tag IDs.
 	 *             This list should not be null.
-	 * @return A List of Integer representing the IDs of the provided LocationTag objects.
+	 * @return A List of Integer representing the IDs of the provided LocationTag objects, one per entry and in
+	 *         the same order, null where the entry or its id was null.
 	 *         Returns an empty list if the input list is empty.
 	 */
 	private List<Integer> getLocationTagIds(List<LocationTag> tags) {
 		List<Integer> locationTagIds = new ArrayList<>();
 		for (LocationTag tag : tags) {
-			locationTagIds.add(tag.getLocationTagId());
+			// a null entry maps to a null id rather than being dropped, so that callers counting the ids back
+			// against the tags they asked for still see one entry per tag
+			locationTagIds.add(tag == null ? null : tag.getLocationTagId());
 		}
 		return locationTagIds;
 	}
@@ -464,7 +467,7 @@ public class HibernateLocationDAO implements LocationDAO {
 		List<Predicate> predicates = buildPredicates(cb, cq, root, criteria, descendantIds);
 
 		cq.where(cb.and(predicates.toArray(new Predicate[0])));
-		cq.orderBy(cb.asc(root.get("name")));
+		cq.orderBy(cb.asc(root.get("name")), cb.asc(root.get("locationId")));
 
 		Query<Location> query = session.createQuery(cq);
 		applyPagination(query, criteria);
@@ -609,8 +612,17 @@ public class HibernateLocationDAO implements LocationDAO {
 			return;
 		}
 
-		List<Integer> tagIds = getLocationTagIds(new ArrayList<>(criteria.getLocationTags()));
-		if (tagIds.isEmpty()) {
+		List<Integer> requestedTagIds = getLocationTagIds(new ArrayList<>(criteria.getLocationTags()));
+		List<Integer> matchableTagIds = new ArrayList<>();
+		for (Integer tagId : requestedTagIds) {
+			if (tagId != null) {
+				matchableTagIds.add(tagId);
+			}
+		}
+
+		if (matchableTagIds.isEmpty()) {
+			// nothing is left to match against, and an empty IN list is not valid SQL
+			predicates.add(cb.disjunction());
 			return;
 		}
 
@@ -622,13 +634,12 @@ public class HibernateLocationDAO implements LocationDAO {
 		Subquery<Long> matchedTagCount = cq.subquery(Long.class);
 		Root<Location> subRoot = matchedTagCount.from(Location.class);
 		Join<Location, LocationTag> tagsJoin = subRoot.join("tags");
-		matchedTagCount.select(cb.count(tagsJoin)).where(cb.and(tagsJoin.get("locationTagId").in(tagIds),
+		matchedTagCount.select(cb.count(tagsJoin)).where(cb.and(tagsJoin.get("locationTagId").in(matchableTagIds),
 		    cb.equal(subRoot.get("locationId"), root.get("locationId"))));
 
 		if (criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL) {
-			// location_tag_map holds each pairing once, so the count is the number of distinct tags matched. An
-			// unsaved tag contributes a null id that can never match, which correctly keeps ALL from matching.
-			predicates.add(cb.equal(matchedTagCount, (long) tagIds.size()));
+			// location_tag_map holds each pairing once, so the count is the number of distinct tags matched
+			predicates.add(cb.equal(matchedTagCount, (long) requestedTagIds.size()));
 		} else {
 			predicates.add(cb.greaterThan(matchedTagCount, 0L));
 		}

@@ -1448,6 +1448,65 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * The tag set is handed in by the caller, so it can contain a null. Matching used to ask the location's own
+	 * tag set whether it contained each requested tag, which is simply false for a null, so a null must go on
+	 * being an unmatchable tag rather than becoming an error.
+	 *
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldTreatANullTagAsUnmatchableUnderAllMode() {
+		LocationService ls = Context.getLocationService();
+		// tag 3 alone matches locations 2 and 3, but the unmatchable null means ALL can never be satisfied
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setLocationTags(new HashSet<>(Arrays.asList(ls.getLocationTag(3), null)));
+		criteria.setTagMatchMode(LocationSearchCriteria.TagMatchMode.ALL);
+
+		assertTrue(ls.getLocations(criteria).isEmpty());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldIgnoreANullTagUnderAnyMode() {
+		LocationService ls = Context.getLocationService();
+		// tag 3 is on locations 2 and 3; the null contributes nothing but must not suppress them either
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setLocationTags(new HashSet<>(Arrays.asList(ls.getLocationTag(3), null)));
+		criteria.setTagMatchMode(LocationSearchCriteria.TagMatchMode.ANY);
+		List<Location> result = ls.getLocations(criteria);
+
+		assertEquals(2, result.size());
+		assertTrue(result.contains(ls.getLocation(2)));
+		assertTrue(result.contains(ls.getLocation(3)));
+	}
+
+	/**
+	 * A tag set holding nothing matchable leaves no id to build an IN list from, which is where an empty result
+	 * and "no tag filter at all" are easiest to confuse.
+	 *
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldReturnNoLocationsWhenEveryRequestedTagIsUnmatchable() {
+		LocationService ls = Context.getLocationService();
+
+		for (LocationSearchCriteria.TagMatchMode mode : LocationSearchCriteria.TagMatchMode.values()) {
+			LocationSearchCriteria nullTag = new LocationSearchCriteria();
+			nullTag.setLocationTags(new HashSet<>(Collections.singletonList(null)));
+			nullTag.setTagMatchMode(mode);
+			assertTrue(ls.getLocations(nullTag).isEmpty(), "a null tag should match nothing under " + mode);
+
+			// an unsaved tag has no id, so it cannot be on any location either
+			LocationSearchCriteria unsavedTag = new LocationSearchCriteria();
+			unsavedTag.setLocationTags(new HashSet<>(Collections.singletonList(new LocationTag("Unsaved", "no id"))));
+			unsavedTag.setTagMatchMode(mode);
+			assertTrue(ls.getLocations(unsavedTag).isEmpty(), "an unsaved tag should match nothing under " + mode);
+		}
+	}
+
+	/**
 	 * @see LocationService#getLocations(LocationSearchCriteria)
 	 */
 	@Test
@@ -1551,6 +1610,56 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 
 		assertEquals(1, paged.size());
 		assertEquals(filtered.get(1).getLocationId(), paged.get(0).getLocationId());
+	}
+
+	/**
+	 * LocationValidator only rejects a name that an unretired location already holds, so retiring a location
+	 * frees its name for reuse and locations can end up sharing one. A sort on name alone is therefore not a
+	 * total order, and paging over it would leave tied rows wherever the database put them, serving a location
+	 * on two pages or on none. Walking the pages has to reconstruct the unpaged result exactly.
+	 *
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldPageDeterministicallyOverLocationsSharingAName() {
+		LocationService ls = Context.getLocationService();
+
+		// each one is retired before the next takes the name again, which is what the validator allows
+		for (int i = 0; i < 5; i++) {
+			Location reusedName = new Location();
+			reusedName.setName("Reused Name");
+			ls.saveLocation(reusedName);
+			ls.retireLocation(reusedName, "test");
+		}
+		Location current = new Location();
+		current.setName("Reused Name");
+		ls.saveLocation(current);
+
+		LocationSearchCriteria allCriteria = new LocationSearchCriteria();
+		allCriteria.setNameFragment("Reused Name");
+		allCriteria.setIncludeRetired(true);
+		List<Location> all = ls.getLocations(allCriteria);
+		assertEquals(6, all.size());
+
+		List<Integer> walked = new ArrayList<>();
+		for (int page = 0; page < 3; page++) {
+			LocationSearchCriteria pageCriteria = new LocationSearchCriteria();
+			pageCriteria.setNameFragment("Reused Name");
+			pageCriteria.setIncludeRetired(true);
+			pageCriteria.setStartIndex(page * 2);
+			pageCriteria.setMaxResults(2);
+			for (Location location : ls.getLocations(pageCriteria)) {
+				walked.add(location.getLocationId());
+			}
+		}
+
+		List<Integer> expected = new ArrayList<>();
+		for (Location location : all) {
+			expected.add(location.getLocationId());
+		}
+
+		// no location skipped and none served twice
+		assertEquals(expected, walked);
 	}
 
 	/**
