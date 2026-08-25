@@ -23,6 +23,7 @@ import java.util.Properties;
 public class Containers {
 
 	private static MySQLContainer<?> mysql;
+	private static MariaDBContainer<?> mariadb;
 	private static PostgreSQLContainer<?> postgres;
 	private static JdbcDatabaseContainer<?> db;
 	
@@ -32,12 +33,15 @@ public class Containers {
 
 	
 	public static void ensureDatabaseRunning() {
-		if (mysql != null || postgres != null) {
+		if (mysql != null || mariadb != null || postgres != null) {
 			return;
 		}
-		
+
 		if ("postgres".equals(System.getProperty("database"))) {
 			ensurePostgreSQLRunning();
+		}
+		else if ("mariadb".equals(System.getProperty("database"))) {
+			ensureMariaDBRunning();
 		}
 		else {
 			ensureMySQLRunning();
@@ -90,6 +94,34 @@ public class Containers {
     		System.setProperty("databaseDialect", MySQLDialect.class.getName());
 			System.setProperty("database", "mysql");
     		
+    		createSchema();
+        }
+    }
+
+    /**
+     * MariaDB is the database the reference application actually ships, and unlike the mysql:5.7
+     * image used above it publishes arm64 manifests, so this is the only MySQL-dialect option that
+     * runs on Apple Silicon. The container hands out a jdbc:mariadb: URL, which only the MariaDB
+     * driver accepts, so the two are set as a pair - the same pairing startup-init.sh configures
+     * for OMRS_DB=mariadb. The Hibernate dialect and the "database" property stay on mysql because
+     * the schema and the MySQL-flavoured DDL in tests such as DatabaseIT apply unchanged here.
+     */
+    private static void ensureMariaDBRunning() {
+        if (mariadb == null) {
+        	mariadb = newMariaDBContainer();
+        }
+
+        if (!mariadb.isRunning()) {
+            mariadb.start();
+
+            System.setProperty("databaseUrl", mariadb.getJdbcUrl());
+    		System.setProperty("databaseName", DATABASE);
+    		System.setProperty("databaseUsername", USERNAME);
+    		System.setProperty("databasePassword", PASSWORD);
+    		System.setProperty("databaseDriver", mariadb.getDriverClassName());
+    		System.setProperty("databaseDialect", MySQLDialect.class.getName());
+			System.setProperty("database", "mysql");
+
     		createSchema();
         }
     }
