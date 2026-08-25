@@ -48,6 +48,8 @@
 		     with our version of Spring. -->
 		<springVersion>7.0.8</springVersion>
 		<springTestVersion>7.0.8</springTestVersion>
+		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
+		<springSecurityVersion>7.0.7</springSecurityVersion>
 		<hibernateVersion>7.4.5.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
@@ -266,6 +268,15 @@
 						<artifactId>commons-logging</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+
+			<!-- Spring Security -->
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-bom</artifactId>
+				<version>${springSecurityVersion}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 
 			<!-- Hibernate / ORM -->
