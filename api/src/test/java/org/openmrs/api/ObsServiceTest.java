@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.imageio.ImageIO;
@@ -54,6 +55,8 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.obs.handler.BinaryDataHandler;
 import org.openmrs.obs.handler.ImageHandler;
 import org.openmrs.obs.handler.TextHandler;
+import org.openmrs.parameter.ObsSearchCriteria;
+import org.openmrs.parameter.ObsSearchCriteriaBuilder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -1015,6 +1018,565 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		assertEquals(1, count.size());
 
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldReturnRequestedPageOfResults() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		List<Obs> page1 = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 0, 2);
+		assertEquals(2, page1.size());
+		assertEquals(Integer.valueOf(1), page1.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), page1.get(1).getObsId());
+
+		List<Obs> page2 = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 2, 2);
+		assertEquals(2, page2.size());
+		assertEquals(Integer.valueOf(11), page2.get(0).getObsId());
+		assertEquals(Integer.valueOf(17), page2.get(1).getObsId());
+
+		List<Obs> page3 = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 4, 2);
+		assertEquals(1, page3.size());
+		assertEquals(Integer.valueOf(18), page3.get(0).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldReturnEmptyListWhenStartIndexBeyondResults() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		List<Obs> result = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 10, 5);
+		assertTrue(result.isEmpty());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldIgnorePagingWhenMostRecentNIsSet() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		// paging would have skipped the first two rows and returned a single one
+		List<Obs> result = obsService.getObservations(whom, null, null, null, null, null, sort, null, 2, null, null, null,
+		    false, null, 2, 1);
+		assertEquals(2, result.size());
+		assertEquals(Integer.valueOf(1), result.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), result.get(1).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldReturnAllResultsWhenPagingParamsAreNull() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		List<Obs> result = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, null, null);
+		assertEquals(5, result.size());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldReturnRequestedPageOfResultsUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(0)
+		        .setMaxResults(2).createObsSearchCriteria();
+		List<Obs> page1 = obsService.getObservations(criteria);
+		assertEquals(2, page1.size());
+		assertEquals(Integer.valueOf(1), page1.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), page1.get(1).getObsId());
+
+		criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(2).setMaxResults(2)
+		        .createObsSearchCriteria();
+		List<Obs> page2 = obsService.getObservations(criteria);
+		assertEquals(2, page2.size());
+		assertEquals(Integer.valueOf(11), page2.get(0).getObsId());
+		assertEquals(Integer.valueOf(17), page2.get(1).getObsId());
+
+		criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(4).setMaxResults(2)
+		        .createObsSearchCriteria();
+		List<Obs> page3 = obsService.getObservations(criteria);
+		assertEquals(1, page3.size());
+		assertEquals(Integer.valueOf(18), page3.get(0).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldReturnEmptyListWhenStartIndexBeyondResultsUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(10)
+		        .setMaxResults(5).createObsSearchCriteria();
+
+		List<Obs> result = obsService.getObservations(criteria);
+		assertTrue(result.isEmpty());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldIgnorePagingWhenMostRecentNIsSetUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		// paging would have skipped the first two rows and returned a single one
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setMostRecentN(2)
+		        .setStartIndex(2).setMaxResults(1).createObsSearchCriteria();
+
+		List<Obs> result = obsService.getObservations(criteria);
+		assertEquals(2, result.size());
+		assertEquals(Integer.valueOf(1), result.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), result.get(1).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldReturnAllResultsWhenPagingParamsAreNullUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).createObsSearchCriteria();
+
+		List<Obs> result = obsService.getObservations(criteria);
+		assertEquals(5, result.size());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldSortByObsDatetimeWhenSortIsEmptyUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(Collections.singletonList(new Person(8)))
+		        .createObsSearchCriteria();
+
+		List<Obs> obss = obsService.getObservations(criteria);
+
+		assertEquals(8, obss.get(0).getObsId().intValue());
+		assertEquals(7, obss.get(1).getObsId().intValue());
+	}
+
+	/**
+	 * These tests exist to ensure we're pushing the paging parameters down to the Hibernate level (and
+	 * ultimately, the DB level).
+	 *
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldHydrateOnlyTheRequestedPage() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		// the full result set is larger than the page requested below
+		assertEquals(5,
+		    obsService.getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).createObsSearchCriteria()).size());
+
+		// otherwise the paged query below would be served from the persistence context
+		Context.clearSession();
+
+		Statistics statistics = getHibernateStatistics();
+		statistics.clear();
+
+		List<Obs> page = obsService.getObservations(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setStartIndex(0).setMaxResults(2).createObsSearchCriteria());
+
+		assertEquals(2, page.size());
+		assertEquals(2, statistics.getEntityStatistics(Obs.class.getName()).getLoadCount(),
+		    "a paged query should hydrate only the rows on the requested page");
+	}
+
+	/**
+	 * For paging, we use the obs_id to provide "total-ordering" of the results ensuring pages are
+	 * consistent across requests in the absence of data changes. These test verify that it is applied.
+	 *
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldOrderByObsIdOnlyForPagedQueries() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		String pagedOrderBy = getOrderByClauseOf(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setMaxResults(2).createObsSearchCriteria());
+		assertTrue(pagedOrderBy.contains("obs_id"),
+		    "a paged query should break ties on the obs id, but sorted by " + pagedOrderBy);
+
+		String unpagedOrderBy = getOrderByClauseOf(new ObsSearchCriteriaBuilder().setWhom(whom).createObsSearchCriteria());
+		assertFalse(unpagedOrderBy.contains("obs_id"),
+		    "an unpaged query should sort exactly as it did before, but sorted by " + unpagedOrderBy);
+
+		String mostRecentNOrderBy = getOrderByClauseOf(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setMostRecentN(2).setMaxResults(2).createObsSearchCriteria());
+		assertFalse(mostRecentNOrderBy.contains("obs_id"),
+		    "mostRecentN wins over paging, so that query is not paged, but it sorted by " + mostRecentNOrderBy);
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldSortTiesInTheDirectionOfTheRequestedSort() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		String ascendingOrderBy = getOrderByClauseOf(new ObsSearchCriteriaBuilder().setWhom(whom)
+		        .setSort(Collections.singletonList("obsDatetime asc")).setMaxResults(2).createObsSearchCriteria());
+
+		// ascending is SQL's default, so it is rendered by the absence of "desc" rather than by "asc"
+		assertTrue(ascendingOrderBy.contains("obs_id"),
+		    "a paged query should break ties on the obs id, but sorted by " + ascendingOrderBy);
+		assertFalse(ascendingOrderBy.contains("desc"),
+		    "the tiebreaker should follow the direction of the requested sort, but sorted by " + ascendingOrderBy);
+
+		String descendingOrderBy = getOrderByClauseOf(new ObsSearchCriteriaBuilder().setWhom(whom)
+		        .setSort(Collections.singletonList("obsDatetime")).setMaxResults(2).createObsSearchCriteria());
+
+		assertTrue(descendingOrderBy.contains("obs_id desc"),
+		    "the tiebreaker should follow the direction of the requested sort, but sorted by " + descendingOrderBy);
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldNotRepeatAnObsIdSortTheCallerAlreadyAskedFor() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		String orderBy = getOrderByClauseOf(new ObsSearchCriteriaBuilder().setWhom(whom)
+		        .setSort(Collections.singletonList("obsId asc")).setMaxResults(2).createObsSearchCriteria());
+
+		// the caller's own sort already gives a total order, so no tiebreaker is needed on top of it
+		assertEquals(orderBy.indexOf("obs_id"), orderBy.lastIndexOf("obs_id"),
+		    "the obs id should be sorted on once, but sorted by " + orderBy);
+		assertFalse(orderBy.contains("desc"), "the caller asked to sort ascending, but sorted by " + orderBy);
+	}
+
+	/**
+	 * The first page of a walk needs the same total ordering as the pages that follow it, otherwise a
+	 * row can be served twice or skipped as the client moves on to page two.
+	 *
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldOrderTheFirstPageOfAWalkTheSameWayAsTheRest() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		String firstPageOrderBy = getOrderByClauseOf(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setStartIndex(0).createObsSearchCriteria());
+
+		assertTrue(firstPageOrderBy.contains("obs_id"),
+		    "a start index of 0 is still the first page of a walk, but sorted by " + firstPageOrderBy);
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldFailIfTheSearchCriteriaAreNull() {
+		assertThrows(IllegalArgumentException.class, () -> obsService.getObservations((ObsSearchCriteria) null));
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldCountTheObsMatchingTheCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(Collections.singletonList(new Person(2)))
+		        .createObsSearchCriteria();
+
+		assertEquals(Integer.valueOf(5), obsService.getObservationCount(criteria));
+	}
+
+	/**
+	 * The point of counting by criteria is that a client can hand the very same criteria object to both
+	 * calls and get a total that describes the result set it is paging through, so the row bounds and
+	 * the sort must not narrow the count.
+	 *
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldIgnoreTheSortAndRowBoundsInTheCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		ObsSearchCriteria pagedCriteria = new ObsSearchCriteriaBuilder().setWhom(whom)
+		        .setSort(Collections.singletonList("obsId asc")).setStartIndex(2).setMaxResults(2).createObsSearchCriteria();
+
+		assertEquals(2, obsService.getObservations(pagedCriteria).size());
+		assertEquals(Integer.valueOf(5), obsService.getObservationCount(pagedCriteria),
+		    "the count should describe the whole result set being paged through, not the page");
+
+		ObsSearchCriteria mostRecentNCriteria = new ObsSearchCriteriaBuilder().setWhom(whom).setMostRecentN(2)
+		        .createObsSearchCriteria();
+
+		assertEquals(Integer.valueOf(5), obsService.getObservationCount(mostRecentNCriteria),
+		    "mostRecentN bounds the rows returned, not the rows that match");
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldCountVoidedObsOnlyWhenAskedTo() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		// person 9 has obs 9 and the voided obs 10
+		List<Person> whom = Collections.singletonList(new Person(9));
+
+		assertEquals(Integer.valueOf(1),
+		    obsService.getObservationCount(new ObsSearchCriteriaBuilder().setWhom(whom).createObsSearchCriteria()));
+
+		assertEquals(Integer.valueOf(2), obsService.getObservationCount(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setIncludeVoidedObs(true).createObsSearchCriteria()));
+	}
+
+	/**
+	 * The count is assembled from the criteria in a different place to the query it is meant to
+	 * describe, so this pins the invariant that ties the two together: however the criteria filter,
+	 * counting them has to give the size of the unbounded result those same criteria fetch.
+	 *
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldCountTheSameRowsTheQueryReturns() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		assertCountAgreesWithQuery(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setQuestions(Collections.singletonList(new Concept(1)))
+		            .setLocations(Collections.singletonList(new Location(1))),
+		    3);
+
+		assertCountAgreesWithQuery(new ObsSearchCriteriaBuilder().setWhom(whom).setObsGroupId(2), 1);
+
+		assertCountAgreesWithQuery(new ObsSearchCriteriaBuilder().setWhom(whom).setAccessionNumber("AN1"), 1);
+
+		assertCountAgreesWithQuery(new ObsSearchCriteriaBuilder().setVisits(Collections.singletonList(new Visit(8))), 2);
+	}
+
+	/**
+	 * Asserts that counting the given criteria agrees with fetching them, and that both agree with the
+	 * number of rows the caller expects, the latter so that an over-restrictive filter cannot make the
+	 * agreement vacuously true of an empty result.
+	 */
+	private void assertCountAgreesWithQuery(ObsSearchCriteriaBuilder criteria, int expected) {
+		List<Obs> matching = obsService.getObservations(criteria.createObsSearchCriteria());
+
+		assertEquals(expected, matching.size(), "the criteria should match the rows the test expects");
+		assertEquals(Integer.valueOf(expected), obsService.getObservationCount(criteria.createObsSearchCriteria()),
+		    "counting the criteria should agree with fetching them");
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldAgreeWithTheEquivalentPositionalCall() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		Integer expected = obsService.getObservationCount(whom, null, null, null, null, null, null, null, null, null, false,
+		    null);
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).createObsSearchCriteria();
+
+		assertEquals(expected, obsService.getObservationCount(criteria));
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldFailIfTheSearchCriteriaAreNull() {
+		assertThrows(IllegalArgumentException.class, () -> obsService.getObservationCount((ObsSearchCriteria) null));
+	}
+
+	/**
+	 * Runs the query the given criteria describe and returns the ORDER BY clause of the SQL Hibernate
+	 * generated for it, lowercased.
+	 */
+	private String getOrderByClauseOf(ObsSearchCriteria criteria) {
+		Statistics statistics = getHibernateStatistics();
+		statistics.clear();
+
+		obsService.getObservations(criteria);
+
+		String sql = Arrays.stream(statistics.getQueries()).map(query -> query.toLowerCase(Locale.ROOT))
+		        .filter(query -> query.contains(" from obs ")).findFirst().orElseThrow(() -> new AssertionError(
+		                "no query against the obs table was recorded, only " + Arrays.toString(statistics.getQueries())));
+
+		int orderBy = sql.indexOf("order by");
+		assertTrue(orderBy >= 0, "the observations query should have an ORDER BY clause, but was " + sql);
+
+		return sql.substring(orderBy);
+	}
+
+	/**
+	 * @return the Hibernate statistics, which record the generated SQL and the entities loaded by it
+	 */
+	private Statistics getHibernateStatistics() {
+		Statistics statistics = ((SessionFactory) applicationContext.getBean("sessionFactory")).getStatistics();
+
+		// a test that silently measures nothing is worse than no test, so fail loudly if the platform
+		// ever stops collecting statistics rather than reporting it as a paging regression
+		assertTrue(statistics.isStatisticsEnabled(),
+		    "Hibernate statistics must be enabled for this test to observe the query");
+
+		return statistics;
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldOrderTiedRowsConsistentlyAcrossPages() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		// obs 11 and 18 share an obsDatetime, as do obs 2 and 17, so sorting on obsDatetime alone leaves
+		// the order of those rows, and therefore the page a row lands on, up to the database
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		List<Integer> pagedIds = new ArrayList<>();
+		for (int startIndex = 0; startIndex < 6; startIndex += 2) {
+			ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setStartIndex(startIndex)
+			        .setMaxResults(2).createObsSearchCriteria();
+
+			obsService.getObservations(criteria).forEach(obs -> pagedIds.add(obs.getObsId()));
+		}
+
+		assertEquals(Arrays.asList(18, 11, 17, 2, 1), pagedIds, "walking the pages should return each row exactly once");
+
+		List<Integer> unpagedIds = new ArrayList<>();
+		obsService.getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).createObsSearchCriteria())
+		        .forEach(obs -> unpagedIds.add(obs.getObsId()));
+
+		assertEquals(new HashSet<>(unpagedIds), new HashSet<>(pagedIds), "paging should not lose or duplicate rows");
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldIgnoreOutOfRangePagingParameters() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		// a maxResults of zero is not a usable page size, so every matching row comes back
+		assertEquals(5,
+		    obsService
+		            .getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).setMaxResults(0).createObsSearchCriteria())
+		            .size());
+
+		// and neither is a negative one
+		assertEquals(5, obsService
+		        .getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).setMaxResults(-1).createObsSearchCriteria())
+		        .size());
+
+		// nor can a negative start index be an offset, so the results start from the first row
+		assertEquals(5, obsService
+		        .getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).setStartIndex(-1).createObsSearchCriteria())
+		        .size());
+
+		// the same holds through the positional overload
+		assertEquals(5, obsService
+		        .getObservations(whom, null, null, null, null, null, null, null, null, null, null, null, false, null, -1, 0)
+		        .size());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldOffsetWithoutALimitWhenOnlyStartIndexIsGiven() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = Collections.singletonList("obsId asc");
+
+		List<Obs> result = obsService.getObservations(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(2).createObsSearchCriteria());
+
+		assertEquals(3, result.size(), "the rows before the start index should be skipped and the rest returned");
+		assertEquals(Integer.valueOf(11), result.get(0).getObsId());
+		assertEquals(Integer.valueOf(18), result.get(2).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldNotModifyTheSortListItWasGiven() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		// an empty list is where the default sort gets applied, and callers are free to pass one they
+		// do not expect us to write to
+		List<String> sort = Collections.emptyList();
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(Collections.singletonList(new Person(2)))
+		        .setSort(sort).createObsSearchCriteria();
+
+		assertEquals(5, obsService.getObservations(criteria).size());
+		assertTrue(sort.isEmpty(), "the caller's sort list should be left alone");
 	}
 
 	/**
