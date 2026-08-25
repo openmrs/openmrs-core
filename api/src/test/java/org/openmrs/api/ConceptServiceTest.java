@@ -4002,7 +4002,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		assertFalse(conceptReferenceRanges.isEmpty());
 		
-		assertEquals(3, conceptReferenceRanges.get(0).getId());
+		// Both this test's dataset and standardTestDataset define a reference range for concept 5089,
+		// and the DAO query is unordered, so which row lands at index 0 is engine-dependent. Assert on
+		// membership rather than position.
+		assertTrue(conceptReferenceRanges.stream().anyMatch(range -> range.getId().equals(3)));
 	}
 
 	/**
