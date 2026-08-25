@@ -81,7 +81,7 @@ public class HibernateObsDAO implements ObsDAO {
 			throw new APIException("Obs must not be null");
 		}
 		if (obs.getObsId() == null) {
-			throw new APIException("Obs must be persisted before its version history can be retrieved");
+			throw new APIException("Obs must be committed before its version history can be retrieved");
 		}
 
 		// Use a single recursive CTE to collect all obs_ids in the previousVersion chain,

@@ -50,7 +50,7 @@ public interface ObsService extends OpenmrsService {
 	 *            persisted (i.e. have a database-assigned obsId). The traversal walks backwards from
 	 *            this Obs via the {@code previousVersion} association.
 	 * @return a List of Obs representing the full version history up to and including the supplied obs,
-	 *         or an empty List if no obs with the given obsId exists
+	 *         or an empty List if no obs with the given obsId exists in the database
 	 * @throws APIException if obs is null or is not persisted (has no database-assigned obsId)
 	 * @since 2.9.0, 3.0.0
 	 */
