@@ -33,6 +33,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -106,8 +108,9 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	public void before_shouldUseCachedMetadataOnRepeatedCalls() throws Throwable {
 		Method getConceptMethod = ConceptService.class.getMethod("getConcept", Integer.class);
 		AuthorizationAdvice advice = new AuthorizationAdvice();
-		assertDoesNotThrow(() -> advice.before(getConceptMethod, new Object[] { 3 }, null));
-		assertDoesNotThrow(() -> advice.before(getConceptMethod, new Object[] { 3 }, null));
+		Object first = advice.getMetadata(getConceptMethod);
+		Object second = advice.getMetadata(getConceptMethod);
+		assertSame(first, second, "Cache should return the same instance for the same method");
 	}
 
 	@Test
@@ -137,8 +140,9 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 
 		Method getConceptMethod = ConceptService.class.getMethod("getConcept", Integer.class);
 		Method saveConceptMethod = ConceptService.class.getMethod("saveConcept", Concept.class);
-		assertDoesNotThrow(() -> advice.before(getConceptMethod, new Object[] { 3 }, null));
-		assertDoesNotThrow(() -> advice.before(saveConceptMethod, new Object[] { new Concept() }, null));
+		Object getConceptMetadata = advice.getMetadata(getConceptMethod);
+		Object saveConceptMetadata = advice.getMetadata(saveConceptMethod);
+		assertNotSame(getConceptMetadata, saveConceptMetadata, "Different methods should have different cached metadata");
 	}
 
 }

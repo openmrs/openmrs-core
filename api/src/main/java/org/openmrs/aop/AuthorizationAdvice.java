@@ -52,28 +52,21 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private static final Map<Method, AuthorizedMetadata> metadataCache = new ConcurrentHashMap<>();
 
 	/**
+	 * Shared singleton for methods without the {@link Authorized} annotation.
+	 */
+	private static final AuthorizedMetadata UNPROTECTED = new AuthorizedMetadata(Collections.emptySet(), false, false);
+
+	/**
 	 * Holds the resolved {@link Authorized} annotation metadata for a single method.
 	 */
-	private static final class AuthorizedMetadata {
-
-		final Collection<String> privileges;
-
-		final boolean requireAll;
-
-		final boolean hasAnnotation;
-
-		AuthorizedMetadata(Collection<String> privileges, boolean requireAll, boolean hasAnnotation) {
-			this.privileges = privileges;
-			this.requireAll = requireAll;
-			this.hasAnnotation = hasAnnotation;
-		}
+	private record AuthorizedMetadata(Collection<String> privileges, boolean requireAll, boolean hasAnnotation) {
 	}
 
 	/**
-	 * Resolves and caches the {@link Authorized} annotation metadata for the given method. Annotation
-	 * reflection happens at most once per method.
+	 * Returns cached {@link Authorized} annotation metadata for the given method. Annotation reflection
+	 * happens at most once per method.
 	 */
-	private AuthorizedMetadata resolveMetadata(Method method) {
+	AuthorizedMetadata getMetadata(Method method) {
 		return metadataCache.computeIfAbsent(method, m -> {
 			Authorized authorized = AnnotationUtils.findAnnotation(m, Authorized.class);
 			if (authorized != null) {
@@ -81,7 +74,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 				Collections.addAll(privileges, authorized.value());
 				return new AuthorizedMetadata(Collections.unmodifiableSet(privileges), authorized.requireAll(), true);
 			}
-			return new AuthorizedMetadata(Collections.emptySet(), false, false);
+			return UNPROTECTED;
 		});
 	}
 
@@ -99,6 +92,17 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	public void before(Method method, Object[] args, Object target) throws Throwable {
 		log.debug("Calling authorization advice before {}", method.getName());
 
+		if (Daemon.isDaemonThread()) {
+			return;
+		}
+
+		AuthorizedMetadata metadata = getMetadata(method);
+
+		// Fast exit: no authorization required for this method
+		if (!metadata.hasAnnotation()) {
+			return;
+		}
+
 		if (log.isDebugEnabled()) {
 			User user = Context.getAuthenticatedUser();
 			log.debug("User {}", user);
@@ -107,13 +111,8 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 			}
 		}
 
-		if (Daemon.isDaemonThread()) {
-			return;
-		}
-
-		AuthorizedMetadata metadata = resolveMetadata(method);
-		Collection<String> privileges = metadata.privileges;
-		boolean requireAll = metadata.requireAll;
+		Collection<String> privileges = metadata.privileges();
+		boolean requireAll = metadata.requireAll();
 
 		// Only execute if the "secure" method has authorization attributes
 		// Iterate through required privileges and return only if the user has
@@ -154,7 +153,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 				throwUnauthorized(Context.getAuthenticatedUser(), method, privileges);
 			}
 
-		} else if (metadata.hasAnnotation && !(Context.isAuthenticated() || Context.hasProxyPrivileges())) {
+		} else if (!(Context.isAuthenticated() || Context.hasProxyPrivileges())) {
 			throwUnauthorized(Context.getAuthenticatedUser(), method);
 		}
 	}
