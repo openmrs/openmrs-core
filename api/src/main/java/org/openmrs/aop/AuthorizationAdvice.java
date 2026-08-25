@@ -11,11 +11,16 @@ package org.openmrs.aop;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.User;
-import org.openmrs.annotation.AuthorizedAnnotationAttributes;
+import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
@@ -23,6 +28,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.MethodBeforeAdvice;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -38,6 +44,46 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private static final Logger log = LoggerFactory.getLogger(AuthorizationAdvice.class);
 
 	private static final String USER_IS_NOT_AUTHORIZED_TO_ACCESS = "User {} is not authorized to access {}";
+
+	/**
+	 * Memoized authorization metadata per {@link Method}. Annotation reflection is performed once per
+	 * method and reused for every subsequent call.
+	 */
+	private static final Map<Method, AuthorizedMetadata> metadataCache = new ConcurrentHashMap<>();
+
+	/**
+	 * Holds the resolved {@link Authorized} annotation metadata for a single method.
+	 */
+	private static final class AuthorizedMetadata {
+
+		final Collection<String> privileges;
+
+		final boolean requireAll;
+
+		final boolean hasAnnotation;
+
+		AuthorizedMetadata(Collection<String> privileges, boolean requireAll, boolean hasAnnotation) {
+			this.privileges = privileges;
+			this.requireAll = requireAll;
+			this.hasAnnotation = hasAnnotation;
+		}
+	}
+
+	/**
+	 * Resolves and caches the {@link Authorized} annotation metadata for the given method. Annotation
+	 * reflection happens at most once per method.
+	 */
+	private AuthorizedMetadata resolveMetadata(Method method) {
+		return metadataCache.computeIfAbsent(method, m -> {
+			Authorized authorized = AnnotationUtils.findAnnotation(m, Authorized.class);
+			if (authorized != null) {
+				Set<String> privileges = new LinkedHashSet<>();
+				Collections.addAll(privileges, authorized.value());
+				return new AuthorizedMetadata(Collections.unmodifiableSet(privileges), authorized.requireAll(), true);
+			}
+			return new AuthorizedMetadata(Collections.emptySet(), false, false);
+		});
+	}
 
 	/**
 	 * Allows us to check whether a user is authorized to access a particular method.
@@ -65,9 +111,9 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 			return;
 		}
 
-		AuthorizedAnnotationAttributes attributes = new AuthorizedAnnotationAttributes();
-		Collection<String> privileges = attributes.getAttributes(method);
-		boolean requireAll = attributes.getRequireAll(method);
+		AuthorizedMetadata metadata = resolveMetadata(method);
+		Collection<String> privileges = metadata.privileges;
+		boolean requireAll = metadata.requireAll;
 
 		// Only execute if the "secure" method has authorization attributes
 		// Iterate through required privileges and return only if the user has
@@ -108,8 +154,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 				throwUnauthorized(Context.getAuthenticatedUser(), method, privileges);
 			}
 
-		} else if (attributes.hasAuthorizedAnnotation(method)
-		        && !(Context.isAuthenticated() || Context.hasProxyPrivileges())) {
+		} else if (metadata.hasAnnotation && !(Context.isAuthenticated() || Context.hasProxyPrivileges())) {
 			throwUnauthorized(Context.getAuthenticatedUser(), method);
 		}
 	}

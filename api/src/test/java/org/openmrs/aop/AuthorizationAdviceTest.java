@@ -7,12 +7,10 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.openmrs.aop;
 
+import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -20,9 +18,12 @@ import jakarta.annotation.Resource;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
+import org.openmrs.Patient;
 import org.openmrs.PrivilegeListener;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Component;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -98,6 +100,45 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	public void before_shouldThrowAPIAuthenticationException() {
 		Context.getUserContext().logout();
 		assertThrows(APIAuthenticationException.class, () -> Context.getConceptService().getConcept(3));
+	}
+
+	@Test
+	public void before_shouldUseCachedMetadataOnRepeatedCalls() throws Throwable {
+		Method getConceptMethod = ConceptService.class.getMethod("getConcept", Integer.class);
+		AuthorizationAdvice advice = new AuthorizationAdvice();
+		assertDoesNotThrow(() -> advice.before(getConceptMethod, new Object[] { 3 }, null));
+		assertDoesNotThrow(() -> advice.before(getConceptMethod, new Object[] { 3 }, null));
+	}
+
+	@Test
+	public void before_shouldCorrectlyAuthorizeWithRequireAll() throws Throwable {
+		Method saveCauseOfDeathMethod = PatientService.class.getMethod("saveCauseOfDeathObs", Patient.class, Date.class,
+		    Concept.class, String.class);
+		AuthorizationAdvice advice = new AuthorizationAdvice();
+		assertDoesNotThrow(() -> advice.before(saveCauseOfDeathMethod, new Object[] { null, null, null, null }, null));
+	}
+
+	@Test
+	public void before_shouldRejectUnauthenticatedUserForAnnotatedMethod() {
+		Context.getUserContext().logout();
+		AuthorizationAdvice advice = new AuthorizationAdvice();
+
+		try {
+			Method getConceptMethod = ConceptService.class.getMethod("getConcept", Integer.class);
+			assertThrows(APIAuthenticationException.class, () -> advice.before(getConceptMethod, new Object[] { 3 }, null));
+		} catch (NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Test
+	public void before_shouldCacheMetadataForDifferentMethodsIndependently() throws Throwable {
+		AuthorizationAdvice advice = new AuthorizationAdvice();
+
+		Method getConceptMethod = ConceptService.class.getMethod("getConcept", Integer.class);
+		Method saveConceptMethod = ConceptService.class.getMethod("saveConcept", Concept.class);
+		assertDoesNotThrow(() -> advice.before(getConceptMethod, new Object[] { 3 }, null));
+		assertDoesNotThrow(() -> advice.before(saveConceptMethod, new Object[] { new Concept() }, null));
 	}
 
 }
