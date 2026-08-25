@@ -379,4 +379,8 @@ public class Security {
 		return skey.getEncoded();
 	}
 
+	public static boolean needsUpgrade(String storedEncodedPassword) {
+		return getPasswordEncoder().upgradeEncoding(storedEncodedPassword);
+	}
+
 }

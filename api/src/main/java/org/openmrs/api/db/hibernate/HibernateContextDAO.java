@@ -197,7 +197,7 @@ public class HibernateContextDAO implements ContextDAO {
 				saveUserProperties(candidateUser);
 
 				// Lazy rehash: if password is legacy, upgrade to Argon2id transparently
-				if (passwordOnRecord != null && !passwordOnRecord.startsWith("$argon2id$")) {
+				if (passwordOnRecord != null && Security.needsUpgrade(passwordOnRecord)) {
 					try {
 						self.upgradePasswordHash(candidateUser, password, saltOnRecord);
 					}
