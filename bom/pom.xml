@@ -113,7 +113,7 @@
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
 		<tomcatVersion>11.0.25</tomcatVersion>
-		<guavaVersion>33.7.0-jre</guavaVersion>
+		<guavaVersion>33.7.1-jre</guavaVersion>
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 		<jobrunrVersion>8.8.1</jobrunrVersion>
