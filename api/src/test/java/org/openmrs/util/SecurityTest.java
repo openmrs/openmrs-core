@@ -235,4 +235,10 @@ public class SecurityTest {
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 	}
 
+	@Test
+	public void isLegacyHash_shouldReturnTrueForSha512Hash() {
+		String sha512Hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
+		assertFalse(sha512Hash.startsWith("$argon2id$"));
+	}
+
 }

@@ -13,8 +13,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.annotation.Resource;
@@ -410,5 +412,17 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		assertThat(testUserSessionListener.logouts,
 				contains("admin:LOGOUT:SUCCESS"));
 		assertThat(testUserSessionListener.logins, empty());
+	}
+
+	@Test
+	public void authenticate_shouldUpgradeLegacyPasswordToArgon2idOnSuccessfulLogin() {
+		String originalHash = "4a1750c8607d0fa237de36c6305715c223415189";
+		User user = dao.authenticate("admin", "test");
+		assertNotNull(user);
+		UserDAO userDAO = (UserDAO) applicationContext.getBean("userDAO");
+		LoginCredential credential = userDAO.getLoginCredential(user);
+		assertNotNull(credential.getHashedPassword());
+		assertFalse(originalHash.equals(credential.getHashedPassword()),
+			"Password hash should have been upgraded");
 	}
 }

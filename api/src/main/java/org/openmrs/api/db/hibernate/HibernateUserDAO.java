@@ -111,6 +111,25 @@ public class HibernateUserDAO implements UserDAO {
 		
 		return user;
 	}
+
+	/**
+	 * Updates the password only if the stored hash still matches the expected old hash.
+	 *
+	 * @since 2.8.9
+	 */
+	boolean conditionallyUpdateUserPassword(Integer userId, String oldHashedPassword,
+			String newHashedPassword, Integer changedBy, Date dateChanged) {
+		String sql = "UPDATE users SET password = :newHash, date_changed = :dateChanged, changed_by = :changedBy "
+				+ "WHERE user_id = :userId AND password = :oldHash";
+		int rows = sessionFactory.getCurrentSession().createNativeQuery(sql)
+				.setParameter("newHash", newHashedPassword)
+				.setParameter("dateChanged", dateChanged)
+				.setParameter("changedBy", changedBy)
+				.setParameter("userId", userId)
+				.setParameter("oldHash", oldHashedPassword)
+				.executeUpdate();
+		return rows > 0;
+	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#getUserByUsername(java.lang.String)

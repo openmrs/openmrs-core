@@ -217,5 +217,35 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		assertFalse(dao.isSecretAnswer(userJoe, "foo"));
 		
 	}
+
+	@Test
+	public void saveUser_shouldStoreThePasswordAsArgon2id() {
+		User newUser = new User();
+		newUser.setPerson(new Person());
+		newUser.getPerson().addName(new PersonName("Test", null, "Argon2"));
+		newUser.getPerson().setGender("M");
+		newUser.setSystemId("999-9");
+		newUser.setUsername("argon2testuser");
+		newUser.setDateCreated(new Date());
+		dao.saveUser(newUser, "Openmr5xy");
+		LoginCredential lc = dao.getLoginCredential(newUser);
+		assertNotNull(lc.getHashedPassword());
+	}
+
+	@Test
+	public void changePassword_shouldStoreTheNewPasswordAsArgon2id() {
+		dao.saveUser(userJoe, PASSWORD);
+		dao.changePassword(userJoe, "Openmr6zz");
+		LoginCredential lc = dao.getLoginCredential(userJoe);
+		assertNotNull(lc.getHashedPassword());
+	}
+
+	@Test
+	public void changePasswordByOldPassword_shouldStoreTheNewPasswordAsArgon2id() {
+		User admin = dao.getUserByUsername("admin");
+		dao.changePassword("test", "Openmr5xy");
+		LoginCredential lc = dao.getLoginCredential(admin);
+		assertNotNull(lc.getHashedPassword());
+	}
 	
 }

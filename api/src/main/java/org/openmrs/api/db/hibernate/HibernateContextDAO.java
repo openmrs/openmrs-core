@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
@@ -40,6 +41,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.ContextDAO;
+import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.openmrs.util.OpenmrsConstants;
@@ -51,8 +53,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
@@ -82,6 +86,10 @@ public class HibernateContextDAO implements ContextDAO {
 	private SearchSessionFactory searchSessionFactory;
 	
 	private UserDAO userDao;
+
+	@Autowired
+	@Lazy
+	private HibernateContextDAO self;
 	
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
@@ -187,6 +195,18 @@ public class HibernateContextDAO implements ContextDAO {
 				}
 				setLastLoginTime(candidateUser);
 				saveUserProperties(candidateUser);
+
+				// Lazy rehash: if password is legacy, upgrade to Argon2id transparently
+				if (passwordOnRecord != null && !passwordOnRecord.startsWith("$argon2id$")) {
+					try {
+						self.upgradePasswordHash(candidateUser, password, saltOnRecord);
+					}
+					catch (Exception e) {
+						log.error("Failed to upgrade password hash for user {}: {}",
+							candidateUser.getUsername(), e);
+						// login still succeeds — upgrade failure is non-fatal
+					}
+				}
 
 				// skip out of the method early (instead of throwing the exception)
 				// to indicate that this is the valid user
@@ -327,6 +347,39 @@ public class HibernateContextDAO implements ContextDAO {
 			// skip over errors and leave the attempts at zero
 		}
 		return attempts;
+	}
+
+	/**
+	 * Upgrades a user's stored password hash to the configured encoder in a separate transaction.
+	 *
+	 * @param user the authenticated user whose password needs upgrading
+	 * @param rawPassword the plaintext password
+	 * @param salt the legacy salt from the database
+	 * @since 2.8.9
+	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void upgradePasswordHash(User user, String rawPassword, String salt) {
+		LoginCredential credential = userDao.getLoginCredential(user);
+		if (credential.getHashedPassword() == null || !credential.getHashedPassword().startsWith("$argon2id$")) {
+			if (!Security.checkPassword(credential.getHashedPassword(), rawPassword + (salt != null ? salt : ""))) {
+				log.warn("Refusing to upgrade password hash for user {}: password does not match",
+					user.getUsername());
+				return;
+			}
+			String newHash = Security.encodePassword(rawPassword + (salt != null ? salt : ""));
+			boolean upgraded = ((HibernateUserDAO) userDao).conditionallyUpdateUserPassword(
+				user.getUserId(),
+				credential.getHashedPassword(),
+				newHash,
+				user.getUserId(),
+				new Date()
+			);
+			if (upgraded) {
+				log.info("Successfully upgraded password hash for user: {}", user.getUsername());
+			} else {
+				log.debug("Password upgrade skipped for user {} — already changed", user.getUsername());
+			}
+		}
 	}
 	
 	/**
