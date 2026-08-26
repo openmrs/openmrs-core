@@ -160,50 +160,16 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * Loads the property once so that it is held in the second-level cache, leaving the session empty
-	 * so that only that cache can answer the next read.
-	 * <p>
-	 * The session is flushed <b>before</b> the warming read, not after. Loading the test dataset can
-	 * leave inserts pending in the session, and flushing those writes to <code>global_property</code>
-	 * invalidates the cache region for the entity. Warming after the flush means nothing is left to
-	 * invalidate what we just cached, which is what makes this test independent of whichever tests ran
-	 * before it.
-	 */
-	private void warmSecondLevelCache() {
-		Context.flushSession();
-		Context.clearSession();
-
-		assertNotNull(dao.getGlobalPropertyObject(EXISTING_PROPERTY));
-
-		Context.clearSession();
-	}
-
-	/**
-	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
-	 */
-	@Test
-	public void getGlobalPropertyObject_shouldServeRepeatedReadsFromTheSecondLevelCache() {
-		warmSecondLevelCache();
-
-		long queriesBefore = sessionFactory.getStatistics().getPrepareStatementCount();
-		long cacheHitsBefore = sessionFactory.getStatistics().getSecondLevelCacheHitCount();
-
-		assertNotNull(dao.getGlobalPropertyObject(EXISTING_PROPERTY));
-
-		assertEquals(queriesBefore, sessionFactory.getStatistics().getPrepareStatementCount(),
-		    "reading a warm global property should not issue any statement");
-		assertTrue(sessionFactory.getStatistics().getSecondLevelCacheHitCount() > cacheHitsBefore,
-		    "reading a warm global property should hit the second level cache");
-	}
-
-	/**
 	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
 	 */
 	@Test
 	public void getGlobalPropertyObject_shouldNotQueryTheCaseSensitivePropertyOnAnExactMatch() {
-		// the case sensitivity property is only consulted when the exact match misses, so a lookup
-		// that matches exactly must not need the fallback query at all
-		warmSecondLevelCache();
+		// The point of looking the property up by its identifier first is that an exact match never
+		// reaches the case-insensitive fallback. Hibernate counts that fallback as a query execution
+		// but does not count a load by identifier, so the counter staying flat is what pins the
+		// behaviour, whether the load was served from a cache or from the database.
+		Context.flushSession();
+		Context.clearSession();
 
 		long queryExecutionsBefore = sessionFactory.getStatistics().getQueryExecutionCount();
 

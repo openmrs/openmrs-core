@@ -204,7 +204,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 
 		String viewPrivilege = cached.getViewPrivilege();
-		if (viewPrivilege != null && !Context.getAuthenticatedUser().hasPrivilege(viewPrivilege)) {
+		// Context.hasPrivilege(name, false) rather than a plain privilege check, to match
+		// canViewGlobalProperty: a proxy privilege must not satisfy the view check.
+		if (viewPrivilege != null && !Context.hasPrivilege(viewPrivilege, false)) {
 			throw new APIException("GlobalProperty.error.privilege.required.view",
 			        new Object[] { viewPrivilege, propertyName });
 		}
