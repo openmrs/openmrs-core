@@ -206,7 +206,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	private static volatile boolean initializationComplete = false;
 
-	protected void setInitializationComplete(boolean complete) {
+	protected static void setInitializationComplete(boolean complete) {
 		initializationComplete = complete;
 	}
 
