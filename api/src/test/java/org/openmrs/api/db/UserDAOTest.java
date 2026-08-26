@@ -80,7 +80,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		u.setPerson(new Person());
 		u.getPerson().setGender("M");
 
-		String wildcards[] = new String[] { "_" };
+		String[] wildcards = new String[] { "_" };
 		for (String wildcard : wildcards) {
 
 			PersonName name = new PersonName(wildcard + "cats", wildcard + "and", wildcard + "dogs");
