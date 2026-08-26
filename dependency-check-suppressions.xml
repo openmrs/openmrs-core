@@ -71,16 +71,4 @@
 	   <cve>CVE-2026-54399</cve>
 	   <cve>CVE-2026-54428</cve>
 	</suppress>
-	<suppress>
-	   <notes><![CDATA[
-	   False positive. CVE-2026-0994 is a denial-of-service in Python's
-	   google.protobuf.json_format.ParseDict() (recursion depth bypass in
-	   nested Any messages). The Java artifact com.google.protobuf:protobuf-java
-	   is not affected. Dependency-Check matches it via the shared
-	   protobuf:protobuf CPE. Suppressed at the openmrs.war CPE level because
-	   Dependency-Check resolves the match through the WAR, not the JAR directly.
-	   ]]></notes>
-	   <cpe>cpe:2.3:a:openmrs:openmrs</cpe>
-	   <cve>CVE-2026-0994</cve>
-	</suppress>
 </suppressions>
