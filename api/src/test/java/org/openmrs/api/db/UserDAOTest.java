@@ -19,7 +19,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -44,14 +43,8 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 
 	private UserDAO dao = null;
 
-	/**
-	 * Run this before each unit test in this class. The "@Before" method in
-	 * {@link BaseContextSensitiveTest} is run right before this method.
-	 *
-	 * @throws Exception
-	 */
 	@BeforeEach
-	public void runBeforeEachTest() {
+	public void runBeforeEachTest() throws Exception {
 		PersonName name = new PersonName("Joe", "J", "Doe");
 		name.setDateCreated(new Date());
 		Person person = new Person();
@@ -66,43 +59,47 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		userJoe.setDateCreated(new Date());
 
 		if (dao == null) {
-			// fetch the dao from the spring application context
-			// this bean name matches the name in /metadata/spring/applicationContext-service.xml
 			dao = (UserDAO) applicationContext.getBean("userDAO");
 		}
 
-		Context.getUserService().createUser(userJoe, PASSWORD);
-		Context.flushSession(); //needed by postgres
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.saveUser(userJoe, PASSWORD);
+		}
+		Context.flushSession();
 	}
 
 	@Test
+<<<<<<< HEAD
 	public void openmrsPasswordEncoder_shouldBeRegisteredInSpringContext() {
 		assertNotNull(Context.getRegisteredComponent("openmrsPasswordEncoder", PasswordEncoder.class));
 	}
 
 	@Test
 	public void getUsers_shouldEscapeSqlWildcardsInSearchPhrase() {
+=======
+	public void getUsers_shouldEscapeSqlWildcardsInSearchPhrase() throws Exception {
+>>>>>>> 135b0138f (TRUNK-6721: Rewrite UserDAOTest to call DAO methods directly)
 
 		User u = new User();
 		u.setPerson(new Person());
 		u.getPerson().setGender("M");
 
-		String wildcards[] = new String[] { "_" }; // we used to also test %, but UserValidator actually doesn't allow that in usernames. TODO: remove the loop
-		//for each of the wildcards in the array, insert a user with a username or names
-		//with the wildcards and carry out a search for that user
+		String wildcards[] = new String[] { "_" };
 		for (String wildcard : wildcards) {
 
 			PersonName name = new PersonName(wildcard + "cats", wildcard + "and", wildcard + "dogs");
 			name.setDateCreated(new Date());
 			u.addName(name);
 			u.setUsername(wildcard + "test" + wildcard);
-			Context.getUserService().createUser(u, "Openmr5xy");
+			u.setSystemId("wildcard-" + wildcard);
 
-			//we expect only one matching name or or systemId  to be returned
+			try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+				dao.saveUser(u, "Openmr5xy");
+			}
+
 			int size = dao.getUsers(wildcard + "ca", null, false, null, null).size();
 			assertEquals(1, size);
 
-			//if actually the search returned the matching name or system id
 			String userName = (dao.getUsers(wildcard + "ca", null, false, null, null).get(0).getUsername());
 			assertEquals(wildcard + "test" + wildcard, userName,
 			    "Test failed since no user containing the character " + wildcard + " was found, ");
@@ -112,35 +109,41 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void saveUser_shouldCreateNewUser() {
-		Context.getUserService().saveUser(userJoe);
+		dao.saveUser(userJoe, null);
 		User u2 = dao.getUser(userJoe.getId());
 		assertNotNull(u2, "User should have been returned");
 	}
 
 	@Test
-	public void updateUserPassword_shouldNotOverwriteUserSecretQuestionOrAnswer() {
-		Context.getUserService().changePassword(userJoe, PASSWORD);
-		Context.getUserService().changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+	public void updateUserPassword_shouldNotOverwriteUserSecretQuestionOrAnswer() throws Exception {
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changePassword(userJoe, PASSWORD);
+			dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+		}
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
-		Context.getUserService().changePassword(userJoe, "Openmr6zz");
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changePassword(userJoe, "Openmr6zz");
+		}
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should not have changed");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
 	}
 
 	@Test
-	public void saveUser_shouldNotOverwriteUserSecretQuestionOrAnswer() {
-		Context.getUserService().saveUser(userJoe);
-		Context.getUserService().changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+	public void saveUser_shouldNotOverwriteUserSecretQuestionOrAnswer() throws Exception {
+		dao.saveUser(userJoe, null);
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+		}
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		userJoe.setUserProperty("foo", "bar");
-		Context.getUserService().saveUser(userJoe);
+		dao.saveUser(userJoe, null);
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should not have changed");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
@@ -169,38 +172,45 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void changePassword_shouldNotOverwriteUserSecretQuestionOrAnswer() {
-		Context.getUserService().changePassword(userJoe, PASSWORD);
-		Context.getUserService().changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+	public void changePassword_shouldNotOverwriteUserSecretQuestionOrAnswer() throws Exception {
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changePassword(userJoe, PASSWORD);
+			dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+		}
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
-		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		Context.getUserService().changePassword(PASSWORD, PASSWORD + "foo");
-		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changePassword(userJoe, PASSWORD + "foo");
+		}
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should not have changed");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
 	}
 
 	@Test
-	public void changeHashedPassword_shouldNotOverwriteUserSecretQuestionOrAnswer() {
-		Context.getUserService().changePassword(userJoe, PASSWORD);
-		Context.getUserService().changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+	public void changeHashedPassword_shouldNotOverwriteUserSecretQuestionOrAnswer() throws Exception {
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changePassword(userJoe, PASSWORD);
+			dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+		}
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		userJoe.setUserProperty("foo", "bar");
-		Context.getUserService().changeHashedPassword(userJoe, "VakesJkw1", Security.getRandomToken());
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changeHashedPassword(userJoe, "VakesJkw1", Security.getRandomToken());
+		}
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should not have changed");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
 	}
 
 	@Test
+<<<<<<< HEAD
 	public void changePassword_shouldNotInvalidateSecretAnswer() {
 		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
@@ -213,13 +223,22 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	public void isSecretAnswer_shouldReturnTrueWhenTheAnswerMatches() {
 		Context.getUserService().saveUser(userJoe);
 		Context.getUserService().changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+=======
+	public void isSecretAnswer_shouldReturnTrueWhenTheAnswerMatches() throws Exception {
+		dao.saveUser(userJoe, null);
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+		}
+>>>>>>> 135b0138f (TRUNK-6721: Rewrite UserDAOTest to call DAO methods directly)
 		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
 	}
 
 	@Test
-	public void isSecretAnswer_shouldReturnFalseWhenTheAnswerDoesNotMatch() {
-		Context.getUserService().saveUser(userJoe);
-		Context.getUserService().changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+	public void isSecretAnswer_shouldReturnFalseWhenTheAnswerDoesNotMatch() throws Exception {
+		dao.saveUser(userJoe, null);
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+		}
 		assertFalse(dao.isSecretAnswer(userJoe, "foo"));
 
 	}
@@ -249,7 +268,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void changeQuestionAnswerString_shouldNotAllowChangingQuestionAnswerFromUnknownCaller() {
+	public void changeQuestionAnswerString_shouldNotAllowChangingQuestionAnswerFromUnknownCaller() throws Exception {
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
 		Exception caughtException = assertThrows(DAOException.class,
 		    () -> dao.changeQuestionAnswer(PASSWORD, "question", "answer"));
@@ -268,7 +287,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void userPasswordGuard_shouldAllowReEntrantCalls() {
+	public void userPasswordGuard_shouldAllowReEntrantCalls() throws Exception {
 		User newUser = new User();
 		newUser.setPerson(new Person());
 		newUser.getPerson().setGender("M");
@@ -279,17 +298,19 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		newUser.setSystemId("reentrant");
 		newUser.setDateCreated(new Date());
 
-		Context.getUserService().createUser(newUser, PASSWORD);
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.saveUser(newUser, PASSWORD);
+		}
 
 		assertNotNull(dao.getUser(newUser.getUserId()));
 	}
 
 	@Test
-	public void changePasswordString_shouldAllowChangingPasswordWhenPermitIsHeld() {
+	public void changePasswordString_shouldAllowChangingPasswordWhenPermitIsHeld() throws Exception {
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
-		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		Context.getUserService().changePassword(PASSWORD, PASSWORD + "foo");
-		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changePassword(userJoe, PASSWORD + "foo");
+		}
 
 		assertFalse(UserServiceImpl.isPasswordGuardPermitted());
 		assertTrue(dao.getLoginCredential(userJoe).checkPassword(PASSWORD + "foo"));

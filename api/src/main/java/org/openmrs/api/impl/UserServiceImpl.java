@@ -870,6 +870,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	/**
+	 * Acquires a password-guard permit for the current thread. Intended for use in tests that need to
+	 * call password-guarded DAO methods directly.
+	 *
+	 * @return the acquired permit, which must be closed when done
+	 * @since 3.0.0
+	 */
+	public static AutoCloseable acquirePasswordGuardPermit() {
+		return UserPasswordGuard.acquire();
+	}
+
+	/**
 	 * Guards the password- and credential-mutating methods on {@link UserDAO} so they can only be
 	 * invoked by service code that holds a permit for the current thread. The service acquires a permit
 	 * before calling the DAO and releases it when the returned instance is closed, normally via a
