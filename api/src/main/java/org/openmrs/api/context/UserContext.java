@@ -248,7 +248,8 @@ public class UserContext implements Serializable {
 	 * @param privilege to give to users
 	 */
 	public void addProxyPrivilege(String privilege) {
-		addProxyPrivilege(new String[] { privilege });
+		log.debug("Adding proxy privilege: {}", privilege);
+		proxies.add(privilege);
 	}
 
 	/**
@@ -257,7 +258,8 @@ public class UserContext implements Serializable {
 	 * @param privilege Privilege to remove in string form
 	 */
 	public void removeProxyPrivilege(String privilege) {
-		removeProxyPrivilege(new String[] { privilege });
+		log.debug("Removing privilege: {}", privilege);
+		proxies.remove(privilege);
 	}
 
 	/**
@@ -291,8 +293,7 @@ public class UserContext implements Serializable {
 		}
 
 		for (String privilege : privileges) {
-			log.debug("Adding proxy privilege: {}", privilege);
-			proxies.add(privilege);
+			addProxyPrivilege(privilege);
 		}
 	}
 
@@ -314,8 +315,7 @@ public class UserContext implements Serializable {
 
 		for (String privilege : privileges) {
 			if (privilege != null) {
-				log.debug("Removing privilege: {}", privilege);
-				proxies.remove(privilege);
+				removeProxyPrivilege(privilege);
 			}
 		}
 	}
@@ -423,7 +423,7 @@ public class UserContext implements Serializable {
 	public boolean hasPrivilege(String privilege, boolean includeProxyPrivileges) {
 		if (includeProxyPrivileges) {
 			log.debug("Checking '{}' against proxies: {}", privilege, proxies);
-			// check proxied privileges
+			// check proxied privileges; ArrayList so we have a consistent view
 			for (String s : new ArrayList<>(proxies)) {
 				if (s.equals(privilege)) {
 					notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
