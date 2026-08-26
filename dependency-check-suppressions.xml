@@ -71,22 +71,4 @@
 	   <cve>CVE-2026-54399</cve>
 	   <cve>CVE-2026-54428</cve>
 	</suppress>
-	<suppress>
-	   <notes><![CDATA[
-	   mysql-connector-j 9.7.0 has 7 CVEs (CVSS 6.5-8.5) tracked for resolution
-	   via an upgrade to 26.7.0 in a separate PR. Three of the seven
-	   (CVE-2026-60193, CVE-2026-60192, CVE-2026-60317) are Connector/Net rather
-	   than Connector/J false positives, but all match through the shared
-	   oracle:mysql_connectors CPE. This suppression is temporary; it should be
-	   removed when the dependency is upgraded.
-	   ]]></notes>
-	   <packageUrl regex="true">^pkg:maven/com\.mysql/mysql-connector-j@9\.7\.0$</packageUrl>
-	   <cve>CVE-2026-60586</cve>
-	   <cve>CVE-2026-60193</cve>
-	   <cve>CVE-2026-60317</cve>
-	   <cve>CVE-2026-60192</cve>
-	   <cve>CVE-2026-61082</cve>
-	   <cve>CVE-2026-60623</cve>
-	   <cve>CVE-2026-60624</cve>
-	</suppress>
 </suppressions>

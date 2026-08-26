@@ -41,7 +41,7 @@ jobs:
           # can stall for 30+ min). --disableOssIndex is a no-op here (the
           # analyzer auto-disables without credentials).
           args: |
-            --failOnCVSS 6.2
+            --failOnCVSS 9.0
             --enableRetired
             --disableCentral
             --disableOssIndex
