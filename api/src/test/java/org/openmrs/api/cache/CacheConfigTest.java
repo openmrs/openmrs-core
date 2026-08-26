@@ -40,6 +40,7 @@ public class CacheConfigTest extends BaseContextSensitiveTest {
 	public void shouldContainSpecificCacheConfigurations() {
 		String[] expectedCaches = { "conceptDatatype", "subscription", "userSearchLocales", "conceptIdsByMapping",
 		        "testCache", "serializerWhiteListTypes", "globalProperty" };
+		        "testCache", "serializerWhiteListTypes", "rolePrivileges" };
 		Collection<String> actualCaches = cacheManager.getCacheNames();
 		assertThat(actualCaches, containsInAnyOrder(expectedCaches));
 	}

@@ -9,3 +9,5 @@ caches:
         configuration: "entity"
         memory:
             maxCount: 5000
+    rolePrivileges:
+        configuration: "role-privileges"

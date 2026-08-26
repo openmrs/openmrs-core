@@ -217,7 +217,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			return true;
 		}
 
-		return Context.getAuthenticatedUser().hasPrivilege(property.getViewPrivilege().getPrivilege());
+		return Context.hasPrivilege(property.getViewPrivilege().getPrivilege(), false);
 	}
 
 	private boolean canDeleteGlobalProperty(GlobalProperty property) {
@@ -225,7 +225,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			return true;
 		}
 
-		return Context.getAuthenticatedUser().hasPrivilege(property.getDeletePrivilege().getPrivilege());
+		return Context.hasPrivilege(property.getDeletePrivilege().getPrivilege(), false);
 	}
 
 	private boolean canEditGlobalProperty(GlobalProperty property) {
@@ -233,7 +233,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			return true;
 		}
 
-		return Context.getAuthenticatedUser().hasPrivilege(property.getEditPrivilege().getPrivilege());
+		return Context.hasPrivilege(property.getEditPrivilege().getPrivilege(), false);
 	}
 
 	private List<GlobalProperty> filterGlobalPropertiesByViewPrivilege(List<GlobalProperty> properties) {
@@ -241,7 +241,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			for (Iterator<GlobalProperty> iterator = properties.iterator(); iterator.hasNext();) {
 				GlobalProperty property = iterator.next();
 				Privilege vp = property.getViewPrivilege();
-				if (vp != null && !Context.getAuthenticatedUser().hasPrivilege(vp.getPrivilege())) {
+				if (vp != null && !Context.hasPrivilege(vp.getPrivilege(), false)) {
 					iterator.remove();
 				}
 			}
