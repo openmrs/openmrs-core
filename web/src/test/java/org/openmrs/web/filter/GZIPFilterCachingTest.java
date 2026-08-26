@@ -376,7 +376,7 @@ class GZIPFilterCachingTest {
 		private boolean responseWasWrapped = false;
 
 		@Override
-		void doFilter(ServletRequest request, ServletResponse response) {
+		public void doFilter(ServletRequest request, ServletResponse response) {
 			wasCalled = true;
 			responseWasWrapped = response instanceof GZIPResponseWrapper;
 		}
