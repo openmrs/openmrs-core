@@ -141,6 +141,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 	private Set<ConceptAttribute> attributes = new LinkedHashSet<>();
 
+	private Set<ConceptInterpretationRule> interpretationRules = new LinkedHashSet<>();
+
 	/** default constructor */
 	public Concept() {
 		names = new HashSet<>();
@@ -1700,6 +1702,68 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void addAttribute(ConceptAttribute attribute) {
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
+	}
+
+	/**
+	 * Gets the interpretation rules of this concept.
+	 *
+	 * @since 2.9.0
+	 * @return the interpretation rules, never null
+	 */
+	public Set<ConceptInterpretationRule> getInterpretationRules() {
+		if (interpretationRules == null) {
+			interpretationRules = new LinkedHashSet<>();
+		}
+		return interpretationRules;
+	}
+
+	/**
+	 * Sets the interpretation rules of this concept.
+	 *
+	 * @since 2.9.0
+	 * @param interpretationRules the interpretation rules to set
+	 */
+	public void setInterpretationRules(Set<ConceptInterpretationRule> interpretationRules) {
+		this.interpretationRules = interpretationRules;
+	}
+
+	/**
+	 * Adds an interpretation rule to this concept, setting both sides of the association.
+	 * <p>
+	 * A null rule is ignored.
+	 * </p>
+	 *
+	 * @since 2.9.0
+	 * @param interpretationRule the interpretation rule to add
+	 */
+	public void addInterpretationRule(ConceptInterpretationRule interpretationRule) {
+		if (interpretationRule == null) {
+			return;
+		}
+		interpretationRule.setConcept(this);
+		getInterpretationRules().add(interpretationRule);
+	}
+
+	/**
+	 * Removes an interpretation rule from this concept, clearing both sides of the association. The
+	 * removed rule is deleted when this concept is next saved.
+	 * <p>
+	 * A null rule is ignored.
+	 * </p>
+	 *
+	 * @since 2.9.0
+	 * @param interpretationRule the interpretation rule to remove
+	 * @return true if the rule was part of this concept
+	 */
+	public boolean removeInterpretationRule(ConceptInterpretationRule interpretationRule) {
+		if (interpretationRule == null) {
+			return false;
+		}
+		boolean removed = getInterpretationRules().remove(interpretationRule);
+		if (removed) {
+			interpretationRule.setConcept(null);
+		}
+		return removed;
 	}
 
 }
