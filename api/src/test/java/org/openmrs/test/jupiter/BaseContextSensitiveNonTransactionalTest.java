@@ -351,9 +351,10 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 			runtimeProperties.setProperty("connection.password", password);
 			runtimeProperties.setProperty("connection.url", url);
 
-			//for the first time, automatically create the tables defined in the hbm files
-			//after that, just update, if there are any changes. This is for performance reasons.
-			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
+			// The schema is created by Liquibase via Containers.createSchema(), so we validate
+			// Hibernate mappings against it rather than silently updating. This surfaces
+			// changelog/mapping drift instead of patching it at runtime.
+			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "validate");
 		}
 
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
