@@ -360,7 +360,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void upgradePasswordHash(User user, String rawPassword, String salt) {
 		LoginCredential credential = userDao.getLoginCredential(user);
-		if (credential.getHashedPassword() == null || !credential.getHashedPassword().startsWith("$argon2id$")) {
+		if (credential.getHashedPassword() == null || Security.needsUpgrade(credential.getHashedPassword())) {
 			if (!Security.checkPassword(credential.getHashedPassword(), rawPassword + (salt != null ? salt : ""))) {
 				log.warn("Refusing to upgrade password hash for user {}: password does not match",
 					user.getUsername());
