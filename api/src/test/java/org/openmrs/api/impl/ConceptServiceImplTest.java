@@ -24,6 +24,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptInterpretationRule;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
@@ -1174,6 +1175,61 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	public void getConceptReferenceRange_shouldThrowExceptionWhenContextIsNull() {
 		assertThrows(IllegalArgumentException.class,
 		    () -> conceptService.getConceptReferenceRange((ConceptReferenceRangeContext) null));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptInterpretation(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptInterpretation_shouldReturnHighestPriorityMatchingRule() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+		Concept concept = conceptService.getConcept(23);
+
+		ConceptInterpretationRule lowPriorityRule = new ConceptInterpretationRule();
+		lowPriorityRule.setCriteria("$patient.getAge() > 1");
+		lowPriorityRule.setInterpretation(Obs.Interpretation.POSITIVE);
+		lowPriorityRule.setPriority(1);
+		concept.addInterpretationRule(lowPriorityRule);
+
+		ConceptInterpretationRule highPriorityRule = new ConceptInterpretationRule();
+		highPriorityRule.setCriteria("$patient.getAge() > 1");
+		highPriorityRule.setInterpretation(Obs.Interpretation.NEGATIVE);
+		highPriorityRule.setPriority(2);
+		concept.addInterpretationRule(highPriorityRule);
+
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+
+		assertEquals(Obs.Interpretation.NEGATIVE, conceptService.getConceptInterpretation(context));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptInterpretation(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptInterpretation_shouldReturnNullWhenNoRuleMatches() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+		Concept concept = conceptService.getConcept(23);
+
+		ConceptInterpretationRule rule = new ConceptInterpretationRule();
+		rule.setCriteria("$patient.getAge() < 1");
+		rule.setInterpretation(Obs.Interpretation.POSITIVE);
+		rule.setPriority(1);
+		concept.addInterpretationRule(rule);
+
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+
+		assertNull(conceptService.getConceptInterpretation(context));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptInterpretation(ConceptReferenceRangeContext)
+	 */
+	@Test
+	public void getConceptInterpretation_shouldThrowExceptionWhenContextIsNull() {
+		assertThrows(IllegalArgumentException.class,
+		    () -> conceptService.getConceptInterpretation((ConceptReferenceRangeContext) null));
 	}
 
 	private ConceptNumeric createConceptNumeric() {

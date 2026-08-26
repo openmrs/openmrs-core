@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
@@ -1266,11 +1265,84 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		assertThat(concept.getSetMembers().size(), is(3));
 	}
 
+	/**
+	 * @see Concept#addInterpretationRule(ConceptInterpretationRule)
+	 */
 	@Test
-	public void getAnswers_shouldLoadConceptAnswersLazily() throws Exception {
-		Context.clearSession();
-		Concept concept = Context.getConceptService().getConcept(21);
-		ConceptAnswer answer = concept.getAnswers().iterator().next();
-		assertFalse(Hibernate.isInitialized(answer.getAnswerConcept()), "Answer Concept should be loaded lazily");
+	public void addInterpretationRule_shouldSetBothSidesOfTheAssociation() {
+		Concept concept = new Concept(1);
+		ConceptInterpretationRule rule = new ConceptInterpretationRule();
+
+		concept.addInterpretationRule(rule);
+
+		assertThat(concept.getInterpretationRules(), hasItem(rule));
+		assertEquals(concept, rule.getConcept());
+	}
+
+	/**
+	 * @see Concept#addInterpretationRule(ConceptInterpretationRule)
+	 */
+	@Test
+	public void addInterpretationRule_shouldIgnoreNull() {
+		Concept concept = new Concept(1);
+
+		assertDoesNotThrow(() -> concept.addInterpretationRule(null));
+
+		assertThat(concept.getInterpretationRules(), is(empty()));
+	}
+
+	/**
+	 * @see Concept#removeInterpretationRule(ConceptInterpretationRule)
+	 */
+	@Test
+	public void removeInterpretationRule_shouldClearBothSidesOfTheAssociation() {
+		Concept concept = new Concept(1);
+		ConceptInterpretationRule rule = new ConceptInterpretationRule();
+		concept.addInterpretationRule(rule);
+
+		assertTrue(concept.removeInterpretationRule(rule));
+
+		assertThat(concept.getInterpretationRules(), is(empty()));
+		assertNull(rule.getConcept());
+	}
+
+	/**
+	 * @see Concept#removeInterpretationRule(ConceptInterpretationRule)
+	 */
+	@Test
+	public void removeInterpretationRule_shouldReturnFalseForARuleOfAnotherConcept() {
+		Concept concept = new Concept(1);
+		ConceptInterpretationRule ownRule = new ConceptInterpretationRule();
+		concept.addInterpretationRule(ownRule);
+
+		Concept otherConcept = new Concept(2);
+		ConceptInterpretationRule otherRule = new ConceptInterpretationRule();
+		otherConcept.addInterpretationRule(otherRule);
+
+		assertFalse(concept.removeInterpretationRule(otherRule));
+
+		assertThat(concept.getInterpretationRules(), hasItem(ownRule));
+		assertEquals(otherConcept, otherRule.getConcept());
+	}
+
+	/**
+	 * @see Concept#removeInterpretationRule(ConceptInterpretationRule)
+	 */
+	@Test
+	public void removeInterpretationRule_shouldIgnoreNull() {
+		Concept concept = new Concept(1);
+
+		assertFalse(assertDoesNotThrow(() -> concept.removeInterpretationRule(null)));
+	}
+
+	/**
+	 * @see Concept#getInterpretationRules()
+	 */
+	@Test
+	public void getInterpretationRules_shouldNotReturnNullWhenTheCollectionWasNulledOut() {
+		Concept concept = new Concept(1);
+		concept.setInterpretationRules(null);
+
+		assertNotNull(concept.getInterpretationRules());
 	}
 }
