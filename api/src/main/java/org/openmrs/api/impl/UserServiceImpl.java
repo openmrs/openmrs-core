@@ -870,11 +870,27 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	/**
-	 * Acquires a password-guard permit for the current thread. Intended for use in tests that need to
-	 * call password-guarded DAO methods directly.
+	 * Returns whether the current thread is permitted to change passwords. This is a convenience method
+	 * that delegates to {@link #isPasswordGuardPermitted()}.
+	 *
+	 * @return true if the current thread holds a password-guard permit
+	 * @since 3.0.0
+	 * @see #isPasswordGuardPermitted()
+	 */
+	public static boolean canChangePassword() {
+		return UserPasswordGuard.isPermitted();
+	}
+
+	/**
+	 * Acquires a password-guard permit for the current thread. This method exists solely for test code
+	 * that needs to call password-guarded DAO methods directly. It is not part of the public API and
+	 * should not be used in production code. The protection mechanism relies on
+	 * {@link UserPasswordGuard#acquire()} and {@link UserPasswordGuard#close()} being private; this
+	 * method exposes them only for testing purposes.
 	 *
 	 * @return the acquired permit, which must be closed when done
 	 * @since 3.0.0
+	 * @see UserPasswordGuard#isPermitted()
 	 */
 	public static AutoCloseable acquirePasswordGuardPermit() {
 		return UserPasswordGuard.acquire();
