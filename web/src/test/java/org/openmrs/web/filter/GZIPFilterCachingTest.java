@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
  * ones so that a global property read can be made to fail on demand; the filter's behaviour against
  * a real service is covered by {@link GZIPFilterTest}.
  */
-public class GZIPFilterCachingTest {
+class GZIPFilterCachingTest {
 
 	private static final String ACCEPT_PATHS = OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS;
 
@@ -66,7 +66,7 @@ public class GZIPFilterCachingTest {
 	private GZIPFilter filter;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		contextMock = mockStatic(Context.class);
 		contextMock.when(Context::isSessionOpen).thenReturn(true);
 		configUtilMock = mockStatic(ConfigUtil.class);
@@ -74,13 +74,13 @@ public class GZIPFilterCachingTest {
 	}
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		configUtilMock.close();
 		contextMock.close();
 	}
 
 	@Test
-	public void shouldAcceptCompressedRequestForPathMatchingOneOfTheConfiguredPatterns() throws Exception {
+	void shouldAcceptCompressedRequestForPathMatchingOneOfTheConfiguredPatterns() throws Exception {
 		givenGlobalProperty(ACCEPT_PATHS, "/openmrs/ws/rest/.*,/openmrs/ms/.*");
 
 		assertTrue(isCompressedRequestAccepted("/openmrs/ws/rest/v1/session"));
@@ -88,14 +88,14 @@ public class GZIPFilterCachingTest {
 	}
 
 	@Test
-	public void shouldRejectCompressedRequestForPathMatchingNoConfiguredPattern() throws Exception {
+	void shouldRejectCompressedRequestForPathMatchingNoConfiguredPattern() throws Exception {
 		givenGlobalProperty(ACCEPT_PATHS, "/openmrs/ws/rest/.*,/openmrs/ms/.*");
 
 		assertFalse(isCompressedRequestAccepted("/openmrs/index.htm"));
 	}
 
 	@Test
-	public void shouldRejectCompressedRequestWhenPatternOnlyMatchesPartOfThePath() throws Exception {
+	void shouldRejectCompressedRequestWhenPatternOnlyMatchesPartOfThePath() throws Exception {
 		// the patterns have always been applied as full matches rather than as substring searches
 		givenGlobalProperty(ACCEPT_PATHS, "/ws/rest/.*");
 
@@ -103,14 +103,14 @@ public class GZIPFilterCachingTest {
 	}
 
 	@Test
-	public void shouldRejectCompressedRequestWhenNoPathsAreConfigured() throws Exception {
+	void shouldRejectCompressedRequestWhenNoPathsAreConfigured() throws Exception {
 		givenGlobalProperty(ACCEPT_PATHS, null);
 
 		assertFalse(isCompressedRequestAccepted("/openmrs/ws/rest/v1/session"));
 	}
 
 	@Test
-	public void shouldRejectCompressedRequestWhenThePathsPropertyCannotBeRead() throws Exception {
+	void shouldRejectCompressedRequestWhenThePathsPropertyCannotBeRead() throws Exception {
 		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(ACCEPT_PATHS))
 		        .thenThrow(new APIException("service unavailable"));
 
@@ -124,35 +124,35 @@ public class GZIPFilterCachingTest {
 	 * everything that followed it.
 	 */
 	@Test
-	public void shouldStillAcceptPathsConfiguredBeforeAPatternThatIsNotAValidRegex() throws Exception {
+	void shouldStillAcceptPathsConfiguredBeforeAPatternThatIsNotAValidRegex() throws Exception {
 		givenGlobalProperty(ACCEPT_PATHS, "/openmrs/ws/rest/.*,[unclosed,/openmrs/ms/.*");
 
 		assertTrue(isCompressedRequestAccepted("/openmrs/ws/rest/v1/session"));
 	}
 
 	@Test
-	public void shouldStillAcceptPathsConfiguredAfterAPatternThatIsNotAValidRegex() throws Exception {
+	void shouldStillAcceptPathsConfiguredAfterAPatternThatIsNotAValidRegex() throws Exception {
 		givenGlobalProperty(ACCEPT_PATHS, "/openmrs/ws/rest/.*,[unclosed,/openmrs/ms/.*");
 
 		assertTrue(isCompressedRequestAccepted("/openmrs/ms/somemodule"));
 	}
 
 	@Test
-	public void shouldStillAcceptPathsWhenTheFirstConfiguredPatternIsNotAValidRegex() throws Exception {
+	void shouldStillAcceptPathsWhenTheFirstConfiguredPatternIsNotAValidRegex() throws Exception {
 		givenGlobalProperty(ACCEPT_PATHS, "[unclosed,/openmrs/ws/rest/.*");
 
 		assertTrue(isCompressedRequestAccepted("/openmrs/ws/rest/v1/session"));
 	}
 
 	@Test
-	public void shouldRejectEveryPathWhenNoConfiguredPatternIsAValidRegex() throws Exception {
+	void shouldRejectEveryPathWhenNoConfiguredPatternIsAValidRegex() throws Exception {
 		givenGlobalProperty(ACCEPT_PATHS, "[unclosed,(also bad");
 
 		assertFalse(isCompressedRequestAccepted("/openmrs/ws/rest/v1/session"));
 	}
 
 	@Test
-	public void shouldRejectAPathMatchedByNoneOfTheValidPatternsAlongsideAnInvalidOne() throws Exception {
+	void shouldRejectAPathMatchedByNoneOfTheValidPatternsAlongsideAnInvalidOne() throws Exception {
 		givenGlobalProperty(ACCEPT_PATHS, "/openmrs/ws/rest/.*,[unclosed");
 
 		assertFalse(isCompressedRequestAccepted("/openmrs/index.htm"));
@@ -163,7 +163,7 @@ public class GZIPFilterCachingTest {
 	 * catch-all that turned any surprise into a rejection rather than a 500.
 	 */
 	@Test
-	public void shouldRejectACompressedRequestWithNoRequestURI() {
+	void shouldRejectACompressedRequestWithNoRequestURI() {
 		// deliberately no allowlist configured: a path that cannot be matched at all is rejected before
 		// the property is consulted
 		HttpServletRequest request = mock(HttpServletRequest.class);
@@ -178,7 +178,7 @@ public class GZIPFilterCachingTest {
 	 * answers that from its own cache, but the regexes behind it are compiled only once.
 	 */
 	@Test
-	public void shouldCompileTheConfiguredPatternsOnlyOnce() throws Exception {
+	void shouldCompileTheConfiguredPatternsOnlyOnce() throws Exception {
 		givenGlobalProperty(ACCEPT_PATHS, "/openmrs/ws/rest/.*");
 
 		assertTrue(isCompressedRequestAccepted("/openmrs/ws/rest/v1/session"));
@@ -194,7 +194,7 @@ public class GZIPFilterCachingTest {
 	}
 
 	@Test
-	public void shouldRecompileThePatternsWhenThePropertyChanges() throws Exception {
+	void shouldRecompileThePatternsWhenThePropertyChanges() throws Exception {
 		givenGlobalProperty(ACCEPT_PATHS, "/openmrs/ws/rest/.*");
 
 		assertTrue(isCompressedRequestAccepted("/openmrs/ws/rest/v1/session"));
@@ -208,14 +208,14 @@ public class GZIPFilterCachingTest {
 	}
 
 	@Test
-	public void shouldNotCompressWhenTheEnabledFlagIsFalse() throws Exception {
+	void shouldNotCompressWhenTheEnabledFlagIsFalse() throws Exception {
 		givenGlobalProperty(GZIP_ENABLED, "false");
 
 		assertFalse(isResponseCompressed());
 	}
 
 	@Test
-	public void shouldCompressWhenTheEnabledFlagIsTrue() throws Exception {
+	void shouldCompressWhenTheEnabledFlagIsTrue() throws Exception {
 		givenGlobalProperty(GZIP_ENABLED, "true");
 
 		assertTrue(isResponseCompressed());
@@ -226,7 +226,7 @@ public class GZIPFilterCachingTest {
 	 * else about the client.
 	 */
 	@Test
-	public void shouldNotCompressWhenTheClientDoesNotAdvertiseGzipSupport() throws Exception {
+	void shouldNotCompressWhenTheClientDoesNotAdvertiseGzipSupport() throws Exception {
 		givenGlobalProperty(GZIP_ENABLED, "true");
 
 		assertFalse(isResponseCompressed(null));
@@ -234,7 +234,7 @@ public class GZIPFilterCachingTest {
 	}
 
 	@Test
-	public void shouldPickUpAChangeToTheEnabledFlag() throws Exception {
+	void shouldPickUpAChangeToTheEnabledFlag() throws Exception {
 		givenGlobalProperty(GZIP_ENABLED, "false");
 		assertFalse(isResponseCompressed());
 
@@ -243,7 +243,7 @@ public class GZIPFilterCachingTest {
 	}
 
 	@Test
-	public void shouldNotCompressWhenTheEnabledFlagCannotBeRead() throws Exception {
+	void shouldNotCompressWhenTheEnabledFlagCannotBeRead() throws Exception {
 		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(GZIP_ENABLED))
 		        .thenThrow(new APIException("service unavailable"));
 
@@ -251,7 +251,7 @@ public class GZIPFilterCachingTest {
 	}
 
 	@Test
-	public void shouldNotReadAnyGlobalPropertyWhenNoSessionIsOpen() throws Exception {
+	void shouldNotReadAnyGlobalPropertyWhenNoSessionIsOpen() throws Exception {
 		contextMock.when(Context::isSessionOpen).thenReturn(false);
 
 		assertFalse(isResponseCompressed());
@@ -265,7 +265,7 @@ public class GZIPFilterCachingTest {
 	 * property is privileged, so the read has to be proxied.
 	 */
 	@Test
-	public void shouldProxyTheGetGlobalPropertiesPrivilegeAroundASuccessfulRead() throws Exception {
+	void shouldProxyTheGetGlobalPropertiesPrivilegeAroundASuccessfulRead() throws Exception {
 		givenGlobalProperty(GZIP_ENABLED, "true");
 
 		assertTrue(isResponseCompressed());
@@ -279,7 +279,7 @@ public class GZIPFilterCachingTest {
 	 * whatever request lands on the thread next.
 	 */
 	@Test
-	public void shouldReleaseTheGetGlobalPropertiesPrivilegeWhenAReadFails() throws Exception {
+	void shouldReleaseTheGetGlobalPropertiesPrivilegeWhenAReadFails() throws Exception {
 		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(GZIP_ENABLED))
 		        .thenThrow(new APIException("service unavailable"));
 
@@ -376,7 +376,7 @@ public class GZIPFilterCachingTest {
 		private boolean responseWasWrapped = false;
 
 		@Override
-		public void doFilter(ServletRequest request, ServletResponse response) {
+		void doFilter(ServletRequest request, ServletResponse response) {
 			wasCalled = true;
 			responseWasWrapped = response instanceof GZIPResponseWrapper;
 		}
