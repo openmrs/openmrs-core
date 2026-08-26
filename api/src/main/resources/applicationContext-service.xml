@@ -33,9 +33,11 @@
 
 	<bean id="openmrsLegacyPasswordEncoder" class="org.openmrs.spring.LegacyOpenmrsPasswordEncoder" />
 	<bean id="openmrsPasswordEncoder" class="org.openmrs.spring.OpenmrsDelegatingPasswordEncoder">
-		<constructor-arg type="java.lang.String" value="" />
+		<constructor-arg type="java.lang.String" value="argon2" />
 		<constructor-arg>
-			<map />
+			<map>
+				<entry key="argon2" value-ref="argon2PasswordEncoder" />
+			</map>
 		</constructor-arg>
 		<constructor-arg ref="openmrsLegacyPasswordEncoder" />
 	</bean>
@@ -49,6 +51,18 @@
 
 	<bean id="localeUtility" class="org.openmrs.util.LocaleUtility"/>
 	<bean id="locationUtility" class="org.openmrs.util.LocationUtility"/>
+	<bean id="security" class="org.openmrs.util.Security"/>
+	<bean id="argon2PasswordEncoder" class="org.springframework.security.crypto.argon2.Argon2PasswordEncoder">
+		<!-- Work-factor defaults; values can be changed at runtime via the five
+		     security.argon2.* global properties which the Security listener caches.
+		     When #6219 lands, this bean will instead be registered inside the
+		     DelegatingPasswordEncoder id-to-encoder map keyed "argon2". -->
+		<constructor-arg index="0" value="16"/><!-- saltLength bytes -->
+		<constructor-arg index="1" value="32"/><!-- hashLength bytes -->
+		<constructor-arg index="2" value="1"/> <!-- parallelism -->
+		<constructor-arg index="3" value="65536"/> <!-- memory KB (64 MB) -->
+		<constructor-arg index="4" value="3"/> <!-- iterations -->
+	</bean>
 	<bean id="configUtilGlobalPropertyListener" class="org.openmrs.util.ConfigUtil"/>
 	<bean id="personNameGlobalPropertyListener" class="org.openmrs.api.impl.PersonNameGlobalPropertyListener"/>
 	<bean id="loggingConfigurationGlobalPropertyListener"
@@ -59,6 +73,7 @@
 			<list value-type="org.openmrs.api.GlobalPropertyListener">
 				<ref bean="localeUtility"/>
 				<ref bean="locationUtility"/>
+				<ref bean="security"/>
 				<ref bean="configUtilGlobalPropertyListener"/>
 				<ref bean="personNameGlobalPropertyListener"/>
 				<ref bean="loggingConfigurationGlobalPropertyListener"/>

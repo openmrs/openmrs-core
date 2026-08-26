@@ -103,13 +103,9 @@ public class HibernateUserDAO implements UserDAO {
 			
 			//update the new user with the password
 			String salt = Security.getRandomToken();
-<<<<<<< HEAD
 
-			String hashedPassword = Security.encodeStringArgon2(password + salt);
+			String hashedPassword = Security.encodePassword(password + salt);
 
-=======
-			String hashedPassword = Security.encodeStringArgon2(password + salt);
->>>>>>> d360b20e0 (fix-for review3)
 			
 			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user
 			        .getUserId());

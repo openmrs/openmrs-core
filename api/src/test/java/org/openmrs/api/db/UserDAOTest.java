@@ -179,6 +179,75 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
 	}
 	
+	/**
+	 * Covers the regression gap by reverting the three
+	 * HibernateUserDAO call sites back to {@code Security.encodeString(SHA-512)} left all 5139
+	 * api tests green because SecurityTest only pins {@code encodeStringArgon2()} directly,
+	 * never what actually reaches users.password. This assertion fails on 2.8.x and passes on
+	 * the Argon2 branch.
+	 *
+	 * <p>Covers HibernateUserDAO.changePassword(User, String) line 353.
+	 */
+	@Test
+	public void changePassword_shouldStoreTheArgon2idFormattedValue() {
+		dao.changePassword(userJoe, PASSWORD);
+		LoginCredential lc = dao.getLoginCredential(userJoe);
+		String stored = lc.getHashedPassword();
+		assertTrue(stored.contains("$argon2id$"),
+			"Expected users.password to contain $argon2id$ (Argon2id PHC format) but first 40 chars were: "
+				+ stored.substring(0, Math.min(40, stored.length())));
+		// Round-trip: prove the value that was stored also matches the raw password on login.
+		Context.authenticate(userJoe.getUsername(), PASSWORD);
+	}
+
+	/**
+	 * Covers HibernateUserDAO.saveUser() line 106 — the brand-new-user password path.
+	 */
+	@Test
+	public void saveUser_shouldStoreTheArgon2idFormattedValue() {
+		PersonName name = new PersonName("Jane", "J", "Doe");
+		name.setDateCreated(new Date());
+		Person person = new Person();
+		person.setDateCreated(new Date());
+		person.setPersonDateCreated(person.getDateCreated());
+		person.setGender("F");
+		User newUser = new User();
+		newUser.setSystemId("101-31");
+		newUser.setPerson(person);
+		newUser.addName(name);
+		newUser.setUsername("juser2");
+		newUser.setDateCreated(new Date());
+
+		dao.saveUser(newUser, "Openmr6zz");
+		Context.flushSession();
+
+		LoginCredential lc = dao.getLoginCredential(newUser);
+		String stored = lc.getHashedPassword();
+		assertTrue(stored.contains("$argon2id$"),
+			"Expected new-user password to contain $argon2id$ but first 40 chars were: "
+				+ stored.substring(0, Math.min(40, stored.length())));
+		Context.authenticate("juser2", "Openmr6zz");
+	}
+
+	/**
+	 * Covers HibernateUserDAO.changePassword(String, String) line 437 — the "self change"
+	 * overload that takes old and new password as strings.
+	 */
+	@Test
+	public void changePasswordOldNew_shouldStoreTheArgon2idFormattedValue() {
+		// Establish baseline so oldPassword verifies inside the DAO overload.
+		dao.changePassword(userJoe, PASSWORD);
+		Context.authenticate(userJoe.getUsername(), PASSWORD);
+
+		dao.changePassword(PASSWORD, "Openmr7aa");
+		LoginCredential lc = dao.getLoginCredential(userJoe);
+		String stored = lc.getHashedPassword();
+		assertTrue(stored.contains("$argon2id$"),
+			"Expected self-change password to contain $argon2id$ but first 40 chars were: "
+				+ stored.substring(0, Math.min(40, stored.length())));
+		Context.authenticate(userJoe.getUsername(), "Openmr7aa");
+	}
+	
 	@Test
 	public void changeHashedPassword_shouldNotOverwriteUserSecretQuestionOrAnswer() {
 		dao.changePassword(userJoe, PASSWORD);
