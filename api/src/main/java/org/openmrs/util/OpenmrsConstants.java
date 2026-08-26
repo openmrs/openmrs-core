@@ -11,16 +11,16 @@ package org.openmrs.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import liquibase.GlobalConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
@@ -34,7 +34,7 @@ import org.openmrs.scheduler.SchedulerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import liquibase.GlobalConfiguration;
+import static java.util.Arrays.asList;
 
 /**
  * Constants used in OpenMRS. Contents built from build properties (version, version_short, and
@@ -938,10 +938,10 @@ public final class OpenmrsConstants {
 		        "Argon2 time cost (number of iterations). Higher values increase security but slow down hashing. Default: 3. Recommended: 3-4."));
 
 		props.add(new GlobalProperty(GP_ARGON2_HASH_LENGTH, "32",
-		        "Argon2 hash length in bytes. Default: 32. Maximum depends on salt length to fit VARCHAR(128): with 16-byte salt max is 55, with 32-byte salt max is 39. Values are automatically clamped to safe limits."));
+		        "Argon2 hash length in bytes. Default: 32. Maximum with 16-byte salt: 48, with 32-byte salt: 33. Values exceeding the VARCHAR(128) limit are automatically clamped."));
 
 		props.add(new GlobalProperty(GP_ARGON2_SALT_LENGTH, "16",
-		        "Argon2 salt length in bytes. Default: 16. Maximum: 32. Higher values reduce maximum allowable hash length to fit VARCHAR(128). Values are automatically clamped to safe limits."));
+		        "Argon2 salt length in bytes. Default: 16. Maximum: 32. Higher values reduce the maximum allowable hash length. Values are automatically clamped to fit VARCHAR(128)."));
 
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
 		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",

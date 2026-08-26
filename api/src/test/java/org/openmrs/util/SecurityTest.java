@@ -27,13 +27,13 @@ public class SecurityTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private AdministrationService administrationService;
-	
+
 	/**
-	 * @see Security#encodeStringArgon2(String)
+	 * @see Security#encodeCredential(String)
 	 */
 	@Test
-	public void encodeStringArgon2_shouldEncodeStringsToArgon2id() {
-		String hash = Security.encodeStringArgon2("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
+	public void encodeCredential_shouldEncodeStringsToArgon2id() {
+		String hash = Security.encodeCredential("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
 		assertTrue(hash.startsWith("$argon2id$"));
 	}
 
@@ -41,44 +41,34 @@ public class SecurityTest extends BaseContextSensitiveTest {
 	 * @see Security#encodeString(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsToSHA512() {
+	public void encodeString_shouldEncodeStringsTo128Characters() {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
 		assertTrue(hash.length() == 128);
 		assertTrue(hash.matches("[0-9a-f]+"));
 	}
 
 	/**
-	 * @see Security#encodeStringSHA512(String)
+	 * @see Security#encodeCredential(String)
 	 */
 	@Test
-	public void encodeStringSHA512_shouldEncodeStringsToSHA512() {
-		String hash = Security.encodeStringSHA512("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
-		assertTrue(hash.length() == 128);
-		assertTrue(hash.matches("[0-9a-f]+"));
-	}
-
-	/**
-	 * @see Security#encodeStringArgon2(String)
-	 */
-	@Test
-	public void encodeStringArgon2_shouldClampHashLengthToFitVarchar128() {
+	public void encodeCredential_shouldClampHashLengthToFitVarchar128() {
 		String originalSaltLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
 		String originalHashLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
 
 		try {
-			// Test with 16-byte salt, hash length should be clamped to max 55
+			// Test with 16-byte salt, hash length should be clamped
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16"));
-			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "60")); // Exceeds safe max
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "60"));
 			Security.resetEncoder();
-			String hash1 = Security.encodeStringArgon2("test");
+			String hash1 = Security.encodeCredential("test");
 			assertTrue(hash1.length() <= 128, "Hash with 16-byte salt should fit in VARCHAR(128): " + hash1.length());
 			assertTrue(hash1.startsWith("$argon2id$"));
 
-			// Test with 32-byte salt, hash length should be clamped to max 39
+			// Test with 32-byte salt, hash length should be clamped
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "32"));
-			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "50")); // Exceeds safe max
+			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "50"));
 			Security.resetEncoder();
-			String hash2 = Security.encodeStringArgon2("test");
+			String hash2 = Security.encodeCredential("test");
 			assertTrue(hash2.length() <= 128, "Hash with 32-byte salt should fit in VARCHAR(128): " + hash2.length());
 			assertTrue(hash2.startsWith("$argon2id$"));
 		}
@@ -88,58 +78,38 @@ public class SecurityTest extends BaseContextSensitiveTest {
 			Security.resetEncoder();
 		}
 	}
-	
+
 	/**
-	 * @see Security#encodeStringArgon2(String)
+	 * @see Security#encodeCredential(String)
 	 */
 	@Test
-	public void encodeStringArgon2_shouldEncodeStringsToXCharactersWithXCharactersSalt() {
+	public void encodeCredential_shouldProduceDifferentHashesForDifferentSalts() {
 		String originalSaltLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
 		String originalHashLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
 		try {
-			// Use safe values that fit in VARCHAR(128)
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "8"));
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32"));
 			Security.resetEncoder();
-			String hash1 = Security.encodeStringArgon2("test");
+			String hash1 = Security.encodeCredential("test");
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16"));
 			Security.resetEncoder();
-			String hash2 = Security.encodeStringArgon2("test");
-			
-			// Verify both hashes are valid Argon2id hashes
+			String hash2 = Security.encodeCredential("test");
+
 			assertTrue(hash1.startsWith("$argon2id$"));
 			assertTrue(hash2.startsWith("$argon2id$"));
-			
-			// Verify hashes are different (different salt should produce different hash)
 			assertTrue(!hash1.equals(hash2), "Different salt lengths should produce different hashes");
-			
-			// Verify both fit in VARCHAR(128)
 			assertTrue(hash1.length() <= 128, "Hash with 8-byte salt should fit in VARCHAR(128)");
 			assertTrue(hash2.length() <= 128, "Hash with 16-byte salt should fit in VARCHAR(128)");
 		}
 		finally {
-			if (originalSaltLength != null) {
-				administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, originalSaltLength));
-			} else {
-				GlobalProperty gp = administrationService.getGlobalPropertyObject(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
-				if (gp != null) {
-					administrationService.purgeGlobalProperty(gp);
-				}
-			}
-			if (originalHashLength != null) {
-				administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, originalHashLength));
-			} else {
-				GlobalProperty gp = administrationService.getGlobalPropertyObject(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
-				if (gp != null) {
-					administrationService.purgeGlobalProperty(gp);
-				}
-			}
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, originalSaltLength);
+			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, originalHashLength);
 			Security.resetEncoder();
 		}
 	}
 
 	@Test
-	public void encodeStringArgon2_shouldUseDefaultValuesWhenGlobalPropertyValuesAreInvalid() {
+	public void encodeCredential_shouldUseDefaultValuesWhenGlobalPropertyValuesAreInvalid() {
 		String originalSaltLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH);
 		String originalHashLength = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH);
 		String originalParallelism = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM);
@@ -153,7 +123,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "abc"));
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "-1"));
 			Security.resetEncoder();
-			String hash = Security.encodeStringArgon2("test");
+			String hash = Security.encodeCredential("test");
 			assertTrue(hash.startsWith("$argon2id$"));
 			String[] parts = hash.split("\\$");
 			assertTrue(parts.length >= 5);
@@ -173,7 +143,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void encodeStringArgon2_shouldUseUpdatedGlobalPropertyValues() {
+	public void encodeCredential_shouldUseUpdatedGlobalPropertyValues() {
 		String originalMemory = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY);
 		String originalIterations = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS);
 		String originalParallelism = administrationService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM);
@@ -183,7 +153,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3"));
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1"));
 			Security.resetEncoder();
-			String hash1 = Security.encodeStringArgon2("test");
+			String hash1 = Security.encodeCredential("test");
 			String[] parts1 = hash1.split("\\$");
 			assertTrue(parts1.length >= 5);
 			assertTrue(parts1[3].contains("m=65536"));
@@ -194,7 +164,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "4"));
 			administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "2"));
 
-			String hash2 = Security.encodeStringArgon2("test");
+			String hash2 = Security.encodeCredential("test");
 			String[] parts2 = hash2.split("\\$");
 			assertTrue(parts2.length >= 5);
 			assertTrue(parts2[3].contains("m=131072"));
@@ -219,7 +189,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 			}
 		}
 	}
-	
+
 	/**
 	 * @see Security#hashMatches(String,String)
 	 */
@@ -228,7 +198,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 		assertTrue(Security.hashMatches("4a1750c8607d0fa237de36c6305715c223415189", "test"
 		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
 	}
-	
+
 	/**
 	 * @see Security#hashMatches(String,String)
 	 */
@@ -239,7 +209,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 		        + "0d7bb319434295261601202e14494b959cdd69c6ceb54ee3890e176ae780ce9edf797f48afde5f39906a6bd75b8a5feeac8f5339615acf7429c7dda85220d329";
 		assertTrue(Security.hashMatches(password, passwordToHash));
 	}
-	
+
 	/**
 	 * @see Security#hashMatches(String,String)
 	 */
@@ -248,7 +218,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 		assertTrue(Security.hashMatches("4a1750c8607dfa237de36c6305715c223415189", "test"
 		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
 	}
-	
+
 	/**
 	 * @see Security#decrypt(String)
 	 */
@@ -258,13 +228,13 @@ public class SecurityTest extends BaseContextSensitiveTest {
 		// use specific IV and Key
 		byte[] initVector = base64.decode("9wyBUNglFCRVSUhMfsTa3Q==");
 		byte[] secretKey = base64.decode("dTfyELRrAICGDwzjHDjuhw==");
-		
+
 		// perform decryption
 		String expected = "this is fantasmic";
 		String encrypted = "GnMz8qETyKMv+edLpYqWfBhR+lX6JlkocNGwHhmhXSY=";
 		String actual = Security.decrypt(encrypted, initVector, secretKey);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
-		
+
 		expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta sapien ac nisi imperdiet posuere. Ma"
 		        + "ecenas nec felis ac enim posuere semper. In arcu turpis, elementum nec auctor id, pretium sed tortor. Quisque "
 		        + "sit amet erat ante. Praesent metus dui, porttitor non volutpat eu, porta sed ante. Fusce quis dignissim nisl. "
@@ -303,7 +273,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 		        + "get, tincidunt vel nunc. Nullam at neque sem, rutrum aliquet elit. In et velit enim, tempus mollis nunc. Sed s"
 		        + "it amet quam justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur convallis dolor non lig"
 		        + "ula fermentum imperdiet.";
-		
+
 		encrypted = "owV/Mh80CUvbu7zfmKqQVl7OdHlhokcyjRdCvIWPdnTQbakQVwYhOpkJ4cFzo1FF7kK8ErB+VaN76W6lJtR7eQw3Ugfm4jGHagA+zn7un/"
 		        + "4DkfjI5GxaJj904Gtdv0kV0aluJLBa8Mx8uPNWPL/BkWUru8E/kwysr9BzzPr6PhFOM7G2c+N8hwaYBZEyu021vLrt+6yHbI56HEUuVh2ssGm8O"
 		        + "0xQFHS3lvTT0oBFQKCdUi+sULrTYc9GzARuyS8Rp0BENHGUKVCU5zqKuW/PMk5BHZLd0aGh2VvvtDoxZ6fwqQozPeGyOeOfUFs46dQIDNy+wwIW"
@@ -354,11 +324,11 @@ public class SecurityTest extends BaseContextSensitiveTest {
 		        + "EpIZ0sMQy57/L+utOT4AU5T3n/QiP3QsITdlVCqqY0UMt0+wQhJF++nrliBfQNFm+bQGych3oG4+vxDjoiQ3WJ1OXkmqT92RTELzx/pWRZhvx6a"
 		        + "QR0VMzAdJKrsE5TgNsfYy6AACBiUnujhN+4KRQiFWxrgAfs02Q8eySiPXLghDElym8HgiM2CZdV66UOifHAYtLPZUc3imANE4B31Fvs4VSHtJne"
 		        + "t9mHrJ+FI181rG5bdf62ZsSuziuQ==";
-		
+
 		actual = Security.decrypt(encrypted, initVector, secretKey);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 	}
-	
+
 	/**
 	 * @see Security#encrypt(String)
 	 */
@@ -370,7 +340,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 		assertTrue(StringUtils.hasText(encrypted));
 		String actual = Security.decrypt(encrypted);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
-		
+
 		// long text
 		expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta sapien ac nisi imperdiet posuere. Maecenas nec felis ac enim posuere semper. In arcu turpis, elementum nec auctor id, pretium sed tortor. Quisque sit amet erat ante. Praesent metus dui, porttitor non volutpat eu, porta sed ante. Fusce quis dignissim nisl. Vivamus id massa in nisl sollicitudin iaculis ac ut odio. Morbi et sapien non massa ultricies commodo. Nunc semper, nulla a pellentesque adipiscing, urna nisl vulputate lacus, non rutrum nulla mauris at tortor. Quisque molestie, velit nec vehicula tempor, mi eros fermentum ipsum, ut ullamcorper nisl sem at risus. Nam varius nunc sit amet velit blandit gravida sed vel purus. Nam ac justo ut metus elementum vehicula ac non ante. Aliquam pellentesque semper mauris ut pulvinar."
 		        + "Duis et orci nisi. Mauris tempor consequat felis, vel consequat diam consequat vitae. Donec eget dolor quis nulla lobortis vestibulum. Quisque vel ipsum in sapien egestas blandit. Praesent malesuada tellus nec sapien blandit sit amet molestie magna consequat. Pellentesque quis tempus urna. Quisque ut nibh ut tellus hendrerit rhoncus. Aenean ultricies lorem eu sem condimentum at consectetur magna dignissim. Nam porta lobortis consequat. Suspendisse congue, tellus quis sodales blandit, augue massa interdum sem, vel suscipit ipsum risus vitae massa. Quisque ipsum tellus, gravida sed suscipit non, ultricies eu augue. Etiam consequat consequat massa a accumsan. Quisque rhoncus nisi lectus, vel ultrices sapien. Aenean a felis felis, sit amet vestibulum lorem. Cras ut fermentum magna."
@@ -381,7 +351,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 		assertTrue(StringUtils.hasText(encrypted));
 		actual = Security.decrypt(encrypted);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
-		
+
 		// foreign text
 		expected = "傑里米 (Jeremy), 潔儀 (Kitty) and 贏 (Win) like encryption :-D";
 		encrypted = Security.encrypt(expected);
@@ -389,5 +359,5 @@ public class SecurityTest extends BaseContextSensitiveTest {
 		actual = Security.decrypt(encrypted);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 	}
-	
+
 }
