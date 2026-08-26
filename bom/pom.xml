@@ -46,7 +46,7 @@
 		     of Hibernate Search. Similarly, our version of Hibernate Search must be
 		     compatible with the version of Hibernate and Hibernate must be compatible
 		     with our version of Spring. -->
-		<springVersion>7.0.8</springVersion>
+		<springVersion>7.0.9</springVersion>
 		<springTestVersion>7.0.8</springTestVersion>
 		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
 		<springSecurityVersion>7.0.7</springSecurityVersion>
