@@ -80,14 +80,14 @@ class InitializationFilterE2ETest {
 		// since SchedulerConfig.dataSource() reads them at bean-creation time.
 		originalRuntimeProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(new Properties());
-		InitializationFilter.setInitializationComplete(false);
+		filter.setInitializationComplete(false);
 		InitializationFilter.setInstallationStarted(false);
 	}
 
 	@AfterEach
 	void cleanup() {
 		InitializationFilter.setInstallationStarted(false);
-		InitializationFilter.setInitializationComplete(false);
+		filter.setInitializationComplete(false);
 		Context.setRuntimeProperties(originalRuntimeProperties);
 	}
 
@@ -939,7 +939,7 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void skipFilter_shouldReturnFalseWhenInitializationRequired() {
-		InitializationFilter.setInitializationComplete(false);
+		filter.setInitializationComplete(false);
 
 		boolean result = filter.skipFilter(request);
 
@@ -948,7 +948,7 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void skipFilter_shouldReturnTrueWhenInitializationComplete() {
-		InitializationFilter.setInitializationComplete(true);
+		filter.setInitializationComplete(true);
 
 		boolean result = filter.skipFilter(request);
 
@@ -957,7 +957,7 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void skipFilter_shouldReturnFalseForProgressPollOnSetupPage() {
-		InitializationFilter.setInitializationComplete(true);
+		filter.setInitializationComplete(true);
 		request.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
 		request.setParameter("page", "progress.vm.ajaxRequest");
 
@@ -968,7 +968,7 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void skipFilter_shouldReturnTrueForProgressPollOffSetupPage() {
-		InitializationFilter.setInitializationComplete(true);
+		filter.setInitializationComplete(true);
 		request.setServletPath("/openmrs");
 		request.setParameter("page", "progress.vm.ajaxRequest");
 
@@ -979,7 +979,7 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void skipFilter_shouldReturnTrueForSetupPageRequestThatIsNotTheProgressPoll() {
-		InitializationFilter.setInitializationComplete(true);
+		filter.setInitializationComplete(true);
 		request.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
 
 		boolean result = filter.skipFilter(request);
@@ -989,7 +989,7 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void skipFilter_shouldNotReadRequestParametersOnceInitializationIsComplete() {
-		InitializationFilter.setInitializationComplete(true);
+		filter.setInitializationComplete(true);
 		MockHttpServletRequest req = new MockHttpServletRequest() {
 
 			@Override
