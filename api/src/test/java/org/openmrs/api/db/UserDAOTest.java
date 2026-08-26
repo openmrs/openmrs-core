@@ -69,16 +69,12 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-<<<<<<< HEAD
 	public void openmrsPasswordEncoder_shouldBeRegisteredInSpringContext() {
 		assertNotNull(Context.getRegisteredComponent("openmrsPasswordEncoder", PasswordEncoder.class));
 	}
 
 	@Test
-	public void getUsers_shouldEscapeSqlWildcardsInSearchPhrase() {
-=======
 	public void getUsers_shouldEscapeSqlWildcardsInSearchPhrase() throws Exception {
->>>>>>> 135b0138f (TRUNK-6721: Rewrite UserDAOTest to call DAO methods directly)
 
 		User u = new User();
 		u.setPerson(new Person());
@@ -210,26 +206,24 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-<<<<<<< HEAD
-	public void changePassword_shouldNotInvalidateSecretAnswer() {
-		dao.changePassword(userJoe, PASSWORD);
-		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+	public void changePassword_shouldNotInvalidateSecretAnswer() throws Exception {
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changePassword(userJoe, PASSWORD);
+			dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+		}
 		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
-		dao.changePassword(userJoe, "NewPass456");
+		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
+			dao.changePassword(userJoe, "NewPass456");
+		}
 		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
 	}
 
 	@Test
-	public void isSecretAnswer_shouldReturnTrueWhenTheAnswerMatches() {
-		Context.getUserService().saveUser(userJoe);
-		Context.getUserService().changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
-=======
 	public void isSecretAnswer_shouldReturnTrueWhenTheAnswerMatches() throws Exception {
 		dao.saveUser(userJoe, null);
 		try (AutoCloseable permit = UserServiceImpl.acquirePasswordGuardPermit()) {
 			dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		}
->>>>>>> 135b0138f (TRUNK-6721: Rewrite UserDAOTest to call DAO methods directly)
 		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
 	}
 
