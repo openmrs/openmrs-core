@@ -434,6 +434,41 @@ public final class OpenmrsConstants {
 	 * adhere to
 	 */
 	public static final String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
+
+	/**
+	 * Global property for the Argon2 memory cost parameter (in KiB). Default is 65536 (64 MiB).
+	 * Must be between 1 and 1048576 (1 GiB).
+	 * @since 2.8.10
+	 */
+	public static final String GP_ARGON2_MEMORY = "security.argon2.memory";
+
+	/**
+	 * Global property for the Argon2 time cost parameter (iterations). Default is 3.
+	 * Must be between 1 and 10.
+	 * @since 2.8.10
+	 */
+	public static final String GP_ARGON2_ITERATIONS = "security.argon2.iterations";
+
+	/**
+	 * Global property for the Argon2 parallelism parameter. Default is 1.
+	 * Must be between 1 and 8.
+	 * @since 2.8.10
+	 */
+	public static final String GP_ARGON2_PARALLELISM = "security.argon2.parallelism";
+
+	/**
+	 * Global property for the Argon2 hash output length (in bytes). Default is 32.
+	 * Must be between 4 and 55 to fit in VARCHAR(128).
+	 * @since 2.8.10
+	 */
+	public static final String GP_ARGON2_HASH_LENGTH = "security.argon2.hashLength";
+
+	/**
+	 * Global property for the Argon2 salt length (in bytes). Default is 16.
+	 * Must be between 8 and 32 to fit in VARCHAR(128).
+	 * @since 2.8.10
+	 */
+	public static final String GP_ARGON2_SALT_LENGTH = "security.argon2.saltLength";
 	
 	/**
 	 * Global property name for absolute color for patient graphs.
@@ -902,7 +937,22 @@ public final class OpenmrsConstants {
 		        .add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",
 		                "Configure whether passwords must contain both upper and lower case characters",
 		                BooleanDatatype.class, null));
-		
+
+		props.add(new GlobalProperty(GP_ARGON2_MEMORY, "65536",
+		        "Argon2 memory cost in kilobytes (KB). Higher values increase security but require more memory. Default: 65536 (64 MB). Recommended: 65536-262144 (64-256 MB)."));
+
+		props.add(new GlobalProperty(GP_ARGON2_PARALLELISM, "1",
+		        "Argon2 parallelism factor (number of threads). Higher values increase security but require more CPU. Default: 1. Recommended: 1-4."));
+
+		props.add(new GlobalProperty(GP_ARGON2_ITERATIONS, "3",
+		        "Argon2 time cost (number of iterations). Higher values increase security but slow down hashing. Default: 3. Recommended: 3-4."));
+
+		props.add(new GlobalProperty(GP_ARGON2_HASH_LENGTH, "32",
+		        "Argon2 hash length in bytes. Default: 32. Maximum depends on salt length to fit VARCHAR(128): with 16-byte salt max is 55, with 32-byte salt max is 39. Values are automatically clamped to safe limits."));
+
+		props.add(new GlobalProperty(GP_ARGON2_SALT_LENGTH, "16",
+		        "Argon2 salt length in bytes. Default: 16. Maximum: 32. Higher values reduce maximum allowable hash length to fit VARCHAR(128). Values are automatically clamped to safe limits."));
+
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
 		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",
 		        BooleanDatatype.class, null));
