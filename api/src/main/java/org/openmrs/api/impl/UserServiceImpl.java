@@ -186,9 +186,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			        "Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
 		}
 
-		try (var permit = UserPasswordGuard.acquire()) {
-			return dao.saveUser(user, null);
-		}
+		return dao.saveUser(user, null);
 	}
 
 	public User voidUser(User user, String reason) throws APIException {
@@ -632,9 +630,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			throw new APIException("no.authenticated.user.found", (Object[]) null);
 		}
 		user.setUserProperty(key, value);
-		try (var permit = UserPasswordGuard.acquire()) {
-			return dao.saveUser(user, null);
-		}
+		return dao.saveUser(user, null);
 	}
 
 	@Override
@@ -647,9 +643,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		for (Map.Entry<String, String> entry : properties.entrySet()) {
 			user.setUserProperty(entry.getKey(), entry.getValue());
 		}
-		try (var permit = UserPasswordGuard.acquire()) {
-			return dao.saveUser(user, null);
-		}
+		return dao.saveUser(user, null);
 	}
 
 	/**
@@ -864,6 +858,18 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	/**
+	 * Returns whether the current thread holds a password-guard permit. This is the service-level API
+	 * for the guard check that {@link org.openmrs.api.db.UserDAO} implementations use to verify they
+	 * were called from a service method rather than directly.
+	 *
+	 * @return true if the current thread holds a permit
+	 * @since 3.0.0
+	 */
+	public static boolean isPasswordGuardPermitted() {
+		return UserPasswordGuard.isPermitted();
+	}
+
+	/**
 	 * Guards the password- and credential-mutating methods on {@link UserDAO} so they can only be
 	 * invoked by service code that holds a permit for the current thread. The service acquires a permit
 	 * before calling the DAO and releases it when the returned instance is closed, normally via a
@@ -872,7 +878,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 *
 	 * @since 3.0.0
 	 */
-	public static final class UserPasswordGuard implements AutoCloseable {
+	private static final class UserPasswordGuard implements AutoCloseable {
 
 		private static final ThreadLocal<Integer> DEPTH = ThreadLocal.withInitial(() -> 0);
 
@@ -912,7 +918,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		 * @return true if the current thread holds a permit
 		 * @since 3.0.0
 		 */
-		public static boolean isPermitted() {
+		private static boolean isPermitted() {
 			return DEPTH.get() > 0;
 		}
 	}

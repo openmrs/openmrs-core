@@ -76,9 +76,6 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public User saveUser(User user, String password) {
-		if (!UserServiceImpl.UserPasswordGuard.isPermitted()) {
-			throw new DAOException("Illegal attempt to save user from unknown caller");
-		}
 
 		// only change the user's password when creating a new user
 		boolean isNewUser = user.getUserId() == null;
@@ -341,7 +338,7 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws DAOException {
-		if (!UserServiceImpl.UserPasswordGuard.isPermitted()) {
+		if (!UserServiceImpl.isPasswordGuardPermitted()) {
 			throw new DAOException("Illegal attempt to change user password from unknown caller");
 		}
 
@@ -365,7 +362,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws DAOException {
-		if (!UserServiceImpl.UserPasswordGuard.isPermitted()) {
+		if (!UserServiceImpl.isPasswordGuardPermitted()) {
 			throw new DAOException("Illegal attempt to change user password from unknown caller");
 		}
 
@@ -409,7 +406,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changePassword(String oldPassword, String newPassword) throws DAOException {
-		if (!UserServiceImpl.UserPasswordGuard.isPermitted()) {
+		if (!UserServiceImpl.isPasswordGuardPermitted()) {
 			throw new DAOException("Illegal attempt to change user password from unknown caller");
 		}
 
@@ -450,7 +447,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changeQuestionAnswer(User u, String question, String answer) throws DAOException {
-		if (!UserServiceImpl.UserPasswordGuard.isPermitted()) {
+		if (!UserServiceImpl.isPasswordGuardPermitted()) {
 			throw new DAOException("Illegal attempt to change user password from unknown caller");
 		}
 
@@ -748,7 +745,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void setUserActivationKey(LoginCredential credentials) {
-		if (!UserServiceImpl.UserPasswordGuard.isPermitted()) {
+		if (!UserServiceImpl.isPasswordGuardPermitted()) {
 			throw new DAOException("Illegal attempt to change user password from unknown caller");
 		}
 

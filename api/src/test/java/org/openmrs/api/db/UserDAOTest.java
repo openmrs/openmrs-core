@@ -210,13 +210,6 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void saveUser_shouldNotAllowSavingUserFromUnknownCaller() {
-		Exception caughtException = assertThrows(DAOException.class, () -> dao.saveUser(userJoe, PASSWORD));
-
-		assertThat(caughtException.getMessage(), is("Illegal attempt to save user from unknown caller"));
-	}
-
-	@Test
 	public void changePasswordString_shouldNotAllowChangingPasswordFromUnknownCaller() {
 		Exception caughtException = assertThrows(DAOException.class, () -> dao.changePassword("old", "new"));
 
@@ -283,7 +276,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		Context.getUserService().changePassword(PASSWORD, PASSWORD + "foo");
 		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 
-		assertFalse(UserServiceImpl.UserPasswordGuard.isPermitted());
+		assertFalse(UserServiceImpl.isPasswordGuardPermitted());
 		assertTrue(dao.getLoginCredential(userJoe).checkPassword(PASSWORD + "foo"));
 	}
 
