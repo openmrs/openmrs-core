@@ -12,18 +12,26 @@ package org.openmrs.api.db.hibernate;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Role;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
+
+	private static final String EXISTING_PROPERTY = "concept.defaultConceptMapType";
 
 	@Autowired
 	private HibernateAdministrationDAO dao;
@@ -149,5 +157,114 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(role, "type");
 		dao.validate(role, errors);
 		assertFalse(errors.hasFieldErrors("role"));
+	}
+
+	/**
+	 * Loads the property once so that it is held in the second-level cache, leaving the session empty
+	 * so that only that cache can answer the next read.
+	 * <p>
+	 * The session is flushed <b>before</b> the warming read, not after. Loading the test dataset can
+	 * leave inserts pending in the session, and flushing those writes to <code>global_property</code>
+	 * invalidates the cache region for the entity. Warming after the flush means nothing is left to
+	 * invalidate what we just cached, which is what makes this test independent of whichever tests ran
+	 * before it.
+	 */
+	private void warmSecondLevelCache() {
+		Context.flushSession();
+		Context.clearSession();
+
+		assertNotNull(dao.getGlobalPropertyObject(EXISTING_PROPERTY));
+
+		Context.clearSession();
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldServeRepeatedReadsFromTheSecondLevelCache() {
+		warmSecondLevelCache();
+
+		long queriesBefore = sessionFactory.getStatistics().getPrepareStatementCount();
+		long cacheHitsBefore = sessionFactory.getStatistics().getSecondLevelCacheHitCount();
+
+		assertNotNull(dao.getGlobalPropertyObject(EXISTING_PROPERTY));
+
+		assertEquals(queriesBefore, sessionFactory.getStatistics().getPrepareStatementCount(),
+		    "reading a warm global property should not issue any statement");
+		assertTrue(sessionFactory.getStatistics().getSecondLevelCacheHitCount() > cacheHitsBefore,
+		    "reading a warm global property should hit the second level cache");
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldNotQueryTheCaseSensitivePropertyOnAnExactMatch() {
+		// the case sensitivity property is only consulted when the exact match misses, so a lookup
+		// that matches exactly must not need the fallback query at all
+		warmSecondLevelCache();
+
+		long queryExecutionsBefore = sessionFactory.getStatistics().getQueryExecutionCount();
+
+		assertNotNull(dao.getGlobalPropertyObject(EXISTING_PROPERTY));
+
+		assertEquals(queryExecutionsBefore, sessionFactory.getStatistics().getQueryExecutionCount(),
+		    "an exact match should not fall back to the case insensitive query");
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldStillMatchCaseInsensitively() {
+		String expectedValue = dao.getGlobalPropertyObject(EXISTING_PROPERTY).getPropertyValue();
+
+		GlobalProperty upperCased = dao.getGlobalPropertyObject(EXISTING_PROPERTY.toUpperCase());
+		assertNotNull(upperCased, "an upper cased name should still resolve");
+		assertEquals(expectedValue, upperCased.getPropertyValue());
+
+		GlobalProperty lowerCased = dao.getGlobalPropertyObject(EXISTING_PROPERTY.toLowerCase());
+		assertNotNull(lowerCased, "a lower cased name should still resolve");
+		assertEquals(expectedValue, lowerCased.getPropertyValue());
+
+		// Asserting on the value rather than on getProperty(): when the database itself compares
+		// strings without regard to case, Hibernate hands back an entity whose identifier is the
+		// name that was asked for rather than the one stored in the row. That is true of the H2
+		// test database, which is created with IGNORECASE=TRUE, and of MySQL under a case
+		// insensitive collation. The value comes from the row either way, so it is what proves the
+		// right property was found.
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldReturnNullForAPropertyThatDoesNotExist() {
+		assertNull(dao.getGlobalPropertyObject("some.property.that.is.not.set"));
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldFailForANullPropertyName() {
+		// the property name is the identifier, so Hibernate rejects a null one. Pinned here so that
+		// this does not silently become a null return in a later refactor.
+		assertThrows(IllegalArgumentException.class, () -> dao.getGlobalPropertyObject(null));
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldFindAPropertyThatHasNotBeenFlushedYet() {
+		String propertyName = "unflushed.property";
+		dao.saveGlobalProperty(new GlobalProperty(propertyName, "unflushed value"));
+
+		GlobalProperty saved = dao.getGlobalPropertyObject(propertyName);
+
+		assertNotNull(saved, "a property still sitting unflushed in the session should be found");
+		assertEquals("unflushed value", saved.getPropertyValue());
 	}
 }

@@ -45,6 +45,8 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EventListeners;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.RefByUuid;
+import org.openmrs.api.cache.CachedGlobalProperty;
+import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.customdatatype.CustomDatatype;
@@ -92,6 +94,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	protected AdministrationDAO dao;
 
 	@Autowired
+	private GlobalPropertyCache globalPropertyCache;
+
+	@Autowired
 	@Qualifier("openmrsEventListeners")
 	private EventListeners eventListeners;
 
@@ -118,6 +123,17 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	public void setAdministrationDAO(AdministrationDAO dao) {
 		this.dao = dao;
+	}
+
+	/**
+	 * Mainly for tests that build this service by hand. An unproxied {@link GlobalPropertyCache} simply
+	 * delegates to the loader without caching, which is usually what such a test wants.
+	 *
+	 * @param globalPropertyCache the cache to use for global property lookups
+	 * @since 3.0.0
+	 */
+	public void setGlobalPropertyCache(GlobalPropertyCache globalPropertyCache) {
+		this.globalPropertyCache = globalPropertyCache;
 	}
 
 	public void setEventListeners(EventListeners eventListeners) {
@@ -178,17 +194,22 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			return null;
 		}
 
-		GlobalProperty gp = dao.getGlobalPropertyObject(propertyName);
-		if (gp != null) {
-			if (canViewGlobalProperty(gp)) {
-				return gp.getPropertyValue();
-			} else {
-				throw new APIException("GlobalProperty.error.privilege.required.view",
-				        new Object[] { gp.getViewPrivilege().getPrivilege(), propertyName });
-			}
-		} else {
+		// Note that only the property data is cached, never the outcome of the privilege check
+		// below. The check has to run on every call, otherwise one user's read would warm the
+		// cache and let the next user past a privilege they do not hold.
+		CachedGlobalProperty cached = globalPropertyCache.get(propertyName, () -> dao.getGlobalPropertyObject(propertyName));
+
+		if (!cached.isPresent()) {
 			return null;
 		}
+
+		String viewPrivilege = cached.getViewPrivilege();
+		if (viewPrivilege != null && !Context.getAuthenticatedUser().hasPrivilege(viewPrivilege)) {
+			throw new APIException("GlobalProperty.error.privilege.required.view",
+			        new Object[] { viewPrivilege, propertyName });
+		}
+
+		return cached.getValue();
 	}
 
 	private boolean canViewGlobalProperty(GlobalProperty property) {
@@ -292,6 +313,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 
 		gp.setPropertyValue(propertyValue);
 		dao.saveGlobalProperty(gp);
+		globalPropertyCache.evict(propertyName);
 	}
 
 	/**
@@ -333,6 +355,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 
 		notifyGlobalPropertyDelete(globalProperty.getProperty());
 		dao.deleteGlobalProperty(globalProperty);
+		globalPropertyCache.evict(globalProperty.getProperty());
 	}
 
 	/**
@@ -396,6 +419,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 
 			CustomDatatypeUtil.saveIfDirty(gp);
 			dao.saveGlobalProperty(gp);
+			globalPropertyCache.evict(gp.getProperty());
 			notifyGlobalPropertyChange(gp);
 			return gp;
 		}
@@ -1110,11 +1134,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		GlobalProperty gp = new GlobalProperty(propertyName, OpenmrsConstants.OPENMRS_VERSION_SHORT,
 		        "Saved core version for future restarts");
 		dao.saveGlobalProperty(gp);
+		globalPropertyCache.evict(propertyName);
 	}
 
 	protected void storeModuleVersion(String moduleId, String version) {
 		String propertyName = "module." + moduleId + ".version";
 		GlobalProperty gp = new GlobalProperty(propertyName, version, "Saved module version for future restarts");
 		dao.saveGlobalProperty(gp);
+		globalPropertyCache.evict(propertyName);
 	}
 }

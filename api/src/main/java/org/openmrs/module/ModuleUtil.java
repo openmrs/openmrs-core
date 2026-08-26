@@ -910,6 +910,11 @@ public class ModuleUtil {
 		}
 		log.debug("Done refreshing context");
 
+		// Modules may have inserted or changed global properties through Liquibase while starting,
+		// which happens entirely outside the API and so evicts nothing. Drop the API caches so that
+		// anything cached from before the refresh is re-read.
+		ServiceContext.getInstance().clearEntireApiCache();
+
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 

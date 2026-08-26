@@ -5,3 +5,7 @@ caches:
         configuration: "entity"
     serializerWhiteListTypes:
         configuration: "entity"
+    globalProperty:
+        configuration: "entity"
+        memory:
+            maxCount: 5000
