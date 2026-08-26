@@ -81,11 +81,9 @@ public class GZIPFilterTest extends BaseWebContextSensitiveTest {
 		req.addHeader("Content-encoding", "gzip");
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		GZIPOutputStream gzOutput = new GZIPOutputStream(stream);
-		PrintWriter pwriter = new PrintWriter(gzOutput);
-		pwriter.write("message string");
-		pwriter.flush();
-		gzOutput.finish();
+		try (GZIPOutputStream gzOutput = new GZIPOutputStream(stream)) {
+			gzOutput.write("message string".getBytes(StandardCharsets.UTF_8));
+		}
 		req.setContent(stream.toByteArray());
 
 		MockHttpServletResponse resp = new MockHttpServletResponse();
