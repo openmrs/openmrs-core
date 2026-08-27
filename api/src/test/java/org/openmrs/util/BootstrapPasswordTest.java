@@ -125,19 +125,64 @@ class BootstrapPasswordTest {
 	}
 
 	@Test
-	void testIsBootstrapPasswordExpired_shouldReturnTrueWhenUserHasChangePasswordFlag() {
-		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "true");
+	void testIsBootstrapPasswordExpired_shouldBeFalseWhenNothingHasConsumedTheBootstrapPassword() {
+		assertFalse(Security.isBootstrapPasswordExpired(user));
+	}
+
+	@Test
+	void testIsBootstrapPasswordExpired_shouldBeTrueWhenBootstrapPasswordWasConsumed() {
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_EXPIRED, "true");
 		assertTrue(Security.isBootstrapPasswordExpired(user));
 	}
 
 	@Test
-	void testIsBootstrapPasswordExpired_shouldReturnFalseWhenUserDoesNotHaveChangePasswordFlag() {
-		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "false");
+	void testIsBootstrapPasswordExpired_shouldNotBeSetByTheForcePasswordFlagAlone() {
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "true");
 		assertFalse(Security.isBootstrapPasswordExpired(user));
+	}
+
+	@Test
+	void testIsBootstrapPasswordExpired_shouldNotBeClearedWhenTheForcePasswordFlagIsCleared() {
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_EXPIRED, "true");
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "false");
+		assertTrue(Security.isBootstrapPasswordExpired(user));
 	}
 
 	@Test
 	void testIsBootstrapPasswordExpired_shouldReturnFalseForNullUser() {
 		assertFalse(Security.isBootstrapPasswordExpired(null));
+	}
+
+	@Test
+	void testForcePasswordChange_shouldAlsoExpireTheBootstrapPassword() {
+		Security.forcePasswordChange(user);
+		assertEquals("true", user.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
+		assertTrue(Security.isBootstrapPasswordExpired(user));
+	}
+
+	@Test
+	void testValidateBootstrapPassword_shouldNotBeBlockedByTheForcePasswordFlagAlone() {
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "true");
+		String password = Security.generateBootstrapPassword(user);
+		assertTrue(Security.validateBootstrapPassword(user, password));
+	}
+
+	@Test
+	void testValidateBootstrapPassword_shouldReturnFalseForAnExpiredBootstrapPassword() {
+		String password = Security.generateBootstrapPassword(user);
+		assertTrue(Security.validateBootstrapPassword(user, password));
+
+		Security.forcePasswordChange(user);
+
+		assertFalse(Security.validateBootstrapPassword(user, password));
+	}
+
+	@Test
+	void testValidateBootstrapPassword_shouldReturnFalseForAnExpiredBootstrapPasswordEvenAfterThePasswordIsCleared() {
+		String password = Security.generateBootstrapPassword(user);
+		Security.forcePasswordChange(user);
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "false");
+
+		assertFalse(Security.validateBootstrapPassword(user, password));
 	}
 }

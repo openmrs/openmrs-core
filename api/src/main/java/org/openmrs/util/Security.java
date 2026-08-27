@@ -52,7 +52,7 @@ public class Security {
 
 	// required so we can hash passwords at startup.
 	private static final PasswordEncoder FALLBACK_ENCODER = new LegacyOpenmrsPasswordEncoder();
-
+	
 	private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA256";
 	private static final int PBKDF2_DEFAULT_ITERATIONS = 600000;
 	private static final int PBKDF2_KEY_LENGTH = 256;
@@ -112,7 +112,7 @@ public class Security {
 		if (hashedPassword == null || passwordToHash == null) {
 			throw new APIException("password.cannot.be.null", (Object[]) null);
 		}
-
+		
 		return hashedPassword.equals(encodeString(passwordToHash))
 			|| hashedPassword.equals(encodeStringSHA1(passwordToHash))
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
@@ -131,7 +131,7 @@ public class Security {
 	 * @param user the user for whom to generate the bootstrap password
 	 * @return the generated bootstrap password (a user-friendly string)
 	 * @throws APIException if user is null, has no UUID, or the pepper is not configured
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	public static String generateBootstrapPassword(org.openmrs.User user) {
 		if (user == null) {
@@ -165,7 +165,7 @@ public class Security {
 	 * @param salt  the per-user salt (typically the user's UUID)
 	 * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
 	 * @throws APIException if input or salt is null
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	public static String generateDeterministicHash(String input, String salt) {
 		return generateDeterministicHash(input, salt, PBKDF2_DEFAULT_ITERATIONS);
@@ -187,7 +187,7 @@ public class Security {
 	 * @param iterations the number of PBKDF2 iterations (use 0 to apply the default)
 	 * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
 	 * @throws APIException if input or salt is null
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	public static String generateDeterministicHash(String input, String salt, int iterations) {
 		if (input == null || salt == null) {
@@ -222,7 +222,7 @@ public class Security {
 	 * The pepper is read from the runtime property "openmrs.bootstrap.pepper".
 	 *
 	 * @return the pepper, or null if not configured
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	public static String getBootstrapPepper() {
 		return Context.getRuntimeProperties()
@@ -236,7 +236,7 @@ public class Security {
 	 * Falls back to default (600,000) if not configured or invalid.
 	 *
 	 * @return the number of iterations (always > 0)
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	public static int getBootstrapIterations() {
 		String value = Context.getRuntimeProperties().getProperty("openmrs.bootstrap.iterations");
@@ -261,8 +261,8 @@ public class Security {
 	 *
 	 * @param user the user
 	 * @param password the password to validate
-	 * @return true if the password matches the user's bootstrap password and the user has not been forced to change
-	 * @since 2.8.9
+	 * @return true if the password matches the user's bootstrap password and the bootstrap password has not expired
+	 * @since 2.8.10
 	 */
 	public static boolean validateBootstrapPassword(org.openmrs.User user, String password) {
 		if (user == null || password == null) {
@@ -288,32 +288,39 @@ public class Security {
 	/**
 	 * Checks if a user's bootstrap password has expired.
 	 *
-	 * Bootstrap passwords are expired if the user has the "forcePassword" user property set to "true".
+	 * A bootstrap password is considered expired once the user has been
+	 * successfully authenticated with it and was forced to change their password.
+	 * This is tracked with the dedicated
+	 * {@link OpenmrsConstants#USER_PROPERTY_BOOTSTRAP_PASSWORD_EXPIRED} user property,
+	 * which is independent of the general "forcePassword" user property. It only ever
+	 * moves from unset to "true", so a consumed bootstrap password stays expired.
 	 *
 	 * @param user the user
 	 * @return true if the bootstrap password is expired
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	public static boolean isBootstrapPasswordExpired(org.openmrs.User user) {
 		if (user == null) {
 			return false;
 		}
-		String forcePassword = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
-		return "true".equals(forcePassword);
+		String expired = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_EXPIRED);
+		return "true".equals(expired);
 	}
 
 	/**
 	 * Forces a user to change their password on next login.
 	 *
-	 * Sets the "forcePassword" user property to "true".
-	 * The user will be redirected to change password on next login.
+	 * Sets the "forcePassword" user property to "true". Also marks any issued
+	 * bootstrap password as expired, so a bootstrap credential that has already
+	 * been consumed cannot be used again.
 	 *
 	 * @param user the user whose password change should be forced
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	public static void forcePasswordChange(org.openmrs.User user) {
 		if (user != null) {
 			user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "true");
+			user.setUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_EXPIRED, "true");
 		}
 	}
 

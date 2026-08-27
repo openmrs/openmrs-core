@@ -617,7 +617,7 @@ public interface UserService extends OpenmrsService {
 	 * @param user the user for whom to generate the bootstrap password
 	 * @return the generated bootstrap password
 	 * @throws APIException if the user is null, has no UUID, or pepper is not configured
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
 	String generateBootstrapPassword(User user);
@@ -627,8 +627,8 @@ public interface UserService extends OpenmrsService {
 	 *
 	 * @param user the user
 	 * @param password the password to validate
-	 * @return true if the password matches the user's bootstrap password
-	 * @since 2.8.9
+	 * @return true if the password matches the user's bootstrap password and the bootstrap password has not expired
+	 * @since 2.8.10
 	 */
 	@Authorized({ PrivilegeConstants.GET_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })
@@ -638,9 +638,11 @@ public interface UserService extends OpenmrsService {
 	 * Forces a user to change their password on next login.
 	 *
 	 * This is typically called after a user successfully logs in with a bootstrap password.
+	 * It also marks any issued bootstrap password as expired, so the consumed
+	 * bootstrap credential cannot be used again.
 	 *
 	 * @param user the user whose password change should be forced
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
 	void forcePasswordChange(User user);
@@ -650,10 +652,13 @@ public interface UserService extends OpenmrsService {
 	 *
 	 * Bootstrap passwords are considered expired when the user has been
 	 * successfully authenticated with them and was forced to change their password.
+	 * Expiry is tracked in a dedicated user property independent of the general
+	 * force-password flag and only ever moves one way, so a consumed bootstrap
+	 * password stays expired.
 	 *
 	 * @param user the user
 	 * @return true if the bootstrap password is expired
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	@Authorized({ PrivilegeConstants.GET_USERS })
 	boolean isBootstrapPasswordExpired(User user);
