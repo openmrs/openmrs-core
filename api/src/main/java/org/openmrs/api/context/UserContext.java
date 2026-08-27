@@ -248,6 +248,10 @@ public class UserContext implements Serializable {
 	 * @param privilege to give to users
 	 */
 	public void addProxyPrivilege(String privilege) {
+		if (privilege == null) {
+			throw new IllegalArgumentException("UserContext.addProxyPrivilege does not accept null privileges");
+		}
+
 		log.debug("Adding proxy privilege: {}", privilege);
 		proxies.add(privilege);
 	}
@@ -258,6 +262,10 @@ public class UserContext implements Serializable {
 	 * @param privilege Privilege to remove in string form
 	 */
 	public void removeProxyPrivilege(String privilege) {
+		if (privilege == null) {
+			return;
+		}
+
 		log.debug("Removing privilege: {}", privilege);
 		proxies.remove(privilege);
 	}
