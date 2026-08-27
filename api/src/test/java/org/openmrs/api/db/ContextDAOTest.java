@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.annotation.Resource;
@@ -35,6 +34,7 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.Security;
 import org.springframework.stereotype.Component;
 
 /**
@@ -415,11 +415,13 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void authenticate_shouldUpgradeLegacyPasswordToArgon2idOnSuccessfulLogin() {
+	public void authenticate_shouldUpgradeLegacyPasswordOnSuccessfulLogin() {
 		User user = dao.authenticate("admin", "test");
 		assertNotNull(user);
 		UserDAO userDAO = (UserDAO) applicationContext.getBean("userDAO");
 		LoginCredential credential = userDAO.getLoginCredential(user);
 		assertNotNull(credential.getHashedPassword());
+		assertFalse(Security.needsUpgrade(credential.getHashedPassword()),
+			"Password hash should have been upgraded and no longer need upgrading");
 	}
 }

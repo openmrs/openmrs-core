@@ -115,7 +115,7 @@ public class HibernateUserDAO implements UserDAO {
 	/**
 	 * Updates the password only if the stored hash still matches the expected old hash.
 	 *
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	boolean conditionallyUpdateUserPassword(Integer userId, String oldHashedPassword,
 			String newHashedPassword, Integer changedBy, Date dateChanged) {

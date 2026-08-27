@@ -199,10 +199,11 @@ public class HibernateContextDAO implements ContextDAO {
 				// Lazy rehash: if password is legacy, upgrade to Argon2id transparently
 				if (passwordOnRecord != null && Security.needsUpgrade(passwordOnRecord)) {
 					try {
-						self.upgradePasswordHash(candidateUser, password, saltOnRecord);
+						String newHash = Security.encodePassword(password + (saltOnRecord != null ? saltOnRecord : ""));
+						self.upgradePasswordHash(candidateUser, passwordOnRecord, newHash);
 					}
 					catch (Exception e) {
-						log.error("Failed to upgrade password hash for user {}: {}",
+						log.error("Failed to upgrade password hash for user {}",
 							candidateUser.getUsername(), e);
 						// login still succeeds — upgrade failure is non-fatal
 					}
@@ -355,31 +356,36 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @param user the authenticated user whose password needs upgrading
 	 * @param rawPassword the plaintext password
 	 * @param salt the legacy salt from the database
-	 * @since 2.8.9
+	 * @since 2.8.10
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void upgradePasswordHash(User user, String rawPassword, String salt) {
-		LoginCredential credential = userDao.getLoginCredential(user);
-		if (credential.getHashedPassword() == null || Security.needsUpgrade(credential.getHashedPassword())) {
-			if (!Security.checkPassword(credential.getHashedPassword(), rawPassword + (salt != null ? salt : ""))) {
-				log.warn("Refusing to upgrade password hash for user {}: password does not match",
-					user.getUsername());
-				return;
-			}
-			String newHash = Security.encodePassword(rawPassword + (salt != null ? salt : ""));
-			boolean upgraded = ((HibernateUserDAO) userDao).conditionallyUpdateUserPassword(
-				user.getUserId(),
-				credential.getHashedPassword(),
-				newHash,
-				user.getUserId(),
-				new Date()
-			);
-			if (upgraded) {
-				log.info("Successfully upgraded password hash for user: {}", user.getUsername());
-			} else {
-				log.debug("Password upgrade skipped for user {} — already changed", user.getUsername());
-			}
+	public void upgradePasswordHash(User user, String oldHash, String newHash) {
+		boolean upgraded = conditionallyUpdateUserPassword(
+			user.getUserId(),
+			oldHash,
+			newHash,
+			user.getUserId(),
+			new Date()
+		);
+		if (upgraded) {
+			log.info("Successfully upgraded password hash for user: {}", user.getUsername());
+		} else {
+			log.debug("Password upgrade skipped for user {} — already changed", user.getUsername());
 		}
+	}
+
+	private boolean conditionallyUpdateUserPassword(Integer userId, String oldHashedPassword,
+			String newHashedPassword, Integer changedBy, Date dateChanged) {
+		String sql = "UPDATE users SET password = :newHash, date_changed = :dateChanged, changed_by = :changedBy "
+				+ "WHERE user_id = :userId AND password = :oldHash";
+		int rows = sessionFactory.getCurrentSession().createNativeQuery(sql)
+				.setParameter("newHash", newHashedPassword)
+				.setParameter("dateChanged", dateChanged)
+				.setParameter("changedBy", changedBy)
+				.setParameter("userId", userId)
+				.setParameter("oldHash", oldHashedPassword)
+				.executeUpdate();
+		return rows > 0;
 	}
 	
 	/**

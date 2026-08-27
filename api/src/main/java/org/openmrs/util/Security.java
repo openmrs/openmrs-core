@@ -379,6 +379,13 @@ public class Security {
 		return skey.getEncoded();
 	}
 
+	/**
+	 * Checks if the stored encoded password needs to be upgraded.
+	 *
+	 * @param storedEncodedPassword the stored encoded password
+	 * @return true if the password needs to be upgraded, false otherwise
+	 * @since 2.8.10
+	 */
 	public static boolean needsUpgrade(String storedEncodedPassword) {
 		return getPasswordEncoder().upgradeEncoding(storedEncodedPassword);
 	}
