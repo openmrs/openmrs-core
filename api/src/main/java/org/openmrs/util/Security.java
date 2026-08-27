@@ -26,11 +26,9 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.GlobalPropertyListener;
-import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
-import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
@@ -125,24 +123,22 @@ public class Security implements GlobalPropertyListener {
 		if (cachedSaltLength == null || cachedHashLength == null || cachedParallelism == null
 			|| cachedMemory == null || cachedIterations == null) {
 			synchronized (Security.class) {
-				if (cachedSaltLength == null || cachedHashLength == null || cachedParallelism == null
-					|| cachedMemory == null || cachedIterations == null) {
-					if (Context.isSessionOpen()) {
-						try {
-							Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-							AdministrationService adminService = Context.getAdministrationService();
-							cachedSaltLength = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16"), 16);
-							cachedHashLength = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32"), 32);
-							cachedParallelism = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1"), 1);
-							cachedMemory = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536"), 65536);
-							cachedIterations = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3"), 3);
-						} catch (Exception e) {
-							// Do NOT poison the cache with defaults and do NOT latch a "loaded" flag.
-							// Leave the fields null so the next call retries the GP read.
-							log.debug("Unable to read Argon2 global properties (will retry next call): {}", e.getMessage());
-						} finally {
-							Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-						}
+				if ((cachedSaltLength == null || cachedHashLength == null || cachedParallelism == null
+					|| cachedMemory == null || cachedIterations == null) && Context.isSessionOpen()) {
+					try {
+						Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+						AdministrationService adminService = Context.getAdministrationService();
+						cachedSaltLength = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16"), 16);
+						cachedHashLength = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32"), 32);
+						cachedParallelism = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1"), 1);
+						cachedMemory = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536"), 65536);
+						cachedIterations = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3"), 3);
+					} catch (Exception e) {
+						// Do NOT poison the cache with defaults and do NOT latch a "loaded" flag.
+						// Leave the fields null so the next call retries the GP read.
+						log.debug("Unable to read Argon2 global properties (will retry next call): {}", e.getMessage());
+					} finally {
+						Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 					}
 				}
 			}
@@ -371,31 +367,6 @@ public class Security implements GlobalPropertyListener {
 			return MAX_PARALLELISM;
 		}
 		return -1;
-	}
-
-	/**
-	 * Calculates whether the given hash and salt lengths will produce a PHC string
-	 * that fits within the VARCHAR(128) database column.
-	 *
-	 * PHC format: $argon2id$v=19$m=X,t=Y,p=Z$SALT$HASH
-	 * Actual header is 31 chars with default params ($argon2id$v=19$m=65536,t=3,p=1$)
-	 */
-	private static boolean isPhcLengthSafe(int hashLength, int saltLength) {
-		int headerLength = 31;
-		int saltEncodedLength = (int) Math.ceil(saltLength / 3.0) * 4;
-		int hashEncodedLength = (int) Math.ceil(hashLength / 3.0) * 4;
-		int totalLength = headerLength + saltEncodedLength + hashEncodedLength;
-		return totalLength <= 128;
-	}
-
-	/**
-	 * Calculates the maximum safe hash length for a given salt length to fit in VARCHAR(128).
-	 */
-	private static int calculateSafeHashLength(int saltLength) {
-		int headerLength = 31;
-		int saltEncodedLength = (int) Math.ceil(saltLength / 3.0) * 4;
-		int availableForHash = 128 - headerLength - saltEncodedLength;
-		return Math.max(4, (availableForHash / 4) * 3);
 	}
 
 	private static String encodeString(String strToEncode, String algorithm) {

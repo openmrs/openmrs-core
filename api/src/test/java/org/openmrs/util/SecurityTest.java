@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
 /**
  * Tests the methods on the {@link Security} class
  */
-public class SecurityTest extends BaseContextSensitiveTest {
+class SecurityTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private AdministrationService administrationService;
@@ -92,7 +92,7 @@ public class SecurityTest extends BaseContextSensitiveTest {
 			Security.resetEncoder();
 			String hash2 = Security.encodeStringArgon2("test");
 			assertTrue(hash2.startsWith("$argon2id$"), "Expected Argon2id PHC format, got: " + hash2.substring(0, 20));
-			assertFalse(hash1.equals(hash2), "Different configs must produce different hashes");
+			assertNotEquals(hash1, hash2, "Different configs must produce different hashes");
 		}
 		finally {
 			restoreGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, originalSaltLength);
