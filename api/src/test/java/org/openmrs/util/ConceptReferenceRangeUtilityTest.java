@@ -13,6 +13,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -475,7 +476,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	@Test
 	public void testTimeOfDay_atMidnight_shouldReturnZero() {
 		// Create a fixed clock at LOCAL midnight
-		Clock midnightClock = Clock.fixed(LocalDateTime.of(2026, 8, 13, 0, 0, 0).atZone(ZoneId.systemDefault()).toInstant(),
+		Clock midnightClock = Clock.fixed(
+		    LocalDateTime.of(2026, Month.AUGUST, 13, 0, 0, 0).atZone(ZoneId.systemDefault()).toInstant(),
 		    ZoneId.systemDefault());
 
 		ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility(midnightClock);
@@ -489,13 +491,56 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void testTimeOfDay_atOneSecondBeforeMidnight_shouldReturnTwentyThree() {
 		// Create a fixed clock at LOCAL 23:59:59
 		Clock almostMidnightClock = Clock.fixed(
-		    LocalDateTime.of(2026, 8, 13, 23, 59, 59).atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+		    LocalDateTime.of(2026, Month.AUGUST, 13, 23, 59, 59).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
 
 		ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility(almostMidnightClock);
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
 		assertTrue(utility.evaluateCriteria("$fn.getCurrentHour() == 23", obs));
+	}
+
+	@Test
+	public void getDays_shouldUseTheInjectedClockAsNow() {
+		Clock clock = Clock.fixed(LocalDateTime.of(2026, Month.AUGUST, 13, 12, 0).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
+		person.setBirthdate(
+		    Date.from(LocalDateTime.of(2026, Month.AUGUST, 3, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(new ConceptReferenceRangeUtility(clock).evaluateCriteria("$fn.getDays($patient.birthdate) == 10", obs));
+	}
+
+	@Test
+	public void isEnrolledInProgram_shouldUseTheInjectedClockWhenOnDateIsNull() {
+		Obs obs = buildObs();
+		obs.setPerson(Context.getPatientService().getPatient(2)); // enrolled from 2008-08-01
+
+		Clock clock = Clock.fixed(LocalDateTime.of(2006, Month.JANUARY, 1, 12, 0).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, null)", obs));
+		assertFalse(new ConceptReferenceRangeUtility(clock)
+		        .evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, null)", obs));
+	}
+
+	@Test
+	public void isInProgramState_shouldUseTheInjectedClockWhenOnDateIsNull() {
+		Obs obs = buildObs();
+		obs.setPerson(Context.getPatientService().getPatient(2));
+
+		// enrolled in the program from 2008-08-01, but not in this state until 2008-08-08
+		Clock clock = Clock.fixed(LocalDateTime.of(2008, Month.AUGUST, 5, 12, 0).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, null)", obs));
+		assertFalse(new ConceptReferenceRangeUtility(clock)
+		        .evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, null)", obs));
 	}
 
 	@Test
@@ -949,7 +994,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void isEnrolledInProgram_shouldReturnFalseIfPatientIsNotEnrolledInProgramOnDate() {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
-		ZonedDateTime specificDate = ZonedDateTime.of(2006, 1, 1, 1, 1, 0, 0, ZoneId.systemDefault());
+		ZonedDateTime specificDate = LocalDateTime.of(2006, Month.JANUARY, 1, 1, 1, 0, 0).atZone(ZoneId.systemDefault());
 		obs.setObsDatetime(Date.from(specificDate.toInstant()));
 		obs.setPerson(patient);
 		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
@@ -989,7 +1034,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void isInProgramState_shouldReturnFalseIfPatientIsNotInStateOnDate() {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
-		ZonedDateTime specificDate = ZonedDateTime.of(2006, 1, 1, 1, 1, 0, 0, ZoneId.systemDefault());
+		ZonedDateTime specificDate = LocalDateTime.of(2006, Month.JANUARY, 1, 1, 1, 0, 0).atZone(ZoneId.systemDefault());
 		obs.setObsDatetime(Date.from(specificDate.toInstant()));
 		obs.setPerson(patient);
 		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
