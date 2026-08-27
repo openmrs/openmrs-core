@@ -9,12 +9,9 @@
  */
 package org.openmrs.web.filter;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import jakarta.servlet.FilterChain;
@@ -29,6 +26,7 @@ import org.mockito.Mockito;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.GlobalPropertiesTestHelper;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -62,8 +60,9 @@ public class GZIPFilterTest extends BaseWebContextSensitiveTest {
 	 * it, so the value does not leak into whatever test runs next in this JVM.
 	 */
 	@AfterEach
-	public void purgeAcceptedPathsProperty() {
+	public void purgeGlobalProperties() {
 		globalProperties.purgeGlobalProperty(ACCEPT_PATHS);
+		globalProperties.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED);
 	}
 
 	/**
@@ -145,6 +144,34 @@ public class GZIPFilterTest extends BaseWebContextSensitiveTest {
 		req.setContent(bytes.toByteArray());
 
 		return req;
+	}
+
+	@Test
+	public void doFilterInternal_shouldCompressResponseWhenGZIPIsSupportedAndEnabled() throws Exception {
+		globalProperties.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, "true");
+
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.addHeader("Accept-Encoding", "gzip");
+
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain filterChain = (req, res) -> {
+			res.getOutputStream().write("message string".getBytes(StandardCharsets.UTF_8));
+		};
+
+		GZIPFilter gzipFilter = new GZIPFilter();
+
+		gzipFilter.doFilterInternal(request, response, filterChain);
+
+		assertThat(response.getHeader("Content-Encoding"), is("gzip"));
+
+		byte[] compressedResponse = response.getContentAsByteArray();
+
+		try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(compressedResponse));
+		        InputStreamReader reader = new InputStreamReader(gzipInputStream, StandardCharsets.UTF_8);
+		        BufferedReader bufferedReader = new BufferedReader(reader)) {
+
+			assertThat(bufferedReader.readLine(), is("message string"));
+		}
 	}
 
 }
