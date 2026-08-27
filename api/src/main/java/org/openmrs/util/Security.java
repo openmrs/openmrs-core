@@ -8,12 +8,14 @@
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
+
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Properties;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -22,10 +24,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
@@ -38,7 +37,7 @@ import org.springframework.util.StringUtils;
 /**
  * OpenMRS's security class deals with the hashing of passwords.
  */
-public class Security implements GlobalPropertyListener {
+public class Security {
 
 	/**
 	 * encryption settings
@@ -51,6 +50,20 @@ public class Security implements GlobalPropertyListener {
 
 	private static final String SHA1 = "SHA-1";
 
+	/**
+	 * Names of the Argon2 work-factor runtime properties (set in
+	 * openmrs-runtime.properties, not in the database).
+	 */
+	private static final String ARGON2_MEMORY_PROPERTY = "security.argon2.memory";
+
+	private static final String ARGON2_ITERATIONS_PROPERTY = "security.argon2.iterations";
+
+	private static final String ARGON2_PARALLELISM_PROPERTY = "security.argon2.parallelism";
+
+	private static final String ARGON2_SALT_LENGTH_PROPERTY = "security.argon2.saltLength";
+
+	private static final String ARGON2_HASH_LENGTH_PROPERTY = "security.argon2.hashLength";
+
 	private static final int MAX_MEMORY_KB = 1048576;
 
 	private static final int MAX_ITERATIONS = 10;
@@ -59,8 +72,11 @@ public class Security implements GlobalPropertyListener {
 
 	private static final int MAX_SALT_LENGTH = 32;
 
-	// Cached Argon2 configuration values — null sentinel means "not yet loaded,
-	// retry on next call". Per-call defaults are used when the DB is unreachable.
+	// Cached Argon2 configuration values; a null field means "not yet loaded". The
+	// values are read once from the runtime properties (which are fixed for the
+	// lifetime of a running server) into this cache, so the fallback encoder built
+	// here always agrees with the Spring argon2PasswordEncoder bean created by
+	// createArgon2PasswordEncoder().
 	private static volatile Integer cachedSaltLength;
 	private static volatile Integer cachedHashLength;
 	private static volatile Integer cachedParallelism;
@@ -69,13 +85,13 @@ public class Security implements GlobalPropertyListener {
 
 	// required so we can hash passwords at startup.
 	private static final PasswordEncoder FALLBACK_ENCODER = new LegacyOpenmrsPasswordEncoder();
-
+	
 	/**
-	 * Package-private constructor so Spring can instantiate {@code <bean id="security"/>}
-	 * for GlobalPropertyListener registration (see applicationContext-service.xml).
-	 * This class is otherwise used through its static API only.
+	 * Private constructor: this class offers a static API only. The Spring
+	 * {@code argon2PasswordEncoder} bean is created via
+	 * {@link #createArgon2PasswordEncoder()}.
 	 */
-	Security() {
+	private Security() {
 	}
 
 	static PasswordEncoder getPasswordEncoder() {
@@ -115,51 +131,54 @@ public class Security implements GlobalPropertyListener {
 	}
 
 	/**
-	 * Loads Argon2 global-property config into the static cache, retrying on any
-	 * transient failure (null fields act as the "needs reload" sentinel so we never
-	 * latch a poison cache or miss a GP update).
+	 * Loads the Argon2 work factors from the runtime properties into the static cache.
+	 * The values are read once, because runtime properties are fixed for the lifetime of a
+	 * running server and do not change on a running system (unlike global properties).
 	 */
 	private static void loadArgon2ConfigIfNecessary() {
 		if (cachedSaltLength == null || cachedHashLength == null || cachedParallelism == null
 			|| cachedMemory == null || cachedIterations == null) {
 			synchronized (Security.class) {
-				if ((cachedSaltLength == null || cachedHashLength == null || cachedParallelism == null
-					|| cachedMemory == null || cachedIterations == null) && Context.isSessionOpen()) {
-					try {
-						Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-						AdministrationService adminService = Context.getAdministrationService();
-						cachedSaltLength = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_SALT_LENGTH, "16"), 16);
-						cachedHashLength = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_HASH_LENGTH, "32"), 32);
-						cachedParallelism = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_PARALLELISM, "1"), 1);
-						cachedMemory = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_MEMORY, "65536"), 65536);
-						cachedIterations = parseIntProperty(adminService.getGlobalProperty(OpenmrsConstants.GP_ARGON2_ITERATIONS, "3"), 3);
-					} catch (Exception e) {
-						// Do NOT poison the cache with defaults and do NOT latch a "loaded" flag.
-						// Leave the fields null so the next call retries the GP read.
-						log.debug("Unable to read Argon2 global properties (will retry next call): {}", e.getMessage());
-					} finally {
-						Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-					}
+				if (cachedSaltLength == null || cachedHashLength == null || cachedParallelism == null
+					|| cachedMemory == null || cachedIterations == null) {
+					Properties runtime = Context.getRuntimeProperties();
+					cachedSaltLength = getIntProperty(runtime, ARGON2_SALT_LENGTH_PROPERTY, 16, 8, MAX_SALT_LENGTH);
+					cachedHashLength = getIntProperty(runtime, ARGON2_HASH_LENGTH_PROPERTY, 32, 4, Integer.MAX_VALUE);
+					// Parallelism is read first so that the memory floor below can honour
+					// the encoder's requirement that memory >= 8 * parallelism.
+					cachedParallelism = getIntProperty(runtime, ARGON2_PARALLELISM_PROPERTY, 1, 1, MAX_PARALLELISM);
+					int minimumMemory = 8 * cachedParallelism;
+					cachedMemory = getIntProperty(runtime, ARGON2_MEMORY_PROPERTY, 65536, minimumMemory, MAX_MEMORY_KB);
+					cachedIterations = getIntProperty(runtime, ARGON2_ITERATIONS_PROPERTY, 3, 1, MAX_ITERATIONS);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Helper method to parse integer properties with validation.
+	 * Reads an integer-valued runtime property, clamping it to the given bounds and
+	 * falling back to the default when the value is missing or not a valid integer.
 	 */
-	private static int parseIntProperty(String value, int defaultValue) {
-		try {
-			if (value != null) {
-				int parsed = Integer.parseInt(value.trim());
-				if (parsed > 0) {
-					return parsed;
-				}
-			}
-		} catch (NumberFormatException e) {
-			log.warn("Invalid integer value: {}, using default: {}", value, defaultValue);
+	private static int getIntProperty(Properties runtime, String name, int defaultValue, int min, int max) {
+		String raw = runtime.getProperty(name);
+		if (raw == null) {
+			return defaultValue;
 		}
-		return defaultValue;
+		try {
+			int value = Integer.parseInt(raw.trim());
+			if (value < min) {
+				log.warn("Runtime property '{}' = {} is below the minimum of {}, clamping to minimum", name, value, min);
+				return min;
+			}
+			if (value > max) {
+				log.warn("Runtime property '{}' = {} exceeds the maximum of {}, clamping to maximum", name, value, max);
+				return max;
+			}
+			return value;
+		} catch (NumberFormatException e) {
+			log.warn("Invalid integer value for runtime property '{}': '{}', using default: {}", name, raw, defaultValue);
+			return defaultValue;
+		}
 	}
 
 	/**
@@ -194,14 +213,12 @@ public class Security implements GlobalPropertyListener {
 	}
 
 	/**
-	 * This method will hash <code>strToEncode</code> using SHA-512 for deterministic hashing.
-	 * This method is maintained for backward compatibility and public API contract.
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
 	 * OpenMRS's preferred algorithm is hard-coded to be SHA-512.
 	 *
 	 * @param strToEncode string to encode
 	 * @return the SHA-512 encryption of a given string
-	 * @since 1.5
+	 * <strong>Should</strong> encode strings to 128 characters
 	 */
 	public static String encodeString(String strToEncode) throws APIException {
 		return encodeString(strToEncode, SHA512);
@@ -221,18 +238,6 @@ public class Security implements GlobalPropertyListener {
 	}
 
 	/**
-	 * This method will hash <code>strToEncode</code> using SHA-512 for deterministic hashing
-	 * (e.g., activation keys, secret answers).
-	 *
-	 * @param strToEncode string to encode
-	 * @return the SHA-512 encryption of a given string
-	 * @since 2.8.10
-	 */
-	public static String encodeStringSHA512(String strToEncode) throws APIException {
-		return encodeString(strToEncode, SHA512);
-	}
-
-	/**
 	 * This method will hash <code>strToEncode</code> using the old SHA-1 algorithm.
 	 *
 	 * @param strToEncode string to encode
@@ -243,28 +248,34 @@ public class Security implements GlobalPropertyListener {
 	}
 
 	/**
-	 * Returns an Argon2PasswordEncoder configured from the cached global properties.
+	 * Returns an Argon2PasswordEncoder configured from the cached runtime-property values.
 	 * <p>
-	 * Builds a fresh instance per call from the current cached work factors (null cache
-	 * fields fall back to per-call defaults, matching the LocaleUtility retry pattern).
-	 * This ensures that runtime global-property updates (via the listener) always take
-	 * effect immediately, regardless of whether a Spring context is available.
+	 * The Spring {@code argon2PasswordEncoder} bean (see applicationContext-service.xml) is
+	 * created through {@link #createArgon2PasswordEncoder()} from the same values, so the
+	 * encoder used here always agrees with the bean. Making Argon2 the default for any
+	 * password encoder then is purely a matter of Spring configuration.
 	 */
 	private static Argon2PasswordEncoder getArgon2Encoder() {
 		loadArgon2ConfigIfNecessary();
-		int saltLength = cachedSaltLength != null ? cachedSaltLength : 16;
-		int hashLength = cachedHashLength != null ? cachedHashLength : 32;
-		int parallelism = cachedParallelism != null ? cachedParallelism : 1;
-		int memory = cachedMemory != null ? cachedMemory : 65536;
-		int iterations = cachedIterations != null ? cachedIterations : 3;
+		return new Argon2PasswordEncoder(cachedSaltLength, cachedHashLength, cachedParallelism, cachedMemory, cachedIterations);
+	}
 
-		return new Argon2PasswordEncoder(saltLength, hashLength, parallelism, memory, iterations);
+	/**
+	 * Spring factory method used to create the {@code argon2PasswordEncoder} bean from the
+	 * Argon2 work-factor runtime properties (see applicationContext-service.xml). Uses the
+	 * same configuration as {@link #encodeStringArgon2(String)}.
+	 *
+	 * @return an Argon2PasswordEncoder configured from the runtime properties
+	 * @since 2.8.10
+	 */
+	public static Argon2PasswordEncoder createArgon2PasswordEncoder() {
+		return getArgon2Encoder();
 	}
 
 	/**
 	 * Resets the cached Argon2 configuration values.
 	 * This is a package-private method intended for testing purposes only.
-	 * It forces the configuration to be re-read from global properties
+	 * It forces the configuration to be re-read from the runtime properties
 	 * on the next call to {@link #encodeStringArgon2(String)}.
 	 *
 	 * @since 2.8.10
@@ -279,96 +290,6 @@ public class Security implements GlobalPropertyListener {
 		}
 	}
 
-	/**
-	 * GlobalPropertyListener implementation — caches Argon2 configuration values
-	 * and avoids database reads on every password operation.
-	 */
-	@Override
-	public boolean supportsPropertyName(String propertyName) {
-		return OpenmrsConstants.GP_ARGON2_SALT_LENGTH.equals(propertyName)
-			|| OpenmrsConstants.GP_ARGON2_HASH_LENGTH.equals(propertyName)
-			|| OpenmrsConstants.GP_ARGON2_PARALLELISM.equals(propertyName)
-			|| OpenmrsConstants.GP_ARGON2_MEMORY.equals(propertyName)
-			|| OpenmrsConstants.GP_ARGON2_ITERATIONS.equals(propertyName);
-	}
-
-	@Override
-	public void globalPropertyChanged(GlobalProperty newValue) {
-		if (newValue == null || newValue.getPropertyValue() == null) {
-			return;
-		}
-
-		String propertyName = newValue.getProperty();
-		try {
-			int value = Integer.parseInt(newValue.getPropertyValue().trim());
-			if (value <= 0) {
-				log.warn("Invalid value for global property '{}': {}, must be > 0, ignoring", propertyName, value);
-				return;
-			}
-
-			int maxValue = getMaxValueForProperty(propertyName);
-			if (maxValue > 0 && value > maxValue) {
-				log.warn("Value for global property '{}': {} exceeds recommended maximum of {}, clamping to maximum",
-					propertyName, value, maxValue);
-				value = maxValue;
-			}
-
-			synchronized (Security.class) {
-				if (OpenmrsConstants.GP_ARGON2_SALT_LENGTH.equals(propertyName)) {
-					cachedSaltLength = value;
-				} else if (OpenmrsConstants.GP_ARGON2_HASH_LENGTH.equals(propertyName)) {
-					cachedHashLength = value;
-				} else if (OpenmrsConstants.GP_ARGON2_PARALLELISM.equals(propertyName)) {
-					cachedParallelism = value;
-				} else if (OpenmrsConstants.GP_ARGON2_MEMORY.equals(propertyName)) {
-					cachedMemory = value;
-				} else if (OpenmrsConstants.GP_ARGON2_ITERATIONS.equals(propertyName)) {
-					cachedIterations = value;
-				}
-			}
-			log.info("Argon2 configuration updated via global property {} = {}", propertyName, value);
-		} catch (NumberFormatException e) {
-			log.warn("Invalid numeric value for global property '{}': {}, ignoring", propertyName, newValue.getPropertyValue());
-		}
-	}
-
-	@Override
-	public void globalPropertyDeleted(String propertyName) {
-		// Null out the cached field so the next encode call re-reads the GP or falls
-		// back to the per-call default. Do NOT write a hardcoded default here.
-		synchronized (Security.class) {
-			if (OpenmrsConstants.GP_ARGON2_SALT_LENGTH.equals(propertyName)) {
-				cachedSaltLength = null;
-			} else if (OpenmrsConstants.GP_ARGON2_HASH_LENGTH.equals(propertyName)) {
-				cachedHashLength = null;
-			} else if (OpenmrsConstants.GP_ARGON2_PARALLELISM.equals(propertyName)) {
-				cachedParallelism = null;
-			} else if (OpenmrsConstants.GP_ARGON2_MEMORY.equals(propertyName)) {
-				cachedMemory = null;
-			} else if (OpenmrsConstants.GP_ARGON2_ITERATIONS.equals(propertyName)) {
-				cachedIterations = null;
-			}
-		}
-		log.info("Argon2 configuration cleared via global property deletion: {}", propertyName);
-	}
-
-	/**
-	 * Returns the upper-bound clamp for a given GP key, or -1 for no enforced cap.
-	 * Memory/iterations/parallelism still have security upper bounds; hash and salt
-	 * length are unbounded here because TRUNK-6662 / #6219 widens users.password to
-	 * varchar(512), which accommodates any reasonable PHC string length.
-	 */
-	private static int getMaxValueForProperty(String key) {
-		if (OpenmrsConstants.GP_ARGON2_MEMORY.equals(key)) {
-			return MAX_MEMORY_KB;
-		} else if (OpenmrsConstants.GP_ARGON2_ITERATIONS.equals(key)) {
-			return MAX_ITERATIONS;
-		} else if (OpenmrsConstants.GP_ARGON2_PARALLELISM.equals(key)) {
-			return MAX_PARALLELISM;
-		}
-		return -1;
-	}
-
 	private static String encodeString(String strToEncode, String algorithm) {
 		return hexString(digest(strToEncode.getBytes(StandardCharsets.UTF_8), algorithm));
 	}
@@ -379,6 +300,7 @@ public class Security implements GlobalPropertyListener {
 			md = MessageDigest.getInstance(algorithm);
 		}
 		catch (NoSuchAlgorithmException e) {
+			// Yikes! Can't encode password...what to do?
 			log.error("Can't encode password because the given algorithm: " + algorithm + " was not found! (fail)", e);
 			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
@@ -530,7 +452,7 @@ public class Security implements GlobalPropertyListener {
 	/**
 	 * decrypt text using stored initVector and securityKey
 	 *
-	 * @param text the text to decrypt
+	 * @param text text to be decrypted
 	 * @return decrypted text
 	 * @since 1.9
 	 * <strong>Should</strong> decrypt short and long text
@@ -568,6 +490,7 @@ public class Security implements GlobalPropertyListener {
 	 * @since 1.9
 	 */
 	public static byte[] generateNewInitVector() {
+		// initialize the init vector with 16 random bytes
 		byte[] initVector = new byte[16];
 		RANDOM.nextBytes(initVector);
 
@@ -599,6 +522,7 @@ public class Security implements GlobalPropertyListener {
 	 * @since 1.9
 	 */
 	public static byte[] generateNewSecretKey() {
+		// Get the KeyGenerator
 		KeyGenerator kgen;
 		try {
 			kgen = KeyGenerator.getInstance(OpenmrsConstants.ENCRYPTION_KEY_SPEC);
@@ -606,8 +530,9 @@ public class Security implements GlobalPropertyListener {
 		catch (NoSuchAlgorithmException e) {
 			throw new APIException("could.not.generate.cipher.key", null, e);
 		}
-		kgen.init(128);
+		kgen.init(128); // 192 and 256 bits may not be available
 
+		// Generate the secret key specs.
 		SecretKey skey = kgen.generateKey();
 
 		return skey.getEncoded();

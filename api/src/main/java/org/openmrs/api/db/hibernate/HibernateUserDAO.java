@@ -103,9 +103,7 @@ public class HibernateUserDAO implements UserDAO {
 			
 			//update the new user with the password
 			String salt = Security.getRandomToken();
-
-			String hashedPassword = Security.encodePassword(password + salt);
-
+			String hashedPassword = Security.encodeStringArgon2(password + salt);
 			
 			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user
 			        .getUserId());
@@ -154,7 +152,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public LoginCredential getLoginCredentialByActivationKey(String activationKey) {
-		String key = Security.encodeStringSHA512(activationKey);
+		String key = Security.encodeString(activationKey);
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<LoginCredential> cq = cb.createQuery(LoginCredential.class);
@@ -466,7 +464,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		LoginCredential credentials = getLoginCredential(u);
 		credentials.setSecretQuestion(question);
-		String hashedAnswer = Security.encodeStringSHA512(answer.toLowerCase() + credentials.getSalt());
+		String hashedAnswer = Security.encodeString(answer.toLowerCase() + credentials.getSalt());
 		credentials.setSecretAnswer(hashedAnswer);
 		credentials.setDateChanged(new Date());
 		credentials.setChangedBy(u);
@@ -479,14 +477,14 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public boolean isSecretAnswer(User u, String answer) throws DAOException {
-
+		
 		if (StringUtils.isEmpty(answer)) {
 			return false;
 		}
-
+		
 		LoginCredential credentials = getLoginCredential(u);
 		String answerOnRecord = credentials.getSecretAnswer();
-		String hashedAnswer = Security.encodeStringSHA512(answer.toLowerCase() + credentials.getSalt());
+		String hashedAnswer = Security.encodeString(answer.toLowerCase() + credentials.getSalt());
 		return (hashedAnswer.equals(answerOnRecord));
 	}
 	

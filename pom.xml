@@ -211,6 +211,11 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-crypto</artifactId>
+				<version>5.8.16</version>
+			</dependency>
+			<dependency>
 				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-spring5-embedded</artifactId>
 				<version>${infinispanVersion}</version>
@@ -316,11 +321,6 @@
 				<groupId>org.owasp</groupId>
 				<artifactId>csrfguard-extension-session</artifactId>
 				<version>${owaspCsrfGuardVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-crypto</artifactId>
-				<version>${springSecurityVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
@@ -1300,7 +1300,6 @@
 			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
 			 be compatible with our version of Spring. -->
 		<springVersion>5.3.30</springVersion>
-		<springSecurityVersion>5.8.16</springSecurityVersion>
 		<bouncyCastleVersion>1.84</bouncyCastleVersion>
 		<hibernateVersion>5.6.15.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->

@@ -9,16 +9,16 @@
  */
 package org.openmrs.api.db;
 
-import java.util.Date;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Date;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
@@ -118,7 +118,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeStringSHA512(SECRET_ANSWER + lc.getSalt());
+		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		dao.changePassword(userJoe, "Openmr6zz");
@@ -132,7 +132,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.saveUser(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeStringSHA512(SECRET_ANSWER + lc.getSalt());
+		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		userJoe.setUserProperty("foo", "bar");
@@ -169,9 +169,9 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeStringSHA512(SECRET_ANSWER + lc.getSalt());
+		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
-		assertEquals( hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
+		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
 		dao.changePassword(PASSWORD, PASSWORD + "foo");
 		lc = dao.getLoginCredential(userJoe);
@@ -180,13 +180,8 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Covers the regression gap by reverting the three
-	 * HibernateUserDAO call sites back to {@code Security.encodeString(SHA-512)} left all 5139
-	 * api tests green because SecurityTest only pins {@code encodeStringArgon2()} directly,
-	 * never what actually reaches users.password. This assertion fails on 2.8.x and passes on
-	 * the Argon2 branch.
-	 *
-	 * <p>Covers HibernateUserDAO.changePassword(User, String) line 353.
+	 * Verifies that the password hash stored by {@code changePassword(User, String)} uses the
+	 * Argon2id PHC format and that the stored value authenticates the password.
 	 */
 	@Test
 	public void changePassword_shouldStoreTheArgon2idFormattedValue() {
@@ -201,7 +196,8 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * Covers HibernateUserDAO.saveUser() line 106 — the brand-new-user password path.
+	 * Verifies that the password hash stored by {@code saveUser(User, String)} uses the
+	 * Argon2id PHC format and that the stored value authenticates the password.
 	 */
 	@Test
 	public void saveUser_shouldStoreTheArgon2idFormattedValue() {
@@ -230,8 +226,9 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * Covers HibernateUserDAO.changePassword(String, String) line 437 — the "self change"
-	 * overload that takes old and new password as strings.
+	 * Verifies that the password hash stored by {@code changePassword(String, String)} — the
+	 * "self change" overload taking old and new password — uses the Argon2id PHC format and
+	 * that the stored value authenticates the new password.
 	 */
 	@Test
 	public void changePasswordOldNew_shouldStoreTheArgon2idFormattedValue() {
@@ -253,7 +250,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String hashedSecretAnswer = Security.encodeStringSHA512(SECRET_ANSWER + lc.getSalt());
+		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		userJoe.setUserProperty("foo", "bar");
@@ -286,20 +283,5 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		assertFalse(dao.isSecretAnswer(userJoe, "foo"));
 		
 	}
-
-	@Test
-	public void changePassword_shouldStorePasswordAsArgon2() {
-		dao.changePassword(userJoe, PASSWORD);
-		LoginCredential lc = dao.getLoginCredential(userJoe);
-		assertTrue(lc.getHashedPassword().startsWith("$argon2id$"),
-			"Password should be stored as Argon2id hash");
-	}
-
-	@Test
-	public void changePassword_shouldAllowAuthenticationWithNewPassword() {
-		dao.changePassword(userJoe, PASSWORD);
-		assertDoesNotThrow(() -> Context.authenticate(userJoe.getUsername(), PASSWORD),
-			"Authentication should succeed with the new password");
-	}
-
+	
 }

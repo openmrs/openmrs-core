@@ -359,19 +359,13 @@
 <tr class="a">
 <td>org.springframework.security</td>
 <td><a class="externalLink" href="https://spring.io/projects/spring-security">spring-security-crypto</a></td>
-<td>5.8.14</td>
+<td>5.8.16</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
 <tr class="a">
 <td>org.springframework</td>
 <td><a class="externalLink" href="https://github.com/spring-projects/spring-framework">spring-beans</a></td>
 <td>4.1.4.RELEASE</td>
-<td>jar</td>
-<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
-<tr class="a">
-<td>org.springframework.security</td>
-<td><a class="externalLink" href="https://spring.io/projects/spring-security">spring-security-crypto</a></td>
-<td>5.8.14</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
 <tr class="a">
