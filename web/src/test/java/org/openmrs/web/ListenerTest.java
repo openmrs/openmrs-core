@@ -48,10 +48,21 @@ public class ListenerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void getHttpSessionListeners_shouldCacheListeners() {
-		List<HttpSessionListener> first = listener.getHttpSessionListeners();
-		List<HttpSessionListener> second = listener.getHttpSessionListeners();
+		try (MockedStatic<Context> contextMock = Mockito.mockStatic(Context.class)) {
+			contextMock.when(() -> Context.getRegisteredComponents(HttpSessionListener.class))
+			        .thenReturn(Collections.singletonList(Mockito.mock(HttpSessionListener.class)));
 
-		assertSame(first, second);
+			Listener.setOpenmrsStarted(true);
+
+			List<HttpSessionListener> first = listener.getHttpSessionListeners();
+			List<HttpSessionListener> second = listener.getHttpSessionListeners();
+
+			assertSame(first, second);
+
+			contextMock.verify(() -> Context.getRegisteredComponents(HttpSessionListener.class), times(1));
+		} finally {
+			Listener.setOpenmrsStarted(false);
+		}
 	}
 
 	/**
@@ -59,11 +70,22 @@ public class ListenerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void getHttpSessionListeners_shouldCacheEmptyListeners() {
-		List<HttpSessionListener> first = listener.getHttpSessionListeners();
-		List<HttpSessionListener> second = listener.getHttpSessionListeners();
+		try (MockedStatic<Context> contextMock = Mockito.mockStatic(Context.class)) {
+			contextMock.when(() -> Context.getRegisteredComponents(HttpSessionListener.class))
+			        .thenReturn(Collections.emptyList());
 
-		assertTrue(first.isEmpty());
-		assertSame(first, second);
+			Listener.setOpenmrsStarted(true);
+
+			List<HttpSessionListener> first = listener.getHttpSessionListeners();
+			List<HttpSessionListener> second = listener.getHttpSessionListeners();
+
+			assertTrue(first.isEmpty());
+			assertSame(first, second);
+
+			contextMock.verify(() -> Context.getRegisteredComponents(HttpSessionListener.class), times(1));
+		} finally {
+			Listener.setOpenmrsStarted(false);
+		}
 	}
 
 	/**

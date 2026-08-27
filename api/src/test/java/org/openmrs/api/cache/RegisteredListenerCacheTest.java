@@ -9,48 +9,49 @@
  */
 package org.openmrs.api.cache;
 
-import java.util.List;
+import java.util.Collections;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.openmrs.PrivilegeListener;
-import org.openmrs.api.context.ServiceContext;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.TestUsernameAuthenticationScheme;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.openmrs.util.DatabaseUpdateException;
-import org.openmrs.util.InputRequiredException;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.times;
 
 public class RegisteredListenerCacheTest extends BaseContextSensitiveTest {
-
-	private ServiceContext serviceContext;
-
-	@BeforeEach
-	public void setUp() throws InputRequiredException, DatabaseUpdateException {
-		serviceContext = ServiceContext.getInstance();
-		serviceContext.clearCachedListeners();
-	}
 
 	/**
 	 * @see RegisteredListenerCache#onApplicationEvent(ContextRefreshedEvent)
 	 */
 	@Test
 	public void onApplicationEvent_shouldClearCachedListeners() {
-		serviceContext.clearCachedListeners();
+		try (MockedStatic<Context> contextMock = Mockito.mockStatic(Context.class)) {
+			UserContext.clearCachedListeners();
+			contextMock.when(() -> Context.getRegisteredComponents(PrivilegeListener.class))
+			        .thenReturn(Collections.emptyList());
 
-		List<PrivilegeListener> first = serviceContext.getRegisteredComponents(PrivilegeListener.class);
-		List<PrivilegeListener> second = serviceContext.getRegisteredComponents(PrivilegeListener.class);
+			UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+			userContext.addProxyPrivilege("Some Privilege");
 
-		assertSame(first, second);
+			// The first check populates the listener cache.
+			userContext.hasPrivilege("Some Privilege");
 
-		RegisteredListenerCache cache = applicationContext.getBean(RegisteredListenerCache.class);
+			RegisteredListenerCache cache = applicationContext.getBean(RegisteredListenerCache.class);
 
-		// A context refresh should invalidate listener registrations cached from the previous context.
-		cache.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
-		List<PrivilegeListener> third = serviceContext.getRegisteredComponents(PrivilegeListener.class);
+			// A context refresh should invalidate the cached listener registrations.
+			cache.onApplicationEvent(new ContextRefreshedEvent(applicationContext));
 
-		assertNotSame(first, third);
+			// The next check should perform a fresh listener lookup.
+			userContext.hasPrivilege("Some Privilege");
+
+			contextMock.verify(() -> Context.getRegisteredComponents(PrivilegeListener.class), times(2));
+		} finally {
+			UserContext.clearCachedListeners();
+		}
 	}
 }

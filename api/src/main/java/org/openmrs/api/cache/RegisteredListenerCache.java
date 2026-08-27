@@ -9,13 +9,19 @@
  */
 package org.openmrs.api.cache;
 
-import org.openmrs.api.context.ServiceContext;
+import org.openmrs.api.context.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+/**
+ * Clears the cached listener registrations whenever the application context is refreshed, ensuring
+ * listeners contributed by the refreshed context are not served from a stale cache.
+ *
+ * @since 2.8.10
+ */
 @Component
 public class RegisteredListenerCache implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -23,9 +29,7 @@ public class RegisteredListenerCache implements ApplicationListener<ContextRefre
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (ServiceContext.isInstantiated()) {
-			log.debug("Clearing registered listener cache after context refresh");
-			ServiceContext.getInstance().clearCachedListeners();
-		}
+		log.debug("Clearing registered listener cache after context refresh");
+		UserContext.clearCachedListeners();
 	}
 }

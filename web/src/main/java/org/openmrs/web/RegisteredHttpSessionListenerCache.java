@@ -13,6 +13,12 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+/**
+ * Clears the cached HTTP session listeners after an application context refresh, ensuring listeners
+ * registered by the refreshed context are not served from a stale cache.
+ *
+ * @since 2.8.10
+ */
 @Component
 public class RegisteredHttpSessionListenerCache implements ApplicationListener<ContextRefreshedEvent> {
 
