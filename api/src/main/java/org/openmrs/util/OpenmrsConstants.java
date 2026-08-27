@@ -448,11 +448,6 @@ public final class OpenmrsConstants {
 	 * Global property for the Argon2 time cost parameter (iterations). Default is 3.
 	 * Must be between 1 and 10.
 	 * @since 2.8.10
-	 * Global property name for Argon2 parallelism factor
-	 */
-	public static final String GP_ARGON2_PARALLELISM = "security.argon2.parallelism";
-
-	/**
 	 * Global property name for Argon2 iterations
 	 */
 	public static final String GP_ARGON2_ITERATIONS = "security.argon2.iterations";
@@ -461,6 +456,7 @@ public final class OpenmrsConstants {
 	 * Global property for the Argon2 parallelism parameter. Default is 1.
 	 * Must be between 1 and 8.
 	 * @since 2.8.10
+	 * Global property name for Argon2 parallelism factor
 	 */
 	public static final String GP_ARGON2_PARALLELISM = "security.argon2.parallelism";
 
