@@ -358,6 +358,9 @@
 						<!-- Exclude mail test, slows build, breaks portability with requirements on port 25 -->
 						<exclude>**/notification/MessageServiceTest.java</exclude>
 					</excludes>
+					<systemPropertyVariables>
+						<java.awt.headless>true</java.awt.headless>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -27,7 +28,7 @@ class SecurityFallbackEncoderTest {
 
 	@Test
 	void fallbackEncoder_matchesBareHash() {
-		PasswordEncoder fallback = Security.getPasswordEncoder();
+		PasswordEncoder fallback = new LegacyOpenmrsPasswordEncoder();
 		String salt = Security.getRandomToken();
 		String rawPassword = "password" + salt;
 		String bareHash = Security.encodeString(rawPassword);

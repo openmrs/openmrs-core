@@ -247,7 +247,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 				+ stored.substring(0, Math.min(40, stored.length())));
 		Context.authenticate(userJoe.getUsername(), "Openmr7aa");
 	}
-	
+
 	@Test
 	public void changeHashedPassword_shouldNotOverwriteUserSecretQuestionOrAnswer() {
 		dao.changePassword(userJoe, PASSWORD);

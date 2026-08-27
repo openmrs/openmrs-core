@@ -46,11 +46,11 @@ public class Security implements GlobalPropertyListener {
 	private static final Logger log = LoggerFactory.getLogger(Security.class);
 
 	private static final Random RANDOM = new SecureRandom();
-	
+
 	private static final String SHA512 = "SHA-512";
-	
+
 	private static final String SHA1 = "SHA-1";
-	
+
 	private static final int MAX_MEMORY_KB = 1048576;
 
 	private static final int MAX_ITERATIONS = 10;
