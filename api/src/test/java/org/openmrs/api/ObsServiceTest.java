@@ -2721,21 +2721,45 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertEquals(Integer.valueOf(90101), versions.get(1).getObsId());
 		assertEquals(Integer.valueOf(90100), versions.get(2).getObsId());
 
-		// 15-obs chain
-		Obs prev = null;
-		Obs first = null;
-		for (int i = 0; i < 15; i++) {
-			Obs o = new Obs();
-			o.setConcept(latestObs.getConcept());
-			o.setPerson(latestObs.getPerson());
-			o.setObsDatetime(new java.util.Date());
-			o.setValueNumeric((double) i);
-			if (prev != null) {
-				o.setPreviousVersion(prev);
-			} else {
-				first = o;
-			}
-			prev = Context.getObsService().saveObs(o, "chain test");
+		// verify unrelated observations are NOT included in the chain
+		List<Integer> ids = new ArrayList<>();
+		for (Obs v : versions) {
+			ids.add(v.getObsId());
+		}
+		assertFalse(ids.contains(90200));
+		assertFalse(ids.contains(90201));
+		assertFalse(ids.contains(90202));
+
+		// standalone unrelated obs: only itself, no chain leakage
+		Obs standalone = obsService.getObs(90200);
+		List<Obs> standaloneVersions = obsService.getObsVersionHistory(standalone);
+		assertNotNull(standaloneVersions);
+		assertEquals(1, standaloneVersions.size());
+		assertEquals(Integer.valueOf(90200), standaloneVersions.get(0).getObsId());
+
+		// separate 2-obs chain: only its own members
+		Obs unrelatedLatest = obsService.getObs(90201);
+		List<Obs> unrelatedChain = obsService.getObsVersionHistory(unrelatedLatest);
+		assertNotNull(unrelatedChain);
+		assertEquals(2, unrelatedChain.size());
+		assertEquals(Integer.valueOf(90201), unrelatedChain.get(0).getObsId());
+		assertEquals(Integer.valueOf(90200), unrelatedChain.get(1).getObsId());
+
+		// another standalone obs on a different person
+		Obs standalone2 = obsService.getObs(90202);
+		List<Obs> standalone2Versions = obsService.getObsVersionHistory(standalone2);
+		assertNotNull(standalone2Versions);
+		assertEquals(1, standalone2Versions.size());
+		assertEquals(Integer.valueOf(90202), standalone2Versions.get(0).getObsId());
+
+		// 15-obs chain via saveObs revision path
+		Obs chainObs = buildObservation();
+		Obs saved = Context.getObsService().saveObs(chainObs, "chain original");
+		Obs first = saved;
+		Obs prev = saved;
+		for (int i = 1; i < 15; i++) {
+			prev.setValueNumeric(60.0 + i);
+			prev = Context.getObsService().saveObs(prev, "chain revision " + i);
 		}
 		List<Obs> longChain = obsService.getObsVersionHistory(prev);
 		assertNotNull(longChain);
@@ -2753,18 +2777,11 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		// build a chain long enough that a select-per-version implementation would be
 		// unmistakable in the prepared statement count
-		Obs latestObs = obsService.getObs(90102);
-		Obs prev = null;
-		for (int i = 0; i < 40; i++) {
-			Obs o = new Obs();
-			o.setConcept(latestObs.getConcept());
-			o.setPerson(latestObs.getPerson());
-			o.setObsDatetime(new java.util.Date());
-			o.setValueNumeric((double) i);
-			if (prev != null) {
-				o.setPreviousVersion(prev);
-			}
-			prev = Context.getObsService().saveObs(o, "chain test");
+		Obs chainObs = buildObservation();
+		Obs prev = Context.getObsService().saveObs(chainObs, "chain original");
+		for (int i = 1; i < 40; i++) {
+			prev.setValueNumeric(60.0 + i);
+			prev = Context.getObsService().saveObs(prev, "chain revision " + i);
 		}
 
 		// flush pending inserts and reset the counters so that only the version history
