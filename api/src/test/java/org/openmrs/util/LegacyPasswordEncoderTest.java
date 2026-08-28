@@ -9,7 +9,6 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,7 +17,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests the methods on the {@link LegacyPasswordEncoder} class.
  */
-public class LegacyPasswordEncoderTest {
+class LegacyPasswordEncoderTest {
 
 	private static final String SALT = "c788c6ad82a157b712392ca695dfcf2eed193d7f";
 
@@ -26,7 +25,7 @@ public class LegacyPasswordEncoderTest {
 	 * @see LegacyPasswordEncoder#matches(String, String)
 	 */
 	@Test
-	public void matches_shouldMatchCorrectSha1Hash() {
+	void matches_shouldMatchCorrectSha1Hash() {
 		assertTrue(LegacyPasswordEncoder.matches("4a1750c8607d0fa237de36c6305715c223415189", "test" + SALT));
 	}
 
@@ -34,7 +33,7 @@ public class LegacyPasswordEncoderTest {
 	 * @see LegacyPasswordEncoder#matches(String, String)
 	 */
 	@Test
-	public void matches_shouldMatchIncorrectSha1Hash() {
+	void matches_shouldMatchIncorrectSha1Hash() {
 		assertTrue(LegacyPasswordEncoder.matches("4a1750c8607dfa237de36c6305715c223415189", "test" + SALT));
 	}
 
@@ -42,7 +41,7 @@ public class LegacyPasswordEncoderTest {
 	 * @see LegacyPasswordEncoder#matches(String, String)
 	 */
 	@Test
-	public void matches_shouldMatchHashWithLegacyPrefix() {
+	void matches_shouldMatchHashWithLegacyPrefix() {
 		assertTrue(LegacyPasswordEncoder.matches(LegacyPasswordEncoder.LEGACY_HASH_PREFIX
 		        + "4a1750c8607d0fa237de36c6305715c223415189", "test" + SALT));
 	}
@@ -51,7 +50,7 @@ public class LegacyPasswordEncoderTest {
 	 * @see LegacyPasswordEncoder#matches(String, String)
 	 */
 	@Test
-	public void matches_shouldNotMatchSha512Hash() {
+	void matches_shouldNotMatchSha512Hash() {
 		String sha512Hash = "1d1436658853aceceadd72e92f1ae9089a0000fbb38cea519ce34eae9f28523930ecb212177dbd607d83dc275fde3e9ca648deb557d503ad0bcd01a955a394b2";
 		assertFalse(LegacyPasswordEncoder.matches(sha512Hash, "test" + SALT));
 	}
