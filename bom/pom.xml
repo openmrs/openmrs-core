@@ -47,7 +47,7 @@
 		     compatible with the version of Hibernate and Hibernate must be compatible
 		     with our version of Spring. -->
 		<springVersion>7.0.9</springVersion>
-		<springTestVersion>7.0.8</springTestVersion>
+		<springTestVersion>7.0.9</springTestVersion>
 		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
 		<springSecurityVersion>7.0.7</springSecurityVersion>
 		<hibernateVersion>7.4.5.Final</hibernateVersion>
