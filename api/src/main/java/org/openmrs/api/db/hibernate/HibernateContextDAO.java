@@ -171,9 +171,14 @@ public class HibernateContextDAO implements ContextDAO {
 
 			String passwordOnRecord = (String) passwordAndSalt[0];
 			String saltOnRecord = (String) passwordAndSalt[1];
+			String passwordToHash = password + saltOnRecord;
 
 			// if the username and password match, hydrate the user and return it
-			if (passwordOnRecord != null && Security.checkPassword(passwordOnRecord, password + saltOnRecord)) {
+			if (passwordOnRecord != null && Security.matchesPassword(passwordOnRecord, passwordToHash)) {
+				if (Security.isLegacyPasswordHash(passwordOnRecord)) {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD,
+					    String.valueOf(System.currentTimeMillis()));
+				}
 				// hydrate the user object
 				candidateUser.getAllRoles().size();
 				candidateUser.getUserProperties().size();

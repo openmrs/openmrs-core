@@ -1171,6 +1171,8 @@ public final class OpenmrsConstants {
 	 */
 	public static final String USER_PROPERTY_CHANGE_PASSWORD = "forcePassword";
 	
+	public static final String USER_PROPERTY_LEGACY_PASSWORD = "legacyPassword";
+
 	public static final String USER_PROPERTY_DEFAULT_LOCALE = "defaultLocale";
 	
 	public static final String USER_PROPERTY_DEFAULT_LOCATION = "defaultLocation";
