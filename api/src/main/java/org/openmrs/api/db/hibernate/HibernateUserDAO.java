@@ -192,8 +192,9 @@ public class HibernateUserDAO implements UserDAO {
 			//Hardcoding in Luhn since past user IDs used this validator.
 			usernameWithCheckDigit = new LuhnIdentifierValidator().getValidIdentifier(username);
 		}
-		catch (Exception e) {}
-		
+		catch (Exception e) {
+			// Ignore exception, use original username if check digit generation fails
+		}		
 		Query query = sessionFactory
 		        .getCurrentSession()
 		        .createQuery(
@@ -403,6 +404,7 @@ public class HibernateUserDAO implements UserDAO {
 		// reset lockout 
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
+		changeForUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD);
 		saveUser(changeForUser, null);
 	}
 	

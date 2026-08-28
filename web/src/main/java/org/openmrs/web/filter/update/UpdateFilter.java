@@ -56,7 +56,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.Future;
+
 
 /**
  * This is the second filter that is processed. It is only active when OpenMRS has some liquibase
@@ -204,6 +204,7 @@ public class UpdateFilter extends StartupFilter {
 					Thread.sleep(3000);
 				}
 				catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
 					log.error("Unable to sleep", e);
 					throw new ServletException("Got interrupted while trying to sleep thread", e);
 				}
@@ -338,7 +339,8 @@ public class UpdateFilter extends StartupFilter {
 							DatabaseUpdater.setAuthenticatedUserId(userId);
 							String storedPassword = results.getString(2);
 							String salt = results.getString(3);
-							return Security.checkPassword(storedPassword, password + salt) && isSuperUser(connection, userId);
+							String passwordToHash = password + salt;
+							return Security.matchesPassword(storedPassword, passwordToHash) && isSuperUser(connection, userId);
 						}
 					}
 					finally {
@@ -387,7 +389,8 @@ public class UpdateFilter extends StartupFilter {
 								DatabaseUpdater.setAuthenticatedUserId(userId);
 								String storedPassword = results.getString(2);
 								String salt = results.getString(3);
-								return Security.checkPassword(storedPassword, password + salt)
+								String passwordToHash = password + salt;
+								return Security.matchesPassword(storedPassword, passwordToHash)
 								        && isSuperUser(connection, userId);
 							}
 						}
