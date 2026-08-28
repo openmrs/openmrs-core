@@ -214,7 +214,6 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	public void isSecretAnswer_shouldReturnFalseWhenTheAnswerDoesNotMatch() {
 		dao.saveUser(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
-		assertFalse(dao.isSecretAnswer(userJoe, "foo"));
-		
+		assertFalse(dao.isSecretAnswer(userJoe, "foo"));		
 	}	
 }

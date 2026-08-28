@@ -108,7 +108,7 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 	}
 
 	@Test
-	public void matches_shouldUseTheEncoderNamedByTheIdForEncodeForAnUnprefixedPassword() {
+	public void matches_shouldUseTheFallbackEncoderForAnUnprefixedPasswordWhenAnIdForEncodeIsConfigured() {
 		when(fallbackEncoder.matches("password", "hashedPassword")).thenReturn(true);
 		OpenmrsDelegatingPasswordEncoder encoder = new OpenmrsDelegatingPasswordEncoder("bcrypt",
 			idToPasswordEncoder, fallbackEncoder);

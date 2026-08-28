@@ -41,7 +41,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.ContextDAO;
-import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.openmrs.util.OpenmrsConstants;
@@ -89,6 +88,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 	@Autowired
 	@Lazy
+	@SuppressWarnings("java:S6813") // self-injection required for @Transactional(REQUIRES_NEW) proxy
 	private HibernateContextDAO self;
 	
 	/**
@@ -196,7 +196,7 @@ public class HibernateContextDAO implements ContextDAO {
 				setLastLoginTime(candidateUser);
 				saveUserProperties(candidateUser);
 
-				// Lazy rehash: if password is legacy, upgrade to Argon2id transparently
+				// Lazy rehash: if the stored hash needs upgrading, re-encode transparently on login
 				if (passwordOnRecord != null && Security.needsUpgrade(passwordOnRecord)) {
 					try {
 						String newHash = Security.encodePassword(password + (saltOnRecord != null ? saltOnRecord : ""));
@@ -354,11 +354,10 @@ public class HibernateContextDAO implements ContextDAO {
 	 * Upgrades a user's stored password hash to the configured encoder in a separate transaction.
 	 *
 	 * @param user the authenticated user whose password needs upgrading
-	 * @param rawPassword the plaintext password
-	 * @param salt the legacy salt from the database
+	 * @param oldHash the hash currently stored for the user, used to skip the write if it has changed
+	 * @param newHash the re-encoded hash to store
 	 * @since 2.8.10
 	 */
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void upgradePasswordHash(User user, String oldHash, String newHash) {
 		boolean upgraded = conditionallyUpdateUserPassword(
 			user.getUserId(),
