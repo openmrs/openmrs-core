@@ -360,7 +360,7 @@ public class HibernateContextDAO implements ContextDAO {
 	public void closeSession() {
 		log.debug("HibernateContext: closing Hibernate Session");
 		if (!participate) {
-			log.debug("Unbinding session from synchronization manager ({})", sessionFactory.hashCode());
+			log.debug("Unbinding session from synchronization manager (" + sessionFactory.hashCode() + ")");
 			
 			if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
 				Object value = TransactionSynchronizationManager.unbindResource(sessionFactory);

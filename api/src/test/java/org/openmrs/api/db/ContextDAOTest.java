@@ -420,7 +420,6 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		try {
 			Context.authenticate("admin", "wrongPassword");
 		} catch (ContextAuthenticationException e) {
-			// Expected exception for failed login
 		}
 		Context.authenticate("admin", "test");
 		assertThat(testUserSessionListener.logins,

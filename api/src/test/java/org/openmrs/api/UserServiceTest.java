@@ -627,7 +627,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userService.changePassword("test", "Tester12");
 
 		User user = userService.getUser(Context.getAuthenticatedUser().getUserId());
-		assertNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD));
+		assertNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LEGACY_PASSWORD, null));
 
 		LoginCredential credentials = dao.getLoginCredential(user);
 		assertEquals(128, credentials.getHashedPassword().length());
