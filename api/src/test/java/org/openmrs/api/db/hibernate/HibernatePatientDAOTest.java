@@ -13,8 +13,11 @@ import java.sql.Date;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.proxy.HibernateProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Patient;
@@ -32,8 +35,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
+
+	private static final String SEARCH_FIXTURE_TOKEN = "BOUNDED";
+
+	private static final int SEARCH_FIXTURE_SIZE = 50;
+
+	private static final int SMALL_PAGE = 5;
+
+	private static final int LARGE_PAGE = 40;
+
+	/** Headroom for effects that scale with the page without being per-hit loading. */
+	private static final int PAGE_GROWTH_ALLOWANCE = 8;
 
 	private HibernatePatientDAO hibernatePatientDao;
 
@@ -298,5 +314,120 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 		// then
 		assertThat(duplicatePatients.size(), equalTo(2));
+	}
+
+	/**
+	 * Asserts the shape of the cost rather than an absolute number, which would break on any change
+	 * shifting the fixed overhead. Before the search projected the patient id instead of loading the
+	 * identifier hits - whose {@link PatientIdentifier#getPatient()} is a default-eager
+	 * <code>@ManyToOne</code> - the difference here was roughly one round trip per extra result.
+	 */
+	@Test
+	public void getPatients_shouldNotIssueMoreDatabaseTripsAsTheIdentifierSearchPageGrows() {
+		List<PatientIdentifierType> identifierTypes = singletonList(Context.getPatientService().getPatientIdentifierType(2));
+		createIdentifierSearchFixture();
+
+		// The first search of the process carries one-off warm-up, so prime it before measuring.
+		hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, identifierTypes, false, 0, SMALL_PAGE);
+
+		int smallPageTrips = countDatabaseTrips(SMALL_PAGE,
+		    page -> hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, identifierTypes, false, 0, page));
+		int largePageTrips = countDatabaseTrips(LARGE_PAGE,
+		    page -> hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, identifierTypes, false, 0, page));
+
+		assertPageGrowthIsBounded("identifier search", smallPageTrips, largePageTrips);
+	}
+
+	/**
+	 * The joined search behind the main patient search reaches the identifier sub-query too, so it
+	 * carries the same guarantee as
+	 * {@link #getPatients_shouldNotIssueMoreDatabaseTripsAsTheIdentifierSearchPageGrows}. Only the
+	 * fixture's identifiers match the search token - its names deliberately do not - so the page can
+	 * only fill from the identifier sub-query, and this cannot quietly end up measuring the name leg
+	 * instead if relative scoring ever shifts.
+	 */
+	@Test
+	public void getPatients_shouldNotIssueMoreDatabaseTripsAsTheJoinedSearchPageGrows() {
+		createIdentifierSearchFixture();
+
+		// The first search of the process carries one-off warm-up, so prime it before measuring.
+		hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, false, 0, SMALL_PAGE);
+
+		int smallPageTrips = countDatabaseTrips(SMALL_PAGE,
+		    page -> hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, false, 0, page));
+		int largePageTrips = countDatabaseTrips(LARGE_PAGE,
+		    page -> hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, false, 0, page));
+
+		assertPageGrowthIsBounded("joined search", smallPageTrips, largePageTrips);
+	}
+
+	/**
+	 * Because the search loads the patients itself rather than reaching them through a loaded hit, the
+	 * results are the patients themselves and not proxies standing in for them. Reaching them through
+	 * the hits requires suppressing that association's eager fetch, which leaves every result an
+	 * initialized proxy whose {@code getClass()} is no longer {@link Patient} - a difference visible to
+	 * callers that compare types or serialize what they get back.
+	 */
+	@Test
+	public void getPatients_shouldReturnPatientsRatherThanProxies() {
+		List<PatientIdentifierType> identifierTypes = singletonList(Context.getPatientService().getPatientIdentifierType(2));
+		createIdentifierSearchFixture();
+
+		Context.flushSession();
+		Context.clearSession();
+
+		List<Patient> patients = hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, identifierTypes, false, 0,
+		    SMALL_PAGE);
+
+		assertEquals(SMALL_PAGE, patients.size());
+		for (Patient patient : patients) {
+			assertFalse(patient instanceof HibernateProxy,
+			    "search results must be patients, not proxies standing in for them");
+			assertEquals(Patient.class, patient.getClass());
+		}
+	}
+
+	private void assertPageGrowthIsBounded(String searchName, int smallPageTrips, int largePageTrips) {
+		assertTrue(largePageTrips <= smallPageTrips + PAGE_GROWTH_ALLOWANCE,
+		    String.format(
+		        "%s should cost a bounded number of database trips regardless of page size, "
+		                + "but a page of %d cost %d trips against %d for a page of %d",
+		        searchName, LARGE_PAGE, largePageTrips, smallPageTrips, SMALL_PAGE));
+	}
+
+	private int countDatabaseTrips(int pageSize, IntFunction<List<Patient>> search) {
+		Context.flushSession();
+		Context.clearSession();
+
+		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
+		sessionFactory.getStatistics().clear();
+
+		List<Patient> results = search.apply(pageSize);
+
+		assertEquals(pageSize, results.size(), "fixture should be large enough to fill the requested page");
+
+		return (int) sessionFactory.getStatistics().getPrepareStatementCount();
+	}
+
+	private void createIdentifierSearchFixture() {
+		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierType(2);
+
+		for (int i = 0; i < SEARCH_FIXTURE_SIZE; i++) {
+			Patient patient = new Patient();
+			// Deliberately unrelated to SEARCH_FIXTURE_TOKEN so only the identifiers match the search.
+			patient.addName(new PersonName("Ada", null, "Lovelace" + i));
+			patient.setGender("F");
+
+			PatientIdentifier identifier = new PatientIdentifier(SEARCH_FIXTURE_TOKEN + String.format("%04d", i),
+			        identifierType, null);
+			identifier.setPreferred(true);
+			patient.addIdentifier(identifier);
+
+			hibernatePatientDao.savePatient(patient);
+		}
+
+		Context.flushSession();
+		Context.clearSession();
+		updateSearchIndex();
 	}
 }
