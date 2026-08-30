@@ -56,7 +56,8 @@ class BootstrapPasswordTest {
 	void testGenerateDeterministicHash_shouldNotContainVisuallyAmbiguousCharacters() {
 		for (int i = 0; i < 100; i++) {
 			String hash = Security.generateDeterministicHash("input-" + i, "salt-" + i, 1000);
-			assertFalse(hash.matches(".*[0OIl+/].*"), "Hash must not contain 0, O, I, l, + or / but was: " + hash);
+			assertFalse(hash.chars().anyMatch(c -> "0OIl+/".indexOf(c) >= 0),
+				"Hash must not contain 0, O, I, l, + or / but was: " + hash);
 		}
 	}
 
