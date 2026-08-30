@@ -59,6 +59,16 @@ public class OrderSearchCriteria {
 	private final Date activatedOnOrAfterDate;
 
 	/**
+	 * Matches on scheduledDate that is any time on this date or less
+	 */
+	private final Date scheduledOnOrBeforeDate;
+
+	/**
+	 * Matches on scheduledDate that is any time on this date or more
+	 */
+	private final Date scheduledOnOrAfterDate;
+
+	/**
 	 * Matches on autoExpireDate that is any time on this date or less
 	 */
 	private final Date autoExpireOnOrBeforeDate;
@@ -108,24 +118,40 @@ public class OrderSearchCriteria {
 	 * @param orderNumber to match on; performs exact match if specifed
 	 * @param activatedOnOrBeforeDate orders must have dateActivated on or before this date
 	 * @param activatedOnOrAfterDate orders must have dateActivated on or after this date
+	 * @param scheduledOnOrBeforeDate orders must have scheduledDate on or before this date
+	 * @param scheduledOnOrAfterDate orders must have scheduledDate on or after this date
 	 * @param includeVoided whether to include the voided orders or not
 	 */
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
 	    Collection<OrderType> orderTypes, String accessionNumber, String orderNumber, Date activatedOnOrBeforeDate,
-	    Date activatedOnOrAfterDate, boolean isStopped, Date autoExpireOnOrBeforeDate, Date canceledOrExpiredOnOrBeforeDate,
-	    Order.Action action, Order.FulfillerStatus fulfillerStatus, Boolean includeNullFulfillerStatus,
-	    boolean excludeCanceledAndExpired, boolean excludeDiscontinueOrders, boolean includeVoided) {
-
+	    Date activatedOnOrAfterDate, boolean isStopped, Date autoExpireOnOrBeforeDate, 
+		Date canceledOrExpiredOnOrBeforeDate, Order.Action action, Order.FulfillerStatus fulfillerStatus, 
+		Boolean includeNullFulfillerStatus, boolean excludeCanceledAndExpired, boolean excludeDiscontinueOrders, 
+		boolean includeVoided) {
 		this(patient, careSetting, concepts, orderTypes, null, null, activatedOnOrBeforeDate, activatedOnOrAfterDate,
-		        isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate, action, fulfillerStatus,
-		        includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided, null);
+				null, null, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate, action, 
+				fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, 
+				includeVoided, null);
 	}
 
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
 	    Collection<OrderType> orderTypes, String accessionNumber, String orderNumber, Date activatedOnOrBeforeDate,
-	    Date activatedOnOrAfterDate, boolean isStopped, Date autoExpireOnOrBeforeDate, Date canceledOrExpiredOnOrBeforeDate,
-	    Order.Action action, Order.FulfillerStatus fulfillerStatus, Boolean includeNullFulfillerStatus,
-	    boolean excludeCanceledAndExpired, boolean excludeDiscontinueOrders, boolean includeVoided, Visit visit) {
+	    Date activatedOnOrAfterDate, boolean isStopped, 
+		Date autoExpireOnOrBeforeDate, Date canceledOrExpiredOnOrBeforeDate, Order.Action action, 
+		Order.FulfillerStatus fulfillerStatus, Boolean includeNullFulfillerStatus, boolean excludeCanceledAndExpired, 
+		boolean excludeDiscontinueOrders, boolean includeVoided, Visit visit) {
+		this(patient, careSetting, concepts, orderTypes, null, null, activatedOnOrBeforeDate, activatedOnOrAfterDate,
+				null, null, isStopped, autoExpireOnOrBeforeDate, 
+				canceledOrExpiredOnOrBeforeDate, action, fulfillerStatus, includeNullFulfillerStatus, 
+				excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided, visit);
+	}
+
+	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
+	    Collection<OrderType> orderTypes, String accessionNumber, String orderNumber, Date activatedOnOrBeforeDate,
+	    Date activatedOnOrAfterDate, Date scheduledOnOrBeforeDate, Date scheduledOnOrAfterDate, boolean isStopped, 
+		Date autoExpireOnOrBeforeDate, Date canceledOrExpiredOnOrBeforeDate, Order.Action action, 
+		Order.FulfillerStatus fulfillerStatus, Boolean includeNullFulfillerStatus, boolean excludeCanceledAndExpired, 
+		boolean excludeDiscontinueOrders, boolean includeVoided, Visit visit) {
 		this.patient = patient;
 		this.careSetting = careSetting;
 		this.concepts = concepts;
@@ -134,6 +160,8 @@ public class OrderSearchCriteria {
 		this.orderNumber = orderNumber;
 		this.activatedOnOrBeforeDate = activatedOnOrBeforeDate;
 		this.activatedOnOrAfterDate = activatedOnOrAfterDate;
+		this.scheduledOnOrBeforeDate = scheduledOnOrBeforeDate;
+		this.scheduledOnOrAfterDate = scheduledOnOrAfterDate;
 		this.isStopped = isStopped;
 		this.autoExpireOnOrBeforeDate = autoExpireOnOrBeforeDate;
 		this.canceledOrExpiredOnOrBeforeDate = canceledOrExpiredOnOrBeforeDate;
@@ -149,7 +177,7 @@ public class OrderSearchCriteria {
 	/**
 	 * (Legacy constructor, before addition of Order Number and Accession Number fields) Instead of
 	 * calling this constructor directly, it is recommended to use {@link OrderSearchCriteriaBuilder}.
-	 *
+	 * 
 	 * @param patient the patient the order is for
 	 * @param careSetting the care setting to match on
 	 * @param concepts the concepts to match on; if not specified, matches on all concepts
@@ -166,8 +194,8 @@ public class OrderSearchCriteria {
 	    boolean excludeDiscontinueOrders, boolean includeVoided) {
 
 		this(patient, careSetting, concepts, orderTypes, null, null, activatedOnOrBeforeDate, activatedOnOrAfterDate,
-		        isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate, action, fulfillerStatus,
-		        includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided);
+		        null, null, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate, action, fulfillerStatus,
+		        includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided, null);
 
 	}
 
@@ -238,6 +266,18 @@ public class OrderSearchCriteria {
 	}
 
 	/**
+	 * @return orders must have scheduledDate on or before this date
+	 */
+	public Date getScheduledOnOrBeforeDate() { return scheduledOnOrBeforeDate; }
+
+	/**
+	 * @return orders must have scheduledDate on or after this date
+	 */
+	public Date getScheduledOnOrAfterDate() { return scheduledOnOrAfterDate; }
+
+
+	/**
+	 *
 	 * @return orders must have dateStopped on or before this date
 	 */
 	public boolean isStopped() {
