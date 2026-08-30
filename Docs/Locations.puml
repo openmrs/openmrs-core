@@ -1,0 +1,66 @@
+@startuml
+
+title Location Service Module Architecture (Detailed)
+
+' 1. Interface Service (Berdasarkan kode yang Anda kirim)
+interface LocationService {
+    ' Core Location methods
+    + saveLocation(Location) : Location
+    + getLocation(Integer) : Location
+    + getLocationByUuid(String) : Location
+    + getAllLocations(boolean) : List<Location>
+    + retireLocation(Location, String) : Location
+    + purgeLocation(Location) : void
+    
+    ' Location Tag methods (Ditemukan di source code)
+    + saveLocationTag(LocationTag) : LocationTag
+    + getAllLocationTags() : List<LocationTag>
+    + getLocationsByTag(LocationTag) : List<Location>
+    
+    ' Attribute methods (Ditemukan di source code)
+    + saveLocationAttributeType(LocationAttributeType) : LocationAttributeType
+}
+
+' 2. Class Implementasi
+class LocationServiceImpl {
+    - dao : LocationDAO
+    + saveLocation(Location) : Location
+    + getLocation(Integer) : Location
+    + saveLocationTag(LocationTag) : LocationTag
+}
+
+' 3. Interface DAO
+interface LocationDAO {
+    + saveLocation(Location) : Location
+    + getLocation(Integer) : Location
+    + getAllLocations(boolean) : List<Location>
+    + saveLocationTag(LocationTag) : LocationTag
+}
+
+' 4. ENTITIES (Data Objects)
+class Location {
+    - locationId : Integer
+    - name : String
+    - parentLocation : Location
+    - tags : Set<LocationTag>
+}
+
+class LocationTag {
+    - locationTagId : Integer
+    - name : String
+}
+
+' 5. HUBUNGAN (RELATIONSHIPS)
+
+' Realization
+LocationService <|.. LocationServiceImpl : implements
+
+' Dependency Injection
+LocationServiceImpl --> LocationDAO : uses
+
+' Entity Relationships
+LocationService ..> Location : manages
+LocationService ..> LocationTag : manages
+Location "1" *-- "0..*" LocationTag : has
+
+@enduml
