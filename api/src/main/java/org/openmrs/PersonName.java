@@ -69,6 +69,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	@FullTextField(name = "givenNameStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "givenNameAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "givenNameSoundex", analyzer = SearchAnalysis.SOUNDEX_ANALYZER)
+	@FullTextField(name = "givenNameNickname", analyzer = SearchAnalysis.NICKNAME_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	private String givenName;
 
 	private String prefix;
@@ -77,6 +78,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	@FullTextField(name = "middleNameStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "middleNameAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "middleNameSoundex", analyzer = SearchAnalysis.SOUNDEX_ANALYZER)
+	@FullTextField(name = "middleNameNickname", analyzer = SearchAnalysis.NICKNAME_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	private String middleName;
 
 	private String familyNamePrefix;
