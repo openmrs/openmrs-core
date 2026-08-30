@@ -134,6 +134,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	public Patient savePatient(Patient patient) throws APIException {
 		requireAppropriatePatientModificationPrivilege(patient);
+		requireAppropriatePatientIdentifierPrivilege(patient);
 
 		if (!patient.getVoided() && patient.getIdentifiers().size() == 1) {
 			patient.getPatientIdentifier().setPreferred(true);
@@ -158,6 +159,19 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		if (patient.getVoided()) {
 			Context.requirePrivilege(PrivilegeConstants.DELETE_PATIENTS);
+		}
+	}
+
+	/**
+	 * Ensures that the user has the appropriate privilege to add a patient identifier if they try to do
+	 * so through {@link #savePatient(Patient)}.
+	 */
+	private void requireAppropriatePatientIdentifierPrivilege(Patient patient) {
+		for (PatientIdentifier identifier : patient.getIdentifiers()) {
+			if (identifier.getPatientIdentifierId() == null) {
+				Context.requirePrivilege(PrivilegeConstants.ADD_PATIENT_IDENTIFIERS);
+				break;
+			}
 		}
 	}
 
