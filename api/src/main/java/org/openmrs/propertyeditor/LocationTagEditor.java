@@ -14,7 +14,7 @@ import org.openmrs.api.context.Context;
 
 /**
  * Property editor for {@link LocationTag}s In version 1.9, added ability for this to also retrieve
- * objects by uuid
+ * objects by UUID
  *
  * @since 1.7
  */
