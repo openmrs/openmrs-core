@@ -358,6 +358,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @param newHash the re-encoded hash to store
 	 * @since 2.8.10
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void upgradePasswordHash(User user, String oldHash, String newHash) {
 		boolean upgraded = conditionallyUpdateUserPassword(
 			user.getUserId(),
