@@ -14,6 +14,7 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,9 @@ import java.util.Random;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
@@ -33,10 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
-
-import java.security.spec.KeySpec;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 
 /**
  * OpenMRS's security class deals with the hashing of passwords.
@@ -125,8 +124,12 @@ public class Security {
 	 * The UUID acts as a per-user salt, ensuring uniqueness per user, while the pepper
 	 * (stored in runtime.properties) provides system-wide secrecy.
 	 *
-	 * The resulting password is Base64-encoded and truncated to a user-friendly length
-	 * of {@value #BOOTSTRAP_MAX_PASSWORD_LENGTH} characters.
+	 * The resulting password is Base64-encoded, stripped of visually ambiguous
+	 * or awkward-to-type characters ({@code 0}, {@code O}, {@code I}, {@code l},
+	 * {@code +}, {@code /}) and truncated to a user-friendly length of
+	 * {@value #BOOTSTRAP_MAX_PASSWORD_LENGTH} characters. A digit is always
+	 * included so the password also satisfies OpenMRS's own password policy
+	 * when {@code security.passwordRequiresDigit} is enabled.
 	 *
 	 * @param user the user for whom to generate the bootstrap password
 	 * @return the generated bootstrap password (a user-friendly string)
@@ -207,8 +210,15 @@ public class Security {
 			byte[] derived = factory.generateSecret(spec).getEncoded();
 
 			String base64 = Base64.getEncoder().withoutPadding().encodeToString(derived);
-			String cleaned = base64.replaceAll("[0OIl]", "");
-			return cleaned.substring(0, Math.min(cleaned.length(), BOOTSTRAP_MAX_PASSWORD_LENGTH));
+			String cleaned = base64.replaceAll("[0OIl+/]", "");
+			if (cleaned.length() > BOOTSTRAP_MAX_PASSWORD_LENGTH) {
+				cleaned = cleaned.substring(0, BOOTSTRAP_MAX_PASSWORD_LENGTH);
+			}
+			if (cleaned.chars().noneMatch(c -> c >= '0' && c <= '9')) {
+				char digit = (char) ('0' + (derived[0] & 0xFF) % 10);
+				cleaned = cleaned.substring(0, cleaned.length() - 1) + digit;
+			}
+			return cleaned;
 
 		} catch (GeneralSecurityException e) {
 			log.error("Failed to generate deterministic hash", e);

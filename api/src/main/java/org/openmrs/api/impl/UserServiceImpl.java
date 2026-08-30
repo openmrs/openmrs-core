@@ -843,7 +843,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public void forcePasswordChange(User user) {
 		if (user != null) {
 			Security.forcePasswordChange(user);
-			Context.getUserService().saveUser(user);
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+				Context.getUserService().saveUser(user);
+			}
+			finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			}
 		}
 	}
 

@@ -53,6 +53,23 @@ class BootstrapPasswordTest {
 	}
 
 	@Test
+	void testGenerateDeterministicHash_shouldNotContainVisuallyAmbiguousCharacters() {
+		for (int i = 0; i < 100; i++) {
+			String hash = Security.generateDeterministicHash("input-" + i, "salt-" + i, 1000);
+			assertFalse(hash.matches(".*[0OIl+/].*"), "Hash must not contain 0, O, I, l, + or / but was: " + hash);
+		}
+	}
+
+	@Test
+	void testGenerateDeterministicHash_shouldAlwaysContainADigit() {
+		for (int i = 0; i < 100; i++) {
+			String hash = Security.generateDeterministicHash("input-" + i, "salt-" + i, 1000);
+			assertTrue(hash.chars().anyMatch(c -> c >= '0' && c <= '9'),
+				"Hash must contain at least one digit but was: " + hash);
+		}
+	}
+
+	@Test
 	void testGenerateBootstrapPassword_shouldReturnPassword() {
 		String password = Security.generateBootstrapPassword(user);
 		assertNotNull(password);
