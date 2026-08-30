@@ -31,6 +31,7 @@ import org.openmrs.Drug;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -382,5 +383,50 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 		Context.clearSession();
 		updateSearchIndex();
+	}
+
+	/**
+	 * @see HibernateConceptDAO#getCountOfConcepts
+	 */
+	@Test
+	public void getCountOfConcepts_shouldReturnExactCountWhenGlobalPropertyIsNotSet() {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "");
+
+		List<Locale> locales = Collections.singletonList(Locale.ENGLISH);
+		Integer count = dao.getCountOfConcepts("COUGH", locales, false, Collections.emptyList(), Collections.emptyList(),
+		    Collections.emptyList(), Collections.emptyList(), null);
+
+		assertNotNull(count);
+		assertTrue(count > 0);
+	}
+
+	/**
+	 * @see HibernateConceptDAO#getCountOfConcepts
+	 */
+	@Test
+	public void getCountOfConcepts_shouldReturnBoundedCountWhenGlobalPropertyIsSet() {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "1");
+
+		List<Locale> locales = Collections.singletonList(Locale.ENGLISH);
+		Integer count = dao.getCountOfConcepts("COUGH", locales, false, Collections.emptyList(), Collections.emptyList(),
+		    Collections.emptyList(), Collections.emptyList(), null);
+
+		assertNotNull(count);
+		assertTrue(count >= 1);
+	}
+
+	/**
+	 * @see HibernateConceptDAO#getCountOfConcepts
+	 */
+	@Test
+	public void getCountOfConcepts_shouldFallBackToUnboundedWhenGlobalPropertyIsInvalid() {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "not-a-number");
+
+		List<Locale> locales = Collections.singletonList(Locale.ENGLISH);
+		Integer count = dao.getCountOfConcepts("COUGH", locales, false, Collections.emptyList(), Collections.emptyList(),
+		    Collections.emptyList(), Collections.emptyList(), null);
+
+		assertNotNull(count);
+		assertTrue(count > 0);
 	}
 }
