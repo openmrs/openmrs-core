@@ -10,6 +10,7 @@
 package org.openmrs.web.filter;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
 
 import jakarta.servlet.FilterChain;
@@ -59,8 +60,6 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 	        throws ServletException, IOException {
 
 		HttpSession httpSession = httpRequest.getSession();
-		// used by htmlInclude tag
-		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(System.currentTimeMillis()));
 
 		log.debug("requestURI {}", httpRequest.getRequestURI());
 		log.debug("requestURL {}", httpRequest.getRequestURL());
@@ -93,11 +92,11 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		if (!Objects.equals(httpSession.getAttribute("username"), sessionUsername)) {
 			httpSession.setAttribute("username", sessionUsername);
 		}
+		Locale locale = userContext.getLocale();
 		// update the session locale only when it has changed
-		if (!Objects.equals(httpSession.getAttribute("locale"), userContext.getLocale())) {
-			httpSession.setAttribute("locale", userContext.getLocale());
+		if (!Objects.equals(httpSession.getAttribute("locale"), locale)) {
+			httpSession.setAttribute("locale", locale);
 		}
-
 		//TODO We do not cache the csrfguard javascript file because it contains the
 		//csrf token that is dynamically embedded in forms. For this to work,
 		//the OpenmrsFilter should be before the CSRFGuard filter in web.xml
