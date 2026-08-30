@@ -9,12 +9,17 @@
  */
 package org.openmrs.notification;
 
+import java.util.HashMap;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -109,6 +114,28 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 				fail();
 			}
 		}
+	}
+
+	/**
+	 * Preparing a message renders the template body with the Velocity engine, so it must be gated
+	 * behind a privilege rather than being callable by any (or no) user.
+	 *
+	 * @see MessageService#prepareMessage(Template)
+	 */
+	@Test
+	public void prepareMessage_shouldOnlyBeAllowedForUsersWithTheManageAlertsPrivilege() throws MessageException {
+		Template template = new Template();
+		template.setData(new HashMap<>());
+		template.setTemplate("Hello $name!");
+
+		// the default authenticated user is a super user and may prepare messages
+		assertNotNull(ms.prepareMessage(template));
+
+		// a user without the Manage Alerts privilege may not, via either overload (the privilege
+		// check fires before the method body, so no stored template is needed for the name overload)
+		Context.becomeUser("3-4");
+		assertThrows(APIAuthenticationException.class, () -> ms.prepareMessage(template));
+		assertThrows(APIAuthenticationException.class, () -> ms.prepareMessage("anyTemplateName", new HashMap<>()));
 	}
 
 }
