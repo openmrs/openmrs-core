@@ -12,51 +12,47 @@ package org.openmrs.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Properties;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.api.context.Context;
 
 /**
- * Tests how {@link Security#encodeStringArgon2(String)} derives its work factors from the
- * security.argon2.* runtime properties.
+ * Tests how the Argon2id work factors are resolved from the {@code security.argon2.*}
+ * runtime properties and clamped to safe bounds, and that an encoder produced from the
+ * resolved values yields a PHC string that always fits the {@value
+ * Security#MAX_PASSWORD_COLUMN_LENGTH} character {@code users.password} column.
  * <p>
- * Deliberately a plain unit test (no Spring context): the argon2PasswordEncoder bean is
- * created once from these runtime properties at context startup, so the configurable
- * behaviour can only be exercised by manipulating the runtime properties directly and
- * forcing the cache to be re-read via {@link Security#resetEncoder()}.
+ * Deliberately a plain unit test (no Spring context): the {@code argon2PasswordEncoder}
+ * bean is wired through {@link Security#createArgon2PasswordEncoder(int, int, int, int, int)}
+ * from the same placeholders, so this exercises the exact clamping the Spring context relies
+ * on without booting a server.
  */
 class SecurityArgon2ConfigTest {
 
-	private Properties originalRuntimeProperties;
-
-	@AfterEach
-	void restoreRuntimeProperties() {
-		Context.setRuntimeProperties(originalRuntimeProperties);
-		Security.resetEncoder();
-	}
-
 	@Test
-	void shouldUseDefaultsWhenNoRuntimePropertiesAreSet() {
-		setRuntimeProperties(new Properties());
-		String hash = Security.encodeStringArgon2("test");
-		assertArgon2Params(hash, 65536, 3, 1);
+	void shouldUseOWASPDefaultsWhenNoRuntimePropertiesAreSet() {
+		Security.Argon2Config config = Security.resolveArgon2Config(new Properties());
+		assertEquals(16, config.saltLength);
+		assertEquals(32, config.hashLength);
+		assertEquals(1, config.parallelism);
+		assertEquals(19456, config.memory);
+		assertEquals(2, config.iterations);
 	}
 
 	@Test
 	void shouldUseTheValuesFromTheRuntimeProperties() {
 		Properties props = new Properties();
-		props.setProperty("security.argon2.memory", "1024");
-		props.setProperty("security.argon2.iterations", "2");
+		props.setProperty("security.argon2.memory", "32768");
+		props.setProperty("security.argon2.iterations", "4");
 		props.setProperty("security.argon2.parallelism", "2");
 		props.setProperty("security.argon2.saltLength", "16");
 		props.setProperty("security.argon2.hashLength", "32");
-		setRuntimeProperties(props);
-		String hash = Security.encodeStringArgon2("test");
-		assertArgon2Params(hash, 1024, 2, 2);
+		Security.Argon2Config config = Security.resolveArgon2Config(props);
+		assertEquals(32768, config.memory);
+		assertEquals(4, config.iterations);
+		assertEquals(2, config.parallelism);
+		assertEquals(16, config.saltLength);
+		assertEquals(32, config.hashLength);
 	}
 
 	@Test
@@ -67,21 +63,29 @@ class SecurityArgon2ConfigTest {
 		props.setProperty("security.argon2.parallelism", "0");
 		props.setProperty("security.argon2.saltLength", "4");
 		props.setProperty("security.argon2.hashLength", "2");
-		setRuntimeProperties(props);
-		String hash = Security.encodeStringArgon2("test");
-		// memory is clamped to 8 * parallelism (1)
-		assertArgon2Params(hash, 8, 1, 1);
+		Security.Argon2Config config = Security.resolveArgon2Config(props);
+		// Clamp to the OWASP security floor (m=19456, t=2, p=1), not the encoder's technical
+		// minimums: a site that sets everything low must not end up weaker than SHA-512.
+		assertEquals(19456, config.memory);
+		assertEquals(2, config.iterations);
+		assertEquals(1, config.parallelism);
+		assertEquals(8, config.saltLength);
+		assertEquals(4, config.hashLength);
 	}
 
 	@Test
 	void shouldClampValuesThatExceedTheAllowedMaximum() {
 		Properties props = new Properties();
+		props.setProperty("security.argon2.memory", "2000000");
 		props.setProperty("security.argon2.iterations", "100");
 		props.setProperty("security.argon2.parallelism", "16");
 		props.setProperty("security.argon2.saltLength", "64");
-		setRuntimeProperties(props);
-		String hash = Security.encodeStringArgon2("test");
-		assertArgon2Params(hash, 65536, 10, 8);
+		props.setProperty("security.argon2.hashLength", "128");
+		Security.Argon2Config config = Security.resolveArgon2Config(props);
+		assertEquals(1048576, config.memory);
+		assertEquals(10, config.iterations);
+		assertEquals(8, config.parallelism);
+		assertEquals(32, config.saltLength);
 	}
 
 	@Test
@@ -92,57 +96,40 @@ class SecurityArgon2ConfigTest {
 		props.setProperty("security.argon2.parallelism", "lots");
 		props.setProperty("security.argon2.saltLength", "salty");
 		props.setProperty("security.argon2.hashLength", "long");
-		setRuntimeProperties(props);
-		String hash = Security.encodeStringArgon2("test");
-		assertArgon2Params(hash, 65536, 3, 1);
+		Security.Argon2Config config = Security.resolveArgon2Config(props);
+		assertEquals(19456, config.memory);
+		assertEquals(2, config.iterations);
+		assertEquals(1, config.parallelism);
+		assertEquals(16, config.saltLength);
+		assertEquals(32, config.hashLength);
 	}
 
 	@Test
-	void shouldClampMemoryToTheMaximumWhenExceeded() throws Exception {
+	void shouldClampHashLengthSoThePhcAlwaysFitsThePasswordColumn() {
+		// With the default 16 byte salt the largest hash length that still fits varchar(128)
+		// is 55; 56 or more overflows and would be silently truncated on a non-strict DB.
 		Properties props = new Properties();
-		props.setProperty("security.argon2.memory", "2000000");
-		props.setProperty("security.argon2.iterations", "1");
-		setRuntimeProperties(props);
-		// Load the cached configuration without encoding: an encode with 1 GiB of
-		// Argon2 memory cost would exceed the surefire heap (-Xmx1g) and the CI runner.
-		loadCachedConfig();
-		assertEquals(1048576, cachedMemory());
-		assertEquals(1, cachedIterations());
+		props.setProperty("security.argon2.saltLength", "16");
+		props.setProperty("security.argon2.hashLength", "56");
+		Security.Argon2Config config = Security.resolveArgon2Config(props);
+		assertEquals(55, config.hashLength);
 	}
 
-	private void loadCachedConfig() throws Exception {
-		Method load = Security.class.getDeclaredMethod("loadArgon2ConfigIfNecessary");
-		load.setAccessible(true);
-		load.invoke(null);
+	@Test
+	void shouldClampHashLengthWithMaximumSaltLength() {
+		// At salt 32 (the maximum the resolver allows) the largest fitting hash length is 39.
+		Properties props = new Properties();
+		props.setProperty("security.argon2.saltLength", "32");
+		props.setProperty("security.argon2.hashLength", "40");
+		Security.Argon2Config config = Security.resolveArgon2Config(props);
+		assertEquals(39, config.hashLength);
 	}
 
-	private int cachedMemory() throws Exception {
-		Field field = Security.class.getDeclaredField("cachedMemory");
-		field.setAccessible(true);
-		return (Integer) field.get(null);
-	}
-
-	private int cachedIterations() throws Exception {
-		Field field = Security.class.getDeclaredField("cachedIterations");
-		field.setAccessible(true);
-		return (Integer) field.get(null);
-	}
-
-	private void setRuntimeProperties(Properties props) {
-		if (originalRuntimeProperties == null) {
-			originalRuntimeProperties = Context.getRuntimeProperties();
-		}
-		Context.setRuntimeProperties(props);
-		Security.resetEncoder();
-	}
-
-	private void assertArgon2Params(String hash, int memory, int iterations, int parallelism) {
-		assertTrue(hash.startsWith("$argon2id$"), "Expected Argon2id PHC format, got: " + hash.substring(0, 20));
-		String[] parts = hash.split("\\$");
-		assertTrue(parts.length >= 5, "Unexpected PHC string layout: " + hash.substring(0, 20));
-		String params = parts[3];
-		assertTrue(params.contains("m=" + memory), "Expected m=" + memory + " in params, got: " + params);
-		assertTrue(params.contains("t=" + iterations), "Expected t=" + iterations + " in params, got: " + params);
-		assertTrue(params.contains("p=" + parallelism), "Expected p=" + parallelism + " in params, got: " + params);
+	@Test
+	void shouldProducePhcThatFitsThePasswordColumnForDefaultWorkFactors() {
+		org.springframework.security.crypto.argon2.Argon2PasswordEncoder encoder = Security.createArgon2PasswordEncoder(16, 32, 1, 19456, 2);
+		String phc = encoder.encode("test");
+		assertTrue(phc.length() <= 128, "PHC length " + phc.length() + " exceeds the 128 char password column: " + phc);
+		assertTrue(Security.hashMatches(phc, "test"), "Encoded value must authenticate its raw password");
 	}
 }

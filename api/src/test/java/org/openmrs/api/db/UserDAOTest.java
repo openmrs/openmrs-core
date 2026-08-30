@@ -171,7 +171,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should be set");
-		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
+		assertEquals( hashedSecretAnswer, lc.getSecretAnswer(), "answer should be set");
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
 		dao.changePassword(PASSWORD, PASSWORD + "foo");
 		lc = dao.getLoginCredential(userJoe);

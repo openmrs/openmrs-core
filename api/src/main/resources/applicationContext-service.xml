@@ -32,14 +32,19 @@
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
 	<bean id="openmrsLegacyPasswordEncoder" class="org.openmrs.spring.LegacyOpenmrsPasswordEncoder" />
+	<!-- Argon2id work factors, overridable per-installation via openmrs-runtime.properties.
+	     Security.createArgon2PasswordEncoder(...) clamps each value to a safe range. -->
 	<bean id="argon2PasswordEncoder" class="org.openmrs.util.Security" factory-method="createArgon2PasswordEncoder">
-		<!-- Work factors come from the security.argon2.* runtime properties
-		     (openmrs-runtime.properties), with the defaults applied when they are
-		     absent. The same runtime properties drive Security.hashMatches /
-		     encodeStringArgon2, so password hashing and the bean never disagree. -->
+		<constructor-arg index="0" value="${security.argon2.saltLength:16}" />
+		<constructor-arg index="1" value="${security.argon2.hashLength:32}" />
+		<constructor-arg index="2" value="${security.argon2.parallelism:1}" />
+		<constructor-arg index="3" value="${security.argon2.memory:19456}" />
+		<constructor-arg index="4" value="${security.argon2.iterations:2}" />
 	</bean>
 	<bean id="openmrsPasswordEncoder" class="org.openmrs.spring.OpenmrsDelegatingPasswordEncoder">
-		<constructor-arg type="java.lang.String" value="" />
+		<!-- an empty value keeps newly written passwords on the legacy (SHA-512) encoder;
+		     set security.passwordEncoder=argon2 in openmrs-runtime.properties to opt in -->
+		<constructor-arg type="java.lang.String" value="${security.passwordEncoder:}" />
 		<constructor-arg>
 			<map>
 				<entry key="argon2" value-ref="argon2PasswordEncoder" />
