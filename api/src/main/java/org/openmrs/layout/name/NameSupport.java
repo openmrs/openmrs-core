@@ -35,6 +35,9 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 
 	private boolean initialized = false;
 
+	// Memoized layout format to avoid repeated DB calls
+	private String layoutFormat;
+
 	public NameSupport() {
 		if (singleton == null) {
 			singleton = this;
@@ -58,6 +61,14 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 			return;
 		}
 		Context.getAdministrationService().addGlobalPropertyListener(singleton);
+
+		// Read and cache the configured name format GP
+		String formatGp = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT);
+		if (StringUtils.isNotBlank(formatGp)) {
+			this.layoutFormat = formatGp;
+		}
+
 		// Get configured name template to override the existing one if any
 		String layoutTemplateXml = Context.getAdministrationService()
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
@@ -104,13 +115,14 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	}
 
 	/**
-	 * @return Returns the defaultLayoutFormat
+	 * @return Returns the memoized default layout format, falling back to defaultLayoutFormat
 	 */
 	@Override
 	public String getDefaultLayoutFormat() {
-		String ret = Context.getAdministrationService()
-		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT);
-		return (ret != null && ret.length() > 0) ? ret : defaultLayoutFormat;
+		if (StringUtils.isNotBlank(layoutFormat)) {
+			return layoutFormat;
+		}
+		return defaultLayoutFormat;
 	}
 
 	/**
@@ -118,7 +130,8 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 */
 	@Override
 	public boolean supportsPropertyName(String propertyName) {
-		return OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE.equals(propertyName);
+		return OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE.equals(propertyName)
+		        || OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT.equals(propertyName);
 	}
 
 	/**
@@ -126,9 +139,17 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		NameTemplate nameTemplate = deserializeXmlTemplate(newValue.getPropertyValue());
-		if (nameTemplate != null) {
-			updateLayoutTemplates(nameTemplate);
+		if (newValue == null) {
+			return;
+		}
+
+		if (OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE.equals(newValue.getProperty())) {
+			NameTemplate nameTemplate = deserializeXmlTemplate(newValue.getPropertyValue());
+			if (nameTemplate != null) {
+				updateLayoutTemplates(nameTemplate);
+			}
+		} else if (OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT.equals(newValue.getProperty())) {
+			this.layoutFormat = newValue.getPropertyValue();
 		}
 	}
 
@@ -137,6 +158,8 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 */
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-
+		if (OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT.equals(propertyName)) {
+			this.layoutFormat = null;
+		}
 	}
 }
