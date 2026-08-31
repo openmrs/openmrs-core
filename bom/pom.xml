@@ -82,7 +82,6 @@
 		<commonsIoVersion>2.22.0</commonsIoVersion>
 		<commonsLang3Version>3.20.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
-		<commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
 		<commonsFileupload2JakartaVersion>2.0.0-M5</commonsFileupload2JakartaVersion>
 		<commonsValidatorVersion>1.11.0</commonsValidatorVersion>
 
@@ -388,11 +387,6 @@
 						<artifactId>commons-logging</artifactId>
 					</exclusion>
 				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>${commonsFileuploadVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
