@@ -49,7 +49,7 @@
 		<springVersion>7.0.9</springVersion>
 		<springTestVersion>7.0.9</springTestVersion>
 		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
-		<springSecurityVersion>7.0.7</springSecurityVersion>
+		<springSecurityVersion>7.1.1</springSecurityVersion>
 		<hibernateVersion>7.4.6.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
