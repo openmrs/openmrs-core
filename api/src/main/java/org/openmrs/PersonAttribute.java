@@ -300,12 +300,15 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 				return null;
 			}
 
-			log.warn(
-			    "Unable to hydrate value: " + OpenmrsLoggingUtil.sanitize(getValue()) + " for type: " + getAttributeType(),
-			    e);
+			if (log.isWarnEnabled()) {
+				log.warn("Unable to hydrate value: {} for type: {}", OpenmrsLoggingUtil.sanitize(getValue()),
+				    getAttributeType(), e);
+			}
 		}
 
-		log.debug("Returning value: '" + OpenmrsLoggingUtil.sanitize(getValue()) + "'");
+		if (log.isDebugEnabled()) {
+			log.debug("Returning value: '{}'", OpenmrsLoggingUtil.sanitize(getValue()));
+		}
 		return getValue();
 	}
 

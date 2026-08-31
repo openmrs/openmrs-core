@@ -375,7 +375,9 @@ public class Context {
 	 * @throws ContextAuthenticationException
 	 */
 	public static void becomeUser(String systemId) throws ContextAuthenticationException {
-		log.info("systemId: {}", OpenmrsLoggingUtil.sanitize(systemId));
+		if (log.isInfoEnabled()) {
+			log.info("systemId: {}", OpenmrsLoggingUtil.sanitize(systemId));
+		}
 
 		getUserContext().becomeUser(systemId);
 	}
@@ -715,7 +717,9 @@ public class Context {
 		if (!isSessionOpen()) {
 			return; // fail early if there isn't even a session open
 		}
-		log.debug("Logging out : {}", OpenmrsLoggingUtil.sanitize(getAuthenticatedUser()));
+		if (log.isDebugEnabled()) {
+			log.debug("Logging out : {}", OpenmrsLoggingUtil.sanitize(getAuthenticatedUser()));
+		}
 
 		getUserContext().logout();
 

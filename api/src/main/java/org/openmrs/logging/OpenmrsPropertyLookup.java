@@ -9,6 +9,7 @@
  */
 package org.openmrs.logging;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.lookup.AbstractLookup;
@@ -60,9 +61,11 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 			case "logLayout":
 				return getProperty(OpenmrsConstants.GP_LOG_LAYOUT);
 			default:
-				StatusLogger.getLogger().error(
-				    "{} is not a supported property. We support openmrs:applicationDirectory, openmrs:logLocation, and openmrs:logLayout",
-				    OpenmrsLoggingUtil.sanitize(key));
+				String message = "{} is not a supported property. We support openmrs:applicationDirectory, openmrs:logLocation, and openmrs:logLayout";
+				StatusLogger statusLogger = StatusLogger.getLogger();
+				if (statusLogger.isEnabled(Level.ERROR, null, message)) {
+					statusLogger.error(message, OpenmrsLoggingUtil.sanitize(key));
+				}
 				return null;
 		}
 	}
