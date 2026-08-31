@@ -14,20 +14,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
-
       - name: Set up Java version
         uses: actions/setup-java@v6.0.0
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
-
       - name: Build project with Maven
         run: mvn clean install -DskipTests -Dspotbugs.skip=true
-
       - name: Run OWASP Dependency-Check
         uses: dependency-check/Dependency-Check_Action@1e54355a8b4c8abaa8cc7d0b70aa655a3bb15a6c
-        id: depcheck
+        id: Depcheck
         env:
           JAVA_HOME: /opt/jdk
         with:
@@ -39,16 +36,15 @@ jobs:
           # can stall for 30+ min). --disableOssIndex is a no-op here (the
           # analyzer auto-disables without credentials).
           args: |
-            --failOnCVSS 9.0
+            --failOnCVSS 6.2
             --enableRetired
             --disableCentral
             --disableOssIndex
             --suppression dependency-check-suppressions.xml
             ${{ secrets.NVD_API_KEY != '' && format('--nvdApiKey {0}', secrets.NVD_API_KEY) || '' }}
-
       - name: Upload Test results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: Dependency Check report
-          path: ${{ github.workspace }}/reports
+           name: Dependency Check report
+           path: ${{github.workspace}}/reports
