@@ -2035,12 +2035,18 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		List<Patient> patients = dao.getPatients("Ben", 0, 11);
 
 		assertEquals(4, patients.size());
-		assertEquals("Ben", patients.getFirst().getGivenName());
+		assertEquals("Ben", patients.get(0).getGivenName());
+		assertEquals("Alan", patients.get(1).getGivenName());
+		assertEquals("Benedict", patients.get(2).getGivenName());
+		assertEquals("Adam", patients.get(3).getGivenName());
 
 		patients = dao.getPatients("Ben Frank", 0, 11);
 
 		assertEquals(4, patients.size());
-		assertEquals("Ben", patients.getFirst().getGivenName());
+		assertEquals("Ben", patients.get(0).getGivenName());
+		assertEquals("Alan", patients.get(1).getGivenName());
+		assertEquals("Benedict", patients.get(2).getGivenName());
+		assertEquals("Adam", patients.get(3).getGivenName());
 	}
 
 	/**
