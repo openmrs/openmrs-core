@@ -215,7 +215,8 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 			} else {
 				if (classAndLevel.length > 2) {
 					StatusLogger statusLogger = StatusLogger.getLogger();
-					if (statusLogger.isEnabled(Level.WARN, null, "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO")) {
+					if (statusLogger.isEnabled(Level.WARN, null,
+					    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO")) {
 						statusLogger.warn(
 						    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO",
 						    OpenmrsLoggingUtil.sanitize(level));
