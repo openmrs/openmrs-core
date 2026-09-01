@@ -4007,6 +4007,21 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertTrue(conceptReferenceRanges.stream().anyMatch(range -> range.getId().equals(3)));
 	}
 
+	@Test
+	public void getConceptReferenceRange_shouldAcceptDateParameter() {
+		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
+
+		Person person = new Person();
+		person.setBirthdate(java.sql.Date.valueOf("2000-01-01"));
+
+		Concept concept = conceptService.getConcept(5497);
+		Date date = java.sql.Date.valueOf("2020-01-01");
+
+		ConceptReferenceRange range = conceptService.getConceptReferenceRange(person, concept, date);
+
+		assertNotNull(range);
+	}
+
 	/**
 	 * @see ConceptService#saveConcept(Concept)
 	 */
