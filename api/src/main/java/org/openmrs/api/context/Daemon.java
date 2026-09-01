@@ -201,62 +201,6 @@ public final class Daemon {
 	 * scheduled task) and you want to start up a new parallel Daemon thread. You may only call this
 	 * method from a Daemon thread.
 	 *
-	 * @param runnable what to run in a new thread
-	 * @return the newly spawned {@link Thread}
-	 * @deprecated As of 2.7.0, consider using {@link #runNewDaemonTask(Runnable)} instead
-	 */
-	@Deprecated
-	public static Thread runInNewDaemonThread(final Runnable runnable) {
-		// make sure we're already in a daemon thread
-		if (!isDaemonThread()) {
-			throw new APIAuthenticationException("Only daemon threads can spawn new daemon threads");
-		}
-
-		// the previous implementation ensured that Thread.start() was called before this function returned
-		// since we cannot guarantee that the executor will run the thread when `execute()` is called, we need another
-		// mechanism to ensure the submitted Runnable was actually started.
-		final CountDownLatch countDownLatch = new CountDownLatch(1);
-
-		// we should consider making DaemonThread public, so the caller can access returnedObject and exceptionThrown
-		DaemonThread thread = new DaemonThread() {
-
-			@Override
-			public void run() {
-				isDaemonThread.set(true);
-				try {
-					Context.openSession();
-					countDownLatch.countDown();
-					//Suppressing sonar issue "squid:S1217"
-					//We intentionally do not start a new thread yet, rather wrap the run call in a session.
-					runnable.run();
-				} finally {
-					try {
-						Context.closeSession();
-					} finally {
-						isDaemonThread.remove();
-						daemonThreadUser.remove();
-					}
-				}
-			}
-		};
-
-		OpenmrsThreadPoolHolder.threadExecutor.execute(thread);
-
-		// do not return until the thread is actually started to emulate the previous behaviour
-		try {
-			countDownLatch.await();
-		} catch (InterruptedException ignored) {
-			Thread.currentThread().interrupt();
-		}
-
-		return thread;
-	}
-
-	/**
-	 * Call this method if you are inside a Daemon thread (for example in a Module activator or a
-	 * scheduled task) and you want to start up a new parallel Daemon thread. You may only call this
-	 * method from a Daemon thread.
-	 *
 	 * @param callable what to run in a new thread
 	 * @return a future that completes when the task is done;
 	 * @since 2.7.0
@@ -361,48 +305,6 @@ public final class Daemon {
 				        service.getClass().getSimpleName(), e);
 			}
 		}
-	}
-
-	/**
-	 * Executes the given runnable in a new thread that is authenticated as the daemon user.
-	 *
-	 * @param runnable an object implementing the {@link Runnable} interface.
-	 * @param token the token required to run code as the daemon user
-	 * @return the newly spawned {@link Thread}
-	 * @since 1.9.2
-	 * @deprecated Since 2.7.0 use {@link #runInDaemonThreadWithoutResult(Runnable, DaemonToken)}
-	 *             instead
-	 */
-	@Deprecated
-	@SuppressWarnings({ "squid:S1217", "unused" })
-	public static Thread runInDaemonThread(final Runnable runnable, DaemonToken token) {
-		if (!ModuleFactory.isTokenValid(token)) {
-			throw new ContextAuthenticationException("Invalid token " + token);
-		}
-
-		DaemonThread thread = new DaemonThread() {
-
-			@Override
-			public void run() {
-				isDaemonThread.set(true);
-				try {
-					Context.openSession();
-					//Suppressing sonar issue "squid:S1217"
-					//We intentionally do not start a new thread yet, rather wrap the run call in a session.
-					runnable.run();
-				} finally {
-					try {
-						Context.closeSession();
-					} finally {
-						isDaemonThread.remove();
-						daemonThreadUser.remove();
-					}
-				}
-			}
-		};
-
-		OpenmrsThreadPoolHolder.threadExecutor.execute(thread);
-		return thread;
 	}
 
 	/**
