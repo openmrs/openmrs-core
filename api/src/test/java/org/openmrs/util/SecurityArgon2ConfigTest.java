@@ -86,8 +86,9 @@ class SecurityArgon2ConfigTest {
 		assertEquals(10, config.iterations);
 		assertEquals(8, config.parallelism);
 		assertEquals(32, config.saltLength);
-		// hashLength 128 is clamped so that "{argon2}" + the PHC string still fits the column;
-		// the longer header at these maximum work factors leaves room for only 31 hash bytes
+		// The 128 byte hash length does not fit together with the encoder id
+		// prefix and the PHC header at these maximum work factors, so it is
+		// capped to the 31 bytes that do fit.
 		assertEquals(31, config.hashLength);
 	}
 
