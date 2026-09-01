@@ -180,27 +180,29 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Verifies that the password hash stored by {@code changePassword(User, String)} uses the
-	 * Argon2id PHC format and that the stored value authenticates the password.
+	 * Pins the password write path for {@code changePassword(User, String)}: the hash the DAO
+	 * persists must be exactly what the configured {@code openmrsPasswordEncoder} bean
+	 * produces for {@code password + salt} (by default the legacy SHA-512 encoder), and the
+	 * stored value must authenticate the password on login.
 	 */
 	@Test
-	public void changePassword_shouldStoreTheArgon2idFormattedValue() {
+	public void changePassword_shouldStoreThePasswordThroughTheConfiguredEncoder() {
 		dao.changePassword(userJoe, PASSWORD);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 		String stored = lc.getHashedPassword();
-		assertTrue(stored.contains("$argon2id$"),
-			"Expected users.password to contain $argon2id$ (Argon2id PHC format) but first 40 chars were: "
-				+ stored.substring(0, Math.min(40, stored.length())));
+		assertEquals(Security.encodePassword(PASSWORD + lc.getSalt()), stored,
+			"users.password must be written by the configured openmrsPasswordEncoder bean");
 		// Round-trip: prove the value that was stored also matches the raw password on login.
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
 	}
 
 	/**
-	 * Verifies that the password hash stored by {@code saveUser(User, String)} uses the
-	 * Argon2id PHC format and that the stored value authenticates the password.
+	 * Pins the password write path for {@code saveUser(User, String)}: the hash the DAO
+	 * persists must be exactly what the configured {@code openmrsPasswordEncoder} bean
+	 * produces, and the stored value must authenticate the password on login.
 	 */
 	@Test
-	public void saveUser_shouldStoreTheArgon2idFormattedValue() {
+	public void saveUser_shouldStoreThePasswordThroughTheConfiguredEncoder() {
 		PersonName name = new PersonName("Jane", "J", "Doe");
 		name.setDateCreated(new Date());
 		Person person = new Person();
@@ -219,19 +221,18 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 
 		LoginCredential lc = dao.getLoginCredential(newUser);
 		String stored = lc.getHashedPassword();
-		assertTrue(stored.contains("$argon2id$"),
-			"Expected new-user password to contain $argon2id$ but first 40 chars were: "
-				+ stored.substring(0, Math.min(40, stored.length())));
+		assertEquals(Security.encodePassword("Openmr6zz" + lc.getSalt()), stored,
+			"new-user password must be written by the configured openmrsPasswordEncoder bean");
 		Context.authenticate("juser2", "Openmr6zz");
 	}
 
 	/**
-	 * Verifies that the password hash stored by {@code changePassword(String, String)} — the
-	 * "self change" overload taking old and new password — uses the Argon2id PHC format and
-	 * that the stored value authenticates the new password.
+	 * Pins the password write path for {@code changePassword(String, String)} — the
+	 * "self change" overload taking old and new password — and that the stored value
+	 * authenticates the new password.
 	 */
 	@Test
-	public void changePasswordOldNew_shouldStoreTheArgon2idFormattedValue() {
+	public void changePasswordOldNew_shouldStoreThePasswordThroughTheConfiguredEncoder() {
 		// Establish baseline so oldPassword verifies inside the DAO overload.
 		dao.changePassword(userJoe, PASSWORD);
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
@@ -239,9 +240,8 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changePassword(PASSWORD, "Openmr7aa");
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 		String stored = lc.getHashedPassword();
-		assertTrue(stored.contains("$argon2id$"),
-			"Expected self-change password to contain $argon2id$ but first 40 chars were: "
-				+ stored.substring(0, Math.min(40, stored.length())));
+		assertEquals(Security.encodePassword("Openmr7aa" + lc.getSalt()), stored,
+			"self-change password must be written by the configured openmrsPasswordEncoder bean");
 		Context.authenticate(userJoe.getUsername(), "Openmr7aa");
 	}
 

@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -108,13 +109,16 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 	}
 
 	@Test
-	public void matches_shouldUseTheEncoderNamedByTheIdForEncodeForAnUnprefixedPassword() {
-		when(bcryptEncoder.matches("password", "hashedPassword")).thenReturn(true);
+	public void matches_shouldRouteAnUnprefixedPasswordToTheFallbackEncoder() {
+		when(fallbackEncoder.matches("password", "hashedPassword")).thenReturn(true);
 		OpenmrsDelegatingPasswordEncoder encoder = new OpenmrsDelegatingPasswordEncoder("bcrypt",
 			idToPasswordEncoder, fallbackEncoder);
 
+		// An unprefixed value predates the id-based encoder, so it must be verified by the
+		// fallback even when new passwords are written with an id prefix. Sending it to
+		// bcryptEncoder would reject every legacy row once the opt-in is enabled.
 		assertTrue(encoder.matches("password", "hashedPassword"));
-		verify(fallbackEncoder, never()).matches(any(), anyString());
+		verify(bcryptEncoder, never()).matches(any(), anyString());
 	}
 
 	@Test
@@ -210,5 +214,46 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 		assertTrue(encoder.matches("password", encoded));
 		assertFalse(encoder.matches("wrongPassword", encoded));
 		assertFalse(encoder.upgradeEncoding(encoded));
+	}
+
+	/**
+	 * Models {@code security.passwordEncoder=argon2} and pins the exact behavior dkayiwa
+	 * measured against a real context: every row shape that exists in a 2.8.x database has
+	 * to keep authenticating the moment the opt-in is switched on. Nothing that was written
+	 * before the opt-in may stop logging in.
+	 */
+	@Test
+	public void shouldKeepVerifyingLegacyAndArgon2RowsWhenTheArgon2OptInIsEnabled() {
+		Argon2PasswordEncoder argon2Encoder = new Argon2PasswordEncoder(16, 32, 1, 19456, 2);
+		PasswordEncoder legacyEncoder = new LegacyOpenmrsPasswordEncoder();
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+		encoders.put("argon2", argon2Encoder);
+		OpenmrsDelegatingPasswordEncoder encoder = new OpenmrsDelegatingPasswordEncoder("argon2", encoders,
+			legacyEncoder);
+
+		// a new password is stored prefixed with the id, so the persisted value is
+		// "{argon2}" + the PHC string
+		String encoded = encoder.encode("password");
+		assertTrue(encoded.startsWith("{argon2}"));
+		assertTrue(encoder.matches("password", encoded));
+		assertFalse(encoder.matches("wrongPassword", encoded));
+		assertFalse(encoder.upgradeEncoding(encoded));
+
+		// a bare SHA-512 value written before the opt-in must keep authenticating
+		String legacyHash = legacyEncoder.encode("password");
+		assertFalse(legacyHash.startsWith("{"));
+		assertTrue(encoder.matches("password", legacyHash));
+		// and must be a candidate for transparent re-encoding
+		assertTrue(encoder.upgradeEncoding(legacyHash));
+
+		// SHA-1 (40 char) rows from the pre-SHA-512 era must keep authenticating too
+		assertTrue(encoder.matches("password", "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8"));
+		assertTrue(encoder.upgradeEncoding("5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8"));
+
+		// a bare Argon2 PHC row (however it got into the database) is also verified through
+		// the fallback's hashMatches, which recognizes the $argon2id$ marker
+		String bareArgon2 = argon2Encoder.encode("password");
+		assertTrue(encoder.matches("password", bareArgon2));
+		assertTrue(encoder.upgradeEncoding(bareArgon2));
 	}
 }

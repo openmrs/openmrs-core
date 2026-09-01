@@ -15,6 +15,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
@@ -187,17 +189,25 @@ public class Security {
 		}
 	}
 
+	// Length of the "{argon2}" id prefix that OpenmrsDelegatingPasswordEncoder prepends to the
+	// PHC string before it is persisted (encode() returns "{argon2}" + phc when upgraded). The
+	// clamp below must leave room for it, or the stored value overflows the column even though
+	// the bare PHC string fits.
+	private static final int ENCODER_ID_PREFIX_LENGTH = 8;
+
 	/**
-	 * Caps the Argon2 hash length so the encoded PHC string always fits the {@value
-	 * #MAX_PASSWORD_COLUMN_LENGTH} character {@code users.password} column. The total length
-	 * depends on the work factors (the header) and the salt as well as the hash, so the
-	 * ceiling must be computed jointly. Without it, a too-large hash is silently truncated on
-	 * a non-strict database and can never verify again, locking the account out.
+	 * Caps the Argon2 hash length so the full value persisted to the {@value
+	 * #MAX_PASSWORD_COLUMN_LENGTH} character {@code users.password} column always fits. When
+	 * the encoder is used in upgraded (prefixed) mode the stored value is "{argon2}" plus the
+	 * PHC string, so the budget is the column length minus the prefix. The total length of the
+	 * PHC string depends on the work factors (the header) and the salt as well as the hash, so
+	 * the ceiling must be computed jointly. Without it, a too-large hash is silently truncated
+	 * on a non-strict database and can never verify again, locking the account out.
 	 */
 	private static int clampHashLengthToColumnLimit(int hashLength, int saltLength, int memory, int iterations, int parallelism) {
 		String header = "$argon2id$v=19$m=" + memory + ",t=" + iterations + ",p=" + parallelism + "$";
 		int saltBase64 = unpaddedBase64Length(saltLength);
-		int maxHashBase64 = MAX_PASSWORD_COLUMN_LENGTH - header.length() - saltBase64 - 1;
+		int maxHashBase64 = MAX_PASSWORD_COLUMN_LENGTH - ENCODER_ID_PREFIX_LENGTH - header.length() - saltBase64 - 1;
 		if (maxHashBase64 <= 0) {
 			return MIN_HASH_LENGTH;
 		}

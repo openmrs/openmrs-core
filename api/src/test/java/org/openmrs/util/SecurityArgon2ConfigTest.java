@@ -86,6 +86,9 @@ class SecurityArgon2ConfigTest {
 		assertEquals(10, config.iterations);
 		assertEquals(8, config.parallelism);
 		assertEquals(32, config.saltLength);
+		// hashLength 128 is clamped so that "{argon2}" + the PHC string still fits the column;
+		// the longer header at these maximum work factors leaves room for only 31 hash bytes
+		assertEquals(31, config.hashLength);
 	}
 
 	@Test
@@ -106,23 +109,24 @@ class SecurityArgon2ConfigTest {
 
 	@Test
 	void shouldClampHashLengthSoThePhcAlwaysFitsThePasswordColumn() {
-		// With the default 16 byte salt the largest hash length that still fits varchar(128)
-		// is 55; 56 or more overflows and would be silently truncated on a non-strict DB.
+		// With the default 16 byte salt the largest hash length whose "{argon2}"-prefixed
+		// value still fits varchar(128) is 49; 50 or more overflows and would be silently
+		// truncated on a non-strict DB.
 		Properties props = new Properties();
 		props.setProperty("security.argon2.saltLength", "16");
 		props.setProperty("security.argon2.hashLength", "56");
 		Security.Argon2Config config = Security.resolveArgon2Config(props);
-		assertEquals(55, config.hashLength);
+		assertEquals(49, config.hashLength);
 	}
 
 	@Test
 	void shouldClampHashLengthWithMaximumSaltLength() {
-		// At salt 32 (the maximum the resolver allows) the largest fitting hash length is 39.
+		// At salt 32 (the maximum the resolver allows) the largest fitting hash length is 33.
 		Properties props = new Properties();
 		props.setProperty("security.argon2.saltLength", "32");
 		props.setProperty("security.argon2.hashLength", "40");
 		Security.Argon2Config config = Security.resolveArgon2Config(props);
-		assertEquals(39, config.hashLength);
+		assertEquals(33, config.hashLength);
 	}
 
 	@Test
@@ -131,5 +135,11 @@ class SecurityArgon2ConfigTest {
 		String phc = encoder.encode("test");
 		assertTrue(phc.length() <= 128, "PHC length " + phc.length() + " exceeds the 128 char password column: " + phc);
 		assertTrue(Security.hashMatches(phc, "test"), "Encoded value must authenticate its raw password");
+		// The openmrsPasswordEncoder bean persists "{argon2}" + phc, so the prefixed value
+		// must fit the column as well as the bare PHC string.
+		String prefixed = "{argon2}" + phc;
+		assertTrue(prefixed.length() <= 128, "Stored length " + prefixed.length() + " exceeds the 128 char password column");
+		assertTrue(Security.hashMatches(prefixed, "test"),
+			"Prefixed value must authenticate through hashMatches as a stored row would");
 	}
 }
