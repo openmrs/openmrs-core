@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
+import org.openmrs.api.EventListeners;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.LayoutSupport;
@@ -57,10 +58,20 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 * Initializes layout templates with a custom template configured via the "layout.name.template" GP.
 	 */
 	private void init() {
+
+		// OpenMRS wipes listeners on context refresh. We check the global list to see if we need to re-register ourselves, avoiding duplicate registrations.
+		EventListeners eventListeners = new EventListeners();
+		List<GlobalPropertyListener> currentListeners = eventListeners.getGlobalPropertyListeners();
+
+		if (currentListeners == null || !currentListeners.contains(singleton)) {
+			Context.getAdministrationService().addGlobalPropertyListener(singleton);
+
+		}
+
+		// now the listener is secure and guards the expensive database reads.
 		if (initialized) {
 			return;
 		}
-		Context.getAdministrationService().addGlobalPropertyListener(singleton);
 
 		// Read and cache the configured name format GP
 		String formatGp = Context.getAdministrationService()
