@@ -83,7 +83,7 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 			if (!configurationFiles.isEmpty()) {
 				if (configurationFiles.size() == 1) {
 					StatusLogger statusLogger = StatusLogger.getLogger();
-					if (statusLogger.isEnabled(Level.INFO, null, "Adding log4j2 configuration file: {}")) {
+					if (statusLogger.isEnabled(Level.INFO)) {
 						statusLogger.info("Adding log4j2 configuration file: {}",
 						    OpenmrsLoggingUtil.sanitize(configurationFiles.get(0).getPath()));
 					}
@@ -94,13 +94,13 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 						Configuration configuration = super.getConfiguration(loggerContext, name, configFile.toURI());
 						StatusLogger statusLogger = StatusLogger.getLogger();
 						if (configuration instanceof AbstractConfiguration) {
-							if (statusLogger.isEnabled(Level.INFO, null, "Adding log4j2 configuration file: {}")) {
+							if (statusLogger.isEnabled(Level.INFO)) {
 								statusLogger.info("Adding log4j2 configuration file: {}",
 								    OpenmrsLoggingUtil.sanitize(configFile.getPath()));
 							}
 							abstractConfigurations.add((AbstractConfiguration) configuration);
 						} else {
-							if (statusLogger.isEnabled(Level.ERROR, null, "Unable to add log4j2 configuration file: {}")) {
+							if (statusLogger.isEnabled(Level.ERROR)) {
 								statusLogger.error("Unable to add log4j2 configuration file: {}",
 								    OpenmrsLoggingUtil.sanitize(configFile.getPath()));
 							}
@@ -215,8 +215,7 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 			} else {
 				if (classAndLevel.length > 2) {
 					StatusLogger statusLogger = StatusLogger.getLogger();
-					if (statusLogger.isEnabled(Level.WARN, null,
-					    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO")) {
+					if (statusLogger.isEnabled(Level.WARN)) {
 						statusLogger.warn(
 						    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO",
 						    OpenmrsLoggingUtil.sanitize(level));

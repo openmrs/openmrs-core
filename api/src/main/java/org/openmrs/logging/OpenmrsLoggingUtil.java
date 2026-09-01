@@ -136,8 +136,7 @@ public final class OpenmrsLoggingUtil {
 			// Fall back to global property only if a session is open
 		} else if (logLevel != null && logLevelGp != null) {
 			StatusLogger statusLogger = StatusLogger.getLogger();
-			if (statusLogger.isEnabled(Level.INFO, null,
-			    "Ignoring GP value \"{}\" as a system or runtime property is already set")) {
+			if (statusLogger.isEnabled(Level.INFO)) {
 				statusLogger.info("Ignoring GP value \"{}\" as a system or runtime property is already set",
 				    sanitize(logLevelGp));
 			}
@@ -168,8 +167,7 @@ public final class OpenmrsLoggingUtil {
 				} else {
 					if (classAndLevel.length > 2) {
 						StatusLogger statusLogger = StatusLogger.getLogger();
-						if (statusLogger.isEnabled(Level.WARN, null,
-						    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO")) {
+						if (statusLogger.isEnabled(Level.WARN)) {
 							statusLogger.warn(
 							    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO",
 							    sanitize(level));
@@ -337,7 +335,6 @@ public final class OpenmrsLoggingUtil {
 	 *
 	 * @param value the string to sanitize
 	 * @return the sanitized string
-	 * @since 3.0.0
 	 */
 	@Logging(ignore = true)
 	public static String sanitize(Object value) {

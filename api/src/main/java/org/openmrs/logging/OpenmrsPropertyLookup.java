@@ -63,7 +63,7 @@ public class OpenmrsPropertyLookup extends AbstractLookup {
 			default:
 				String message = "{} is not a supported property. We support openmrs:applicationDirectory, openmrs:logLocation, and openmrs:logLayout";
 				StatusLogger statusLogger = StatusLogger.getLogger();
-				if (statusLogger.isEnabled(Level.ERROR, null, message)) {
+				if (statusLogger.isEnabled(Level.ERROR)) {
 					statusLogger.error(message, OpenmrsLoggingUtil.sanitize(key));
 				}
 				return null;
