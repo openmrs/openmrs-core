@@ -343,6 +343,28 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * An edit that moves a value across a threshold has to be re-interpreted: the amended copy inherits
+	 * the reference range of the observation it replaces, but its interpretation must follow the new
+	 * value.
+	 *
+	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldDeriveTheInterpretationOfAnAmendedObservationFromItsNewValue() {
+		// concept 4089 has a reference range of 80 - 118 (normal) for a patient of this age
+		Obs savedObs = Context.getObsService().saveObs(buildObservation(), null);
+		assertEquals(Obs.Interpretation.NORMAL, savedObs.getInterpretation());
+
+		savedObs.setValueNumeric(119.0);
+		Obs amendedObs = Context.getObsService().saveObs(savedObs, "edited across the high normal threshold");
+
+		Obs reloadedObs = Context.getObsService().getObs(amendedObs.getObsId());
+		assertNotNull(reloadedObs.getReferenceRange());
+		assertEquals(118.0, reloadedObs.getReferenceRange().getHiNormal());
+		assertEquals(Obs.Interpretation.HIGH, reloadedObs.getInterpretation());
+	}
+
+	/**
 	 * Helper method to create an Obs with specific reference range values
 	 *
 	 * @param value The numeric value for the observation

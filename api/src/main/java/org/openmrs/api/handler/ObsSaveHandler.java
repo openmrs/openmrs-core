@@ -35,8 +35,10 @@ import org.openmrs.api.context.Context;
  * <br>
  * A reference range is only derived for a new, non-voided, numeric observation that has a value and
  * that does not already carry one, so a reference range supplied by the caller is never
- * overwritten. Group members are reached by {@link RequiredDataAdvice#recursivelyHandle} walking
- * the {@link Obs#getGroupMembers()} collection, so this handler never recurses itself.
+ * overwritten. An observation that is being edited keeps the reference range it was created with,
+ * but its interpretation is still re-derived from that range so that it follows the edited value.
+ * Group members are reached by {@link RequiredDataAdvice#recursivelyHandle} walking the
+ * {@link Obs#getGroupMembers()} collection, so this handler never recurses itself.
  *
  * @see RequiredDataHandler
  * @see SaveHandler
@@ -57,10 +59,13 @@ public class ObsSaveHandler implements SaveHandler<Obs> {
 		}
 
 		// An observation that has already been persisted, and the amended copy that replaces it, both
-		// keep the reference range the observation was created with. Editing an observation must not
-		// hit the database from here either: the copy is handled while the observation it amends is
-		// still dirty in the session, and a query would auto-flush it past ImmutableObsInterceptor.
+		// keep the reference range the observation was created with, so no range is derived here. The
+		// interpretation still has to follow the value: editing a value across a threshold has to
+		// re-derive it, which the preserved range alone answers. Nothing on this path may hit the
+		// database: the amended copy is handled while the observation it replaces is still dirty in
+		// the session, and a query would auto-flush it past ImmutableObsInterceptor.
 		if (obs.getId() != null || obs.hasPreviousVersion()) {
+			setObsInterpretation(obs);
 			return;
 		}
 
