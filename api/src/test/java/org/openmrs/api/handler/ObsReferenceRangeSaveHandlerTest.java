@@ -21,11 +21,13 @@ import org.openmrs.ObsReferenceRange;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
+import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.validator.ValidateUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,7 +66,9 @@ public class ObsReferenceRangeSaveHandlerTest extends BaseContextSensitiveTest {
 	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetObsReferenceRangeValuesIfConceptReferenceRangeIsNullAndConceptNumericIsNotNull() {
+	public void handle_shouldFallBackToTheConceptsOwnBoundsWhenNoReferenceRangeCriteriaMatch() {
+		// concept 4090's criteria all cap the age, so none matches a person of this age and the
+		// resolution falls back to the concept's own hi/low absolute
 		Person person = new Person(1);
 		calendar.add(Calendar.YEAR, -600);
 		person.setBirthdate(calendar.getTime());
@@ -536,6 +540,111 @@ public class ObsReferenceRangeSaveHandlerTest extends BaseContextSensitiveTest {
 	 * Builds an observation that can be saved through the ObsService, i.e. one whose person is a
 	 * persisted patient.
 	 */
+	/**
+	 * {@link org.openmrs.aop.RequiredDataAdvice#recursivelyHandle} hands this handler every {@link Obs}
+	 * under whatever is being saved, and {@link org.openmrs.api.VisitService#saveVisit} reaches them
+	 * through {@link Visit#getEncounters()} without ever calling
+	 * {@link org.openmrs.api.ObsService#saveObs}, as do <code>endVisit</code>, <code>unvoidVisit</code>
+	 * and <code>PatientServiceImpl.mergeVisits</code>. Since <code>interpretation</code> is not one of
+	 * {@link org.openmrs.api.db.hibernate.ImmutableObsInterceptor}'s mutable properties, deriving it on
+	 * an obs the save will never rewrite leaves a dirty field that the flush rejects with
+	 * {@link org.openmrs.api.UnchangeableObjectException}.
+	 *
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldSaveAVisitWhoseEncounterHasAnUneditedObservation() {
+		Obs obs = buildObservationOnEncounterThree();
+		obs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
+		Obs savedObs = Context.getObsService().saveObs(obs, null);
+		assertEquals(Obs.Interpretation.CRITICALLY_HIGH, savedObs.getInterpretation());
+
+		// visit 8 holds encounter 3, so the recursion reaches that observation without saveObs
+		Visit visit = Context.getVisitService().getVisit(8);
+		Context.getVisitService().saveVisit(visit);
+		Context.flushSession();
+
+		assertEquals(Obs.Interpretation.CRITICALLY_HIGH,
+		    Context.getObsService().getObs(savedObs.getObsId()).getInterpretation());
+	}
+
+	/**
+	 * On an encounter re-save {@link org.openmrs.api.ObsService#saveObs} is called for each top-level
+	 * observation, and it uses {@link Obs#isDirty()} to decide the observation is being amended. An
+	 * interpretation written by this handler is by itself enough to make an otherwise untouched
+	 * observation dirty, which would void it and replace it with a revision that differs only in the
+	 * interpretation the handler just overwrote.
+	 *
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldNotReviseAnUneditedObservationWhenItsEncounterIsReSaved() {
+		Obs obs = buildObservationOnEncounterThree();
+		obs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
+		Obs savedObs = Context.getObsService().saveObs(obs, null);
+		Integer obsId = savedObs.getObsId();
+
+		Context.getEncounterService().saveEncounter(Context.getEncounterService().getEncounter(3));
+
+		Obs reloadedObs = Context.getObsService().getObs(obsId);
+		assertFalse(reloadedObs.getVoided());
+		assertEquals(Obs.Interpretation.CRITICALLY_HIGH, reloadedObs.getInterpretation());
+		assertTrue(Context.getObsService().getObservationsByPerson(reloadedObs.getPerson()).stream()
+		        .noneMatch(candidate -> reloadedObs.equals(candidate.getPreviousVersion())));
+	}
+
+	/**
+	 * {@link org.openmrs.validator.ObsValidator} used to fall back to the
+	 * {@link org.openmrs.ConceptNumeric}'s own bounds when no {@link org.openmrs.ConceptReferenceRange}
+	 * matched, so a concept with no bounds configured at all stored an all-null
+	 * {@link ObsReferenceRange} and an interpretation of <code>NORMAL</code>. Deriving the range
+	 * through {@link org.openmrs.api.ConceptService#getConceptReferenceRange} drops that: its default
+	 * range is null when every bound is null, so such an observation now gets neither, since
+	 * <code>NORMAL</code> derived from no bounds is not information.
+	 *
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldSetNeitherReferenceRangeNorInterpretationForAConceptWithNoBoundsConfigured() {
+		// concept 4089 carries no bounds of its own, and its only criteria caps the age at 10, which
+		// patient 2 is well past
+		Obs obs = new Obs();
+		obs.setConcept(Context.getConceptService().getConcept(4089));
+		obs.setPerson(Context.getPatientService().getPatient(2));
+		obs.setEncounter(Context.getEncounterService().getEncounter(3));
+		obs.setObsDatetime(new Date());
+		obs.setLocation(new Location(1));
+		obs.setValueNumeric(90.0);
+
+		Obs savedObs = Context.getObsService().saveObs(obs, null);
+
+		Obs reloadedObs = Context.getObsService().getObs(savedObs.getObsId());
+		assertNull(reloadedObs.getReferenceRange());
+		assertNull(reloadedObs.getInterpretation());
+	}
+
+	/**
+	 * Builds a numeric observation on encounter 3 for that encounter's own patient. Concept 5497
+	 * carries its own bounds and no criteria, so the range resolves without touching the patient's
+	 * birthdate, which visit 8 validates against. The person has to match the encounter's patient, or
+	 * {@link org.openmrs.api.EncounterService#saveEncounter} re-points it and marks the observation
+	 * dirty of its own accord, which would hide what these tests are pinning.
+	 */
+	private static Obs buildObservationOnEncounterThree() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+
+		Obs obs = new Obs();
+		obs.setConcept(Context.getConceptService().getConcept(5497));
+		obs.setPerson(encounter.getPatient());
+		obs.setEncounter(encounter);
+		obs.setObsDatetime(new Date());
+		obs.setLocation(new Location(1));
+		// below concept 5497's low normal of 445, so the derivation would say LOW
+		obs.setValueNumeric(120.0);
+
+		return obs;
+	}
+
 	private static Obs buildObservation() {
 		Concept concept = Context.getConceptService().getConcept(4089);
 		Patient patient = Context.getPatientService().getPatient(2);

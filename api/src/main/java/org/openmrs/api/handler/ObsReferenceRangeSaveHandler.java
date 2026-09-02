@@ -29,10 +29,11 @@ import org.openmrs.api.context.Context;
  * <p>
  * A reference range is derived only for an observation that does not already carry one, so a range
  * supplied by the caller is never overwritten. The interpretation is deliberately asymmetric: a
- * caller-supplied one is kept on a new observation, but is always re-derived on an observation that
- * has already been persisted, because an amended value has to be re-interpreted and a persisted
+ * caller-supplied one is kept on a new observation, but is re-derived on a persisted observation
+ * the caller has edited, because an amended value has to be re-interpreted and a persisted
  * observation gives no way to tell an interpretation the caller has just set from one derived on an
- * earlier save.
+ * earlier save. A persisted observation that is not dirty is left alone, since
+ * <code>interpretation</code> is immutable on an obs the current save will not rewrite.
  *
  * @see RequiredDataHandler
  * @see SaveHandler
@@ -66,10 +67,18 @@ public class ObsReferenceRangeSaveHandler implements SaveHandler<Obs> {
 			return;
 		}
 
-		// a persisted obs keeps the range it was created with; only its interpretation follows the
-		// edited value, which overwrites a caller-supplied one (see the class javadoc)
+		// A persisted obs keeps the range it was created with. Its interpretation is re-derived only
+		// when the caller has actually edited it: interpretation is not one of
+		// ImmutableObsInterceptor's mutable properties, so writing it on an unedited obs leaves a
+		// dirty field that either the flush rejects (RequiredDataAdvice.recursivelyHandle reaches
+		// every obs under a save, and VisitService.saveVisit never calls saveObs) or that voids the
+		// obs and replaces it with a pointless revision. Gate on the same isDirty() that
+		// ObsServiceImpl.saveObs uses to decide the obs is being amended; a genuinely edited obs is
+		// already dirty by the time the handler sees it.
 		if (obs.getId() != null) {
-			assignObsInterpretation(obs);
+			if (obs.isDirty()) {
+				assignObsInterpretation(obs);
+			}
 			return;
 		}
 
