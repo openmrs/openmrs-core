@@ -9,11 +9,9 @@
  */
 package org.openmrs.spring;
 
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Map;
 
 /**
  * A variation of Spring's <tt>DelegatingPasswordEncoder</tt> that falls back to the
@@ -25,32 +23,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * without that prefix.
  */
 public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
-
-	private static final Logger log = LoggerFactory.getLogger(OpenmrsDelegatingPasswordEncoder.class);
-
+	
 	private final PasswordEncoder defaultEncoder;
 
 	private final String idForEncode;
 
 	private final Map<String, PasswordEncoder> idToPasswordEncoder;
-
-	private final PasswordEncoder fallbackEncoder;
-
+	
 	public OpenmrsDelegatingPasswordEncoder(String idForEncode, Map<String, PasswordEncoder> idToPasswordEncoder, PasswordEncoder fallbackEncoder) {
 		if (idForEncode == null || idForEncode.isEmpty()) {
 			this.defaultEncoder = fallbackEncoder;
 		} else if (!idToPasswordEncoder.containsKey(idForEncode)) {
-			// An unknown security.passwordEncoder must not stop the server from coming up.
-			// Warn and keep writing with the legacy encoder rather than rejecting the value.
-			log.warn("The password encoder named '{}' is not configured; falling back to the legacy encoder. "
-				+ "Known encoders are: {}", idForEncode, idToPasswordEncoder.keySet());
-			this.defaultEncoder = fallbackEncoder;
+			throw new IllegalArgumentException("The encoder named '" + idForEncode + "' is not configured for this instance of OpenmrsDelegatingPasswordEncoder");
 		} else {
 			defaultEncoder = idToPasswordEncoder.get(idForEncode);
 		}
+		
 		this.idForEncode = idForEncode;
 		this.idToPasswordEncoder = idToPasswordEncoder;
-		this.fallbackEncoder = fallbackEncoder;
 	}
 
 	@Override
@@ -74,15 +64,9 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		}
 		PasswordEncoder encoder = idToPasswordEncoder.get(id);
 		if (encoder == null) {
-			// An unprefixed value is a legacy hash (SHA-1/SHA-512) that the encoder new
-			// passwords are written with cannot parse. It must go to the fallback encoder;
-			// routing it to defaultEncoder instead would reject every existing account the
-			// moment a site opts in to an id-based encoder such as argon2.
-			if (id == null) {
-				return fallbackEncoder.matches(rawPassword, encodedPassword);
-			}
 			return defaultEncoder.matches(rawPassword, encodedPassword);
 		}
+		
 		return encoder.matches(rawPassword, encodedPassword);
 	}
 
