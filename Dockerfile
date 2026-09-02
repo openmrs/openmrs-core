@@ -63,7 +63,7 @@ RUN mvn $MVN_SETTINGS $MVN_ARGS
 ### Development Stage
 FROM maven:3.9-$DEV_JDK AS dev
 
-RUN apt-get update && apt-get install -y tar gzip git curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y tar gzip git curl mariadb-client && rm -rf /var/lib/apt/lists/*
 
 # Setup Tini
 ARG TARGETARCH
@@ -112,7 +112,7 @@ CMD ["/openmrs/startup-dev.sh"]
 ### Production Stage
 FROM tomcat:11-$RUNTIME_JDK
 
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/* && rm -rf /usr/local/tomcat/webapps/*
+RUN apt-get update && apt-get install -y curl mariadb-client && rm -rf /var/lib/apt/lists/* && rm -rf /usr/local/tomcat/webapps/*
 
 # Setup Tini
 ARG TARGETARCH

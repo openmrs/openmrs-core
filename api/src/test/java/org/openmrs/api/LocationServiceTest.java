@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -1403,4 +1404,62 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		assertTrue(result.contains(ls.getLocation(7)));
 	}
 
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldApplyPaginationWhenProvided() {
+		LocationService ls = Context.getLocationService();
+
+		LocationSearchCriteria allCriteria = new LocationSearchCriteria();
+		allCriteria.setIncludeRetired(true);
+		List<Location> all = ls.getLocations(allCriteria);
+
+		LocationSearchCriteria pagedCriteria = new LocationSearchCriteria();
+		pagedCriteria.setIncludeRetired(true);
+		pagedCriteria.setStartIndex(1);
+		pagedCriteria.setMaxResults(2);
+		List<Location> paged = ls.getLocations(pagedCriteria);
+
+		assertEquals(2, paged.size());
+		assertEquals(all.get(1).getLocationId(), paged.get(0).getLocationId());
+		assertEquals(all.get(2).getLocationId(), paged.get(1).getLocationId());
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_shouldApplyPaginationAfterOtherFilters() {
+		LocationService ls = Context.getLocationService();
+
+		LocationSearchCriteria filteredCriteria = new LocationSearchCriteria();
+		filteredCriteria.setNameFragment("Test Level A");
+		List<Location> filtered = ls.getLocations(filteredCriteria);
+
+		LocationSearchCriteria pagedCriteria = new LocationSearchCriteria();
+		pagedCriteria.setNameFragment("Test Level A");
+		pagedCriteria.setStartIndex(1);
+		pagedCriteria.setMaxResults(1);
+		List<Location> paged = ls.getLocations(pagedCriteria);
+
+		assertEquals(1, paged.size());
+		assertEquals(filtered.get(1).getLocationId(), paged.get(0).getLocationId());
+	}
+
+	@Test
+	public void getLocation_shouldLoadLocationParentLazily() throws Exception {
+		LocationService ls = Context.getLocationService();
+		Location child = new Location();
+		child.setName("Child");
+		Location parent = ls.getLocation(1);
+		child.setParentLocation(parent);
+		ls.saveLocation(child);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		Location fetchedChild = ls.getLocation(child.getId());
+		assertFalse(Hibernate.isInitialized(fetchedChild.getParentLocation()), "Parent Location should be loaded lazily");
+	}
 }

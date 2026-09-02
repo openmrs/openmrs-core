@@ -21,7 +21,6 @@ import org.jobrunr.scheduling.JobScheduler;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Configuration
 public class JobRunrConfig {
@@ -41,9 +40,9 @@ public class JobRunrConfig {
 	}
 
 	@Bean
-	public JobRunrConfiguration.JobRunrConfigurationResult jobRunrConfiguration(
-	        @Qualifier("schedulerObjectMapper") ObjectMapper objectMapper, StorageProvider storageProvider,
-	        ApplicationContext applicationContext, @Value("${jobrunr.dashboard.username:admin}") String user,
+	public JobRunrConfiguration.JobRunrConfigurationResult jobRunrConfiguration(ObjectMapper objectMapper,
+	        StorageProvider storageProvider, ApplicationContext applicationContext,
+	        @Value("${jobrunr.dashboard.username:admin}") String user,
 	        @Value("${jobrunr.dashboard.password:}") String password, @Value("${jobrunr.dashboard.port:9000}") int port,
 	        @Value("${jobrunr.dashboard.enabled:false}") boolean dashboardEnabled) {
 		if (dashboardEnabled && StringUtils.isBlank(password)) {

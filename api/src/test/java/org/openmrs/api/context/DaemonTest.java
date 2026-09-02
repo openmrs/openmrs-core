@@ -9,12 +9,12 @@
  */
 package org.openmrs.api.context;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -36,7 +36,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 /**
  * Tests the methods on the {@link Daemon} class
@@ -49,7 +48,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	@Test
 	public void executeScheduledTask_shouldNotBeCalledFromOtherMethodsOtherThanTimerSchedulerTask() throws Throwable {
 		try {
-			Daemon.executeScheduledTaskAsUser("", () -> {});
+			Daemon.executeScheduledTaskAsUser("", () -> {}, null);
 			fail("Should not be here, an exception should have been thrown in the line above");
 		} catch (APIException e) {
 			assertThat(e.getMessage(),
@@ -64,9 +63,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		// verify
 
 		// replay
-		APIException exception = assertThrows(APIException.class, () -> Daemon.createUser(new User(), "password", null));
+		APIException exception = assertThrows(APIException.class,
+		    () -> Daemon.createUser(new User(), "password", null, null));
 		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("Context.DAO.only",
-		    new Object[] { this.getClass().getName() }, Locale.ENGLISH)));
+		    new Object[] { "an unauthorized caller" }, Locale.ENGLISH)));
 	}
 
 	@Test
@@ -102,21 +102,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		    new Object[] { u.getDisplayString() }, Locale.ENGLISH)));
 	}
 
-	/**
-	 * @see Daemon#runInNewDaemonThread(Runnable)
-	 */
-	@Test
-	public void runInNewDaemonThread_shouldThrowErrorIfCalledFromANonDaemonThread() {
-		try {
-			Daemon.runInNewDaemonThread(() -> {
-				// do nothing
-			});
-			fail("Should not hit this line, since the previous needed to throw an exception");
-		} catch (APIAuthenticationException ex) {
-			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
-		}
-	}
-
 	@Test
 	public void runInNewDaemonThreadCallable_shouldThrowErrorIfCalledFromANonDaemonThread() {
 		try {
@@ -137,6 +122,29 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		}
 	}
 
+	@Test
+	public void runNewDaemonTask_shouldThrowWhenCalledWithoutCallerKey() {
+		assertThrows(APIException.class, () -> Daemon.runNewDaemonTask(() -> {}, null));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldThrowWhenCalledWithAForgedCallerKey() throws Exception {
+		// A CallerKey minted outside Daemon (here via reflection) must be rejected: the guard compares
+		// against the genuine singleton by identity, so a non-null but foreign key does not pass.
+		Constructor<Daemon.CallerKey> constructor = Daemon.CallerKey.class.getDeclaredConstructor();
+		constructor.setAccessible(true);
+		Daemon.CallerKey forgedKey = constructor.newInstance();
+
+		assertThrows(APIException.class, () -> Daemon.runNewDaemonTask(() -> {}, forgedKey));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldRunTheTaskWhenGivenTheGenuineCallerKey() throws Exception {
+		AtomicBoolean wasRun = new AtomicBoolean(false);
+		Daemon.runNewDaemonTask(() -> wasRun.set(true), Daemon.callerKey()).get();
+		assertThat(wasRun.get(), is(true));
+	}
+
 	/**
 	 * Small task that just marks itself when it gets run
 	 */
@@ -147,23 +155,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		@Override
 		public void execute() throws InterruptedException, ExecutionException {
 			this.wasRun = true;
-		}
-	}
-
-	/**
-	 * A task that starts another Daemon thread that marks *this* thread when it gets run.
-	 */
-	private static class TaskThatStartsAnotherThread extends PrivateTask {
-
-		@Override
-		public void execute() throws InterruptedException {
-			Thread another = Daemon.runInNewDaemonThread(() -> {
-				this.wasRun = true;
-			});
-
-			// another.join(10000); doesn't actually work as runInNewDaemonThread doesn't use the Thread object rather it
-			// only executes the run method. The only way to determine it completed is to wait for wasRun to return true.
-			await().atMost(10, TimeUnit.SECONDS).untilTrue(new AtomicBoolean(wasRun));
 		}
 	}
 
