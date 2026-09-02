@@ -261,9 +261,6 @@ public class ObsValidator implements Validator {
 	 * absolute.</li>
 	 * <li>Sets field errors if numeric value is outside the valid range</li>
 	 * <ol/>
-	 * Note that the reference range and the interpretation are not set here; that is done by
-	 * {@link org.openmrs.api.handler.ObsSaveHandler} so that they are still recorded when validation is
-	 * disabled.
 	 *
 	 * @param obs Observation to validate
 	 * @param errors Errors to record validation issues

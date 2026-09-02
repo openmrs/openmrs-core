@@ -26,8 +26,6 @@ import java.util.Set;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
-import org.hibernate.FlushMode;
 import org.hibernate.Hibernate;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -66,13 +64,10 @@ import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.api.db.hibernate.DbSession;
-import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.parameter.ConceptSearchCriteria;
 import org.openmrs.parameter.ConceptSearchCriteriaBuilder;
-import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.UuidUtil;
@@ -98,9 +93,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 
 	@Autowired
 	private ConceptDAO dao;
-
-	@Autowired
-	private DbSessionFactory dbSessionFactory;
 
 	private static Concept trueConcept;
 
@@ -2091,129 +2083,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			return null;
 		}
 
-		// Resolving a range is read only, but it runs queries: the concept's ranges, and then whatever
-		// each range's criteria asks for, e.g. $fn.getLatestObs resolves a concept reference and
-		// searches observations. Any of those would auto-flush the session, and ObsSaveHandler resolves
-		// a range while an edited Obs is still dirty in it, which ImmutableEntityInterceptor rejects.
-		// Hold the session in MANUAL flush mode for the whole resolution, the way
-		// HibernateAdministrationDAO.validate does for the validator run that used to derive the range.
-		DbSession session = dbSessionFactory.getCurrentSession();
-		FlushMode flushMode = session.getFlushMode();
-		session.setFlushMode(FlushMode.MANUAL);
-		try {
-			return resolveConceptReferenceRange((ConceptNumeric) concept, context);
-		} finally {
-			session.setFlushMode(flushMode);
-		}
-	}
-
-	/**
-	 * Picks the reference range for the given concept and context, falling back to the concept's own
-	 * range fields when no {@link ConceptReferenceRange} record exists or matches. Callers hold the
-	 * session in {@link FlushMode#MANUAL} for the duration, so nothing here may rely on an auto-flush.
-	 *
-	 * @param conceptNumeric the numeric concept whose range is being resolved
-	 * @param context the context the criteria are evaluated against
-	 * @return the strictest matching range, the concept's default range, or null
-	 */
-	private ConceptReferenceRange resolveConceptReferenceRange(ConceptNumeric conceptNumeric,
-	        ConceptReferenceRangeContext context) {
-		List<ConceptReferenceRange> referenceRanges = Context.getConceptService()
-		        .getConceptReferenceRangesByConceptId(conceptNumeric.getConceptId());
-
-		if (referenceRanges.isEmpty()) {
-			return getDefaultReferenceRange(conceptNumeric);
-		}
-
-		ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
-		List<ConceptReferenceRange> validRanges = new ArrayList<>();
-
-		for (ConceptReferenceRange referenceRange : referenceRanges) {
-			if (referenceRangeUtility.evaluateCriteria(StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()),
-			    context)) {
-				validRanges.add(referenceRange);
-			}
-		}
-
-		if (validRanges.isEmpty()) {
-			ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
-			if (defaultReferenceRange != null) {
-				return defaultReferenceRange;
-			}
-			return null;
-		}
-
-		return findStrictestReferenceRange(validRanges);
-	}
-
-	/**
-	 * Returns a reference range derived from the ConceptNumeric's own range fields. Used as a fallback
-	 * when no ConceptReferenceRange records exist or match.
-	 */
-	private static ConceptReferenceRange getDefaultReferenceRange(ConceptNumeric conceptNumeric) {
-		if (conceptNumeric == null || (conceptNumeric.getHiAbsolute() == null && conceptNumeric.getHiCritical() == null
-		        && conceptNumeric.getHiNormal() == null && conceptNumeric.getLowAbsolute() == null
-		        && conceptNumeric.getLowCritical() == null && conceptNumeric.getLowNormal() == null)) {
-			return null;
-		}
-
-		ConceptReferenceRange defaultReferenceRange = new ConceptReferenceRange();
-		defaultReferenceRange.setConceptNumeric(conceptNumeric);
-		defaultReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
-		defaultReferenceRange.setHiCritical(conceptNumeric.getHiCritical());
-		defaultReferenceRange.setHiNormal(conceptNumeric.getHiNormal());
-		defaultReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
-		defaultReferenceRange.setLowCritical(conceptNumeric.getLowCritical());
-		defaultReferenceRange.setLowNormal(conceptNumeric.getLowNormal());
-		return defaultReferenceRange;
-	}
-
-	/**
-	 * Combines multiple matching reference ranges into one by selecting the strictest bound for each
-	 * limit. For low bounds, the highest value is strictest; for high bounds, the lowest. For example,
-	 * ranges 80-150 and 60-140 combine to 80-140.
-	 */
-	private static ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
-		if (conceptReferenceRanges.size() == 1) {
-			return conceptReferenceRanges.get(0);
-		}
-
-		ConceptReferenceRange strictestRange = new ConceptReferenceRange();
-		strictestRange.setConceptNumeric(conceptReferenceRanges.get(0).getConceptNumeric());
-
-		for (ConceptReferenceRange conceptReferenceRange : conceptReferenceRanges) {
-			if (conceptReferenceRange.getLowAbsolute() != null && (strictestRange.getLowAbsolute() == null
-			        || strictestRange.getLowAbsolute() < conceptReferenceRange.getLowAbsolute())) {
-				strictestRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
-			}
-
-			if (conceptReferenceRange.getLowCritical() != null && (strictestRange.getLowCritical() == null
-			        || strictestRange.getLowCritical() < conceptReferenceRange.getLowCritical())) {
-				strictestRange.setLowCritical(conceptReferenceRange.getLowCritical());
-			}
-
-			if (conceptReferenceRange.getLowNormal() != null && (strictestRange.getLowNormal() == null
-			        || strictestRange.getLowNormal() < conceptReferenceRange.getLowNormal())) {
-				strictestRange.setLowNormal(conceptReferenceRange.getLowNormal());
-			}
-
-			if (conceptReferenceRange.getHiNormal() != null && (strictestRange.getHiNormal() == null
-			        || strictestRange.getHiNormal() > conceptReferenceRange.getHiNormal())) {
-				strictestRange.setHiNormal(conceptReferenceRange.getHiNormal());
-			}
-
-			if (conceptReferenceRange.getHiCritical() != null && (strictestRange.getHiCritical() == null
-			        || strictestRange.getHiCritical() > conceptReferenceRange.getHiCritical())) {
-				strictestRange.setHiCritical(conceptReferenceRange.getHiCritical());
-			}
-
-			if (conceptReferenceRange.getHiAbsolute() != null && (strictestRange.getHiAbsolute() == null
-			        || strictestRange.getHiAbsolute() > conceptReferenceRange.getHiAbsolute())) {
-				strictestRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
-			}
-		}
-
-		return strictestRange;
+		return dao.getConceptReferenceRange((ConceptNumeric) concept, context);
 	}
 
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {

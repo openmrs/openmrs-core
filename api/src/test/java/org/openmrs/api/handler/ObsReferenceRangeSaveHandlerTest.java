@@ -31,16 +31,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Tests the {@link ObsSaveHandler} class.
+ * Tests the {@link ObsReferenceRangeSaveHandler} class.
  */
-public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
+public class ObsReferenceRangeSaveHandlerTest extends BaseContextSensitiveTest {
 
-	private final ObsSaveHandler obsSaveHandler = new ObsSaveHandler();
+	private final ObsReferenceRangeSaveHandler obsReferenceRangeSaveHandler = new ObsReferenceRangeSaveHandler();
 
 	Calendar calendar = Calendar.getInstance();
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetObsReferenceRangeIfCriteriaMatches() {
@@ -54,14 +54,14 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(88.0);
 		obs.setObsDatetime(new Date());
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertNotNull(obs.getReferenceRange());
 		assertEquals(140.0, obs.getReferenceRange().getHiAbsolute());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetObsReferenceRangeValuesIfConceptReferenceRangeIsNullAndConceptNumericIsNotNull() {
@@ -75,7 +75,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(88.0);
 		obs.setObsDatetime(new Date());
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertNotNull(obs.getReferenceRange());
 		assertEquals(145.0, obs.getReferenceRange().getHiAbsolute());
@@ -83,7 +83,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetObsReferenceRangeValuesToNarrowestMatchingValues() {
@@ -98,7 +98,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(88.0);
 		obs.setObsDatetime(new Date());
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertNotNull(obs.getReferenceRange());
 		assertEquals(140.0, obs.getReferenceRange().getHiAbsolute());
@@ -110,7 +110,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetObsReferenceRangeValuesToConceptReferenceRangeValuesIfNoRuleBasedRangesArePresent() {
@@ -124,7 +124,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(88.0);
 		obs.setObsDatetime(new Date());
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertNotNull(obs.getReferenceRange());
 		assertEquals(2500.0, obs.getReferenceRange().getHiAbsolute());
@@ -136,7 +136,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldNotSetObsReferenceRangeValueIfConceptIsNotFound() {
@@ -150,141 +150,141 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(8.0);
 		obs.setObsDatetime(new Date());
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertNull(obs.getReferenceRange());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldNotSetObsReferenceRangeForAVoidedObs() {
 		Obs obs = getObs(60, 4090, 100.0);
 		obs.setVoided(true);
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertNull(obs.getReferenceRange());
 		assertNull(obs.getInterpretation());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetInterpretationToHighIfObsValueIsAboveHiNormalAndLessThanHighCritical() {
 		Obs obs = getObs(60, 4090, 121.0);
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertEquals(Obs.Interpretation.HIGH, obs.getInterpretation());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetInterpretationToCriticallyHighIfObsValueIsAboveHighCritical() {
 		Obs obs = getObs(60, 4090, 131.0);
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertEquals(Obs.Interpretation.CRITICALLY_HIGH, obs.getInterpretation());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetInterpretationToCriticallyHighIfObsValueIsEqualToHighCritical() {
 		Obs obs = getObs(60, 4090, 130.0);
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertEquals(Obs.Interpretation.CRITICALLY_HIGH, obs.getInterpretation());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetInterpretationToCriticallyLowIfObsValueIsEqualToLowCritical() {
 		Obs obs = getObs(60, 4090, 75.0);
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertEquals(Obs.Interpretation.CRITICALLY_LOW, obs.getInterpretation());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetInterpretationToNormalIfObsValueIsWithinNormalRange() {
 		Obs obs = getObs(60, 4090, 100.0);
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetInterpretationToCriticalLowIfObsValueIsBelowLowCritical() {
 		Obs obs = getObs(60, 4090, 74.0);
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertEquals(Obs.Interpretation.CRITICALLY_LOW, obs.getInterpretation());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetInterpretationToNormalIfObsValueIsAboveLowNormalAndHiNormalIsNull() {
 		Obs obs = createObsWithReferenceRange(60, 97, 4090, 95.0, null, 90.0, null, 0.0, 100.0);
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetInterpretationToNormalIfObsValueIsBelowHiNormalAndLowNormalIsNull() {
 		Obs obs = createObsWithReferenceRange(60, 100, 4090, null, 140.0, null, null, null, null);
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetInterpretationToHighIfObsValueIsAboveHiNormalAndHiCriticalIsNull() {
 		Obs obs = createObsWithReferenceRange(60, 150, 4090, null, 140.0, null, null, null, null);
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertEquals(Obs.Interpretation.HIGH, obs.getInterpretation());
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetInterpretationToLowIfObsValueIsBelowLowNormalAndLowCriticalIsNull() {
 		Obs obs = createObsWithReferenceRange(60, 90, 4090, 100.0, 140.0, null, 180.0, 0.0, 100.0);
 
-		obsSaveHandler.handle(obs, null, new Date(), null);
+		obsReferenceRangeSaveHandler.handle(obs, null, new Date(), null);
 
 		assertEquals(Obs.Interpretation.LOW, obs.getInterpretation());
 	}
@@ -295,7 +295,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	 * reference range at all. It is derived by a save handler now, so it survives validation being
 	 * switched off.
 	 *
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSetObsReferenceRangeEvenWhenValidationIsDisabled() {
@@ -315,7 +315,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldNotOverwriteAReferenceRangeSuppliedByTheCaller() {
@@ -348,7 +348,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	 * the reference range of the observation it replaces, but its interpretation must follow the new
 	 * value.
 	 *
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldDeriveTheInterpretationOfAnAmendedObservationFromItsNewValue() {
@@ -373,7 +373,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	 * leaves the edited observation dirty in the session while the added one is being handled, so the
 	 * lookup must not auto-flush it past ImmutableObsInterceptor.
 	 *
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldSaveAnEncounterThatHasOneObservationEditedAndAnotherAdded() {
@@ -409,7 +409,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	 * the whole resolution has to be covered, or an observation left dirty in the session is flushed
 	 * past ImmutableObsInterceptor while the criteria are being evaluated.
 	 *
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldNotFlushADirtyObsWhileEvaluatingReferenceRangeCriteria() {
@@ -437,7 +437,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	 * offers no way to tell an interpretation the caller has just set from one derived on an earlier
 	 * save and an amended value has to be re-interpreted anyway.
 	 *
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldKeepASuppliedInterpretationOnANewObsButReDeriveItOnAnAmendment() {
@@ -466,7 +466,7 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	 * new observation, so its range has to be derived: the criteria are evaluated against the state of
 	 * the patient at the time of the observation, which cannot be reconstructed later.
 	 *
-	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 * @see ObsReferenceRangeSaveHandler#handle(Obs,User,Date,String)
 	 */
 	@Test
 	public void handle_shouldDeriveAReferenceRangeForACopiedObservationThatHasNoneToInherit() {
