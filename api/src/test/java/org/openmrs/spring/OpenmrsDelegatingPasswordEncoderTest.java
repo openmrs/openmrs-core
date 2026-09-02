@@ -11,7 +11,6 @@ package org.openmrs.spring;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -53,11 +52,19 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 	}
 
 	@Test
-	public void constructor_shouldRejectAnIdForEncodeThatIsNotConfigured() {
-		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-			() -> new OpenmrsDelegatingPasswordEncoder("scrypt", idToPasswordEncoder, fallbackEncoder));
+	public void constructor_shouldFallBackToTheLegacyEncoderForAnUnknownIdForEncode() {
+		// An unknown security.passwordEncoder value (a typo, or a key that is not wired up)
+		// must not stop the server from starting: it warns and keeps writing with the legacy
+		// (fallback) encoder, never the named encoder.
+		OpenmrsDelegatingPasswordEncoder encoder = new OpenmrsDelegatingPasswordEncoder("scrypt",
+			idToPasswordEncoder, fallbackEncoder);
 
-		assertTrue(exception.getMessage().contains("scrypt"));
+		when(fallbackEncoder.encode("password")).thenReturn("legacyHash");
+		String encoded = encoder.encode("password");
+		// the delegate used is the fallback, and no bcrypt encoder was touched
+		verify(fallbackEncoder).encode("password");
+		verify(bcryptEncoder, never()).encode(any());
+		assertEquals("legacyHash", encoded.substring(encoded.indexOf("}") + 1));
 	}
 
 	@Test
@@ -255,5 +262,26 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 		String bareArgon2 = argon2Encoder.encode("password");
 		assertTrue(encoder.matches("password", bareArgon2));
 		assertTrue(encoder.upgradeEncoding(bareArgon2));
+	}
+
+	/**
+	 * Pins that {@code security.passwordEncoder=argon2id} (the algorithm name used in the
+	 * ticket) opts in to the Argon2 encoder and writes "{argon2id}"-prefixed rows. The
+	 * applicationContext-service.xml bean registers both the "argon2" and "argon2id" keys.
+	 */
+	@Test
+	public void shouldOptInWithTheArgon2idEncoderName() {
+		Argon2PasswordEncoder argon2Encoder = new Argon2PasswordEncoder(16, 32, 1, 19456, 2);
+		PasswordEncoder legacyEncoder = new LegacyOpenmrsPasswordEncoder();
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+		encoders.put("argon2", argon2Encoder);
+		encoders.put("argon2id", argon2Encoder);
+		OpenmrsDelegatingPasswordEncoder encoder = new OpenmrsDelegatingPasswordEncoder("argon2id", encoders,
+			legacyEncoder);
+
+		String encoded = encoder.encode("password");
+		assertTrue(encoded.startsWith("{argon2id}"));
+		assertTrue(encoder.matches("password", encoded));
+		assertFalse(encoder.matches("wrongPassword", encoded));
 	}
 }

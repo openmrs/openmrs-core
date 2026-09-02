@@ -9,6 +9,9 @@
  */
 package org.openmrs.spring;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Map;
@@ -23,20 +26,26 @@ import java.util.Map;
  * without that prefix.
  */
 public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
-	
+
+	private static final Logger log = LoggerFactory.getLogger(OpenmrsDelegatingPasswordEncoder.class);
+
 	private final PasswordEncoder defaultEncoder;
-	
+
 	private final String idForEncode;
-	
+
 	private final Map<String, PasswordEncoder> idToPasswordEncoder;
-	
+
 	private final PasswordEncoder fallbackEncoder;
 
 	public OpenmrsDelegatingPasswordEncoder(String idForEncode, Map<String, PasswordEncoder> idToPasswordEncoder, PasswordEncoder fallbackEncoder) {
 		if (idForEncode == null || idForEncode.isEmpty()) {
 			this.defaultEncoder = fallbackEncoder;
 		} else if (!idToPasswordEncoder.containsKey(idForEncode)) {
-			throw new IllegalArgumentException("The encoder named '" + idForEncode + "' is not configured for this instance of OpenmrsDelegatingPasswordEncoder");
+			// An unknown security.passwordEncoder must not stop the server from coming up.
+			// Warn and keep writing with the legacy encoder rather than rejecting the value.
+			log.warn("The password encoder named '{}' is not configured; falling back to the legacy encoder. "
+				+ "Known encoders are: {}", idForEncode, idToPasswordEncoder.keySet());
+			this.defaultEncoder = fallbackEncoder;
 		} else {
 			defaultEncoder = idToPasswordEncoder.get(idForEncode);
 		}

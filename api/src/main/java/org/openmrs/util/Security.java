@@ -52,10 +52,9 @@ public class Security {
 
 	private static final String SHA1 = "SHA-1";
 
-	// Names of the Argon2 work-factor runtime properties (set in
-	// openmrs-runtime.properties, not in the database). The same names are used by the
-	// applicationContext-service.xml placeholder placeholders for the argon2PasswordEncoder
-	// bean, so the bean and Security.encodeStringArgon2 always use the same values.
+	// Names of the Argon2 work-factor runtime properties (set in openmrs-runtime.properties,
+	// not in the database). They are read by createArgon2PasswordEncoder(...), the factory
+	// method that backs the argon2PasswordEncoder bean in applicationContext-service.xml.
 	private static final String ARGON2_MEMORY_PROPERTY = "security.argon2.memory";
 
 	private static final String ARGON2_ITERATIONS_PROPERTY = "security.argon2.iterations";
@@ -92,9 +91,12 @@ public class Security {
 	// string must never exceed it, or the value gets truncated and can never verify again.
 	private static final int MAX_PASSWORD_COLUMN_LENGTH = 128;
 
-	// Cached Argon2id encoder; built lazily once from the runtime properties (which are fixed
-	// for the lifetime of a running server) and reused so the encoder is not rebuilt per call.
-	private static volatile Argon2PasswordEncoder argon2Encoder;
+	// Verifies bare $argon2id$ PHC rows that carry no "{...}" encoder id. Argon2PasswordEncoder
+	// reconstructs the work factors from the stored PHC string on the matches() path, so the
+	// values baked into this instance are irrelevant to verification; keeping it a fixed default
+	// (rather than reading the work-factor properties again) leaves the bean in
+	// applicationContext-service.xml as the single source for the configurable work factors.
+	private static final Argon2PasswordEncoder ARGON2_ENCODER = new Argon2PasswordEncoder(16, 32, 1, 16384, 2);
 
 	// required so we can hash passwords at startup.
 	private static final PasswordEncoder FALLBACK_ENCODER = new LegacyOpenmrsPasswordEncoder();
@@ -157,7 +159,7 @@ public class Security {
 		int memory = getIntProperty(runtime, ARGON2_MEMORY_PROPERTY, DEFAULT_MEMORY_KB, DEFAULT_MEMORY_KB, MAX_MEMORY_KB);
 		int iterations = getIntProperty(runtime, ARGON2_ITERATIONS_PROPERTY, DEFAULT_ITERATIONS, DEFAULT_ITERATIONS, MAX_ITERATIONS);
 		int saltLength = getIntProperty(runtime, ARGON2_SALT_LENGTH_PROPERTY, DEFAULT_SALT_LENGTH, 8, MAX_SALT_LENGTH);
-		int hashLength = getIntProperty(runtime, ARGON2_HASH_LENGTH_PROPERTY, DEFAULT_HASH_LENGTH, MIN_HASH_LENGTH, MAX_PASSWORD_COLUMN_LENGTH);
+		int hashLength = getIntProperty(runtime, ARGON2_HASH_LENGTH_PROPERTY, DEFAULT_HASH_LENGTH, DEFAULT_HASH_LENGTH, MAX_PASSWORD_COLUMN_LENGTH);
 		hashLength = clampHashLengthToColumnLimit(hashLength, saltLength, memory, iterations, parallelism);
 		return new Argon2Config(saltLength, hashLength, parallelism, memory, iterations);
 	}
@@ -270,7 +272,7 @@ public class Security {
 		int phcIndex = hashedPassword.indexOf("$argon2id$");
 		if (phcIndex >= 0) {
 			String phc = phcIndex == 0 ? hashedPassword : hashedPassword.substring(phcIndex);
-			return getArgon2Encoder().matches(passwordToHash, phc);
+			return ARGON2_ENCODER.matches(passwordToHash, phc);
 		}
 
 		return hashedPassword.equals(encodeString(passwordToHash, SHA512))
@@ -291,16 +293,18 @@ public class Security {
 	}
 
 	/**
-	 * This method will hash <code>strToEncode</code> using Argon2id for password encoding.
-	 * This method should only be used for password storage, not for deterministic hashing
-	 * (e.g., activation keys, secret answers).
+	 * Hashes <code>strToEncode</code> using Argon2id, writing a bare PHC string.
+	 * <p>
+	 * Package-private: the public password-write path is the configured
+	 * {@code openmrsPasswordEncoder} bean, which honours {@code security.passwordEncoder} and
+	 * writes the "{argon2id}" prefixed form; this helper exists for the tests and ignores that
+	 * opt-in, so modules should not use it as a password writer.
 	 *
 	 * @param strToEncode string to encode
 	 * @return the Argon2id encryption of a given string
-	 * @since 2.8.10
 	 */
-	public static String encodeStringArgon2(String strToEncode) throws APIException {
-		return getArgon2Encoder().encode(strToEncode);
+	static String encodeStringArgon2(String strToEncode) throws APIException {
+		return ARGON2_ENCODER.encode(strToEncode);
 	}
 
 	/**
@@ -314,26 +318,13 @@ public class Security {
 	}
 
 	/**
-	 * Returns the single cached Argon2PasswordEncoder, built from the runtime properties on
-	 * first use. The encoder is reused rather than rebuilt per call.
-	 */
-	static Argon2PasswordEncoder getArgon2Encoder() {
-		if (argon2Encoder == null) {
-			synchronized (Security.class) {
-				if (argon2Encoder == null) {
-					Argon2Config config = resolveArgon2Config(Context.getRuntimeProperties());
-					argon2Encoder = new Argon2PasswordEncoder(config.saltLength, config.hashLength, config.parallelism, config.memory, config.iterations);
-				}
-			}
-		}
-		return argon2Encoder;
-	}
-
-	/**
 	 * Spring factory method used to create the {@code argon2PasswordEncoder} bean (see
-	 * applicationContext-service.xml). Each work factor is wired from its
-	 * {@code security.argon2.*} runtime-property placeholder and clamped to a safe range here,
-	 * so the bean cannot overflow the {@code users.password} column either.
+	 * applicationContext-service.xml). Each work factor arrives here as the raw string that
+	 * Spring resolved from its {@code security.argon2.*} placeholder, and is parsed with the
+	 * fallback-and-clamp rules in {@link #resolveArgon2Config(Properties)}: a missing, empty
+	 * or non-numeric value falls back to the safe default rather than failing the context
+	 * startup, and an out-of-range value is clamped so the bean cannot overflow the
+	 * {@code users.password} column.
 	 *
 	 * @param saltLength the salt length in bytes
 	 * @param hashLength the hash length in bytes
@@ -343,25 +334,15 @@ public class Security {
 	 * @return an Argon2PasswordEncoder configured from the given work factors
 	 * @since 2.8.10
 	 */
-	public static Argon2PasswordEncoder createArgon2PasswordEncoder(int saltLength, int hashLength, int parallelism, int memory, int iterations) {
+	public static Argon2PasswordEncoder createArgon2PasswordEncoder(String saltLength, String hashLength, String parallelism, String memory, String iterations) {
 		Properties props = new Properties();
-		props.setProperty(ARGON2_SALT_LENGTH_PROPERTY, Integer.toString(saltLength));
-		props.setProperty(ARGON2_HASH_LENGTH_PROPERTY, Integer.toString(hashLength));
-		props.setProperty(ARGON2_PARALLELISM_PROPERTY, Integer.toString(parallelism));
-		props.setProperty(ARGON2_MEMORY_PROPERTY, Integer.toString(memory));
-		props.setProperty(ARGON2_ITERATIONS_PROPERTY, Integer.toString(iterations));
+		props.setProperty(ARGON2_SALT_LENGTH_PROPERTY, saltLength);
+		props.setProperty(ARGON2_HASH_LENGTH_PROPERTY, hashLength);
+		props.setProperty(ARGON2_PARALLELISM_PROPERTY, parallelism);
+		props.setProperty(ARGON2_MEMORY_PROPERTY, memory);
+		props.setProperty(ARGON2_ITERATIONS_PROPERTY, iterations);
 		Argon2Config config = resolveArgon2Config(props);
 		return new Argon2PasswordEncoder(config.saltLength, config.hashLength, config.parallelism, config.memory, config.iterations);
-	}
-
-	/**
-	 * Resets the cached Argon2 encoder so it is rebuilt from the runtime properties on the next
-	 * call. Package-private and intended for testing only.
-	 */
-	static void resetEncoder() {
-		synchronized (Security.class) {
-			argon2Encoder = null;
-		}
 	}
 
 	private static String encodeString(String strToEncode, String algorithm) {

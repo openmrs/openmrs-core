@@ -23,9 +23,9 @@ import org.junit.jupiter.api.Test;
  * Security#MAX_PASSWORD_COLUMN_LENGTH} character {@code users.password} column.
  * <p>
  * Deliberately a plain unit test (no Spring context): the {@code argon2PasswordEncoder}
- * bean is wired through {@link Security#createArgon2PasswordEncoder(int, int, int, int, int)}
- * from the same placeholders, so this exercises the exact clamping the Spring context relies
- * on without booting a server.
+ * bean is wired through {@link Security#createArgon2PasswordEncoder(String, String, String, String, String)}
+ * from the same placeholders, so this exercises the exact parsing and clamping the Spring
+ * context relies on without booting a server.
  */
 class SecurityArgon2ConfigTest {
 
@@ -64,13 +64,15 @@ class SecurityArgon2ConfigTest {
 		props.setProperty("security.argon2.saltLength", "4");
 		props.setProperty("security.argon2.hashLength", "2");
 		Security.Argon2Config config = Security.resolveArgon2Config(props);
-		// Clamp to the OWASP security floor (m=19456, t=2, p=1), not the encoder's technical
-		// minimums: a site that sets everything low must not end up weaker than SHA-512.
+		// Clamp to the OWASP security floor (m=19456, t=2, p=1, hash=32), not the encoder's
+		// technical minimums: a site that sets everything low must not end up weaker than
+		// SHA-512 (a 32 byte Argon2 hash is far below SHA-512's 64 bytes, and lowering the
+		// technical Argon2 minimum would make it weaker still).
 		assertEquals(19456, config.memory);
 		assertEquals(2, config.iterations);
 		assertEquals(1, config.parallelism);
 		assertEquals(8, config.saltLength);
-		assertEquals(4, config.hashLength);
+		assertEquals(32, config.hashLength);
 	}
 
 	@Test
@@ -109,6 +111,24 @@ class SecurityArgon2ConfigTest {
 	}
 
 	@Test
+	void shouldFallBackToDefaultsWhenTheBeanFactoryReceivesNonNumericPlaceholderValues() {
+		// The argon2PasswordEncoder bean is wired in applicationContext-service.xml from
+		// ${security.argon2.*} placeholders via this factory method, so the raw (possibly
+		// mistyped) value must be parsed here with the same fallback the resolver documents.
+		// Regression test for the startup failure that an int-typed factory method produced:
+		// Spring converted a mistyped value (e.g. security.argon2.memory=19456k) to int before
+		// this method ran, bypassing the fallback and stopping the context from coming up.
+		org.springframework.security.crypto.argon2.Argon2PasswordEncoder encoder = Security
+			.createArgon2PasswordEncoder("salty", "long", "lots", "19456k", "many");
+
+		String phc = encoder.encode("test");
+		assertTrue(phc.startsWith("$argon2id$"));
+		// Falling back to the OWASP defaults means a value 3 KiB bigger than the v5.8 default;
+		// the memory value appears in the PHC header.
+		assertTrue(phc.contains("m=19456,t=2,p=1"), "Expected OWASP default work factors in PHC, got: " + phc);
+	}
+
+	@Test
 	void shouldClampHashLengthSoThePhcAlwaysFitsThePasswordColumn() {
 		// With the default 16 byte salt the largest hash length whose "{argon2}"-prefixed
 		// value still fits varchar(128) is 49; 50 or more overflows and would be silently
@@ -132,7 +152,7 @@ class SecurityArgon2ConfigTest {
 
 	@Test
 	void shouldProducePhcThatFitsThePasswordColumnForDefaultWorkFactors() {
-		org.springframework.security.crypto.argon2.Argon2PasswordEncoder encoder = Security.createArgon2PasswordEncoder(16, 32, 1, 19456, 2);
+		org.springframework.security.crypto.argon2.Argon2PasswordEncoder encoder = Security.createArgon2PasswordEncoder("16", "32", "1", "19456", "2");
 		String phc = encoder.encode("test");
 		assertTrue(phc.length() <= 128, "PHC length " + phc.length() + " exceeds the 128 char password column: " + phc);
 		assertTrue(Security.hashMatches(phc, "test"), "Encoded value must authenticate its raw password");
