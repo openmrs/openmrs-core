@@ -82,7 +82,18 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 
 	@Override
 	public boolean upgradeEncoding(String prefixedPassword) {
-		return extractId(prefixedPassword) == null && idForEncode != null && !idForEncode.isEmpty();
+		String id = extractId(prefixedPassword);
+		// an unprefixed value is a legacy hash; it must be upgraded to the encoder
+		// named by idForEncode so that it can be validated after opt-in
+		if (id == null) {
+			return idForEncode != null && !idForEncode.isEmpty();
+		}
+		String encodedPassword = prefixedPassword.substring(prefixedPassword.indexOf("}") + 1);
+		PasswordEncoder encoder = idToPasswordEncoder.get(id);
+		if (encoder == null) {
+			return defaultEncoder.upgradeEncoding(encodedPassword);
+		}
+		return encoder.upgradeEncoding(encodedPassword);
 	}
 
 	private String extractId(String prefixEncodedPassword) {
