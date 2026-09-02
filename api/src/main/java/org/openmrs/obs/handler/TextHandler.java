@@ -16,12 +16,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
@@ -66,12 +66,34 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 		if (ComplexObsHandler.TEXT_VIEW.equals(view) || ComplexObsHandler.RAW_VIEW.equals(view)) {
 			String filename = parseFilename(obs, "file");
 
-			try (InputStream is = storageService.getData(key)) {
+			DataWithMetadata dwm;
+			try {
+				dwm = storageService.getDataWithMetadata(key);
+			} catch (IOException e) {
+				// Key not found at new layout; try legacy layout
+				String legacyKey = getObsDir() + '/' + key;
+				try {
+					dwm = storageService.getDataWithMetadata(legacyKey);
+					key = legacyKey;
+				} catch (IOException e2) {
+					log.error("Trying to read file: {}", key, e2);
+					Assert.notNull(null, "Complex data must not be null");
+					return null;
+				}
+			}
+
+			try (InputStream is = dwm.data()) {
 				complexData = ComplexObsHandler.RAW_VIEW.equals(view) ? new ComplexData(filename, IOUtils.toByteArray(is))
 				        : new ComplexData(filename, IOUtils.toString(is, StandardCharsets.UTF_8));
 			} catch (IOException e) {
 				log.error("Trying to read file: {}", key, e);
 			}
+
+			// Get the Mime Type and set it
+			String mimeType = dwm.metadata().getMimeType();
+			mimeType = !(mimeType.equals("application/octet-stream")) ? mimeType : "text/plain";
+			complexData.setMimeType(mimeType);
+			complexData.setLength(dwm.metadata().getLength());
 		} else if (ComplexObsHandler.URI_VIEW.equals(view)) {
 			complexData = new ComplexData(parseDataTitle(obs), key);
 		} else {
@@ -81,17 +103,6 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 		}
 		Assert.notNull(complexData, "Complex data must not be null");
 
-		// Get the Mime Type and set it
-		ObjectMetadata metadata;
-		try {
-			metadata = storageService.getMetadata(key);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-		String mimeType = metadata.getMimeType();
-		mimeType = !(mimeType.equals("application/octet-stream")) ? mimeType : "text/plain";
-		complexData.setMimeType(mimeType);
-		complexData.setLength(metadata.getLength());
 		obs.setComplexData(complexData);
 
 		return obs;

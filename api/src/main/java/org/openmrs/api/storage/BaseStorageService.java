@@ -56,6 +56,11 @@ public abstract class BaseStorageService extends BaseOpenmrsService implements S
 	}
 
 	@Override
+	public DataWithMetadata getDataWithMetadata(String key) throws IOException {
+		return new DataWithMetadata(getData(key), getMetadata(key));
+	}
+
+	@Override
 	public String saveData(InputStream inputStream, ObjectMetadata metadata, String moduleIdOrGroup) throws IOException {
 		return saveData(inputStream, metadata, moduleIdOrGroup, null);
 	}

@@ -132,6 +132,19 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		return waitForResponse(object);
 	}
 
+	@Override
+	public DataWithMetadata getDataWithMetadata(String key) throws IOException {
+		CompletableFuture<ResponseInputStream<GetObjectResponse>> future = s3AsyncClient.getObject(
+		    GetObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build(),
+		    AsyncResponseTransformer.toBlockingInputStream());
+		ResponseInputStream<GetObjectResponse> response = waitForResponse(future);
+		GetObjectResponse getResponse = response.response();
+		ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setMimeType(getResponse.contentType());
+		metadata.setLength(getResponse.contentLength());
+		return new DataWithMetadata(response, metadata);
+	}
+
 	private <T> T waitForResponse(CompletableFuture<T> object) throws IOException {
 		T result;
 		try {
