@@ -123,8 +123,6 @@ class SecurityArgon2ConfigTest {
 
 		String phc = encoder.encode("test");
 		assertTrue(phc.startsWith("$argon2id$"));
-		// Falling back to the OWASP defaults means a value 3 KiB bigger than the v5.8 default;
-		// the memory value appears in the PHC header.
 		assertTrue(phc.contains("m=19456,t=2,p=1"), "Expected OWASP default work factors in PHC, got: " + phc);
 	}
 

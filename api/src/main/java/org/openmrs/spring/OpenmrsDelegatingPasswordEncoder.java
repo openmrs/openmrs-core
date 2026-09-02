@@ -9,20 +9,19 @@
  */
 package org.openmrs.spring;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 /**
- * A variation of Spring's <tt>DelegatingPasswordEncoder</tt> that falls back to the 
+ * A variation of Spring's <tt>DelegatingPasswordEncoder</tt> that falls back to the
  * supplied <tt>fallbackEncoder</tt> without using a prefix.
  * <p/>
  * Spring's <tt>DelegatingPasswordEncoder</tt> winds up prepending the "{<encoder>}"
  * to the password. However, we want to support existing passwords with no formatting,
- * so with this variation, our default fallback generates and validates passwords 
+ * so with this variation, our default fallback generates and validates passwords
  * without that prefix.
  */
 public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
@@ -49,7 +48,6 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		} else {
 			defaultEncoder = idToPasswordEncoder.get(idForEncode);
 		}
-		
 		this.idForEncode = idForEncode;
 		this.idToPasswordEncoder = idToPasswordEncoder;
 		this.fallbackEncoder = fallbackEncoder;
@@ -60,7 +58,6 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		if (idForEncode == null || idForEncode.isEmpty() || defaultEncoder instanceof LegacyOpenmrsPasswordEncoder) {
 			return defaultEncoder.encode(rawPassword);
 		}
-		
 		return "{" + idForEncode + "}" + defaultEncoder.encode(rawPassword);
 	}
 
@@ -69,14 +66,12 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		if (rawPassword == null && prefixedPassword == null) {
 			return true;
 		}
-		
 		String id = extractId(prefixedPassword);
 		String encodedPassword = prefixedPassword;
 		// if we have an id
 		if (id != null && !id.isEmpty()) {
 			encodedPassword = encodedPassword.substring(encodedPassword.indexOf("}") + 1);
 		}
-		
 		PasswordEncoder encoder = idToPasswordEncoder.get(id);
 		if (encoder == null) {
 			// An unprefixed value is a legacy hash (SHA-1/SHA-512) that the encoder new
@@ -88,7 +83,6 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 			}
 			return defaultEncoder.matches(rawPassword, encodedPassword);
 		}
-		
 		return encoder.matches(rawPassword, encodedPassword);
 	}
 
@@ -101,17 +95,14 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		if (prefixEncodedPassword == null) {
 			return null;
 		}
-		
 		int start = prefixEncodedPassword.indexOf("{");
 		if (start != 0) {
 			return null;
 		}
-		
 		int end = prefixEncodedPassword.indexOf("}", start);
 		if (end < 0) {
 			return null;
 		}
-		
 		return prefixEncodedPassword.substring(start + 1, end);
 	}
 }
