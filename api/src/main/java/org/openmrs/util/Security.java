@@ -15,9 +15,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -52,51 +49,18 @@ public class Security {
 
 	private static final String SHA1 = "SHA-1";
 
-	// Names of the Argon2 work-factor runtime properties (set in openmrs-runtime.properties,
-	// not in the database). They are read by createArgon2PasswordEncoder(...), the factory
-	// method that backs the argon2PasswordEncoder bean in applicationContext-service.xml.
-	private static final String ARGON2_MEMORY_PROPERTY = "security.argon2.memory";
-
-	private static final String ARGON2_ITERATIONS_PROPERTY = "security.argon2.iterations";
-
-	private static final String ARGON2_PARALLELISM_PROPERTY = "security.argon2.parallelism";
-
-	private static final String ARGON2_SALT_LENGTH_PROPERTY = "security.argon2.saltLength";
-
-	private static final String ARGON2_HASH_LENGTH_PROPERTY = "security.argon2.hashLength";
-
-	// Safe bounds for the Argon2id work factors. The defaults follow the OWASP recommendation
-	// for Argon2id (m=19456 KB, t=2, p=1) and can be overridden per-installation.
+	// Fallback defaults for the Argon2id work factors, used only when a value cannot be
+	// parsed. The defaults follow the OWASP recommendation for Argon2id (m=19456 KB, t=2,
+	// p=1); per-installation overrides come through the Spring placeholders.
 	private static final int DEFAULT_MEMORY_KB = 19456;
-
-	private static final int MAX_MEMORY_KB = 1048576;
 
 	private static final int DEFAULT_ITERATIONS = 2;
 
-	private static final int MAX_ITERATIONS = 10;
-
 	private static final int DEFAULT_PARALLELISM = 1;
-
-	private static final int MAX_PARALLELISM = 8;
 
 	private static final int DEFAULT_SALT_LENGTH = 16;
 
-	private static final int MAX_SALT_LENGTH = 32;
-
 	private static final int DEFAULT_HASH_LENGTH = 32;
-
-	private static final int MIN_HASH_LENGTH = 4;
-
-	// map to LoginCredential.hbm.xml's users.password column (varchar(128)); an Argon2 PHC
-	// string must never exceed it, or the value gets truncated and can never verify again.
-	private static final int MAX_PASSWORD_COLUMN_LENGTH = 128;
-
-	// Verifies bare $argon2id$ PHC rows that carry no "{...}" encoder id. Argon2PasswordEncoder
-	// reconstructs the work factors from the stored PHC string on the matches() path, so the
-	// values baked into this instance are irrelevant to verification; keeping it a fixed default
-	// (rather than reading the work-factor properties again) leaves the bean in
-	// applicationContext-service.xml as the single source for the configurable work factors.
-	private static final Argon2PasswordEncoder ARGON2_ENCODER = new Argon2PasswordEncoder(16, 32, 1, 16384, 2);
 
 	// required so we can hash passwords at startup.
 	private static final PasswordEncoder FALLBACK_ENCODER = new LegacyOpenmrsPasswordEncoder();
@@ -145,111 +109,6 @@ public class Security {
 	}
 
 	/**
-	 * Resolves the Argon2 work factors from the given runtime properties, clamping each value
-	 * to a safe range. Runtime properties are fixed for the lifetime of a running server, so
-	 * the resolved values are read once and cached rather than re-read per call.
-	 *
-	 * @param runtime the runtime properties to read from
-	 * @return the resolved and clamped work factors
-	 */
-	static Argon2Config resolveArgon2Config(Properties runtime) {
-		// Parallelism is resolved first so that the memory floor below can honour the
-		// encoder's requirement that memory >= 8 * parallelism.
-		int parallelism = getIntProperty(runtime, ARGON2_PARALLELISM_PROPERTY, DEFAULT_PARALLELISM, 1, MAX_PARALLELISM);
-		int memory = getIntProperty(runtime, ARGON2_MEMORY_PROPERTY, DEFAULT_MEMORY_KB, DEFAULT_MEMORY_KB, MAX_MEMORY_KB);
-		int iterations = getIntProperty(runtime, ARGON2_ITERATIONS_PROPERTY, DEFAULT_ITERATIONS, DEFAULT_ITERATIONS, MAX_ITERATIONS);
-		int saltLength = getIntProperty(runtime, ARGON2_SALT_LENGTH_PROPERTY, DEFAULT_SALT_LENGTH, 8, MAX_SALT_LENGTH);
-		int hashLength = getIntProperty(runtime, ARGON2_HASH_LENGTH_PROPERTY, DEFAULT_HASH_LENGTH, DEFAULT_HASH_LENGTH, MAX_PASSWORD_COLUMN_LENGTH);
-		hashLength = clampHashLengthToColumnLimit(hashLength, saltLength, memory, iterations, parallelism);
-		return new Argon2Config(saltLength, hashLength, parallelism, memory, iterations);
-	}
-
-	/**
-	 * Reads an integer-valued runtime property, clamping it to the given bounds and falling
-	 * back to the default when the value is missing or not a valid integer.
-	 */
-	private static int getIntProperty(Properties runtime, String name, int defaultValue, int min, int max) {
-		String raw = runtime.getProperty(name);
-		if (raw == null) {
-			return defaultValue;
-		}
-		try {
-			int value = Integer.parseInt(raw.trim());
-			if (value < min) {
-				log.warn("Runtime property '{}' = {} is below the minimum of {}, clamping to minimum", name, value, min);
-				return min;
-			}
-			if (value > max) {
-				log.warn("Runtime property '{}' = {} exceeds the maximum of {}, clamping to maximum", name, value, max);
-				return max;
-			}
-			return value;
-		}
-		catch (NumberFormatException e) {
-			log.warn("Invalid integer value for runtime property '{}': '{}', using default: {}", name, raw, defaultValue);
-			return defaultValue;
-		}
-	}
-
-	// Length of the "{argon2}" id prefix that OpenmrsDelegatingPasswordEncoder prepends to the
-	// PHC string before it is persisted (encode() returns "{argon2}" + phc when upgraded). The
-	// clamp below must leave room for it, or the stored value overflows the column even though
-	// the bare PHC string fits.
-	private static final int ENCODER_ID_PREFIX_LENGTH = 8;
-
-	/**
-	 * Caps the Argon2 hash length so the full value persisted to the {@value
-	 * #MAX_PASSWORD_COLUMN_LENGTH} character {@code users.password} column always fits. When
-	 * the encoder is used in upgraded (prefixed) mode the stored value is "{argon2}" plus the
-	 * PHC string, so the budget is the column length minus the prefix. The total length of the
-	 * PHC string depends on the work factors (the header) and the salt as well as the hash, so
-	 * the ceiling must be computed jointly. Without it, a too-large hash is silently truncated
-	 * on a non-strict database and can never verify again, locking the account out.
-	 */
-	private static int clampHashLengthToColumnLimit(int hashLength, int saltLength, int memory, int iterations, int parallelism) {
-		String header = "$argon2id$v=19$m=" + memory + ",t=" + iterations + ",p=" + parallelism + "$";
-		int saltBase64 = unpaddedBase64Length(saltLength);
-		int maxHashBase64 = MAX_PASSWORD_COLUMN_LENGTH - ENCODER_ID_PREFIX_LENGTH - header.length() - saltBase64 - 1;
-		if (maxHashBase64 <= 0) {
-			return MIN_HASH_LENGTH;
-		}
-		int maxHash = maxHashBase64 * 6 / 8;
-		if (hashLength > maxHash) {
-			log.warn("Runtime property '{}' = {} would overflow the {} character password column, clamping to {}", ARGON2_HASH_LENGTH_PROPERTY, hashLength, MAX_PASSWORD_COLUMN_LENGTH, maxHash);
-			return maxHash;
-		}
-		return hashLength;
-	}
-
-	private static int unpaddedBase64Length(int byteLength) {
-		return (4 * byteLength + 2) / 3;
-	}
-
-	/**
-	 * Immutable holder for the resolved Argon2 work factors.
-	 */
-	static final class Argon2Config {
-
-		final int saltLength;
-
-		final int hashLength;
-
-		final int parallelism;
-
-		final int memory;
-
-		final int iterations;
-
-		Argon2Config(int saltLength, int hashLength, int parallelism, int memory, int iterations) {
-			this.saltLength = saltLength;
-			this.hashLength = hashLength;
-			this.parallelism = parallelism;
-			this.memory = memory;
-			this.iterations = iterations;
-		}
-	}
-
-	/**
 	 * Compare the given hash and the given string-to-hash to see if they are equal. The
 	 * string-to-hash is usually of the form password + salt. <br>
 	 * <br>
@@ -269,12 +128,6 @@ public class Security {
 			throw new APIException("password.cannot.be.null", (Object[]) null);
 		}
 		
-		int phcIndex = hashedPassword.indexOf("$argon2id$");
-		if (phcIndex >= 0) {
-			String phc = phcIndex == 0 ? hashedPassword : hashedPassword.substring(phcIndex);
-			return ARGON2_ENCODER.matches(passwordToHash, phc);
-		}
-
 		return hashedPassword.equals(encodeString(passwordToHash, SHA512))
 			|| hashedPassword.equals(encodeStringSHA1(passwordToHash))
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
@@ -293,21 +146,6 @@ public class Security {
 	}
 
 	/**
-	 * Hashes <code>strToEncode</code> using Argon2id, writing a bare PHC string.
-	 * <p>
-	 * Package-private: the public password-write path is the configured
-	 * {@code openmrsPasswordEncoder} bean, which honours {@code security.passwordEncoder} and
-	 * writes the "{argon2id}" prefixed form; this helper exists for the tests and ignores that
-	 * opt-in, so modules should not use it as a password writer.
-	 *
-	 * @param strToEncode string to encode
-	 * @return the Argon2id encryption of a given string
-	 */
-	static String encodeStringArgon2(String strToEncode) throws APIException {
-		return ARGON2_ENCODER.encode(strToEncode);
-	}
-
-	/**
 	 * This method will hash <code>strToEncode</code> using the old SHA-1 algorithm.
 	 *
 	 * @param strToEncode string to encode
@@ -320,11 +158,9 @@ public class Security {
 	/**
 	 * Spring factory method used to create the {@code argon2PasswordEncoder} bean (see
 	 * applicationContext-service.xml). Each work factor arrives here as the raw string that
-	 * Spring resolved from its {@code security.argon2.*} placeholder, and is parsed with the
-	 * fallback-and-clamp rules in {@link #resolveArgon2Config(Properties)}: a missing, empty
-	 * or non-numeric value falls back to the safe default rather than failing the context
-	 * startup, and an out-of-range value is clamped so the bean cannot overflow the
-	 * {@code users.password} column.
+	 * Spring resolved from its {@code security.argon2.*} placeholder (with the default given
+	 * in the placeholder), and a missing or non-numeric value falls back to the safe default
+	 * rather than failing the context startup.
 	 *
 	 * @param saltLength the salt length in bytes
 	 * @param hashLength the hash length in bytes
@@ -335,14 +171,25 @@ public class Security {
 	 * @since 2.8.10
 	 */
 	public static Argon2PasswordEncoder createArgon2PasswordEncoder(String saltLength, String hashLength, String parallelism, String memory, String iterations) {
-		Properties props = new Properties();
-		props.setProperty(ARGON2_SALT_LENGTH_PROPERTY, saltLength);
-		props.setProperty(ARGON2_HASH_LENGTH_PROPERTY, hashLength);
-		props.setProperty(ARGON2_PARALLELISM_PROPERTY, parallelism);
-		props.setProperty(ARGON2_MEMORY_PROPERTY, memory);
-		props.setProperty(ARGON2_ITERATIONS_PROPERTY, iterations);
-		Argon2Config config = resolveArgon2Config(props);
-		return new Argon2PasswordEncoder(config.saltLength, config.hashLength, config.parallelism, config.memory, config.iterations);
+		return new Argon2PasswordEncoder(
+			parseOrDefault(saltLength, DEFAULT_SALT_LENGTH),
+			parseOrDefault(hashLength, DEFAULT_HASH_LENGTH),
+			parseOrDefault(parallelism, DEFAULT_PARALLELISM),
+			parseOrDefault(memory, DEFAULT_MEMORY_KB),
+			parseOrDefault(iterations, DEFAULT_ITERATIONS));
+	}
+
+	private static int parseOrDefault(String raw, int defaultValue) {
+		if (raw == null || raw.trim().isEmpty()) {
+			return defaultValue;
+		}
+		try {
+			return Integer.parseInt(raw.trim());
+		}
+		catch (NumberFormatException e) {
+			log.warn("Invalid integer value for Argon2 work factor '{}', using default: {}", raw, defaultValue);
+			return defaultValue;
+		}
 	}
 
 	private static String encodeString(String strToEncode, String algorithm) {

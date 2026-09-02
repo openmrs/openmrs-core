@@ -45,15 +45,6 @@ public class SecurityTest {
 	}
 
 	/**
-	 * @see Security#encodeStringArgon2(String)
-	 */
-	@Test
-	public void encodeStringArgon2_shouldEncodeStringsToArgon2id() {
-		String hash = Security.encodeStringArgon2("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
-		assertTrue(hash.startsWith("$argon2id$"));
-	}
-
-	/**
 	 * @see Security#hashMatches(String,String)
 	 */
 	@Test

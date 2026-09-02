@@ -34,8 +34,7 @@
 	<bean id="openmrsLegacyPasswordEncoder" class="org.openmrs.spring.LegacyOpenmrsPasswordEncoder" />
 	<!-- Argon2id work factors, overridable per-installation via openmrs-runtime.properties.
 	     Security.createArgon2PasswordEncoder(...) parses each raw placeholder value with a
-	     safe-default fallback and clamps it to a safe range, so a mistyped value cannot stop
-	     the server from starting. -->
+	     safe-default fallback, so a mistyped value cannot stop the server from starting. -->
 	<bean id="argon2PasswordEncoder" class="org.openmrs.util.Security" factory-method="createArgon2PasswordEncoder">
 		<constructor-arg index="0" value="${security.argon2.saltLength:16}" />
 		<constructor-arg index="1" value="${security.argon2.hashLength:32}" />
