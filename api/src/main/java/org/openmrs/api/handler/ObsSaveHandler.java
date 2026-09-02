@@ -41,7 +41,19 @@ import org.openmrs.api.context.Context;
  * {@link Obs#newInstance(Obs)} had none to copy, which is the case for observations recorded before
  * reference ranges existed or while <code>validation.disable</code> was on. Group members are
  * reached by {@link RequiredDataAdvice#recursivelyHandle} walking the {@link Obs#getGroupMembers()}
- * collection, so this handler never recurses itself.
+ * collection, so this handler never recurses itself. <br>
+ * <br>
+ * The {@link Obs.Interpretation} is handled asymmetrically between the two paths, which is
+ * intended. On a new observation an interpretation supplied by the caller is kept, so a client that
+ * computes its own interpretations wins. On an observation that has already been persisted the
+ * interpretation is always re-derived, because an amendment that moves the value across a threshold
+ * has to be re-interpreted, and a persisted observation offers no way to tell an interpretation the
+ * caller has just set from one that was derived on an earlier save. The consequence is that an
+ * amendment does not preserve a caller-supplied interpretation: re-saving an observation with a new
+ * value and an interpretation of {@link Obs.Interpretation#CRITICALLY_HIGH} stores whatever the
+ * preserved reference range implies for that value instead. A client that maintains its own
+ * interpretations, for example a laboratory amending a result, therefore has to set the
+ * interpretation again on every amendment.
  *
  * @see RequiredDataHandler
  * @see SaveHandler
@@ -64,6 +76,9 @@ public class ObsSaveHandler implements SaveHandler<Obs> {
 		// An observation that has already been persisted keeps the reference range it was created with,
 		// so no range is derived for it. Its interpretation still has to follow the value: editing a
 		// value across a threshold has to re-derive it, which the preserved range alone answers.
+		// Unlike the new observation path below, this overwrites an interpretation supplied by the
+		// caller, because a persisted observation gives no way to tell one from an earlier derivation.
+		// See the class javadoc.
 		if (obs.getId() != null) {
 			setObsInterpretation(obs);
 			return;
@@ -95,6 +110,7 @@ public class ObsSaveHandler implements SaveHandler<Obs> {
 			}
 		}
 
+		// an interpretation supplied by the caller is kept, unlike on the amend path above
 		if (obs.getInterpretation() == null) {
 			setObsInterpretation(obs);
 		}

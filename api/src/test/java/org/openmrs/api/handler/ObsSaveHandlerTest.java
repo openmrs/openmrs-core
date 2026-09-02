@@ -402,6 +402,64 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * The reference range query is only the first query the lookup runs. Resolving a range then
+	 * evaluates each candidate range's criteria, and those query too: concept 5089 carries a criteria
+	 * that calls <code>$fn.getLatestObs</code>, which resolves a concept reference and searches
+	 * observations. Holding the session unflushed for the range query alone therefore is not enough,
+	 * the whole resolution has to be covered, or an observation left dirty in the session is flushed
+	 * past ImmutableObsInterceptor while the criteria are being evaluated.
+	 *
+	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldNotFlushADirtyObsWhileEvaluatingReferenceRangeCriteria() {
+		// obs 7 is numeric, so editing it leaves it dirty in the session
+		Obs editedObs = Context.getObsService().getObs(7);
+		editedObs.setValueNumeric(editedObs.getValueNumeric() + 1.0);
+
+		// concept 5089's only criteria calls $fn.getLatestObs, which queries, and patient 2 is male, so
+		// the expression does not short circuit before reaching it
+		Obs addedObs = new Obs();
+		addedObs.setPerson(Context.getPatientService().getPatient(2));
+		addedObs.setConcept(Context.getConceptService().getConcept(5089));
+		addedObs.setValueNumeric(70.0);
+		addedObs.setObsDatetime(new Date());
+		addedObs.setLocation(new Location(1));
+
+		Obs savedObs = Context.getObsService().saveObs(addedObs, null);
+
+		assertNotNull(savedObs.getReferenceRange());
+	}
+
+	/**
+	 * Pins the interpretation asymmetry the class javadoc describes: a caller-supplied interpretation
+	 * is kept on a new observation, but an amendment re-derives it, because a persisted observation
+	 * offers no way to tell an interpretation the caller has just set from one derived on an earlier
+	 * save and an amended value has to be re-interpreted anyway.
+	 *
+	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldKeepASuppliedInterpretationOnANewObsButReDeriveItOnAnAmendment() {
+		// concept 4089 is normal between 80 and 118 for a patient of this age, so 90.0 reads as NORMAL
+		Obs obs = buildObservation();
+		obs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
+
+		Obs savedObs = Context.getObsService().saveObs(obs, null);
+
+		// the supplied interpretation wins on a new observation
+		assertEquals(Obs.Interpretation.CRITICALLY_HIGH, savedObs.getInterpretation());
+
+		savedObs.setValueNumeric(91.0);
+		savedObs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
+		Obs amendedObs = Context.getObsService().saveObs(savedObs, "amended with a supplied interpretation");
+
+		// on an amendment it does not: the preserved reference range decides
+		Obs reloadedObs = Context.getObsService().getObs(amendedObs.getObsId());
+		assertEquals(Obs.Interpretation.NORMAL, reloadedObs.getInterpretation());
+	}
+
+	/**
 	 * {@link Obs#newInstance(Obs)} copies a reference range only when the source observation has one,
 	 * so copying forward an observation recorded before reference ranges existed, or recorded while
 	 * <code>validation.disable</code> was on, yields a replacement with no range. The replacement is a
