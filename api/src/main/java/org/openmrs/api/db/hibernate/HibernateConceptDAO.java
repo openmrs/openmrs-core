@@ -2492,23 +2492,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId) {
-		//This is a read only lookup that does not require a flush
-		//Otherwise we end up with premature flushes of Immutable types like Obs
-		//that are still dirty in the session while their reference range is being derived
 		Session session = sessionFactory.getCurrentSession();
-		FlushMode flushMode = session.getHibernateFlushMode();
-		session.setHibernateFlushMode(FlushMode.MANUAL);
-		try {
-			CriteriaBuilder cb = session.getCriteriaBuilder();
-			CriteriaQuery<ConceptReferenceRange> cq = cb.createQuery(ConceptReferenceRange.class);
-			Root<ConceptReferenceRange> root = cq.from(ConceptReferenceRange.class);
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<ConceptReferenceRange> cq = cb.createQuery(ConceptReferenceRange.class);
+		Root<ConceptReferenceRange> root = cq.from(ConceptReferenceRange.class);
 
-			cq.where(cb.equal(root.get("conceptNumeric").get("conceptId"), conceptId));
+		cq.where(cb.equal(root.get("conceptNumeric").get("conceptId"), conceptId));
 
-			return session.createQuery(cq).getResultList();
-		} finally {
-			session.setHibernateFlushMode(flushMode);
-		}
+		return session.createQuery(cq).getResultList();
 	}
 
 	/**

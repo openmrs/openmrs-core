@@ -27,6 +27,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.hibernate.FlushMode;
 import org.hibernate.Hibernate;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -65,6 +66,8 @@ import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.hibernate.DbSession;
+import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.parameter.ConceptSearchCriteria;
@@ -95,6 +98,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 
 	@Autowired
 	private ConceptDAO dao;
+
+	@Autowired
+	private DbSessionFactory dbSessionFactory;
 
 	private static Concept trueConcept;
 
@@ -2084,10 +2090,36 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (!(concept instanceof ConceptNumeric) || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
 			return null;
 		}
-		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
 
+		// Resolving a range is read only, but it runs queries: the concept's ranges, and then whatever
+		// each range's criteria asks for, e.g. $fn.getLatestObs resolves a concept reference and
+		// searches observations. Any of those would auto-flush the session, and ObsSaveHandler resolves
+		// a range while an edited Obs is still dirty in it, which ImmutableEntityInterceptor rejects.
+		// Hold the session in MANUAL flush mode for the whole resolution, the way
+		// HibernateAdministrationDAO.validate does for the validator run that used to derive the range.
+		DbSession session = dbSessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getFlushMode();
+		session.setFlushMode(FlushMode.MANUAL);
+		try {
+			return resolveConceptReferenceRange((ConceptNumeric) concept, context);
+		} finally {
+			session.setFlushMode(flushMode);
+		}
+	}
+
+	/**
+	 * Picks the reference range for the given concept and context, falling back to the concept's own
+	 * range fields when no {@link ConceptReferenceRange} record exists or matches. Callers hold the
+	 * session in {@link FlushMode#MANUAL} for the duration, so nothing here may rely on an auto-flush.
+	 *
+	 * @param conceptNumeric the numeric concept whose range is being resolved
+	 * @param context the context the criteria are evaluated against
+	 * @return the strictest matching range, the concept's default range, or null
+	 */
+	private ConceptReferenceRange resolveConceptReferenceRange(ConceptNumeric conceptNumeric,
+	        ConceptReferenceRangeContext context) {
 		List<ConceptReferenceRange> referenceRanges = Context.getConceptService()
-		        .getConceptReferenceRangesByConceptId(concept.getConceptId());
+		        .getConceptReferenceRangesByConceptId(conceptNumeric.getConceptId());
 
 		if (referenceRanges.isEmpty()) {
 			return getDefaultReferenceRange(conceptNumeric);
