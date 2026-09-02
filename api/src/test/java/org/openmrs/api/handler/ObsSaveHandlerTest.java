@@ -14,6 +14,7 @@ import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
+import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.ObsReferenceRange;
@@ -362,6 +363,70 @@ public class ObsSaveHandlerTest extends BaseContextSensitiveTest {
 		assertNotNull(reloadedObs.getReferenceRange());
 		assertEquals(118.0, reloadedObs.getReferenceRange().getHiNormal());
 		assertEquals(Obs.Interpretation.HIGH, reloadedObs.getInterpretation());
+	}
+
+	/**
+	 * Deriving the reference range from a save handler runs at AOP time, outside the
+	 * {@link org.openmrs.api.db.hibernate.HibernateAdministrationDAO#validate} pass that used to hold
+	 * the session in {@link org.hibernate.FlushMode#MANUAL} for the whole validator run. Re-saving an
+	 * encounter with one observation edited and another added, i.e. an ordinary form re-submission,
+	 * leaves the edited observation dirty in the session while the added one is being handled, so the
+	 * lookup must not auto-flush it past ImmutableObsInterceptor.
+	 *
+	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldSaveAnEncounterThatHasOneObservationEditedAndAnotherAdded() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+
+		// obs 7 is on that encounter and is numeric, so editing it leaves it dirty in the session
+		Obs editedObs = Context.getObsService().getObs(7);
+		editedObs.setValueNumeric(editedObs.getValueNumeric() + 1.0);
+
+		Obs addedObs = new Obs();
+		addedObs.setPerson(encounter.getPatient());
+		addedObs.setConcept(Context.getConceptService().getConcept(5497));
+		addedObs.setValueNumeric(120.0);
+		addedObs.setObsDatetime(new Date());
+		addedObs.setLocation(new Location(1));
+		encounter.addObs(addedObs);
+
+		Context.getEncounterService().saveEncounter(encounter);
+
+		// the added observation still gets the reference range of concept 5497
+		assertNotNull(addedObs.getObsId());
+		assertNotNull(addedObs.getReferenceRange());
+		assertEquals(1497.0, addedObs.getReferenceRange().getHiNormal());
+		assertEquals(445.0, addedObs.getReferenceRange().getLowNormal());
+		assertEquals(Obs.Interpretation.LOW, addedObs.getInterpretation());
+	}
+
+	/**
+	 * {@link Obs#newInstance(Obs)} copies a reference range only when the source observation has one,
+	 * so copying forward an observation recorded before reference ranges existed, or recorded while
+	 * <code>validation.disable</code> was on, yields a replacement with no range. The replacement is a
+	 * new observation, so its range has to be derived: the criteria are evaluated against the state of
+	 * the patient at the time of the observation, which cannot be reconstructed later.
+	 *
+	 * @see ObsSaveHandler#handle(Obs,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldDeriveAReferenceRangeForACopiedObservationThatHasNoneToInherit() {
+		// obs 7 was recorded without a reference range of its own
+		Obs existingObs = Context.getObsService().getObs(7);
+		assertNull(existingObs.getReferenceRange());
+
+		Obs newObs = Obs.newInstance(existingObs);
+		newObs.setValueNumeric(60.0);
+		newObs.setPreviousVersion(existingObs);
+
+		Obs savedObs = Context.getObsService().saveObs(newObs, null);
+
+		// concept 5089 has no criteria that match this patient, so its concept numeric range applies
+		assertNotNull(savedObs.getReferenceRange());
+		assertEquals(250.0, savedObs.getReferenceRange().getHiNormal());
+		assertEquals(0.0, savedObs.getReferenceRange().getLowCritical());
+		assertEquals(Obs.Interpretation.NORMAL, savedObs.getInterpretation());
 	}
 
 	/**
