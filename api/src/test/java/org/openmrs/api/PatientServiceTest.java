@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
@@ -2014,7 +2014,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertTrue(patients.contains(patientService.getPatient(205)),
 		    "search term without accent did not find patient middle name with accent");
 
-		patients = patientService.getPatients("Úrsula", null, null, false);
+		patients = patientService.getPatients("Ãšrsula", null, null, false);
 		assertTrue(patients.contains(patientService.getPatient(203)), "search term with accent did not find matching name");
 		assertTrue(patients.contains(patientService.getPatient(204)), "search term with accent did not find matching name");
 
@@ -2022,21 +2022,21 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertTrue(patients.contains(patientService.getPatient(208)),
 		    "three-term search did not find Vietnamese-accented name");
 
-		patients = patientService.getPatients("Hưong", null, null, false);
+		patients = patientService.getPatients("HÆ°ong", null, null, false);
 		assertTrue(patients.contains(patientService.getPatient(208)),
 		    "did not find a name with a partially accented search term");
 
-		patients = patientService.getPatients("Ὀδυσσεύς", null, null, false);
+		patients = patientService.getPatients("á½ˆÎ´Ï…ÏƒÏƒÎµÏÏ‚", null, null, false);
 		assertTrue(patients.contains(patientService.getPatient(207)),
 		    "did not find a Greek name that should have matched exactly");
 
 		// This is more to document behavior than to assert that this should necessarily behave this way
-		patients = patientService.getPatients("Amarantá", null, null, false);
+		patients = patientService.getPatients("AmarantÃ¡", null, null, false);
 		assertFalse(patients.contains(patientService.getPatient(204)),
 		    "unexpectedly found a patient using a search term with an extraneous accent");
 
 		// This is more to document behavior than to assert that this should necessarily behave this way
-		patients = patientService.getPatients("Οδυσσευς", null, null, false);
+		patients = patientService.getPatients("ÎŸÎ´Ï…ÏƒÏƒÎµÏ…Ï‚", null, null, false);
 		assertFalse(patients.contains(patientService.getPatient(207)),
 		    "unexpectedly found an accented Greek name by searching for its un-accented equivalent");
 

@@ -12,7 +12,7 @@ package org.openmrs.api.db.hibernate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.Interceptor;
 import org.hibernate.type.Type;
