@@ -23,13 +23,15 @@ import java.util.Map;
  * without that prefix.
  */
 public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
-	
+
 	private final PasswordEncoder defaultEncoder;
 
 	private final String idForEncode;
 
 	private final Map<String, PasswordEncoder> idToPasswordEncoder;
-	
+
+	private final PasswordEncoder fallbackEncoder;
+
 	public OpenmrsDelegatingPasswordEncoder(String idForEncode, Map<String, PasswordEncoder> idToPasswordEncoder, PasswordEncoder fallbackEncoder) {
 		if (idForEncode == null || idForEncode.isEmpty()) {
 			this.defaultEncoder = fallbackEncoder;
@@ -38,9 +40,10 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		} else {
 			defaultEncoder = idToPasswordEncoder.get(idForEncode);
 		}
-		
+
 		this.idForEncode = idForEncode;
 		this.idToPasswordEncoder = idToPasswordEncoder;
+		this.fallbackEncoder = fallbackEncoder;
 	}
 
 	@Override
@@ -64,9 +67,16 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		}
 		PasswordEncoder encoder = idToPasswordEncoder.get(id);
 		if (encoder == null) {
+			// An unprefixed value is a legacy hash (SHA-1/SHA-512) that the encoder new
+			// passwords are written with cannot parse. It must go to the fallback encoder;
+			// routing it to defaultEncoder instead would reject every existing account the
+			// moment a site opts in to an id-based encoder such as argon2.
+			if (id == null) {
+				return fallbackEncoder.matches(rawPassword, encodedPassword);
+			}
 			return defaultEncoder.matches(rawPassword, encodedPassword);
 		}
-		
+
 		return encoder.matches(rawPassword, encodedPassword);
 	}
 
