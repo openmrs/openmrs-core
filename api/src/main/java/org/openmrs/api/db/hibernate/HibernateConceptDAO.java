@@ -1653,11 +1653,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) throws DAOException {
 
-		return Math.toIntExact(SearchQueryUnique.searchCount(searchSessionFactory,
-		    SearchQueryUnique.newQuery(
-		        ConceptName.class, f -> newConceptNamePredicate(f, phrase, true, locales, false, includeRetired,
-		            requireClasses, excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept),
-		        "concept.conceptId")));
+		int cap = SearchQueryUnique.UNBOUNDED_DEDUPLICATION;
+		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP);
+		if (gpValue != null && !gpValue.trim().isEmpty()) {
+			try {
+				cap = Integer.parseInt(gpValue.trim());
+			} catch (NumberFormatException e) {
+				log.warn("Invalid value for global property {}: '{}', using unbounded deduplication",
+				    OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, gpValue);
+			}
+		}
+
+		return Math
+		        .toIntExact(SearchQueryUnique.searchCount(searchSessionFactory,
+		            SearchQueryUnique.newQuery(ConceptName.class,
+		                f -> newConceptNamePredicate(f, phrase, true, locales, false, includeRetired, requireClasses,
+		                    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept),
+		                "concept.conceptId"),
+		            cap));
 	}
 
 	private SearchPredicate newConceptNamePredicate(SearchPredicateFactory f, final String phrase, boolean searchKeywords,
