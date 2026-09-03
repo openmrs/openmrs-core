@@ -138,8 +138,19 @@ RUN mkdir -p /openmrs/data/modules \
     && mkdir -p /openmrs/data/configuration_checksums \
     && mkdir -p /openmrs/data/complex_obs \
     && mkdir -p /openmrs/data/activemq-data \
+    && mkdir -p /openmrs/otel \
     && chmod -R g+rw /openmrs \
     && chown -R 1001 /openmrs
+
+# Setup OpenTelemetry Java agent
+# Pure Java, so no TARGETARCH handling needed.
+# Bump OTEL_AGENT_VERSION and OTEL_AGENT_SHA together.
+ARG OTEL_AGENT_VERSION=2.31.1
+ARG OTEL_AGENT_SHA="bbf83c151b6400709e2f225bdd07a04f839d9d13b8b93464241333fd25d3e3ba"
+ARG OTEL_AGENT_URL="https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${OTEL_AGENT_VERSION}/opentelemetry-javaagent.jar"
+RUN curl -fsSL -o /openmrs/otel/opentelemetry-javaagent.jar "${OTEL_AGENT_URL}" \
+    && echo "${OTEL_AGENT_SHA}  /openmrs/otel/opentelemetry-javaagent.jar" | sha256sum -c \
+    && chmod g+r /openmrs/otel/opentelemetry-javaagent.jar
     
 # Copy in the start-up scripts
 COPY --from=dev /openmrs/wait-for-it.sh /openmrs/startup-init.sh /openmrs/startup.sh /openmrs/
