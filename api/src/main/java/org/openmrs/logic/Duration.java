@@ -97,7 +97,7 @@ public class Duration implements Operand {
 			case DAYS:
 				return d * 86400000;
 			case WEEKS:
-				return d * 10080000;
+				return d * 604800000L;
 			case MONTHS:
 				return d * 2628000000L;
 			case YEARS:
