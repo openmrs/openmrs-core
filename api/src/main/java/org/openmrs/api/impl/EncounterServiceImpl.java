@@ -332,7 +332,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatient(Patient patient) throws APIException {
 		if (patient == null) {
-			throw new IllegalArgumentException("The 'patient' parameter is requred and cannot be null");
+			throw new IllegalArgumentException("The 'patient' parameter is required and cannot be null");
 		}
 
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setPatient(patient)
@@ -358,7 +358,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws APIException {
 		if (patientId == null) {
-			throw new IllegalArgumentException("The 'patientId' parameter is requred and cannot be null");
+			throw new IllegalArgumentException("The 'patientId' parameter is required and cannot be null");
 		}
 		return Context.getEncounterService().filterEncountersByViewPermissions(dao.getEncountersByPatientId(patientId),
 		    null);
