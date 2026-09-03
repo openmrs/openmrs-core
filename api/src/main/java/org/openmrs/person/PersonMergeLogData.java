@@ -442,7 +442,7 @@ public class PersonMergeLogData {
 		str += getPriorCauseOfDeath();
 		str += getPriorGender();
 		str += (getPriorDateOfBirth() != null) ? getPriorDateOfBirth().toString() : getPriorDateOfBirth();
-		str += (getPriorDateOfBirth() != null) ? getPriorDateOfDeath().toString() : getPriorDateOfDeath();
+		str += (getPriorDateOfDeath() != null) ? getPriorDateOfDeath().toString() : getPriorDateOfDeath();
 		str += isPriorDateOfBirthEstimated();
 		return str.hashCode();
 	}
