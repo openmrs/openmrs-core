@@ -17,6 +17,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
@@ -62,7 +63,22 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 
 		// Raw view (i.e. the file as is)
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
-			try (InputStream in = storageService.getData(key)) {
+			DataWithMetadata dwm;
+			try {
+				dwm = storageService.getDataWithMetadata(key);
+			} catch (IOException e) {
+				// Key not found at new layout; try legacy layout
+				String legacyKey = getObsDir() + '/' + key;
+				try {
+					dwm = storageService.getDataWithMetadata(legacyKey);
+					key = legacyKey;
+				} catch (IOException e2) {
+					log.error("Trying to read file: {}", key, e2);
+					Assert.notNull(null, "Complex data must not be null");
+					return null;
+				}
+			}
+			try (InputStream in = dwm.data()) {
 				complexData = new ComplexData(parseFilename(obs, "file"), IOUtils.toByteArray(in));
 			} catch (IOException e) {
 				log.error("Trying to read file: {}", key, e);

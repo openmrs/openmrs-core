@@ -59,6 +59,20 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 	}
 
 	@Override
+	public DataWithMetadata getDataWithMetadata(String key) throws IOException {
+		Path path = getPath(key);
+
+		BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
+		String filename = decodeKey(path.getFileName().toString());
+		ObjectMetadata metadata = ObjectMetadata.builder().setLength(attributes.size())
+		        .setMimeType(mimetypes.getContentType(filename)).setFilename(filename)
+		        .setCreationTime(attributes.creationTime().toInstant()).build();
+
+		InputStream data = Files.newInputStream(path);
+		return new DataWithMetadata(data, metadata);
+	}
+
+	@Override
 	public InputStream getData(final String key) throws IOException {
 		return Files.newInputStream(getPath(key));
 	}

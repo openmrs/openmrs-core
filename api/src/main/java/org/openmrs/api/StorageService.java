@@ -15,6 +15,7 @@ import java.io.UncheckedIOException;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.api.stream.StreamDataWriter;
 
@@ -176,4 +177,20 @@ public interface StorageService extends OpenmrsService {
 	 * @throws UncheckedIOException IO error
 	 */
 	boolean exists(String key) throws UncheckedIOException;
+
+	/**
+	 * Returns both data and metadata for the given key in a single operation.
+	 * <p>
+	 * This avoids redundant I/O (e.g. separate existence probes or metadata fetches) when the backend
+	 * can provide both in one call (e.g. S3 GetObject returns response headers with metadata, local
+	 * filesystem can read attributes alongside the file).
+	 * <p>
+	 * The caller must close the returned {@link org.openmrs.api.storage.DataWithMetadata} to release
+	 * the underlying stream.
+	 *
+	 * @param key unique key
+	 * @return data with metadata
+	 * @throws IOException wrong key or IO error
+	 */
+	DataWithMetadata getDataWithMetadata(String key) throws IOException;
 }
