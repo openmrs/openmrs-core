@@ -203,6 +203,7 @@ public class UpdateFilter extends StartupFilter {
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
 					log.error("Unable to sleep", e);
+					Thread.currentThread().interrupt();
 					throw new ServletException("Got interrupted while trying to sleep thread", e);
 				}
 				errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
