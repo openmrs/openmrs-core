@@ -115,6 +115,12 @@
             <one-to-many class="ConceptAttribute"/>
         </set>
 
+		<set name="interpretationRules" lazy="true" inverse="true" cascade="all,delete-orphan"
+				order-by="concept_interpretation_rule_id asc">
+			<key column="concept_id" not-null="true" />
+			<one-to-many class="ConceptInterpretationRule" />
+		</set>
+
 		<joined-subclass name="org.openmrs.ConceptNumeric" table="concept_numeric" extends="org.openmrs.Concept" lazy="false">
 			<key column="concept_id" not-null="true" on-delete="cascade" />
 			<property name="hiAbsolute" type="java.lang.Double" column="hi_absolute" length="22" />
