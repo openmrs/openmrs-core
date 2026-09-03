@@ -12,18 +12,26 @@ package org.openmrs.api.db.hibernate;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Role;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
+
+	private static final String EXISTING_PROPERTY = "concept.defaultConceptMapType";
 
 	@Autowired
 	private HibernateAdministrationDAO dao;
@@ -149,5 +157,80 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(role, "type");
 		dao.validate(role, errors);
 		assertFalse(errors.hasFieldErrors("role"));
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldNotQueryTheCaseSensitivePropertyOnAnExactMatch() {
+		// The point of looking the property up by its identifier first is that an exact match never
+		// reaches the case-insensitive fallback. Hibernate counts that fallback as a query execution
+		// but does not count a load by identifier, so the counter staying flat is what pins the
+		// behaviour, whether the load was served from a cache or from the database.
+		Context.flushSession();
+		Context.clearSession();
+
+		long queryExecutionsBefore = sessionFactory.getStatistics().getQueryExecutionCount();
+
+		assertNotNull(dao.getGlobalPropertyObject(EXISTING_PROPERTY));
+
+		assertEquals(queryExecutionsBefore, sessionFactory.getStatistics().getQueryExecutionCount(),
+		    "an exact match should not fall back to the case insensitive query");
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldStillMatchCaseInsensitively() {
+		String expectedValue = dao.getGlobalPropertyObject(EXISTING_PROPERTY).getPropertyValue();
+
+		GlobalProperty upperCased = dao.getGlobalPropertyObject(EXISTING_PROPERTY.toUpperCase());
+		assertNotNull(upperCased, "an upper cased name should still resolve");
+		assertEquals(expectedValue, upperCased.getPropertyValue());
+
+		GlobalProperty lowerCased = dao.getGlobalPropertyObject(EXISTING_PROPERTY.toLowerCase());
+		assertNotNull(lowerCased, "a lower cased name should still resolve");
+		assertEquals(expectedValue, lowerCased.getPropertyValue());
+
+		// Asserting on the value rather than on getProperty(): when the database itself compares
+		// strings without regard to case, Hibernate hands back an entity whose identifier is the
+		// name that was asked for rather than the one stored in the row. That is true of the H2
+		// test database, which is created with IGNORECASE=TRUE, and of MySQL under a case
+		// insensitive collation. The value comes from the row either way, so it is what proves the
+		// right property was found.
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldReturnNullForAPropertyThatDoesNotExist() {
+		assertNull(dao.getGlobalPropertyObject("some.property.that.is.not.set"));
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldFailForANullPropertyName() {
+		// the property name is the identifier, so Hibernate rejects a null one. Pinned here so that
+		// this does not silently become a null return in a later refactor.
+		assertThrows(IllegalArgumentException.class, () -> dao.getGlobalPropertyObject(null));
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#getGlobalPropertyObject(String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldFindAPropertyThatHasNotBeenFlushedYet() {
+		String propertyName = "unflushed.property";
+		dao.saveGlobalProperty(new GlobalProperty(propertyName, "unflushed value"));
+
+		GlobalProperty saved = dao.getGlobalPropertyObject(propertyName);
+
+		assertNotNull(saved, "a property still sitting unflushed in the session should be found");
+		assertEquals("unflushed value", saved.getPropertyValue());
 	}
 }
