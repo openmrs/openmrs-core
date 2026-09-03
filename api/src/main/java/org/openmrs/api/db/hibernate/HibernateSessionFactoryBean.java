@@ -28,11 +28,9 @@ import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.spi.BootstrapContext;
-import org.hibernate.cfg.JdbcSettings;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.integrator.spi.Integrator;
-import org.hibernate.internal.util.config.ConfigurationHelper;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 import org.jspecify.annotations.NonNull;
@@ -256,10 +254,8 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 
 	private void assertProviderDisablesAutocommitPremise(ServiceRegistry serviceRegistry,
 	        SessionFactoryImplementor sessionFactory) {
-		Map<String, Object> settings = sessionFactory.getProperties();
-		boolean declared = ConfigurationHelper.getBoolean(JdbcSettings.CONNECTION_PROVIDER_DISABLES_AUTOCOMMIT, settings,
-		    false);
-		if (!declared) {
+
+		if (!sessionFactory.getSessionFactoryOptions().doesConnectionProviderDisableAutoCommit()) {
 			return;
 		}
 		ConnectionProvider provider = serviceRegistry.getService(ConnectionProvider.class);

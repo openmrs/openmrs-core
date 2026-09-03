@@ -66,6 +66,12 @@ public class ConnectionPoolConfigTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldHaveProviderDisablesAutocommitConfigured() {
+		// as above, a machine-local openmrs-runtime.properties may legitimately turn this off
+		assumeTrue(
+		    Stream.of("hibernate.connection.provider_disables_autocommit", "connection.provider_disables_autocommit")
+		            .noneMatch(runtimeProperties::containsKey),
+		    "skipped because local runtime properties override provider_disables_autocommit");
+
 		Map<String, Object> settings = sessionFactory.getProperties();
 
 		assertEquals("true", String.valueOf(settings.get(JdbcSettings.CONNECTION_PROVIDER_DISABLES_AUTOCOMMIT)),
