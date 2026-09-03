@@ -11,7 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.Map;
 
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.Predicate;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.customdatatype.Customizable;
