@@ -82,19 +82,28 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 			List<File> configurationFiles = getConfigurationFiles();
 			if (!configurationFiles.isEmpty()) {
 				if (configurationFiles.size() == 1) {
-					StatusLogger.getLogger().info("Adding log4j2 configuration file: {}",
-					    configurationFiles.get(0).getPath());
+					StatusLogger statusLogger = StatusLogger.getLogger();
+					if (statusLogger.isEnabled(Level.INFO)) {
+						statusLogger.info("Adding log4j2 configuration file: {}",
+						    OpenmrsLoggingUtil.sanitize(configurationFiles.get(0).getPath()));
+					}
 					return super.getConfiguration(loggerContext, name, configurationFiles.get(0).toURI());
 				} else {
 					List<AbstractConfiguration> abstractConfigurations = new ArrayList<>();
 					for (File configFile : configurationFiles) {
 						Configuration configuration = super.getConfiguration(loggerContext, name, configFile.toURI());
+						StatusLogger statusLogger = StatusLogger.getLogger();
 						if (configuration instanceof AbstractConfiguration) {
-							StatusLogger.getLogger().info("Adding log4j2 configuration file: {}", configFile.getPath());
+							if (statusLogger.isEnabled(Level.INFO)) {
+								statusLogger.info("Adding log4j2 configuration file: {}",
+								    OpenmrsLoggingUtil.sanitize(configFile.getPath()));
+							}
 							abstractConfigurations.add((AbstractConfiguration) configuration);
 						} else {
-							StatusLogger.getLogger().error("Unable to add log4j2 configuration file: {}",
-							    configFile.getPath());
+							if (statusLogger.isEnabled(Level.ERROR)) {
+								statusLogger.error("Unable to add log4j2 configuration file: {}",
+								    OpenmrsLoggingUtil.sanitize(configFile.getPath()));
+							}
 						}
 					}
 					return new OpenmrsCompositeConfiguration(abstractConfigurations);
@@ -205,9 +214,12 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 				applyLogLevel(configuration, OpenmrsConstants.LOG_CLASS_DEFAULT, classAndLevel[0].trim());
 			} else {
 				if (classAndLevel.length > 2) {
-					StatusLogger.getLogger().warn(
-					    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO",
-					    level);
+					StatusLogger statusLogger = StatusLogger.getLogger();
+					if (statusLogger.isEnabled(Level.WARN)) {
+						statusLogger.warn(
+						    "Could not properly parse \"{}\" into a class and level due to too many colons. Expected format is <class>:<level>, e.g., org.openmrs.api:INFO",
+						    OpenmrsLoggingUtil.sanitize(level));
+					}
 				}
 				applyLogLevel(configuration, classAndLevel[0].trim(), classAndLevel[1].trim());
 			}
