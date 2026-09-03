@@ -1170,7 +1170,7 @@ public final class OpenmrsConstants {
 	 *
 	 * @since 2.9.0, 2.8.7
 	 */
-	public static final String DEFAULT_LOG_LAYOUT_PATTERN = "%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n";
+	public static final String DEFAULT_LOG_LAYOUT_PATTERN = "%p - %C{1}.%M(%L) |%d{ISO8601}| %replace{%m}{[\\p{Cntrl}\\u2028\\u2029&&[^\\t]]}{_}%n";
 
 	/**
 	 * It specifies a default name of the OpenMRS file appender. .
