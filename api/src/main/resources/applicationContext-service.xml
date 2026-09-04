@@ -32,10 +32,32 @@
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
 	<bean id="openmrsLegacyPasswordEncoder" class="org.openmrs.spring.LegacyOpenmrsPasswordEncoder" />
+	<!-- Argon2id work factors, overridable per-installation via openmrs-runtime.properties.
+	     Security.createArgon2PasswordEncoder(...) parses each raw placeholder value with a
+	     safe-default fallback, so a mistyped value cannot stop the server from starting. -->
+	<bean id="argon2PasswordEncoder" class="org.openmrs.util.Security" factory-method="createArgon2PasswordEncoder">
+		<!-- users.password is varchar(128) and the stored value includes the 8-char {argon2}
+		     prefix. Measured ceilings with default parallelism/memory/iterations:
+		       hashLength 32 (default) -> 105 stored
+		       hashLength 49            -> 128 stored (maximum safe value)
+		       hashLength 50            -> 129 stored, exceeds column width
+		       saltLength 32            -> 126 stored
+		       saltLength 40            -> 137 stored, exceeds column width
+		     Exceeding 128 causes MySQL strict-mode error 1406 or silent truncation. -->
+		<constructor-arg index="0" value="${security.argon2.saltLength:16}" />
+		<constructor-arg index="1" value="${security.argon2.hashLength:32}" />
+		<constructor-arg index="2" value="${security.argon2.parallelism:1}" />
+		<constructor-arg index="3" value="${security.argon2.memory:19456}" />
+		<constructor-arg index="4" value="${security.argon2.iterations:2}" />
+	</bean>
 	<bean id="openmrsPasswordEncoder" class="org.openmrs.spring.OpenmrsDelegatingPasswordEncoder">
-		<constructor-arg type="java.lang.String" value="" />
+		<!-- an empty value keeps newly written passwords on the legacy (SHA-512) encoder;
+		     set security.passwordEncoder=argon2 in openmrs-runtime.properties to opt in -->
+		<constructor-arg type="java.lang.String" value="${security.passwordEncoder:}" />
 		<constructor-arg>
-			<map />
+			<map>
+				<entry key="argon2" value-ref="argon2PasswordEncoder" />
+			</map>
 		</constructor-arg>
 		<constructor-arg ref="openmrsLegacyPasswordEncoder" />
 	</bean>
