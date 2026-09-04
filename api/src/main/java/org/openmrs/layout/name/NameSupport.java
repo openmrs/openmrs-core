@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
-import org.openmrs.api.EventListeners;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.LayoutSupport;
@@ -32,9 +31,9 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 
 	private static final Logger log = LoggerFactory.getLogger(NameSupport.class);
 
-	private static NameSupport singleton;
+	private static volatile NameSupport singleton;
 
-	private boolean initialized = false;
+	private volatile boolean initialized = false;
 
 	// Memoized layout format to avoid repeated DB calls
 	private String layoutFormat;
@@ -59,27 +58,12 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 */
 	private void init() {
 
-		// OpenMRS wipes listeners on context refresh. We check the global list to see if we need to re-register ourselves, avoiding duplicate registrations.
-		EventListeners eventListeners = new EventListeners();
-		List<GlobalPropertyListener> currentListeners = eventListeners.getGlobalPropertyListeners();
-
-		if (currentListeners == null || !currentListeners.contains(singleton)) {
-			Context.getAdministrationService().addGlobalPropertyListener(singleton);
-
-		}
-
 		// now the listener is secure and guards the expensive database reads.
 		if (initialized) {
 			return;
 		}
 
-		// Read and cache the configured name format GP
-		String formatGp = Context.getAdministrationService()
-		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT);
-		if (StringUtils.isNotBlank(formatGp)) {
-			this.layoutFormat = formatGp;
-		}
-
+		Context.getAdministrationService().addGlobalPropertyListener(singleton);
 		// Get configured name template to override the existing one if any
 		String layoutTemplateXml = Context.getAdministrationService()
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
@@ -126,7 +110,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	}
 
 	/**
-	 * @return Returns the memoized default layout format, falling back to defaultLayoutFormat
+	 * @return Returns the configured default layout format
 	 */
 	@Override
 	public String getDefaultLayoutFormat() {
@@ -159,7 +143,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 			if (nameTemplate != null) {
 				updateLayoutTemplates(nameTemplate);
 			}
-		} else if (OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT.equals(newValue.getProperty())) {
+		} else {
 			this.layoutFormat = newValue.getPropertyValue();
 		}
 	}
