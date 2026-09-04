@@ -91,7 +91,10 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		String encodedPassword = prefixedPassword.substring(prefixedPassword.indexOf("}") + 1);
 		PasswordEncoder encoder = idToPasswordEncoder.get(id);
 		if (encoder == null) {
-			return defaultEncoder.upgradeEncoding(encodedPassword);
+			// An unrecognized prefix should go to the fallback encoder (the same path that
+			// matches() takes for unknown ids), not to the default encoder. This keeps the
+			// delegation in sync between matches() and upgradeEncoding().
+			return fallbackEncoder.upgradeEncoding(encodedPassword);
 		}
 		return encoder.upgradeEncoding(encodedPassword);
 	}

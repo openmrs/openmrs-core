@@ -15,6 +15,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -27,6 +28,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
+import org.openmrs.spring.OpenmrsDelegatingPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
@@ -62,8 +64,14 @@ public class Security {
 
 	private static final int DEFAULT_HASH_LENGTH = 32;
 
-	// required so we can hash passwords at startup.
-	private static final PasswordEncoder FALLBACK_ENCODER = new LegacyOpenmrsPasswordEncoder();
+	// required so we can hash passwords at startup when no Spring context is available.
+	// The fallback carries its own Argon2 map so that passwords written by the Spring bean
+	// (when the context is up) can be verified even when the context is detached (e.g. the
+	// update wizard). The empty idForEncode keeps encode() writing bare SHA-512 so that
+	// unprefixed values still go to the legacy encoder.
+	private static final PasswordEncoder FALLBACK_ENCODER = new OpenmrsDelegatingPasswordEncoder("",
+		Collections.singletonMap("argon2", Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8()),
+		new LegacyOpenmrsPasswordEncoder());
 	
 	/**
 	 * Private constructor: this class offers a static API only. The Spring
