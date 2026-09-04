@@ -332,29 +332,24 @@ public class SearchQueryUnique<T, R> {
 		return searchWithResults(searchSession, uniqueQuery, offset, limit);
 	}
 
+	/**
+	 * Executes unique queries applying joins and mapping to the result type while also calculating the
+	 * total hit count.
+	 *
+	 * @param searchSessionFactory search session factory
+	 * @param uniqueQuery unique query {@link #newQuery(Class, Function, String, Function)}
+	 * @param offset offset of results
+	 * @param limit limit of results
+	 * @param deduplicationCap maximum number of unique keys to track for the exact count
+	 * @return the results and total hit count
+	 * @param <T> the type of results
+	 */
 	public static <T> SearchUniqueResults<T> searchWithResultsAndCount(SearchSessionFactory searchSessionFactory,
 	        SearchQueryUnique<?, T> uniqueQuery, final Integer offset, final Integer limit, int deduplicationCap) {
 		return searchWithResultsAndCount(searchSessionFactory.getSearchSession(), uniqueQuery, offset, limit,
 		    deduplicationCap);
 	}
 
-	/**
-	 * Fetches the requested page of deduplicated results, walking the joined queries in order.
-	 * <p>
-	 * The deduplication scroll for each query is bounded to the requested page: it stops once
-	 * <code>offset + limit</code> unique keys have been found, because any hit beyond that point sorts
-	 * after the page and therefore cannot appear in it. This keeps the work proportional to the page
-	 * size rather than to the full hit set.
-	 * <p>
-	 * This bound relies on the deduplication scroll and the page fetch producing hits in the same
-	 * order. Both queries are left unsorted so they default to descending score, and the fetch's filter
-	 * clauses do not affect scoring; do not add an explicit sort to one without the other, or the bound
-	 * no longer holds.
-	 */
-	/**
-	 * Fetches the requested page and deduplicated total hit count while sharing the same deduplication
-	 * scan for each joined query.
-	 */
 	private static <T> SearchUniqueResults<T> searchWithResultsAndCount(SearchSession searchSession,
 	        SearchQueryUnique<?, T> uniqueQuery, final Integer offset, final Integer limit, int deduplicationCap) {
 		List<T> results = new ArrayList<>();
@@ -460,6 +455,19 @@ public class SearchQueryUnique<T, R> {
 		return new SearchUniqueResults<>(results, offset, limit, totalHitCount, !exceededCap);
 	}
 
+	/**
+	 * Fetches the requested page of deduplicated results, walking the joined queries in order.
+	 * <p>
+	 * The deduplication scroll for each query is bounded to the requested page: it stops once
+	 * <code>offset + limit</code> unique keys have been found, because any hit beyond that point sorts
+	 * after the page and therefore cannot appear in it. This keeps the work proportional to the page
+	 * size rather than to the full hit set.
+	 * <p>
+	 * This bound relies on the deduplication scroll and the page fetch producing hits in the same
+	 * order. Both queries are left unsorted so they default to descending score, and the fetch's filter
+	 * clauses do not affect scoring; do not add an explicit sort to one without the other, or the bound
+	 * no longer holds.
+	 */
 	private static <T> SearchUniqueResults<T> searchWithResults(SearchSession searchSession,
 	        SearchQueryUnique<?, T> uniqueQuery, final Integer offset, final Integer limit) {
 		List<T> results = new ArrayList<>();
@@ -733,7 +741,7 @@ public class SearchQueryUnique<T, R> {
 		boolean pageFrozen = false;
 		try (SearchScroll<List<?>> scroll = uniqueKeyQuery.scroll(chunkSize)) {
 			SearchScrollResult<List<?>> chunk = scroll.next();
-			scan: while (chunk.hasHits()) {
+			while (chunk.hasHits() && !(pageFrozen && countExceededCap)) {
 				for (List<?> match : chunk.hits()) {
 					scannedHitCount++;
 					Object key = match.get(0);
@@ -750,18 +758,14 @@ public class SearchQueryUnique<T, R> {
 							}
 						}
 					}
-					if (!countExceededCap) {
-						if (fullCountUniqueKeys.add(key) && fullCountUniqueKeys.size() > deduplicationCap) {
-							countExceededCap = true;
-						}
+					if (!countExceededCap && fullCountUniqueKeys.add(key) && fullCountUniqueKeys.size() > deduplicationCap) {
+						countExceededCap = true;
 					}
 					if (pageFrozen && countExceededCap) {
-						break scan;
+						break;
 					}
 				}
-				if (pageFrozen && countExceededCap) {
-					break scan;
-				}
+
 				chunk = scroll.next();
 			}
 		}

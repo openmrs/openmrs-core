@@ -2588,4 +2588,59 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 			assertEquals(legacyPatients.get(i), combinedList.get(i));
 		}
 	}
+
+	@Test
+	public void getPatientsAndCount_shouldRespectMinSearchCharacters() {
+		String oldPropertyValue = globalPropertiesTestHelper
+		        .setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "4");
+
+		try {
+			String query = "Ben";
+
+			List<Patient> patients = dao.getPatients(query, false, 0, 20);
+			org.openmrs.collection.ListPart<Patient> combined = dao.getPatientsAndCount(query, false, 0, 20);
+
+			assertEquals(0, patients.size());
+			assertEquals(0, combined.getList().size());
+			assertEquals(0L, combined.getTotalElements().longValue());
+			assertTrue(combined.isTotalElementsExact());
+		} finally {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS,
+			    oldPropertyValue);
+		}
+	}
+
+	@Test
+	public void getPatientsAndCount_shouldMatchGetPatientsWhenLengthIsNull() {
+		String query = "Ben";
+		boolean includeVoided = false;
+
+		List<Patient> legacyPatients = dao.getPatients(query, includeVoided, 0, null);
+		org.openmrs.collection.ListPart<Patient> combined = dao.getPatientsAndCount(query, includeVoided, 0, null);
+
+		assertNotNull(combined);
+		assertEquals(legacyPatients.size(), combined.getList().size());
+
+		for (int i = 0; i < legacyPatients.size(); i++) {
+			assertEquals(legacyPatients.get(i), combined.getList().get(i));
+		}
+	}
+
+	@Test
+	public void getPatientsAndCount_shouldNormalizeNegativeStart() {
+		String query = "Ben";
+		boolean includeVoided = false;
+		Integer start = -1;
+		Integer length = 3;
+
+		List<Patient> legacyPatients = dao.getPatients(query, includeVoided, start, length);
+		org.openmrs.collection.ListPart<Patient> combined = dao.getPatientsAndCount(query, includeVoided, start, length);
+
+		assertNotNull(combined);
+		assertEquals(legacyPatients.size(), combined.getList().size());
+
+		for (int i = 0; i < legacyPatients.size(); i++) {
+			assertEquals(legacyPatients.get(i), combined.getList().get(i));
+		}
+	}
 }

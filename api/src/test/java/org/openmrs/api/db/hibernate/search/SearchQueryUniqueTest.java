@@ -319,6 +319,8 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 
 		assertEquals(personIds(expectedPage.getResults()), personIds(actual.getResults()));
 		assertEquals(expectedCount, actual.getTotalHitCount());
+		assertFalse(actual.getTotalHitCountExact(),
+		    "count should be flagged as approximate when deduplication cap is exceeded");
 	}
 
 	@Test

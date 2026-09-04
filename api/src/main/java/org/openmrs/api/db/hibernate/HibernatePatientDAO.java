@@ -768,19 +768,29 @@ public class HibernatePatientDAO implements PatientDAO {
 	@Override
 	public org.openmrs.collection.ListPart<Patient> getPatientsAndCount(String query, boolean includeVoided, Integer start,
 	        Integer length) throws DAOException {
-		if (StringUtils.isBlank(query)) {
-			return org.openmrs.collection.ListPart.newListPart(new ArrayList<>(), start == null ? 0L : start.longValue(),
-			    length == null ? 0L : length.longValue(), 0L, true);
-		}
-
 		Integer tmpStart = start;
-		if (tmpStart == null) {
+		if (tmpStart == null || tmpStart < 0) {
 			tmpStart = 0;
 		}
 		Integer maxLength = HibernatePersonDAO.getMaximumSearchResults();
 		Integer tmpLength = length;
 		if (tmpLength == null || tmpLength > maxLength) {
 			tmpLength = maxLength;
+		}
+
+		if (StringUtils.isBlank(query)) {
+			return org.openmrs.collection.ListPart.newListPart(new ArrayList<>(), tmpStart.longValue(),
+			    tmpLength.longValue(), 0L, true);
+		}
+
+		String minChars = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS);
+		if (!StringUtils.isNumeric(minChars)) {
+			minChars = "" + OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS;
+		}
+		if (query.length() < Integer.parseInt(minChars)) {
+			return org.openmrs.collection.ListPart.newListPart(new ArrayList<>(), tmpStart.longValue(),
+			    tmpLength.longValue(), 0L, true);
 		}
 
 		PersonQuery personQuery = new PersonQuery();
@@ -795,7 +805,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		                    f -> personQuery.getPatientAttributeQuery(f, query, includeVoided), "person.personId",
 		                    this::multiLoadPatients)));
 		SearchQueryUnique.SearchUniqueResults<Patient> result = SearchQueryUnique.searchWithResultsAndCount(
-		    searchSessionFactory, patientQuery, start, length, HibernatePersonDAO.getMaximumSearchResults());
+		    searchSessionFactory, patientQuery, tmpStart, tmpLength, HibernatePersonDAO.getMaximumSearchResults());
 		Long totalElements = result.getTotalHitCount();
 		Boolean totalElementsExact = result.getTotalHitCountExact() == null ? Boolean.TRUE : result.getTotalHitCountExact();
 		return org.openmrs.collection.ListPart.newListPart(result.getResults(), tmpStart.longValue(), tmpLength.longValue(),
