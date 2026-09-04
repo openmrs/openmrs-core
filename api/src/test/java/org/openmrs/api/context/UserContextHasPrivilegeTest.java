@@ -59,7 +59,7 @@ public class UserContextHasPrivilegeTest extends BaseContextSensitiveTest {
 	}
 
 	private void cacheRole(String roleName, RolePrivileges value) {
-		rolePrivilegeCache().put(RolePrivileges.normalize(roleName), value);
+		rolePrivilegeCache().put(roleName, value);
 	}
 
 	private User userWithRole(String roleName) {
@@ -91,10 +91,10 @@ public class UserContextHasPrivilegeTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void hasPrivilege_shouldMatchPrivilegesCaseInsensitively() throws Exception {
+	public void hasPrivilege_shouldMatchPrivilegesCaseSensitively() throws Exception {
 		cacheRole("Clerk", new RolePrivileges(Collections.singleton(GRANTED), false));
 
-		runAs(userWithRole("Clerk"), () -> assertTrue(Context.hasPrivilege(GRANTED.toUpperCase())));
+		runAs(userWithRole("Clerk"), () -> assertFalse(Context.hasPrivilege(GRANTED.toUpperCase())));
 	}
 
 	@Test

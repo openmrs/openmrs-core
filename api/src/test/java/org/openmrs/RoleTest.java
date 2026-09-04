@@ -102,13 +102,14 @@ public class RoleTest {
 	}
 
 	@Test
-	public void hasPrivilege_shouldBeCaseInsensitive() {
+	public void hasPrivilege_shouldBeCaseSensitive() {
 		Role role = new Role();
 
 		// very basic privilege adding and checking
 		Privilege p1 = new Privilege("PrIv1");
 		role.addPrivilege(p1);
-		assertTrue(role.hasPrivilege("priv1"), "This roles should have the privilege");
+		assertTrue(role.hasPrivilege("PrIv1"), "This roles should have the privilege under its exact casing");
+		assertFalse(role.hasPrivilege("priv1"), "This roles should not have the privilege under a different casing");
 	}
 
 	/**

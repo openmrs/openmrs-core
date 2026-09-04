@@ -161,7 +161,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 
 		if (privileges != null) {
 			for (Privilege p : privileges) {
-				if (p.getPrivilege().equalsIgnoreCase(privilegeName)) {
+				if (p.getPrivilege().equals(privilegeName)) {
 					return true;
 				}
 			}

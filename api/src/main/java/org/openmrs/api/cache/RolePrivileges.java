@@ -12,7 +12,6 @@ package org.openmrs.api.cache;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -22,9 +21,15 @@ import java.util.Set;
  * superuser status. It is the cached value used by {@link RolePrivilegeCache} to answer privilege
  * checks without re-expanding the role graph on every call.
  * <p>
- * Privilege names are stored case-normalized because privilege comparison in OpenMRS is
- * case-insensitive (see {@link org.openmrs.Role#hasPrivilege(String)}). Lookups normalize the same
- * way, so {@link #containsPrivilege(String)} preserves that behavior.
+ * Privilege matching here - {@link #containsPrivilege(String)} and
+ * {@link #equals(Object)}/{@link #hashCode()} - is exact, case-sensitive string comparison,
+ * matching Spring Security's own built-in {@code hasAuthority(...)}/{@code hasRole(...)} SpEL
+ * expressions (which compare {@code GrantedAuthority#getAuthority()} the same way) and
+ * {@code @PreAuthorize}'s {@code hasPermission(null, '&lt;privilege&gt;')} form, backed by
+ * {@link org.openmrs.security.OpenmrsPermissionEvaluator}. As of 3.0.0, this is also how legacy
+ * {@code @Authorized} and {@code Context#hasPrivilege(String)} match, a deliberate break from the
+ * case-insensitive matching {@link org.openmrs.Role#hasPrivilege(String)} still performs on its own
+ * (unflattened, uncached) comparison - see that method's javadoc.
  *
  * @since 3.0.0, 2.9.0, 2.8.9
  */
@@ -37,19 +42,19 @@ public final class RolePrivileges implements Serializable {
 	private final boolean grantsSuperuser;
 
 	/**
-	 * @param privilegeNames privilege names granted by the role and its inherited closure;
-	 *            case-normalized as copied, null elements ignored
+	 * @param privilegeNames privilege names granted by the role and its inherited closure; stored as
+	 *            supplied, null elements ignored
 	 * @param grantsSuperuser whether the role or any inherited role confers superuser status
 	 */
 	public RolePrivileges(Set<String> privilegeNames, boolean grantsSuperuser) {
 		Objects.requireNonNull(privilegeNames, "privilegeNames must not be null");
-		Set<String> normalized = new HashSet<>();
+		Set<String> original = new HashSet<>();
 		for (String privilegeName : privilegeNames) {
 			if (privilegeName != null) {
-				normalized.add(normalize(privilegeName));
+				original.add(privilegeName);
 			}
 		}
-		this.privilegeNames = Collections.unmodifiableSet(normalized);
+		this.privilegeNames = Collections.unmodifiableSet(original);
 		this.grantsSuperuser = grantsSuperuser;
 	}
 
@@ -61,30 +66,18 @@ public final class RolePrivileges implements Serializable {
 	}
 
 	/**
-	 * @param privilege the privilege name to test (compared case-insensitively)
+	 * @param privilege the privilege name to test (compared case-sensitively)
 	 * @return true if the role's closure grants the given privilege
 	 */
 	public boolean containsPrivilege(String privilege) {
-		return privilege != null && privilegeNames.contains(normalize(privilege));
+		return privilege != null && privilegeNames.contains(privilege);
 	}
 
 	/**
-	 * @return an unmodifiable view of the case-normalized privilege names in this closure
+	 * @return an unmodifiable view of the privilege names in this closure
 	 */
 	public Set<String> getPrivilegeNames() {
 		return privilegeNames;
-	}
-
-	/**
-	 * Case-normalizes a privilege name for storage and lookup. Uses {@link Locale#ROOT} so the
-	 * normalization is stable across server locales.
-	 *
-	 * @param privilege the privilege name to normalize; must not be null
-	 * @return the lower-cased privilege name
-	 * @throws NullPointerException if <code>privilege</code> is null
-	 */
-	public static String normalize(String privilege) {
-		return privilege.toLowerCase(Locale.ROOT);
 	}
 
 	@Override

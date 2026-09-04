@@ -69,10 +69,10 @@ public class UserTest {
 	 * @see User#containsRole(String)
 	 */
 	@Test
-	public void containsRole_shouldBeCaseInsensitive() {
+	public void containsRole_shouldBeCaseSensitive() {
 		user.addRole(new Role(MATERNITY_NURSE_UPPERCASE));
 		assertTrue(user.containsRole(MATERNITY_NURSE_UPPERCASE));
-		assertTrue(user.containsRole(MATERNITY_NURSE_LOWERCASE));
+		assertFalse(user.containsRole(MATERNITY_NURSE_LOWERCASE));
 	}
 
 	/**

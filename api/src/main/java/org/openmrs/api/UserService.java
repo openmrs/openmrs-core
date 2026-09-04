@@ -22,6 +22,7 @@ import org.openmrs.annotation.Logging;
 import org.openmrs.notification.MessageException;
 import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Contains methods pertaining to Users in the system Use:<br>
@@ -81,7 +82,7 @@ public interface UserService extends OpenmrsService {
 	 * @return requested user
 	 * @throws APIException
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasPermission(null, '" + PrivilegeConstants.GET_USERS + "')")
 	User getUser(Integer userId) throws APIException;
 
 	/**

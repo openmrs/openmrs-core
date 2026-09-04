@@ -30,12 +30,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class RolePrivilegesTest {
 
 	@Test
-	public void containsPrivilege_shouldMatchCaseInsensitively() {
+	public void containsPrivilege_shouldMatchCaseSensitively() {
 		RolePrivileges privileges = new RolePrivileges(Collections.singleton("View Patients"), false);
 
 		assertTrue(privileges.containsPrivilege("View Patients"));
-		assertTrue(privileges.containsPrivilege("VIEW PATIENTS"));
-		assertTrue(privileges.containsPrivilege("view patients"));
+		assertFalse(privileges.containsPrivilege("VIEW PATIENTS"));
+		assertFalse(privileges.containsPrivilege("view patients"));
 		assertFalse(privileges.containsPrivilege("Edit Patients"));
 	}
 
@@ -75,13 +75,21 @@ public class RolePrivilegesTest {
 	}
 
 	@Test
-	public void equals_shouldBeInsensitiveToInsertionOrderAndCase() {
+	public void equals_shouldBeInsensitiveToInsertionOrder() {
 		RolePrivileges a = new RolePrivileges(new LinkedHashSet<>(Arrays.asList("View Patients", "Edit Patients")), false);
-		RolePrivileges b = new RolePrivileges(new LinkedHashSet<>(Arrays.asList("EDIT PATIENTS", "VIEW PATIENTS")), false);
+		RolePrivileges b = new RolePrivileges(new LinkedHashSet<>(Arrays.asList("Edit Patients", "View Patients")), false);
 
 		assertEquals(a, b);
 		assertEquals(b, a);
 		assertEquals(a.hashCode(), b.hashCode());
+	}
+
+	@Test
+	public void equals_shouldDistinguishByCase() {
+		RolePrivileges a = new RolePrivileges(Collections.singleton("View Patients"), false);
+		RolePrivileges b = new RolePrivileges(Collections.singleton("VIEW PATIENTS"), false);
+
+		assertNotEquals(a, b);
 	}
 
 	@Test
