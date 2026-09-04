@@ -495,6 +495,20 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 	// end patient identifier _type_ section
 
+	@Override
+	@Transactional(readOnly = true)
+	public org.openmrs.collection.ListPart<Patient> getPatientsAndCount(String query, Integer start, Integer length)
+	        throws APIException {
+		return dao.getPatientsAndCount(query, start, length);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public org.openmrs.collection.ListPart<Patient> getPatientsAndCount(String query, boolean includeVoided, Integer start,
+	        Integer length) throws APIException {
+		return dao.getPatientsAndCount(query, includeVoided, start, length);
+	}
+
 	/**
 	 * @see org.openmrs.api.PatientService#getPatients(java.lang.String)
 	 */

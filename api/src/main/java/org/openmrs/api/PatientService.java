@@ -23,6 +23,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.collection.ListPart;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.person.PersonMergeLogData;
@@ -498,6 +499,34 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws APIException;
+
+	/**
+	 * Returns the patient page and the deduplicated total count in one combined search.
+	 *
+	 * @param query the search query
+	 * @param start the starting index
+	 * @param length the maximum number of patients to return
+	 * @return the patient page and deduplicated total count
+	 * @throws APIException
+	 * @since 1.11
+	 */
+	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	public ListPart<Patient> getPatientsAndCount(String query, Integer start, Integer length) throws APIException;
+
+	/**
+	 * Returns the patient page and the deduplicated total count in one combined search.
+	 *
+	 * @param query the search query
+	 * @param includeVoided whether to include voided patients
+	 * @param start the starting index
+	 * @param length the maximum number of patients to return
+	 * @return the patient page and deduplicated total count
+	 * @throws APIException
+	 * @since 1.11
+	 */
+	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	public ListPart<Patient> getPatientsAndCount(String query, boolean includeVoided, Integer start, Integer length)
+	        throws APIException;
 
 	/**
 	 * This method tries to find a patient in the database given the attributes on the given
