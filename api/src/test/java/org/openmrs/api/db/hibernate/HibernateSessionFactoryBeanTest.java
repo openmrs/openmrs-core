@@ -29,7 +29,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class HibernateSessionFactoryBeanTest {
+class HibernateSessionFactoryBeanTest {
 
 	private void integrate(boolean settingOn, boolean poolAutoCommit, ConnectionProvider provider) throws SQLException {
 		SessionFactoryOptions options = mock(SessionFactoryOptions.class);
@@ -50,7 +50,7 @@ public class HibernateSessionFactoryBeanTest {
 	}
 
 	@Test
-	public void shouldRefuseToStartWhenThePoolHandsOutAutoCommitEnabledConnections() throws SQLException {
+	 void shouldRefuseToStartWhenThePoolHandsOutAutoCommitEnabledConnections() throws SQLException {
 		ConnectionProvider provider = mock(ConnectionProvider.class);
 
 		assertThrows(HibernateException.class, () -> integrate(true, true, provider));
@@ -59,7 +59,7 @@ public class HibernateSessionFactoryBeanTest {
 	}
 
 	@Test
-	public void shouldStartWhenThePoolHandsOutAutoCommitDisabledConnections() throws SQLException {
+	 void shouldStartWhenThePoolHandsOutAutoCommitDisabledConnections() throws SQLException {
 		ConnectionProvider provider = mock(ConnectionProvider.class);
 
 		assertDoesNotThrow(() -> integrate(true, false, provider));
@@ -68,7 +68,7 @@ public class HibernateSessionFactoryBeanTest {
 	}
 
 	@Test
-	public void shouldNotTouchThePoolWhenTheSettingIsOff() throws SQLException {
+	 void shouldNotTouchThePoolWhenTheSettingIsOff() throws SQLException {
 		ConnectionProvider provider = mock(ConnectionProvider.class);
 
 		assertDoesNotThrow(() -> integrate(false, true, provider));
