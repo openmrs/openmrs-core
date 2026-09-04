@@ -50,7 +50,7 @@ class HibernateSessionFactoryBeanTest {
 	}
 
 	@Test
-	 void shouldRefuseToStartWhenThePoolHandsOutAutoCommitEnabledConnections() throws SQLException {
+	void shouldRefuseToStartWhenThePoolHandsOutAutoCommitEnabledConnections() throws SQLException {
 		ConnectionProvider provider = mock(ConnectionProvider.class);
 
 		assertThrows(HibernateException.class, () -> integrate(true, true, provider));
@@ -59,7 +59,7 @@ class HibernateSessionFactoryBeanTest {
 	}
 
 	@Test
-	 void shouldStartWhenThePoolHandsOutAutoCommitDisabledConnections() throws SQLException {
+	void shouldStartWhenThePoolHandsOutAutoCommitDisabledConnections() throws SQLException {
 		ConnectionProvider provider = mock(ConnectionProvider.class);
 
 		assertDoesNotThrow(() -> integrate(true, false, provider));
@@ -68,7 +68,7 @@ class HibernateSessionFactoryBeanTest {
 	}
 
 	@Test
-	 void shouldNotTouchThePoolWhenTheSettingIsOff() throws SQLException {
+	void shouldNotTouchThePoolWhenTheSettingIsOff() throws SQLException {
 		ConnectionProvider provider = mock(ConnectionProvider.class);
 
 		assertDoesNotThrow(() -> integrate(false, true, provider));
