@@ -11,7 +11,6 @@ package org.openmrs.api.context;
 
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,6 +71,7 @@ import org.openmrs.notification.MessageService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.scheduler.SchedulerService;
+import org.openmrs.security.OpenmrsAuthenticationToken;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
@@ -88,6 +88,8 @@ import org.springframework.aop.Advisor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
@@ -140,10 +142,6 @@ public class Context {
 
 	private static volatile Session mailSession;
 
-	// Using "wrapper" (Object array) around UserContext to avoid ThreadLocal
-	// bug in Java 1.5
-	private static final ThreadLocal<Object[] /* UserContext */> userContextHolder = new ThreadLocal<>();
-
 	private static volatile ServiceContext serviceContext;
 
 	private static Properties runtimeProperties = new Properties();
@@ -153,6 +151,20 @@ public class Context {
 	private static AuthenticationScheme authenticationScheme;
 
 	private static final Logger log = LoggerFactory.getLogger(Context.class);
+
+	/**
+	 * The authoritative, per-thread store for the current {@link UserContext} - kept private to this
+	 * class rather than folded entirely into {@link SecurityContextHolder}, so that anything else on
+	 * this thread that writes to that shared, last-writer-wins holder (Spring Security's own
+	 * {@code ExceptionTranslationFilter.sendStartAuthentication}, or a module's own
+	 * {@code SecurityContextHolder.getContext().setAuthentication(...)}) cannot take down every OpenMRS
+	 * API call on the thread by clobbering it. {@link #setUserContext(UserContext)} publishes a copy
+	 * into {@link SecurityContextHolder} too, purely so Spring Security's own machinery
+	 * ({@code @PreAuthorize}, {@code authorizeHttpRequests(...)}) has an
+	 * {@link org.springframework.security.core.Authentication} to evaluate; that publication is derived
+	 * and disposable, never read back by {@link #getUserContext()}.
+	 */
+	private static final ThreadLocal<UserContext> userContextHolder = new ThreadLocal<>();
 
 	/**
 	 * Default public constructor
@@ -222,31 +234,43 @@ public class Context {
 	}
 
 	/**
-	 * Sets the user context on the thread local so that the service layer can perform
+	 * Sets the user context for the current thread so that the service layer can perform
 	 * authentication/authorization checks.<br>
 	 * <br>
-	 * This is thread safe since it stores the given user context in ThreadLocal.
+	 * This is thread safe since it stores the given user context in {@link ThreadLocal}, same as before
+	 * 3.0.0.
+	 * <p>
+	 * As of 3.0.0, also wraps <code>ctx</code> in an
+	 * {@link org.openmrs.security.OpenmrsAuthenticationToken} and installs that as the current thread's
+	 * {@link org.springframework.security.core.context.SecurityContext}, so that Spring Security's own
+	 * machinery ({@code @PreAuthorize}, {@code authorizeHttpRequests(...)}) has an
+	 * {@link org.springframework.security.core.Authentication} to evaluate - see
+	 * {@link #userContextHolder} for why that publication is derived, not the store of record.
 	 *
 	 * @param ctx UserContext to set
 	 */
 	public static void setUserContext(UserContext ctx) {
 		log.trace("Setting user context {}", ctx);
 
-		Object[] arr = new Object[] { ctx };
-		userContextHolder.set(arr);
+		userContextHolder.set(ctx);
+
+		SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+		securityContext.setAuthentication(new OpenmrsAuthenticationToken(ctx));
+		SecurityContextHolder.setContext(securityContext);
 	}
 
 	/**
-	 * Clears the user context from the threadlocal.
+	 * Clears the user context from the current thread.
 	 */
 	public static void clearUserContext() {
-		log.trace("Clearing user context {}", Arrays.toString(userContextHolder.get()));
+		log.trace("Clearing user context");
 
 		userContextHolder.remove();
+		SecurityContextHolder.clearContext();
 	}
 
 	/**
-	 * Gets the user context from the thread local. This might be accessed by several threads at the
+	 * Gets the user context from the current thread. This might be accessed by several threads at the
 	 * same time.
 	 * <p>
 	 * <strong>Should</strong> fail if session hasn't been opened
@@ -254,15 +278,15 @@ public class Context {
 	 * @return The current UserContext for this thread.
 	 */
 	public static UserContext getUserContext() {
-		Object[] arr = userContextHolder.get();
-		log.trace("Getting user context {} from userContextHolder {}", Arrays.toString(arr), userContextHolder);
+		UserContext userContext = userContextHolder.get();
+		log.trace("Getting user context {}", userContext);
 
-		if (arr == null) {
+		if (userContext == null) {
 			log.trace("userContext is null.");
 			throw new APIException(
 			        "A user context must first be passed to setUserContext()...use Context.openSession() (and closeSession() to prevent memory leaks!) before using the API");
 		}
-		return (UserContext) userContextHolder.get()[0];
+		return userContext;
 	}
 
 	/**
@@ -316,7 +340,12 @@ public class Context {
 	 * <strong>Should</strong> not authenticate with null password and proper system id
 	 *
 	 * @deprecated as of 2.3.0, replaced by {@link #authenticate(Credentials)} Used to authenticate user
-	 *             within the context
+	 *             within the context. As of 3.0.0, {@link #authenticate(Credentials)} itself routes
+	 *             through Spring Security's
+	 *             {@link org.springframework.security.authentication.AuthenticationManager} (see
+	 *             {@link org.openmrs.security.AuthenticationSchemeAuthenticationProvider}), which in
+	 *             turn invokes whichever {@link AuthenticationScheme} is configured - this is the real
+	 *             entry point for authentication now.
 	 * @param username user's identifier token for login
 	 * @param password user's password for authenticating to context
 	 * @throws ContextAuthenticationException

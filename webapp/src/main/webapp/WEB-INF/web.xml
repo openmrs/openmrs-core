@@ -156,19 +156,25 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	
+	<!-- Installs the SecurityContext for this request onto the thread (via
+	     org.openmrs.web.security.OpenmrsSecurityContextFilter, added to this chain in
+	     org.openmrs.web.security.WebSecurityConfig - the seat org.openmrs.web.filter.OpenmrsFilter
+	     used to occupy directly in this file) and runs authorization, before CSRFGuard/ModuleFilter.
+	     The dispatcher list matches OpenmrsFilter's former mapping, so forwarded/included/
+	     error-dispatched requests keep getting a UserContext exactly as before. -->
 	<filter>
-		<filter-name>OpenmrsFilter</filter-name> 
-		<filter-class>org.openmrs.web.filter.OpenmrsFilter</filter-class> 
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
 	</filter>
 	<filter-mapping>
-		<filter-name>OpenmrsFilter</filter-name> 
+		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/*</url-pattern>
 		<dispatcher>ERROR</dispatcher>
 		<dispatcher>FORWARD</dispatcher>
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>INCLUDE</dispatcher>
 	</filter-mapping>
-	
+
 	<filter>
         <filter-name>CSRFGuard</filter-name>
         <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>

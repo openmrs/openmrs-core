@@ -32,11 +32,16 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.cache.RolePrivileges;
+import org.openmrs.security.AuthenticatedResultToken;
+import org.openmrs.security.CredentialsAuthenticationToken;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * Represents an OpenMRS <code>User Context</code> which stores the current user information. Only
@@ -109,8 +114,14 @@ public class UserContext implements Serializable {
 	}
 
 	/**
-	 * Authenticate user with the provided credentials. The authentication scheme must be Spring wired,
-	 * see {@link Context#getAuthenticationScheme()}.
+	 * Authenticate user with the provided credentials.
+	 * <p>
+	 * As of 3.0.0, this delegates to Spring Security's
+	 * {@link org.springframework.security.authentication.AuthenticationManager}, which in turn invokes
+	 * whichever {@link AuthenticationScheme} is configured (the authentication scheme must be Spring
+	 * wired, see {@link Context#getAuthenticationScheme()}) - Spring Security is the real entry point
+	 * for authentication; this method's observable behavior (event notifications, thrown exception
+	 * type, location/locale side effects) is unchanged.
 	 *
 	 * @param credentials The credentials to use to authenticate
 	 * @return The authenticated client information
@@ -124,7 +135,7 @@ public class UserContext implements Serializable {
 
 		Authenticated authenticated = null;
 		try {
-			authenticated = authenticationScheme.authenticate(credentials);
+			authenticated = performAuthenticate(credentials);
 			this.user = authenticated.getUser();
 			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
 		} catch (ContextAuthenticationException e) {
@@ -140,6 +151,43 @@ public class UserContext implements Serializable {
 		log.debug("Authenticated as: {}", this.user);
 
 		return authenticated;
+	}
+
+	/**
+	 * Routes authentication through the Spring Security {@link AuthenticationManager}, falling back to
+	 * invoking the configured {@link AuthenticationScheme} directly if no {@code AuthenticationManager}
+	 * bean is available yet (for example a very early bootstrap phase, or a {@link UserContext}
+	 * constructed directly outside of a running Spring context, as some tests do) - preserving
+	 * pre-3.0.0 behavior in that fallback case.
+	 *
+	 * @param credentials The credentials to use to authenticate
+	 * @return The authenticated client information
+	 * @throws ContextAuthenticationException if authentication fails
+	 */
+	private Authenticated performAuthenticate(Credentials credentials) throws ContextAuthenticationException {
+		AuthenticationManager authenticationManager = resolveAuthenticationManager();
+		if (authenticationManager == null) {
+			return authenticationScheme.authenticate(credentials);
+		}
+
+		try {
+			Authentication result = authenticationManager.authenticate(new CredentialsAuthenticationToken(credentials));
+			return ((AuthenticatedResultToken) result).getAuthenticatedResult();
+		} catch (AuthenticationException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof ContextAuthenticationException) {
+				throw (ContextAuthenticationException) cause;
+			}
+			throw new ContextAuthenticationException(e.getMessage(), e);
+		}
+	}
+
+	private AuthenticationManager resolveAuthenticationManager() {
+		try {
+			return Context.getRegisteredComponent("authenticationManager", AuthenticationManager.class);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	/**
@@ -337,6 +385,16 @@ public class UserContext implements Serializable {
 	}
 
 	/**
+	 * @return a snapshot of the privilege names currently added via
+	 *         {@link #addProxyPrivilege(String...)} on this context - a defensive copy, since
+	 *         {@link #proxies} may be mutated concurrently by the thread that owns this context
+	 * @since 3.0.0
+	 */
+	public List<String> getProxyPrivileges() {
+		return new ArrayList<>(proxies);
+	}
+
+	/**
 	 * @param locale new locale for this context
 	 */
 	public void setLocale(Locale locale) {
@@ -449,12 +507,19 @@ public class UserContext implements Serializable {
 	 * Resolves whether the current user (authenticated or anonymous) holds the given privilege by
 	 * consulting the per-role privilege cache instead of recursively re-expanding the role graph on
 	 * every call. Proxy privileges are handled separately by {@link #hasPrivilege(String)}.
+	 * <p>
+	 * Also flags, via {@link RolePrivilegeCache#warnIfUnregistered(String)}, a privilege name with no
+	 * corresponding {@link org.openmrs.Privilege} row - purely diagnostic, this never changes whether
+	 * the privilege is granted.
 	 *
 	 * @param privilege the privilege to check
 	 * @return true if the privilege is granted
 	 */
 	private boolean resolvePrivilege(String privilege) {
 		RolePrivilegeCache cache = getRolePrivilegeCache();
+		if (cache != null) {
+			cache.warnIfUnregistered(privilege);
+		}
 
 		// if a user has logged in, check their privileges
 		if (isAuthenticated()) {
