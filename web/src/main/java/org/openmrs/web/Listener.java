@@ -268,7 +268,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			try (InputStream csrfGuardInputStream = Files.newInputStream(csrfGuardFile.toPath())) {
 				csrfGuardProperties.load(csrfGuardInputStream);
 			} catch (Exception e) {
-				log.error("Error loading csrfguard.properties file at " + csrfGuardFile.getAbsolutePath(), e);
+				log.error("Error loading csrfguard.properties file at {}", csrfGuardFile.getAbsolutePath(), e);
 				throw e;
 			}
 		} else {
@@ -276,7 +276,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			try (InputStream csrfGuardInputStream = Files.newInputStream(Paths.get(fileName))) {
 				csrfGuardProperties.load(csrfGuardInputStream);
 			} catch (Exception e) {
-				log.error("Error loading csrfguard.properties file at " + fileName, e);
+				log.error("Error loading csrfguard.properties file at {}", fileName, e);
 				throw e;
 			}
 		}
@@ -494,10 +494,10 @@ public final class Listener extends ContextLoader implements ServletContextListe
 								if (!f.getName().startsWith(".")) {
 									String tmpAbsolutePath = absolutePath + "/" + f.getName();
 									if (!copyFile(userOverridePath, tmpAbsolutePath)) {
-										log.warn("Unable to copy file in folder defined by runtime property: " + prop);
-										log.warn("Your source directory (or a file in it) '" + userOverridePath
-										        + " cannot be loaded or destination '" + tmpAbsolutePath
-										        + "' cannot be found");
+										log.warn("Unable to copy file in folder defined by runtime property: {}", prop);
+										log.warn(
+										    "Your source directory (or a file in it) '{} cannot be loaded or destination '{}' cannot be found",
+										    userOverridePath, tmpAbsolutePath);
 									}
 								}
 							}
@@ -505,9 +505,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 					} else {
 						// file is not a directory
 						if (!copyFile(userOverridePath, absolutePath)) {
-							log.warn("Unable to copy file defined by runtime property: " + prop);
-							log.warn("Your source file '" + userOverridePath + " cannot be loaded or destination '"
-							        + absolutePath + "' cannot be found");
+							log.warn("Unable to copy file defined by runtime property: {}", prop);
+							log.warn("Your source file '{} cannot be loaded or destination '{}' cannot be found",
+							    userOverridePath, absolutePath);
 						}
 					}
 				}
@@ -563,11 +563,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		File folder = Paths.get(servletContext.getRealPath(""), "WEB-INF", "bundledModules").toFile();
 
 		if (!folder.exists()) {
-			log.warn("Bundled module folder doesn't exist: " + folder.getAbsolutePath());
+			log.warn("Bundled module folder doesn't exist: {}", folder.getAbsolutePath());
 			return;
 		}
 		if (!folder.isDirectory()) {
-			log.warn("Bundled module folder isn't really a directory: " + folder.getAbsolutePath());
+			log.warn("Bundled module folder isn't really a directory: {}", folder.getAbsolutePath());
 			return;
 		}
 
@@ -578,9 +578,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
 					try {
 						Module mod = ModuleFactory.loadModule(f);
-						log.debug("Loaded bundled module: " + mod + " successfully");
+						log.debug("Loaded bundled module: {} successfully", mod);
 					} catch (Exception e) {
-						log.warn("Error while trying to load bundled module " + f.getName() + "", e);
+						log.warn("Error while trying to load bundled module {}", f.getName(), e);
 					}
 				}
 			}
@@ -702,7 +702,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 					    "Unable to refresh the spring application context.  Root Cause was:", rootCause);
 				} else {
 					log.error(MarkerFactory.getMarker("FATAL"),
-					    "nable to refresh the spring application context. Unloading all modules,  Error was:", e);
+					    "Unable to refresh the spring application context. Unloading all modules,  Error was:", e);
 				}
 
 				try {
@@ -714,7 +714,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 							} catch (Exception t3) {
 								// just keep going if we get an error shutting down.  was probably caused by the module
 								// that actually got us to this point!
-								log.trace("Unable to shutdown module:" + mod, t3);
+								log.trace("Unable to shutdown module:{}", mod, t3);
 							}
 						}
 					}
