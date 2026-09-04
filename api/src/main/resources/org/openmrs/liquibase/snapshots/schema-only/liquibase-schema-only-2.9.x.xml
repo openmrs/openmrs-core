@@ -7111,5 +7111,29 @@
   </changeSet>  
   <changeSet author="rafal (generated)" id="1782825451946-1052"> 
     <addForeignKeyConstraint baseColumnNames="program_workflow_id" baseTableName="program_workflow_state" constraintName="workflow_for_state" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="program_workflow_id" referencedTableName="program_workflow" validate="true"/> 
+  </changeSet>  
+  <changeSet author="rafal (generated)" id="1782825451946-1053"> 
+    <createTable tableName="concept_interpretation_rule"> 
+      <column autoIncrement="true" name="concept_interpretation_rule_id" type="INT"> 
+        <constraints nullable="false" primaryKey="true"/> 
+      </column>  
+      <column name="concept_id" type="INT"> 
+        <constraints nullable="false"/> 
+      </column>  
+      <column name="criteria" type="TEXT"/>  
+      <column defaultValueComputed="NULL" name="interpretation" type="VARCHAR(32)"/>  
+      <column defaultValueComputed="NULL" name="priority" type="INT"/>  
+      <column name="uuid" type="CHAR(38)"> 
+        <constraints nullable="false" unique="true"/> 
+      </column> 
+    </createTable> 
+  </changeSet>  
+  <changeSet author="rafal (generated)" id="1782825451946-1054"> 
+    <createIndex associatedWith="" indexName="fk_concept_interpretation_rule_concept" tableName="concept_interpretation_rule"> 
+      <column name="concept_id"/> 
+    </createIndex> 
+  </changeSet>  
+  <changeSet author="rafal (generated)" id="1782825451946-1055"> 
+    <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_interpretation_rule" constraintName="fk_concept_interpretation_rule_concept" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="concept_id" referencedTableName="concept" validate="true"/> 
   </changeSet>
 </databaseChangeLog>
