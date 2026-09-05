@@ -11,7 +11,6 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -350,32 +349,6 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 		}
 
 		return this;
-	}
-
-	/**
-	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
-	 */
-	@Override
-	@Deprecated
-	public List<User> findPossibleValues(String searchText) {
-		try {
-			return Context.getUserService().getUsersByName(searchText, "", false);
-		} catch (Exception e) {
-			return Collections.emptyList();
-		}
-	}
-
-	/**
-	 * @see org.openmrs.Attributable#getPossibleValues()
-	 */
-	@Override
-	@Deprecated
-	public List<User> getPossibleValues() {
-		try {
-			return Context.getUserService().getAllUsers();
-		} catch (Exception e) {
-			return Collections.emptyList();
-		}
 	}
 
 	/**

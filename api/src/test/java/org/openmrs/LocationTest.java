@@ -10,10 +10,13 @@
 package org.openmrs;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.context.Context;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LocationTest {
+public class LocationTest extends BaseContextSensitiveTest {
 
 	/**
 	 * Get locations that have any of specified set of tags among its child tags.
@@ -33,4 +36,17 @@ public class LocationTest {
 		assertTrue(Location.isInHierarchy(locationChild, locationGrandParent));
 	}
 
+	/**
+	 * @see Location#serialize()
+	 * @see Location#hydrate(String)
+	 */
+	@Test
+	public void serializeAndHydrate_shouldRoundTripLocation() {
+		Location location = new Location();
+		location.setName("Test Location");
+		Location originalLocation = Context.getLocationService().saveLocation(location);
+		String serialized = originalLocation.serialize();
+		Location hydratedLocation = originalLocation.hydrate(serialized);
+		assertEquals(originalLocation.getLocationId(), hydratedLocation.getLocationId());
+	}
 }
