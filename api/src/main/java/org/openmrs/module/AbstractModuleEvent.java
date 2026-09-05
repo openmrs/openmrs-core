@@ -33,8 +33,8 @@ public abstract class AbstractModuleEvent extends ApplicationEvent {
 	
 	private final String failureReason;
 	
-	protected AbstractModuleEvent(Object source, String moduleId, String moduleName, String moduleVersion, boolean isSuccess,
-	    String failureReason) {
+	protected AbstractModuleEvent(Object source, String moduleId, String moduleName, String moduleVersion,
+	    boolean isSuccess, String failureReason) {
 		super(source);
 		this.moduleId = moduleId;
 		this.moduleName = moduleName;

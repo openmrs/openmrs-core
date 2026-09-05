@@ -116,7 +116,6 @@ public class ModuleFactory {
 		Module module = null;
 		boolean isModuleLoaded = true;
 		String failureReason = null;
-		String fileName;
 
 		try {
 			module = new ModuleFileParser(Context.getMessageSourceService()).parse(moduleFile);
@@ -129,25 +128,12 @@ public class ModuleFactory {
 			failureReason = ex.getMessage();
 			throw ex;
 		} finally {
-			Module moduleToPublish = module;
-			if (module == null) {
-				fileName = ModuleUtil.getModuleNameAndVersionFromFileName(moduleFile.getName());
-				isModuleLoaded = false;
-				String name = null;
-				String version = null;
-
-				if (fileName != null) {
-					String[] parts = fileName.split(":");
-
-					name = parts[0];
-					version = (parts.length > 1) ? parts[1] : null;
-				}
-				moduleToPublish = new Module(name, null, null, null, null, version, null);
-			}
-			publishModuleEvents(new ModuleLoadEvent(ModuleFactory.class, moduleToPublish.getModuleId(), moduleToPublish.getName(),
-			    moduleToPublish.getVersion(), isModuleLoaded, failureReason));
+			publishModuleEvents(new ModuleLoadEvent(ModuleFactory.class,
+				module != null ? module.getModuleId() : null, 
+				module !=null ? module.getName() : null,
+				module !=null ? module.getVersion() : null,
+				moduleFile.getName(), isModuleLoaded, failureReason));
 		}
-		
 		return module;
 	}
 	
@@ -155,14 +141,20 @@ public class ModuleFactory {
 	 * Add a module to the list of openmrs modules
 	 *
 	 * @param module
-	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded already
-	 *            <strong>Should</strong> load module if it is currently not loaded
-	 *            <strong>Should</strong> not load module if already loaded <strong>Should</strong>
-	 *            always load module if replacement is wanted <strong>Should</strong> not load an older
-	 *            version of the same module <strong>Should</strong> load a newer version of the same
-	 *            module
-	 * @return module the module that was loaded or if the module exists already with the same version,
-	 *         the old module
+	 * @param replaceIfExists unload a module that has the same moduleId if one is
+	 *                        loaded already
+	 *                        <strong>Should</strong> load module if it is currently
+	 *                        not loaded
+	 *                        <strong>Should</strong> not load module if already
+	 *                        loaded <strong>Should</strong>
+	 *                        always load module if replacement is wanted
+	 *                        <strong>Should</strong> not load an older
+	 *                        version of the same module <strong>Should</strong>
+	 *                        load a newer version of the same
+	 *                        module
+	 * @return module the module that was loaded
+	 * @throws ModuleException if the module exists already with the same or newer
+	 *                         version
 	 */
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		
@@ -183,7 +175,7 @@ public class ModuleFactory {
 					throw new ModuleException("A module with the same id and version already exists", module.getModuleId());
 				}
 			} else {
-				throw new ModuleException("There exists a same module with latest version than this module version");
+				throw new ModuleException("A newer version of this module is already loaded");
 			}
 		}
 		
@@ -719,7 +711,7 @@ public class ModuleFactory {
 				
 				// Sort this module's extensions, and merge them into the full extensions map
 				Comparator<Extension> sortOrder = (e1, e2) -> Integer.valueOf(e1.getOrder()).compareTo(e2.getOrder());
-				for (Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
+				for (Map.Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
 					// Sort this module's extensions for current extension point
 					List<Extension> sortedModuleExtensions = moduleExtensionEntry.getValue();
 					sortedModuleExtensions.sort(sortOrder);
@@ -746,7 +738,7 @@ public class ModuleFactory {
 					// be nobody because this is being run at startup)
 					Context.addProxyPrivilege("");
 					
-					for (Entry<String, String> entry : diffs.entrySet()) {
+					for (Map.Entry<String, String> entry : diffs.entrySet()) {
 						String version = entry.getKey();
 						String sql = entry.getValue();
 						if (StringUtils.hasText(sql)) {
@@ -1066,8 +1058,19 @@ public class ModuleFactory {
 	}
 
 	/**
-	 * It's a wrapper over {@link ModuleFactory#doStopModule}, 
-	 * which needed to separate the event publish part from the actual stop module logic.
+	 * Runs through the advice and extension points and removes from api.<br>
+	 * <code>skipOverStartedProperty</code> should only be true when openmrs is stopping modules because
+	 * it is shutting down. When normally stopping a module, use {@link #stopModule(Module)} (or leave
+	 * value as false). This property controls whether the globalproperty is set for startup/shutdown.
+	 * <br>
+	 * Also calls module's {@link ModuleActivator#stopped()}
+	 *
+	 * @param mod module to stop
+	 * @param skipOverStartedProperty true if we don't want to set &lt;moduleid&gt;.started to false
+	 * @param isFailedStartup true if this is being called as a cleanup because of a failed module
+	 *            startup
+	 * @return list of dependent modules that were stopped because this module was stopped. This will
+	 *         never be null.
 	 */
 	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
 		throws ModuleMustStartException {
@@ -1088,27 +1091,14 @@ public class ModuleFactory {
 			throw ex;
 		}
 		finally {
-			publishModuleEvents(new ModuleStopEvent(ModuleFactory.class, mod.getModuleId(), mod.getName(), mod.getVersion(), isStoppedSuccess && !isModuleStarted(mod), failureReason));
+			publishModuleEvents(new ModuleStopEvent(ModuleFactory.class, mod.getModuleId(), mod.getName(), mod.getVersion(),
+							isStoppedSuccess && !isModuleStarted(mod), failureReason));
 		}
 		return dependentModulesStopped;
 	}
-
-
-	/**
-	 * Runs through the advice and extension points and removes from api.<br>
-	 * <code>skipOverStartedProperty</code> should only be true when openmrs is stopping modules because
-	 * it is shutting down. When normally stopping a module, use {@link #stopModule(Module)} (or leave
-	 * value as false). This property controls whether the globalproperty is set for startup/shutdown.
-	 * <br>
-	 * Also calls module's {@link ModuleActivator#stopped()}
-	 *
-	 * @param mod module to stop
-	 * @param skipOverStartedProperty true if we don't want to set &lt;moduleid&gt;.started to false
-	 * @param isFailedStartup true if this is being called as a cleanup because of a failed module
-	 *            startup
-	 * @return list of dependent modules that were stopped because this module was stopped. This will
-	 *         never be null.
-	 */
+	
+	
+	// Performs the actual work of stopping a module, separated from event publishing
 	private static List<Module> doStopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
 		throws ModuleMustStartException {
 		
@@ -1286,6 +1276,9 @@ public class ModuleFactory {
 	 * @param mod module to unload
 	 */
 	public static void unloadModule(Module mod) {
+		if(mod == null) {
+			return;
+		}
 		boolean isEventSuccess = true;
 		String failureReason = null;
 		try {
@@ -1297,17 +1290,15 @@ public class ModuleFactory {
 			// remove from list of loaded modules
 			getLoadedModules().remove(mod);
 
-			if (mod != null) {
-				// remove the file from the module repository
-				File file = mod.getFile();
-				
-				boolean deleted = file.delete();
-				if (!deleted) {
-					file.deleteOnExit();
-					log.warn("Could not delete " + file.getAbsolutePath());
-				}
+			// remove the file from the module repository
+			File file = mod.getFile();
+
+			boolean deleted = file.delete();
+			if (!deleted) {
+				file.deleteOnExit();
+				log.warn("Could not delete " + file.getAbsolutePath());
 			}
-			
+
 		}
 		catch(Exception ex) {
 			isEventSuccess = false;
@@ -1315,13 +1306,8 @@ public class ModuleFactory {
 			throw ex;
 		}
 		finally {
-			if (mod == null) {
-				publishModuleEvents(new ModuleUnloadEvent(ModuleFactory.class, null, null, null,  isEventSuccess, failureReason));
-			} 
-			else {
-				publishModuleEvents(new ModuleUnloadEvent(ModuleFactory.class, mod.getModuleId(), mod.getName(), mod.getVersion(),  isEventSuccess, failureReason));
-
-			}
+			publishModuleEvents(new ModuleUnloadEvent(ModuleFactory.class, mod.getModuleId(), mod.getName(),
+						mod.getVersion(), isEventSuccess, failureReason));
 		}
 	}
 	
@@ -1345,7 +1331,7 @@ public class ModuleFactory {
 		// if this pointId doesn't contain the separator character, search
 		// for this point prepended with each MEDIA TYPE
 		if (!pointId.contains(Extension.EXTENSION_ID_SEPARATOR)) {
-			for (MEDIA_TYPE mediaType : MEDIA_TYPE.values()) {
+			for (MEDIA_TYPE mediaType : Extension.MEDIA_TYPE.values()) {
 				
 				// get all extensions for this type and point id
 				List<Extension> tmpExtensions = extensionMap.get(Extension.toExtensionId(pointId, mediaType));
@@ -1373,7 +1359,7 @@ public class ModuleFactory {
 	 * @param type Extension.MEDIA_TYPE
 	 * @return List of extensions
 	 */
-	public static List<Extension> getExtensions(String pointId, MEDIA_TYPE type) {
+	public static List<Extension> getExtensions(String pointId, Extension.MEDIA_TYPE type) {
 		String key = Extension.toExtensionId(pointId, type);
 		List<Extension> extensions = getExtensionMap().get(key);
 		if (extensions != null) {
