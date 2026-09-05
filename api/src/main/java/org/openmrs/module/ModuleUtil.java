@@ -61,8 +61,6 @@ public class ModuleUtil {
 	}
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
-
-	private static final Pattern MODULE_FILENAME_PATTERN = Pattern.compile("^(.+?)(?:-(\\d[\\w.-]*?))?(?:\\.([a-zA-Z0-9]+))?$");
 	
 	/**
 	 * Start up the module system with the given properties.
@@ -1251,37 +1249,5 @@ public class ModuleUtil {
 		}
 		
 		return null;
-	}
-
-	/**
-	 *Gets the module name and version from the filename if possible. 
-	 * <p>
-	 * This is a fallback helper for cases where module descriptor parsing fails before a
-	 * {@link Module} object can be created. 
-	 * </p>
-	 *
-	 * @param fileName the module file name
-	 * @return name:version if version can be found, name only if no version is found, or null
-	 *         for null/empty input
-	 */
-	public static String getModuleNameAndVersionFromFileName(String fileName) {
-
-		if (fileName == null || fileName.trim().isEmpty()) {
-			return null;
-		}
-		
-		Matcher matcher = MODULE_FILENAME_PATTERN.matcher(fileName);
-		
-		if (matcher.matches()) {
-			String name = matcher.group(1);
-			String version = matcher.group(2);
-			if (version != null && !version.isEmpty()) {
-				return name + ":" + version;	
-			} else {
-				return  name;
-			}
-		}
-		
-		return fileName;
 	}
 }

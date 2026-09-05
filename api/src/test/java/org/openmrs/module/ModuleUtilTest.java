@@ -768,30 +768,6 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 			assertFalse(string.contains("web/module"));
 		}
 	}
-
-	@Test
-	void getModuleNameAndVersionFromFileName_shouldReturnNull_whenInputIsNullOrEmpty() {
-		assertNull(ModuleUtil.getModuleNameAndVersionFromFileName(null));
-		assertNull(ModuleUtil.getModuleNameAndVersionFromFileName(""));
-	}
-
-	@Test
-	void getModuleNameAndVersionFromFileName_shouldExtractNameAndVersion_whenVersionAndExtensionPresent() {
-		assertEquals("webservices.rest:2.50.0-SNAPSHOT",
-			ModuleUtil.getModuleNameAndVersionFromFileName("webservices.rest-2.50.0-SNAPSHOT.omok"));
-	}
-
-	@Test
-	void getModuleNameAndVersionFromFileName_shouldReturnNameOnly_whenExtensionPresentWithoutVersion() {
-		assertEquals("legacy-module",
-			ModuleUtil.getModuleNameAndVersionFromFileName("legacy-module.jar"));
-	}
-
-	@Test
-	void getModuleNameAndVersionFromFileName_shouldReturnFileName_whenNoExtensionOrVersion() {
-		assertEquals("custommodule",
-			ModuleUtil.getModuleNameAndVersionFromFileName("custommodule"));
-	}
 	
 	/**
 	 * @see ModuleUtil#matchRequiredVersions(String, String) 
