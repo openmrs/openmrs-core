@@ -341,8 +341,6 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				}
 
 			}
-
-			message.getCode();
 		}
 	}
 
@@ -352,7 +350,26 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 */
 	@Override
 	public PresentationMessage getPresentation(String key, Locale forLocale) {
-		// TODO Auto-generated method stub
+		for (Resource propertiesFile : findPropertiesFiles()) {
+			Locale locale = parseLocaleFrom(propertiesFile.getFilename());
+
+			if (!locale.equals(forLocale)) {
+				continue;
+			}
+
+			Properties props = new Properties();
+
+			try {
+				OpenmrsUtil.loadProperties(props, propertiesFile.getInputStream());
+
+				if (props.containsKey(key)) {
+					return new PresentationMessage(key, locale, props.getProperty(key), "");
+				}
+			} catch (Exception e) {
+				log.error("Unable to load properties from file: {}", propertiesFile.getFilename(), e);
+			}
+		}
+
 		return null;
 	}
 
@@ -361,8 +378,15 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 */
 	@Override
 	public Collection<PresentationMessage> getPresentationsInLocale(Locale locale) {
-		// TODO Auto-generated method stub
-		return null;
+		Collection<PresentationMessage> presentations = new ArrayList<>();
+
+		for (PresentationMessage presentation : getPresentations()) {
+			if (locale.equals(presentation.getLocale())) {
+				presentations.add(presentation);
+			}
+		}
+
+		return presentations;
 	}
 
 }
