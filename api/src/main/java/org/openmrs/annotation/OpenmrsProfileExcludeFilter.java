@@ -51,7 +51,7 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 		}
 	}
 
-	public boolean matchOpenmrsProfileAttributes(Map<String, Object> openmrsProfile) {
+	public static boolean matchOpenmrsProfileAttributes(Map<String, Object> openmrsProfile) {
 		Object openmrsPlatformVersion = openmrsProfile.get("openmrsPlatformVersion");
 		if (StringUtils.isBlank((String) openmrsPlatformVersion)) {
 			//Left for backwards compatibility
