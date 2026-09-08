@@ -768,7 +768,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 			assertFalse(string.contains("web/module"));
 		}
 	}
-	
+
 	/**
 	 * @see ModuleUtil#matchRequiredVersions(String, String) 
 	 */
