@@ -11,6 +11,8 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 /**
  * Interface for Openmrs services supporting fetching domain objects by UUID.
  *
@@ -23,7 +25,10 @@ public interface DomainService extends OpenmrsService {
 	 *
 	 * @param uuid the UUID string of the domain object
 	 * @return an instance of the requested type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
+	@PreAuthorize("hasPermission(#uuid, #type.name, '')")
 	public <T> T fetchByUuid(Class<T> type, String uuid);
 
 	/**

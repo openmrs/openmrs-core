@@ -73,10 +73,13 @@ public class OpenmrsSecurityConfig {
 	 * <p>
 	 * Declared {@code static} per Spring Security's guidance for infrastructure beans, so it is built
 	 * early enough not to trigger premature proxying.
+	 * <p>
+	 * A {@link PrivilegeCachingMethodSecurityExpressionHandler} rather than the stock handler, so that
+	 * a filter pass resolves the privilege it names once instead of once per element.
 	 */
 	@Bean
 	static MethodSecurityExpressionHandler methodSecurityExpressionHandler(OpenmrsPermissionEvaluator permissionEvaluator) {
-		DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
+		DefaultMethodSecurityExpressionHandler handler = new PrivilegeCachingMethodSecurityExpressionHandler();
 		handler.setPermissionEvaluator(permissionEvaluator);
 		// Makes the built-in hasAuthority(...)/hasRole(...) resolve through Context.hasPrivilege(String)
 		// and User#hasRole(String), so they agree with @Authorized. Set here rather than published as

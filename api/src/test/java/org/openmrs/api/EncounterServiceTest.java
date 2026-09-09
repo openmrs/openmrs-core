@@ -2434,6 +2434,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#filterEncountersByViewPermissions(List, User)
 	 */
 	@Test
+	public void filterEncountersByViewPermissions_shouldReturnNullForANullList() {
+		// a @PostFilter here would hand null to the expression handler, which rejects a null filter target
+		assertNull(Context.getEncounterService().filterEncountersByViewPermissions(null, null));
+	}
+
+	/**
+	 * @see EncounterService#filterEncountersByViewPermissions(List, User)
+	 */
+	@Test
 	public void filterEncountersByViewPermissions_shouldFilterEncountersIfUserIsNotAllowedToSeeSomeEncounters() {
 		EncounterService encounterService = Context.getEncounterService();
 

@@ -24,8 +24,11 @@ them. The Spring Security annotations can express everything it can, plus:
 - **Composable expressions.** SpEL combines checks freely with `and`, `or` and `not`, so a method
   whose rule is not a flat privilege list can state its real rule.
 - **Access to the invocation.** The expression can see the method's arguments and its result
-  (`#p0`, `returnObject`, `filterObject`), so authorization can depend on *what* is being accessed,
-  not only on which privileges the caller holds.
+  (`#argName`, `returnObject`, `filterObject`), so authorization can depend on *what* is being
+  accessed, not only on which privileges the caller holds. `#argName` is resolved against the
+  **implementation** method rather than the annotated interface method, so both sides have to agree
+  on the parameter name - see Pitfalls. (Resolution also needs the build's
+  `<parameters>true</parameters>`, since Spring no longer falls back to debug symbols.)
 - **Post-invocation filtering.** `@PostFilter` removes the elements a caller is not entitled to see
   from a returned collection, instead of the all-or-nothing outcome a pre-invocation privilege
   check is limited to.
@@ -148,7 +151,12 @@ both, so a module that still throws the deprecated exception keeps working.
 
 | Pitfall | Why | Fix |
 |---|---|---|
-| `#someArgName` silently evaluates to `null` | the build does not compile with `-parameters`, and service annotations sit on interfaces | refer to arguments positionally as `#p0`, or name them with `@P("someArgName")` |
+| `#someArgName` silently evaluates to `null`, so no rule is consulted | argument names resolve against the **implementation** method (`AopUtils.getMostSpecificMethod`), not the annotated interface method, so a name only the interface declares is unknown - and `hasPermission(null, privilege)` is a plain privilege check | make the implementation's parameter name match, or annotate that parameter `@P("someArgName")`; `MethodSecurityExpressionArgumentNameTest` fails the build on a mismatch |
+| `hasPermission(#someCollection, 'Type', privilege)` throws `ClassCastException` | the 3-argument overload binds its target to `Serializable`, and `List.subList(...)` and similar views are not | for a collection of *objects* use the 2-argument form, `hasPermission(#whom, privilege)`, which judges each element by its own type and never binds to `Serializable`. A collection of *ids* belongs in the 3-argument form (each id is judged against the named type), but the collection itself still has to be `Serializable` |
+| `hasPermission(#someIds, privilege)` silently consults no rule | the 2-argument form judges each element by its *own* type, so a `List<Integer>` of patient ids resolves rules for `Integer` and a `Patient` rule never runs - nothing is checked and the call authorizes | name the type: `hasPermission(#someIds, 'Patient', privilege)`. Omitting it is not a laxer check, it is no check |
+| A rule for a *subtype* is not consulted | a rule covers its target type and everything assignable to it, so `Person.class` reaches a `Patient` - but the reverse cannot work: where only the supertype is known (a declared type, or an uninitialized Hibernate proxy, which is read without initializing it) a `DrugOrder.class` rule cannot be matched to an `Order` | register the rule for the type actually named at the call site, or for the supertype if it should cover the whole hierarchy |
+| A `targetType` name silently matches no rule | `hasPermission(#id, 'Type', privilege)` resolves a simple name against `org.openmrs` only; anything elsewhere needs its fully-qualified name (`'org.openmrs.hl7.HL7InQueue'`). A name that loads no class is logged as a warning and leaves the call authorized on the privilege alone | qualify the name, and check the log for `No class '...' for the targetType` |
+| A criteria-object overload bypasses a rule the parameter-list overload enforces | `getObservations(ObsSearchCriteria)` is a second route to the same query | name the criteria's own subject: `hasPermission(#obsSearchCriteria?.whom, privilege)`, with `?.` so a null criteria stays a privilege-only check instead of failing in SpEL |
 | A write survives a `@PostAuthorize` denial | method security runs outside the transaction boundary | guard writes with `@PreAuthorize` |
 | A `@PostFilter`ed `@Cacheable` method serves one user's filtered view to everyone | `@PostFilter` filters in place | key the cache by the caller (`UserKeyGenerator.BEAN_NAME`) |
 | A module's error handling stops recognizing a denial | `@Authorized` denies with `AccessDeniedException` as of 3.0.0, not `APIAuthenticationException` | handle `AccessDeniedException`; `ExceptionUtil.rethrowAPIAuthenticationException` covers both |

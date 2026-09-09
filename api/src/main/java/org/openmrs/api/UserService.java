@@ -17,11 +17,12 @@ import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.notification.MessageException;
 import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
@@ -48,7 +49,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.ADD_USERS + "')")
 	@Logging(ignoredArgumentIndexes = { 1 })
 	User createUser(User user, String password) throws APIException;
 
@@ -73,7 +74,7 @@ public interface UserService extends OpenmrsService {
 	 *             permission
 	 * @since 1.12
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USER_PASSWORDS + "')")
 	@Logging(ignoredArgumentIndexes = { 1, 2 })
 	void changePassword(User user, String oldPassword, String newPassword) throws APIException;
 
@@ -104,7 +105,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasPermission(#uuid, 'User', '" + PrivilegeConstants.GET_USERS + "')")
 	User getUserByUuid(String uuid) throws APIException;
 
 	/**
@@ -117,7 +118,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_USERS + "')")
 	User getUserByUsername(String username);
 
 	/**
@@ -128,7 +130,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_USERS + "')")
 	User getUserByUsernameOrEmail(String usernameOrEmail);
 
 	/**
@@ -139,7 +142,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_USERS + "')")
 	User getUserByActivationKey(String activationKey);
 
 	/**
@@ -153,7 +157,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.GET_USERS + "')")
 	boolean hasDuplicateUsername(User user) throws APIException;
 
 	/**
@@ -168,7 +172,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasPermission(#role, '" + PrivilegeConstants.GET_USERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_USERS + "')")
 	List<User> getUsersByRole(Role role) throws APIException;
 
 	/**
@@ -180,7 +185,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USERS + "')")
 	User saveUser(User user) throws APIException;
 
 	/**
@@ -194,7 +199,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USERS + "')")
 	User retireUser(User user, String reason) throws APIException;
 
 	/**
@@ -207,7 +212,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USERS + "')")
 	User unretireUser(User user) throws APIException;
 
 	/**
@@ -220,7 +225,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.PURGE_USERS + "')")
 	void purgeUser(User user) throws APIException;
 
 	/**
@@ -241,7 +246,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.PURGE_USERS + "')")
 	void purgeUser(User user, boolean cascade) throws APIException;
 
 	/**
@@ -254,7 +259,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_PRIVILEGES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_PRIVILEGES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.MANAGE_PRIVILEGES + "')")
 	List<Privilege> getAllPrivileges() throws APIException;
 
 	/**
@@ -267,7 +273,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ROLES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_ROLES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.MANAGE_ROLES + "')")
 	List<Role> getAllRoles() throws APIException;
 
 	/**
@@ -282,7 +289,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ROLES })
+	@PreAuthorize("hasPermission(#role, '" + PrivilegeConstants.MANAGE_ROLES + "')")
 	Role saveRole(Role role) throws APIException;
 
 	/**
@@ -297,7 +304,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_ROLES })
+	@PreAuthorize("hasPermission(#role, '" + PrivilegeConstants.PURGE_ROLES + "')")
 	void purgeRole(Role role) throws APIException;
 
 	/**
@@ -311,7 +318,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PRIVILEGES })
+	@PreAuthorize("hasPermission(#privilege, '" + PrivilegeConstants.MANAGE_PRIVILEGES + "')")
 	Privilege savePrivilege(Privilege privilege) throws APIException;
 
 	/**
@@ -325,7 +332,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_PRIVILEGES })
+	@PreAuthorize("hasPermission(#privilege, '" + PrivilegeConstants.PURGE_PRIVILEGES + "')")
 	void purgePrivilege(Privilege privilege) throws APIException;
 
 	/**
@@ -338,7 +345,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ROLES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ROLES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ROLES + "')")
 	Role getRole(String r) throws APIException;
 
 	/**
@@ -352,7 +360,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ROLES)
+	@PreAuthorize("hasPermission(#uuid, 'Role', '" + PrivilegeConstants.GET_ROLES + "')")
 	Role getRoleByUuid(String uuid) throws APIException;
 
 	/**
@@ -365,7 +373,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_PRIVILEGES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PRIVILEGES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_PRIVILEGES + "')")
 	Privilege getPrivilege(String p) throws APIException;
 
 	/**
@@ -380,7 +389,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_PRIVILEGES)
+	@PreAuthorize("hasPermission(#uuid, 'Privilege', '" + PrivilegeConstants.GET_PRIVILEGES + "')")
 	Privilege getPrivilegeByUuid(String uuid) throws APIException;
 
 	/**
@@ -394,7 +403,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_USERS + "')")
 	List<User> getAllUsers() throws APIException;
 
 	/**
@@ -412,7 +422,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	@Logging(ignoredArgumentIndexes = { 0, 1 })
 	void changePassword(String oldPassword, String newPassword) throws APIException;
 
@@ -430,7 +440,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USER_PASSWORDS + "')")
 	void changePassword(User user, String newPassword) throws APIException;
 
 	/**
@@ -450,7 +460,7 @@ public interface UserService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USER_PASSWORDS + "')")
 	void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException;
 
 	/**
@@ -466,7 +476,7 @@ public interface UserService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@PreAuthorize("hasPermission(#u, '" + PrivilegeConstants.EDIT_USER_PASSWORDS + "')")
 	@Logging(ignoredArgumentIndexes = { 1, 2 })
 	void changeQuestionAnswer(User u, String question, String answer) throws APIException;
 
@@ -483,7 +493,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	@Logging(ignoreAllArgumentValues = true)
 	void changeQuestionAnswer(String pw, String q, String a) throws APIException;
 
@@ -532,7 +542,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_USERS + "')")
 	List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws APIException;
 
 	/**
@@ -550,7 +561,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_USERS + "')")
 	List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) throws APIException;
 
 	/**
@@ -566,7 +578,8 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasPermission(#person, '" + PrivilegeConstants.GET_USERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_USERS + "')")
 	List<User> getUsersByPerson(Person person, boolean includeRetired) throws APIException;
 
 	/**
@@ -587,7 +600,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	User setUserProperty(User user, String key, String value) throws APIException;
 
 	/**
@@ -604,7 +617,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	User removeUserProperty(User user, String key) throws APIException;
 
 	/**
@@ -615,7 +628,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	String generateSystemId();
 
 	/**
@@ -637,7 +650,8 @@ public interface UserService extends OpenmrsService {
 	 *             permission
 	 * @since 1.8
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	//TODO: DAO auth filter
 	List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
 	        throws APIException;
 
@@ -653,7 +667,8 @@ public interface UserService extends OpenmrsService {
 	 *             permission
 	 * @since 1.8
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	//TODO: DAO auth filter
 	Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired);
 
 	/**
@@ -665,7 +680,7 @@ public interface UserService extends OpenmrsService {
 	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	User saveUserProperty(String key, String value);
 
 	/**
@@ -676,7 +691,7 @@ public interface UserService extends OpenmrsService {
 	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	User saveUserProperties(Map<String, String> properties);
 
 	/**
@@ -690,7 +705,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException;
 
 	/**
@@ -700,7 +715,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.EDIT_USER_PASSWORDS)
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USER_PASSWORDS + "')")
 	User setUserActivationKey(User user) throws MessageException;
 
 	/**
@@ -718,7 +733,7 @@ public interface UserService extends OpenmrsService {
 	 *             permission
 	 * @since 2.3.6, 2.4.6, 2.5.4, 2.6.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	Locale getDefaultLocaleForUser(User user);
 
 	/**
@@ -733,6 +748,6 @@ public interface UserService extends OpenmrsService {
 	 * @should not be empty if user is authenticated
 	 * @should return empty string on last login time if property not set
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	String getLastLoginTime(User user);
 }

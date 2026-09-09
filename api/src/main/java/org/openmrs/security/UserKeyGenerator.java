@@ -28,9 +28,8 @@ import org.springframework.cache.interceptor.SimpleKey;
  * because {@code @PostFilter} filters in place - {@code filterCollection} clears the returned
  * collection and re-adds what survived, so with a shared key the first caller's filtering
  * permanently strips the entry and every later caller is served that remainder. A {@code key}
- * expression naming the caller works too; refer to arguments as {@code #p0} rather than by name,
- * since the build does not compile with {@code -parameters} and {@code #someArgName} would silently
- * be {@code null}.
+ * expression naming the caller works too, and may refer to arguments by name, since the build
+ * compiles with {@code -parameters}.
  * <p>
  * The identity is the user's id, falling back to the uuid, then to a constant when unauthenticated.
  * It covers who is asking, not what they have been lent: privileges from

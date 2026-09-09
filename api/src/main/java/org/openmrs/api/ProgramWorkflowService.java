@@ -25,9 +25,11 @@ import org.openmrs.Program;
 import org.openmrs.ProgramAttributeType;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -69,7 +71,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
+	@PreAuthorize("hasPermission(#program, '" + PrivilegeConstants.MANAGE_PROGRAMS + "')")
 	public Program saveProgram(Program program) throws APIException;
 
 	/**
@@ -85,7 +87,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
+	@PreAuthorize("hasPermission(#programId, 'Program', '" + PrivilegeConstants.GET_PROGRAMS + "')")
 	public Program getProgram(Integer programId) throws APIException;
 
 	/**
@@ -104,7 +106,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROGRAMS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_PROGRAMS + "')")
 	public Program getProgramByName(String name) throws APIException;
 
 	/**
@@ -116,7 +119,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROGRAMS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PROGRAMS + "')")
 	public List<Program> getAllPrograms() throws APIException;
 
 	/**
@@ -132,7 +136,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROGRAMS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PROGRAMS + "')")
 	public List<Program> getAllPrograms(boolean includeRetired) throws APIException;
 
 	/**
@@ -156,7 +161,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROGRAMS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PROGRAMS + "')")
 	public List<Program> getPrograms(String nameFragment) throws APIException;
 
 	/**
@@ -170,7 +176,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
+	@PreAuthorize("hasPermission(#program, '" + PrivilegeConstants.MANAGE_PROGRAMS + "')")
 	public void purgeProgram(Program program) throws APIException;
 
 	/**
@@ -186,7 +192,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
+	@PreAuthorize("hasPermission(#program, '" + PrivilegeConstants.MANAGE_PROGRAMS + "')")
 	public void purgeProgram(Program program, boolean cascade) throws APIException;
 
 	/**
@@ -203,7 +209,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
+	@PreAuthorize("hasPermission(#program, '" + PrivilegeConstants.MANAGE_PROGRAMS + "')")
 	public Program retireProgram(Program program, String reason) throws APIException;
 
 	/**
@@ -219,7 +225,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
+	@PreAuthorize("hasPermission(#program, '" + PrivilegeConstants.MANAGE_PROGRAMS + "')")
 	public Program unretireProgram(Program program) throws APIException;
 
 	// **************************
@@ -237,7 +243,10 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @param uuid the universally unique identifier
 	 * @return the program which matches the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
+	@PreAuthorize("hasPermission(#uuid, 'Program', '" + PrivilegeConstants.GET_PROGRAMS + "')")
 	public Program getProgramByUuid(String uuid);
 
 	/**
@@ -254,7 +263,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#uuid, 'PatientState', '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
 	public PatientState getPatientStateByUuid(String uuid);
 
 	/**
@@ -270,7 +279,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#patientProgram, '" + PrivilegeConstants.ADD_PATIENT_PROGRAMS
+	        + "') or hasPermission(#patientProgram, '" + PrivilegeConstants.EDIT_PATIENT_PROGRAMS + "')")
 	public PatientProgram savePatientProgram(PatientProgram patientProgram) throws APIException;
 
 	/**
@@ -288,7 +298,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#patientProgramId, 'PatientProgram', '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
 	public PatientProgram getPatientProgram(Integer patientProgramId) throws APIException;
 
 	/**
@@ -329,7 +339,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
 	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
 	        throws APIException;
@@ -345,7 +356,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#patientProgram, '" + PrivilegeConstants.PURGE_PATIENT_PROGRAMS + "')")
 	public void purgePatientProgram(PatientProgram patientProgram) throws APIException;
 
 	/**
@@ -361,7 +372,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#patientProgram, '" + PrivilegeConstants.PURGE_PATIENT_PROGRAMS + "')")
 	public void purgePatientProgram(PatientProgram patientProgram, boolean cascade) throws APIException;
 
 	/**
@@ -377,7 +388,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.DELETE_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#patientProgram, '" + PrivilegeConstants.DELETE_PATIENT_PROGRAMS + "')")
 	public PatientProgram voidPatientProgram(PatientProgram patientProgram, String reason) throws APIException;
 
 	/**
@@ -391,7 +402,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.DELETE_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#patientProgram, '" + PrivilegeConstants.DELETE_PATIENT_PROGRAMS + "')")
 	public PatientProgram unvoidPatientProgram(PatientProgram patientProgram) throws APIException;
 
 	/**
@@ -404,7 +415,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
+	@PreAuthorize("hasPermission(#programId, 'Program', '" + PrivilegeConstants.GET_PROGRAMS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PROGRAMS + "')")
 	public List<Concept> getPossibleOutcomes(Integer programId);
 
 	// **************************
@@ -442,7 +454,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#conceptStateConversion, '" + PrivilegeConstants.ADD_PATIENT_PROGRAMS
+	        + "') or hasPermission(#conceptStateConversion, '" + PrivilegeConstants.EDIT_PATIENT_PROGRAMS + "')")
 	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion conceptStateConversion)
 	        throws APIException;
 
@@ -460,7 +473,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
+	@PreAuthorize("hasPermission(#conceptStateConversionId, 'ConceptStateConversion', '" + PrivilegeConstants.GET_PROGRAMS
+	        + "')")
 	public ConceptStateConversion getConceptStateConversion(Integer conceptStateConversionId) throws APIException;
 
 	/**
@@ -473,7 +487,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROGRAMS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PROGRAMS + "')")
 	public List<ConceptStateConversion> getAllConceptStateConversions() throws APIException;
 
 	/**
@@ -485,7 +500,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
+	@PreAuthorize("hasPermission(#conceptStateConversion, '" + PrivilegeConstants.MANAGE_PROGRAMS + "')")
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion) throws APIException;
 
 	/**
@@ -502,7 +517,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
+	@PreAuthorize("hasPermission(#conceptStateConversion, '" + PrivilegeConstants.MANAGE_PROGRAMS + "')")
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion, boolean cascade)
 	        throws APIException;
 
@@ -557,7 +572,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#uuid, 'PatientProgram', '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
 	public PatientProgram getPatientProgramByUuid(String uuid);
 
 	/**
@@ -580,7 +595,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#cohort, '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
 
 	/**
@@ -591,7 +607,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#concept, '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
 	public List<Program> getProgramsByConcept(Concept concept);
 
 	/**
@@ -602,7 +619,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#concept, '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
 	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept);
 
 	/**
@@ -613,7 +631,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
+	@PreAuthorize("hasPermission(#concept, '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
 
 	/**
@@ -631,31 +650,35 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public ConceptStateConversion getConceptStateConversionByUuid(String uuid);
 
 	@Transactional(readOnly = true)
-	@Authorized({ "Get Patient Program Attribute Types" })
+	@PreAuthorize("hasAuthority('Get Patient Program Attribute Types')")
+	@PostFilter("hasPermission(filterObject, 'Get Patient Program Attribute Types')")
 	public List<ProgramAttributeType> getAllProgramAttributeTypes();
 
 	@Transactional(readOnly = true)
-	@Authorized({ "Get Patient Program Attribute Types" })
-	public ProgramAttributeType getProgramAttributeType(Integer var1);
+	@PreAuthorize("hasPermission(#programAttributeTypeId, 'ProgramAttributeType', 'Get Patient Program Attribute Types')")
+	public ProgramAttributeType getProgramAttributeType(Integer programAttributeTypeId);
 
 	@Transactional(readOnly = true)
-	@Authorized({ "Get Patient Program Attribute Types" })
-	public ProgramAttributeType getProgramAttributeTypeByUuid(String var1);
+	@PreAuthorize("hasPermission(#uuid, 'ProgramAttributeType', 'Get Patient Program Attribute Types')")
+	public ProgramAttributeType getProgramAttributeTypeByUuid(String uuid);
 
-	@Authorized({ "Manage Patient Program Attribute Types" })
-	public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType var1);
+	@PreAuthorize("hasPermission(#type, 'Manage Patient Program Attribute Types')")
+	public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType type);
 
-	@Authorized({ "Purge Patient Program Attribute Types" })
-	public void purgeProgramAttributeType(ProgramAttributeType var1);
+	@PreAuthorize("hasPermission(#type, 'Purge Patient Program Attribute Types')")
+	public void purgeProgramAttributeType(ProgramAttributeType type);
 
 	@Transactional(readOnly = true)
-	@Authorized({ "Get Patient Programs" })
-	public PatientProgramAttribute getPatientProgramAttributeByUuid(String var1);
+	@PreAuthorize("hasPermission(#uuid, 'PatientProgramAttribute', '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
+	public PatientProgramAttribute getPatientProgramAttributeByUuid(String uuid);
 
-	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasPermission(#patients, 'Patient', '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
+	// Do not filter by returnObject as it's already filtered by patient ids
 	public Map<Object, Object> getPatientProgramAttributeByAttributeName(List<Integer> patients, String attributeName);
 
 	@Transactional(readOnly = true)
-	@Authorized({ "Get Patient Programs" })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
+	@PostFilter("hasPermission(filterObject,  '" + PrivilegeConstants.GET_PATIENT_PROGRAMS + "')")
 	public List<PatientProgram> getPatientProgramByAttributeNameAndValue(String attributeName, String attributeValue);
 }
