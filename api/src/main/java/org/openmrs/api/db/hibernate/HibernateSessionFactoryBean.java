@@ -265,7 +265,9 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 				if (conn.getAutoCommit()) {
 					throw new HibernateException(
 					        "provider_disables_autocommit=true but the pool returned a connection with autoCommit=true; "
-					                + "configure the pool to disable autocommit at checkout or remove the property");
+					                + "remove connection.autocommit=true from openmrs-runtime.properties, or set "
+					                + "connection.provider_disables_autocommit=false there if this pool really must hand out "
+					                + "auto-commit-enabled connections");
 				}
 			} finally {
 				provider.closeConnection(conn);
