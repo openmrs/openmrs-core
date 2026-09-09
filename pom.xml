@@ -545,6 +545,20 @@
 							<goal>enforce</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>enforce-no-snapshots-on-deploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<banDynamicVersions>
+									<allowSnapshots>false</allowSnapshots>
+								</banDynamicVersions>
+							</rules>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -589,33 +603,6 @@
 						<configuration>
 							<skip>true</skip>
 						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>release</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-enforcer-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>enforce-no-snapshots-release-build</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>enforce</goal>
-								</goals>
-								<configuration>
-									<rules>
-										<banDynamicVersions>
-											<allowSnapshots>false</allowSnapshots>
-										</banDynamicVersions>
-									</rules>
-								</configuration>
-							</execution>
-						</executions>
 					</plugin>
 				</plugins>
 			</build>
