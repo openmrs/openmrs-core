@@ -57,6 +57,15 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	/** Headroom for effects that scale with the page without being per-hit loading. */
 	private static final int PAGE_GROWTH_ALLOWANCE = 8;
 
+	/** Distinct token for the count-deduplication fixture, matched by every fixture ConceptName. */
+	private static final String COUNT_DEDUP_TOKEN = "Zzcountdedupe";
+
+	/** Number of concepts in the count-deduplication fixture. */
+	private static final int COUNT_DEDUP_CONCEPTS = 3;
+
+	/** Matching ConceptName rows per fixture concept, so the raw (non-deduplicated) hit count is known. */
+	private static final int COUNT_DEDUP_NAMES_PER_CONCEPT = 2;
+
 	@Autowired
 	private HibernateConceptDAO dao;
 
@@ -386,47 +395,79 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * With no cap configured the duplicate ConceptName hits collapse to the exact distinct concept
+	 * count.
+	 *
 	 * @see HibernateConceptDAO#getCountOfConcepts
 	 */
 	@Test
 	public void getCountOfConcepts_shouldReturnExactCountWhenGlobalPropertyIsNotSet() {
+		createCountDeduplicationFixture();
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "");
 
-		List<Locale> locales = Collections.singletonList(Locale.ENGLISH);
-		Integer count = dao.getCountOfConcepts("COUGH", locales, false, Collections.emptyList(), Collections.emptyList(),
-		    Collections.emptyList(), Collections.emptyList(), null);
+		Integer count = countConceptsForDedupToken();
 
-		assertNotNull(count);
-		assertTrue(count > 0);
+		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
 	}
 
 	/**
+	 * The distinct concept count exceeds a cap of 1, so exact deduplication is abandoned and the raw
+	 * (duplicate-counting) ConceptName document count is returned as an upper bound.
+	 *
 	 * @see HibernateConceptDAO#getCountOfConcepts
 	 */
 	@Test
 	public void getCountOfConcepts_shouldReturnBoundedCountWhenGlobalPropertyIsSet() {
+		createCountDeduplicationFixture();
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "1");
 
-		List<Locale> locales = Collections.singletonList(Locale.ENGLISH);
-		Integer count = dao.getCountOfConcepts("COUGH", locales, false, Collections.emptyList(), Collections.emptyList(),
-		    Collections.emptyList(), Collections.emptyList(), null);
+		Integer count = countConceptsForDedupToken();
 
-		assertNotNull(count);
-		assertTrue(count >= 1);
+		assertEquals(COUNT_DEDUP_CONCEPTS * COUNT_DEDUP_NAMES_PER_CONCEPT, count.intValue());
 	}
 
 	/**
+	 * A malformed property value is ignored, so the count matches the unbounded (exact distinct)
+	 * behaviour of an unset property.
+	 *
 	 * @see HibernateConceptDAO#getCountOfConcepts
 	 */
 	@Test
 	public void getCountOfConcepts_shouldFallBackToUnboundedWhenGlobalPropertyIsInvalid() {
+		createCountDeduplicationFixture();
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "not-a-number");
 
-		List<Locale> locales = Collections.singletonList(Locale.ENGLISH);
-		Integer count = dao.getCountOfConcepts("COUGH", locales, false, Collections.emptyList(), Collections.emptyList(),
-		    Collections.emptyList(), Collections.emptyList(), null);
+		Integer count = countConceptsForDedupToken();
 
-		assertNotNull(count);
-		assertTrue(count > 0);
+		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
+	}
+
+	private Integer countConceptsForDedupToken() {
+		return dao.getCountOfConcepts(COUNT_DEDUP_TOKEN, Collections.singletonList(Locale.ENGLISH), false,
+		    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null);
+	}
+
+	/**
+	 * Creates {@link #COUNT_DEDUP_CONCEPTS} concepts, each with {@link #COUNT_DEDUP_NAMES_PER_CONCEPT}
+	 * names that all match {@link #COUNT_DEDUP_TOKEN}. The search index therefore holds more matching
+	 * ConceptName hits ({@code concepts * names}) than there are distinct concepts, which is exactly
+	 * what the deduplication cap acts on.
+	 */
+	private void createCountDeduplicationFixture() {
+		ConceptClass conceptClass = dao.getConceptClass(1);
+		ConceptDatatype datatype = dao.getConceptDatatypeByName("N/A");
+
+		for (int i = 0; i < COUNT_DEDUP_CONCEPTS; i++) {
+			Concept concept = new Concept();
+			concept.setConceptClass(conceptClass);
+			concept.setDatatype(datatype);
+			concept.addName(new ConceptName(COUNT_DEDUP_TOKEN + " " + i, Locale.ENGLISH));
+			concept.addName(new ConceptName(COUNT_DEDUP_TOKEN + " synonym " + i, Locale.UK));
+			dao.saveConcept(concept);
+		}
+
+		Context.flushSession();
+		Context.clearSession();
+		updateSearchIndex();
 	}
 }

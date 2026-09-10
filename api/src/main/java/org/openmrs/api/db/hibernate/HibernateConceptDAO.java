@@ -1657,7 +1657,15 @@ public class HibernateConceptDAO implements ConceptDAO {
 		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP);
 		if (gpValue != null && !gpValue.trim().isEmpty()) {
 			try {
-				cap = Integer.parseInt(gpValue.trim());
+				int parsedCap = Integer.parseInt(gpValue.trim());
+				if (parsedCap > 0) {
+					cap = parsedCap;
+				} else {
+					// A zero or negative cap would make deduplication fall back to the raw (duplicate-counting)
+					// hit count on the very first hit, so ignore it and keep the count exact.
+					log.warn("Non-positive value for global property {}: '{}', using unbounded deduplication",
+					    OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, gpValue);
+				}
 			} catch (NumberFormatException e) {
 				log.warn("Invalid value for global property {}: '{}', using unbounded deduplication",
 				    OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, gpValue);
