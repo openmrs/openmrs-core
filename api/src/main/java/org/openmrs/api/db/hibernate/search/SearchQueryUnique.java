@@ -244,7 +244,8 @@ public class SearchQueryUnique<T, R> {
 	 * The count is exact unless the {@link OpenmrsConstants#GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD}
 	 * global property configures a positive default cap, in which case it behaves as
 	 * {@link #searchCount(SearchSessionFactory, SearchQueryUnique, int)} with that cap. A blank, unset,
-	 * non-positive or malformed property value keeps the count exact ({@link #UNBOUNDED_DEDUPLICATION}).
+	 * non-positive or malformed property value keeps the count exact
+	 * ({@link #UNBOUNDED_DEDUPLICATION}).
 	 *
 	 * @param searchSessionFactory SearchSessionFactory
 	 * @param uniqueQuery unique query {@link #newQuery(Class, Function, String, Function)}
@@ -256,12 +257,13 @@ public class SearchQueryUnique<T, R> {
 
 	/**
 	 * Resolves the default deduplication cap from the
-	 * {@link OpenmrsConstants#GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD} global property, used whenever no
-	 * explicit cap is supplied. A blank, unset, non-positive or malformed value falls back to
-	 * {@link #UNBOUNDED_DEDUPLICATION} (an always exact count); a non-positive or malformed value is also
-	 * logged as a warning.
+	 * {@link OpenmrsConstants#GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD} global property, used whenever
+	 * no explicit cap is supplied. A blank, unset, non-positive or malformed value falls back to
+	 * {@link #UNBOUNDED_DEDUPLICATION} (an always exact count); a non-positive or malformed value is
+	 * also logged as a warning.
 	 *
-	 * @return the configured positive default cap, or {@link #UNBOUNDED_DEDUPLICATION} if none is configured
+	 * @return the configured positive default cap, or {@link #UNBOUNDED_DEDUPLICATION} if none is
+	 *         configured
 	 */
 	private static int resolveDefaultDeduplicationCap() {
 		String gpValue = Context.getAdministrationService()
@@ -338,8 +340,8 @@ public class SearchQueryUnique<T, R> {
 	 * calculated and the returned results are empty. The count is exact unless the
 	 * {@link OpenmrsConstants#GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD} global property configures a
 	 * positive default cap; use {@link #searchCount(SearchSessionFactory, SearchQueryUnique, int)} to
-	 * bound the count cost explicitly. Otherwise the requested page of results is returned and the total
-	 * hit count is <code>null</code>.
+	 * bound the count cost explicitly. Otherwise the requested page of results is returned and the
+	 * total hit count is <code>null</code>.
 	 *
 	 * @param searchSessionFactory search session factory
 	 * @param uniqueQuery unique query {@link #newQuery(Class, Function, String, Function)}

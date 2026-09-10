@@ -63,7 +63,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	/** Number of concepts in the count-deduplication fixture. */
 	private static final int COUNT_DEDUP_CONCEPTS = 3;
 
-	/** Matching ConceptName rows per fixture concept, so the raw (non-deduplicated) hit count is known. */
+	/**
+	 * Matching ConceptName rows per fixture concept, so the raw (non-deduplicated) hit count is known.
+	 */
 	private static final int COUNT_DEDUP_NAMES_PER_CONCEPT = 2;
 
 	@Autowired

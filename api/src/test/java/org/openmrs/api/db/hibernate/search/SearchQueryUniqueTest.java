@@ -236,8 +236,8 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 		// The no-cap overload reads search.deduplicationDefaultThreshold: a positive value below the
 		// distinct person count bounds the exact deduplication exactly as an explicit cap would, so the
 		// count degrades to the raw upper bound.
-		Context.getAdministrationService().setGlobalProperty(
-		    OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, String.valueOf(DUPLICATE_COUNT));
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD,
+		    String.valueOf(DUPLICATE_COUNT));
 
 		Long count = SearchQueryUnique.searchCount(searchSessionFactory, personNameQuery());
 
@@ -248,11 +248,10 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 	public void searchCount_shouldHonourConfiguredDefaultDeduplicationThresholdForTotalHitCountPath() {
 		// The includeTotalHitCount branch of search(...) likewise has no caller-supplied cap and must
 		// honour the configured default threshold.
-		Context.getAdministrationService().setGlobalProperty(
-		    OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, String.valueOf(DUPLICATE_COUNT));
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD,
+		    String.valueOf(DUPLICATE_COUNT));
 
-		Long count = SearchQueryUnique.search(searchSessionFactory, personNameQuery(), null, null, true)
-		        .getTotalHitCount();
+		Long count = SearchQueryUnique.search(searchSessionFactory, personNameQuery(), null, null, true).getTotalHitCount();
 
 		assertEquals(Long.valueOf(TOTAL_NAME_HITS), count);
 	}
@@ -261,8 +260,8 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 	public void searchCount_shouldIgnoreNonPositiveConfiguredDefaultDeduplicationThreshold() {
 		// A zero or negative threshold is invalid and must not switch the count to the raw upper bound;
 		// the count stays exact, as if the property were unset.
-		Context.getAdministrationService().setGlobalProperty(
-		    OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, "-1");
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD,
+		    "-1");
 
 		Long count = SearchQueryUnique.searchCount(searchSessionFactory, personNameQuery());
 
