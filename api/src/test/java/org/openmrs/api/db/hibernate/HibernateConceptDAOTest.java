@@ -442,6 +442,38 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
 	}
 
+	/**
+	 * A cap of {@code 0} is non-positive and must be rejected: without the guard the count would
+	 * degrade to the raw ConceptName document count on the very first hit.
+	 *
+	 * @see HibernateConceptDAO#getCountOfConcepts
+	 */
+	@Test
+	public void getCountOfConcepts_shouldFallBackToUnboundedWhenGlobalPropertyIsZero() {
+		createCountDeduplicationFixture();
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "0");
+
+		Integer count = countConceptsForDedupToken();
+
+		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
+	}
+
+	/**
+	 * A negative cap is non-positive and must be rejected, matching the unbounded (exact distinct)
+	 * behaviour of an unset property.
+	 *
+	 * @see HibernateConceptDAO#getCountOfConcepts
+	 */
+	@Test
+	public void getCountOfConcepts_shouldFallBackToUnboundedWhenGlobalPropertyIsNegative() {
+		createCountDeduplicationFixture();
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "-1");
+
+		Integer count = countConceptsForDedupToken();
+
+		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
+	}
+
 	private Integer countConceptsForDedupToken() {
 		return dao.getCountOfConcepts(COUNT_DEDUP_TOKEN, Collections.singletonList(Locale.ENGLISH), false,
 		    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null);

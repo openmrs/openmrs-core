@@ -26,9 +26,11 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.api.PersonService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.SearchQueryUnique.DeduplicationResult;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -227,6 +229,44 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 		Long count = SearchQueryUnique.searchCount(searchSessionFactory, personNameQuery(), DUPLICATE_COUNT);
 
 		assertEquals(Long.valueOf(TOTAL_NAME_HITS), count);
+	}
+
+	@Test
+	public void searchCount_shouldHonourConfiguredDefaultDeduplicationThreshold() {
+		// The no-cap overload reads search.deduplicationDefaultThreshold: a positive value below the
+		// distinct person count bounds the exact deduplication exactly as an explicit cap would, so the
+		// count degrades to the raw upper bound.
+		Context.getAdministrationService().setGlobalProperty(
+		    OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, String.valueOf(DUPLICATE_COUNT));
+
+		Long count = SearchQueryUnique.searchCount(searchSessionFactory, personNameQuery());
+
+		assertEquals(Long.valueOf(TOTAL_NAME_HITS), count);
+	}
+
+	@Test
+	public void searchCount_shouldHonourConfiguredDefaultDeduplicationThresholdForTotalHitCountPath() {
+		// The includeTotalHitCount branch of search(...) likewise has no caller-supplied cap and must
+		// honour the configured default threshold.
+		Context.getAdministrationService().setGlobalProperty(
+		    OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, String.valueOf(DUPLICATE_COUNT));
+
+		Long count = SearchQueryUnique.search(searchSessionFactory, personNameQuery(), null, null, true)
+		        .getTotalHitCount();
+
+		assertEquals(Long.valueOf(TOTAL_NAME_HITS), count);
+	}
+
+	@Test
+	public void searchCount_shouldIgnoreNonPositiveConfiguredDefaultDeduplicationThreshold() {
+		// A zero or negative threshold is invalid and must not switch the count to the raw upper bound;
+		// the count stays exact, as if the property were unset.
+		Context.getAdministrationService().setGlobalProperty(
+		    OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, "-1");
+
+		Long count = SearchQueryUnique.searchCount(searchSessionFactory, personNameQuery());
+
+		assertEquals(Long.valueOf(PERSON_COUNT), count);
 	}
 
 	@Test
