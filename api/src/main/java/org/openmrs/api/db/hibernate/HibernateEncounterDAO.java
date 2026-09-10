@@ -40,6 +40,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
@@ -485,12 +486,36 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			}
 			return new QueryResult(predicates, Collections.emptyList());
 		} else {
-			//As identifier could be all alpha, no heuristic here will work in determining intent of user for querying by name versus identifier
-			//So search by both!
-			QueryResult queryResult = new PatientSearchCriteria(sessionFactory).prepareCriteria(cb, patientJoin, query,
-			    query, new ArrayList<>(), true, orderByNames, true);
-			queryResult.addPredicates(predicates);
-			return queryResult;
+			if (StringUtils.isNotBlank(query)) {
+				Join<Patient, PersonName> nameJoin = patientJoin.join("names", JoinType.LEFT);
+				Join<Patient, PatientIdentifier> idsJoin = patientJoin.join("identifiers", JoinType.LEFT);
+
+				String[] splitNames = query.trim().split("\\s+");
+				List<Predicate> allNameTermPredicates = new ArrayList<>();
+
+				for (String nameTerm : splitNames) {
+					String pattern = MatchMode.ANYWHERE.toLowerCasePattern(nameTerm);
+					List<Predicate> termMatch = new ArrayList<>();
+					termMatch.add(cb.like(cb.lower(nameJoin.get("givenName")), pattern));
+					termMatch.add(cb.like(cb.lower(nameJoin.get("middleName")), pattern));
+					termMatch.add(cb.like(cb.lower(nameJoin.get("familyName")), pattern));
+					termMatch.add(cb.like(cb.lower(nameJoin.get("familyName2")), pattern));
+
+					allNameTermPredicates.add(cb.or(termMatch.toArray(new Predicate[0])));
+				}
+
+				Predicate nameNotVoided = cb.isFalse(nameJoin.get("voided"));
+				Predicate validName = cb.and(nameNotVoided, cb.and(allNameTermPredicates.toArray(new Predicate[0])));
+
+				// Exact identifier matching
+				Predicate identifierMatch = cb.equal(cb.lower(idsJoin.get("identifier")), query.trim().toLowerCase());
+				Predicate idNotVoided = cb.isFalse(idsJoin.get("voided"));
+				Predicate validIdentifier = cb.and(idNotVoided, identifierMatch);
+
+				predicates.add(cb.or(validName, validIdentifier));
+			}
+
+			return new QueryResult(predicates, Collections.emptyList());
 		}
 	}
 

@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -28,6 +29,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.type.StandardBasicTypes;
 import org.openmrs.Cohort;
+import org.openmrs.CohortMembership;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
@@ -239,7 +241,9 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		hql += " order by patient.patientId, dateEnrolled";
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		if (cohort != null) {
-			query.setParameter("patientIds", cohort.getMemberIds());
+			List<Integer> patientIds = cohort.getMemberships().stream().map(CohortMembership::getPatientId)
+			        .collect(Collectors.toList());
+			query.setParameter("patientIds", patientIds);
 		}
 		if (programs != null) {
 			query.setParameter("programs", programs);

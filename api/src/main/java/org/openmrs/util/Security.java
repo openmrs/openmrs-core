@@ -244,22 +244,6 @@ public class Security {
 	}
 
 	/**
-	 * encrypt text using stored initVector and securityKey
-	 * <p>
-	 * <strong>Should</strong> encrypt short and long text
-	 *
-	 * @param text the text to encrypt
-	 * @return encrypted text
-	 * @since 1.9
-	 * @deprecated As of version 2.4.0, this method is not referenced in openmrs-core or any other
-	 *             projects under the GitHub OpenMRS organisation.
-	 */
-	@Deprecated
-	public static String encrypt(String text) {
-		return Security.encrypt(text, Security.getSavedInitVector(), Security.getSavedSecretKey());
-	}
-
-	/**
 	 * decrypt text to a string with specific initVector and secretKey; rarely used except in testing
 	 * and where specifically necessary
 	 *
@@ -285,22 +269,6 @@ public class Security {
 		}
 
 		return decrypted;
-	}
-
-	/**
-	 * decrypt text using stored initVector and securityKey
-	 * <p>
-	 * <strong>Should</strong> decrypt short and long text
-	 *
-	 * @param text text to be decrypted
-	 * @return decrypted text
-	 * @since 1.9
-	 * @deprecated As of version 2.4.0, this method is not referenced in openmrs-core or any other
-	 *             projects under the GitHub OpenMRS organisation.
-	 */
-	@Deprecated
-	public static String decrypt(String text) {
-		return Security.decrypt(text, Security.getSavedInitVector(), Security.getSavedSecretKey());
 	}
 
 	/**

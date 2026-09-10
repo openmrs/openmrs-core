@@ -146,21 +146,6 @@ public class Cohort extends BaseChangeableOpenmrsData {
 		Arrays.stream(ids).forEach(id -> addMembership(new CohortMembership(Integer.valueOf(id.trim()))));
 	}
 
-	/**
-	 * @deprecated since 2.1.0 cohorts are more complex than just a set of patient ids, so there is no
-	 *             one-line replacement
-	 * @return Returns a comma-separated list of patient ids in the cohort.
-	 */
-	@Deprecated
-	public String getCommaSeparatedPatientIds() {
-		return StringUtils.join(getMemberIds(), ',');
-	}
-
-	public boolean contains(Integer patientId) {
-		return getMemberships() != null
-		        && getMemberships().stream().anyMatch(m -> m.getPatientId().equals(patientId) && !m.getVoided());
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("Cohort id=" + getCohortId());
@@ -240,14 +225,6 @@ public class Cohort extends BaseChangeableOpenmrsData {
 
 	public int size() {
 		return getMemberships().stream().filter(m -> !m.getVoided()).collect(Collectors.toList()).size();
-	}
-
-	/**
-	 * @deprecated use {@link #size()}
-	 */
-	@Deprecated
-	public int getSize() {
-		return size();
 	}
 
 	public boolean isEmpty() {
@@ -337,35 +314,6 @@ public class Cohort extends BaseChangeableOpenmrsData {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	/**
-	 * @deprecated since 2.1.0 cohorts are more complex than just a set of patient ids, so there is no
-	 *             one-line replacement
-	 */
-	@Deprecated
-	public Set<Integer> getMemberIds() {
-		Set<Integer> memberIds = new TreeSet<>();
-		for (CohortMembership member : getMemberships()) {
-			memberIds.add(member.getPatientId());
-		}
-		return memberIds;
-	}
-
-	/**
-	 * @deprecated since 2.1.0 cohorts are more complex than just a set of patient ids, so there is no
-	 *             one-line replacement
-	 * @param memberIds
-	 */
-	@Deprecated
-	public void setMemberIds(Set<Integer> memberIds) {
-		if (getMemberships().isEmpty()) {
-			for (Integer id : memberIds) {
-				addMembership(new CohortMembership(id));
-			}
-		} else {
-			throw new IllegalArgumentException("since 2.1.0 cohorts are more complex than just a set of patient ids");
-		}
 	}
 
 	public void setMemberships(Set<CohortMembership> members) {

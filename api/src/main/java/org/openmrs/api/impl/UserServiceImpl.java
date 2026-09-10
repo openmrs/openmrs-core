@@ -776,7 +776,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * Delete this method when deleting {@link OpenmrsConstants#GP_HOST_URL}
 	 */
 	private void copyHostURLGlobalPropertyToPasswordResetGlobalProperty(AdministrationService adminService) {
-		String hostURLGP = adminService.getGlobalProperty(OpenmrsConstants.GP_HOST_URL);
+		String hostURLGP = adminService.getGlobalProperty(Context.getAdministrationService().getGlobalProperty("host.url"));
 		String passwordResetGP = adminService.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL);
 		if (StringUtils.isNotBlank(hostURLGP) && StringUtils.isBlank(passwordResetGP)) {
 			adminService.setGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL, hostURLGP);

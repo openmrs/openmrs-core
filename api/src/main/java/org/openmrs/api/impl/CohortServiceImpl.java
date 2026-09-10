@@ -117,7 +117,10 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@Override
 	public Cohort addPatientToCohort(Cohort cohort, Patient patient) {
-		if (!cohort.contains(patient.getPatientId())) {
+		boolean isMember = cohort.getActiveMemberships().stream()
+		        .anyMatch(m -> m.getPatientId().equals(patient.getPatientId()));
+
+		if (!isMember) {
 			CohortMembership cohortMembership = new CohortMembership(patient.getPatientId());
 			cohort.addMembership(cohortMembership);
 			Context.getCohortService().saveCohort(cohort);

@@ -310,7 +310,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Override
 	@Transactional(readOnly = true)
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
-		if (cohort.getMemberIds().isEmpty()) {
+		if (cohort.isEmpty()) { // Updated from cohort.getMemberIds().isEmpty()
 			return dao.getPatientPrograms(null, programs);
 		} else {
 			return dao.getPatientPrograms(cohort, programs);

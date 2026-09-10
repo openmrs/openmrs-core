@@ -41,7 +41,6 @@ import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.liquibase.LiquibaseProvider;
-import org.openmrs.liquibase.OpenmrsClassLoaderResourceAccessor;
 import org.openmrs.module.ModuleClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +68,7 @@ import liquibase.exception.LiquibaseException;
 import liquibase.exception.LockException;
 import liquibase.lockservice.LockService;
 import liquibase.lockservice.LockServiceFactory;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.CompositeResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
@@ -153,21 +153,6 @@ public class DatabaseUpdater {
 			log.debug("applying Liquibase changelog '{}'", changeLog);
 			executeChangelog(changeLog, (ChangeSetExecutorCallback) null);
 		}
-	}
-
-	/**
-	 * Run changesets on database using Liquibase to get the database up to the most recent version
-	 *
-	 * @param changelog the liquibase changelog file to use (or null to use the default file)
-	 * @param userInput nullable map from question to user answer. Used if a call to update(null) threw
-	 *            an {@link InputRequiredException}
-	 * @throws DatabaseUpdateException if an error occurs
-	 * @deprecated as of 2.4 see {@link #executeChangelog(String, ChangeSetExecutorCallback)}
-	 */
-	@Deprecated
-	public static void executeChangelog(String changelog, Map<String, Object> userInput) throws DatabaseUpdateException {
-		log.debug("Executing changelog: {}", changelog);
-		executeChangelog(changelog, (ChangeSetExecutorCallback) null);
 	}
 
 	/**
@@ -895,7 +880,7 @@ public class DatabaseUpdater {
 			}
 		}
 
-		ResourceAccessor openmrsFO = new OpenmrsClassLoaderResourceAccessor(classLoader);
+		ResourceAccessor openmrsFO = new ClassLoaderResourceAccessor(OpenmrsClassLoader.getInstance());
 		ResourceAccessor fsFO = new FileSystemResourceAccessor(OpenmrsUtil.getApplicationDataDirectoryAsFile());
 		return new CompositeResourceAccessor(openmrsFO, fsFO);
 	}
