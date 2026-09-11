@@ -50,7 +50,7 @@
 		<springTestVersion>7.0.9</springTestVersion>
 		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
 		<springSecurityVersion>7.1.1</springSecurityVersion>
-		<hibernateVersion>7.4.6.Final</hibernateVersion>
+		<hibernateVersion>7.4.7.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.3.Final</hibernateValidatorVersion>
@@ -120,13 +120,13 @@
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 		<jobrunrVersion>8.8.1</jobrunrVersion>
-		<shedlockVersion>7.9.0</shedlockVersion>
+		<shedlockVersion>7.10.0</shedlockVersion>
 
 		<!-- Testing -->
 		<junitVersion>6.1.3</junitVersion>
 		<mockitoVersion>5.23.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
-		<h2Version>2.3.232</h2Version>
+		<h2Version>2.5.250</h2Version>
 		<dbunitVersion>3.5.1</dbunitVersion>
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.5</testcontainersVersion>
@@ -152,7 +152,7 @@
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>3.10.1</version>
+				<version>3.10.2</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
