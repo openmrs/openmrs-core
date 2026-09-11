@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.web.filter;
+package org.openmrs.web.security;
 
 import java.io.IOException;
 
@@ -27,31 +27,29 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * This is the custom OpenMRS filter. It is defined as the filter of choice in the web.xml file. All
- * page/object calls run through the doFilter method so we can wrap every session with the user's
- * userContext (which holds the user's authenticated info). This is needed because the OpenMRS API
- * keeps authentication information on the current Thread. Web applications use a different thread
- * per request, so before each request this filter will make sure that the UserContext (the
- * authentication information) is on the Thread.
+ * Registered as part of {@link WebSecurityConfig}'s {@code SecurityFilterChain} rather than as a
+ * plain {@code web.xml} filter - superseding {@code org.openmrs.web.filter.OpenmrsFilter}, which
+ * did the same job from outside Spring Security's own filter chain. Every page/object request runs
+ * through {@link #doFilterInternal}, wrapping it with the user's {@link UserContext} (holding the
+ * user's authenticated info) so the OpenMRS API, which keeps authentication information on the
+ * current {@link Thread}, sees it: web applications use a different thread per request, so this
+ * filter makes sure the {@code UserContext} is on the thread before the rest of the chain runs.
+ * <p>
+ * Positioned via {@link WebSecurityConfig} to run before Spring Security's own authorization filter
+ * ({@code authorizeHttpRequests(...)}), since that needs the
+ * {@link org.springframework.security.core.Authentication} this filter installs (via
+ * {@link Context#setUserContext(UserContext)}) to already be in place - see
+ * {@link OpenmrsAuthenticationToken}.
+ *
+ * @since 3.0.0
  */
-public class OpenmrsFilter extends OncePerRequestFilter {
+public class OpenmrsSecurityContextFilter extends OncePerRequestFilter {
 
-	private static final Logger log = LoggerFactory.getLogger(OpenmrsFilter.class);
-
-	/**
-	 * @see jakarta.servlet.Filter#destroy()
-	 */
-	@Override
-	public void destroy() {
-		log.debug("Destroying filter");
-	}
+	private static final Logger log = LoggerFactory.getLogger(OpenmrsSecurityContextFilter.class);
 
 	/**
-	 * This method is called for every request for a page/image/javascript file/etc The main point of
-	 * this is to make sure the user's current userContext is on the session and on the current thread
-	 *
-	 * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(jakarta.servlet.http.HttpServletRequest,
-	 *      jakarta.servlet.http.HttpServletResponse, jakarta.servlet.FilterChain)
+	 * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(HttpServletRequest,
+	 *      HttpServletResponse, FilterChain)
 	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain chain)
@@ -93,9 +91,10 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		// set the locale on the session (for the servlet container as well)
 		httpSession.setAttribute("locale", userContext.getLocale());
 
-		//TODO We do not cache the csrfguard javascript file because it contains the
-		//csrf token that is dynamically embedded in forms. For this to work,
-		//the OpenmrsFilter should be before the CSRFGuard filter in web.xml
+		// We do not cache the csrfguard javascript file because it contains the csrf token that is
+		// dynamically embedded in forms. For this to work, this filter must run before CSRFGuard,
+		// which it does: web.xml positions springSecurityFilterChain (which this filter is part of)
+		// ahead of the CSRFGuard filter.
 		if (httpRequest.getRequestURI().endsWith("csrfguard")) {
 			httpResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
 			httpResponse.setHeader("Pragma", "no-cache"); // HTTP 1.0.
@@ -108,7 +107,7 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 
 		log.debug("before chain.Filter");
 
-		// continue the filter chain (going on to spring, authorization, etc)
+		// continue the filter chain (going on to the rest of Spring Security, authorization, etc)
 		try {
 			chain.doFilter(httpRequest, httpResponse);
 		} finally {
@@ -116,7 +115,5 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		}
 
 		log.debug("after chain.doFilter");
-
 	}
-
 }

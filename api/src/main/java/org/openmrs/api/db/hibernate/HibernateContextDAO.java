@@ -12,6 +12,7 @@ package org.openmrs.api.db.hibernate;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -162,7 +163,28 @@ public class HibernateContextDAO implements ContextDAO {
 			String saltOnRecord = (String) passwordAndSalt[1];
 
 			// if the username and password match, hydrate the user and return it
-			if (passwordOnRecord != null && Security.checkPassword(passwordOnRecord, password + saltOnRecord)) {
+			if (passwordOnRecord != null && Security.hashMatches(passwordOnRecord, password + saltOnRecord)) {
+				if (!Security.isUpgradedHash(passwordOnRecord)) {
+					// Transparently rewrite legacy (SHA-512/SHA-1) hashes to the stronger, id-prefixed
+					// format on next successful login, keeping the same salt. Done as a direct update
+					// here (rather than via UserDAO#changePassword, which restricts its caller to
+					// UserServiceImpl) since this DAO already reads the raw password/salt columns
+					// directly above. changed_by/date_changed are set to the authenticating user/now,
+					// same as any other password change, even though the cleartext password itself is
+					// unchanged - there is no other user to attribute a login-time rewrite to.
+					// Conditioned on password/salt still matching what was just read: without that
+					// guard, a password change racing between the read above and this write would be
+					// silently overwritten with an upgraded hash of the now-superseded password,
+					// reviving the old credential and discarding the one the user just chose. If the
+					// row no longer matches, another change won the race and this rewrite simply does
+					// not happen - the next successful login retries the upgrade.
+					String upgradedHash = Security.encodePassword(password + saltOnRecord);
+					session.createNativeQuery("update users set password = ?1, changed_by = ?2, date_changed = ?3 "
+					        + "where user_id = ?2 and password = ?4 and salt = ?5").setParameter(1, upgradedHash)
+					        .setParameter(2, candidateUser.getUserId()).setParameter(3, new Date())
+					        .setParameter(4, passwordOnRecord).setParameter(5, saltOnRecord).executeUpdate();
+				}
+
 				// hydrate the user object
 				candidateUser.getAllRoles().size();
 				candidateUser.getUserProperties().size();

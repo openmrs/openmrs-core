@@ -25,7 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
-import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
+import org.openmrs.security.LegacyOpenmrsPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -59,18 +59,27 @@ public class Security {
 	/**
 	 * Encodes a password using the configured {@code openmrsPasswordEncoder} and returns the full
 	 * encoded value to persist.
+	 * <p>
+	 * Pre-hashes <code>strToEncode</code> with {@link #sha256Hex(String)} before delegating - see that
+	 * method for why - so the configured {@code PasswordEncoder} never sees the original, potentially
+	 * over-length value. {@link #checkPassword(String, String)} applies the same pre-hash, so the two
+	 * stay consistent with each other regardless of which {@code PasswordEncoder} is configured.
 	 *
 	 * @param strToEncode {@code password + salt} to encode
 	 * @return the encoded value to store
 	 * @since 2.8.10, 2.9.0, 3.0.0
 	 */
 	public static String encodePassword(String strToEncode) {
-		return getPasswordEncoder().encode(strToEncode);
+		return getPasswordEncoder().encode(sha256Hex(strToEncode));
 	}
 
 	/**
 	 * Checks a raw password against a stored encoded password using the configured
-	 * {@code PasswordEncoder}.
+	 * {@code PasswordEncoder}. Unlike {@link #hashMatches(String, String)}, this does not branch on
+	 * whether {@code storedEncodedPassword} is a legacy or an upgraded hash - it is only meaningful for
+	 * a value this same {@code PasswordEncoder} produced itself (see {@link #encodePassword(String)}),
+	 * not for a stored password of unknown vintage, which is what {@link #hashMatches(String, String)}
+	 * is for.
 	 *
 	 * @param storedEncodedPassword the stored encoded password
 	 * @param rawPassword the raw password, with the salt already concatenated
@@ -82,7 +91,7 @@ public class Security {
 			return false;
 		}
 
-		return getPasswordEncoder().matches(rawPassword, storedEncodedPassword);
+		return getPasswordEncoder().matches(sha256Hex(rawPassword), storedEncodedPassword);
 	}
 
 	/**
@@ -106,8 +115,51 @@ public class Security {
 			throw new APIException("password.cannot.be.null", (Object[]) null);
 		}
 
+		if (isUpgradedHash(hashedPassword)) {
+			PasswordEncoder encoder = resolvePasswordEncoder();
+			// An upgraded (id-prefixed) hash cannot be verified by the legacy comparison below, which
+			// would never match it anyway; fail closed if the encoder bean isn't available yet rather
+			// than falling through.
+			return encoder != null && encoder.matches(sha256Hex(passwordToHash), hashedPassword);
+		}
+
 		return hashedPassword.equals(encodeString(passwordToHash)) || hashedPassword.equals(encodeStringSHA1(passwordToHash))
 		        || hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
+	}
+
+	/**
+	 * BCrypt (the default delegate behind the <code>openmrsPasswordEncoder</code> bean, see
+	 * {@link org.openmrs.security.OpenmrsSecurityConfig#openmrsPasswordEncoder()}) rejects inputs over
+	 * 72 bytes, and OpenMRS's 128-character salts routinely push <code>password + salt</code> past that
+	 * limit - so both {@link #encodePassword(String)}/{@link #checkPassword(String, String)} and the
+	 * matching branch of {@link #hashMatches(String, String)} pre-hash to this fixed-length,
+	 * 64-character digest before delegating to the {@link PasswordEncoder}, a standard pattern for
+	 * using BCrypt with arbitrary-length input.
+	 *
+	 * @param value the string to pre-hash
+	 * @return the SHA-256 hex digest of <code>value</code>
+	 */
+	private static String sha256Hex(String value) {
+		return hexString(digest(value.getBytes(StandardCharsets.UTF_8), "SHA-256"));
+	}
+
+	/**
+	 * @param hash a stored password hash
+	 * @return true if <code>hash</code> carries an encoder id prefix (e.g. <code>{bcrypt}...</code>,
+	 *         produced by {@link #encodePassword(String)}) rather than being in the legacy, unprefixed
+	 *         SHA-512/SHA-1 format
+	 * @since 3.0.0
+	 */
+	public static boolean isUpgradedHash(String hash) {
+		return hash != null && hash.startsWith("{");
+	}
+
+	private static PasswordEncoder resolvePasswordEncoder() {
+		try {
+			return Context.getRegisteredComponent("openmrsPasswordEncoder", PasswordEncoder.class);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	/**

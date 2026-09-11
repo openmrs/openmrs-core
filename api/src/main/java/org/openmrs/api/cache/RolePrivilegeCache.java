@@ -9,7 +9,9 @@
  */
 package org.openmrs.api.cache;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,6 +64,22 @@ import org.springframework.stereotype.Component;
  * That template carries a {@code lifespan} TTL as a safety net against role changes made outside
  * the API (eviction only fires on API mutations); it is configured declaratively in {@code
  * infinispan-api.xml}/{@code infinispan-api-local.xml} rather than per entry here.
+ * <p>
+ * Also caches the flattened set of every currently registered {@link Privilege} name (see
+ * {@link #getAllPrivilegeNames()}) and every registered {@link org.openmrs.Role} name (see
+ * {@link #getAllRoleNames()}), each under its own reserved key in the same cache region so both are
+ * invalidated by the same {@code @CacheEvict} on {@code savePrivilege}/{@code purgePrivilege}/
+ * {@code saveRole}/{@code purgeRole} that already clears per-role entries, without a dedicated
+ * cache region. This backs {@code OpenmrsAuthenticationToken} giving a superuser or {@code Daemon}
+ * thread every registered privilege and role as {@code GrantedAuthority}s (both satisfy any
+ * privilege or role name, which cannot otherwise be represented as a static, enumerable authority
+ * set - see {@link #isRegisteredPrivilege(String)}), and {@link #warnIfUnregistered(String)}, which
+ * flags a privilege check naming a string with no corresponding row - almost always a forgotten
+ * registration or a typo, since {@code Context.hasPrivilege(String)} enforces no such requirement
+ * itself. There is no role equivalent of {@code warnIfUnregistered}: unlike a privilege name, a
+ * role name checked via {@code hasRole(...)} is always compared against actual
+ * {@link org.openmrs.Role} membership, so there is no "checked but never registered" case to
+ * diagnose.
  *
  * @since 3.0.0, 2.9.0, 2.8.9
  */
@@ -73,6 +91,21 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	public static final String CACHE_NAME = "rolePrivileges";
 
 	/**
+	 * Cache/in-flight key for the flattened set of every registered privilege name. Chosen to be
+	 * exceedingly unlikely to collide with an admin-supplied role name, which is the only other kind of
+	 * key stored in this cache region.
+	 */
+	private static final String ALL_PRIVILEGES_KEY = "\u0000ALL_PRIVILEGES\u0000";
+
+	/**
+	 * Cache/in-flight key for the flattened set of every registered role name, alongside
+	 * {@link #ALL_PRIVILEGES_KEY} in the same reserved-key scheme.
+	 */
+	private static final String ALL_ROLES_KEY = "\u0000ALL_ROLES\u0000";
+
+	private static final RolePrivileges EMPTY_NAMES = new RolePrivileges(Collections.emptySet(), false);
+
+	/**
 	 * Capability token issued by {@link Daemon}, letting this component launch a daemon thread to load
 	 * roles with full trust.
 	 */
@@ -81,10 +114,17 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	private final CacheManager cacheManager;
 
 	/**
-	 * In-flight refreshes keyed by normalized role name, so concurrent misses for the same role share a
-	 * single daemon computation instead of each launching their own.
+	 * In-flight refreshes keyed by normalized role name (or {@link #ALL_PRIVILEGES_KEY}/
+	 * {@link #ALL_ROLES_KEY}), so concurrent misses for the same key share a single daemon computation
+	 * instead of each launching their own.
 	 */
 	private final ConcurrentMap<String, Future<RolePrivileges>> inFlight = new ConcurrentHashMap<>();
+
+	/**
+	 * Privilege names (case-normalized) that {@link #warnIfUnregistered(String)} has already logged
+	 * about, so a repeatedly-checked unregistered privilege logs once rather than on every check.
+	 */
+	private final Set<String> loggedUnregisteredPrivileges = ConcurrentHashMap.newKeySet();
 
 	@Autowired
 	public RolePrivilegeCache(@Qualifier("apiCacheManager") CacheManager cacheManager) {
@@ -133,6 +173,87 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 		}
 
 		return refresh(key, role, cache);
+	}
+
+	/**
+	 * Returns the names of every currently registered {@link Privilege}, in their original casing (see
+	 * {@link RolePrivileges} for why), computing and caching the result on a miss. Never returns
+	 * {@code null}.
+	 *
+	 * @return the registered privilege names
+	 * @since 3.0.0
+	 */
+	public Set<String> getAllPrivilegeNames() {
+		return getAllPrivilegesClosure().getPrivilegeNames();
+	}
+
+	/**
+	 * @param privilege the privilege name to test (compared case-insensitively)
+	 * @return true if a {@link Privilege} with this name is registered in the system
+	 * @since 3.0.0
+	 */
+	public boolean isRegisteredPrivilege(String privilege) {
+		return privilege != null && getAllPrivilegesClosure().containsPrivilege(privilege);
+	}
+
+	/**
+	 * Returns the names of every currently registered {@link org.openmrs.Role}, in their original
+	 * casing (see {@link RolePrivileges} for why), computing and caching the result on a miss. Never
+	 * returns {@code null}.
+	 *
+	 * @return the registered role names
+	 * @since 3.0.0
+	 */
+	public Set<String> getAllRoleNames() {
+		return getAllRolesClosure().getPrivilegeNames();
+	}
+
+	private RolePrivileges getAllPrivilegesClosure() {
+		Cache cache = getCache();
+		if (cache != null) {
+			RolePrivileges cached = cache.get(ALL_PRIVILEGES_KEY, RolePrivileges.class);
+			if (cached != null) {
+				return cached;
+			}
+		}
+
+		return refreshAllPrivileges(cache);
+	}
+
+	private RolePrivileges getAllRolesClosure() {
+		Cache cache = getCache();
+		if (cache != null) {
+			RolePrivileges cached = cache.get(ALL_ROLES_KEY, RolePrivileges.class);
+			if (cached != null) {
+				return cached;
+			}
+		}
+
+		return refreshAllRoles(cache);
+	}
+
+	/**
+	 * Logs, at error level and once per distinct privilege name for the lifetime of this component,
+	 * that a privilege check named a string with no corresponding {@link Privilege} row. Purely
+	 * diagnostic: it never affects the outcome of the check that triggered it. The empty string is
+	 * exempt, since it is the implicit "authenticated" privilege every logged-in user holds (see
+	 * {@code UserContext#resolvePrivilege(String)}) and is never itself registered as a
+	 * {@link Privilege}.
+	 *
+	 * @param privilege the privilege name that was checked
+	 * @since 3.0.0
+	 */
+	public void warnIfUnregistered(String privilege) {
+		if (privilege == null || privilege.isEmpty() || isRegisteredPrivilege(privilege)) {
+			return;
+		}
+
+		if (loggedUnregisteredPrivileges.add(RolePrivileges.normalize(privilege))) {
+			log.error(
+			    "Checked privilege '{}' is not registered as a Privilege in the system - "
+			            + "register it (Manage Privileges, or a startup registration) so it can be assigned to a role",
+			    privilege);
+		}
 	}
 
 	/**
@@ -202,6 +323,142 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 			// The lifespan TTL comes from the cache template (see the class-level note), so a plain put
 			// carries it; no per-entry expiry handling is needed here.
 			cache.put(key, computed);
+		}
+		return computed;
+	}
+
+	/**
+	 * Loads and caches the flattened set of every registered {@link Privilege} name in a daemon thread,
+	 * mirroring {@link #refresh(String, Role, Cache)} for the per-role case: loading them through the
+	 * secured {@code UserService} itself requires {@code Manage Privileges}, so a daemon thread is
+	 * needed to break that cycle for a caller who does not (yet) hold it.
+	 * <p>
+	 * Failure of any kind - scheduling, interruption, or the daemon task itself - fails open to an
+	 * empty, uncached result rather than propagating: this data only ever adds convenience
+	 * ({@code getAuthorities()}'s superuser authorities, or the diagnostic in
+	 * {@link #warnIfUnregistered(String)}), never a security decision, so degrading it during a
+	 * transient failure is preferable to letting it break the privilege check that triggered it.
+	 *
+	 * @param cache the target cache, or <code>null</code> if unavailable
+	 * @return the flattened set of registered privilege names, or an empty one on failure
+	 */
+	private RolePrivileges refreshAllPrivileges(Cache cache) {
+		Future<RolePrivileges> future;
+		try {
+			future = inFlight.computeIfAbsent(ALL_PRIVILEGES_KEY,
+			    k -> Daemon.runNewDaemonTask((Callable<RolePrivileges>) () -> {
+				    try {
+					    return loadAndCacheAllPrivileges(cache);
+				    } finally {
+					    inFlight.remove(k);
+				    }
+			    }, daemonCallerKey()));
+		} catch (RuntimeException e) {
+			log.warn("Could not schedule a daemon refresh of the registered privilege names; treating the set as "
+			        + "empty for this call",
+			    e);
+			return EMPTY_NAMES;
+		}
+
+		try {
+			return future.get();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			log.debug(
+			    "Interrupted while refreshing the registered privilege names; treating the set as empty for " + "this call",
+			    e);
+			return EMPTY_NAMES;
+		} catch (ExecutionException e) {
+			log.warn("Refreshing the registered privilege names failed; treating the set as empty for this call",
+			    e.getCause());
+			return EMPTY_NAMES;
+		}
+	}
+
+	/**
+	 * Runs inside a daemon thread: loads every {@link Privilege} through the {@code UserService}
+	 * (authorization skipped for daemon threads), collects their names, and caches the result.
+	 *
+	 * @param cache the target cache, or <code>null</code> if unavailable
+	 * @return the flattened set of registered privilege names
+	 */
+	private RolePrivileges loadAndCacheAllPrivileges(Cache cache) {
+		List<Privilege> privileges = Context.getUserService().getAllPrivileges();
+		Set<String> names = new HashSet<>();
+		for (Privilege privilege : privileges) {
+			if (privilege != null && privilege.getPrivilege() != null) {
+				names.add(privilege.getPrivilege());
+			}
+		}
+
+		RolePrivileges computed = new RolePrivileges(names, false);
+		if (cache != null) {
+			cache.put(ALL_PRIVILEGES_KEY, computed);
+		}
+		return computed;
+	}
+
+	/**
+	 * Loads and caches the flattened set of every registered {@link org.openmrs.Role} name in a daemon
+	 * thread, mirroring {@link #refreshAllPrivileges(Cache)} for the same reason: loading them through
+	 * the secured {@code UserService} itself requires {@code Manage Roles}, so a daemon thread is
+	 * needed to break that cycle for a caller who does not (yet) hold it.
+	 * <p>
+	 * Failure of any kind fails open to an empty, uncached result, same as
+	 * {@link #refreshAllPrivileges(Cache)} and for the same reason: this data only ever adds
+	 * convenience ({@code getAuthorities()}'s superuser/Daemon authorities), never a security decision.
+	 *
+	 * @param cache the target cache, or <code>null</code> if unavailable
+	 * @return the flattened set of registered role names, or an empty one on failure
+	 */
+	private RolePrivileges refreshAllRoles(Cache cache) {
+		Future<RolePrivileges> future;
+		try {
+			future = inFlight.computeIfAbsent(ALL_ROLES_KEY, k -> Daemon.runNewDaemonTask((Callable<RolePrivileges>) () -> {
+				try {
+					return loadAndCacheAllRoles(cache);
+				} finally {
+					inFlight.remove(k);
+				}
+			}, daemonCallerKey()));
+		} catch (RuntimeException e) {
+			log.warn("Could not schedule a daemon refresh of the registered role names; treating the set as empty "
+			        + "for this call",
+			    e);
+			return EMPTY_NAMES;
+		}
+
+		try {
+			return future.get();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			log.debug("Interrupted while refreshing the registered role names; treating the set as empty for this call", e);
+			return EMPTY_NAMES;
+		} catch (ExecutionException e) {
+			log.warn("Refreshing the registered role names failed; treating the set as empty for this call", e.getCause());
+			return EMPTY_NAMES;
+		}
+	}
+
+	/**
+	 * Runs inside a daemon thread: loads every {@link org.openmrs.Role} through the {@code UserService}
+	 * (authorization skipped for daemon threads), collects their names, and caches the result.
+	 *
+	 * @param cache the target cache, or <code>null</code> if unavailable
+	 * @return the flattened set of registered role names
+	 */
+	private RolePrivileges loadAndCacheAllRoles(Cache cache) {
+		List<Role> roles = Context.getUserService().getAllRoles();
+		Set<String> names = new HashSet<>();
+		for (Role role : roles) {
+			if (role != null && role.getRole() != null) {
+				names.add(role.getRole());
+			}
+		}
+
+		RolePrivileges computed = new RolePrivileges(names, false);
+		if (cache != null) {
+			cache.put(ALL_ROLES_KEY, computed);
 		}
 		return computed;
 	}

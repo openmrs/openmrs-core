@@ -29,6 +29,14 @@ import java.lang.annotation.Target;
  *     &#64;Authorized ()
  *     public void getUsersByName(String name);
  * </pre>
+ * <p>
+ * As of 3.0.0, Spring Security's {@code @PreAuthorize} is also fully supported (see
+ * {@link org.openmrs.security.OpenmrsSecurityConfig}), evaluated by a separate, independent advisor
+ * alongside {@link org.openmrs.aop.AuthorizationAdvice} - a method carries one annotation or the
+ * other, never both. {@code @Authorized} remains fully supported and is not going away; there is no
+ * need to convert existing usages. New code, and contributors who prefer Spring Security's standard
+ * mechanism, may use {@code @PreAuthorize("hasPermission(null, '&lt;privilege&gt;')")} instead -
+ * see {@link org.openmrs.api.ProviderService#getProvider(Integer)} for a reference example.
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)

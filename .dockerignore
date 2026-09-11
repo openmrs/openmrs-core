@@ -1,0 +1,6 @@
+.idea
+.git
+**/target
+**/.DS_Store
+openmrs-merged.properties
+docker-image.txt

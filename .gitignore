@@ -68,6 +68,10 @@ nb-configuration.xml
 *~
 #############
 
+### macOS ###
+.DS_Store
+#############
+
 ### OpenMRS Files ###
 /webapp/activemq-data
 /webapp/src/main/webapp/WEB-INF/tags/module
