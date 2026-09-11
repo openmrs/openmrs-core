@@ -723,6 +723,19 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		return visitCount.intValue() + encounterCount.intValue();
 	}
 
+	private String getFormattedMatchPattern(String query) {
+		String modeSetting = Context.getAdministrationService().getGlobalProperty("patient.nameSearchMatchMode", "exact");
+
+		MatchMode mode = MatchMode.EXACT;
+		if ("start".equalsIgnoreCase(modeSetting)) {
+			mode = MatchMode.START;
+		} else if ("anywhere".equalsIgnoreCase(modeSetting)) {
+			mode = MatchMode.ANYWHERE;
+		}
+
+		return mode.toLowerCasePattern(query);
+	}
+
 	private List<Predicate> createEmptyVisitsByPatientPredicates(CriteriaBuilder cb, Root<Visit> root, Patient patient,
 	        boolean includeVoided, String query) {
 		List<Predicate> predicates = new ArrayList<>();
@@ -738,8 +751,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			Join<Visit, VisitType> visitTypeJoin = root.join("visitType", JoinType.LEFT);
 			Join<Visit, Location> locationJoin = root.join("location", JoinType.LEFT);
 
-			predicates.add(cb.or(cb.like(cb.lower(visitTypeJoin.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(query)),
-			    cb.like(cb.lower(locationJoin.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(query))));
+			String likePattern = getFormattedMatchPattern(query);
+			predicates.add(cb.or(cb.like(cb.lower(visitTypeJoin.get("name")), likePattern),
+			    cb.like(cb.lower(locationJoin.get("name")), likePattern)));
 		}
 
 		return predicates;
@@ -763,7 +777,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			Join<Encounter, Location> locationJoin = root.join("location", JoinType.LEFT);
 			Join<Encounter, EncounterType> encounterTypeJoin = root.join("encounterType", JoinType.LEFT);
 
-			String likePattern = MatchMode.ANYWHERE.toLowerCasePattern(query);
+			String likePattern = getFormattedMatchPattern(query);
 			predicates.add(cb.or(cb.like(cb.lower(visitTypeJoin.get("name")), likePattern),
 			    cb.like(cb.lower(visitLocationJoin.get("name")), likePattern),
 			    cb.like(cb.lower(locationJoin.get("name")), likePattern),

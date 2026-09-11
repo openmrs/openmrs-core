@@ -250,7 +250,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 		List<CohortMembership> memberships;
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.GET_PATIENT_COHORTS);
-			memberships = Context.getCohortService().getCohortMemberships(patient.getPatientId(), null, false);
+			memberships = Context.getCohortService().getCohortMemberships(patient.getPatientId(), null, true);
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_PATIENT_COHORTS);
 		}
