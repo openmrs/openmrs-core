@@ -9,13 +9,7 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
@@ -310,8 +304,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Override
 	@Transactional(readOnly = true)
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
-		if (cohort.isEmpty()) { // Updated from cohort.getMemberIds().isEmpty()
-			return dao.getPatientPrograms(null, programs);
+		if (cohort == null || cohort.getMemberships() == null || cohort.getMemberships().isEmpty()) {
+			return Collections.emptyList();
 		} else {
 			return dao.getPatientPrograms(cohort, programs);
 		}
