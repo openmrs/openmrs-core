@@ -16,6 +16,7 @@ import java.io.InterruptedIOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.NoSuchFileException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
@@ -137,7 +138,12 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		CompletableFuture<ResponseInputStream<GetObjectResponse>> future = s3AsyncClient.getObject(
 		    GetObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build(),
 		    AsyncResponseTransformer.toBlockingInputStream());
-		ResponseInputStream<GetObjectResponse> response = waitForResponse(future);
+		ResponseInputStream<GetObjectResponse> response;
+		try {
+			response = waitForResponse(future);
+		} catch (IOException e) {
+			throw translateNotFound(key, e);
+		}
 		GetObjectResponse getResponse = response.response();
 		ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setMimeType(getResponse.contentType());
@@ -157,10 +163,28 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		return result;
 	}
 
+	private IOException translateNotFound(String key, IOException e) {
+		Throwable cause = e;
+		while (cause != null) {
+			if (cause instanceof S3Exception && ((S3Exception) cause).statusCode() == 404) {
+				NoSuchFileException notFound = new NoSuchFileException(key);
+				notFound.initCause(e);
+				return notFound;
+			}
+			cause = cause.getCause();
+		}
+		return e;
+	}
+
 	public ObjectMetadata getMetadata(String key) throws IOException {
 		HeadObjectRequest request = HeadObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build();
 		CompletableFuture<HeadObjectResponse> headRequest = s3AsyncClient.headObject(request);
-		HeadObjectResponse awsMetadata = waitForResponse(headRequest);
+		HeadObjectResponse awsMetadata;
+		try {
+			awsMetadata = waitForResponse(headRequest);
+		} catch (IOException e) {
+			throw translateNotFound(key, e);
+		}
 		ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setMimeType(awsMetadata.contentType());
 		metadata.setLength(awsMetadata.contentLength());

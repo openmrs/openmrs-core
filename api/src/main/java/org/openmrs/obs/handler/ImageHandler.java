@@ -81,20 +81,12 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 
 			DataWithMetadata dwm;
 			try {
-				dwm = storageService.getDataWithMetadata(key);
+				dwm = getDataWithMetadataWithLegacyFallback(key);
 			} catch (IOException e) {
-				// Key not found at new layout; try legacy layout
-				String legacyKey = getObsDir() + '/' + key;
-				try {
-					dwm = storageService.getDataWithMetadata(legacyKey);
-					key = legacyKey;
-				} catch (IOException e2) {
-					log.error("Trying to read file: {}", key, e2);
-					String filename = parseFilename(obs, "image");
-					ComplexData complexData = new ComplexData(filename, null);
-					obs.setComplexData(complexData);
-					return obs;
-				}
+				log.error("Trying to read file: {}", key, e);
+				ComplexData complexData = new ComplexData(parseFilename(obs, "image"), null);
+				obs.setComplexData(complexData);
+				return obs;
 			}
 
 			try (InputStream in = dwm.data()) {

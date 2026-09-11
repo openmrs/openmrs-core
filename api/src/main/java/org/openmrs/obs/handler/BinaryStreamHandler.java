@@ -9,7 +9,6 @@
  */
 package org.openmrs.obs.handler;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -62,6 +61,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 		String key = parseDataKey(obs);
 
 		ComplexData complexData = null;
+		DataWithMetadata dwm = null;
 		// Raw stream
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
 			try {
@@ -69,15 +69,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 				String originalFilename = names[0];
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
 
-				DataWithMetadata dwm;
-				try {
-					dwm = storageService.getDataWithMetadata(key);
-				} catch (IOException e) {
-					// Key not found at new layout; try legacy layout
-					String legacyKey = getObsDir() + '/' + key;
-					dwm = storageService.getDataWithMetadata(legacyKey);
-					key = legacyKey;
-				}
+				dwm = getDataWithMetadataWithLegacyFallback(key);
 				InputStream in = dwm.data();
 				complexData = new ComplexData(parseFilename(obs, ""), in);
 			} catch (Exception e) {
@@ -91,7 +83,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 
 		Assert.notNull(complexData, "Complex data must not be null");
 
-		injectMissingMetadata(key, complexData);
+		injectMissingMetadata(key, complexData, dwm.metadata());
 		obs.setComplexData(complexData);
 
 		return obs;

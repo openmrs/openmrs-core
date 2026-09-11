@@ -179,11 +179,11 @@ public interface StorageService extends OpenmrsService {
 	boolean exists(String key) throws UncheckedIOException;
 
 	/**
-	 * Returns both data and metadata for the given key in a single operation.
+	 * Returns both data and metadata for the given key.
 	 * <p>
-	 * This avoids redundant I/O (e.g. separate existence probes or metadata fetches) when the backend
-	 * can provide both in one call (e.g. S3 GetObject returns response headers with metadata, local
-	 * filesystem can read attributes alongside the file).
+	 * The default implementation fetches data and metadata separately, which may be optimized by
+	 * implementations that can provide both in a single operation (e.g. S3 GetObject returns response
+	 * headers with metadata, local filesystem can read attributes alongside the file).
 	 * <p>
 	 * The caller must close the returned {@link org.openmrs.api.storage.DataWithMetadata} to release
 	 * the underlying stream.
@@ -192,5 +192,7 @@ public interface StorageService extends OpenmrsService {
 	 * @return data with metadata
 	 * @throws IOException wrong key or IO error
 	 */
-	DataWithMetadata getDataWithMetadata(String key) throws IOException;
+	default DataWithMetadata getDataWithMetadata(String key) throws IOException {
+		return new DataWithMetadata(getData(key), getMetadata(key));
+	}
 }
