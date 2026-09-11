@@ -166,7 +166,7 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 	private IOException translateNotFound(String key, IOException e) {
 		Throwable cause = e;
 		while (cause != null) {
-			if (cause instanceof S3Exception && ((S3Exception) cause).statusCode() == 404) {
+			if (cause instanceof S3Exception s3Exception && s3Exception.statusCode() == 404) {
 				NoSuchFileException notFound = new NoSuchFileException(key);
 				notFound.initCause(e);
 				return notFound;

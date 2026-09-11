@@ -10,6 +10,7 @@
 package org.openmrs.obs.handler;
 
 import java.io.InputStream;
+import java.nio.file.NoSuchFileException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +73,10 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 				dwm = getDataWithMetadataWithLegacyFallback(key);
 				InputStream in = dwm.data();
 				complexData = new ComplexData(parseFilename(obs, ""), in);
+			} catch (NoSuchFileException e) {
+				log.error("Trying to read file: {}", key, e);
+				Assert.notNull(null, "Complex data must not be null");
+				return null;
 			} catch (Exception e) {
 				throw new APIException("Obs.error.while.trying.get.binary.complex", null, e);
 			}

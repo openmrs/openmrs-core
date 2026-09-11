@@ -63,44 +63,64 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 
 		log.debug("value complex: {}", obs.getValueComplex());
 		log.debug("file path: {}", key);
-		ComplexData complexData = null;
-		ObjectMetadata metadata = null;
 
+		ComplexData complexData;
 		if (ComplexObsHandler.TEXT_VIEW.equals(view) || ComplexObsHandler.RAW_VIEW.equals(view)) {
-			String filename = parseFilename(obs, "file");
-
-			DataWithMetadata dwm;
-			try {
-				dwm = getDataWithMetadataWithLegacyFallback(key);
-			} catch (NoSuchFileException e) {
-				log.error("Trying to read file: {}", key, e);
-				Assert.notNull(null, "Complex data must not be null");
-				return null;
-			} catch (IOException e) {
-				log.error("Trying to read file: {}", key, e);
-				throw new UncheckedIOException(e);
-			}
-			metadata = dwm.metadata();
-
-			try (InputStream is = dwm.data()) {
-				complexData = ComplexObsHandler.RAW_VIEW.equals(view) ? new ComplexData(filename, IOUtils.toByteArray(is))
-				        : new ComplexData(filename, IOUtils.toString(is, StandardCharsets.UTF_8));
-			} catch (IOException e) {
-				log.error("Trying to read file: {}", key, e);
-			}
+			complexData = getTextOrRawViewData(obs, key, view);
 		} else if (ComplexObsHandler.URI_VIEW.equals(view)) {
-			complexData = new ComplexData(parseDataTitle(obs), key);
-			try {
-				metadata = getMetadataWithLegacyFallback(key);
-			} catch (IOException e) {
-				throw new UncheckedIOException(e);
-			}
+			complexData = getUriViewData(obs, key);
 		} else {
 			// No other view supported
 			// NOTE: if adding support for another view, don't forget to update supportedViews list above
 			return null;
 		}
 
+		Assert.notNull(complexData, "Complex data must not be null");
+		obs.setComplexData(complexData);
+		return obs;
+	}
+
+	private ComplexData getTextOrRawViewData(Obs obs, String key, String view) {
+		String filename = parseFilename(obs, "file");
+
+		DataWithMetadata dwm;
+		try {
+			dwm = getDataWithMetadataWithLegacyFallback(key);
+		} catch (NoSuchFileException e) {
+			log.error("Trying to read file: {}", key, e);
+			Assert.notNull(null, "Complex data must not be null");
+			return null;
+		} catch (IOException e) {
+			log.error("Trying to read file: {}", key, e);
+			throw new UncheckedIOException(e);
+		}
+
+		ComplexData complexData;
+		try (InputStream is = dwm.data()) {
+			complexData = ComplexObsHandler.RAW_VIEW.equals(view) ? new ComplexData(filename, IOUtils.toByteArray(is))
+			        : new ComplexData(filename, IOUtils.toString(is, StandardCharsets.UTF_8));
+		} catch (IOException e) {
+			log.error("Trying to read file: {}", key, e);
+			return null;
+		}
+
+		setContentMetadata(complexData, dwm.metadata());
+		return complexData;
+	}
+
+	private ComplexData getUriViewData(Obs obs, String key) {
+		ComplexData complexData = new ComplexData(parseDataTitle(obs), key);
+		ObjectMetadata metadata;
+		try {
+			metadata = getMetadataWithLegacyFallback(key);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+		setContentMetadata(complexData, metadata);
+		return complexData;
+	}
+
+	private void setContentMetadata(ComplexData complexData, ObjectMetadata metadata) {
 		if (complexData != null && metadata != null) {
 			// Get the Mime Type and set it
 			String mimeType = metadata.getMimeType();
@@ -108,11 +128,6 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 			complexData.setMimeType(mimeType);
 			complexData.setLength(metadata.getLength());
 		}
-		Assert.notNull(complexData, "Complex data must not be null");
-
-		obs.setComplexData(complexData);
-
-		return obs;
 	}
 
 	/**
