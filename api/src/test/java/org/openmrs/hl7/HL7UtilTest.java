@@ -105,4 +105,14 @@ public class HL7UtilTest {
 	public void parseHL7Timestamp_shouldRejectInvalidDate() {
 		assertThrows(HL7Exception.class, () -> HL7Util.parseHL7Timestamp("20240230"));
 	}
+
+	/**
+	 * @throws HL7Exception
+	 * @see HL7Util#parseHL7Timestamp(String)
+	 */
+	@Test
+	public void parseHL7Timestamp_shouldRejectInvalidTime() {
+		assertThrows(HL7Exception.class, () -> HL7Util.parseHL7Timestamp("20240101250000.000+0000"));
+	}
+
 }
