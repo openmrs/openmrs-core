@@ -1170,6 +1170,7 @@
 	</changeSet>
 
 	<changeSet id="20090402-1516-cohort" author="bwolfe">
+		<validCheckSum>8:0431b5d66dadace1f609f27248062925</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in cohort table via built in uuid function.</comment>
 		<update tableName="cohort" >
@@ -1180,6 +1181,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept" author="bwolfe">
+		<validCheckSum>8:1e0f400a3e02b2267dba57afbc09f064</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept table via built in uuid function.</comment>
 		<update tableName="concept" >
@@ -1190,6 +1192,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_answer" author="bwolfe">
+		<validCheckSum>8:14725aeb0ba1b220764aaaa2743fbcc1</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_answer table via built in uuid function.</comment>
 		<update tableName="concept_answer" >
@@ -1200,6 +1203,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_class" author="bwolfe">
+		<validCheckSum>8:e009e66a10fad39725007b8b437ec542</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_class table via built in uuid function.</comment>
 		<update tableName="concept_class" >
@@ -1210,6 +1214,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_datatype" author="bwolfe">
+		<validCheckSum>8:50c60f113feae2f9b76a36b182d729c3</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_datatype table via built in uuid function.</comment>
 		<update tableName="concept_datatype" >
@@ -1220,6 +1225,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_description" author="bwolfe">
+		<validCheckSum>8:d507b6d43d4703b337e2873b99d53c29</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_description table via built in uuid function.</comment>
 		<update tableName="concept_description" >
@@ -1230,6 +1236,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_map" author="bwolfe">
+		<validCheckSum>8:4a3198befaf42d7fd4cf5af019b6f4f2</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_map table via built in uuid function.</comment>
 		<update tableName="concept_map" >
@@ -1240,6 +1247,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_name" author="bwolfe">
+		<validCheckSum>8:ee75375425d145b05df4fab8f707ea69</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_name table via built in uuid function.</comment>
 		<update tableName="concept_name" >
@@ -1250,6 +1258,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_name_tag" author="bwolfe">
+		<validCheckSum>8:5566908beb393ec832ce27a5d493ca86</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_name_tag table via built in uuid function.</comment>
 		<update tableName="concept_name_tag" >
@@ -1260,6 +1269,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_proposal" author="bwolfe">
+		<validCheckSum>8:eac4db6c3f0ef95585e34e98afb00578</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_proposal table via built in uuid function.</comment>
 		<update tableName="concept_proposal" >
@@ -1270,6 +1280,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_set" author="bwolfe">
+		<validCheckSum>8:c35e143c79ef625bb8b54438006ebc8d</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_set table via built in uuid function.</comment>
 		<update tableName="concept_set" >
@@ -1280,6 +1291,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_source" author="bwolfe">
+		<validCheckSum>8:76c2300af70adeed3b0d61c4dcb361ac</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_source table via built in uuid function.</comment>
 		<update tableName="concept_source" >
@@ -1290,6 +1302,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-concept_state_conversion" author="bwolfe">
+		<validCheckSum>8:ab520a2102cbde06e2e0a6a3e8e24760</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in concept_state_conversion table via built in uuid function.</comment>
 		<update tableName="concept_state_conversion" >
@@ -1300,6 +1313,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-drug" author="bwolfe">
+		<validCheckSum>8:42ad5652d8be630da9a85cdc777bf62c</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in drug table via built in uuid function.</comment>
 		<update tableName="drug" >
@@ -1310,6 +1324,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-encounter" author="bwolfe">
+		<validCheckSum>8:6fa6291b208cbf30795e4fbbf1a29499</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in encounter table via built in uuid function.</comment>
 		<update tableName="encounter" >
@@ -1320,6 +1335,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-encounter_type" author="bwolfe">
+		<validCheckSum>8:2dc353dff2b3e85f8aa2cfdc35ddf0d1</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in encounter_type table via built in uuid function.</comment>
 		<update tableName="encounter_type" >
@@ -1330,6 +1346,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-field" author="bwolfe">
+		<validCheckSum>8:ae2bb67bc770d53bf9c5aeb1b4a44a18</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in field table via built in uuid function.</comment>
 		<update tableName="field" >
@@ -1340,6 +1357,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-field_answer" author="bwolfe">
+		<validCheckSum>8:6d08b43ff81ab3ef5ad063a4162c14be</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in field_answer table via built in uuid function.</comment>
 		<update tableName="field_answer" >
@@ -1350,6 +1368,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-field_type" author="bwolfe">
+		<validCheckSum>8:924158127f8815eb78de0acee3ab615d</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in field_type table via built in uuid function.</comment>
 		<update tableName="field_type" >
@@ -1360,6 +1379,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-form" author="bwolfe">
+		<validCheckSum>8:7750e533b6847a12b14b525520e46fcc</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in form table via built in uuid function.</comment>
 		<update tableName="form" >
@@ -1370,6 +1390,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-form_field" author="bwolfe">
+		<validCheckSum>8:0290a276b8eca8da5521269693faa9c3</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in form_field table via built in uuid function.</comment>
 		<update tableName="form_field" >
@@ -1380,6 +1401,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-global_property" author="bwolfe">
+		<validCheckSum>8:a2da54d7dfc7184d4f57782f6d6da7ca</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in global_property table via built in uuid function.</comment>
 		<update tableName="global_property" >
@@ -1390,6 +1412,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-hl7_in_archive" author="bwolfe">
+		<validCheckSum>8:91a5a3238f6804b6deba8c390ed90cec</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in hl7_in_archive table via built in uuid function.</comment>
 		<update tableName="hl7_in_archive" >
@@ -1400,6 +1423,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-hl7_in_error" author="bwolfe">
+		<validCheckSum>8:d2bcb59eb5739d359b6e2a51d6929569</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in hl7_in_error table via built in uuid function.</comment>
 		<update tableName="hl7_in_error" >
@@ -1410,6 +1434,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-hl7_in_queue" author="bwolfe">
+		<validCheckSum>8:bb805f250af6a7ee95c19b4b8b0ec52b</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in hl7_in_queue table via built in uuid function.</comment>
 		<update tableName="hl7_in_queue" >
@@ -1420,6 +1445,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-hl7_source" author="bwolfe">
+		<validCheckSum>8:28d8ac6ba72b528ff0b07f6c5262852d</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in hl7_source table via built in uuid function.</comment>
 		<update tableName="hl7_source" >
@@ -1430,6 +1456,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-location" author="bwolfe">
+		<validCheckSum>8:42790f0921f9aacb08a5590abe086550</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in location table via built in uuid function.</comment>
 		<update tableName="location" >
@@ -1440,6 +1467,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-location_tag" author="bwolfe">
+		<validCheckSum>8:774ecbfa168c75ed80f0b3f990fc5190</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in location_tag table via built in uuid function.</comment>
 		<update tableName="location_tag" >
@@ -1450,6 +1478,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-note" author="bwolfe">
+		<validCheckSum>8:7531745f30d7514af2f44694a5f3aff9</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in note table via built in uuid function.</comment>
 		<update tableName="note" >
@@ -1460,6 +1489,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-notification_alert" author="bwolfe">
+		<validCheckSum>8:fe1be90bb46eaae28be0702f2c0a2e69</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in notification_alert table via built in uuid function.</comment>
 		<update tableName="notification_alert" >
@@ -1470,6 +1500,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-notification_template" author="bwolfe">
+		<validCheckSum>8:584f6ad7726c20c1f807d87a13bf62fc</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in notification_template table via built in uuid function.</comment>
 		<update tableName="notification_template" >
@@ -1480,6 +1511,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-obs" author="bwolfe">
+		<validCheckSum>8:0ebd729cae2b593813e045a089ecf7d7</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in obs table via built in uuid function.</comment>
 		<update tableName="obs" >
@@ -1490,6 +1522,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-order_type" author="bwolfe">
+		<validCheckSum>8:b9f8568f018e930f9b65574d3a07790e</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in order_type table via built in uuid function.</comment>
 		<update tableName="order_type" >
@@ -1500,6 +1533,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-orders" author="bwolfe">
+		<validCheckSum>8:eda3ea2432dd5e3f4e31ea58ed364b82</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in orders table via built in uuid function.</comment>
 		<update tableName="orders" >
@@ -1510,6 +1544,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-patient_identifier" author="bwolfe">
+		<validCheckSum>8:0548850e9abe887cdaf4868fb804f924</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in patient_identifier table via built in uuid function.</comment>
 		<update tableName="patient_identifier" >
@@ -1520,6 +1555,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-patient_identifier_type" author="bwolfe">
+		<validCheckSum>8:f341797c0cf514a97aaa0fe86883f678</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in patient_identifier_type table via built in uuid function.</comment>
 		<update tableName="patient_identifier_type" >
@@ -1530,6 +1566,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-patient_program" author="bwolfe">
+		<validCheckSum>8:c1ce92458fd28203d3ce6d702854a326</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in patient_program table via built in uuid function.</comment>
 		<update tableName="patient_program" >
@@ -1540,6 +1577,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-patient_state" author="bwolfe">
+		<validCheckSum>8:1a63f639c482a6c1cfa50def18000fb6</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in patient_state table via built in uuid function.</comment>
 		<update tableName="patient_state" >
@@ -1550,6 +1588,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-person" author="bwolfe">
+		<validCheckSum>8:5a29a6f0b14bac5440c6fa41fb368110</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in person table via built in uuid function.</comment>
 		<update tableName="person" >
@@ -1560,6 +1599,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-person_address" author="bwolfe">
+		<validCheckSum>8:55bfbe6740eba93a5b4104cb607094e2</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in person_address table via built in uuid function.</comment>
 		<update tableName="person_address" >
@@ -1570,6 +1610,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-person_attribute" author="bwolfe">
+		<validCheckSum>8:b11fef19f2bba6e07f2334d35ca165dc</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in person_attribute table via built in uuid function.</comment>
 		<update tableName="person_attribute" >
@@ -1580,6 +1621,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-person_attribute_type" author="bwolfe">
+		<validCheckSum>8:71e412dbf9a57529674f4f09a9cd1536</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in person_attribute_type table via built in uuid function.</comment>
 		<update tableName="person_attribute_type" >
@@ -1590,6 +1632,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-person_name" author="bwolfe">
+		<validCheckSum>8:2afb750dd32034a81edcbbd8a6eb1f75</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in person_name table via built in uuid function.</comment>
 		<update tableName="person_name" >
@@ -1600,6 +1643,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-privilege" author="bwolfe">
+		<validCheckSum>8:eeb99da50411c70e1f297286597ff09f</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in privilege table via built in uuid function.</comment>
 		<update tableName="privilege" >
@@ -1610,6 +1654,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-program" author="bwolfe">
+		<validCheckSum>8:6bcada11a6f2ad97ac9713f257ae7151</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in program table via built in uuid function.</comment>
 		<update tableName="program" >
@@ -1620,6 +1665,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-program_workflow" author="bwolfe">
+		<validCheckSum>8:215fa56af3d5a2a384a08f9cdf06041a</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in program_workflow table via built in uuid function.</comment>
 		<update tableName="program_workflow" >
@@ -1630,6 +1676,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-program_workflow_state" author="bwolfe">
+		<validCheckSum>8:c494bf783c1f0a730258dec0d9f05f1e</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in program_workflow_state table via built in uuid function.</comment>
 		<update tableName="program_workflow_state" >
@@ -1640,6 +1687,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-relationship" author="bwolfe">
+		<validCheckSum>8:493d653eb8e211db15185a1ff027d5aa</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in relationship table via built in uuid function.</comment>
 		<update tableName="relationship" >
@@ -1650,6 +1698,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-relationship_type" author="bwolfe">
+		<validCheckSum>8:835ef495d3f688714ccbcd1e9a3a10cb</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in relationship_type table via built in uuid function.</comment>
 		<update tableName="relationship_type" >
@@ -1660,6 +1709,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-report_object" author="bwolfe">
+		<validCheckSum>8:a10b1f0744a834c0593de85e5d81b18f</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in report_object table via built in uuid function.</comment>
 		<update tableName="report_object" >
@@ -1670,6 +1720,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-report_schema_xml" author="bwolfe">
+		<validCheckSum>8:8a94cc44a583abaa722d7db26c83e00c</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in report_schema_xml table via built in uuid function.</comment>
 		<update tableName="report_schema_xml" >
@@ -1680,6 +1731,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-role" author="bwolfe">
+		<validCheckSum>8:35033cf62cc439d381e932d0ee66c94b</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in role table via built in uuid function.</comment>
 		<update tableName="role" >
@@ -1690,6 +1742,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 	<changeSet id="20090402-1516-serialized_object" author="bwolfe">
+		<validCheckSum>8:18a3a57f8aa95bc34bddda4c6c9a680c</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in serialized_object table via built in uuid function.</comment>
 		<update tableName="serialized_object" >
@@ -1717,6 +1770,7 @@
 	</changeSet>
 	
 	<changeSet id="20090414-0806" author="bwolfe" dbms="mysql,mariadb">
+		<validCheckSum>8:2fec2a5cbe145044e4ddda6e528b95e8</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_set" columnName="concept_set_id"/></not>
 		</preConditions>
@@ -1760,6 +1814,7 @@
 	</changeSet>
 
 	<changeSet id="20090414-0809" author="bwolfe" dbms="mysql,mariadb">
+		<validCheckSum>8:d830ba80f78504482eaa8dfe4d93be3d</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="patient_identifier" columnName="patient_identifier_id"/></not>
 		</preConditions>
@@ -2289,6 +2344,7 @@
 	</changeSet>
 	
 	<changeSet id="20090414-0812" author="bwolfe" dbms="mysql,mariadb">
+		<validCheckSum>8:be261ff12facaf51c32cbd2c442149ce</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
 		</preConditions>
@@ -2424,6 +2480,7 @@
 	</changeSet>
 	
 	<changeSet id="20100128-1" author="djazayeri" dbms="mysql,mariadb">
+		<validCheckSum>8:7c257c7137b321e2c63d722339995d0b</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				SELECT COUNT(*) FROM role where role = 'System Developer'
@@ -2470,6 +2527,7 @@
 	</changeSet>
 	
 	<changeSet id="20090831-1040-scheduler_task_config" author="bwolfe" dbms="mysql,mariadb">
+		<validCheckSum>8:8bce39064602a229e807264432b6478d</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in scheduler_task_config table via built in uuid function.</comment>
 		<update tableName="scheduler_task_config" >
@@ -2856,6 +2914,7 @@
 	</changeSet>
 
 	<changeSet id="200912140039" author="djazayeri">
+		<validCheckSum>8:7473d9cbb88ee51a1603f01fccec9901</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in users table via built in uuid function.</comment>
 		<update tableName="users" >
@@ -3065,6 +3124,7 @@
 	</changeSet>
 
 	<changeSet id="20100412-2218" author="bwolfe">
+		<validCheckSum>8:61b0b47699f1629bb216e0b9fba6f1fb</validCheckSum>
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql,mariadb" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in notification_alert_recipient table via built in uuid function.</comment>
 		<update tableName="notification_alert_recipient" >
