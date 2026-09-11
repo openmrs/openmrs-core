@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalTime;
 import org.openmrs.Concept;
+import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
@@ -89,12 +90,40 @@ public class ConceptReferenceRangeUtility {
 			throw new IllegalArgumentException("Failed to evaluate criteria with reason: criteria is empty");
 		}
 
+		return evaluateCriteria(criteria, new ConceptReferenceRangeContext(obs));
+	}
+
+	/**
+	 * Evaluates criteria against a {@link ConceptReferenceRangeContext}. When the context was
+	 * constructed from an Obs, {@code $obs} is available in the expression; otherwise only
+	 * {@code $patient}, {@code $fn}, {@code $context}, {@code $date}, and {@code $encounter} are
+	 * available.
+	 *
+	 * @param criteria the criteria string to evaluate
+	 * @param context the evaluation context
+	 * @return true if the criteria evaluates to true, false otherwise
+	 * @since 3.0.0, 2.9.0, 2.8.5, 2.7.10
+	 */
+	public boolean evaluateCriteria(String criteria, ConceptReferenceRangeContext context) {
+		if (context == null) {
+			throw new IllegalArgumentException("Failed to evaluate criteria with reason: context is null");
+		}
+
+		if (context.getPerson() == null) {
+			throw new IllegalArgumentException("Failed to evaluate criteria with reason: patient is null");
+		}
+
+		if (StringUtils.isBlank(criteria)) {
+			throw new IllegalArgumentException("Failed to evaluate criteria with reason: criteria is empty");
+		}
+
 		Map<String, Object> root = new HashMap<>();
 		root.put("$fn", functions);
-		root.put("$patient", HibernateUtil.getRealObjectFromProxy(obs.getPerson()));
-		root.put("$obs", obs);
-		root.put("$encounter", obs.getEncounter());
-		root.put("$date", obs.getObsDatetime());
+		root.put("$patient", HibernateUtil.getRealObjectFromProxy(context.getPerson()));
+		root.put("$context", context);
+		root.put("$obs", context.getObs());
+		root.put("$encounter", context.getEncounter());
+		root.put("$date", context.getDate());
 
 		try {
 			Expression expression = PARSER.parseExpression(criteria);
