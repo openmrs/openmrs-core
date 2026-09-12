@@ -19,6 +19,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.Security;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -69,6 +70,11 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 
 		dao.saveUser(userJoe, null);
 		Context.flushSession(); //needed by postgres
+	}
+
+	@Test
+	public void openmrsPasswordEncoder_shouldBeRegisteredInSpringContext() {
+		assertNotNull(Context.getRegisteredComponent("openmrsPasswordEncoder", PasswordEncoder.class));
 	}
 
 	@Test
@@ -187,6 +193,15 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should not have changed");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
+	}
+
+	@Test
+	public void changePassword_shouldNotInvalidateSecretAnswer() {
+		dao.changePassword(userJoe, PASSWORD);
+		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
+		dao.changePassword(userJoe, "NewPass456");
+		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
 	}
 
 	@Test

@@ -703,8 +703,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public List<EncounterVisitHandler> getEncounterVisitHandlers() {
-
-		return HandlerUtil.getHandlersForType(EncounterVisitHandler.class, null);
+		// copied because HandlerUtil hands out the shared, unmodifiable list it caches, while this method
+		// has promised callers an ordinary List since 1.9. The path is cold enough for the copy not to
+		// matter
+		return new ArrayList<>(HandlerUtil.getHandlersForType(EncounterVisitHandler.class, null));
 	}
 
 	/**
