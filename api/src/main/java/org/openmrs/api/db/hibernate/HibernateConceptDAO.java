@@ -81,6 +81,7 @@ import org.openmrs.api.db.hibernate.search.SearchQueryUnique;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.openmrs.parameter.ConceptSearchCriteria;
 import org.openmrs.util.ConceptMapTypeComparator;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1653,32 +1654,34 @@ public class HibernateConceptDAO implements ConceptDAO {
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) throws DAOException {
 
-		int cap = SearchQueryUnique.UNBOUNDED_DEDUPLICATION;
-		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP);
-		if (gpValue != null && !gpValue.trim().isEmpty()) {
+		Integer cap = null;
+		String gpValue = ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP);
+		if (StringUtils.isNotBlank(gpValue)) {
 			try {
 				int parsedCap = Integer.parseInt(gpValue.trim());
 				if (parsedCap > 0) {
 					cap = parsedCap;
 				} else {
-					// A zero or negative cap would make deduplication fall back to the raw (duplicate-counting)
-					// hit count on the very first hit, so ignore it and keep the count exact.
-					log.warn("Non-positive value for global property {}: '{}', using unbounded deduplication",
+					log.warn(
+					    "Non-positive value for global property {}: '{}', falling back to the default deduplication threshold",
 					    OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, gpValue);
 				}
 			} catch (NumberFormatException e) {
-				log.warn("Invalid value for global property {}: '{}', using unbounded deduplication",
+				log.warn("Invalid value for global property {}: '{}', falling back to the default deduplication threshold",
 				    OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, gpValue);
 			}
 		}
 
-		return Math
-		        .toIntExact(SearchQueryUnique.searchCount(searchSessionFactory,
-		            SearchQueryUnique.newQuery(ConceptName.class,
-		                f -> newConceptNamePredicate(f, phrase, true, locales, false, includeRetired, requireClasses,
-		                    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept),
-		                "concept.conceptId"),
-		            cap));
+		SearchQueryUnique<ConceptName, ?> uniqueQuery = SearchQueryUnique
+		        .newQuery(
+		            ConceptName.class, f -> newConceptNamePredicate(f, phrase, true, locales, false, includeRetired,
+		                requireClasses, excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept),
+		            "concept.conceptId");
+
+		Long count = cap != null ? SearchQueryUnique.searchCount(searchSessionFactory, uniqueQuery, cap)
+		        : SearchQueryUnique.searchCount(searchSessionFactory, uniqueQuery);
+
+		return Math.toIntExact(count);
 	}
 
 	private SearchPredicate newConceptNamePredicate(SearchPredicateFactory f, final String phrase, boolean searchKeywords,

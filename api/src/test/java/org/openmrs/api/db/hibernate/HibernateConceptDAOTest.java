@@ -31,6 +31,7 @@ import org.openmrs.Drug;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -71,6 +72,8 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	@Autowired
 	private HibernateConceptDAO dao;
 
+	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
+
 	/**
 	 * Restricts search-index rebuilds to the entity types concept searches actually query, instead of
 	 * rebuilding every indexed type on each test.
@@ -85,6 +88,8 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		executeDataSet(PROVIDERS_INITIAL_XML);
 
 		updateSearchIndex();
+
+		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(Context.getAdministrationService());
 	}
 
 	/**
@@ -405,7 +410,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getCountOfConcepts_shouldReturnExactCountWhenGlobalPropertyIsNotSet() {
 		createCountDeduplicationFixture();
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "");
+		globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP);
 
 		Integer count = countConceptsForDedupToken();
 
@@ -421,11 +426,14 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getCountOfConcepts_shouldReturnBoundedCountWhenGlobalPropertyIsSet() {
 		createCountDeduplicationFixture();
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "1");
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP,
+		    "1");
 
 		Integer count = countConceptsForDedupToken();
 
 		assertEquals(COUNT_DEDUP_CONCEPTS * COUNT_DEDUP_NAMES_PER_CONCEPT, count.intValue());
+
+		restoreConceptSearchCountCap(oldPropertyValue);
 	}
 
 	/**
@@ -437,11 +445,14 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getCountOfConcepts_shouldFallBackToUnboundedWhenGlobalPropertyIsInvalid() {
 		createCountDeduplicationFixture();
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "not-a-number");
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP,
+		    "not-a-number");
 
 		Integer count = countConceptsForDedupToken();
 
 		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
+
+		restoreConceptSearchCountCap(oldPropertyValue);
 	}
 
 	/**
@@ -453,11 +464,14 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getCountOfConcepts_shouldFallBackToUnboundedWhenGlobalPropertyIsZero() {
 		createCountDeduplicationFixture();
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "0");
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP,
+		    "0");
 
 		Integer count = countConceptsForDedupToken();
 
 		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
+
+		restoreConceptSearchCountCap(oldPropertyValue);
 	}
 
 	/**
@@ -469,16 +483,31 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getCountOfConcepts_shouldFallBackToUnboundedWhenGlobalPropertyIsNegative() {
 		createCountDeduplicationFixture();
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, "-1");
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP,
+		    "-1");
 
 		Integer count = countConceptsForDedupToken();
 
 		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
+
+		restoreConceptSearchCountCap(oldPropertyValue);
 	}
 
 	private Integer countConceptsForDedupToken() {
 		return dao.getCountOfConcepts(COUNT_DEDUP_TOKEN, Collections.singletonList(Locale.ENGLISH), false,
 		    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null);
+	}
+
+	/**
+	 * Restores {@link OpenmrsConstants#GP_CONCEPT_SEARCH_COUNT_CAP} to its pre-test value, so the
+	 * {@link org.openmrs.util.ConfigUtil} cache is left consistent with the database for other tests.
+	 */
+	private void restoreConceptSearchCountCap(String oldPropertyValue) {
+		if (oldPropertyValue != null) {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, oldPropertyValue);
+		} else {
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP);
+		}
 	}
 
 	/**

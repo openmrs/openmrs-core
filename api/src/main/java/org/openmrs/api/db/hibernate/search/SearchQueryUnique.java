@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.BooleanQuery;
 import org.hibernate.search.engine.search.predicate.SearchPredicate;
 import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
@@ -25,8 +26,8 @@ import org.hibernate.search.engine.search.query.SearchScroll;
 import org.hibernate.search.engine.search.query.SearchScrollResult;
 import org.hibernate.search.mapper.orm.scope.SearchScope;
 import org.hibernate.search.mapper.orm.session.SearchSession;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -266,9 +267,8 @@ public class SearchQueryUnique<T, R> {
 	 *         configured
 	 */
 	private static int resolveDefaultDeduplicationCap() {
-		String gpValue = Context.getAdministrationService()
-		        .getGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD);
-		if (gpValue == null || gpValue.trim().isEmpty()) {
+		String gpValue = ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD);
+		if (StringUtils.isBlank(gpValue)) {
 			return UNBOUNDED_DEDUPLICATION;
 		}
 		try {
@@ -357,8 +357,7 @@ public class SearchQueryUnique<T, R> {
 
 		if (Boolean.TRUE.equals(includeTotalHitCount)) {
 			// The count path only needs the total number of distinct hits, so it skips fetching and
-			// hydrating a page of results entirely. Like the no-cap searchCount overload, it has no
-			// caller-supplied cap, so it honours the configured default deduplication threshold.
+			// hydrating a page of results up to the default maximum
 			long totalHitCount = searchTotalHitCount(searchSession, uniqueQuery, resolveDefaultDeduplicationCap());
 			return new SearchUniqueResults<>(new ArrayList<>(), offset, limit, totalHitCount);
 		}

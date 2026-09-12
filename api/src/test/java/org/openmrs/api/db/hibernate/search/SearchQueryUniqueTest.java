@@ -30,6 +30,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.SearchQueryUnique.DeduplicationResult;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -87,6 +88,8 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 	@Autowired
 	private PersonService personService;
 
+	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
+
 	@BeforeEach
 	public void createMatchingPersons() {
 		// Every person shares the same family name so a single predicate matches them all. The first
@@ -103,6 +106,22 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 		}
 
 		updateSearchIndex();
+
+		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(Context.getAdministrationService());
+	}
+
+	/**
+	 * Restores {@link OpenmrsConstants#GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD} to its pre-test value,
+	 * so the {@link org.openmrs.util.ConfigUtil} cache is left consistent with the database for other
+	 * tests.
+	 */
+	private void restoreDefaultDeduplicationThreshold(String oldPropertyValue) {
+		if (oldPropertyValue != null) {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD,
+			    oldPropertyValue);
+		} else {
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD);
+		}
 	}
 
 	private Function<SearchPredicateFactory, SearchPredicate> matchingPredicate() {
@@ -233,39 +252,26 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void searchCount_shouldHonourConfiguredDefaultDeduplicationThreshold() {
-		// The no-cap overload reads search.deduplicationDefaultThreshold: a positive value below the
-		// distinct person count bounds the exact deduplication exactly as an explicit cap would, so the
-		// count degrades to the raw upper bound.
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD,
-		    String.valueOf(DUPLICATE_COUNT));
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
+		    OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, String.valueOf(DUPLICATE_COUNT));
 
 		Long count = SearchQueryUnique.searchCount(searchSessionFactory, personNameQuery());
 
 		assertEquals(Long.valueOf(TOTAL_NAME_HITS), count);
-	}
 
-	@Test
-	public void searchCount_shouldHonourConfiguredDefaultDeduplicationThresholdForTotalHitCountPath() {
-		// The includeTotalHitCount branch of search(...) likewise has no caller-supplied cap and must
-		// honour the configured default threshold.
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD,
-		    String.valueOf(DUPLICATE_COUNT));
-
-		Long count = SearchQueryUnique.search(searchSessionFactory, personNameQuery(), null, null, true).getTotalHitCount();
-
-		assertEquals(Long.valueOf(TOTAL_NAME_HITS), count);
+		restoreDefaultDeduplicationThreshold(oldPropertyValue);
 	}
 
 	@Test
 	public void searchCount_shouldIgnoreNonPositiveConfiguredDefaultDeduplicationThreshold() {
-		// A zero or negative threshold is invalid and must not switch the count to the raw upper bound;
-		// the count stays exact, as if the property were unset.
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD,
-		    "-1");
+		String oldPropertyValue = globalPropertiesTestHelper
+		        .setGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, "-1");
 
 		Long count = SearchQueryUnique.searchCount(searchSessionFactory, personNameQuery());
 
 		assertEquals(Long.valueOf(PERSON_COUNT), count);
+
+		restoreDefaultDeduplicationThreshold(oldPropertyValue);
 	}
 
 	@Test
@@ -395,6 +401,18 @@ public class SearchQueryUniqueTest extends BaseContextSensitiveTest {
 		List<Integer> page = personIds(SearchQueryUnique.search(searchSessionFactory, personNameQuery(), 5, 5));
 
 		assertEquals(all.subList(5, 10), page);
+	}
+
+	@Test
+	public void search_shouldHonourConfiguredDefaultDeduplicationThresholdForTotalHitCountPath() {
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
+		    OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, String.valueOf(DUPLICATE_COUNT));
+
+		Long count = SearchQueryUnique.search(searchSessionFactory, personNameQuery(), null, null, true).getTotalHitCount();
+
+		assertEquals(Long.valueOf(TOTAL_NAME_HITS), count);
+
+		restoreDefaultDeduplicationThreshold(oldPropertyValue);
 	}
 
 	@Test

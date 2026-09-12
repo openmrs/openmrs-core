@@ -473,7 +473,8 @@ public final class OpenmrsConstants {
 
 	/**
 	 * Global property name for the maximum number of distinct concept hits to deduplicate exactly when
-	 * counting concept search results. Empty or non-integer value means exact/unbounded.
+	 * counting concept search results. A blank or non-positive value falls back to
+	 * {@link #GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD}.
 	 *
 	 * @since 2.8.0
 	 */
@@ -924,7 +925,7 @@ public final class OpenmrsConstants {
 
 		props.add(new GlobalProperty(GP_CONCEPT_SEARCH_COUNT_CAP, "",
 		        "Maximum number of distinct concept hits to deduplicate exactly when counting concept search results. "
-		                + "Empty or non-integer value means exact/unbounded (default behaviour)."));
+		                + "A blank or non-positive value falls back to " + GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD + "."));
 
 		props.add(new GlobalProperty(GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, "",
 		        "Default deduplication threshold used by SearchQueryUnique when no explicit cap is supplied. "
