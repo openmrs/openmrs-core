@@ -9,6 +9,8 @@
  */
 package org.openmrs.web;
 
+import java.io.Serial;
+
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 
@@ -34,6 +36,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  */
 public class DispatcherServlet extends org.springframework.web.servlet.DispatcherServlet {
 
+	@Serial
 	private static final long serialVersionUID = -6925172744402818729L;
 
 	private static final Logger log = LoggerFactory.getLogger(DispatcherServlet.class);
@@ -61,7 +64,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 	 * @throws ServletException
 	 */
 	public void reInitFrameworkServlet() throws ServletException {
-		log.debug("Framework being REinitialized");
+		log.debug("Framework being Reinitialized");
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		((XmlWebApplicationContext) getWebApplicationContext()).setClassLoader(OpenmrsClassLoader.getInstance());
 
