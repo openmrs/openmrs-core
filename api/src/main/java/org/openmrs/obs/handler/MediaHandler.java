@@ -63,7 +63,7 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 				String filename = parseFilename(obs, "");
 
 				DataWithMetadata dwm;
-				dwm = getDataWithMetadataWithLegacyFallback(key);
+				dwm = storageService.getDataWithMetadata(key);
 				InputStream in = dwm.data();
 				ComplexData complexData = new ComplexData(filename, in);
 				complexData.setMimeType(mimetypes.getContentType(filename));

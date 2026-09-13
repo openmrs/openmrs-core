@@ -130,7 +130,11 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		CompletableFuture<ResponseInputStream<GetObjectResponse>> object = s3AsyncClient.getObject(
 		    GetObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build(),
 		    AsyncResponseTransformer.toBlockingInputStream());
-		return waitForResponse(object);
+		try {
+			return waitForResponse(object);
+		} catch (IOException e) {
+			throw translateNotFound(key, e);
+		}
 	}
 
 	@Override

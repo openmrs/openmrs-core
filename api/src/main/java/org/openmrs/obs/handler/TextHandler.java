@@ -83,28 +83,19 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	private ComplexData getTextOrRawViewData(Obs obs, String key, String view) {
 		String filename = parseFilename(obs, "file");
 
-		DataWithMetadata dwm;
-		try {
-			dwm = getDataWithMetadataWithLegacyFallback(key);
-		} catch (NoSuchFileException e) {
-			log.error("Trying to read file: {}", key, e);
-			Assert.notNull(null, "Complex data must not be null");
-			return null;
-		} catch (IOException e) {
-			log.error("Trying to read file: {}", key, e);
-			throw new UncheckedIOException(e);
-		}
-
-		ComplexData complexData;
-		try (InputStream is = dwm.data()) {
+		ComplexData complexData = null;
+		try (DataWithMetadata dwm = storageService.getDataWithMetadata(key)) {
+			InputStream is = dwm.data();
 			complexData = ComplexObsHandler.RAW_VIEW.equals(view) ? new ComplexData(filename, IOUtils.toByteArray(is))
 			        : new ComplexData(filename, IOUtils.toString(is, StandardCharsets.UTF_8));
+			setContentMetadata(complexData, dwm.metadata());
+		} catch (NoSuchFileException e) {
+			log.error("Trying to read file: {}", key, e);
 		} catch (IOException e) {
 			log.error("Trying to read file: {}", key, e);
-			return null;
+			throw new APIException("Obs.error.while.trying.get.complex", null, e);
 		}
 
-		setContentMetadata(complexData, dwm.metadata());
 		return complexData;
 	}
 
@@ -112,7 +103,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 		ComplexData complexData = new ComplexData(parseDataTitle(obs), key);
 		ObjectMetadata metadata;
 		try {
-			metadata = getMetadataWithLegacyFallback(key);
+			metadata = storageService.getMetadata(key);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}

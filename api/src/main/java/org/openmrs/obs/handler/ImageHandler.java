@@ -81,7 +81,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 
 			DataWithMetadata dwm;
 			try {
-				dwm = getDataWithMetadataWithLegacyFallback(key);
+				dwm = storageService.getDataWithMetadata(key);
 			} catch (IOException e) {
 				log.error("Trying to read file: {}", key, e);
 				ComplexData complexData = new ComplexData(parseFilename(obs, "image"), null);

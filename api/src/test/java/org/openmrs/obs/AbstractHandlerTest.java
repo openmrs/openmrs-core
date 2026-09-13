@@ -216,7 +216,7 @@ public class AbstractHandlerTest extends BaseContextSensitiveTest {
 		assertEquals("test", new String((byte[]) fetched.getComplexData().getData()));
 		assertEquals(1, counting.getDataWithMetadataCalls, "data+metadata must be fetched together");
 		assertEquals(0, counting.getMetadataCalls, "no separate metadata request when data provides it");
-		assertEquals(0, counting.existsCalls, "no existence probe when resolving key layout");
+		assertEquals(1, counting.existsCalls, "single existence probe to resolve the key layout");
 		assertTrue(fetched.getComplexData().getLength() > 0, "metadata length should be populated");
 	}
 

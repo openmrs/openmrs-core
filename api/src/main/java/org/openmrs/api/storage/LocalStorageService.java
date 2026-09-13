@@ -62,19 +62,20 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 	public DataWithMetadata getDataWithMetadata(String key) throws IOException {
 		Path path = getPath(key);
 
-		BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
-		String filename = decodeKey(path.getFileName().toString());
-		ObjectMetadata metadata = ObjectMetadata.builder().setLength(attributes.size())
-		        .setMimeType(mimetypes.getContentType(filename)).setFilename(filename)
-		        .setCreationTime(attributes.creationTime().toInstant()).build();
-
-		InputStream data = Files.newInputStream(path);
-		return new DataWithMetadata(data, metadata);
+		// Note: the metadata must be read before the data stream is opened and this ordering must be
+		// maintained. If the reads were swapped and the metadata lookup failed, the already opened
+		// stream would never be closed.
+		ObjectMetadata metadata = getMetadataInternal(path);
+		return new DataWithMetadata(getDataInternal(path), metadata);
 	}
 
 	@Override
 	public InputStream getData(final String key) throws IOException {
-		return Files.newInputStream(getPath(key));
+		return getDataInternal(getPath(key));
+	}
+
+	private InputStream getDataInternal(Path path) throws IOException {
+		return Files.newInputStream(path);
 	}
 
 	/**
@@ -90,11 +91,12 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 
 	@Override
 	public ObjectMetadata getMetadata(final String key) throws IOException {
-		Path path = getPath(key);
+		return getMetadataInternal(getPath(key));
+	}
 
+	private ObjectMetadata getMetadataInternal(Path path) throws IOException {
 		BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
 		String filename = decodeKey(path.getFileName().toString());
-
 		return ObjectMetadata.builder().setLength(attributes.size()).setMimeType(mimetypes.getContentType(filename))
 		        .setFilename(filename).setCreationTime(attributes.creationTime().toInstant()).build();
 	}

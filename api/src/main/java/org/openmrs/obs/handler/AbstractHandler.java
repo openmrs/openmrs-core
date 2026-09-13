@@ -12,7 +12,6 @@ package org.openmrs.obs.handler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.nio.file.NoSuchFileException;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
@@ -70,7 +69,7 @@ public class AbstractHandler {
 
 		DataWithMetadata dwm;
 		try {
-			dwm = getDataWithMetadataWithLegacyFallback(key);
+			dwm = storageService.getDataWithMetadata(key);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -115,10 +114,7 @@ public class AbstractHandler {
 		String key = parseDataKey(obs);
 
 		try {
-			if (!storageService.purgeData(key)) {
-				// Key not found at new layout; try legacy layout
-				storageService.purgeData(getObsDir() + '/' + key);
-			}
+			storageService.purgeData(key);
 			obs.setComplexData(null);
 			return true;
 		} catch (IOException e) {
@@ -135,7 +131,12 @@ public class AbstractHandler {
 	public String parseDataKey(Obs obs) {
 		String[] names = obs.getValueComplex().split("\\|");
 		String key = names.length < 2 ? names[0] : names[names.length - 1];
-		return StringUtils.trim(key);
+		key = StringUtils.trim(key);
+		if (!storageService.exists(key)) {
+			// prepend legacy storage location
+			key = getObsDir() + '/' + key;
+		}
+		return key;
 	}
 
 	/**
@@ -155,7 +156,7 @@ public class AbstractHandler {
 	protected void injectMissingMetadata(String key, ComplexData complexData, ObjectMetadata metadata) {
 		try {
 			if (metadata == null) {
-				metadata = getMetadataWithLegacyFallback(key);
+				metadata = storageService.getMetadata(key);
 			}
 
 			if (complexData.getMimeType() == null) {
@@ -164,24 +165,6 @@ public class AbstractHandler {
 			complexData.setLength(metadata.getLength());
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
-		}
-	}
-
-	protected ObjectMetadata getMetadataWithLegacyFallback(String key) throws IOException {
-		try {
-			return storageService.getMetadata(key);
-		} catch (NoSuchFileException e) {
-			// Key not found at new layout; try legacy layout
-			return storageService.getMetadata(getObsDir() + '/' + key);
-		}
-	}
-
-	protected DataWithMetadata getDataWithMetadataWithLegacyFallback(String key) throws IOException {
-		try {
-			return storageService.getDataWithMetadata(key);
-		} catch (NoSuchFileException e) {
-			// Key not found at new layout; try legacy layout
-			return storageService.getDataWithMetadata(getObsDir() + '/' + key);
 		}
 	}
 

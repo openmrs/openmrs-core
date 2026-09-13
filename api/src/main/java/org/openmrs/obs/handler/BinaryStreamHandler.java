@@ -62,7 +62,6 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 		String key = parseDataKey(obs);
 
 		ComplexData complexData = null;
-		DataWithMetadata dwm = null;
 		// Raw stream
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
 			try {
@@ -70,13 +69,12 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 				String originalFilename = names[0];
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
 
-				dwm = getDataWithMetadataWithLegacyFallback(key);
+				DataWithMetadata dwm = storageService.getDataWithMetadata(key);
 				InputStream in = dwm.data();
 				complexData = new ComplexData(parseFilename(obs, ""), in);
+				injectMissingMetadata(key, complexData, dwm.metadata());
 			} catch (NoSuchFileException e) {
-				log.error("Trying to read file: {}", key, e);
-				Assert.notNull(null, "Complex data must not be null");
-				return null;
+				log.error("Unable to find file associated with complex obs {}", obs.getId());
 			} catch (Exception e) {
 				throw new APIException("Obs.error.while.trying.get.binary.complex", null, e);
 			}
@@ -88,7 +86,6 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 
 		Assert.notNull(complexData, "Complex data must not be null");
 
-		injectMissingMetadata(key, complexData, dwm.metadata());
 		obs.setComplexData(complexData);
 
 		return obs;

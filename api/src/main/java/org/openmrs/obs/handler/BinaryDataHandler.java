@@ -61,24 +61,17 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		log.debug("value complex: {}", obs.getValueComplex());
 		log.debug("file path: {}", key);
 		ComplexData complexData = null;
-		DataWithMetadata dwm = null;
 
 		// Raw view (i.e. the file as is)
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
-			try {
-				dwm = getDataWithMetadataWithLegacyFallback(key);
+			try (DataWithMetadata dwm = storageService.getDataWithMetadata(key)) {
+				complexData = new ComplexData(parseFilename(obs, "file"), IOUtils.toByteArray(dwm.data()));
+				injectMissingMetadata(key, complexData, dwm.metadata());
 			} catch (NoSuchFileException e) {
 				log.error("Trying to read file: {}", key, e);
-				Assert.notNull(null, "Complex data must not be null");
-				return null;
 			} catch (IOException e) {
 				log.error("Trying to read file: {}", key, e);
-				throw new UncheckedIOException(e);
-			}
-			try (InputStream in = dwm.data()) {
-				complexData = new ComplexData(parseFilename(obs, "file"), IOUtils.toByteArray(in));
-			} catch (IOException e) {
-				log.error("Trying to read file: {}", key, e);
+				throw new APIException("Obs.error.while.trying.get.binary.complex", null, e);
 			}
 		} else {
 			// No other view supported
@@ -88,7 +81,6 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 
 		Assert.notNull(complexData, "Complex data must not be null");
 
-		injectMissingMetadata(key, complexData, dwm.metadata());
 		obs.setComplexData(complexData);
 
 		return obs;

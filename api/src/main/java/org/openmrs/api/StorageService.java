@@ -12,6 +12,7 @@ package org.openmrs.api;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.file.NoSuchFileException;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -39,6 +40,7 @@ public interface StorageService extends OpenmrsService {
 	 * @param key unique key
 	 * @return data
 	 * @throws IOException wrong key or IO error
+	 * @throws NoSuchFileException if no object is stored under the given key
 	 */
 	InputStream getData(String key) throws IOException;
 
@@ -57,6 +59,7 @@ public interface StorageService extends OpenmrsService {
 	 * @param key the key
 	 * @return the metadata
 	 * @throws IOException wrong key or IO error
+	 * @throws NoSuchFileException if no object is stored under the given key
 	 */
 	ObjectMetadata getMetadata(String key) throws IOException;
 
@@ -182,8 +185,7 @@ public interface StorageService extends OpenmrsService {
 	 * Returns both data and metadata for the given key.
 	 * <p>
 	 * The default implementation fetches data and metadata separately, which may be optimized by
-	 * implementations that can provide both in a single operation (e.g. S3 GetObject returns response
-	 * headers with metadata, local filesystem can read attributes alongside the file).
+	 * implementations that can provide both in a single operation.
 	 * <p>
 	 * The caller must close the returned {@link org.openmrs.api.storage.DataWithMetadata} to release
 	 * the underlying stream.
@@ -191,8 +193,16 @@ public interface StorageService extends OpenmrsService {
 	 * @param key unique key
 	 * @return data with metadata
 	 * @throws IOException wrong key or IO error
+	 * @throws NoSuchFileException if no object is stored under the given key
 	 */
 	default DataWithMetadata getDataWithMetadata(String key) throws IOException {
-		return new DataWithMetadata(getData(key), getMetadata(key));
+		InputStream data = getData(key);
+		try {
+			return new DataWithMetadata(data, getMetadata(key));
+		} catch (IOException | RuntimeException e) {
+			// If fetching the metadata fails, the data stream must not be left open
+			data.close();
+			throw e;
+		}
 	}
 }
