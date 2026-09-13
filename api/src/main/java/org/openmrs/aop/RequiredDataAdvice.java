@@ -201,15 +201,12 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 */
 	private boolean methodNameEndsWithClassName(Method method, Class<?> mainArgumentClass) {
 		String methodName = method.getName();
-		if (methodName.endsWith(mainArgumentClass.getSimpleName())) {
-			return true;
-		} else {
-			while (mainArgumentClass.getSuperclass() != null) {
-				mainArgumentClass = mainArgumentClass.getSuperclass();
-				if (methodName.endsWith(mainArgumentClass.getSimpleName())) {
-					return true;
-				}
+
+		while (mainArgumentClass != null) {
+			if (methodName.endsWith(mainArgumentClass.getSimpleName())) {
+				return true;
 			}
+			mainArgumentClass = mainArgumentClass.getSuperclass();
 		}
 
 		return false;
