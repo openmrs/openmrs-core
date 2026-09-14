@@ -18,7 +18,6 @@ import java.util.List;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import org.hibernate.FlushMode;
@@ -98,28 +97,36 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	@Override
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
+		if (propertyName == null) {
+			// session.get() below would throw IllegalArgumentException a few frames deeper anyway,
+			// since the property name is the identifier. Fail here with a clearer message.
+			throw new IllegalArgumentException("propertyName is required");
+		}
+
 		Session session = sessionFactory.getCurrentSession();
 
+		// Look the property up by its identifier first. This hits the first-level session cache and
+		// then the second-level entity cache, so a warm property costs no query at all. It also
+		// picks up an unflushed property already present in the session, which may happen when the
+		// flush mode is manual and we are running inside a larger transaction.
+		GlobalProperty gp = session.get(GlobalProperty.class, propertyName);
+		if (gp != null) {
+			return gp;
+		}
+
+		// Only pay for the case-insensitive lookup when the exact match missed. On databases with
+		// case-insensitive string comparison the query above has already covered it.
 		if (isDatabaseStringComparisonCaseSensitive()) {
 			CriteriaBuilder cb = session.getCriteriaBuilder();
 			CriteriaQuery<GlobalProperty> query = cb.createQuery(GlobalProperty.class);
 			Root<GlobalProperty> root = query.from(GlobalProperty.class);
 
-			Predicate condition = (propertyName != null) ? cb.equal(cb.lower(root.get(PROPERTY)), propertyName.toLowerCase())
-			        : cb.isNull(root.get(PROPERTY));
+			query.where(cb.equal(cb.lower(root.get(PROPERTY)), propertyName.toLowerCase()));
 
-			query.where(condition);
-
-			GlobalProperty gp = session.createQuery(query).uniqueResult();
-			if (gp != null) {
-				// GP may be null, but the session may contain an unflushed gp so
-				// we will do a final check with session.get below. It may happen,
-				// if flush is set to manual and running in a larger transaction.
-				return gp;
-			}
+			return session.createQuery(query).setCacheable(true).uniqueResult();
 		}
 
-		return session.get(GlobalProperty.class, propertyName);
+		return null;
 	}
 
 	@Override
