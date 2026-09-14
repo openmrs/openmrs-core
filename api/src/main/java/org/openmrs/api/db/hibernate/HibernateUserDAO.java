@@ -243,7 +243,7 @@ public class HibernateUserDAO implements UserDAO {
 	@Override
 	public User getUser(Integer userId) {
 
-		return sessionFactory.getCurrentSession().get(User.class, userId);
+		return HibernateUtil.getManaged(sessionFactory.getCurrentSession(), User.class, userId);
 	}
 
 	/**
