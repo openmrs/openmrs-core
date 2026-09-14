@@ -856,8 +856,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.GET_LOCATIONS)
 	public Set<Location> getAllowedLocationsByTag(User user, LocationTag tag) {
-		// re-read the user so the lazy collection initialises inside this transaction, whatever the
-		// caller passed in
 		User persisted = (user == null || user.getUserId() == null) ? null : dao.getUser(user.getUserId());
 		if (tag == null || persisted == null) {
 			return Collections.emptySet();
