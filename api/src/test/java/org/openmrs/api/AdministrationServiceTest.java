@@ -36,6 +36,7 @@ import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.impl.MutableResourceBundleMessageSource;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleActivator;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
@@ -1295,5 +1296,82 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		// verify hook methods must be called
 		verify(activator).setupOnVersionChange(previousCoreVersion, previousModuleVersion);
+	}
+
+	/**
+	 * A released module whose stored version equals its current one really is unchanged, so the startup
+	 * optimisation of TRUNK-6418 correctly skips its setup.
+	 */
+	@Test
+	public void isModuleSetupOnVersionChangeNeeded_shouldNotNeedSetupWhenAReleasedVersionIsUnchanged() {
+		adminService.setGlobalProperty("core.version", OpenmrsConstants.OPENMRS_VERSION_SHORT);
+		Module module = loadTestModule("releasedmodule", "1.2.3");
+		adminService.setGlobalProperty("module.releasedmodule.version", "1.2.3");
+
+		try {
+			assertFalse(adminService.isModuleSetupOnVersionChangeNeeded(module.getModuleId()));
+		} finally {
+			ModuleFactory.getLoadedModulesMap().remove(module.getModuleId());
+		}
+	}
+
+	/**
+	 * A snapshot version is republished unchanged for every rebuild, so an equal version string is no
+	 * evidence the module is unchanged. Skipping setup there means a changeset added after the module
+	 * was installed never runs, and nothing reports it.
+	 */
+	@Test
+	public void isModuleSetupOnVersionChangeNeeded_shouldNeedSetupWhenTheVersionIsASnapshotEvenIfUnchanged() {
+		adminService.setGlobalProperty("core.version", OpenmrsConstants.OPENMRS_VERSION_SHORT);
+		Module module = loadTestModule("snapshotmodule", "1.0.0-SNAPSHOT");
+		adminService.setGlobalProperty("module.snapshotmodule.version", "1.0.0-SNAPSHOT");
+
+		try {
+			assertTrue(adminService.isModuleSetupOnVersionChangeNeeded(module.getModuleId()));
+		} finally {
+			ModuleFactory.getLoadedModulesMap().remove(module.getModuleId());
+		}
+	}
+
+	/**
+	 * The qualifier is a Maven convention rather than a validated field, so the check must not depend
+	 * on how it happens to be cased.
+	 */
+	@Test
+	public void isModuleSetupOnVersionChangeNeeded_shouldRecogniseASnapshotQualifierInAnyCase() {
+		adminService.setGlobalProperty("core.version", OpenmrsConstants.OPENMRS_VERSION_SHORT);
+		Module module = loadTestModule("lowercasesnapshotmodule", "1.0.0-snapshot");
+		adminService.setGlobalProperty("module.lowercasesnapshotmodule.version", "1.0.0-snapshot");
+
+		try {
+			assertTrue(adminService.isModuleSetupOnVersionChangeNeeded(module.getModuleId()));
+		} finally {
+			ModuleFactory.getLoadedModulesMap().remove(module.getModuleId());
+		}
+	}
+
+	/**
+	 * A version that merely contains the word elsewhere is not a snapshot, so it must not defeat the
+	 * optimisation.
+	 */
+	@Test
+	public void isModuleSetupOnVersionChangeNeeded_shouldNotTreatAVersionMerelyMentioningSnapshotAsOne() {
+		adminService.setGlobalProperty("core.version", OpenmrsConstants.OPENMRS_VERSION_SHORT);
+		Module module = loadTestModule("snapshotnamedmodule", "1.0.0-SNAPSHOTS.1");
+		adminService.setGlobalProperty("module.snapshotnamedmodule.version", "1.0.0-SNAPSHOTS.1");
+
+		try {
+			assertFalse(adminService.isModuleSetupOnVersionChangeNeeded(module.getModuleId()));
+		} finally {
+			ModuleFactory.getLoadedModulesMap().remove(module.getModuleId());
+		}
+	}
+
+	private Module loadTestModule(String moduleId, String version) {
+		Module module = new Module("Test Module " + moduleId);
+		module.setModuleId(moduleId);
+		module.setVersion(version);
+		ModuleFactory.getLoadedModulesMap().put(moduleId, module);
+		return module;
 	}
 }
