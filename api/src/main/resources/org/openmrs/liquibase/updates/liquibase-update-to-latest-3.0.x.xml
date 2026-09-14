@@ -141,35 +141,6 @@
 			<column name="description" type="varchar(255)"/>
 		</addColumn>
 	</changeSet>
-	
-	<changeSet id="TRUNK-6669-2026-08-16" author="Yonas Tesfaye">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="user_location"/>
-			</not>
-		</preConditions>
-		<comment>Add user_location table mapping users to the locations they are assigned to for TRUNK-6669</comment>
-		<createTable tableName="user_location">
-			<column name="user_id" type="INT">
-				<constraints nullable="false"/>
-			</column>
-			<column name="location_id" type="INT">
-				<constraints nullable="false"/>
-			</column>
-		</createTable>
 
-		<addPrimaryKey tableName="user_location" columnNames="user_id,location_id"/>
-
-		<addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_location"
-								 constraintName="user_location_to_users" deferrable="false"
-								 initiallyDeferred="false" onDelete="CASCADE" onUpdate="RESTRICT"
-								 referencedColumnNames="user_id" referencedTableName="users"/>
-
-		<addForeignKeyConstraint baseColumnNames="location_id" baseTableName="user_location"
-								 constraintName="user_location_to_location" deferrable="false"
-								 initiallyDeferred="false" onDelete="CASCADE" onUpdate="RESTRICT"
-								 referencedColumnNames="location_id" referencedTableName="location"/>
-	</changeSet>
-	
 </databaseChangeLog>
 

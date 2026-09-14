@@ -664,7 +664,7 @@ public interface UserService extends OpenmrsService {
 	 * @param user the user whose allowed locations to resolve
 	 * @param tag the tag the locations must carry
 	 * @return the allowed locations, never null
-	 * @since 3.0.0
+	 * @since 2.9.0
 	 */
 	@Authorized(PrivilegeConstants.GET_LOCATIONS)
 	Set<Location> getAllowedLocationsByTag(User user, LocationTag tag);
