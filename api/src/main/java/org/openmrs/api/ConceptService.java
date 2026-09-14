@@ -39,6 +39,7 @@ import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
+import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
@@ -2204,6 +2205,16 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	ConceptReferenceRange getConceptReferenceRange(ConceptReferenceRangeContext context);
+
+	/**
+	 * Gets the interpretation for a concept by evaluating its interpretation rules against the given
+	 * context. Higher priority values take precedence when multiple rules match.
+	 *
+	 * @param context the context containing the person, concept, and optional date
+	 * @return the interpretation from the highest-priority matching rule, or null if none matches
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	Obs.Interpretation getConceptInterpretation(ConceptReferenceRangeContext context);
 
 	/**
 	 * Completely purge a <code>ConceptReferenceRange</code> from the database.
