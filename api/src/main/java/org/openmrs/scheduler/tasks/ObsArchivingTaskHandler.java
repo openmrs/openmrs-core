@@ -112,9 +112,9 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 	 * <p>
 	 * {@code note.obs_id} carries the same FK shape ({@code obs_note}, {@code ON DELETE RESTRICT}) but
 	 * core no longer has a mapped {@code Note} entity, so it cannot be filtered in HQL. This is
-	 * deliberately out of scope for the current archival feature. If a {@code note} row references a voided obs,
-	 * the batch will fail and {@code handleBatchFailure} will skip that row each sweep. Future options: switch
-	 * this query to native SQL, or filter the returned ids through
+	 * deliberately out of scope for the current archival feature. If a {@code note} row references a
+	 * voided obs, the batch will fail and {@code handleBatchFailure} will skip that row each sweep.
+	 * Future options: switch this query to native SQL, or filter the returned ids through
 	 * {@code SELECT obs_id FROM note WHERE obs_id IN (...)} behind a table-exists check.
 	 */
 	private List<Integer> fetchNextBatch(long lastProcessedId, Date cutoffDate, int batchSize) {
