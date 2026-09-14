@@ -1171,6 +1171,8 @@ public final class OpenmrsConstants {
 	 */
 	public static final String USER_PROPERTY_CHANGE_PASSWORD = "forcePassword";
 	
+	public static final String USER_PROPERTY_BOOTSTRAP_PASSWORD_EXPIRED = "bootstrapPasswordExpired";
+	
 	public static final String USER_PROPERTY_DEFAULT_LOCALE = "defaultLocale";
 	
 	public static final String USER_PROPERTY_DEFAULT_LOCATION = "defaultLocation";
