@@ -12,7 +12,6 @@ package org.openmrs.web.filter.initialization;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Value;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -246,24 +246,22 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 	@Test
 	public void initializeWizardFromResolvedPropertiesIfPresent_shouldNotThrowNPEWhenScriptIsNotFound() {
 		InitializationFilter spyFilter = spy(filter);
+		doReturn(new HashMap<String, String>()).when(spyFilter).getEnvironmentVariables();
 		doReturn(null).when(spyFilter).getInstallationScript();
 
-		// This should not throw NPE
-		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+		assertDoesNotThrow(spyFilter::initializeWizardFromResolvedPropertiesIfPresent);
 	}
 
 	@Test
-	public void autoRunOpenMRS_shouldAddImportTestDataTasksWhenEnabled() throws Exception {
+	public void autoRunOpenMRS_shouldAddImportTestDataTasksWhenEnabled() {
 		InitializationFilter spyFilter = spy(filter);
 		spyFilter.wizardModel.importTestData = true;
 		spyFilter.wizardModel.databaseConnection = "jdbc:mysql://localhost:3306/openmrs";
 		spyFilter.wizardModel.databaseDriver = "com.mysql.cj.jdbc.Driver";
 		doReturn(new File("fake")).when(spyFilter).getRuntimePropertiesFile();
 		doNothing().when(spyFilter).startInstallation();
-		Method method = InitializationFilter.class.getDeclaredMethod("autoRunOpenMRS", HttpServletRequest.class);
-		method.setAccessible(true);
 		HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-		method.invoke(spyFilter, mockRequest);
+		spyFilter.autoRunOpenMRS(mockRequest);
 		List<WizardTask> tasks = spyFilter.wizardModel.tasksToExecute;
 		assertTrue(tasks.contains(WizardTask.IMPORT_TEST_DATA));
 		assertTrue(tasks.contains(WizardTask.ADD_MODULES));

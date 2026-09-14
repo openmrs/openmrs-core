@@ -1044,7 +1044,15 @@ public class Context {
 		// data directory can be set from the runtime properties
 		OpenmrsUtil.startup(props);
 
-		getContextDAO().setupSearchIndex();
+		// opening a session before running the index setup as it adds a proxy privilege, which resolves
+		// through the user context that openSession installs; without it, a fresh boot fails on
+		// Context.getUserContext()
+		openSession();
+		try {
+			getContextDAO().setupSearchIndex();
+		} finally {
+			closeSession();
+		}
 
 		if (getAdministrationService().isCoreSetupOnVersionChangeNeeded()) {
 			log.info("Detected core version change. Running core setup hooks and Liquibase.");

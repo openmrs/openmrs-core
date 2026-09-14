@@ -941,7 +941,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 
-	private void autoRunOpenMRS(HttpServletRequest httpRequest) {
+	protected void autoRunOpenMRS(HttpServletRequest httpRequest) {
 		File runtimeProperties = getRuntimePropertiesFile();
 		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
 
