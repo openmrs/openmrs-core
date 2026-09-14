@@ -162,12 +162,12 @@
 
 		<addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_location"
 								 constraintName="user_location_to_users" deferrable="false"
-								 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+								 initiallyDeferred="false" onDelete="CASCADE" onUpdate="RESTRICT"
 								 referencedColumnNames="user_id" referencedTableName="users"/>
 
 		<addForeignKeyConstraint baseColumnNames="location_id" baseTableName="user_location"
 								 constraintName="user_location_to_location" deferrable="false"
-								 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+								 initiallyDeferred="false" onDelete="CASCADE" onUpdate="RESTRICT"
 								 referencedColumnNames="location_id" referencedTableName="location"/>
 	</changeSet>
 	

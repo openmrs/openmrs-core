@@ -1078,6 +1078,20 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see UserService#purgeUser(User)
+	 */
+	@Test
+	public void purgeUser_shouldDeleteAUserAssignedToALocation() {
+		User user = userService.getUser(502);
+		user.setAssignedLocations(new HashSet<>(Collections.singletonList(Context.getLocationService().getLocation(1))));
+		userService.saveUser(user);
+
+		userService.purgeUser(userService.getUser(502));
+
+		assertNull(userService.getUser(502));
+	}
+
+	/**
 	 * @see UserService#removeUserProperty(User,String)
 	 */
 	@Test
