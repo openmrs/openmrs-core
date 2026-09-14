@@ -16,6 +16,9 @@ permissions: read-all
 jobs:
   build:
     strategy:
+      # one crashing job used to cancel the rest, so a failure told us nothing about whether
+      # it was specific to a single Java version or hit the whole matrix
+      fail-fast: false
       matrix:
         platform:
           - ubuntu-latest
@@ -52,6 +55,62 @@ jobs:
         run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --file pom.xml
       - name: Build with Maven
         run: mvn clean install --batch-mode && mvn test -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
+      # When a forked test JVM crashes rather than failing a test, surefire does not put the reason
+      # in the console log. It notices the JVM writing its own diagnostics straight to stdout
+      # ("Corrupted channel by directly writing to native stream") and diverts them to a .dumpstream
+      # file, which dies with the runner, so a red build shows an abort and zero test failures with
+      # nothing to explain it. That cost us several days on the July 2026 openmrs-api crashes
+      # (exit code 134); these steps exist so the next one explains itself.
+      #
+      # Deliberately not continue-on-error: the build has already failed by the time this runs, so
+      # letting a broken diagnostics script surface as a failed step costs nothing, and stops it
+      # from reporting success while quietly printing nothing.
+      - name: Show test and JVM crash diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          echo "::group::Disk and memory"
+          df -h || true
+          free -m || true
+          echo "::endgroup::"
+          # the trailing "|| true" on each pipeline matters: this step runs under -e -o pipefail,
+          # so a find that exits non-zero on a single unreadable directory would otherwise abort
+          # the step and take the sections below it with it
+          echo "::group::Surefire dump files"
+          # a crashing JVM writes its abort message last, so show the tail; the full file is in
+          # the uploaded artifact
+          find . \( -name '*.dumpstream' -o -name '*.dump' \) -print | while read -r f; do
+            echo "----- $f ($(wc -c <"$f") bytes)"
+            tail -c 50000 "$f" || true
+          done || true
+          echo "::endgroup::"
+          echo "::group::JVM fatal error logs"
+          # stop at the dynamic library list, which is where the hundreds of lines of mappings and
+          # memory maps begin; everything that names the triggering code comes before it (the frame
+          # sections ended at line 123 and 217 in the two crashes seen so far). The 400 line cap is
+          # the backstop for a file that never reaches that marker.
+          find . \( -name 'hs_err_pid*.log' -o -name 'replay_pid*.log' \) -print | while read -r f; do
+            echo "----- $f"
+            head -n 400 "$f" | sed -n '1,/^Dynamic libraries:/p' || true
+          done || true
+          echo "::endgroup::"
+      # this one stays continue-on-error: it depends on the artifact service, and the step above has
+      # already put the same evidence in the log, so a transient upload failure is not worth
+      # confusing anyone over
+      - name: Upload test and JVM crash diagnostics
+        if: failure()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-diagnostics-${{ matrix.platform }}-java${{ matrix.java-version }}
+          path: |
+            **/target/surefire-reports/**
+            **/hs_err_pid*.log
+            **/replay_pid*.log
+          # warn rather than ignore, so that if these paths ever stop matching we find out from the
+          # log instead of from an empty artifact the next time someone needs a crash dump
+          if-no-files-found: warn
+          retention-days: 7
       # this is necessary to populate the environment variables for Coveralls properly
       - name: Set branch name and PR number
         id: refs
