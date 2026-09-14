@@ -267,8 +267,8 @@ class OpenmrsPropertyLookupTest {
 	 * backslash there is read by log4j2 as a literal backslash plus literal characters and silently
 	 * disables the defense.
 	 * <p>
-	 * The test classpath has its own {@code log4j2.xml}, so the main copy is read by file path
-	 * relative to the module directory rather than as a classpath resource.
+	 * The test classpath has its own {@code log4j2.xml}, so the main copy is read by file path relative
+	 * to the module directory rather than as a classpath resource.
 	 */
 	@Test
 	void log4j2xml_shouldCarryTheSameSanitizingLayoutAsTheDefaultConstant() throws Exception {
@@ -280,10 +280,10 @@ class OpenmrsPropertyLookupTest {
 	}
 
 	/**
-	 * The value written into {@code log.layout} for existing installs must behave like the constant:
-	 * it is persisted verbatim by liquibase, so the same doubled-backslash mistake would be shipped
-	 * to every upgraded database. Read as a classpath resource since nothing on the test classpath
-	 * shadows it.
+	 * The value written into {@code log.layout} for existing installs must behave like the constant: it
+	 * is persisted verbatim by liquibase, so the same doubled-backslash mistake would be shipped to
+	 * every upgraded database. Read as a classpath resource since nothing on the test classpath shadows
+	 * it.
 	 */
 	@Test
 	void liquibaseChangelog_shouldCarryTheSameSanitizingLayoutAsTheDefaultConstant() throws Exception {
@@ -309,10 +309,10 @@ class OpenmrsPropertyLookupTest {
 	}
 
 	private static String extractElementContent(String xml, String tag, String attr, String attrValue) {
-		Matcher match = Pattern.compile("<" + tag + " " + attr + "=\"" + Pattern.quote(attrValue) + "\">([^<]*)</" + tag
-		        + ">").matcher(xml);
-		assertTrue(match.find(),
-		    "expected element <" + tag + " " + attr + "=\"" + attrValue + "\"> in:\n" + xml);
+		Matcher match = Pattern
+		        .compile("<" + tag + " " + attr + "=\"" + Pattern.quote(attrValue) + "\">([^<]*)</" + tag + ">")
+		        .matcher(xml);
+		assertTrue(match.find(), "expected element <" + tag + " " + attr + "=\"" + attrValue + "\"> in:\n" + xml);
 		return match.group(1);
 	}
 
