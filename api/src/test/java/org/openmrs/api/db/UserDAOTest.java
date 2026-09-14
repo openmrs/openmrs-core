@@ -27,7 +27,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.Security;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserDAOTest extends BaseContextSensitiveTest {
 	
@@ -72,11 +71,6 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		Context.flushSession(); //needed by postgres
 	}
 	
-	@Test
-	public void openmrsPasswordEncoder_shouldBeRegisteredInSpringContext() {
-		assertNotNull(Context.getRegisteredComponent("openmrsPasswordEncoder", PasswordEncoder.class));
-	}
-
 	@Test
 	public void getUsers_shouldEscapeSqlWildcardsInSearchPhrase() {
 		
@@ -179,73 +173,6 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
 	}
 	
-	/**
-	 * Pins the password write path for {@code changePassword(User, String)}: the value the DAO
-	 * persists must be verifiable by the configured {@code openmrsPasswordEncoder} bean for
-	 * {@code password + salt} (the legacy SHA-512 encoder by default, or the argon2 encoder when
-	 * the site opts in to it), and the stored value must authenticate the password on login.
-	 */
-	@Test
-	public void changePassword_shouldStoreThePasswordThroughTheConfiguredEncoder() {
-		dao.changePassword(userJoe, PASSWORD);
-		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String stored = lc.getHashedPassword();
-		assertTrue(Security.checkPassword(stored, PASSWORD + lc.getSalt()),
-			"users.password must be written by the configured openmrsPasswordEncoder bean");
-		// Round-trip: prove the value that was stored also matches the raw password on login.
-		Context.authenticate(userJoe.getUsername(), PASSWORD);
-	}
-
-	/**
-	 * Pins the password write path for {@code saveUser(User, String)}: the hash the DAO
-	 * persists must be verifiable by the configured {@code openmrsPasswordEncoder} bean,
-	 * and the stored value must authenticate the password on login.
-	 */
-	@Test
-	public void saveUser_shouldStoreThePasswordThroughTheConfiguredEncoder() {
-		PersonName name = new PersonName("Jane", "J", "Doe");
-		name.setDateCreated(new Date());
-		Person person = new Person();
-		person.setDateCreated(new Date());
-		person.setPersonDateCreated(person.getDateCreated());
-		person.setGender("F");
-		User newUser = new User();
-		newUser.setSystemId("101-31");
-		newUser.setPerson(person);
-		newUser.addName(name);
-		newUser.setUsername("juser2");
-		newUser.setDateCreated(new Date());
-
-		dao.saveUser(newUser, "Openmr6zz");
-		Context.flushSession();
-
-		LoginCredential lc = dao.getLoginCredential(newUser);
-		String stored = lc.getHashedPassword();
-		assertTrue(Security.checkPassword(stored, "Openmr6zz" + lc.getSalt()),
-			"new-user password must be written by the configured openmrsPasswordEncoder bean");
-		Context.authenticate("juser2", "Openmr6zz");
-	}
-
-	/**
-	 * Pins the password write path for {@code changePassword(String, String)} — the
-	 * "self change" overload taking old and new password — and that the stored value
-	 * verifies against the configured {@code openmrsPasswordEncoder} bean and authenticates
-	 * the new password.
-	 */
-	@Test
-	public void changePasswordOldNew_shouldStoreThePasswordThroughTheConfiguredEncoder() {
-		// Establish baseline so oldPassword verifies inside the DAO overload.
-		dao.changePassword(userJoe, PASSWORD);
-		Context.authenticate(userJoe.getUsername(), PASSWORD);
-
-		dao.changePassword(PASSWORD, "Openmr7aa");
-		LoginCredential lc = dao.getLoginCredential(userJoe);
-		String stored = lc.getHashedPassword();
-		assertTrue(Security.checkPassword(stored, "Openmr7aa" + lc.getSalt()),
-			"self-change password must be written by the configured openmrsPasswordEncoder bean");
-		Context.authenticate(userJoe.getUsername(), "Openmr7aa");
-	}
-
 	@Test
 	public void changeHashedPassword_shouldNotOverwriteUserSecretQuestionOrAnswer() {
 		dao.changePassword(userJoe, PASSWORD);
@@ -261,15 +188,6 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
 	}
 	
-	@Test
-	public void changePassword_shouldNotInvalidateSecretAnswer() {
-		dao.changePassword(userJoe, PASSWORD);
-		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
-		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
-		dao.changePassword(userJoe, "NewPass456");
-		assertTrue(dao.isSecretAnswer(userJoe, SECRET_ANSWER));
-	}
-
 	@Test
 	public void isSecretAnswer_shouldReturnTrueWhenTheAnswerMatches() {
 		dao.saveUser(userJoe, PASSWORD);

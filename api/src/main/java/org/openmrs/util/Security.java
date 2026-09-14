@@ -47,19 +47,6 @@ public class Security {
 
 	private static final Random RANDOM = new SecureRandom();
 
-	// Fallback defaults for the Argon2id work factors, used only when a value cannot be
-	// parsed. The defaults follow the OWASP recommendation for Argon2id (m=19456 KB, t=2,
-	// p=1); per-installation overrides come through the Spring placeholders.
-	private static final int DEFAULT_MEMORY_KB = 19456;
-
-	private static final int DEFAULT_ITERATIONS = 2;
-
-	private static final int DEFAULT_PARALLELISM = 1;
-
-	private static final int DEFAULT_SALT_LENGTH = 16;
-
-	private static final int DEFAULT_HASH_LENGTH = 32;
-
 	// required so we can hash passwords at startup when no Spring context is available.
 	// The fallback carries its own Argon2 map so that passwords written by the Spring bean
 	// (when the context is up) can be verified even when the context is detached (e.g. the
@@ -149,43 +136,6 @@ public class Security {
 	 */
 	private static String encodeStringSHA1(String strToEncode) throws APIException {
 		return encodeString(strToEncode, "SHA-1");
-	}
-
-	/**
-	 * Spring factory method used to create the {@code argon2PasswordEncoder} bean (see
-	 * applicationContext-service.xml). Each work factor arrives here as the raw string that
-	 * Spring resolved from its {@code security.argon2.*} placeholder (with the default given
-	 * in the placeholder), and a missing or non-numeric value falls back to the safe default
-	 * rather than failing the context startup.
-	 *
-	 * @param saltLength the salt length in bytes
-	 * @param hashLength the hash length in bytes
-	 * @param parallelism the parallelism
-	 * @param memory the memory cost in KiB
-	 * @param iterations the number of iterations
-	 * @return an Argon2PasswordEncoder configured from the given work factors
-	 * @since 2.8.10
-	 */
-	public static Argon2PasswordEncoder createArgon2PasswordEncoder(String saltLength, String hashLength, String parallelism, String memory, String iterations) {
-		return new Argon2PasswordEncoder(
-			parseOrDefault(saltLength, DEFAULT_SALT_LENGTH),
-			parseOrDefault(hashLength, DEFAULT_HASH_LENGTH),
-			parseOrDefault(parallelism, DEFAULT_PARALLELISM),
-			parseOrDefault(memory, DEFAULT_MEMORY_KB),
-			parseOrDefault(iterations, DEFAULT_ITERATIONS));
-	}
-
-	private static int parseOrDefault(String raw, int defaultValue) {
-		if (raw == null || raw.trim().isEmpty()) {
-			return defaultValue;
-		}
-		try {
-			return Integer.parseInt(raw.trim());
-		}
-		catch (NumberFormatException e) {
-			log.warn("Invalid integer value for Argon2 work factor '{}', using default: {}", raw, defaultValue);
-			return defaultValue;
-		}
 	}
 
 	private static String encodeString(String strToEncode, String algorithm) {

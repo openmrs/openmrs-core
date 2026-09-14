@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.util.Security;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -229,7 +229,7 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 		String storedHash = preOptIn.encode("password");
 		assertFalse(storedHash.startsWith("{"));
 
-		PasswordEncoder argon2Encoder = Security.createArgon2PasswordEncoder("16", "32", "1", "19456", "2");
+		PasswordEncoder argon2Encoder = new Argon2PasswordEncoder(16, 32, 1, 19456, 2);
 		Map<String, PasswordEncoder> encoders = new HashMap<>();
 		encoders.put("argon2", argon2Encoder);
 		OpenmrsDelegatingPasswordEncoder postOptIn = new OpenmrsDelegatingPasswordEncoder("argon2", encoders,
@@ -254,13 +254,13 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 	@Test
 	public void upgradeEncoding_shouldReturnTrueWhenTheConfiguredWorkFactorsAreStrongerThanTheStoredHash() {
 		Map<String, PasswordEncoder> weak = new HashMap<>();
-		weak.put("argon2", Security.createArgon2PasswordEncoder("16", "32", "1", "19456", "2"));
+		weak.put("argon2", new Argon2PasswordEncoder(16, 32, 1, 19456, 2));
 		String stored = new OpenmrsDelegatingPasswordEncoder("argon2", weak,
 			new LegacyOpenmrsPasswordEncoder()).encode("password");
 		assertTrue(stored.startsWith("{argon2}"));
 
 		Map<String, PasswordEncoder> strong = new HashMap<>();
-		strong.put("argon2", Security.createArgon2PasswordEncoder("16", "32", "1", "65536", "3"));
+		strong.put("argon2", new Argon2PasswordEncoder(16, 32, 1, 65536, 3));
 		OpenmrsDelegatingPasswordEncoder reworked = new OpenmrsDelegatingPasswordEncoder("argon2", strong,
 			new LegacyOpenmrsPasswordEncoder());
 
