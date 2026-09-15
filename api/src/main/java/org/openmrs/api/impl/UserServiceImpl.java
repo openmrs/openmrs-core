@@ -123,7 +123,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		// TODO Check required fields for user!!
 		OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
 
-		return dao.saveUser(user, password);
+		try (var permit = UserPasswordGuard.acquire()) {
+			return dao.saveUser(user, password);
+		}
 	}
 
 	/**
@@ -340,7 +342,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException {
-		dao.changeHashedPassword(user, hashedPassword, salt);
+		try (var permit = UserPasswordGuard.acquire()) {
+			dao.changeHashedPassword(user, hashedPassword, salt);
+		}
 	}
 
 	/**
@@ -348,7 +352,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void changeQuestionAnswer(User u, String question, String answer) throws APIException {
-		dao.changeQuestionAnswer(u, question, answer);
+		try (var permit = UserPasswordGuard.acquire()) {
+			dao.changeQuestionAnswer(u, question, answer);
+		}
 	}
 
 	/**
@@ -357,7 +363,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void changeQuestionAnswer(String pw, String q, String a) {
-		dao.changeQuestionAnswer(pw, q, a);
+		try (var permit = UserPasswordGuard.acquire()) {
+			dao.changeQuestionAnswer(pw, q, a);
+		}
 	}
 
 	/**
@@ -688,7 +696,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 	private void updatePassword(User user, String newPassword) {
 		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
-		dao.changePassword(user, newPassword);
+		try (var permit = UserPasswordGuard.acquire()) {
+			dao.changePassword(user, newPassword);
+		}
 	}
 
 	@Override
@@ -746,7 +756,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		String activationKey = hashedKey + ":" + time;
 		LoginCredential credentials = dao.getLoginCredential(user);
 		credentials.setActivationKey(activationKey);
-		dao.setUserActivationKey(credentials);
+		try (var permit = UserPasswordGuard.acquire()) {
+			dao.setUserActivationKey(credentials);
+		}
 
 		MessageSourceService messages = Context.getMessageSourceService();
 		AdministrationService adminService = Context.getAdministrationService();
@@ -845,4 +857,96 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		return Arrays.asList(Role.class, Privilege.class, User.class);
 	}
 
+	/**
+	 * Returns whether the current thread holds a password-guard permit. This is the service-level API
+	 * for the guard check that {@link org.openmrs.api.db.UserDAO} implementations use to verify they
+	 * were called from a service method rather than directly.
+	 *
+	 * @return true if the current thread holds a permit
+	 * @since 3.0.0
+	 */
+	public static boolean isPasswordGuardPermitted() {
+		return UserPasswordGuard.isPermitted();
+	}
+
+	/**
+	 * Returns whether the current thread is permitted to change passwords. This is a convenience method
+	 * that delegates to {@link #isPasswordGuardPermitted()}.
+	 *
+	 * @return true if the current thread holds a password-guard permit
+	 * @since 3.0.0
+	 * @see #isPasswordGuardPermitted()
+	 */
+	public static boolean canChangePassword() {
+		return UserPasswordGuard.isPermitted();
+	}
+
+	/**
+	 * Acquires a password-guard permit for the current thread. This method exists solely for test code
+	 * that needs to call password-guarded DAO methods directly. It is not part of the public API and
+	 * should not be used in production code. The protection mechanism relies on
+	 * {@link UserPasswordGuard#acquire()} and {@link UserPasswordGuard#close()} being private; this
+	 * method exposes them only for testing purposes.
+	 *
+	 * @return the acquired permit, which must be closed when done
+	 * @since 3.0.0
+	 * @see UserPasswordGuard#isPermitted()
+	 */
+	public static AutoCloseable acquirePasswordGuardPermit() {
+		return UserPasswordGuard.acquire();
+	}
+
+	/**
+	 * Guards the password- and credential-mutating methods on {@link UserDAO} so they can only be
+	 * invoked by service code that holds a permit for the current thread. The service acquires a permit
+	 * before calling the DAO and releases it when the returned instance is closed, normally via a
+	 * try-with-resources statement. Permits are re-entrant: each acquisition deepens the held permit by
+	 * one level and only the outermost close releases it.
+	 *
+	 * @since 3.0.0
+	 */
+	private static final class UserPasswordGuard implements AutoCloseable {
+
+		private static final ThreadLocal<Integer> DEPTH = ThreadLocal.withInitial(() -> 0);
+
+		private UserPasswordGuard() {
+		}
+
+		/**
+		 * Acquires one level of permit for the current thread. The returned permit must be closed when
+		 * done, typically with try-with-resources, to release the acquired level.
+		 *
+		 * @return the acquired permit
+		 */
+		private static UserPasswordGuard acquire() {
+			DEPTH.set(DEPTH.get() + 1);
+			return new UserPasswordGuard();
+		}
+
+		/**
+		 * Releases one level of the permit held by the current thread. When the outermost permit is closed
+		 * the thread-local state is cleared.
+		 *
+		 * @since 3.0.0
+		 */
+		@Override
+		public void close() {
+			int depth = DEPTH.get() - 1;
+			if (depth <= 0) {
+				DEPTH.remove();
+			} else {
+				DEPTH.set(depth);
+			}
+		}
+
+		/**
+		 * Returns whether the current thread holds a permit.
+		 *
+		 * @return true if the current thread holds a permit
+		 * @since 3.0.0
+		 */
+		private static boolean isPermitted() {
+			return DEPTH.get() > 0;
+		}
+	}
 }
