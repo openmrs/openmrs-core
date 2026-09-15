@@ -13,8 +13,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,12 +26,15 @@ import org.openmrs.api.UserService;
 import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Value;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 public class InitializationFilterTest extends BaseWebContextSensitiveTest {
@@ -235,6 +241,30 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 			System.clearProperty("admin.password.locked");
 			System.clearProperty("connection_driver_class");
 		}
+	}
+
+	@Test
+	public void initializeWizardFromResolvedPropertiesIfPresent_shouldNotThrowNPEWhenScriptIsNotFound() {
+		InitializationFilter spyFilter = spy(filter);
+		doReturn(new HashMap<String, String>()).when(spyFilter).getEnvironmentVariables();
+		doReturn(null).when(spyFilter).getInstallationScript();
+
+		assertDoesNotThrow(spyFilter::initializeWizardFromResolvedPropertiesIfPresent);
+	}
+
+	@Test
+	public void autoRunOpenMRS_shouldAddImportTestDataTasksWhenEnabled() {
+		InitializationFilter spyFilter = spy(filter);
+		spyFilter.wizardModel.importTestData = true;
+		spyFilter.wizardModel.databaseConnection = "jdbc:mysql://localhost:3306/openmrs";
+		spyFilter.wizardModel.databaseDriver = "com.mysql.cj.jdbc.Driver";
+		doReturn(new File("fake")).when(spyFilter).getRuntimePropertiesFile();
+		doNothing().when(spyFilter).startInstallation();
+		HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+		spyFilter.autoRunOpenMRS(mockRequest);
+		List<WizardTask> tasks = spyFilter.wizardModel.tasksToExecute;
+		assertTrue(tasks.contains(WizardTask.IMPORT_TEST_DATA));
+		assertTrue(tasks.contains(WizardTask.ADD_MODULES));
 	}
 
 	@Test
