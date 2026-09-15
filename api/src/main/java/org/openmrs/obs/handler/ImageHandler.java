@@ -26,6 +26,7 @@ import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
@@ -77,7 +78,18 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
 			String mimeType = null;
 			BufferedImage img = null;
-			try (InputStream in = storageService.getData(key)) {
+
+			DataWithMetadata dwm;
+			try {
+				dwm = storageService.getDataWithMetadata(key);
+			} catch (IOException e) {
+				log.error("Trying to read file: {}", key, e);
+				ComplexData complexData = new ComplexData(parseFilename(obs, "image"), null);
+				obs.setComplexData(complexData);
+				return obs;
+			}
+
+			try (InputStream in = dwm.data()) {
 				ImageInputStream imageIn = ImageIO.createImageInputStream(in);
 				Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(imageIn);
 				if (imageReaders.hasNext()) {
@@ -107,7 +119,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			ComplexData complexData = new ComplexData(filename, img);
 			complexData.setMimeType(mimeType); // Set mimeType based on file content and not filename
 			if (img != null) { // Do not inject if image is missing
-				injectMissingMetadata(key, complexData);
+				injectMissingMetadata(key, complexData, dwm.metadata());
 			}
 			complexData.setLength(null); // Reset as loaded image size is not equal to file size
 

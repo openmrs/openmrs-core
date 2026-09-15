@@ -20,6 +20,7 @@ import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.StorageService;
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.util.OpenmrsConstants;
@@ -66,15 +67,22 @@ public class AbstractHandler {
 	public Obs getObs(Obs obs, String view) {
 		String key = parseDataKey(obs);
 
+		DataWithMetadata dwm;
+		try {
+			dwm = storageService.getDataWithMetadata(key);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+
 		byte[] bytes;
-		try (InputStream is = storageService.getData(key)) {
+		try (InputStream is = dwm.data()) {
 			bytes = IOUtils.toByteArray(is);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
 
 		ComplexData complexData = new ComplexData(parseDataTitle(obs), bytes);
-		injectMissingMetadata(key, complexData);
+		injectMissingMetadata(key, complexData, dwm.metadata());
 		obs.setComplexData(complexData);
 		return obs;
 	}
@@ -142,8 +150,14 @@ public class AbstractHandler {
 	}
 
 	protected void injectMissingMetadata(String key, ComplexData complexData) {
+		injectMissingMetadata(key, complexData, null);
+	}
+
+	protected void injectMissingMetadata(String key, ComplexData complexData, ObjectMetadata metadata) {
 		try {
-			ObjectMetadata metadata = storageService.getMetadata(key);
+			if (metadata == null) {
+				metadata = storageService.getMetadata(key);
+			}
 
 			if (complexData.getMimeType() == null) {
 				complexData.setMimeType(metadata.getMimeType());
