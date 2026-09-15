@@ -76,6 +76,9 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public User saveUser(User user, String password) {
+		if (password != null && !UserServiceImpl.isPasswordGuardPermitted()) {
+			throw new DAOException("Illegal attempt to save user from unknown caller");
+		}
 
 		// only change the user's password when creating a new user
 		boolean isNewUser = user.getUserId() == null;
@@ -612,6 +615,10 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void updateLoginCredential(LoginCredential credential) {
+		if (!UserServiceImpl.isPasswordGuardPermitted()) {
+			throw new DAOException("Illegal attempt to change user password from unknown caller");
+		}
+
 		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credential);
 	}
 
