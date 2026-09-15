@@ -11,6 +11,8 @@ package org.openmrs.api.db.hibernate;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +28,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.spi.BootstrapContext;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.service.ServiceRegistry;
@@ -225,6 +228,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	public void integrate(Metadata metadata, BootstrapContext bootstrapContext, SessionFactoryImplementor sessionFactory) {
 		this.metadata = metadata;
 		generateEnversAuditTables(metadata, bootstrapContext.getServiceRegistry());
+		assertProviderDisablesAutocommitPremise(bootstrapContext.getServiceRegistry(), sessionFactory);
 	}
 
 	@Override
@@ -247,4 +251,31 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 			throw new APIException("An error occurred while initializing the Envers audit tables", e);
 		}
 	}
+
+	private void assertProviderDisablesAutocommitPremise(ServiceRegistry serviceRegistry,
+	        SessionFactoryImplementor sessionFactory) {
+
+		if (!sessionFactory.getSessionFactoryOptions().doesConnectionProviderDisableAutoCommit()) {
+			return;
+		}
+		ConnectionProvider provider = serviceRegistry.getService(ConnectionProvider.class);
+		try {
+			Connection conn = provider.getConnection();
+			try {
+				if (conn.getAutoCommit()) {
+					throw new HibernateException(
+					        "provider_disables_autocommit=true but the pool returned a connection with autoCommit=true; "
+					                + "remove connection.autocommit=true from openmrs-runtime.properties, or set "
+					                + "connection.provider_disables_autocommit=false there if this pool really must hand out "
+					                + "auto-commit-enabled connections");
+				}
+			} finally {
+				provider.closeConnection(conn);
+			}
+		} catch (SQLException e) {
+			throw new HibernateException(
+			        "Failed to obtain a connection from the pool to check autoCommit state: " + e.getMessage(), e);
+		}
+	}
+
 }
