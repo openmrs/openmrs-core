@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -108,13 +109,15 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 	}
 
 	@Test
-	public void matches_shouldUseTheEncoderNamedByTheIdForEncodeForAnUnprefixedPassword() {
-		when(bcryptEncoder.matches("password", "hashedPassword")).thenReturn(true);
+	public void matches_shouldSendAnUnprefixedPasswordToTheFallbackEncoderEvenWhenAnIdForEncodeIsConfigured() {
+		when(fallbackEncoder.matches("password", "hashedPassword")).thenReturn(true);
 		OpenmrsDelegatingPasswordEncoder encoder = new OpenmrsDelegatingPasswordEncoder("bcrypt",
 			idToPasswordEncoder, fallbackEncoder);
 
+		// an unprefixed value is a legacy hash that only the fallback (legacy) encoder can parse;
+		// routing it to the encoder named by the id would reject every pre-existing account after opt-in
 		assertTrue(encoder.matches("password", "hashedPassword"));
-		verify(fallbackEncoder, never()).matches(any(), anyString());
+		verify(bcryptEncoder, never()).matches(any(), anyString());
 	}
 
 	@Test
@@ -210,5 +213,62 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 		assertTrue(encoder.matches("password", encoded));
 		assertFalse(encoder.matches("wrongPassword", encoded));
 		assertFalse(encoder.upgradeEncoding(encoded));
+	}
+
+	/**
+	 * A site that runs on the default (legacy) config, then opts in to argon2. A password already
+	 * stored while on the default config is an unprefixed legacy hash; it must keep authenticating
+	 * after the opt-in even though the encoder now writes argon2-prefixed values. Routing that
+	 * unprefixed hash to the argon2 encoder would reject every pre-existing account.
+	 */
+	@Test
+	public void shouldAuthenticateAPasswordStoredBeforeAnArgon2OptIn() {
+		PasswordEncoder legacyEncoder = new LegacyOpenmrsPasswordEncoder();
+		OpenmrsDelegatingPasswordEncoder preOptIn = new OpenmrsDelegatingPasswordEncoder("", new HashMap<>(),
+			legacyEncoder);
+		String storedHash = preOptIn.encode("password");
+		assertFalse(storedHash.startsWith("{"));
+
+		PasswordEncoder argon2Encoder = new Argon2PasswordEncoder(16, 32, 1, 19456, 2);
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+		encoders.put("argon2", argon2Encoder);
+		OpenmrsDelegatingPasswordEncoder postOptIn = new OpenmrsDelegatingPasswordEncoder("argon2", encoders,
+			legacyEncoder);
+
+		assertTrue(postOptIn.matches("password", storedHash));
+		assertFalse(postOptIn.matches("wrongPassword", storedHash));
+		assertTrue(postOptIn.upgradeEncoding(storedHash));
+
+		String newHash = postOptIn.encode("password");
+		assertTrue(newHash.startsWith("{argon2}"));
+		assertTrue(postOptIn.matches("password", newHash));
+		assertFalse(postOptIn.upgradeEncoding(newHash));
+	}
+
+	/**
+	 * {@link #upgradeEncoding(String)} delegates to the encoder named by a recognized prefix, so
+	 * raising the configured argon2 work factors rehashes previously stored argon2 hashes. With a
+	 * weaker hash stored, an encoder configured with stronger parameters must report that the hash
+	 * needs re-encoding, while still verifying the password against the stored hash.
+	 */
+	@Test
+	public void upgradeEncoding_shouldReturnTrueWhenTheConfiguredWorkFactorsAreStrongerThanTheStoredHash() {
+		Map<String, PasswordEncoder> weak = new HashMap<>();
+		weak.put("argon2", new Argon2PasswordEncoder(16, 32, 1, 19456, 2));
+		String stored = new OpenmrsDelegatingPasswordEncoder("argon2", weak,
+			new LegacyOpenmrsPasswordEncoder()).encode("password");
+		assertTrue(stored.startsWith("{argon2}"));
+
+		Map<String, PasswordEncoder> strong = new HashMap<>();
+		strong.put("argon2", new Argon2PasswordEncoder(16, 32, 1, 65536, 3));
+		OpenmrsDelegatingPasswordEncoder reworked = new OpenmrsDelegatingPasswordEncoder("argon2", strong,
+			new LegacyOpenmrsPasswordEncoder());
+
+		// different work factors mean the stored hash should be upgraded...
+		assertTrue(reworked.upgradeEncoding(stored));
+		// ...but the stored hash still verifies against the raw password until it is
+		assertTrue(reworked.matches("password", stored));
+		// a hash written with the current work factors needs no upgrade
+		assertFalse(reworked.upgradeEncoding(reworked.encode("password")));
 	}
 }
