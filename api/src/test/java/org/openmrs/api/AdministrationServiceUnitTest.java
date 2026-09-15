@@ -20,7 +20,7 @@ import org.openmrs.api.impl.AdministrationServiceImpl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -66,9 +66,8 @@ public class AdministrationServiceUnitTest {
 	}
 
 	@Test
-	public void getGlobalPropertyValue_shouldFailIfDefaultValueIsNull() {
-
-		assertThrows(IllegalArgumentException.class, () -> adminService.getGlobalPropertyValue("valid.double", null));
+	public void getGlobalPropertyValue_shouldReturnNullIfDefaultValueIsNull() {
+		assertNull(adminService.getGlobalPropertyValue("valid.double", null));
 	}
 
 	@Test
