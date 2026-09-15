@@ -9,12 +9,18 @@
  */
 package org.openmrs.api.context;
 
+import java.util.Collections;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+import org.openmrs.PrivilegeListener;
 import org.openmrs.User;
+import org.openmrs.UserSessionListener;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -27,6 +33,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class UserContextTest extends BaseContextSensitiveTest {
 
@@ -224,5 +233,106 @@ public class UserContextTest extends BaseContextSensitiveTest {
 
 		// assert
 		assertThat(userContext.hasPrivilege("Privilege1"), is(true));
+	}
+
+	/**
+	 * @see org.openmrs.api.context.UserContext#hasPrivilege(java.lang.String)
+	 */
+	@Test
+	void hasPrivilege_shouldCachePrivilegeListeners() {
+		try (MockedStatic<Context> contextMock = Mockito.mockStatic(Context.class)) {
+			UserContext.clearCachedListeners();
+			PrivilegeListener privilegeListener = mock(PrivilegeListener.class);
+
+			contextMock.when(() -> Context.getRegisteredComponents(PrivilegeListener.class))
+			        .thenReturn(Collections.singletonList(privilegeListener));
+
+			UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+			userContext.addProxyPrivilege("Some Privilege");
+
+			userContext.hasPrivilege("Some Privilege");
+			userContext.hasPrivilege("Some Privilege");
+
+			// The listener lookup should happen only once because the result is cached.
+			contextMock.verify(() -> Context.getRegisteredComponents(PrivilegeListener.class), times(1));
+		} finally {
+			UserContext.clearCachedListeners();
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.context.UserContext#hasPrivilege(java.lang.String)
+	 */
+	@Test
+	void hasPrivilege_shouldCacheEmptyPrivilegeListenerList() {
+		try (MockedStatic<Context> contextMock = Mockito.mockStatic(Context.class)) {
+			UserContext.clearCachedListeners();
+			contextMock.when(() -> Context.getRegisteredComponents(PrivilegeListener.class))
+			        .thenReturn(Collections.emptyList());
+
+			UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+			userContext.addProxyPrivilege("Some Privilege");
+
+			userContext.hasPrivilege("Some Privilege");
+			userContext.hasPrivilege("Some Privilege");
+
+			// An empty listener list should also be cached, avoiding another lookup.
+			contextMock.verify(() -> Context.getRegisteredComponents(PrivilegeListener.class), times(1));
+		} finally {
+			UserContext.clearCachedListeners();
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.context.UserContext#clearCachedListeners()
+	 */
+	@Test
+	void clearCachedListeners_shouldCausePrivilegeListenerLookupAgain() {
+		try (MockedStatic<Context> contextMock = Mockito.mockStatic(Context.class)) {
+			UserContext.clearCachedListeners();
+			contextMock.when(() -> Context.getRegisteredComponents(PrivilegeListener.class))
+			        .thenReturn(Collections.emptyList());
+
+			UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+			userContext.addProxyPrivilege("Some Privilege");
+
+			// The first lookup populates the cache.
+			userContext.hasPrivilege("Some Privilege");
+
+			// Clearing the cache should force the next privilege check to look up listeners again.
+			UserContext.clearCachedListeners();
+			userContext.hasPrivilege("Some Privilege");
+
+			contextMock.verify(() -> Context.getRegisteredComponents(PrivilegeListener.class), times(2));
+		} finally {
+			UserContext.clearCachedListeners();
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.context.UserContext#logout()
+	 */
+	@Test
+	void logout_shouldCacheAndNotifyUserSessionListeners() {
+		try (MockedStatic<Context> contextMock = Mockito.mockStatic(Context.class)) {
+			UserContext.clearCachedListeners();
+
+			UserSessionListener listener = mock(UserSessionListener.class);
+			contextMock.when(() -> Context.getRegisteredComponents(UserSessionListener.class))
+			        .thenReturn(Collections.singletonList(listener));
+
+			UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+
+			userContext.logout();
+			userContext.logout();
+
+			// Repeated session events should reuse the cached listener list.
+			contextMock.verify(() -> Context.getRegisteredComponents(UserSessionListener.class), times(1));
+
+			verify(listener, times(2)).loggedInOrOut(null, UserSessionListener.Event.LOGOUT,
+			    UserSessionListener.Status.SUCCESS);
+		} finally {
+			UserContext.clearCachedListeners();
+		}
 	}
 }
