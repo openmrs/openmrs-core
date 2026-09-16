@@ -26,7 +26,6 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,9 +66,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 */
 	@Override
 	public void before(Method method, Object[] args, Object target) throws Throwable {
-		if (log.isDebugEnabled()) {
-			log.debug("Calling authorization advice before {}", method.getName());
-		}
+		log.debug("Calling authorization advice before {}", method.getName());
 
 		if (Daemon.isDaemonThread()) {
 			return;
@@ -89,9 +86,9 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 
 		if (log.isDebugEnabled()) {
 			User user = Context.getAuthenticatedUser();
-			log.debug("User {}", OpenmrsUtil.applyLogSanitization(user));
+			log.debug("User {}", user);
 			if (user != null) {
-				log.debug("has roles {}", OpenmrsUtil.applyLogSanitization(user.getAllRoles()));
+				log.debug("has roles {}", user.getAllRoles());
 			}
 		}
 
@@ -110,9 +107,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 						return;
 					}
 					boolean hasPrivilege = Context.hasPrivilege(privilege);
-					if (log.isDebugEnabled()) {
-						log.debug("User has privilege {}? {}", OpenmrsUtil.applyLogSanitization(privilege), hasPrivilege);
-					}
+					log.debug("User has privilege {}? {}", privilege, hasPrivilege);
 
 					if (hasPrivilege) {
 						if (!requireAll) {
@@ -197,9 +192,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param attrs Collection of String privilege names that the user must have
 	 */
 	private void throwUnauthorized(User user, Method method, Collection<String> attrs) {
-		if (log.isDebugEnabled()) {
-			log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, OpenmrsUtil.applyLogSanitization(user), method.getName());
-		}
+		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { StringUtils.join(attrs, ",") }, Locale.getDefault()));
 	}
@@ -212,9 +205,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param attr privilege names that the user must have
 	 */
 	private void throwUnauthorized(User user, Method method, String attr) {
-		if (log.isDebugEnabled()) {
-			log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, OpenmrsUtil.applyLogSanitization(user), method.getName());
-		}
+		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { attr }, Locale.getDefault()));
 	}
@@ -226,9 +217,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param method acting method
 	 */
 	private void throwUnauthorized(User user, Method method) {
-		if (log.isDebugEnabled()) {
-			log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, OpenmrsUtil.applyLogSanitization(user), method.getName());
-		}
+		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.aunthenticationRequired"));
 	}
 

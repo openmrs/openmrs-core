@@ -258,6 +258,26 @@ class OpenmrsPropertyLookupTest {
 		assertThat(result, containsString("before\tafter"));
 	}
 
+	@Test
+	void layoutPattern_shouldReplaceLineAndParagraphSeparatorsWithUnderscores() {
+		PatternLayout layout = PatternLayout.newBuilder().withPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
+
+		String nelMessage = "before\u0085after";
+		LogEvent nelEvent = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
+		        .setMessage(new SimpleMessage(nelMessage)).build();
+		assertThat(layout.toSerializable(nelEvent), containsString("before_after"));
+
+		String lsMessage = "before\u2028after";
+		LogEvent lsEvent = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
+		        .setMessage(new SimpleMessage(lsMessage)).build();
+		assertThat(layout.toSerializable(lsEvent), containsString("before_after"));
+
+		String psMessage = "before\u2029after";
+		LogEvent psEvent = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
+		        .setMessage(new SimpleMessage(psMessage)).build();
+		assertThat(layout.toSerializable(psEvent), containsString("before_after"));
+	}
+
 	// --- layout pattern copy pinning ---
 
 	/**
