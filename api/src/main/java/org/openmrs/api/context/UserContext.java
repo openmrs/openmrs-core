@@ -64,6 +64,16 @@ public class UserContext implements Serializable {
 	private static final AtomicBoolean rolePrivilegeCacheUnavailableWarned = new AtomicBoolean(false);
 
 	/**
+	 * Cached privilege listeners used by privilege checks.
+	 */
+	private static volatile List<PrivilegeListener> privilegeListeners;
+
+	/**
+	 * Cached user session listeners used by authentication and logout events.
+	 */
+	private static volatile List<UserSessionListener> userSessionListeners;
+
+	/**
 	 * User object containing details about the authenticated user
 	 */
 	private User user = null;
@@ -601,6 +611,17 @@ public class UserContext implements Serializable {
 	}
 
 	/**
+	 * Clears cached listener registrations so that listeners contributed by refreshed application or
+	 * module contexts are discovered again.
+	 *
+	 * @since 2.8.10
+	 */
+	public static void clearCachedListeners() {
+		privilegeListeners = null;
+		userSessionListeners = null;
+	}
+
+	/**
 	 * Convenience method that sets the default location of the currently authenticated user using the
 	 * value of the user's default location property
 	 */
@@ -681,7 +702,14 @@ public class UserContext implements Serializable {
 	 * @since 1.8.4, 1.9.1, 1.10
 	 */
 	private void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
-		for (PrivilegeListener privilegeListener : Context.getRegisteredComponents(PrivilegeListener.class)) {
+		List<PrivilegeListener> listeners = privilegeListeners;
+
+		if (listeners == null) {
+			listeners = Collections.unmodifiableList(Context.getRegisteredComponents(PrivilegeListener.class));
+			privilegeListeners = listeners;
+		}
+
+		for (PrivilegeListener privilegeListener : listeners) {
 			try {
 				privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
 			} catch (Exception e) {
@@ -691,7 +719,14 @@ public class UserContext implements Serializable {
 	}
 
 	private void notifyUserSessionListener(User user, Event event, Status status) {
-		for (UserSessionListener userSessionListener : Context.getRegisteredComponents(UserSessionListener.class)) {
+		List<UserSessionListener> listeners = userSessionListeners;
+
+		if (listeners == null) {
+			listeners = Collections.unmodifiableList(Context.getRegisteredComponents(UserSessionListener.class));
+			userSessionListeners = listeners;
+		}
+
+		for (UserSessionListener userSessionListener : listeners) {
 			userSessionListener.loggedInOrOut(user, event, status);
 		}
 	}
