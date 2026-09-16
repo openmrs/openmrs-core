@@ -20,37 +20,21 @@ import java.util.stream.Collectors;
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Order;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
-import org.openmrs.Cohort;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterProvider;
-import org.openmrs.EncounterRole;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.Person;
-import org.openmrs.PersonName;
-import org.openmrs.Provider;
-import org.openmrs.Visit;
-import org.openmrs.VisitType;
+import org.openmrs.*;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.parameter.EncounterSearchCriteria;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -486,15 +470,25 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			}
 			return new QueryResult(predicates, Collections.emptyList());
 		} else {
+			// 1. Exclude voided patients
+			predicates.add(cb.isFalse(patientJoin.get("voided")));
+
+			List<Order> orders = new ArrayList<>();
+
 			if (StringUtils.isNotBlank(query)) {
 				Join<Patient, PersonName> nameJoin = patientJoin.join("names", JoinType.LEFT);
 				Join<Patient, PatientIdentifier> idsJoin = patientJoin.join("identifiers", JoinType.LEFT);
+
+				// 2. Fetch match mode from global properties (default to START if not configured)
+				String matchModeGp = Context.getAdministrationService()
+				        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE, "START");
+				MatchMode matchMode = "ANYWHERE".equalsIgnoreCase(matchModeGp) ? MatchMode.ANYWHERE : MatchMode.START;
 
 				String[] splitNames = query.trim().split("\\s+");
 				List<Predicate> allNameTermPredicates = new ArrayList<>();
 
 				for (String nameTerm : splitNames) {
-					String pattern = MatchMode.ANYWHERE.toLowerCasePattern(nameTerm);
+					String pattern = matchMode.toLowerCasePattern(nameTerm);
 					List<Predicate> termMatch = new ArrayList<>();
 					termMatch.add(cb.like(cb.lower(nameJoin.get("givenName")), pattern));
 					termMatch.add(cb.like(cb.lower(nameJoin.get("middleName")), pattern));
@@ -513,9 +507,16 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				Predicate validIdentifier = cb.and(idNotVoided, identifierMatch);
 
 				predicates.add(cb.or(validName, validIdentifier));
+
+				// 3. Apply ordering by person names if requested
+				if (orderByNames) {
+					orders.add(cb.asc(nameJoin.get("givenName")));
+					orders.add(cb.asc(nameJoin.get("middleName")));
+					orders.add(cb.asc(nameJoin.get("familyName")));
+				}
 			}
 
-			return new QueryResult(predicates, Collections.emptyList());
+			return new QueryResult(predicates, orders);
 		}
 	}
 
@@ -724,15 +725,14 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 
 	private String getFormattedMatchPattern(String query) {
-		String modeSetting = Context.getAdministrationService().getGlobalProperty("patient.nameSearchMatchMode", "exact");
-
-		MatchMode mode = MatchMode.EXACT;
-		if ("start".equalsIgnoreCase(modeSetting)) {
-			mode = MatchMode.START;
-		} else if ("anywhere".equalsIgnoreCase(modeSetting)) {
+		String modeSetting = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE, "START");
+		MatchMode mode = MatchMode.START;
+		if ("EXACT".equalsIgnoreCase(modeSetting)) {
+			mode = MatchMode.EXACT;
+		} else if ("ANYWHERE".equalsIgnoreCase(modeSetting)) {
 			mode = MatchMode.ANYWHERE;
 		}
-
 		return mode.toLowerCasePattern(query);
 	}
 
