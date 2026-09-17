@@ -697,7 +697,20 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public Map<Integer, PersonAttribute> getSavedPersonAttributes(Person person) {
-		if (person == null || person.getPersonId() == null) {
+		if (person == null) {
+			return Collections.emptyMap();
+		}
+
+		// The attributes the person currently carries are looked up by their own id as well, so that an
+		// attribute that is stored against somebody else is not mistaken for a brand new one.
+		Set<Integer> attributeIds = new LinkedHashSet<>();
+		for (PersonAttribute attribute : person.getAttributes()) {
+			if (attribute != null && attribute.getPersonAttributeId() != null) {
+				attributeIds.add(attribute.getPersonAttributeId());
+			}
+		}
+
+		if (person.getPersonId() == null && attributeIds.isEmpty()) {
 			return Collections.emptyMap();
 		}
 
@@ -708,17 +721,20 @@ public class HibernatePersonDAO implements PersonDAO {
 		session.setHibernateFlushMode(FlushMode.MANUAL);
 		try {
 			NativeQuery<Object[]> sql = session.createNativeQuery(
-			    "select person_attribute_id, person_attribute_type_id, value, voided from person_attribute "
-			            + "where person_id = :personId",
+			    "select person_attribute_id, person_id, person_attribute_type_id, value, voided "
+			            + "from person_attribute where person_id = :personId or person_attribute_id in (:attributeIds)",
 			    Object[].class);
+			// in (null) never matches, which is what we want when there is nothing to look up
 			sql.setParameter("personId", person.getPersonId());
+			sql.setParameterList("attributeIds", attributeIds.isEmpty() ? Collections.singleton(null) : attributeIds);
 
 			Map<Integer, PersonAttribute> savedAttributes = new LinkedHashMap<>();
 			for (Object[] row : sql.getResultList()) {
 				PersonAttribute savedAttribute = new PersonAttribute(((Number) row[0]).intValue());
-				savedAttribute.setAttributeType(getPersonAttributeType(((Number) row[1]).intValue()));
-				savedAttribute.setValue((String) row[2]);
-				savedAttribute.setVoided(toBoolean(row[3]));
+				savedAttribute.setPerson(new Person(((Number) row[1]).intValue()));
+				savedAttribute.setAttributeType(getPersonAttributeType(((Number) row[2]).intValue()));
+				savedAttribute.setValue((String) row[3]);
+				savedAttribute.setVoided(toBoolean(row[4]));
 				savedAttributes.put(savedAttribute.getPersonAttributeId(), savedAttribute);
 			}
 
@@ -755,10 +771,13 @@ public class HibernatePersonDAO implements PersonDAO {
 
 	/**
 	 * Interprets a boolean column that was read through a native query, which the supported databases
-	 * hand back either as a {@link Boolean} or as a number
+	 * hand back either as a {@link Boolean} or as a number. Anything else is rejected rather than
+	 * guessed at, because this feeds an authorization decision and a wrong <code>false</code> would
+	 * make a voided row look unvoided.
 	 *
 	 * @param value the raw column value
-	 * @return the value as a boolean, false if it is null
+	 * @return the value as a boolean
+	 * @throws DAOException if the value cannot be read as a boolean
 	 */
 	private static boolean toBoolean(Object value) {
 		if (value instanceof Boolean) {
@@ -769,7 +788,8 @@ public class HibernatePersonDAO implements PersonDAO {
 			return ((Number) value).intValue() != 0;
 		}
 
-		return value != null && Boolean.parseBoolean(value.toString());
+		throw new DAOException("Unable to read " + (value == null ? "null" : value.getClass().getName())
+		        + " as the value of a boolean column");
 	}
 
 	/**

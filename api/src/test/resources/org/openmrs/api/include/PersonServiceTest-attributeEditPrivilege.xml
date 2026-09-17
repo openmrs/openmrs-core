@@ -11,6 +11,6 @@
 
 -->
 <dataset>
-	<privilege privilege="Some Privilege For Edit Person Attributes" description="This is a test privilege for editing restricted person attributes" uuid="21a19e9c-0e0b-4b42-a2fc-7bb2a4f9f1c3" creator="1" retired="false" date_created="2025-09-14 12:00:00.0" name="Privilege Name" />
+	<privilege privilege="Some Privilege For Edit Person Attributes" description="This is a test privilege for editing restricted person attributes" uuid="21a19e9c-0e0b-4b42-a2fc-7bb2a4f9f1c3" creator="1" retired="false" date_created="2025-09-14 12:00:00.0" name="Some Privilege For Edit Person Attributes" />
 	<users user_id="5506" person_id="501" system_id="7-5" username="test_user" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="06d05314-e132-11de-babe-001e37123456"/>
 </dataset>

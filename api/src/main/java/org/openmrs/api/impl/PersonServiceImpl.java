@@ -319,6 +319,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#checkPersonAttributeEditPrivileges(org.openmrs.Person)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public void checkPersonAttributeEditPrivileges(Person person) throws APIAuthenticationException {
 		if (person == null) {
 			return;
@@ -344,18 +345,23 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			}
 
 			keptAttributeIds.add(savedAttribute.getPersonAttributeId());
-			if (isUnchanged(attribute, savedAttribute)) {
+			if (isUnchanged(person, attribute, savedAttribute)) {
 				continue;
 			}
 
-			// when the type of a stored attribute is switched, the type it is taken away from is edited
-			// just as much as the one it is moved to
+			// when a stored attribute is moved to another type or to another person, the type it is being
+			// taken away from is edited just as much as the one it is being moved to
 			requireEditPrivilege(savedAttribute.getAttributeType(), editPrivileges);
 			requireEditPrivilege(attribute.getAttributeType(), editPrivileges);
 		}
 
 		// attributes dropped from the collection are deleted by the all-delete-orphan cascade
 		for (PersonAttribute savedAttribute : savedAttributes.values()) {
+			if (!Objects.equals(person.getPersonId(), getPersonId(savedAttribute))) {
+				// stored against somebody else, so this save is not dropping it from anybody
+				continue;
+			}
+
 			if (!keptAttributeIds.contains(savedAttribute.getPersonAttributeId())) {
 				requireEditPrivilege(savedAttribute.getAttributeType(), editPrivileges);
 			}
@@ -403,20 +409,27 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 
 	/**
 	 * Compares an attribute that is about to be saved against the state it currently has in the
-	 * database, looking at the properties that carry the attribute's meaning
+	 * database, looking at the properties that carry the attribute's meaning. The person is compared
+	 * too, so that adopting an attribute that is stored against somebody else counts as a change.
 	 *
+	 * @param person the person the attribute is about to be saved against
 	 * @param attribute the attribute as it is about to be saved
 	 * @param savedAttribute the same attribute as it is stored in the database
 	 * @return true if the save leaves the stored attribute as it is
 	 */
-	private static boolean isUnchanged(PersonAttribute attribute, PersonAttribute savedAttribute) {
-		return Objects.equals(getAttributeTypeId(attribute), getAttributeTypeId(savedAttribute))
+	private static boolean isUnchanged(Person person, PersonAttribute attribute, PersonAttribute savedAttribute) {
+		return Objects.equals(person.getPersonId(), getPersonId(savedAttribute))
+		        && Objects.equals(getAttributeTypeId(attribute), getAttributeTypeId(savedAttribute))
 		        && Objects.equals(attribute.getValue(), savedAttribute.getValue())
 		        && Objects.equals(attribute.getVoided(), savedAttribute.getVoided());
 	}
 
 	private static Integer getAttributeTypeId(PersonAttribute attribute) {
 		return attribute.getAttributeType() == null ? null : attribute.getAttributeType().getPersonAttributeTypeId();
+	}
+
+	private static Integer getPersonId(PersonAttribute attribute) {
+		return attribute.getPerson() == null ? null : attribute.getPerson().getPersonId();
 	}
 
 	private void setPreferredPersonName(Person person) {
@@ -468,6 +481,11 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		if (person == null) {
 			return null;
 		}
+
+		// the void has already been cascaded onto the attribute collection by RequiredDataAdvice, and
+		// voiding an attribute of a restricted type needs that type's edit privilege whether it is done
+		// on its own or by voiding the person that carries it
+		checkPersonAttributeEditPrivileges(person);
 
 		return dao.savePerson(person);
 	}

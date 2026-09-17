@@ -622,10 +622,18 @@ public interface PersonService extends OpenmrsService {
 	 * the rest of the person. The privilege has to be held by the user's own roles; a proxy privilege
 	 * does not satisfy it.
 	 * <p>
-	 * This is called by {@link #savePerson(Person)} and by
-	 * {@link PatientService#savePatient(org.openmrs.Patient)}, both of which cascade the attribute
-	 * collection to the database. It only needs to be called explicitly by code that persists a
-	 * person's attributes by some other route.
+	 * This is called by the methods that cascade the attribute collection to the database:
+	 * {@link #savePerson(Person)}, {@link #voidPerson(Person, String)},
+	 * {@link PatientService#savePatient(org.openmrs.Patient)} and
+	 * {@link PatientService#voidPatient(org.openmrs.Patient, String)}. Because voiding a person voids
+	 * the attributes it carries, voiding a person who carries a restricted attribute needs that
+	 * attribute type's edit privilege as well, and so does unvoiding them again.
+	 * <p>
+	 * Note the limits of where this can be enforced. It gates the service methods above; it cannot gate
+	 * a caller that mutates an attribute which Hibernate already manages and then lets some unrelated
+	 * write in the same transaction flush it, since no service method sees that change. The same is
+	 * true of the comparable check on {@link EncounterService#saveEncounter(org.openmrs.Encounter)}.
+	 * Closing that off needs a flush-time listener on {@link PersonAttribute} rather than a check here.
 	 *
 	 * @param person the person that is about to be saved, may be null
 	 * @throws APIAuthenticationException if the authenticated user does not hold the edit privilege of

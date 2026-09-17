@@ -331,6 +331,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 
 		// patient and patientidentifier attributes taken care of by the BaseVoidHandler
+		// the void has already been cascaded onto the person attribute collection, and voiding an
+		// attribute of a restricted type needs that type's edit privilege however it is reached
+		Context.getPersonService().checkPersonAttributeEditPrivileges(patient);
+
 		//call the DAO layer directly to avoid any further AOP around save*
 		return dao.savePatient(patient);
 	}

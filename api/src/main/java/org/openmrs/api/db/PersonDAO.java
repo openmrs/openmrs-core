@@ -214,15 +214,21 @@ public interface PersonDAO {
 	public Boolean getSavedPersonAttributeTypeSearchable(PersonAttributeType personAttributeType);
 
 	/**
-	 * Gets the attributes of the given person as they are currently saved in the database, bypassing
-	 * any caches and any unsaved in-memory changes to them. This is used prior to saving a person, so
-	 * that we can tell which of its attributes the save is adding, changing, voiding or removing.
+	 * Gets the person attribute rows that the given person's save touches, as they are currently stored
+	 * in the database and without letting the read flush the caller's unsaved changes into it first.
+	 * This is used prior to saving a person, so that we can tell which of its attributes the save is
+	 * adding, changing, voiding or removing. Both the rows stored against the person and the rows
+	 * carrying the ids the person's attribute collection references are returned, so that an attribute
+	 * stored against somebody else cannot be mistaken for a brand new one.
 	 * <p>
-	 * Only the attribute type, value and voided status of the returned attributes are populated. They
-	 * are read-only snapshots that are not associated with any session and must never be saved.
+	 * The returned attributes are snapshots, not entities to work with: only their person, attribute
+	 * type, value and voided status are populated, the person is an id-only stub, and they must never
+	 * be saved. Note that the attribute type is the live, session-managed instance, so only its id is
+	 * trustworthy; use {@link #getSavedPersonAttributeTypeEditPrivilege(PersonAttributeType)} to find
+	 * out what a type actually restricts.
 	 *
-	 * @param person the person to get the saved attributes of
-	 * @return the saved attributes, keyed by their person attribute id, never null
+	 * @param person the person whose save is about to be checked
+	 * @return the stored rows, keyed by their person attribute id, never null
 	 * @since 3.0.0
 	 */
 	public Map<Integer, PersonAttribute> getSavedPersonAttributes(Person person);
