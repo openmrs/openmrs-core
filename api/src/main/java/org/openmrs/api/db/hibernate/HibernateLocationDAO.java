@@ -463,13 +463,17 @@ public class HibernateLocationDAO implements LocationDAO {
 			return null;
 		}
 
+		// the walk starts at the ancestor itself so that the retired filter also prunes its subtree
+		// when the ancestor is retired; the ancestor is then dropped from the returned ids
 		String retiredFilter = criteria.getIncludeRetired() ? "" : " AND retired = false";
 		String cteSql = "WITH RECURSIVE descendants (location_id) AS ("
-		        + " SELECT location_id FROM location WHERE parent_location = :locationId" + retiredFilter
+		        + " SELECT location_id FROM location WHERE location_id = :locationId" + retiredFilter
 		        + " UNION ALL SELECT l.location_id FROM location l"
 		        + " INNER JOIN descendants d ON l.parent_location = d.location_id" + retiredFilter
-		        + ") SELECT location_id FROM descendants";
-		return session.createNativeQuery(cteSql, Integer.class)
+		        + ") SELECT location_id FROM descendants WHERE location_id <> :locationId";
+		// a native query does not auto-flush on its own, so the location table is declared as a query
+		// space to make pending changes (a location retired earlier in the same transaction) visible
+		return session.createNativeQuery(cteSql, Integer.class).addSynchronizedEntityClass(Location.class)
 		        .setParameter("locationId", criteria.getDescendantOfLocation().getLocationId()).list();
 	}
 
