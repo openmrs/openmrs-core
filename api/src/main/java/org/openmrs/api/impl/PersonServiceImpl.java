@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +28,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PersonAttributeTypeLockedException;
@@ -304,9 +307,116 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	public Person savePerson(Person person) throws APIException {
+		// the attribute collection is cascaded to the database, so the per type edit privileges an
+		// administrator configured have to be enforced before it is handed to the DAO
+		checkPersonAttributeEditPrivileges(person);
 		setPreferredPersonName(person);
 		setPreferredPersonAddress(person);
 		return dao.savePerson(person);
+	}
+
+	/**
+	 * @see org.openmrs.api.PersonService#checkPersonAttributeEditPrivileges(org.openmrs.Person)
+	 */
+	@Override
+	public void checkPersonAttributeEditPrivileges(Person person) throws APIAuthenticationException {
+		if (person == null) {
+			return;
+		}
+
+		Map<Integer, PersonAttribute> savedAttributes = dao.getSavedPersonAttributes(person);
+		// the edit privileges looked up so far during this check, null values included
+		Map<Integer, String> editPrivileges = new HashMap<>();
+		Set<Integer> keptAttributeIds = new HashSet<>();
+
+		for (PersonAttribute attribute : person.getAttributes()) {
+			if (attribute == null) {
+				continue;
+			}
+
+			PersonAttribute savedAttribute = attribute.getPersonAttributeId() == null ? null
+			        : savedAttributes.get(attribute.getPersonAttributeId());
+
+			if (savedAttribute == null) {
+				// an attribute that is not stored against this person yet is being added to it
+				requireEditPrivilege(attribute.getAttributeType(), editPrivileges);
+				continue;
+			}
+
+			keptAttributeIds.add(savedAttribute.getPersonAttributeId());
+			if (isUnchanged(attribute, savedAttribute)) {
+				continue;
+			}
+
+			// when the type of a stored attribute is switched, the type it is taken away from is edited
+			// just as much as the one it is moved to
+			requireEditPrivilege(savedAttribute.getAttributeType(), editPrivileges);
+			requireEditPrivilege(attribute.getAttributeType(), editPrivileges);
+		}
+
+		// attributes dropped from the collection are deleted by the all-delete-orphan cascade
+		for (PersonAttribute savedAttribute : savedAttributes.values()) {
+			if (!keptAttributeIds.contains(savedAttribute.getPersonAttributeId())) {
+				requireEditPrivilege(savedAttribute.getAttributeType(), editPrivileges);
+			}
+		}
+	}
+
+	/**
+	 * Requires that the authenticated user holds the privilege that the given person attribute type
+	 * demands in order for its attributes to be edited
+	 *
+	 * @param attributeType the type of an attribute that is being added, changed, voided or removed
+	 * @param editPrivileges the edit privileges looked up so far, used so that each attribute type is
+	 *            only resolved once per check
+	 * @throws APIAuthenticationException if the type names a privilege the user does not hold
+	 */
+	private void requireEditPrivilege(PersonAttributeType attributeType, Map<Integer, String> editPrivileges) {
+		if (attributeType == null || attributeType.getPersonAttributeTypeId() == null) {
+			return;
+		}
+
+		Integer attributeTypeId = attributeType.getPersonAttributeTypeId();
+		String editPrivilege;
+		if (editPrivileges.containsKey(attributeTypeId)) {
+			editPrivilege = editPrivileges.get(attributeTypeId);
+		} else {
+			// read the privilege from the database rather than from the type instance we were handed, so
+			// that the restriction cannot be lifted by passing in a stub or an edited attribute type
+			editPrivilege = dao.getSavedPersonAttributeTypeEditPrivilege(attributeType);
+			editPrivileges.put(attributeTypeId, editPrivilege);
+		}
+
+		// a type that names no edit privilege may be edited by anyone who may edit the person itself
+		if (StringUtils.isBlank(editPrivilege)) {
+			return;
+		}
+
+		// proxy privileges are excluded: one added merely to get past the savePerson authorization gate
+		// must not also satisfy this per type check
+		if (!Context.hasPrivilege(editPrivilege, false)) {
+			throw new APIAuthenticationException(
+			        Context.getMessageSourceService().getMessage("PersonAttribute.error.privilege.required.edit",
+			            new Object[] { editPrivilege, attributeType.getName() }, Context.getLocale()));
+		}
+	}
+
+	/**
+	 * Compares an attribute that is about to be saved against the state it currently has in the
+	 * database, looking at the properties that carry the attribute's meaning
+	 *
+	 * @param attribute the attribute as it is about to be saved
+	 * @param savedAttribute the same attribute as it is stored in the database
+	 * @return true if the save leaves the stored attribute as it is
+	 */
+	private static boolean isUnchanged(PersonAttribute attribute, PersonAttribute savedAttribute) {
+		return Objects.equals(getAttributeTypeId(attribute), getAttributeTypeId(savedAttribute))
+		        && Objects.equals(attribute.getValue(), savedAttribute.getValue())
+		        && Objects.equals(attribute.getVoided(), savedAttribute.getVoided());
+	}
+
+	private static Integer getAttributeTypeId(PersonAttribute attribute) {
+		return attribute.getAttributeType() == null ? null : attribute.getAttributeType().getPersonAttributeTypeId();
 	}
 
 	private void setPreferredPersonName(Person person) {

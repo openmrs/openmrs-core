@@ -134,6 +134,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	public Patient savePatient(Patient patient) throws APIException {
 		requireAppropriatePatientModificationPrivilege(patient);
+		// savePatient cascades the person attribute collection to the database just like savePerson, so
+		// the per type edit privileges have to be enforced here too
+		Context.getPersonService().checkPersonAttributeEditPrivileges(patient);
 
 		if (!patient.getVoided() && patient.getIdentifiers().size() == 1) {
 			patient.getPatientIdentifier().setPreferred(true);

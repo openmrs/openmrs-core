@@ -10,9 +10,12 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,6 +27,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
@@ -686,6 +690,86 @@ public class HibernatePersonDAO implements PersonDAO {
 		    Boolean.class);
 		sql.setParameter("personAttributeTypeId", personAttributeType.getId());
 		return sql.uniqueResult();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getSavedPersonAttributes(org.openmrs.Person)
+	 */
+	@Override
+	public Map<Integer, PersonAttribute> getSavedPersonAttributes(Person person) {
+		if (person == null || person.getPersonId() == null) {
+			return Collections.emptyMap();
+		}
+
+		Session session = sessionFactory.getCurrentSession();
+		// The unsaved changes made to this person's attributes are exactly what the caller wants to
+		// compare against, so the read must not be allowed to auto-flush them to the database first.
+		FlushMode flushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			NativeQuery<Object[]> sql = session.createNativeQuery(
+			    "select person_attribute_id, person_attribute_type_id, value, voided from person_attribute "
+			            + "where person_id = :personId",
+			    Object[].class);
+			sql.setParameter("personId", person.getPersonId());
+
+			Map<Integer, PersonAttribute> savedAttributes = new LinkedHashMap<>();
+			for (Object[] row : sql.getResultList()) {
+				PersonAttribute savedAttribute = new PersonAttribute(((Number) row[0]).intValue());
+				savedAttribute.setAttributeType(getPersonAttributeType(((Number) row[1]).intValue()));
+				savedAttribute.setValue((String) row[2]);
+				savedAttribute.setVoided(toBoolean(row[3]));
+				savedAttributes.put(savedAttribute.getPersonAttributeId(), savedAttribute);
+			}
+
+			return savedAttributes;
+		} finally {
+			session.setHibernateFlushMode(flushMode);
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getSavedPersonAttributeTypeEditPrivilege(org.openmrs.PersonAttributeType)
+	 */
+	@Override
+	public String getSavedPersonAttributeTypeEditPrivilege(PersonAttributeType personAttributeType) {
+		if (personAttributeType == null || personAttributeType.getId() == null) {
+			return null;
+		}
+
+		Session session = sessionFactory.getCurrentSession();
+		// This is read in order to decide whether the caller may save its unsaved changes at all, so the
+		// read must not be allowed to auto-flush those changes to the database first.
+		FlushMode flushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			NativeQuery<String> sql = session.createNativeQuery(
+			    "select edit_privilege from person_attribute_type where person_attribute_type_id = :personAttributeTypeId",
+			    String.class);
+			sql.setParameter("personAttributeTypeId", personAttributeType.getId());
+			return sql.uniqueResult();
+		} finally {
+			session.setHibernateFlushMode(flushMode);
+		}
+	}
+
+	/**
+	 * Interprets a boolean column that was read through a native query, which the supported databases
+	 * hand back either as a {@link Boolean} or as a number
+	 *
+	 * @param value the raw column value
+	 * @return the value as a boolean, false if it is null
+	 */
+	private static boolean toBoolean(Object value) {
+		if (value instanceof Boolean) {
+			return (Boolean) value;
+		}
+
+		if (value instanceof Number) {
+			return ((Number) value).intValue() != 0;
+		}
+
+		return value != null && Boolean.parseBoolean(value.toString());
 	}
 
 	/**

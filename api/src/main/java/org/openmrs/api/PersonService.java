@@ -612,6 +612,29 @@ public interface PersonService extends OpenmrsService {
 	public Person savePerson(Person person) throws APIException;
 
 	/**
+	 * Checks that the authenticated user is allowed to make the changes that the given person carries
+	 * in its attribute collection, and throws an {@link APIAuthenticationException} if it is not.
+	 * <p>
+	 * A {@link PersonAttributeType} may name an {@link PersonAttributeType#getEditPrivilege() edit
+	 * privilege}, in which case only users holding that privilege may add, change, void or remove
+	 * attributes of that type. Attributes that the save would leave exactly as they are stored are
+	 * always allowed through, so that a user who may not touch a restricted attribute can still edit
+	 * the rest of the person. The privilege has to be held by the user's own roles; a proxy privilege
+	 * does not satisfy it.
+	 * <p>
+	 * This is called by {@link #savePerson(Person)} and by
+	 * {@link PatientService#savePatient(org.openmrs.Patient)}, both of which cascade the attribute
+	 * collection to the database. It only needs to be called explicitly by code that persists a
+	 * person's attributes by some other route.
+	 *
+	 * @param person the person that is about to be saved, may be null
+	 * @throws APIAuthenticationException if the authenticated user does not hold the edit privilege of
+	 *             an attribute type whose attributes are being added, changed, voided or removed
+	 * @since 3.0.0
+	 */
+	public void checkPersonAttributeEditPrivileges(Person person) throws APIAuthenticationException;
+
+	/**
 	 * Purges a person from the database (cannot be undone)
 	 * <p>
 	 * <strong>Should</strong> delete person from the database

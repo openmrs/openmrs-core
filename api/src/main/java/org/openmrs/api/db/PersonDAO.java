@@ -11,6 +11,7 @@ package org.openmrs.api.db;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openmrs.Person;
@@ -211,6 +212,32 @@ public interface PersonDAO {
 	 * @return the searchable property currently in the database for this personAttributeType
 	 */
 	public Boolean getSavedPersonAttributeTypeSearchable(PersonAttributeType personAttributeType);
+
+	/**
+	 * Gets the attributes of the given person as they are currently saved in the database, bypassing
+	 * any caches and any unsaved in-memory changes to them. This is used prior to saving a person, so
+	 * that we can tell which of its attributes the save is adding, changing, voiding or removing.
+	 * <p>
+	 * Only the attribute type, value and voided status of the returned attributes are populated. They
+	 * are read-only snapshots that are not associated with any session and must never be saved.
+	 *
+	 * @param person the person to get the saved attributes of
+	 * @return the saved attributes, keyed by their person attribute id, never null
+	 * @since 3.0.0
+	 */
+	public Map<Integer, PersonAttribute> getSavedPersonAttributes(Person person);
+
+	/**
+	 * Gets the name of the privilege that is currently required in the database in order to edit
+	 * attributes of the given person attribute type, bypassing any caches and any unsaved in-memory
+	 * changes to the type itself. This is used prior to saving a person, so that the restriction an
+	 * administrator configured cannot be lifted by handing the API an edited or stubbed attribute type.
+	 *
+	 * @param personAttributeType the person attribute type to get the edit privilege of
+	 * @return the name of the required privilege, or null if the type does not restrict editing
+	 * @since 3.0.0
+	 */
+	public String getSavedPersonAttributeTypeEditPrivilege(PersonAttributeType personAttributeType);
 
 	/**
 	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes(boolean)

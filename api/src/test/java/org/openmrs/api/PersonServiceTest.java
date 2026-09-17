@@ -12,12 +12,16 @@ package org.openmrs.api;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -34,13 +38,18 @@ import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
+import org.openmrs.api.cache.RolePrivilegeCache;
+import org.openmrs.api.cache.RolePrivileges;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsObjectIdMatcher;
+import org.openmrs.util.PrivilegeConstants;
+import org.springframework.cache.CacheManager;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -48,6 +57,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -91,6 +101,23 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 
 	protected PersonService personService = null;
 
+	private static final String ATTRIBUTE_EDIT_PRIVILEGE_XML = "org/openmrs/api/include/PersonServiceTest-attributeEditPrivilege.xml";
+
+	private static final String ATTRIBUTE_EDIT_PRIVILEGE = "Some Privilege For Edit Person Attributes";
+
+	/**
+	 * The privileges of an ordinary data entry role: the coarse privileges that gate savePerson and
+	 * savePatient, plus the read privileges the framework needs to load and validate a person. It
+	 * deliberately does not include {@link #ATTRIBUTE_EDIT_PRIVILEGE}.
+	 */
+	private static final String[] DATA_ENTRY_PRIVILEGES = { PrivilegeConstants.GET_PERSONS, PrivilegeConstants.ADD_PERSONS,
+	        PrivilegeConstants.EDIT_PERSONS, PrivilegeConstants.GET_PATIENTS, PrivilegeConstants.ADD_PATIENTS,
+	        PrivilegeConstants.EDIT_PATIENTS, PrivilegeConstants.GET_PATIENT_IDENTIFIERS,
+	        PrivilegeConstants.GET_IDENTIFIER_TYPES, PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES,
+	        PrivilegeConstants.GET_GLOBAL_PROPERTIES, PrivilegeConstants.GET_CONCEPTS, PrivilegeConstants.GET_LOCATIONS };
+
+	private CacheManager cacheManager;
+
 	@BeforeEach
 	public void onSetUpInTransaction() {
 		if (ps == null) {
@@ -98,6 +125,16 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 			adminService = Context.getAdministrationService();
 			personService = Context.getPersonService();
 		}
+		cacheManager = Context.getRegisteredComponent("apiCacheManager", CacheManager.class);
+	}
+
+	/**
+	 * Drops anything a test recorded in the authoritative role privilege cache, so that privileges
+	 * granted to a role for one test do not leak into the next one.
+	 */
+	@AfterEach
+	public void clearRolePrivilegeCache() {
+		cacheManager.getCache(RolePrivilegeCache.CACHE_NAME).clear();
 	}
 
 	/**
@@ -2485,6 +2522,227 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		personService.savePersonAddress(pAddress);
 
 		assertNotNull(personService.getPersonAddressByUuid("y403fafk-e5k4-42d0-9d11-4f52e89d123r"));
+	}
+
+	/**
+	 * Creates a person attribute type whose attributes may only be edited by holders of
+	 * {@link #ATTRIBUTE_EDIT_PRIVILEGE}, the way an administrator would through Manage Person Attribute
+	 * Types
+	 *
+	 * @return the saved, restricted person attribute type
+	 */
+	private PersonAttributeType createRestrictedPersonAttributeType() {
+		PersonAttributeType attributeType = new PersonAttributeType();
+		attributeType.setName("Health Center");
+		attributeType.setDescription("The health center this person is registered at");
+		attributeType.setFormat("java.lang.String");
+		attributeType.setEditPrivilege(getUserService().getPrivilege(ATTRIBUTE_EDIT_PRIVILEGE));
+
+		attributeType = personService.savePersonAttributeType(attributeType);
+		Context.flushSession();
+
+		assertNotNull(attributeType.getEditPrivilege());
+		return attributeType;
+	}
+
+	/**
+	 * Stores an attribute of the given restricted type against person 2 as the administrator, so that a
+	 * test can start from a restricted attribute that is already in the database
+	 *
+	 * @param attributeType the restricted type to store an attribute of
+	 * @param value the value to store
+	 */
+	private void storeRestrictedAttributeAsAdmin(PersonAttributeType attributeType, String value) {
+		Person person = personService.getPerson(2);
+		person.addAttribute(new PersonAttribute(attributeType, value));
+		personService.savePerson(person);
+		Context.flushSession();
+
+		assertNotNull(personService.getPerson(2).getAttribute(attributeType));
+	}
+
+	/**
+	 * Logs in as test_user, holding the routine person data entry privileges but not the privilege that
+	 * a restricted person attribute type demands
+	 */
+	private void authenticateAsPersonEditor() {
+		Context.logout();
+		Context.authenticate(new UsernamePasswordCredentials("test_user", "test"));
+		Context.getAuthenticatedUser().addRole(getUserService().getRole("Provider"));
+		grantPrivilegesToProviderRole(DATA_ENTRY_PRIVILEGES);
+	}
+
+	/**
+	 * Records, in the authoritative role privilege cache, that the Provider role grants the given
+	 * privileges. Privilege resolution reads role privileges from this cache by role name, so this lets
+	 * a test grant privileges to a role without persisting them.
+	 */
+	private void grantPrivilegesToProviderRole(String... privileges) {
+		cacheManager.getCache(RolePrivilegeCache.CACHE_NAME).put(RolePrivileges.normalize("Provider"),
+		    new RolePrivileges(new HashSet<>(Arrays.asList(privileges)), false));
+	}
+
+	/**
+	 * @see PersonService#savePerson(Person)
+	 */
+	@Test
+	public void savePerson_shouldFailToAddAnAttributeOfATypeTheUserMayNotEdit() {
+		executeDataSet(ATTRIBUTE_EDIT_PRIVILEGE_XML);
+		PersonAttributeType restrictedType = createRestrictedPersonAttributeType();
+
+		Person person = personService.getPerson(2);
+		authenticateAsPersonEditor();
+		person.addAttribute(new PersonAttribute(restrictedType, "Kayunga"));
+
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		    () -> personService.savePerson(person));
+		assertTrue(exception.getMessage().contains(ATTRIBUTE_EDIT_PRIVILEGE));
+	}
+
+	/**
+	 * @see PersonService#savePerson(Person)
+	 */
+	@Test
+	public void savePerson_shouldFailToChangeAnAttributeOfATypeTheUserMayNotEdit() {
+		executeDataSet(ATTRIBUTE_EDIT_PRIVILEGE_XML);
+		PersonAttributeType restrictedType = createRestrictedPersonAttributeType();
+		storeRestrictedAttributeAsAdmin(restrictedType, "Kayunga");
+
+		Person person = personService.getPerson(2);
+		authenticateAsPersonEditor();
+		person.getAttribute(restrictedType).setValue("Mukono");
+
+		assertThrows(APIAuthenticationException.class, () -> personService.savePerson(person));
+	}
+
+	/**
+	 * @see PersonService#savePerson(Person)
+	 */
+	@Test
+	public void savePerson_shouldFailToVoidAnAttributeOfATypeTheUserMayNotEdit() {
+		executeDataSet(ATTRIBUTE_EDIT_PRIVILEGE_XML);
+		PersonAttributeType restrictedType = createRestrictedPersonAttributeType();
+		storeRestrictedAttributeAsAdmin(restrictedType, "Kayunga");
+
+		Person person = personService.getPerson(2);
+		authenticateAsPersonEditor();
+		person.getAttribute(restrictedType).voidAttribute("no longer applies");
+
+		assertThrows(APIAuthenticationException.class, () -> personService.savePerson(person));
+	}
+
+	/**
+	 * Dropping an attribute from the collection deletes its row through the all-delete-orphan cascade,
+	 * so it needs the same privilege as changing it.
+	 *
+	 * @see PersonService#savePerson(Person)
+	 */
+	@Test
+	public void savePerson_shouldFailToRemoveAnAttributeOfATypeTheUserMayNotEdit() {
+		executeDataSet(ATTRIBUTE_EDIT_PRIVILEGE_XML);
+		PersonAttributeType restrictedType = createRestrictedPersonAttributeType();
+		storeRestrictedAttributeAsAdmin(restrictedType, "Kayunga");
+
+		Person person = personService.getPerson(2);
+		authenticateAsPersonEditor();
+		person.removeAttribute(person.getAttribute(restrictedType));
+
+		assertThrows(APIAuthenticationException.class, () -> personService.savePerson(person));
+	}
+
+	/**
+	 * The restriction must not be avoidable by handing the API an attribute type that does not carry
+	 * the edit privilege the administrator configured.
+	 *
+	 * @see PersonService#savePerson(Person)
+	 */
+	@Test
+	public void savePerson_shouldFailToAddAnAttributeOfARestrictedTypePassedInAsAStub() {
+		executeDataSet(ATTRIBUTE_EDIT_PRIVILEGE_XML);
+		PersonAttributeType restrictedType = createRestrictedPersonAttributeType();
+
+		Person person = personService.getPerson(2);
+		authenticateAsPersonEditor();
+		PersonAttributeType stubType = new PersonAttributeType(restrictedType.getPersonAttributeTypeId());
+		assertNull(stubType.getEditPrivilege());
+		person.addAttribute(new PersonAttribute(stubType, "Kayunga"));
+
+		assertThrows(APIAuthenticationException.class, () -> personService.savePerson(person));
+	}
+
+	/**
+	 * A proxy privilege added to get a call past an {@code @Authorized} gate must not satisfy the per
+	 * type check.
+	 *
+	 * @see PersonService#savePerson(Person)
+	 */
+	@Test
+	public void savePerson_shouldFailIfTheAttributeEditPrivilegeIsHeldOnlyAsAProxyPrivilege() {
+		executeDataSet(ATTRIBUTE_EDIT_PRIVILEGE_XML);
+		PersonAttributeType restrictedType = createRestrictedPersonAttributeType();
+
+		Person person = personService.getPerson(2);
+		authenticateAsPersonEditor();
+		person.addAttribute(new PersonAttribute(restrictedType, "Kayunga"));
+
+		Context.addProxyPrivilege(ATTRIBUTE_EDIT_PRIVILEGE);
+		try {
+			assertThrows(APIAuthenticationException.class, () -> personService.savePerson(person));
+		} finally {
+			Context.removeProxyPrivilege(ATTRIBUTE_EDIT_PRIVILEGE);
+		}
+	}
+
+	/**
+	 * @see PersonService#savePerson(Person)
+	 */
+	@Test
+	public void savePerson_shouldLeaveTheRestOfThePersonEditableWhileARestrictedAttributeIsUntouched() {
+		executeDataSet(ATTRIBUTE_EDIT_PRIVILEGE_XML);
+		PersonAttributeType restrictedType = createRestrictedPersonAttributeType();
+		storeRestrictedAttributeAsAdmin(restrictedType, "Kayunga");
+
+		Person person = personService.getPerson(2);
+		authenticateAsPersonEditor();
+		person.setGender("F");
+
+		assertDoesNotThrow(() -> personService.savePerson(person));
+		assertEquals("F", personService.getPerson(2).getGender());
+		assertEquals("Kayunga", personService.getPerson(2).getAttribute(restrictedType).getValue());
+	}
+
+	/**
+	 * @see PersonService#savePerson(Person)
+	 */
+	@Test
+	public void savePerson_shouldAddAnAttributeOfARestrictedTypeWhenTheUserHoldsItsEditPrivilege() {
+		executeDataSet(ATTRIBUTE_EDIT_PRIVILEGE_XML);
+		PersonAttributeType restrictedType = createRestrictedPersonAttributeType();
+
+		Person person = personService.getPerson(2);
+		authenticateAsPersonEditor();
+		grantPrivilegesToProviderRole(ArrayUtils.add(DATA_ENTRY_PRIVILEGES, ATTRIBUTE_EDIT_PRIVILEGE));
+		person.addAttribute(new PersonAttribute(restrictedType, "Kayunga"));
+
+		assertDoesNotThrow(() -> personService.savePerson(person));
+		assertEquals("Kayunga", personService.getPerson(2).getAttribute(restrictedType).getValue());
+	}
+
+	/**
+	 * savePatient cascades the same attribute collection, so it has to enforce the same restriction.
+	 *
+	 * @see PatientService#savePatient(Patient)
+	 */
+	@Test
+	public void savePatient_shouldFailToAddAnAttributeOfATypeTheUserMayNotEdit() {
+		executeDataSet(ATTRIBUTE_EDIT_PRIVILEGE_XML);
+		PersonAttributeType restrictedType = createRestrictedPersonAttributeType();
+
+		Patient patient = ps.getPatient(2);
+		authenticateAsPersonEditor();
+		patient.addAttribute(new PersonAttribute(restrictedType, "Kayunga"));
+
+		assertThrows(APIAuthenticationException.class, () -> ps.savePatient(patient));
 	}
 
 }
