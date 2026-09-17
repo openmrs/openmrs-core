@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+
+	<concept concept_id="9999" datatype_id="4" class_id="11" is_set="0" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"/>
+
+	<concept_name concept_name_id="9999" concept_id="9999" name="Purge cache test concept" locale="en" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" creator="1" date_created="2004-08-12 00:00:00.0"/>
+	
+	<concept_reference_term concept_reference_term_id="9999" code="PURGEPROBE" name="Purge cache test term" concept_source_id="2" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="cccccccc-cccc-cccc-cccc-cccccccccccc"/>
+
+	<concept_reference_map concept_map_id="9999" concept_id="9999" concept_reference_term_id="9999" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="dddddddd-dddd-dddd-dddd-dddddddddddd"/>
+	
+</dataset>
