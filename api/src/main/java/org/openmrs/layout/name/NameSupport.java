@@ -57,7 +57,6 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 * Initializes layout templates with a custom template configured via the "layout.name.template" GP.
 	 */
 	private void init() {
-
 		if (initialized) {
 			return;
 		}
