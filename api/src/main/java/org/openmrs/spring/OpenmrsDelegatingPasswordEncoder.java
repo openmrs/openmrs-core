@@ -9,6 +9,7 @@
  */
 package org.openmrs.spring;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Map;
@@ -89,7 +90,7 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		// an unprefixed value is a legacy hash, so it should be upgraded
 		// if we're using a different default encoder
 		if (id == null) {
-			return idForEncode != null && !idForEncode.isEmpty();
+			return StringUtils.isNotBlank(idForEncode);
 		}
 		PasswordEncoder encoder = idToPasswordEncoder.get(id);
 		if (encoder == null) {

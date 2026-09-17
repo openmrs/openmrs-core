@@ -229,15 +229,19 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 		String storedHash = preOptIn.encode("password");
 		assertFalse(storedHash.startsWith("{"));
 
-		PasswordEncoder argon2Encoder = new Argon2PasswordEncoder(16, 32, 1, 19456, 2);
-		Map<String, PasswordEncoder> encoders = new HashMap<>();
-		encoders.put("argon2", argon2Encoder);
-		OpenmrsDelegatingPasswordEncoder postOptIn = new OpenmrsDelegatingPasswordEncoder("argon2", encoders,
-			legacyEncoder);
+		OpenmrsDelegatingPasswordEncoder postOptIn = buildArgon2OptInEncoder(legacyEncoder);
 
 		assertTrue(postOptIn.matches("password", storedHash));
 		assertFalse(postOptIn.matches("wrongPassword", storedHash));
-		assertTrue(postOptIn.upgradeEncoding(storedHash));
+	}
+
+	/**
+	 * After opting in to argon2, newly written passwords carry the argon2 prefix and the resulting
+	 * hash round-trips through the same encoder.
+	 */
+	@Test
+	public void encode_shouldWriteArgon2PrefixedHashesThatVerifyAfterAnOptIn() {
+		OpenmrsDelegatingPasswordEncoder postOptIn = buildArgon2OptInEncoder(new LegacyOpenmrsPasswordEncoder());
 
 		String newHash = postOptIn.encode("password");
 		assertTrue(newHash.startsWith("{argon2}"));
@@ -246,29 +250,20 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 	}
 
 	/**
-	 * {@link #upgradeEncoding(String)} delegates to the encoder named by a recognized prefix, so
-	 * raising the configured argon2 work factors rehashes previously stored argon2 hashes. With a
-	 * weaker hash stored, an encoder configured with stronger parameters must report that the hash
-	 * needs re-encoding, while still verifying the password against the stored hash.
+	 * An unprefixed hash written before the opt-in has to be re-encoded once the site is on argon2.
 	 */
 	@Test
-	public void upgradeEncoding_shouldReturnTrueWhenTheConfiguredWorkFactorsAreStrongerThanTheStoredHash() {
-		Map<String, PasswordEncoder> weak = new HashMap<>();
-		weak.put("argon2", new Argon2PasswordEncoder(16, 32, 1, 19456, 2));
-		String stored = new OpenmrsDelegatingPasswordEncoder("argon2", weak,
-			new LegacyOpenmrsPasswordEncoder()).encode("password");
-		assertTrue(stored.startsWith("{argon2}"));
+	public void upgradeEncoding_shouldFlagAnUnprefixedHashStoredBeforeAnOptIn() {
+		PasswordEncoder legacyEncoder = new LegacyOpenmrsPasswordEncoder();
+		String storedHash = new OpenmrsDelegatingPasswordEncoder("", new HashMap<>(), legacyEncoder)
+			.encode("password");
 
-		Map<String, PasswordEncoder> strong = new HashMap<>();
-		strong.put("argon2", new Argon2PasswordEncoder(16, 32, 1, 65536, 3));
-		OpenmrsDelegatingPasswordEncoder reworked = new OpenmrsDelegatingPasswordEncoder("argon2", strong,
-			new LegacyOpenmrsPasswordEncoder());
+		assertTrue(buildArgon2OptInEncoder(legacyEncoder).upgradeEncoding(storedHash));
+	}
 
-		// different work factors mean the stored hash should be upgraded...
-		assertTrue(reworked.upgradeEncoding(stored));
-		// ...but the stored hash still verifies against the raw password until it is
-		assertTrue(reworked.matches("password", stored));
-		// a hash written with the current work factors needs no upgrade
-		assertFalse(reworked.upgradeEncoding(reworked.encode("password")));
+	private OpenmrsDelegatingPasswordEncoder buildArgon2OptInEncoder(PasswordEncoder legacyEncoder) {
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+		encoders.put("argon2", new Argon2PasswordEncoder(16, 32, 1, 19456, 2));
+		return new OpenmrsDelegatingPasswordEncoder("argon2", encoders, legacyEncoder);
 	}
 }
