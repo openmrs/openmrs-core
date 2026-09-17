@@ -358,8 +358,35 @@
 						<exclude>org/openmrs/test/*</exclude>
 						<!-- Exclude mail test, slows build, breaks portability with requirements on port 25 -->
 						<exclude>**/notification/MessageServiceTest.java</exclude>
+						<!-- The OpenmrsPasswordEncoderContextTest boots a second, differently-configured
+						     Spring context (security.passwordEncoder=argon2). The test harness supports a
+						     single application context per JVM: shared in-memory database, shared Lucene
+						     appdir and the static isBaseSetup flag, so a second context in the same fork
+						     wipes the database and leaves the Lucene index locked for every test that runs
+						     after it, failing the whole suite. Exclude it here and run it in its own
+						     forked JVM (argon2-context-test execution) instead. -->
+						<exclude>**/OpenmrsPasswordEncoderContextTest.java</exclude>
 					</excludes>
 				</configuration>
+				<executions>
+					<execution>
+						<id>argon2-context-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<exclude>org/openmrs/test/*</exclude>
+								<exclude>**/notification/MessageServiceTest.java</exclude>
+							</excludes>
+							<includes>
+								<include>**/OpenmrsPasswordEncoderContextTest.java</include>
+							</includes>
+							<failIfNoTests>false</failIfNoTests>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
