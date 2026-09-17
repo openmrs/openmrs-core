@@ -83,7 +83,6 @@
 		<commonsLang3Version>3.20.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
 		<commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
-		<commonsFileupload2JakartaVersion>2.0.0-M5</commonsFileupload2JakartaVersion>
 		<commonsValidatorVersion>1.11.0</commonsValidatorVersion>
 
 		<!-- Velocity -->
@@ -108,7 +107,6 @@
 		<mariadbClientVersion>3.5.10</mariadbClientVersion>
 		<postgresqlVersion>42.7.13</postgresqlVersion>
 		<liquibaseVersion>4.32.0</liquibaseVersion>
-		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
 
 		<!-- Other Runtime -->
 		<javassistVersion>3.33.0-GA</javassistVersion>
@@ -395,11 +393,6 @@
 				<version>${commonsFileuploadVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
-				<version>${commonsFileupload2JakartaVersion}</version>
-			</dependency>
-			<dependency>
 				<groupId>commons-validator</groupId>
 				<artifactId>commons-validator</artifactId>
 				<version>${commonsValidatorVersion}</version>
@@ -488,6 +481,7 @@
 				<artifactId>dom4j</artifactId>
 				<version>${dom4jVersion}</version>
 			</dependency>
+			<!-- Used by the liquibase module for XPath-based changelog preconditions -->
 			<dependency>
 				<groupId>jaxen</groupId>
 				<artifactId>jaxen</artifactId>
@@ -544,11 +538,6 @@
 						<artifactId>logback-classic</artifactId>
 					</exclusion>
 				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.openmrs.liquibase.ext</groupId>
-				<artifactId>type-converter</artifactId>
-				<version>${liquibaseExtTypeConverterVersion}</version>
 			</dependency>
 
 			<!-- AspectJ -->
@@ -687,6 +676,9 @@
 				<artifactId>dbunit</artifactId>
 				<version>${dbunitVersion}</version>
 			</dependency>
+			<!-- Used as a listener dependency for the jacoco-maven-plugin / Sonar
+     coverage integration configured in the root pom.xml, not declared
+     as a direct project dependency by any module -->
 			<dependency>
 				<groupId>org.codehaus.sonar-plugins.java</groupId>
 				<artifactId>sonar-jacoco-listeners</artifactId>
@@ -724,6 +716,7 @@
 			</dependency>
 
 			<!-- Netty -->
+			<!-- Pins the Netty version pulled in transitively by the AWS SDK S3 client -->
 			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty-bom</artifactId>
