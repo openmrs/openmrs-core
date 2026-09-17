@@ -26,6 +26,7 @@ import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.parameter.LocationSearchCriteria;
@@ -533,6 +534,29 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Location l = ls.getLocation(locationToDelete.getLocationId());
 
 		assertNull(l, "We shouldn't find the location after deletion");
+	}
+
+	/**
+	 * Make sure that purging a location that is assigned to a user doesn't fail because of the
+	 * user_location foreign key
+	 *
+	 * @see LocationService#purgeLocation(Location)
+	 */
+	@Test
+	public void purgeLocation_shouldDeleteLocationAssignedToAUser() {
+
+		LocationService ls = Context.getLocationService();
+		UserService us = Context.getUserService();
+
+		Location locationToDelete = ls.getLocation(4);
+
+		User user = us.getUser(1);
+		user.setAssignedLocations(new HashSet<>(Collections.singletonList(locationToDelete)));
+		us.saveUser(user);
+
+		ls.purgeLocation(locationToDelete);
+
+		assertNull(ls.getLocation(locationToDelete.getLocationId()), "We shouldn't find the location after deletion");
 	}
 
 	/**

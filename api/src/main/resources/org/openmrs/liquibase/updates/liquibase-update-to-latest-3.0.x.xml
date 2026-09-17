@@ -141,6 +141,6 @@
 			<column name="description" type="varchar(255)"/>
 		</addColumn>
 	</changeSet>
-	
+
 </databaseChangeLog>
 
