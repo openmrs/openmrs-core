@@ -144,7 +144,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 
 		// sanity check
 		identifiers.add(pi);
-		assertEquals(1, identifiers.size(), "There should still be only 1 identifier in the patient object now");
+		assertTrue(identifiers.size() == 1, "There should still be only 1 identifier in the patient object now");
 
 		pi.setDateCreated(null);
 		pi.setCreator(null);
@@ -530,11 +530,11 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void openmrsDateFormat_shouldAllowSingleDigitDatesAndMonths() {
-		assertDoesNotThrow(() -> {
-			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en"));
-			sdf.parse("1/1/2001");
-		});
+	public void openmrsDateFormat_shouldAllowSingleDigitDatesAndMonths() throws ParseException {
+
+		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en"));
+		sdf.parse("1/1/2001");
+
 	}
 
 	@Test
@@ -779,7 +779,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		OpenmrsUtil.applyLogLevels();
 
 		try {
-			assertEquals(Level.DEBUG, logger.getLevel());
+			assertEquals(logger.getLevel(), Level.DEBUG);
 			assertNotEquals(previousLevel, logger.getLevel());
 		} finally {
 			// undo the logging level
