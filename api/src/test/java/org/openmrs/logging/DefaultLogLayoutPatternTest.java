@@ -24,24 +24,24 @@ import static org.hamcrest.Matchers.not;
 class DefaultLogLayoutPatternTest {
 
 	@Test
-	void layoutPattern_shouldReplaceControlCharactersWithUnderscores() {
+	void layoutPattern_shouldReplaceControlCharactersWithSpaces() {
 		String message = "before\nafter";
 		PatternLayout layout = PatternLayout.newBuilder().withPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
 		LogEvent event = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
 		        .setMessage(new SimpleMessage(message)).build();
 		String result = layout.toSerializable(event);
-		assertThat(result, containsString("before_after"));
+		assertThat(result, containsString("before after"));
 		assertThat(result, not(containsString("before\n")));
 	}
 
 	@Test
-	void layoutPattern_shouldReplaceCarriageReturnWithUnderscores() {
+	void layoutPattern_shouldReplaceCarriageReturnWithSpaces() {
 		String message = "before\rafter";
 		PatternLayout layout = PatternLayout.newBuilder().withPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
 		LogEvent event = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
 		        .setMessage(new SimpleMessage(message)).build();
 		String result = layout.toSerializable(event);
-		assertThat(result, containsString("before_after"));
+		assertThat(result, containsString("before after"));
 		assertThat(result, not(containsString("before\r")));
 	}
 
@@ -56,22 +56,22 @@ class DefaultLogLayoutPatternTest {
 	}
 
 	@Test
-	void layoutPattern_shouldReplaceLineAndParagraphSeparatorsWithUnderscores() {
+	void layoutPattern_shouldReplaceLineAndParagraphSeparatorsWithSpaces() {
 		PatternLayout layout = PatternLayout.newBuilder().withPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
 
 		String nelMessage = "before\u0085after";
 		LogEvent nelEvent = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
 		        .setMessage(new SimpleMessage(nelMessage)).build();
-		assertThat(layout.toSerializable(nelEvent), containsString("before_after"));
+		assertThat(layout.toSerializable(nelEvent), containsString("before after"));
 
 		String lsMessage = "before\u2028after";
 		LogEvent lsEvent = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
 		        .setMessage(new SimpleMessage(lsMessage)).build();
-		assertThat(layout.toSerializable(lsEvent), containsString("before_after"));
+		assertThat(layout.toSerializable(lsEvent), containsString("before after"));
 
 		String psMessage = "before\u2029after";
 		LogEvent psEvent = Log4jLogEvent.newBuilder().setLoggerName("test").setLevel(Level.INFO)
 		        .setMessage(new SimpleMessage(psMessage)).build();
-		assertThat(layout.toSerializable(psEvent), containsString("before_after"));
+		assertThat(layout.toSerializable(psEvent), containsString("before after"));
 	}
 }
