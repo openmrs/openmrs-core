@@ -276,9 +276,12 @@ public class InitializationFilter extends StartupFilter {
 		} else if (page == null) {
 			httpResponse.setContentType("text/html");// if any body has already started installation
 
-			//If someone came straight here without setting the hidden page input,
-			// then we need to clear out all the passwords
-			clearPasswords();
+			// Only clear passwords if the user hasn't entered any yet.
+			// Clearing mid-flow wipes the shared singleton's credentials before
+			// the background install thread reads them, causing "using password: NO".
+			if (!wizardModel.isPasswordsEntered()) {
+				clearPasswords();
+			}
 
 			renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 		} else if (INSTALL_METHOD.equals(page)) {
@@ -427,6 +430,7 @@ public class InitializationFilter extends StartupFilter {
 		wizardModel.createUserPassword = "";
 		wizardModel.currentDatabasePassword = "";
 		wizardModel.remotePassword = "";
+		wizardModel.setPasswordsEntered(false);
 	}
 
 	/**
@@ -492,7 +496,7 @@ public class InitializationFilter extends StartupFilter {
 			checkLocaleAttributes(httpRequest);
 			referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE,
 			    httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
-			log.info("Locale stored in session is " + httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+			log.info("Locale stored in session is {}", httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
 
 			httpResponse.setContentType("text/html");
 			// otherwise do step one of the wizard
@@ -542,6 +546,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 
 			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
+			wizardModel.setPasswordsEntered(true);
 			checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
 			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
 			wizardModel.hasCurrentOpenmrsDatabase = false;
@@ -622,6 +627,7 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.createDatabaseUsername = httpRequest.getParameter("create_database_username");
 				checkForEmptyValue(wizardModel.createDatabaseUsername, errors, ErrorMessageConstants.ERROR_DB_USER_NAME_REQ);
 				wizardModel.createDatabasePassword = httpRequest.getParameter("create_database_password");
+				wizardModel.setPasswordsEntered(true);
 				checkForEmptyValue(wizardModel.createDatabasePassword, errors, ErrorMessageConstants.ERROR_DB_USER_PSWD_REQ);
 			}
 
@@ -880,7 +886,6 @@ public class InitializationFilter extends StartupFilter {
 	}
 
 	protected void startInstallation() {
-		//if no one has run any installation
 		if (!isInstallationStarted()) {
 			initJob = new InitializationCompletion();
 			setInstallationStarted(true);
@@ -991,7 +996,7 @@ public class InitializationFilter extends StartupFilter {
 			// if user has changed locale parameter to new one
 			// or chooses it parameter at first page loading
 			if (storedLocale == null || !storedLocale.equals(localeParameter)) {
-				log.info("Stored locale parameter to session " + localeParameter);
+				log.info("Stored locale parameter to session {}", localeParameter.replaceAll("[\r\n]", ""));
 				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
 			}
 			if (rememberLocale) {
@@ -1063,7 +1068,7 @@ public class InitializationFilter extends StartupFilter {
 			file = new File(OpenmrsUtil.getApplicationDataDirectory(), getRuntimePropertiesFileName());
 		}
 
-		log.debug("Using file: " + file.getAbsolutePath());
+		log.debug("Using file: {}", file.getAbsolutePath());
 
 		return file;
 	}
@@ -1907,7 +1912,7 @@ public class InitializationFilter extends StartupFilter {
 		String loadedDriverString = null;
 		try {
 			loadedDriverString = DatabaseUtil.loadDatabaseDriver(connection, databaseDriver);
-			log.info("using database driver :" + loadedDriverString);
+			log.info("using database driver :{}", loadedDriverString != null ? loadedDriverString.replaceAll("[\r\n]", "") : "null");
 		} catch (ClassNotFoundException e) {
 			log.error("The given database driver class was not found. "
 			        + "Please ensure that the database driver jar file is on the class path "
