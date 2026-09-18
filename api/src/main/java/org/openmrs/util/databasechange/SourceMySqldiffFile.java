@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.liquibase.OpenmrsClassLoaderResourceAccessor;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -38,6 +37,7 @@ import liquibase.exception.CustomChangeException;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.InputStreamList;
 import liquibase.resource.ResourceAccessor;
 
@@ -93,7 +93,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		try {
 			tmpOutputFile = File.createTempFile(sqlFile, "tmp");
 
-			fileOpener = new OpenmrsClassLoaderResourceAccessor(OpenmrsClassLoader.getInstance());
+			fileOpener = new ClassLoaderResourceAccessor(OpenmrsClassLoader.getInstance());
 			try (InputStreamList sqlFileInputStream = fileOpener.openStreams(null, sqlFile);
 			        OutputStream outputStream = new FileOutputStream(tmpOutputFile)) {
 				if (sqlFileInputStream != null && !sqlFileInputStream.isEmpty()) {

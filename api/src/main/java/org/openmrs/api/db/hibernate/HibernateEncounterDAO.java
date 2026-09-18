@@ -20,36 +20,21 @@ import java.util.stream.Collectors;
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Order;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
-import org.openmrs.Cohort;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterProvider;
-import org.openmrs.EncounterRole;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.Person;
-import org.openmrs.PersonName;
-import org.openmrs.Provider;
-import org.openmrs.Visit;
-import org.openmrs.VisitType;
+import org.openmrs.*;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.parameter.EncounterSearchCriteria;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -485,12 +470,53 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			}
 			return new QueryResult(predicates, Collections.emptyList());
 		} else {
-			//As identifier could be all alpha, no heuristic here will work in determining intent of user for querying by name versus identifier
-			//So search by both!
-			QueryResult queryResult = new PatientSearchCriteria(sessionFactory).prepareCriteria(cb, patientJoin, query,
-			    query, new ArrayList<>(), true, orderByNames, true);
-			queryResult.addPredicates(predicates);
-			return queryResult;
+			// 1. Exclude voided patients
+			predicates.add(cb.isFalse(patientJoin.get("voided")));
+
+			List<Order> orders = new ArrayList<>();
+
+			if (StringUtils.isNotBlank(query)) {
+				Join<Patient, PersonName> nameJoin = patientJoin.join("names", JoinType.LEFT);
+				Join<Patient, PatientIdentifier> idsJoin = patientJoin.join("identifiers", JoinType.LEFT);
+
+				// 2. Fetch match mode from global properties (default to START if not configured)
+				String matchModeGp = Context.getAdministrationService()
+				        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE, "START");
+				MatchMode matchMode = "ANYWHERE".equalsIgnoreCase(matchModeGp) ? MatchMode.ANYWHERE : MatchMode.START;
+
+				String[] splitNames = query.trim().split("\\s+");
+				List<Predicate> allNameTermPredicates = new ArrayList<>();
+
+				for (String nameTerm : splitNames) {
+					String pattern = matchMode.toLowerCasePattern(nameTerm);
+					List<Predicate> termMatch = new ArrayList<>();
+					termMatch.add(cb.like(cb.lower(nameJoin.get("givenName")), pattern));
+					termMatch.add(cb.like(cb.lower(nameJoin.get("middleName")), pattern));
+					termMatch.add(cb.like(cb.lower(nameJoin.get("familyName")), pattern));
+					termMatch.add(cb.like(cb.lower(nameJoin.get("familyName2")), pattern));
+
+					allNameTermPredicates.add(cb.or(termMatch.toArray(new Predicate[0])));
+				}
+
+				Predicate nameNotVoided = cb.isFalse(nameJoin.get("voided"));
+				Predicate validName = cb.and(nameNotVoided, cb.and(allNameTermPredicates.toArray(new Predicate[0])));
+
+				// Exact identifier matching
+				Predicate identifierMatch = cb.equal(cb.lower(idsJoin.get("identifier")), query.trim().toLowerCase());
+				Predicate idNotVoided = cb.isFalse(idsJoin.get("voided"));
+				Predicate validIdentifier = cb.and(idNotVoided, identifierMatch);
+
+				predicates.add(cb.or(validName, validIdentifier));
+
+				// 3. Apply ordering by person names if requested
+				if (orderByNames) {
+					orders.add(cb.asc(nameJoin.get("givenName")));
+					orders.add(cb.asc(nameJoin.get("middleName")));
+					orders.add(cb.asc(nameJoin.get("familyName")));
+				}
+			}
+
+			return new QueryResult(predicates, orders);
 		}
 	}
 
@@ -698,6 +724,18 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		return visitCount.intValue() + encounterCount.intValue();
 	}
 
+	private String getFormattedMatchPattern(String query) {
+		String modeSetting = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE, "START");
+		MatchMode mode = MatchMode.START;
+		if ("EXACT".equalsIgnoreCase(modeSetting)) {
+			mode = MatchMode.EXACT;
+		} else if ("ANYWHERE".equalsIgnoreCase(modeSetting)) {
+			mode = MatchMode.ANYWHERE;
+		}
+		return mode.toLowerCasePattern(query);
+	}
+
 	private List<Predicate> createEmptyVisitsByPatientPredicates(CriteriaBuilder cb, Root<Visit> root, Patient patient,
 	        boolean includeVoided, String query) {
 		List<Predicate> predicates = new ArrayList<>();
@@ -713,8 +751,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			Join<Visit, VisitType> visitTypeJoin = root.join("visitType", JoinType.LEFT);
 			Join<Visit, Location> locationJoin = root.join("location", JoinType.LEFT);
 
-			predicates.add(cb.or(cb.like(cb.lower(visitTypeJoin.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(query)),
-			    cb.like(cb.lower(locationJoin.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(query))));
+			String likePattern = getFormattedMatchPattern(query);
+			predicates.add(cb.or(cb.like(cb.lower(visitTypeJoin.get("name")), likePattern),
+			    cb.like(cb.lower(locationJoin.get("name")), likePattern)));
 		}
 
 		return predicates;
@@ -738,7 +777,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			Join<Encounter, Location> locationJoin = root.join("location", JoinType.LEFT);
 			Join<Encounter, EncounterType> encounterTypeJoin = root.join("encounterType", JoinType.LEFT);
 
-			String likePattern = MatchMode.ANYWHERE.toLowerCasePattern(query);
+			String likePattern = getFormattedMatchPattern(query);
 			predicates.add(cb.or(cb.like(cb.lower(visitTypeJoin.get("name")), likePattern),
 			    cb.like(cb.lower(visitLocationJoin.get("name")), likePattern),
 			    cb.like(cb.lower(locationJoin.get("name")), likePattern),
