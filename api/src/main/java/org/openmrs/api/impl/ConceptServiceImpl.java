@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptInterpretationRule;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
@@ -2112,6 +2114,29 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 
 		return findStrictestReferenceRange(validRanges);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Obs.Interpretation getConceptInterpretation(ConceptReferenceRangeContext context) {
+		if (context == null) {
+			throw new IllegalArgumentException("ConceptReferenceRangeContext must not be null");
+		}
+
+		Concept concept = HibernateUtil.getRealObjectFromProxy(context.getConcept());
+		List<ConceptInterpretationRule> rules = new ArrayList<>(concept.getInterpretationRules());
+		rules.sort(
+		    Comparator.comparing(ConceptInterpretationRule::getPriority, Comparator.nullsLast(Comparator.reverseOrder())));
+
+		ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
+		for (ConceptInterpretationRule rule : rules) {
+			if (rule.getCriteria() != null && referenceRangeUtility
+			        .evaluateCriteria(StringEscapeUtils.unescapeHtml4(rule.getCriteria()), context)) {
+				return rule.getInterpretation();
+			}
+		}
+
+		return null;
 	}
 
 	/**
