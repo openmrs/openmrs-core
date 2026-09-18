@@ -880,7 +880,7 @@ public class DatabaseUpdater {
 			}
 		}
 
-		ResourceAccessor openmrsFO = new ClassLoaderResourceAccessor(OpenmrsClassLoader.getInstance());
+		ResourceAccessor openmrsFO = new ClassLoaderResourceAccessor(classLoader);
 		ResourceAccessor fsFO = new FileSystemResourceAccessor(OpenmrsUtil.getApplicationDataDirectoryAsFile());
 		return new CompositeResourceAccessor(openmrsFO, fsFO);
 	}
