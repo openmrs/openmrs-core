@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BinaryStreamHandlerTest extends BaseContextSensitiveTest {
@@ -59,6 +60,16 @@ public class BinaryStreamHandlerTest extends BaseContextSensitiveTest {
 		assertFalse(handler.supportsView(ComplexObsHandler.URI_VIEW));
 		assertFalse(handler.supportsView(""));
 		assertFalse(handler.supportsView(null));
+	}
+
+	@Test
+	public void getObs_shouldThrowWhenFileDoesNotExist() {
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, "obs"));
+
+		Obs obs = new Obs();
+		obs.setValueComplex("missing file |nonexistentkey");
+
+		assertThrows(IllegalArgumentException.class, () -> handler.getObs(obs, ComplexObsHandler.RAW_VIEW));
 	}
 
 	@Test
