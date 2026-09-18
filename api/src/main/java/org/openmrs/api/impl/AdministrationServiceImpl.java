@@ -1035,10 +1035,29 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		String current = module.getVersion();
 		if (!Objects.equals(stored, current)) {
 			return true;
-		} else {
-			log.info("{} module did not change, skipping setup", moduleId);
-			return false;
 		}
+
+		if (isSnapshotVersion(current)) {
+			log.info("{} module version {} is a snapshot, so it does not identify the build; running setup", moduleId,
+			    current);
+			return true;
+		}
+
+		log.info("{} module did not change, skipping setup", moduleId);
+		return false;
+	}
+
+	/**
+	 * A snapshot version is by definition not a stable identifier for a build: the same version string
+	 * is republished for every rebuild. Comparing it against the stored version therefore cannot tell
+	 * an unchanged module from one that has gained changesets since it was installed, and answering
+	 * "unchanged" means the new changesets are never run and nothing reports it.
+	 *
+	 * @param version the module version to inspect, may be null
+	 * @return true if the version is a Maven snapshot
+	 */
+	private boolean isSnapshotVersion(String version) {
+		return version != null && version.trim().toUpperCase(Locale.ROOT).endsWith("-SNAPSHOT");
 	}
 
 	/**
