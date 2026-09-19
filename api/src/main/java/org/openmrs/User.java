@@ -705,17 +705,21 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	}
 
 	@Override
-	public Boolean isRetired() {
+	public boolean isRetired() {
 		return retired;
 	}
 
+	/**
+	 * @deprecated as of 2.0, use {@link #isRetired()}
+	 */
 	@Override
-	public Boolean getRetired() {
-		return retired;
+	@Deprecated
+	public boolean getRetired() {
+		return isRetired();
 	}
 
 	@Override
-	public void setRetired(Boolean retired) {
+	public void setRetired(boolean retired) {
 		this.retired = retired;
 	}
 

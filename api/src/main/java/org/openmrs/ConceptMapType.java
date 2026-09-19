@@ -114,8 +114,8 @@ public class ConceptMapType extends BaseChangeableOpenmrsMetadata {
 	 * @return true if this concept map type is hidden otherwise false
 	 * @deprecated as of 2.0, use {@link #getIsHidden()}
 	 */
-	@Deprecated
 	@JsonIgnore
+	@Deprecated
 	public boolean isHidden() {
 		return getIsHidden();
 	}
