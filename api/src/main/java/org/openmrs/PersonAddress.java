@@ -269,16 +269,18 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 
 	/**
 	 * @return Returns the preferred.
-	 * @deprecated as of 2.0, use {@link #getPreferred()}
 	 */
-	@Deprecated
 	@JsonIgnore
 	public Boolean isPreferred() {
-		return getPreferred();
+		return preferred == null ? Boolean.FALSE : preferred;
 	}
 
+	/**
+	 * @deprecated as of 2.0, use {@link #isPreferred()}
+	 */
+	@Deprecated
 	public Boolean getPreferred() {
-		return preferred == null ? Boolean.FALSE : preferred;
+		return isPreferred();
 	}
 
 	/**
@@ -423,7 +425,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public int compareTo(PersonAddress other) {
 		int retValue = 0;
 		if (other != null) {
-			retValue = getVoided().compareTo(other.getVoided());
+			retValue = Boolean.compare(getVoided(), other.getVoided());
 			if (retValue == 0) {
 				retValue = other.getPreferred().compareTo(getPreferred());
 			}

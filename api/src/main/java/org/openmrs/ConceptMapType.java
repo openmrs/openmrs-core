@@ -21,7 +21,8 @@ import org.hibernate.envers.Audited;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * ConceptMapType are used to define relationships between concepts and concept reference terms e.g
+ * ConceptMapType are used to define relationships between concepts and concept
+ * reference terms e.g
  * IS_A or SAME_AS, BROADER_THAN
  *
  * @since 1.9
@@ -68,11 +69,14 @@ public class ConceptMapType extends BaseChangeableOpenmrsMetadata {
 
 	/**
 	 * @return the isHidden
+	 * @deprecated as of 2.0, use {@link #isHidden()}
 	 */
+	@Deprecated(since = "2.0")
 	public Boolean getIsHidden() {
-		return isHidden;
+		return isHidden();
 	}
 
+	
 	/**
 	 * @param isHidden the isHidden to set
 	 */
@@ -112,11 +116,9 @@ public class ConceptMapType extends BaseChangeableOpenmrsMetadata {
 	 * Returns true if this concept map type is hidden otherwise false
 	 *
 	 * @return true if this concept map type is hidden otherwise false
-	 * @deprecated as of 2.0, use {@link #getIsHidden()}
 	 */
-	@Deprecated
 	@JsonIgnore
 	public boolean isHidden() {
-		return getIsHidden();
+		return isHidden;
 	}
 }

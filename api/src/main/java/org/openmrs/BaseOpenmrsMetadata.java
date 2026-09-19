@@ -59,7 +59,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 
 	@Column(name = "retired", nullable = false)
 	@GenericField
-	private Boolean retired = Boolean.FALSE;
+	private boolean retired = false;
 
 	@Column(name = "date_retired")
 	private Date dateRetired;
@@ -186,13 +186,11 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	}
 
 	/**
-	 * @deprecated as of 2.0, use {@link #getRetired()}
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
 	@Override
-	@Deprecated
-	public Boolean isRetired() {
-		return getRetired();
+	public boolean isRetired() {
+		return retired;
 	}
 
 	/**
@@ -201,17 +199,19 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * type.
 	 *
 	 * @see org.openmrs.Retireable#isRetired()
+	 * @deprecated as of 2.0, use {@link #isRetired()}
 	 */
 	@Override
-	public Boolean getRetired() {
-		return retired;
+	@Deprecated
+	public boolean getRetired() {
+		return isRetired();
 	}
 
 	/**
-	 * @see org.openmrs.Retireable#setRetired(java.lang.Boolean)
+	 * @see org.openmrs.Retireable#setRetired(boolean)
 	 */
 	@Override
-	public void setRetired(Boolean retired) {
+	public void setRetired(boolean retired) {
 		this.retired = retired;
 	}
 

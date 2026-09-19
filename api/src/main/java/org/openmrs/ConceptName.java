@@ -85,7 +85,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 
 	@Column(name = "voided", length = 1, nullable = false)
 	@GenericField
-	private Boolean voided = false;
+	private boolean voided = false;
 
 	@ManyToOne
 	@JoinColumn(name = "voided_by")
@@ -217,32 +217,23 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Returns whether the ConceptName has been voided.
 	 *
 	 * @return true if the ConceptName has been voided, false otherwise.
-	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
 	@Override
-	@Deprecated
-	@JsonIgnore
-	public Boolean isVoided() {
-		return getVoided();
-	}
-
-	/**
-	 * Returns whether the ConceptName has been voided.
-	 *
-	 * @return true if the ConceptName has been voided, false otherwise.
-	 */
-	@Override
-	public Boolean getVoided() {
+	public boolean isVoided() {
 		return voided;
 	}
 
 	/**
-	 * Sets the voided status of this ConceptName.
-	 *
-	 * @param voided the voided status to set.
+	 * @deprecated as of 2.0, use {@link #isVoided()}
 	 */
 	@Override
-	public void setVoided(Boolean voided) {
+	@Deprecated
+	public boolean getVoided() {
+		return isVoided();
+	}
+
+	@Override
+	public void setVoided(boolean voided) {
 		this.voided = voided;
 	}
 
@@ -345,19 +336,19 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Getter for localePreferred
 	 *
 	 * @return localPreferred
-	 * @deprecated as of 2.0, use {@link #getLocalePreferred()}
 	 */
-	@Deprecated
 	@JsonIgnore
 	public Boolean isLocalePreferred() {
-		return getLocalePreferred();
+		return localePreferred;
 	}
 
 	/**
 	 * @return true if it is the localePreferred name otherwise false
+	 * @deprecated as of 2.0, use {@link #isLocalePreferred()}
 	 */
+	@Deprecated
 	public Boolean getLocalePreferred() {
-		return localePreferred;
+		return isLocalePreferred();
 	}
 
 	/**
