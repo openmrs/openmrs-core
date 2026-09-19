@@ -50,10 +50,10 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	private Concept concept;
 
 	@Column(name = "initial", nullable = false, length = 1)
-	private Boolean initial;
+	private boolean initial = false;
 
 	@Column(name = "terminal", nullable = false, length = 1)
-	private Boolean terminal;
+	private boolean terminal = false;
 
 	// ******************
 	// Constructors
@@ -90,19 +90,35 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 		this.concept = concept;
 	}
 
-	public Boolean getInitial() {
+	public boolean isInitial() {
 		return initial;
 	}
 
-	public void setInitial(Boolean initial) {
+	/**
+	 * @deprecated as of 2.0, use {@link #isInitial()}
+	 */
+	@Deprecated
+	public boolean getInitial() {
+		return isInitial();
+	}
+
+	public void setInitial(boolean initial) {
 		this.initial = initial;
 	}
 
-	public Boolean getTerminal() {
+	public boolean isTerminal() {
 		return terminal;
 	}
 
-	public void setTerminal(Boolean terminal) {
+	/**
+	 * @deprecated as of 2.0, use {@link #isTerminal()}
+	 */
+	@Deprecated
+	public boolean getTerminal() {
+		return isTerminal();
+	}
+
+	public void setTerminal(boolean terminal) {
 		this.terminal = terminal;
 	}
 

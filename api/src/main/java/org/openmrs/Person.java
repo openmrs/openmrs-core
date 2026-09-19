@@ -80,7 +80,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	private Boolean deathdateEstimated = false;
 
 	@GenericField
-	private Boolean dead = false;
+	private boolean dead = false;
 
 	private Date deathDate;
 
@@ -96,7 +96,7 @@ public class Person extends BaseChangeableOpenmrsData {
 
 	private Date personDateChanged;
 
-	private Boolean personVoided = false;
+	private boolean personVoided = false;
 
 	private User personVoidedBy;
 
@@ -197,10 +197,14 @@ public class Person extends BaseChangeableOpenmrsData {
 		this.personId = personId;
 	}
 
+	/**
+	 * @deprecated as of 2.0, use {@link #isVoided()}
+	 */
 	@IndexingDependency(derivedFrom = @ObjectPath(@PropertyValue(propertyName = "personVoided")))
 	@Override
-	public Boolean getVoided() {
-		return super.getVoided();
+	@Deprecated
+	public boolean getVoided() {
+		return isVoided();
 	}
 
 	/**
@@ -296,25 +300,26 @@ public class Person extends BaseChangeableOpenmrsData {
 
 	/**
 	 * @return Returns the death status.
-	 * @deprecated as of 2.0, use {@link #getDead()}
 	 */
-	@Deprecated
+
 	@JsonIgnore
-	public Boolean isDead() {
-		return getDead();
+	public boolean isDead() {
+		return dead;
 	}
 
 	/**
 	 * @return Returns the death status.
+	 * @deprecated use {@link #isDead()}
 	 */
-	public Boolean getDead() {
+	@Deprecated
+	public boolean getDead() {
 		return dead;
 	}
 
 	/**
 	 * @param dead The dead to set.
 	 */
-	public void setDead(Boolean dead) {
+	public void setDead(boolean dead) {
 		this.dead = dead;
 	}
 
@@ -1147,22 +1152,22 @@ public class Person extends BaseChangeableOpenmrsData {
 		this.setDateVoided(dateVoided);
 	}
 
-	public void setPersonVoided(Boolean voided) {
+	public void setPersonVoided(boolean voided) {
 		this.personVoided = voided;
 		this.setVoided(voided);
 	}
 
-	public Boolean getPersonVoided() {
+	@JsonIgnore
+	public boolean isPersonVoided() {
 		return personVoided;
 	}
 
 	/**
-	 * @deprecated as of 2.0, use {@link #getPersonVoided()}
+	 * @deprecated as of 2.0, use {@link #isPersonVoided()}
 	 */
 	@Deprecated
-	@JsonIgnore
-	public Boolean isPersonVoided() {
-		return getPersonVoided();
+	public boolean getPersonVoided() {
+		return isPersonVoided();
 	}
 
 	public User getPersonVoidedBy() {
@@ -1187,9 +1192,9 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @return true/false whether this person is a patient or not
 	 * @deprecated as of 2.0, use {@link #getIsPatient()}
 	 */
-	@Deprecated
 	@JsonIgnore
 	@NotAudited
+	@Deprecated
 	public boolean isPatient() {
 		return getIsPatient();
 	}

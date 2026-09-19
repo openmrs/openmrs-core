@@ -376,7 +376,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 				return retValue;
 			}
 
-			if ((retValue = pa1.getVoided().compareTo(pa2.getVoided())) != 0) {
+			if ((retValue = Boolean.compare(pa1.getVoided(), pa2.getVoided())) != 0) {
 				return retValue;
 			}
 

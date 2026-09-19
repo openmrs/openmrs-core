@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +21,6 @@ import org.hibernate.search.engine.search.common.BooleanOperator;
 import org.hibernate.search.engine.search.predicate.SearchPredicate;
 import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateOptionsCollector;
 import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
-import org.hibernate.search.engine.search.predicate.dsl.SimpleQueryStringPredicateFieldMoreStep;
 import org.hibernate.search.util.common.data.RangeBoundInclusion;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -133,12 +133,14 @@ public class PersonQuery {
 	 */
 	public SearchPredicate getSoundexPersonNameSearchOnNNames(SearchPredicateFactory predicateFactory, String[] searchNames,
 	        Integer birthyear, boolean includeVoided, String gender) {
+		List<String> fields = new ArrayList<>(
+		        Arrays.asList("familyNameSoundex", "familyName2Soundex", "middleNameSoundex", "givenNameSoundex"));
 		List<String> queryPart = new ArrayList<>();
 		for (String name : searchNames) {
 			queryPart.add("\"" + name + "\"");
 		}
 		String query = "(" + String.join(" | ", queryPart) + " )";
-		return newSoundexPersonNameSearchQuery(predicateFactory, query, includeVoided, birthyear, gender);
+		return newPersonNameSearchQuery(predicateFactory, fields, query, true, includeVoided, null, null, birthyear, gender);
 	}
 
 	/**
@@ -154,44 +156,34 @@ public class PersonQuery {
 	 */
 	public SearchPredicate getSoundexPersonNameQuery(SearchPredicateFactory predicateFactory, String query,
 	        Integer birthyear, boolean includeVoided, String gender) {
-		return newSoundexPersonNameSearchQuery(predicateFactory, query, includeVoided, birthyear, gender);
+		return newPersonNameSearchQuery(predicateFactory,
+		    Arrays.asList("familyNameSoundex", "familyName2Soundex", "middleNameSoundex", "givenNameSoundex"), query, true,
+		    includeVoided, null, null, birthyear, gender);
 	}
 
 	private SearchPredicate getPersonNameQuery(SearchPredicateFactory predicateFactory, String query, boolean orQueryParser,
 	        boolean includeVoided, boolean patientsOnly, Boolean dead) {
+		List<String> fields = new ArrayList<>(Arrays.asList("givenNameExact", "middleNameExact", "familyNameExact",
+		    "familyName2Exact", "givenNameStart", "middleNameStart", "familyNameStart", "familyName2Start"));
+
 		String matchMode = Context.getAdministrationService()
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
-		boolean includeAnywhere = OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE.equals(matchMode);
-		return newPersonNameSearchQuery(predicateFactory, includeAnywhere, query, orQueryParser, includeVoided, patientsOnly,
-		    dead);
+		if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE.equals(matchMode)) {
+			fields.addAll(
+			    Arrays.asList("givenNameAnywhere", "middleNameAnywhere", "familyNameAnywhere", "familyName2Anywhere"));
+		}
+
+		return newPersonNameSearchQuery(predicateFactory, fields, query, orQueryParser, includeVoided, patientsOnly, dead,
+		    null, null);
 	}
 
-	private SearchPredicate newPersonNameSearchQuery(SearchPredicateFactory predicateFactory, boolean includeAnywhere,
-	        String query, boolean orQueryParser, boolean includeVoided, Boolean patientsOnly, Boolean dead) {
-		BooleanOperator operator = orQueryParser ? BooleanOperator.OR : BooleanOperator.AND;
+	private SearchPredicate newPersonNameSearchQuery(SearchPredicateFactory predicateFactory, List<String> fields,
+	        String query, boolean orQueryParser, boolean includeVoided, Boolean patientsOnly, Boolean dead,
+	        Integer birthyear, String gender) {
 		return predicateFactory.bool().with(b -> {
-			SimpleQueryStringPredicateFieldMoreStep<?, ?, ?> names = predicateFactory.simpleQueryString()
-			        .fields("givenNameExact", "familyNameExact").boost(8f).fields("middleNameExact", "familyName2Exact")
-			        .boost(4f).fields("givenNameStart", "familyNameStart").boost(4f)
-			        .fields("middleNameStart", "familyName2Start").boost(2f);
-
-			if (includeAnywhere) {
-				names = names.fields("givenNameAnywhere", "familyNameAnywhere").boost(2f)
-				        .fields("middleNameAnywhere", "familyName2Anywhere").boost(1f);
-			}
-
-			b.must(names.matching(query).defaultOperator(operator));
-			applyPersonFilters(predicateFactory, b, includeVoided, patientsOnly, dead, null, null);
-		}).toPredicate();
-	}
-
-	private SearchPredicate newSoundexPersonNameSearchQuery(SearchPredicateFactory predicateFactory, String query,
-	        boolean includeVoided, Integer birthyear, String gender) {
-		return predicateFactory.bool().with(b -> {
-			b.must(predicateFactory.simpleQueryString()
-			        .fields("familyNameSoundex", "familyName2Soundex", "middleNameSoundex", "givenNameSoundex")
-			        .matching(query).defaultOperator(BooleanOperator.OR));
-			applyPersonFilters(predicateFactory, b, includeVoided, null, null, birthyear, gender);
+			b.must(predicateFactory.simpleQueryString().fields(fields.toArray(new String[0])).matching(query)
+			        .defaultOperator(orQueryParser ? BooleanOperator.OR : BooleanOperator.AND));
+			applyPersonFilters(predicateFactory, b, includeVoided, patientsOnly, dead, birthyear, gender);
 		}).toPredicate();
 	}
 
@@ -236,19 +228,19 @@ public class PersonQuery {
 
 	private SearchPredicate getPersonAttributeQuery(SearchPredicateFactory predicateFactory, String query,
 	        boolean orQueryParser, boolean includeVoided, boolean patientsOnly) {
-		BooleanOperator operator = orQueryParser ? BooleanOperator.OR : BooleanOperator.AND;
+		List<String> fields = new ArrayList<>();
+		fields.add("valuePhrase"); //will position whole phrase match higher
+		fields.add("valueExact");
 		String matchMode = Context.getAdministrationService()
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE);
-		boolean includeAnywhere = OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE.equals(matchMode);
+		if (OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE.equals(matchMode)) {
+			fields.add("valueStart"); //will position "starts with" match higher
+			fields.add("valueAnywhere");
+		}
 
 		return predicateFactory.bool().with(b -> {
-			SimpleQueryStringPredicateFieldMoreStep<?, ?, ?> attribute = predicateFactory.simpleQueryString()
-			        .field("valuePhrase").boost(8f).field("valueExact").boost(4f);
-
-			if (includeAnywhere) {
-				attribute = attribute.field("valueStart").boost(2f).field("valueAnywhere").boost(1f);
-			}
-			b.must(attribute.matching(query).defaultOperator(operator));
+			b.must(predicateFactory.simpleQueryString().fields(fields.toArray(new String[0])).matching(query)
+			        .defaultOperator(orQueryParser ? BooleanOperator.OR : BooleanOperator.AND));
 
 			if (!includeVoided) {
 				b.filter(predicateFactory.match().field("voided").matching(false));

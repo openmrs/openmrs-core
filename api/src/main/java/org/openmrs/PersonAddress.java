@@ -423,7 +423,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public int compareTo(PersonAddress other) {
 		int retValue = 0;
 		if (other != null) {
-			retValue = getVoided().compareTo(other.getVoided());
+			retValue = Boolean.compare(getVoided(), other.getVoided());
 			if (retValue == 0) {
 				retValue = other.getPreferred().compareTo(getPreferred());
 			}

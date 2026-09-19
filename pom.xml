@@ -109,7 +109,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.16.0</version>
+					<version>3.15.0</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
 					</configuration>
@@ -148,7 +148,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>buildnumber-maven-plugin</artifactId>
-					<version>3.3.1</version>
+					<version>3.3.0</version>
 					<configuration>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
 						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
@@ -164,12 +164,12 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.6.2</version>
+					<version>3.6.1</version>
 				</plugin>
 				<plugin>
 					<groupId>com.diffplug.spotless</groupId>
 					<artifactId>spotless-maven-plugin</artifactId>
-					<version>3.10.2</version>
+					<version>3.10.1</version>
 					<configuration>
 						<java>
 							<eclipse>
@@ -210,7 +210,7 @@
 				<plugin>
 					<groupId>com.github.spotbugs</groupId>
 					<artifactId>spotbugs-maven-plugin</artifactId>
-					<version>4.10.4.1</version>
+					<version>4.10.4.0</version>
 					<configuration>
 						<excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
 						<effort>Max</effort>
@@ -346,7 +346,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.8.0.7211</version>
+					<version>5.7.0.6970</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>

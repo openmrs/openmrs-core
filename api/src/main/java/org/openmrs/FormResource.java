@@ -293,9 +293,9 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	 * @see org.openmrs.customdatatype.SingleCustomValue#isDirty()
 	 * @deprecated as of 2.0, use {@link #getDirty()}
 	 */
-	@Deprecated
 	@JsonIgnore
 	@Override
+	@Deprecated
 	public boolean isDirty() {
 		return getDirty();
 	}
