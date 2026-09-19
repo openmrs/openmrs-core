@@ -76,7 +76,7 @@ public class OrderValidator implements Validator {
 			errors.reject("error.general");
 		} else {
 			// for the following elements Order.hbm.xml says: not-null="true"
-			ValidationUtils.rejectIfEmpty(errors, "voided", "error.null");
+			
 			//For DrugOrders, the api will set the concept to drug.concept
 			if (!DrugOrder.class.isAssignableFrom(order.getClass())) {
 				ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
