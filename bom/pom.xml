@@ -79,6 +79,7 @@
 
 		<!-- Apache Commons -->
 		<commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
+		<commonsCollections4Version>4.5.0</commonsCollections4Version>
 		<commonsIoVersion>2.22.0</commonsIoVersion>
 		<commonsLang3Version>3.20.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
@@ -364,9 +365,9 @@
 
 			<!-- Apache Commons -->
 			<dependency>
-				<groupId>commons-collections</groupId>
-				<artifactId>commons-collections</artifactId>
-				<version>${commonsCollectionsVersion}</version>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>${commonsCollections4Version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
