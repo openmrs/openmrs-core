@@ -329,25 +329,28 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsLatest(pi1.getDateCreated(), pi2.getDateCreated());
 				}
-				if (pi1.getIdentifierType() == null && pi2.getIdentifierType() == null) {
-					return 0;
-				}
-				if (pi1.getIdentifierType() == null && pi2.getIdentifierType() != null) {
-					retValue = 1;
-				}
-				if (pi1.getIdentifierType() != null && pi2.getIdentifierType() == null) {
-					retValue = -1;
-				}
 				if (retValue == 0) {
-					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifierType().getPatientIdentifierTypeId(),
-					    pi2.getIdentifierType().getPatientIdentifierTypeId());
+					if (pi1.getIdentifierType() == null && pi2.getIdentifierType() == null) {
+						return 0;
+					}
+					if (pi1.getIdentifierType() == null && pi2.getIdentifierType() != null) {
+						retValue = 1;
+					}
+					if (pi1.getIdentifierType() != null && pi2.getIdentifierType() == null) {
+						retValue = -1;
+					}
+					if (retValue == 0) {
+						retValue = OpenmrsUtil.compareWithNullAsGreatest(
+						    pi1.getIdentifierType().getPatientIdentifierTypeId(),
+						    pi2.getIdentifierType().getPatientIdentifierTypeId());
+					}
 				}
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifier(), pi2.getIdentifier());
 				}
 
 				// if we've gotten this far, just check all identifier values.  If they are
-				// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1
+				// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
 				// and return that (they are not equal).
 				if (retValue == 0 && !pi1.equalsContent(pi2)) {
 					retValue = 1;
@@ -356,6 +359,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 			return retValue;
 		}
+
 	}
 
 	/**

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class PatientIdentifierTest {
 
 	@Test
-	public void defaultComparator_shouldHandleNullIdentifierType() {
+	public void defaultComparator_shouldNotOverrideVoidedComparison() {
 		PatientIdentifier pi1 = new PatientIdentifier();
 		PatientIdentifier pi2 = new PatientIdentifier();
 
@@ -26,9 +26,12 @@ public class PatientIdentifierTest {
 		pi1.setIdentifierType(identifierType);
 		pi2.setIdentifierType(null);
 
+		pi1.setVoided(true);
+		pi2.setVoided(false);
+
 		PatientIdentifier.DefaultComparator comparator = new PatientIdentifier.DefaultComparator();
 
-		assertEquals(-1, comparator.compare(pi1, pi2));
-		assertEquals(1, comparator.compare(pi2, pi1));
+		assertEquals(1, comparator.compare(pi1, pi2));
+		assertEquals(-1, comparator.compare(pi2, pi1));
 	}
 }
