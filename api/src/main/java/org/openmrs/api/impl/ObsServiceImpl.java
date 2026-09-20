@@ -203,10 +203,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	private void setPersonFromEncounter(Obs obs) {
 		Encounter encounter = obs.getEncounter();
 		if (encounter != null) {
-			Person patient = encounter.getPatient();
-			if (patient != null) {
-				obs.setPerson(patient);
-			}
+			obs.setPerson(encounter.getPatient());
 		}
 	}
 
@@ -822,36 +819,36 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 
 		Integer sourceEncounterId = source.getEncounter() != null ? source.getEncounter().getEncounterId() : null;
 		Integer targetEncounterId = target.getEncounter() != null ? target.getEncounter().getEncounterId() : null;
-		if (!ObsArchiveHelper.hibernateAwareEquals(sourceEncounterId, targetEncounterId)) {
+		if (!OpenmrsUtil.nullSafeEquals(sourceEncounterId, targetEncounterId)) {
 			target.setEncounter(source.getEncounter());
 		}
 
 		Integer sourceOrderId = source.getOrder() != null ? source.getOrder().getOrderId() : null;
 		Integer targetOrderId = target.getOrder() != null ? target.getOrder().getOrderId() : null;
-		if (!ObsArchiveHelper.hibernateAwareEquals(sourceOrderId, targetOrderId)) {
+		if (!OpenmrsUtil.nullSafeEquals(sourceOrderId, targetOrderId)) {
 			target.setOrder(source.getOrder());
 		}
 
-		if (!ObsArchiveHelper.hibernateAwareEquals(source.getObsDatetime(), target.getObsDatetime())) {
+		if (!OpenmrsUtil.nullSafeEquals(source.getObsDatetime(), target.getObsDatetime())) {
 			target.setObsDatetime(source.getObsDatetime());
 		}
 
 		Integer sourceLocationId = source.getLocation() != null ? source.getLocation().getLocationId() : null;
 		Integer targetLocationId = target.getLocation() != null ? target.getLocation().getLocationId() : null;
-		if (!ObsArchiveHelper.hibernateAwareEquals(sourceLocationId, targetLocationId)) {
+		if (!OpenmrsUtil.nullSafeEquals(sourceLocationId, targetLocationId)) {
 			target.setLocation(source.getLocation());
 		}
 
-		if (!ObsArchiveHelper.hibernateAwareEquals(source.getAccessionNumber(), target.getAccessionNumber())) {
+		if (!OpenmrsUtil.nullSafeEquals(source.getAccessionNumber(), target.getAccessionNumber())) {
 			target.setAccessionNumber(source.getAccessionNumber());
 		}
-		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueGroupId(), target.getValueGroupId())) {
+		if (!OpenmrsUtil.nullSafeEquals(source.getValueGroupId(), target.getValueGroupId())) {
 			target.setValueGroupId(source.getValueGroupId());
 		}
 
 		Integer sourceCodedId = source.getValueCoded() != null ? source.getValueCoded().getConceptId() : null;
 		Integer targetCodedId = target.getValueCoded() != null ? target.getValueCoded().getConceptId() : null;
-		if (!ObsArchiveHelper.hibernateAwareEquals(sourceCodedId, targetCodedId)) {
+		if (!OpenmrsUtil.nullSafeEquals(sourceCodedId, targetCodedId)) {
 			target.setValueCoded(source.getValueCoded());
 		}
 
@@ -859,32 +856,32 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		        : null;
 		Integer targetCodedNameId = target.getValueCodedName() != null ? target.getValueCodedName().getConceptNameId()
 		        : null;
-		if (!ObsArchiveHelper.hibernateAwareEquals(sourceCodedNameId, targetCodedNameId)) {
+		if (!OpenmrsUtil.nullSafeEquals(sourceCodedNameId, targetCodedNameId)) {
 			target.setValueCodedName(source.getValueCodedName());
 		}
 
 		Integer sourceDrugId = source.getValueDrug() != null ? source.getValueDrug().getDrugId() : null;
 		Integer targetDrugId = target.getValueDrug() != null ? target.getValueDrug().getDrugId() : null;
-		if (!ObsArchiveHelper.hibernateAwareEquals(sourceDrugId, targetDrugId)) {
+		if (!OpenmrsUtil.nullSafeEquals(sourceDrugId, targetDrugId)) {
 			target.setValueDrug(source.getValueDrug());
 		}
 
-		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueDatetime(), target.getValueDatetime())) {
+		if (!OpenmrsUtil.nullSafeEquals(source.getValueDatetime(), target.getValueDatetime())) {
 			target.setValueDatetime(source.getValueDatetime());
 		}
-		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueNumeric(), target.getValueNumeric())) {
+		if (!OpenmrsUtil.nullSafeEquals(source.getValueNumeric(), target.getValueNumeric())) {
 			target.setValueNumeric(source.getValueNumeric());
 		}
-		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueModifier(), target.getValueModifier())) {
+		if (!OpenmrsUtil.nullSafeEquals(source.getValueModifier(), target.getValueModifier())) {
 			target.setValueModifier(source.getValueModifier());
 		}
-		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueText(), target.getValueText())) {
+		if (!OpenmrsUtil.nullSafeEquals(source.getValueText(), target.getValueText())) {
 			target.setValueText(source.getValueText());
 		}
-		if (!ObsArchiveHelper.hibernateAwareEquals(source.getValueComplex(), target.getValueComplex())) {
+		if (!OpenmrsUtil.nullSafeEquals(source.getValueComplex(), target.getValueComplex())) {
 			target.setValueComplex(source.getValueComplex());
 		}
-		if (!ObsArchiveHelper.hibernateAwareEquals(source.getComment(), target.getComment())) {
+		if (!OpenmrsUtil.nullSafeEquals(source.getComment(), target.getComment())) {
 			target.setComment(source.getComment());
 		}
 		if (source.getStatus() != null && source.getStatus() != target.getStatus()) {

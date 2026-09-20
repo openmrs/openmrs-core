@@ -19,7 +19,6 @@ import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.ObsArchive;
@@ -27,7 +26,6 @@ import org.openmrs.ObsReferenceRange;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
 import org.openmrs.api.APIException;
-import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -409,47 +407,6 @@ public class ObsArchiveHelper {
 		}
 	}
 
-	public static <T, U extends T> boolean hibernateAwareEquals(T d1, U d2) {
-		if (d1 == null) {
-			return d2 == null;
-		} else if (d2 == null) {
-			return false;
-		}
-		if (d1 == d2) {
-			return true;
-		}
-		if (d1 instanceof OpenmrsObject && d2 instanceof OpenmrsObject) {
-			Class<?> class1 = (d1 instanceof HibernateProxy)
-			        ? ((HibernateProxy) d1).getHibernateLazyInitializer().getPersistentClass()
-			        : d1.getClass();
-			Class<?> class2 = (d2 instanceof HibernateProxy)
-			        ? ((HibernateProxy) d2).getHibernateLazyInitializer().getPersistentClass()
-			        : d2.getClass();
-
-			if (!(class1.isAssignableFrom(class2) || class2.isAssignableFrom(class1))) {
-				return false;
-			}
-
-			if (d1 instanceof HibernateProxy || d2 instanceof HibernateProxy) {
-				Object id1 = (d1 instanceof HibernateProxy)
-				        ? ((HibernateProxy) d1).getHibernateLazyInitializer().getIdentifier()
-				        : ((OpenmrsObject) d1).getId();
-				Object id2 = (d2 instanceof HibernateProxy)
-				        ? ((HibernateProxy) d2).getHibernateLazyInitializer().getIdentifier()
-				        : ((OpenmrsObject) d2).getId();
-
-				if (id1 != null && id2 != null) {
-					return id1.equals(id2);
-				}
-				if (id1 == null || id2 == null) {
-					return false;
-				}
-			}
-		}
-		return (d1 instanceof Date d1Date && d2 instanceof Date d2Date) ? OpenmrsUtil.compare(d1Date, d2Date) == 0
-		        : d1.equals(d2);
-	}
-
 	public void handleArchivedDataOnPurge(OpenmrsObject parent, boolean cascade) {
 		if (parent == null || !doesArchiveHaveData()) {
 			return;
@@ -465,7 +422,11 @@ public class ObsArchiveHelper {
 				        .createQuery("SELECT a.obsId FROM ObsArchive a WHERE a.encounter.encounterId = :id", Integer.class)
 				        .setParameter("id", ((Encounter) parent).getEncounterId()).list();
 			} else if (parent instanceof Order) {
-				return session.createQuery("SELECT a.obsId FROM ObsArchive a WHERE a.order.orderId = :id", Integer.class)
+				return session
+				        .createQuery(
+				            "SELECT a.obsId FROM ObsArchive a WHERE a.order.orderId = :id "
+				                    + "OR a.obsGroupId IN (SELECT o.obsId FROM Obs o WHERE o.order.orderId = :id)",
+				            Integer.class)
 				        .setParameter("id", ((Order) parent).getOrderId()).list();
 			}
 			return Collections.emptyList();
