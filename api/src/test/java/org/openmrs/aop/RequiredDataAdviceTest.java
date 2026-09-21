@@ -35,6 +35,7 @@ import org.openmrs.OpenmrsObject;
 import org.openmrs.Person;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
+import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.handler.BaseVoidHandler;
@@ -52,6 +53,7 @@ import org.openmrs.util.Reflect;
 import org.springframework.context.ApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -60,6 +62,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -87,6 +90,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	public void setUp() {
 		//Clear cache since handlers are updated
 		HandlerUtil.clearCachedHandlers();
+		RequiredDataAdvice.clearReflectionCache();
 	}
 
 	/**
@@ -670,6 +674,104 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 
 		public void voidClassWithDisableHandlersAnnotation(ClassWithDisableHandlersAnnotation oo) {
 		}
+	}
+
+	private class ClassWithIndependentCollection extends BaseOpenmrsObject {
+
+		@Independent
+		private List<Location> independentLocations;
+
+		private List<Location> dependentLocations;
+
+		public List<Location> getIndependentLocations() {
+			return independentLocations;
+		}
+
+		public void setIndependentLocations(List<Location> independentLocations) {
+			this.independentLocations = independentLocations;
+		}
+
+		public List<Location> getDependentLocations() {
+			return dependentLocations;
+		}
+
+		public void setDependentLocations(List<Location> dependentLocations) {
+			this.dependentLocations = dependentLocations;
+		}
+
+		@Override
+		public Integer getId() {
+			return null;
+		}
+
+		@Override
+		public void setId(Integer id) {
+			// not needed for this test
+		}
+	}
+
+	private class ChildClassInheritingIndependentCollection extends ClassWithIndependentCollection {
+	}
+
+	@Test
+	public void before_shouldBailOutEarlyForNonHandledMethodWithoutCheckingArguments() throws Throwable {
+		RequiredDataAdvice adviceSpy = spy(requiredDataAdvice);
+		Method method = ConceptServiceImpl.class.getMethod("getConcept", Integer.class);
+		adviceSpy.before(method, new Object[] { 1 }, new ConceptServiceImpl());
+		verify(adviceSpy, never()).methodNameEndsWithClassName(any(), any());
+		verify(saveHandler, never()).handle(any(), any(), any(), any());
+		verify(voidHandler, never()).handle(any(), any(), any(), any());
+	}
+
+	@Test
+	public void recursivelyHandle_shouldCacheReflectionMetadataAndReuseAcrossCalls() {
+		assertEquals(0, RequiredDataAdvice.getMetadataComputationCount());
+		MiniOpenmrsObject obj = new MiniOpenmrsObject();
+		obj.setLocations(new ArrayList<>());
+
+		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, obj, "reason");
+		int countAfterFirst = RequiredDataAdvice.getMetadataComputationCount();
+		assertTrue(countAfterFirst > 0);
+
+		// Subsequent call on the same class should reuse cached metadata without recomputing
+		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, obj, "reason");
+		assertEquals(countAfterFirst, RequiredDataAdvice.getMetadataComputationCount());
+	}
+
+	@Test
+	public void recursivelyHandle_shouldNotRecursivelyHandleIndependentCollectionsWithCachedMetadata() {
+		Map<String, SaveHandler> saveHandlers = new HashMap<>();
+		saveHandlers.put("saveHandler", saveHandler);
+		when(applicationContext.getBeansOfType(SaveHandler.class)).thenReturn(saveHandlers);
+
+		ClassWithIndependentCollection parent = new ClassWithIndependentCollection();
+		Location indepLoc = new Location(10);
+		Location depLoc = new Location(20);
+		parent.setIndependentLocations(Arrays.asList(indepLoc));
+		parent.setDependentLocations(Arrays.asList(depLoc));
+
+		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, parent, "reason");
+
+		verify(saveHandler, times(1)).handle(eq(depLoc), any(), any(), any());
+		verify(saveHandler, never()).handle(eq(indepLoc), any(), any(), any());
+	}
+
+	@Test
+	public void recursivelyHandle_shouldNotRecursivelyHandleInheritedIndependentCollections() {
+		Map<String, SaveHandler> saveHandlers = new HashMap<>();
+		saveHandlers.put("saveHandler", saveHandler);
+		when(applicationContext.getBeansOfType(SaveHandler.class)).thenReturn(saveHandlers);
+
+		ChildClassInheritingIndependentCollection child = new ChildClassInheritingIndependentCollection();
+		Location indepLoc = new Location(10);
+		Location depLoc = new Location(20);
+		child.setIndependentLocations(Arrays.asList(indepLoc));
+		child.setDependentLocations(Arrays.asList(depLoc));
+
+		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, child, "reason");
+
+		verify(saveHandler, times(1)).handle(eq(depLoc), any(), any(), any());
+		verify(saveHandler, never()).handle(eq(indepLoc), any(), any(), any());
 	}
 
 }
