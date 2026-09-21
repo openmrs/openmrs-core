@@ -50,7 +50,7 @@
 		<springTestVersion>7.0.9</springTestVersion>
 		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
 		<springSecurityVersion>7.1.1</springSecurityVersion>
-		<hibernateVersion>7.4.7.Final</hibernateVersion>
+		<hibernateVersion>7.4.9.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.3.Final</hibernateValidatorVersion>
@@ -114,7 +114,7 @@
 		<javassistVersion>3.33.0-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
-		<tomcatVersion>11.0.25</tomcatVersion>
+		<tomcatVersion>11.0.26</tomcatVersion>
 		<jodaTimeVersion>2.14.3</jodaTimeVersion>
 		<guavaVersion>33.7.1-jre</guavaVersion>
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
