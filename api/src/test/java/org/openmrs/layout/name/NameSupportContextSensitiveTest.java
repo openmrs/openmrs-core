@@ -12,6 +12,8 @@ package org.openmrs.layout.name;
 import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.context.Context;
+import org.openmrs.layout.LayoutSupport;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
