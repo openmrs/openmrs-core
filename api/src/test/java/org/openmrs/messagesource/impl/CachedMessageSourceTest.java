@@ -59,4 +59,24 @@ public class CachedMessageSourceTest {
 		assertEquals(valueAsString, valueAsPM.getMessage());
 	}
 
+	/**
+	 * The merge operation should not overwrite an existing message when overwrite is false.
+	 */
+	@Test
+	public void merge_shouldNotOverwriteExistingMessageWhenOverwriteIsFalse() {
+		CachedMessageSource cachedMessages = new CachedMessageSource();
+
+		PresentationMessage existingMessage = new PresentationMessage("test.code", Locale.ENGLISH, "Old message",
+		        "Old message");
+		PresentationMessage newMessage = new PresentationMessage("test.code", Locale.ENGLISH, "New message", "New message");
+
+		cachedMessages.addPresentation(existingMessage);
+
+		CachedMessageSource source = new CachedMessageSource();
+		source.addPresentation(newMessage);
+
+		cachedMessages.merge(source, false);
+
+		assertEquals("Old message", cachedMessages.getPresentation("test.code", Locale.ENGLISH).getMessage());
+	}
 }
