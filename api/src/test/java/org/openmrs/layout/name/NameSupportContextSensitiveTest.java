@@ -24,15 +24,17 @@ public class NameSupportContextSensitiveTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/NameSupportTest-format.xml");
 
 		NameSupport nameSupport = NameSupport.getInstance();
-		nameSupport.setDefaultLayoutFormat("short"); // mirrors legacyui's wiring
 
 		Field initializedField = NameSupport.class.getDeclaredField("initialized");
 		initializedField.setAccessible(true);
 		Field layoutFormatField = NameSupport.class.getDeclaredField("layoutFormat");
 		layoutFormatField.setAccessible(true);
+		Field defaultFormatField = LayoutSupport.class.getDeclaredField("defaultLayoutFormat");
+		defaultFormatField.setAccessible(true);
 
 		boolean previousInitialized = initializedField.getBoolean(nameSupport);
-		Object previousLayoutFormat = layoutFormatField.get(nameSupport);
+		Object previousDefaultFormat = defaultFormatField.get(nameSupport);
+		nameSupport.setDefaultLayoutFormat("short"); // mirrors legacyui's wiring
 
 		try {
 			// Simulate a fresh boot: clear the cache/init flag on the existing singleton
@@ -44,7 +46,9 @@ public class NameSupportContextSensitiveTest extends BaseContextSensitiveTest {
 			assertEquals("long", format);
 		} finally {
 			initializedField.setBoolean(nameSupport, previousInitialized);
-			layoutFormatField.set(nameSupport, previousLayoutFormat);
+			layoutFormatField.set(nameSupport, null);
+			defaultFormatField.set(nameSupport, previousDefaultFormat);
+			Context.getAdministrationService().removeGlobalPropertyListener(nameSupport);
 		}
 	}
 }
