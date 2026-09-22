@@ -87,7 +87,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 		Query query = sessionFactory.getCurrentSession().createQuery(
 			"from Diagnosis d where d.patient.patientId = :patientId and d.voided = false " 
 				+ fromDateCriteria  
-				+ " order by d.dateCreated desc");
+				+ " order by d.dateCreated desc, d.diagnosisId desc");
 		query.setParameter("patientId", patient.getId());
 		if(fromDate != null){
 			query.setParameter("fromDate", fromDate);
@@ -107,7 +107,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 		if (confirmedOnly) {
 			queryString += " and d.certainty = :certainty";
 		}
-		queryString += " order by d.dateCreated desc";
+		queryString += " order by d.dateCreated desc, d.diagnosisId desc";
 
 		TypedQuery<Diagnosis> query = sessionFactory.getCurrentSession().createQuery(queryString, Diagnosis.class).setParameter("encounterId", encounter.getId());
 		if (primaryOnly) {
@@ -132,7 +132,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 		if (confirmedOnly) {
 			queryString += " and d.certainty = :certainty";
 		}
-		queryString += " order by d.dateCreated desc";
+		queryString += " order by d.dateCreated desc, d.diagnosisId desc";
 
 		TypedQuery<Diagnosis> query = sessionFactory.getCurrentSession().createQuery(queryString, Diagnosis.class).setParameter("visitId", visit.getId());
 		if (primaryOnly) {

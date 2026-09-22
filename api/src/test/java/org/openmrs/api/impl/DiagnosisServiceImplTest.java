@@ -209,10 +209,12 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesByEncounter(encounter, false, false);
 
 		assertEquals(2, diagnoses.size());
-		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
-		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
-		assertEquals("77009cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(1).getUuid());
-		assertEquals(ConditionVerificationStatus.PROVISIONAL, diagnoses.get(1).getCertainty());
+		// diagnosis 2 and diagnosis 4 share a date_created, so diagnosis_id breaks the tie: under
+		// "newest first" id 4 (77009cce) sorts ahead of id 2 (88042cce)
+		assertEquals("77009cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.PROVISIONAL, diagnoses.get(0).getCertainty());
+		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(1).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(1).getCertainty());
 	}
 
 	/**
@@ -251,10 +253,12 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesByVisit(visit, false, false);
 
 		assertEquals(2, diagnoses.size());
-		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
-		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
-		assertEquals("77009cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(1).getUuid());
-		assertEquals(ConditionVerificationStatus.PROVISIONAL, diagnoses.get(1).getCertainty());
+		// diagnosis 2 and diagnosis 4 share a date_created, so diagnosis_id breaks the tie: under
+		// "newest first" id 4 (77009cce) sorts ahead of id 2 (88042cce)
+		assertEquals("77009cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.PROVISIONAL, diagnoses.get(0).getCertainty());
+		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(1).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(1).getCertainty());
 
 	}
 

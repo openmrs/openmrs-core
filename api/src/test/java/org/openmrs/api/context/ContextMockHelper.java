@@ -36,6 +36,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.RoleConstants;
 import org.springframework.context.ApplicationContext;
 
@@ -159,12 +160,14 @@ public class ContextMockHelper {
 		}
 		
 		if (applicationContextMocked) {
-			if (realApplicationContext != null) {
-				Context.getServiceContext().setApplicationContext(realApplicationContext);
-				realApplicationContext = null;
-			}
+			// restored even when there was nothing there before: leaving a dead mock installed in the
+			// singleton ServiceContext makes every later lookup in this JVM resolve against it
+			Context.getServiceContext().setApplicationContext(realApplicationContext);
+			realApplicationContext = null;
 			applicationContextMocked = false;
 			applicationContext = null;
+			// the mock's half of the handler cache goes with it; see setApplicationContext
+			HandlerUtil.clearCachedHandlers();
 		}
 		
 	}
@@ -185,6 +188,13 @@ public class ContextMockHelper {
 		Context.getServiceContext().setService(type, service);
 	}
 	
+	/**
+	 * Swapping the application context changes which beans
+	 * {@link Context#getRegisteredComponents(Class)} sees, so the handler cache, which is static and is
+	 * cleared only by context lifecycle events that no mock publishes, has to be dropped here and again
+	 * in {@link #revertMocks()}. Otherwise handlers built from this mock are served to whatever runs
+	 * next in the same JVM.
+	 */
 	public void setApplicationContext(ApplicationContext context) {
 		if (!applicationContextMocked) {
 			realApplicationContext = Context.getServiceContext().getApplicationContext();
@@ -193,6 +203,7 @@ public class ContextMockHelper {
 		
 		Context.getServiceContext().setApplicationContext(context);
 		this.applicationContext = context;
+		HandlerUtil.clearCachedHandlers();
 	}
 	
 	public void setAdministrationService(AdministrationService administrationService) {

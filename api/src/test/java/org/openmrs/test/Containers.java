@@ -15,12 +15,14 @@ import java.util.Properties;
 import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.dialect.PostgreSQL82Dialect;
 import org.openmrs.api.context.Context;
+import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public class Containers {
 
 	private static MySQLContainer<?> mysql;
+	private static MariaDBContainer<?> mariadb;
 	private static PostgreSQLContainer<?> postgres;
 	
 	private static final String USERNAME =  "test";
@@ -30,12 +32,15 @@ public class Containers {
 	
 	public static void ensureDatabaseRunning() {
 		
-		if (mysql != null || postgres != null) {
+		if (mysql != null || mariadb != null || postgres != null) {
 			return;
 		}
-		
+
 		if ("postgres".equals(System.getProperty("database"))) {
 			ensurePostgreSQLRunning();
+		}
+		else if ("mariadb".equals(System.getProperty("database"))) {
+			ensureMariaDBRunning();
 		}
 		else {
 			ensureMySQLRunning();
@@ -76,6 +81,47 @@ public class Containers {
         }
     }
     
+    /**
+     * MariaDB is the database the reference application actually ships, and unlike the mysql:5.7
+     * image used above it publishes arm64 manifests, so this is the only MySQL-dialect option that
+     * runs on Apple Silicon. The container hands out a jdbc:mariadb: URL, which only the MariaDB
+     * driver accepts, so the two are set as a pair - the same pairing startup-init.sh configures
+     * for OMRS_DB=mariadb. The Hibernate dialect and the "database" property stay on mysql because
+     * the schema and the MySQL-flavoured DDL in tests such as DatabaseIT apply unchanged here.
+     */
+    private static void ensureMariaDBRunning() {
+
+        if (mariadb == null) {
+
+            mariadb = new MariaDBContainer<>("mariadb:10.11.7")
+                .withUsername(USERNAME)
+                .withPassword(PASSWORD)
+                .withDatabaseName(DATABASE)
+                .withUrlParam("autoReconnect", "true")
+                .withUrlParam("sessionVariables", "default_storage_engine=InnoDB")
+                .withUrlParam("useUnicode", "true")
+                .withUrlParam("characterEncoding", "UTF-8")
+                .withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_general_ci")
+                .withTmpFs(Collections.singletonMap("/var/lib/mysql", "rw"))
+                .withReuse(true);
+        }
+
+        if (!mariadb.isRunning()) {
+
+            mariadb.start();
+
+            System.setProperty("databaseUrl", mariadb.getJdbcUrl());
+    		System.setProperty("databaseName", DATABASE);
+    		System.setProperty("databaseUsername", USERNAME);
+    		System.setProperty("databasePassword", PASSWORD);
+    		System.setProperty("databaseDriver", mariadb.getDriverClassName());
+    		System.setProperty("databaseDialect", MySQLDialect.class.getName());
+			System.setProperty("database", "mysql");
+
+    		createSchema();
+        }
+    }
+
     private static void ensurePostgreSQLRunning() {
 
         if (postgres == null) {
