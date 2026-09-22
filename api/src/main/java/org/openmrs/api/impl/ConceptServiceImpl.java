@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -73,6 +72,7 @@ import org.openmrs.parameter.ConceptSearchCriteriaBuilder;
 import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.UuidUtil;
 import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,7 +182,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				// create a new concept name from the matching cloned
 				// conceptName
 				ConceptName clone = uuidClonedConceptNameMap.get(changedName.getUuid());
-				clone.setUuid(UUID.randomUUID().toString());
+				clone.setUuid(UuidUtil.newUuidString());
 				clone.setDateCreated(null);
 				clone.setCreator(null);
 				concept.addName(clone);
@@ -810,7 +810,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			conceptName.setCreator(Context.getAuthenticatedUser());
 			//If this is pre 1.9
 			if (conceptName.getUuid() == null) {
-				conceptName.setUuid(UUID.randomUUID().toString());
+				conceptName.setUuid(UuidUtil.newUuidString());
 			}
 			mappedConcept.addName(conceptName);
 			mappedConcept.setChangedBy(Context.getAuthenticatedUser());
@@ -835,7 +835,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			ob.setLocation(cp.getEncounter().getLocation());
 			ob.setPerson(cp.getEncounter().getPatient());
 			if (ob.getUuid() == null) {
-				ob.setUuid(UUID.randomUUID().toString());
+				ob.setUuid(UuidUtil.newUuidString());
 			}
 			Context.getObsService().saveObs(ob, null);
 			cp.setObs(ob);

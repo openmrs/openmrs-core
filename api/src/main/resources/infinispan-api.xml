@@ -24,6 +24,16 @@
 			<expiration max-idle="100000" interval="5000"/>
 			<memory max-count="10000"/>
 		</invalidation-cache-configuration>
-		
+
+		<!-- Like entity, but with a lifespan TTL: role/privilege eviction only fires on API mutations,
+		     so the lifespan is a safety net that bounds staleness from role changes made outside the API. -->
+		<invalidation-cache-configuration name="role-privileges" remote-timeout="20000" statistics="false">
+			<encoding media-type="application/x-java-object"/>
+			<locking concurrency-level="1000" acquire-timeout="15000"/>
+			<transaction mode="NONE" />
+			<expiration lifespan="3600000" max-idle="100000" interval="5000"/>
+			<memory max-count="10000"/>
+		</invalidation-cache-configuration>
+
 	</cache-container>
 </infinispan>

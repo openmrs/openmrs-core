@@ -381,13 +381,15 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Changes the current user's password directly. This is most useful if migrating users from other
 	 * systems and you want to retain the existing passwords. This method will simply save the passed
-	 * hashed password and salt directly to the database.
+	 * encoded password and salt directly to the database. The encoded password may be the full value
+	 * produced by {@link org.openmrs.util.Security#encodePassword(String)} (for
+	 * {@code password + salt}) or an older bare hash, since the configured encoder accepts both.
 	 * <p>
 	 * <strong>Should</strong> change the hashed password for the given user
 	 *
 	 * @param user the user whose password you want to change
-	 * @param hashedPassword - the <em>already hashed</em> password to store
-	 * @param salt - the salt which should be used with this hashed password
+	 * @param hashedPassword - the <em>already encoded</em> password to store
+	 * @param salt - the salt which should be used with this encoded password
 	 * @throws APIException
 	 * @since 1.5
 	 */

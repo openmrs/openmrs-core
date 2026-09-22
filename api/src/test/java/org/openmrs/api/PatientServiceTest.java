@@ -100,6 +100,15 @@ import static org.openmrs.util.NameMatcher.containsFullName;
  */
 public class PatientServiceTest extends BaseContextSensitiveTest {
 
+	/**
+	 * Restricts search-index rebuilds to the entity types patient searches actually query, instead of
+	 * rebuilding every indexed type on each test.
+	 */
+	@Override
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { PersonName.class, PersonAttribute.class, PatientIdentifier.class };
+	}
+
 	// Datasets
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
 

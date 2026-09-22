@@ -35,12 +35,12 @@ The following dependencies are licensed under the [Apache License, Version 2.0](
 - Infinispan (`org.infinispan:infinispan-spring6-embedded`, `infinispan-hibernate-cache-v62`)
 - Jackson JSON (`com.fasterxml.jackson.core:jackson-core`, `jackson-annotations`, `jackson-databind`, `com.fasterxml.jackson.datatype:jackson-datatype-jsr310`)
 - Jakarta Validation API (`jakarta.validation:jakarta.validation-api`)
+- Java UUID Generator (`com.fasterxml.uuid:java-uuid-generator`)
 - JBoss Logging (`org.jboss.logging:jboss-logging`)
 - Joda-Time (`joda-time:joda-time`)
 - Liquibase (`org.liquibase:liquibase-core`)
 - S3Mock (`com.adobe.testing:s3mock-testcontainers`)
 - Spring Framework (`org.springframework:spring-core`, `spring-beans`, `spring-context`, `spring-context-support`, `spring-aop`, `spring-orm`, `spring-tx`, `spring-jdbc`, `spring-web`, `spring-webmvc`, `spring-oxm`, `spring-test`)
-- Xerces (`xerces:xercesImpl`)
 
 ### Eclipse Public License 2.0
 

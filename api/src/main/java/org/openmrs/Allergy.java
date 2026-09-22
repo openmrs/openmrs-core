@@ -13,7 +13,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -30,6 +29,7 @@ import jakarta.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.UuidUtil;
 
 /**
  * Represent allergy
@@ -370,7 +370,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 	 */
 	public void copy(Allergy allergy) {
 		setAllergyId(null);
-		setUuid(UUID.randomUUID().toString());
+		setUuid(UuidUtil.newUuidString());
 		setPatient(allergy.getPatient());
 		setAllergen(allergy.getAllergen());
 		setSeverity(allergy.getSeverity());
@@ -380,7 +380,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 		for (AllergyReaction reaction : allergy.getReactions()) {
 			reactions.add(reaction);
 			reaction.setAllergyReactionId(null);
-			reaction.setUuid(UUID.randomUUID().toString());
+			reaction.setUuid(UuidUtil.newUuidString());
 		}
 	}
 

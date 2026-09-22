@@ -10,7 +10,9 @@
 package org.openmrs.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -22,8 +24,9 @@ import org.mockito.Mockito;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.Privilege;
-import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.cache.RolePrivilegeCache;
+import org.openmrs.api.cache.RolePrivileges;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
@@ -609,11 +612,105 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
-		// add required privilege to user
-		Role role = Context.getUserService().getRole("Provider");
-		role.addPrivilege(property.getViewPrivilege());
-		Context.getAuthenticatedUser().addRole(role);
-		assertNotNull(adminService.getGlobalProperty(property.getProperty()));
+		// Grant the view privilege via the authoritative cache; role privileges resolve by role name,
+		// not from the in-memory role object, so no proxy privilege is involved.
+		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
+		setRolePrivilegesInCache("Provider", property.getViewPrivilege().getPrivilege());
+		try {
+			assertNotNull(adminService.getGlobalProperty(property.getProperty()));
+		} finally {
+			clearRolePrivilegeCache();
+		}
+	}
+
+	/**
+	 * A proxy privilege may satisfy the method's {@code @Authorized} gate but must not satisfy the
+	 * impl-level, proxy-excluding view check, so a caller holding the view privilege only as a proxy is
+	 * still denied the value.
+	 *
+	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
+	 */
+	@Test
+	public void getGlobalProperty_shouldFailIfUserHasViewPrivilegeOnlyAsAProxyPrivilege() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithViewPrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// The property's view privilege is also the privilege the @Authorized gate requires, so this proxy
+		// lets the call past the gate; the impl's proxy-excluding canViewGlobalProperty must still deny it.
+		Context.addProxyPrivilege(property.getViewPrivilege().getPrivilege());
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> adminService.getGlobalProperty(property.getProperty()));
+			// a plain APIException, not the gate's APIAuthenticationException, means the proxy passed the
+			// gate but the resource-level check denied it
+			assertFalse(exception instanceof APIAuthenticationException,
+			    "denial should come from the impl view check, not the @Authorized gate");
+		} finally {
+			Context.removeProxyPrivilege(property.getViewPrivilege().getPrivilege());
+		}
+	}
+
+	/**
+	 * As with the view check, a proxy privilege may pass the method's {@code @Authorized} gate but must
+	 * not satisfy the impl-level, proxy-excluding edit check.
+	 *
+	 * @see org.openmrs.api.AdministrationService#updateGlobalProperty(String, String)
+	 */
+	@Test
+	public void updateGlobalProperty_shouldFailIfUserHasEditPrivilegeOnlyAsAProxyPrivilege() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithEditPrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// Get + Manage Global Properties as proxies get the call past the getGlobalPropertyObject and
+		// updateGlobalProperty gates; the impl's proxy-excluding canEditGlobalProperty must still deny it.
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		Context.addProxyPrivilege(property.getEditPrivilege().getPrivilege());
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> adminService.updateGlobalProperty(property.getProperty(), "new-value"));
+			assertFalse(exception instanceof APIAuthenticationException,
+			    "denial should come from the impl edit check, not the @Authorized gate");
+		} finally {
+			Context.removeProxyPrivilege(property.getEditPrivilege().getPrivilege());
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+	}
+
+	/**
+	 * As with the view check, a proxy privilege may pass the method's {@code @Authorized} gate but must
+	 * not satisfy the impl-level, proxy-excluding delete check.
+	 *
+	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(GlobalProperty)
+	 */
+	@Test
+	public void purgeGlobalProperty_shouldFailIfUserHasDeletePrivilegeOnlyAsAProxyPrivilege() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithDeletePrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// Purge Global Properties as a proxy gets the call past the purgeGlobalProperty gate; the impl's
+		// proxy-excluding canDeleteGlobalProperty must still deny it even with the delete privilege proxied.
+		Context.addProxyPrivilege(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES);
+		Context.addProxyPrivilege(property.getDeletePrivilege().getPrivilege());
+		try {
+			APIException exception = assertThrows(APIException.class, () -> adminService.purgeGlobalProperty(property));
+			assertFalse(exception instanceof APIAuthenticationException,
+			    "denial should come from the impl delete check, not the @Authorized gate");
+		} finally {
+			Context.removeProxyPrivilege(property.getDeletePrivilege().getPrivilege());
+			Context.removeProxyPrivilege(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES);
+		}
 	}
 
 	/**
@@ -644,12 +741,15 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
-		// add required privilege to user
-		Role role = Context.getUserService().getRole("Provider");
-		role.addPrivilege(property.getViewPrivilege());
-		Context.getAuthenticatedUser().addRole(role);
-
-		assertNotNull(adminService.getGlobalPropertyObject(property.getProperty()));
+		// Grant the view privilege via the authoritative cache; role privileges resolve by role name,
+		// not from the in-memory role object, so no proxy privilege is involved.
+		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
+		setRolePrivilegesInCache("Provider", property.getViewPrivilege().getPrivilege());
+		try {
+			assertNotNull(adminService.getGlobalPropertyObject(property.getProperty()));
+		} finally {
+			clearRolePrivilegeCache();
+		}
 	}
 
 	/**
@@ -679,23 +779,25 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void updateGlobalProperty_shouldUpdateIfUserIsAllowedToEditGlobalProperty() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		GlobalProperty property = getGlobalPropertyWithEditPrivilege();
-		GlobalProperty globalPropertyWithViewPrivilege = getGlobalPropertyWithViewPrivilege();
+		// also give the property a view privilege so the read-back below is privilege-gated too
+		getGlobalPropertyWithViewPrivilege();
 		assertEquals("anothervalue", property.getPropertyValue());
 
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
-		// add required privilege to user
-		Role role = Context.getUserService().getRole("Provider");
-		role.addPrivilege(property.getEditPrivilege());
-
-		role.addPrivilege(globalPropertyWithViewPrivilege.getViewPrivilege());
-
-		Context.getAuthenticatedUser().addRole(role);
-
-		adminService.updateGlobalProperty(property.getProperty(), "new-value");
-		String newValue = adminService.getGlobalProperty(property.getProperty());
-		assertEquals("new-value", newValue);
+		// Grant the edit + view privileges via the authoritative cache; role privileges resolve by role
+		// name, not from the in-memory role object, so no proxy privilege is involved.
+		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
+		setRolePrivilegesInCache("Provider", PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES,
+		    PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			adminService.updateGlobalProperty(property.getProperty(), "new-value");
+			String newValue = adminService.getGlobalProperty(property.getProperty());
+			assertEquals("new-value", newValue);
+		} finally {
+			clearRolePrivilegeCache();
+		}
 	}
 
 	/**
@@ -794,6 +896,20 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	private Credentials getTestUserCredentials() {
 		return new UsernamePasswordCredentials("test_user", "test");
+	}
+
+	/**
+	 * Records, in the authoritative role-privilege cache, that the named role grants the given
+	 * privileges. Privilege resolution reads role privileges from this cache by role name, so this lets
+	 * a test grant privileges to a role without persisting them.
+	 */
+	private void setRolePrivilegesInCache(String roleName, String... privileges) {
+		cacheManager.getCache(RolePrivilegeCache.CACHE_NAME).put(RolePrivileges.normalize(roleName),
+		    new RolePrivileges(new HashSet<>(Arrays.asList(privileges)), false));
+	}
+
+	private void clearRolePrivilegeCache() {
+		cacheManager.getCache(RolePrivilegeCache.CACHE_NAME).clear();
 	}
 
 	@Test

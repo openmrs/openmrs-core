@@ -63,7 +63,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer locationId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "location_type_concept_id")
 	private Concept type;
 
@@ -133,7 +133,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@Column(name = "address15")
 	private String address15;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_location")
 	private Location parentLocation;
 

@@ -24,8 +24,11 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
+import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -40,7 +43,46 @@ public class Security {
 
 	private static final Random RANDOM = new SecureRandom();
 
+	// required so we can hash passwords at startup.
+	private static final PasswordEncoder FALLBACK_ENCODER = new LegacyOpenmrsPasswordEncoder();
+
 	private Security() {
+	}
+
+	static PasswordEncoder getPasswordEncoder() {
+		if (!ServiceContext.isInstantiated() || ServiceContext.getInstance().getApplicationContext() == null) {
+			return FALLBACK_ENCODER;
+		}
+		return Context.getRegisteredComponent("openmrsPasswordEncoder", PasswordEncoder.class);
+	}
+
+	/**
+	 * Encodes a password using the configured {@code openmrsPasswordEncoder} and returns the full
+	 * encoded value to persist.
+	 *
+	 * @param strToEncode {@code password + salt} to encode
+	 * @return the encoded value to store
+	 * @since 2.8.10, 2.9.0, 3.0.0
+	 */
+	public static String encodePassword(String strToEncode) {
+		return getPasswordEncoder().encode(strToEncode);
+	}
+
+	/**
+	 * Checks a raw password against a stored encoded password using the configured
+	 * {@code PasswordEncoder}.
+	 *
+	 * @param storedEncodedPassword the stored encoded password
+	 * @param rawPassword the raw password, with the salt already concatenated
+	 * @return true if the password matches
+	 * @since 2.8.10, 2.9.0, 3.0.0
+	 */
+	public static boolean checkPassword(String storedEncodedPassword, String rawPassword) {
+		if (rawPassword == null || storedEncodedPassword == null) {
+			return false;
+		}
+
+		return getPasswordEncoder().matches(rawPassword, storedEncodedPassword);
 	}
 
 	/**
@@ -69,8 +111,8 @@ public class Security {
 	}
 
 	/**
-	 * /** This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
-	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
+	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
+	 * OpenMRS's preferred algorithm is hard-coded to be SHA-512.
 	 * <p>
 	 * <strong>Should</strong> encode strings to 128 characters
 	 *

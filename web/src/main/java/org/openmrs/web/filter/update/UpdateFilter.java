@@ -337,8 +337,8 @@ public class UpdateFilter extends StartupFilter {
 							DatabaseUpdater.setAuthenticatedUserId(userId);
 							String storedPassword = results.getString(2);
 							String salt = results.getString(3);
-							String passwordToHash = password + salt;
-							return Security.hashMatches(storedPassword, passwordToHash) && isSuperUser(connection, userId);
+							return Security.checkPassword(storedPassword, password + salt)
+							        && isSuperUser(connection, userId);
 						}
 					} finally {
 						if (results != null) {
@@ -382,8 +382,7 @@ public class UpdateFilter extends StartupFilter {
 								DatabaseUpdater.setAuthenticatedUserId(userId);
 								String storedPassword = results.getString(2);
 								String salt = results.getString(3);
-								String passwordToHash = password + salt;
-								return Security.hashMatches(storedPassword, passwordToHash)
+								return Security.checkPassword(storedPassword, password + salt)
 								        && isSuperUser(connection, userId);
 							}
 						} finally {

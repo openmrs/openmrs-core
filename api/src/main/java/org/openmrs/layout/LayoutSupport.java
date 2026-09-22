@@ -10,6 +10,7 @@
 package org.openmrs.layout;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,12 @@ import org.slf4j.LoggerFactory;
 public abstract class LayoutSupport<T extends LayoutTemplate> {
 
 	private static final Logger log = LoggerFactory.getLogger(LayoutSupport.class);
+
+	/**
+	 * Bumped whenever the tokens change, so that templates can detect that their memoized tokenization
+	 * is stale with a single field read rather than by re-resolving this support.
+	 */
+	private final AtomicInteger configurationVersion = new AtomicInteger(0);
 
 	protected String defaultLayoutFormat;
 
@@ -136,6 +143,7 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 	 */
 	public void setSpecialTokens(List<String> specialTokens) {
 		this.specialTokens = specialTokens;
+		configurationVersion.incrementAndGet();
 	}
 
 	/**
@@ -150,4 +158,12 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 		this.defaultLayoutFormat = defaultLayoutFormat;
 	}
 
+	/**
+	 * @return the current special token configuration version, for use by
+	 *         {@link LayoutTemplate#getLines()} in deciding whether its cache is still valid
+	 * @since 2.8.10
+	 */
+	int getConfigurationVersion() {
+		return configurationVersion.get();
+	}
 }

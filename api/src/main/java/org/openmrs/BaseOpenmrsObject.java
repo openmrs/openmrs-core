@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -19,6 +18,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.Hibernate;
 import org.hibernate.envers.Audited;
+import org.openmrs.util.UuidUtil;
 
 /**
  * This is the base implementation of the {@link OpenmrsObject} interface.<br>
@@ -29,7 +29,7 @@ import org.hibernate.envers.Audited;
 public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 
 	@Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false)
-	private String uuid = UUID.randomUUID().toString();
+	private String uuid = UuidUtil.newUuidString();
 
 	/**
 	 * @see org.openmrs.OpenmrsObject#getUuid()
