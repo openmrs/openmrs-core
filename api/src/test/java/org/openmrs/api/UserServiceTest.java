@@ -1617,9 +1617,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
 		Long tokenTime = System.currentTimeMillis() + validTime;
 		LoginCredential credentials = dao.getLoginCredential(createdUser);
-		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
-		dao.updateLoginCredential(credentials);
-		assertEquals(createdUser, userService.getUserByActivationKey(key)); 	
+		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);
+		dao.setUserActivationKey(credentials);
+		assertEquals(createdUser, userService.getUserByActivationKey(key));
 	}
 	
 	@Test
@@ -1629,9 +1629,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
 		Long tokenTime = System.currentTimeMillis() - validTime;
 		LoginCredential credentials = dao.getLoginCredential(createdUser);
-		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
-		dao.updateLoginCredential(credentials); 
-		assertNull(userService.getUserByActivationKey(key)); 
+		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);
+		dao.setUserActivationKey(credentials);
+		assertNull(userService.getUserByActivationKey(key));
 	}
 	
 	@Test
@@ -1644,8 +1644,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		dao.updateLoginCredential(credentials);
-		
+		dao.setUserActivationKey(credentials);
+
 		final String PASSWORD = "Admin123";
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
@@ -1674,7 +1674,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		dao.updateLoginCredential(credentials);
+		dao.setUserActivationKey(credentials);
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 		
 		
