@@ -53,7 +53,7 @@
 		<hibernateVersion>7.4.9.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
-		<hibernateValidatorVersion>9.1.3.Final</hibernateValidatorVersion>
+		<hibernateValidatorVersion>9.1.4.Final</hibernateValidatorVersion>
 		<luceneVersion>10.5.1</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.6.Final</infinispanVersion>
