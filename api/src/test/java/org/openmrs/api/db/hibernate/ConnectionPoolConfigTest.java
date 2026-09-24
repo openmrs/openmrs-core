@@ -9,10 +9,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Map;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.JdbcSettings;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.junit.jupiter.api.Test;
@@ -61,4 +63,19 @@ public class ConnectionPoolConfigTest extends BaseContextSensitiveTest {
 		assertEquals(30000, pool.getCheckoutTimeout());
 		assertEquals(50, pool.getMaxPoolSize());
 	}
+
+	@Test
+	public void shouldHaveProviderDisablesAutocommitConfigured() {
+		// as above, a machine-local openmrs-runtime.properties may legitimately turn this off
+		assumeTrue(
+		    Stream.of("hibernate.connection.provider_disables_autocommit", "connection.provider_disables_autocommit")
+		            .noneMatch(runtimeProperties::containsKey),
+		    "skipped because local runtime properties override provider_disables_autocommit");
+
+		Map<String, Object> settings = sessionFactory.getProperties();
+
+		assertEquals("true", String.valueOf(settings.get(JdbcSettings.CONNECTION_PROVIDER_DISABLES_AUTOCOMMIT)),
+		    "hibernate.connection.provider_disables_autocommit must be true so Hibernate skips the redundant setAutoCommit()");
+	}
+
 }
