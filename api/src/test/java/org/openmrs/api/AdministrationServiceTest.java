@@ -25,6 +25,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.Privilege;
 import org.openmrs.User;
+import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.cache.RolePrivileges;
 import org.openmrs.api.context.Context;
@@ -41,9 +42,13 @@ import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.BindException;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -77,6 +82,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	private HttpClient implementationHttpClient;
 
 	private CacheManager cacheManager;
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	@BeforeEach
 	public void runBeforeEachTest() {
@@ -551,6 +559,167 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// try to get a global property with invalid case
 		String noprop = adminService.getGlobalProperty("ANOTher-global-property");
 		assertEquals(orig, noprop);
+	}
+
+	@Test
+	public void getGlobalProperty_shouldReturnCachedValues() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		// test transactions never commit, so seeding the cache stands in for a read by an earlier transaction
+		cacheGlobalProperty(new GlobalProperty("another-global-property", "cached"));
+
+		assertEquals("cached", adminService.getGlobalProperty("another-global-property"));
+		assertEquals("cached", adminService.getGlobalProperty("ANOTHER-global-property"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldCacheUnsetProperties() {
+		assertNull(adminService.getGlobalProperty("unset.property"));
+
+		adminService.executeSQL("insert into global_property (property, property_value, uuid) "
+		        + "values ('unset.property', 'value', '3b5c8f3e-4f5a-4a55-9a4e-0b6f0b7c1d2e')",
+		    false);
+
+		assertNull(adminService.getGlobalProperty("unset.property"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldNotCacheValuesWrittenByTheCurrentTransaction() {
+		adminService.setGlobalProperty("new.property", "value");
+
+		assertEquals("value", adminService.getGlobalProperty("new.property"));
+		assertNull(getGlobalPropertyCache().get("new.property"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldCheckTheViewPrivilegeOfCachedValues() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = new GlobalProperty("another-global-property", "cached");
+		property.setViewPrivilege(new Privilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
+		cacheGlobalProperty(property);
+
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// the proxy privilege passes the @Authorized gate but not the view check
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> adminService.getGlobalProperty("another-global-property"));
+			assertFalse(exception instanceof APIAuthenticationException);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+	}
+
+	@Test
+	public void saveGlobalProperty_shouldEvictTheCachedValue() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		cacheGlobalProperty(new GlobalProperty("another-global-property", "cached"));
+
+		GlobalProperty property = adminService.getGlobalPropertyObject("another-global-property");
+		property.setPropertyValue("saved");
+		adminService.saveGlobalProperty(property);
+
+		assertEquals("saved", adminService.getGlobalProperty("another-global-property"));
+	}
+
+	@Test
+	public void saveGlobalProperty_shouldEvictACachedUnsetProperty() {
+		assertNull(adminService.getGlobalProperty("unset.property"));
+
+		adminService.saveGlobalProperty(new GlobalProperty("unset.property", "value"));
+
+		assertEquals("value", adminService.getGlobalProperty("unset.property"));
+	}
+
+	@Test
+	public void setGlobalProperty_shouldEvictTheCachedValue() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		cacheGlobalProperty(new GlobalProperty("another-global-property", "cached"));
+
+		adminService.setGlobalProperty("ANOTHER-global-property", "set");
+
+		assertEquals("set", adminService.getGlobalProperty("another-global-property"));
+	}
+
+	@Test
+	public void updateGlobalProperty_shouldEvictTheCachedValue() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		cacheGlobalProperty(new GlobalProperty("another-global-property", "cached"));
+
+		adminService.updateGlobalProperty("another-global-property", "updated");
+
+		assertEquals("updated", adminService.getGlobalProperty("another-global-property"));
+	}
+
+	@Test
+	public void purgeGlobalProperty_shouldEvictTheCachedValue() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		cacheGlobalProperty(new GlobalProperty("another-global-property", "cached"));
+
+		adminService.purgeGlobalProperty(adminService.getGlobalPropertyObject("another-global-property"));
+
+		assertNull(adminService.getGlobalProperty("another-global-property"));
+	}
+
+	@Test
+	public void globalPropertyCache_shouldBeConfiguredWithALifespan() {
+		org.infinispan.Cache<?, ?> nativeCache = (org.infinispan.Cache<?, ?>) getGlobalPropertyCache().getNativeCache();
+
+		assertEquals(900_000L, nativeCache.getCacheConfiguration().expiration().lifespan());
+	}
+
+	@Test
+	public void getGlobalPropertyIfCached_shouldReturnNullIfThePropertyIsNotCached() {
+		assertNull(adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void getGlobalPropertyIfCached_shouldReturnACachedProperty() {
+		cacheCommittedGlobalProperty("concept.defaultConceptMapType");
+
+		assertEquals("same-as", adminService.getGlobalPropertyIfCached("CONCEPT.defaultConceptMapType").getValue());
+	}
+
+	@Test
+	public void getGlobalPropertyIfCached_shouldReturnACachedUnsetProperty() {
+		cacheCommittedGlobalProperty("unset.property");
+
+		assertFalse(adminService.getGlobalPropertyIfCached("unset.property").isPresent());
+	}
+
+	@Test
+	public void getGlobalPropertyIfCached_shouldFailIfTheUserMayNotViewTheProperty() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		cacheCommittedGlobalProperty("concept.defaultConceptMapType");
+		GlobalProperty property = new GlobalProperty("another-global-property", "cached");
+		property.setViewPrivilege(new Privilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
+		cacheGlobalProperty(property);
+
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// the proxy privilege passes the @Authorized gate but not the view check
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> adminService.getGlobalPropertyIfCached("another-global-property"));
+			assertFalse(exception instanceof APIAuthenticationException);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+	}
+
+	@Test
+	public void getGlobalPropertyIfCached_shouldRequireTheGetGlobalPropertiesPrivilege() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		cacheCommittedGlobalProperty("concept.defaultConceptMapType");
+
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		assertThrows(APIAuthenticationException.class,
+		    () -> adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
 	}
 
 	@Test
@@ -1215,6 +1384,24 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		adminService.saveGlobalProperty(new GlobalProperty("test", "TEST"));
 
 		assertThat(getCacheForCurrentUser(), nullValue());
+	}
+
+	/**
+	 * Reads the property in a transaction of its own, since the cache only holds committed reads and
+	 * the test's transaction is never committed.
+	 */
+	private void cacheCommittedGlobalProperty(String propertyName) {
+		TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+		transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		transaction.executeWithoutResult(status -> adminService.getGlobalProperty(propertyName));
+	}
+
+	private Cache getGlobalPropertyCache() {
+		return cacheManager.getCache(GlobalPropertyCache.CACHE_NAME);
+	}
+
+	private void cacheGlobalProperty(GlobalProperty property) {
+		getGlobalPropertyCache().put(property.getProperty().toLowerCase(), GlobalPropertyCache.Entry.of(property));
 	}
 
 	private Cache.ValueWrapper getCacheForCurrentUser() {

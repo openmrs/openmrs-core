@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Behavior-driven unit tests for {@link ConfigUtil} class
@@ -82,6 +87,43 @@ public class ConfigUtilTest extends BaseContextSensitiveTest {
 		GlobalProperty p = administrationService.getGlobalPropertyObject("mail.user");
 		administrationService.purgeGlobalProperty(p);
 		assertThat(ConfigUtil.getGlobalProperty("mail.user"), nullValue());
+	}
+
+	@Test
+	public void shouldGetGlobalPropertyAddedAfterItWasFoundToBeUnset() {
+		assertThat(ConfigUtil.getGlobalProperty("a_valid_gp_key"), nullValue());
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		assertThat(ConfigUtil.getGlobalProperty("a_valid_gp_key"), is("correct-value"));
+	}
+
+	@Test
+	public void shouldGetACachedGlobalPropertyWithoutReadingItThroughTheService() {
+		AdministrationService service = mock(AdministrationService.class);
+		when(service.getGlobalPropertyIfCached("some.property"))
+		        .thenReturn(GlobalPropertyCache.Entry.of(new GlobalProperty("some.property", "cached")));
+		contextMockHelper.setAdministrationService(service);
+
+		assertThat(ConfigUtil.getGlobalProperty("some.property"), is("cached"));
+		verify(service, never()).getGlobalProperty("some.property");
+	}
+
+	@Test
+	public void shouldGetACachedUnsetGlobalPropertyWithoutReadingItThroughTheService() {
+		AdministrationService service = mock(AdministrationService.class);
+		when(service.getGlobalPropertyIfCached("some.property")).thenReturn(GlobalPropertyCache.Entry.ABSENT);
+		contextMockHelper.setAdministrationService(service);
+
+		assertThat(ConfigUtil.getGlobalProperty("some.property"), nullValue());
+		verify(service, never()).getGlobalProperty("some.property");
+	}
+
+	@Test
+	public void shouldReadAGlobalPropertyThroughTheServiceIfItIsNotCached() {
+		AdministrationService service = mock(AdministrationService.class);
+		when(service.getGlobalProperty("some.property")).thenReturn("loaded");
+		contextMockHelper.setAdministrationService(service);
+
+		assertThat(ConfigUtil.getGlobalProperty("some.property"), is("loaded"));
 	}
 
 	@Test

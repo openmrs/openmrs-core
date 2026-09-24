@@ -9,9 +9,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import org.hibernate.FlushMode;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Role;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -20,10 +23,15 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
+
+	private static final String ADMIN_GLOBAL_PROPERTIES_XML = "org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml";
 
 	@Autowired
 	private HibernateAdministrationDAO dao;
@@ -149,5 +157,44 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(role, "type");
 		dao.validate(role, errors);
 		assertFalse(errors.hasFieldErrors("role"));
+	}
+
+	@Test
+	public void getGlobalPropertyObject_shouldFindAPropertyByItsExactName() {
+		executeDataSet(ADMIN_GLOBAL_PROPERTIES_XML);
+
+		assertEquals("anothervalue", dao.getGlobalPropertyObject("another-global-property").getPropertyValue());
+	}
+
+	@Test
+	public void getGlobalPropertyObject_shouldFindAPropertyRegardlessOfCase() {
+		executeDataSet(ADMIN_GLOBAL_PROPERTIES_XML);
+
+		assertEquals("anothervalue", dao.getGlobalPropertyObject("ANOTHER-Global-Property").getPropertyValue());
+	}
+
+	@Test
+	public void getGlobalPropertyObject_shouldFindAnUnflushedProperty() {
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getHibernateFlushMode();
+		// with automatic flushing, the case-insensitive query would flush and find the property itself
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			session.persist(new GlobalProperty("unflushed.property", "value"));
+
+			assertEquals("value", dao.getGlobalPropertyObject("unflushed.property").getPropertyValue());
+		} finally {
+			session.setHibernateFlushMode(flushMode);
+		}
+	}
+
+	@Test
+	public void getGlobalPropertyObject_shouldReturnNullIfNoPropertyMatches() {
+		assertNull(dao.getGlobalPropertyObject("no.such.property"));
+	}
+
+	@Test
+	public void getGlobalPropertyObject_shouldFailGivenANullPropertyName() {
+		assertThrows(IllegalArgumentException.class, () -> dao.getGlobalPropertyObject(null));
 	}
 }

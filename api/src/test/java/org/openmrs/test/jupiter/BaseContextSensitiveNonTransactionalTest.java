@@ -77,6 +77,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
+import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
@@ -829,6 +830,9 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 			//Do the actual update/insert:
 			//insert new rows, update existing rows, and leave others alone
 			DatabaseOperation.REFRESH.execute(dbUnitConn, dataset);
+
+			// the dataset may have written global properties behind the API
+			applicationContext.getBean(GlobalPropertyCache.class).clear();
 
 			if (isPostgreSQL()) {
 				Context.getAdministrationService().updatePostgresSequence();
