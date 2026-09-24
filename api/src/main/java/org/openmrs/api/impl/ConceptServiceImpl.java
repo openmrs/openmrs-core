@@ -2111,7 +2111,36 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			return null;
 		}
 
-		return findStrictestReferenceRange(validRanges);
+		return selectReferenceRange(validRanges);
+	}
+
+	/**
+	 * Selects the applicable reference range from the list of matching ranges.
+	 * <p>
+	 * Selection rules (per TRUNK-6510):
+	 * <ol>
+	 * <li>If all matching ranges have a null priority, the legacy "strictest bounds" merging is used
+	 * (backward compatible).</li>
+	 * <li>If any matching range has a priority set, only the ranges with the highest priority value are
+	 * considered (null-priority ranges are ignored in this case). If several ranges share the same
+	 * highest priority, the strictest bounds are applied among them.</li>
+	 * </ol>
+	 */
+	private static ConceptReferenceRange selectReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
+		List<ConceptReferenceRange> prioritizedRanges = conceptReferenceRanges.stream().filter(r -> r.getPriority() != null)
+		        .toList();
+
+		if (prioritizedRanges.isEmpty()) {
+			// All priorities are null — use legacy strictest-bounds logic
+			return findStrictestReferenceRange(conceptReferenceRanges);
+		}
+
+		int maxPriority = prioritizedRanges.stream().mapToInt(ConceptReferenceRange::getPriority).max().getAsInt();
+
+		List<ConceptReferenceRange> highestPriorityRanges = prioritizedRanges.stream()
+		        .filter(r -> r.getPriority().equals(maxPriority)).toList();
+
+		return findStrictestReferenceRange(highestPriorityRanges);
 	}
 
 	/**
