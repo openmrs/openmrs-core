@@ -53,7 +53,7 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return saved object<br/>
 	 * <strong>Should</strong> remove location tag from location<br/>
 	 * <strong>Should</strong> add location tag to location<br/>
-	 * <strong>Should</strong> remove child location from location<br/>
+	 * <strong>Should</strong> not delete child location when removed from parent location<br/>
 	 * <strong>Should</strong> cascade save to child location from location<br/>
 	 * <strong>Should</strong> update location successfully<br/>
 	 * <strong>Should</strong> create location successfully
