@@ -545,6 +545,20 @@
 							<goal>enforce</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>enforce-no-snapshots-on-deploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<banDynamicVersions>
+									<allowSnapshots>false</allowSnapshots>
+								</banDynamicVersions>
+							</rules>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
