@@ -1273,6 +1273,105 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 * @see LocationService#getLocations(LocationSearchCriteria)
 	 */
 	@Test
+	public void getLocations_withDescendantOf_shouldReturnDescendantsOfARetiredAncestorWhenIncludeRetiredIsTrue() {
+		LocationService ls = Context.getLocationService();
+		List<Location> tree = saveTreeUnderRetiredAncestor(ls);
+		Location retiredRoot = tree.get(0);
+		Location child = tree.get(1);
+		Location grandchild = tree.get(2);
+
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setDescendantOfLocation(retiredRoot);
+		criteria.setIncludeRetired(true);
+		List<Location> result = ls.getLocations(criteria);
+
+		assertEquals(2, result.size());
+		assertTrue(result.contains(child));
+		assertTrue(result.contains(grandchild));
+		// the ancestor is the search root and is never part of its own descendants
+		assertFalse(result.contains(retiredRoot));
+		// the convenience method builds the same criteria, so it has to agree
+		assertEquals(result, ls.getDescendantLocations(retiredRoot, true));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
+	public void getLocations_withDescendantOf_shouldExcludeAllDescendantsWhenAncestorIsRetiredAndIncludeRetiredIsFalse() {
+		LocationService ls = Context.getLocationService();
+		List<Location> tree = saveTreeUnderRetiredAncestor(ls);
+		Location retiredRoot = tree.get(0);
+		Location child = tree.get(1);
+		Location grandchild = tree.get(2);
+
+		// the descendants are not retired themselves, but their retired ancestor prunes the whole subtree
+		assertFalse(child.getRetired());
+		assertFalse(grandchild.getRetired());
+
+		LocationSearchCriteria criteria = new LocationSearchCriteria();
+		criteria.setDescendantOfLocation(retiredRoot);
+		criteria.setIncludeRetired(false);
+
+		assertTrue(ls.getLocations(criteria).isEmpty());
+		// the convenience method builds the same criteria, so it has to agree
+		assertTrue(ls.getDescendantLocations(retiredRoot, false).isEmpty());
+	}
+
+	/**
+	 * The deprecated {@link Location#getDescendantLocations(boolean)} names
+	 * {@link LocationService#getDescendantLocations(Location, boolean)} as its replacement, but it
+	 * starts from the child collection and so never examines the ancestor's own retired flag. The two
+	 * therefore disagree for a retired ancestor. That divergence is documented rather than changed -
+	 * changing it would silently alter results for everyone still on the deprecated method - so it is
+	 * pinned here instead.
+	 *
+	 * @see Location#getDescendantLocations(boolean)
+	 */
+	@Test
+	public void getDescendantLocations_shouldDisagreeWithTheDeprecatedEntityMethodForARetiredAncestor() {
+		LocationService ls = Context.getLocationService();
+		Location retiredRoot = saveTreeUnderRetiredAncestor(ls).get(0);
+
+		// the entity method walks the child collection, which is not loaded on the just-saved root
+		Context.flushSession();
+		Context.clearSession();
+		Location reloaded = ls.getLocation(retiredRoot.getLocationId());
+
+		// the entity method returns the whole subtree, having never looked at the root's retired flag
+		assertEquals(2, reloaded.getDescendantLocations(false).size());
+		// the service method prunes it, because the root is retired
+		assertTrue(ls.getDescendantLocations(reloaded, false).isEmpty());
+	}
+
+	/**
+	 * Builds retiredRoot (retired) → child (active) → grandchild (active) and returns the three
+	 * locations in that order.
+	 */
+	private List<Location> saveTreeUnderRetiredAncestor(LocationService ls) {
+		Location retiredRoot = new Location();
+		retiredRoot.setName("Retired Ancestor");
+		ls.saveLocation(retiredRoot);
+
+		Location child = new Location();
+		child.setName("Child of Retired Ancestor");
+		child.setParentLocation(retiredRoot);
+		ls.saveLocation(child);
+
+		Location grandchild = new Location();
+		grandchild.setName("Grandchild of Retired Ancestor");
+		grandchild.setParentLocation(child);
+		ls.saveLocation(grandchild);
+
+		ls.retireLocation(retiredRoot, "test");
+
+		return Arrays.asList(retiredRoot, child, grandchild);
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
 	public void getLocations_withDescendantOf_shouldReturnEmptyListForLeafLocation() {
 		LocationService ls = Context.getLocationService();
 
