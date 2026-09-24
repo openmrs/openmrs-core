@@ -297,20 +297,27 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void evictEntity_shouldClearTheEntityFromCaches() {
 		TestTransaction.end();
 
-		// Load the person name so that it is stored in the cache
-		PersonName name = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		// Statistics are disabled by default; enable them so hit counts below are meaningful
+		boolean statisticsEnabled = sf.getStatistics().isStatisticsEnabled();
+		sf.getStatistics().setStatisticsEnabled(true);
+		try {
+			// Load the person name so that it is stored in the cache
+			PersonName name = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 
-		// Clear session so that the first-level cache is empty
-		Context.flushSession();
-		Context.clearSession();
+			// Clear session so that the first-level cache is empty
+			Context.flushSession();
+			Context.clearSession();
 
-		// evictEntity
-		Context.evictEntity(name);
+			// evictEntity
+			Context.evictEntity(name);
 
-		// Assert that the entity name has been removed from cache
-		long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
-		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
-		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+			// Assert that the entity name has been removed from cache
+			long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
+			Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+			assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+		} finally {
+			sf.getStatistics().setStatisticsEnabled(statisticsEnabled);
+		}
 	}
 
 	/**
@@ -320,23 +327,30 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void evictAllEntities_shouldClearAllEntityFromCaches() {
 		TestTransaction.end();
 
-		// Load person names so that they are stored in the cache
-		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
-		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+		// Statistics are disabled by default; enable them so hit counts below are meaningful
+		boolean statisticsEnabled = sf.getStatistics().isStatisticsEnabled();
+		sf.getStatistics().setStatisticsEnabled(true);
+		try {
+			// Load person names so that they are stored in the cache
+			Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+			Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
 
-		// Clear session so that the first-level cache is empty
-		Context.flushSession();
-		Context.clearSession();
+			// Clear session so that the first-level cache is empty
+			Context.flushSession();
+			Context.clearSession();
 
-		// evictAllEntities
-		Context.evictAllEntities(PERSON_NAME_CLASS);
+			// evictAllEntities
+			Context.evictAllEntities(PERSON_NAME_CLASS);
 
-		// Assert that the class entities have been removed from cache
-		long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
-		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
-		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
-		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
-		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+			// Assert that the class entities have been removed from cache
+			long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
+			Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+			assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+			Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+			assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+		} finally {
+			sf.getStatistics().setStatisticsEnabled(statisticsEnabled);
+		}
 	}
 
 	/**
@@ -346,26 +360,33 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void clearEntireCache_shouldClearEntireCache() {
 		TestTransaction.end();
 
-		// Load person names and patient so that they are stored in the cache
-		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
-		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
-		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
+		// Statistics are disabled by default; enable them so hit counts below are meaningful
+		boolean statisticsEnabled = sf.getStatistics().isStatisticsEnabled();
+		sf.getStatistics().setStatisticsEnabled(true);
+		try {
+			// Load person names and patient so that they are stored in the cache
+			Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+			Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+			Context.getPatientService().getPatient(PERSON_NAME_ID_2);
 
-		// Clear session so that the first-level cache is empty
-		Context.flushSession();
-		Context.clearSession();
+			// Clear session so that the first-level cache is empty
+			Context.flushSession();
+			Context.clearSession();
 
-		// clearEntireCache
-		Context.clearEntireCache();
+			// clearEntireCache
+			Context.clearEntireCache();
 
-		// Assert that all entities have been removed from cache
-		long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
-		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
-		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
-		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
-		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
-		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
-		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+			// Assert that all entities have been removed from cache
+			long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
+			Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+			assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+			Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+			assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+			Context.getPatientService().getPatient(PERSON_NAME_ID_2);
+			assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+		} finally {
+			sf.getStatistics().setStatisticsEnabled(statisticsEnabled);
+		}
 	}
 
 	/**
