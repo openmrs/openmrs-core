@@ -12,11 +12,13 @@ package org.openmrs.obs.handler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.file.NoSuchFileException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
@@ -62,10 +64,14 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 
 		// Raw view (i.e. the file as is)
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
-			try (InputStream in = storageService.getData(key)) {
-				complexData = new ComplexData(parseFilename(obs, "file"), IOUtils.toByteArray(in));
+			try (DataWithMetadata dwm = storageService.getDataWithMetadata(key)) {
+				complexData = new ComplexData(parseFilename(obs, "file"), IOUtils.toByteArray(dwm.data()));
+				injectMissingMetadata(key, complexData, dwm.metadata());
+			} catch (NoSuchFileException e) {
+				log.error("Trying to read file: {}", key, e);
 			} catch (IOException e) {
 				log.error("Trying to read file: {}", key, e);
+				throw new APIException("Obs.error.while.trying.get.binary.complex", null, e);
 			}
 		} else {
 			// No other view supported
@@ -75,7 +81,6 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 
 		Assert.notNull(complexData, "Complex data must not be null");
 
-		injectMissingMetadata(key, complexData);
 		obs.setComplexData(complexData);
 
 		return obs;
