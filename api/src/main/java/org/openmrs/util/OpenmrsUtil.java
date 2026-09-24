@@ -553,6 +553,11 @@ public class OpenmrsUtil {
 		} else if (d2 == null) {
 			return false;
 		}
+		// This short circuit protects against ObjectRetrievalFailureException
+		// when unvoidObs pulls back previous versions but keeps previous version intact.
+		if (d1 == d2) {
+			return true;
+		}
 		return (d1 instanceof Date && d2 instanceof Date) ? compare((Date) d1, (Date) d2) == 0 : d1.equals(d2);
 	}
 

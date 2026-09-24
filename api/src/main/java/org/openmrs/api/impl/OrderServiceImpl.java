@@ -503,6 +503,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public void purgeOrder(Order order, boolean cascade) throws APIException {
+		Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class).handleArchivedDataOnPurge(order, cascade);
+
 		if (cascade) {
 			dao.deleteObsThatReference(order);
 		}
