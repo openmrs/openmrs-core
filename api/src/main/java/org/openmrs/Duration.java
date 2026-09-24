@@ -282,31 +282,6 @@ public class Duration {
 	}
 
 	/**
-	 * Returns concept reference term code of the mapping to the SNOMED CT concept source
-	 * <p>
-	 * <strong>Should</strong> return null if the concept has no mapping to the SNOMED CT source<br/>
-	 * <strong>Should</strong> return the code for the term of the mapping to the SNOMED CT source
-	 *
-	 * @param durationUnits
-	 * @return a string which is reference term code
-	 * @deprecated as of 3.0.0, because the returned code depends on the iteration order of the
-	 *             concept's mappings and is not necessarily a code this class can interpret; use
-	 *             {@link #getDuration(Integer, Concept)} instead
-	 */
-	@Deprecated(since = "3.0.0")
-	public static String getCode(Concept durationUnits) {
-		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {
-			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
-			if (ConceptMapType.SAME_AS_MAP_TYPE_UUID.equals(conceptMapping.getConceptMapType().getUuid())
-			        && Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE
-			                .equals(conceptReferenceTerm.getConceptSource().getHl7Code())) {
-				return conceptReferenceTerm.getCode();
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Resolves the given duration units concept to a {@link Duration} of the given length from the
 	 * concept's SAME-AS mappings to the SNOMED CT and UCUM concept sources.
 	 * <p>
