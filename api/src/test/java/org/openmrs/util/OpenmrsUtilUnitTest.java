@@ -476,3 +476,9 @@ public class OpenmrsUtilUnitTest {
 	}
 
 }
+@Test
+public void shouldReturnEmptyListWhenCollectionIsNull() {
+    List<Object> result = OpenmrsUtil.getCheckedList(null, Object.class);
+    Assert.assertNotNull(result);
+    Assert.assertTrue(result.isEmpty());
+}
