@@ -9,8 +9,13 @@
  */
 package org.openmrs.hl7;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.openmrs.GlobalProperty;
+import org.openmrs.customdatatype.datatype.BooleanDatatype;
 
 /**
  * Constants used by the hl7 package
@@ -83,6 +88,17 @@ public class HL7Constants {
 	public static final String HL7_ARCHIVE_DIRECTORY_NAME = "hl7_archives";
 
 	/**
+	 * Global property for the name or absolute path of the folder where hl7_in_archives are written
+	 */
+	public static final String GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY = "hl7_archive.dir";
+
+	/**
+	 * Global property that, when true, silently drops hl7 messages for patients that are not found and
+	 * are non-local
+	 */
+	public static final String GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS = "hl7_processor.ignore_missing_patient_non_local";
+
+	/**
 	 * @since 1.10
 	 */
 	public static final String HL7_FORM_ID = "AMRS.ELD.FORMID";
@@ -149,4 +165,23 @@ public class HL7Constants {
 	 * provider uuid
 	 */
 	public static final String PROVIDER_ASSIGNING_AUTH_PROV_UUID = "PROVIDER.UUID";
+
+	/**
+	 * The global properties owned by hl7 support, with their default values. These are registered at
+	 * startup alongside the core global properties.
+	 *
+	 * @return the list of hl7 global properties
+	 */
+	public static List<GlobalProperty> HL7_GLOBAL_PROPERTIES() {
+		List<GlobalProperty> props = new ArrayList<>();
+
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY, HL7_ARCHIVE_DIRECTORY_NAME,
+		        "The default name or absolute path for the folder where to write the hl7_in_archives."));
+
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
+		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored",
+		        BooleanDatatype.class, null));
+
+		return props;
+	}
 }
