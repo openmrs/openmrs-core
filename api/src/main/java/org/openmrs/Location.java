@@ -9,9 +9,7 @@
  */
 package org.openmrs;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.Cacheable;
@@ -344,32 +342,6 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 */
 	public void setType(Concept type) {
 		this.type = type;
-	}
-
-	/**
-	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
-	 */
-	@Override
-	@Deprecated
-	public List<Location> findPossibleValues(String searchText) {
-		try {
-			return Context.getLocationService().getLocations(searchText);
-		} catch (Exception e) {
-			return Collections.emptyList();
-		}
-	}
-
-	/**
-	 * @see org.openmrs.Attributable#getPossibleValues()
-	 */
-	@Override
-	@Deprecated
-	public List<Location> getPossibleValues() {
-		try {
-			return Context.getLocationService().getAllLocations();
-		} catch (Exception e) {
-			return Collections.emptyList();
-		}
 	}
 
 	/**

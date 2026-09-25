@@ -1487,39 +1487,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 
 	/**
-	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
-	 */
-	@Override
-	@Deprecated
-	public List<Concept> findPossibleValues(String searchText) {
-		List<Concept> concepts = new ArrayList<>();
-		try {
-
-			for (ConceptSearchResult searchResult : Context.getConceptService().getConcepts(searchText,
-			    Collections.singletonList(Context.getLocale()), false, null, null, null, null, null, null, null)) {
-				concepts.add(searchResult.getConcept());
-			}
-		} catch (Exception e) {
-			// pass
-		}
-		return concepts;
-	}
-
-	/**
-	 * @see org.openmrs.Attributable#getPossibleValues()
-	 */
-	@Override
-	@Deprecated
-	public List<Concept> getPossibleValues() {
-		try {
-			return Context.getConceptService().getConceptsByName("");
-		} catch (Exception e) {
-			// pass
-		}
-		return Collections.emptyList();
-	}
-
-	/**
 	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
 	 */
 	@Override
