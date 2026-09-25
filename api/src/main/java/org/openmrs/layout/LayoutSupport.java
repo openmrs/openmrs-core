@@ -11,6 +11,7 @@ package org.openmrs.layout;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,47 +79,23 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 	}
 
 	public T getLayoutTemplateByCodeName(String templateName) {
-		if (this.layoutTemplates != null && templateName != null) {
-			T ret = null;
-
-			for (T at : this.layoutTemplates) {
-				if (at != null && templateName.equalsIgnoreCase(at.getCodeName())) {
-					ret = at;
-					log.debug("Found Layout Template named " + at.getDisplayName());
-				}
-			}
-
-			return ret;
-		} else {
-			log.debug("No Layout Templates defined");
-			return null;
-		}
+		return findLayoutTemplate(templateName, LayoutTemplate::getCodeName);
 	}
 
 	public T getLayoutTemplateByCountry(String templateName) {
-		if (this.layoutTemplates != null && templateName != null) {
-			T ret = null;
-
-			for (T at : this.layoutTemplates) {
-				if (at != null && templateName.equalsIgnoreCase(at.getCountry())) {
-					ret = at;
-					log.debug("Found Layout Template named " + at.getDisplayName());
-				}
-			}
-
-			return ret;
-		} else {
-			log.debug("No Layout Templates defined");
-			return null;
-		}
+		return findLayoutTemplate(templateName, LayoutTemplate::getCountry);
 	}
 
 	public T getLayoutTemplateByDisplayName(String templateName) {
+		return findLayoutTemplate(templateName, LayoutTemplate::getDisplayName);
+	}
+
+	private T findLayoutTemplate(String templateName, Function<T, String> valueExtractor) {
 		if (this.layoutTemplates != null && templateName != null) {
 			T ret = null;
 
 			for (T at : this.layoutTemplates) {
-				if (at != null && templateName.equalsIgnoreCase(at.getDisplayName())) {
+				if (at != null && templateName.equalsIgnoreCase(valueExtractor.apply(at))) {
 					ret = at;
 					log.debug("Found Layout Template named " + at.getDisplayName());
 				}
