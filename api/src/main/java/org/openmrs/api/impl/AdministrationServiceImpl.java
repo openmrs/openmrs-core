@@ -72,6 +72,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
@@ -887,7 +888,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#validate(java.lang.Object, Errors)
 	 */
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void validate(Object object, Errors errors) throws APIException {
 		if (object == null) {
 			throw new APIException("error.null", (Object[]) null);
