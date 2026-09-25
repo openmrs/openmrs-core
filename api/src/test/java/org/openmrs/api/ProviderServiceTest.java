@@ -568,6 +568,24 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ProviderService#getProviderRoleByName(String)
+	 */
+	@Test
+	public void getProviderRoleByName_shouldReturnTheProviderRoleIfExists() {
+		ProviderRole providerRole = service.getProviderRoleByName("Cell supervisor");
+		assertNotNull(providerRole);
+		assertEquals(Integer.valueOf(1003), providerRole.getProviderRoleId());
+	}
+
+	/**
+	 * @see ProviderService#getProviderRoleByName(String)
+	 */
+	@Test
+	public void getProviderRoleByName_shouldReturnNullIfNotExists() {
+		assertNull(service.getProviderRoleByName("Unknown role"));
+	}
+
+	/**
 	 * @see ProviderService#getProvidersByRoles(List)
 	 */
 	@Test
