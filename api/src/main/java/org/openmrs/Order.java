@@ -145,6 +145,13 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Column(name = "order_reason_non_coded", length = 255)
 	private String orderReasonNonCoded;
 
+	@ManyToOne
+	@JoinColumn(name = "discontinue_reason")
+	private Concept discontinueReason;
+
+	@Column(name = "discontinue_reason_non_coded", length = 255)
+	private String discontinueReasonNonCoded;
+
 	@Enumerated(EnumType.STRING)
 	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "urgency", length = 50, nullable = false)
@@ -260,6 +267,8 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		target.dateStopped = getDateStopped();
 		target.setOrderReason(getOrderReason());
 		target.setOrderReasonNonCoded(getOrderReasonNonCoded());
+		target.setDiscontinueReason(getDiscontinueReason());
+		target.setDiscontinueReasonNonCoded(getDiscontinueReasonNonCoded());
 		target.setAccessionNumber(getAccessionNumber());
 		target.setVoided(getVoided());
 		target.setVoidedBy(getVoidedBy());
@@ -456,6 +465,34 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 */
 	public void setOrderReasonNonCoded(String orderReasonNonCoded) {
 		this.orderReasonNonCoded = orderReasonNonCoded;
+	}
+
+	/**
+	 * @return Returns the discontinueReason.
+	 */
+	public Concept getDiscontinueReason() {
+		return discontinueReason;
+	}
+
+	/**
+	 * @param discontinueReason The discontinueReason to set.
+	 */
+	public void setDiscontinueReason(Concept discontinueReason) {
+		this.discontinueReason = discontinueReason;
+	}
+
+	/**
+	 * @return Returns the discontinueReasonNonCoded.
+	 */
+	public String getDiscontinueReasonNonCoded() {
+		return discontinueReasonNonCoded;
+	}
+
+	/**
+	 * @param discontinueReasonNonCoded The discontinueReasonNonCoded to set.
+	 */
+	public void setDiscontinueReasonNonCoded(String discontinueReasonNonCoded) {
+		this.discontinueReasonNonCoded = discontinueReasonNonCoded;
 	}
 
 	/**
