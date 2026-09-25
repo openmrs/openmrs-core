@@ -90,6 +90,18 @@ cd openmrs-core/webapp
 ../mvnw jetty:run
 ```
 
+This command starts a local development server using Jetty.
+
+Once the server starts successfully, you can access the application at: `http://localhost:8080/openmrs` (default port)
+
+If you configured a custom port (e.g., 8081), use: `http://localhost:<port>/openmrs`
+
+If the application does not load:
+
+- Ensure port 8080 is not being used by another service
+- Make sure you successfully ran ./mvnw clean package before this step
+- Check the console logs for any errors during startup
+
 To run Jetty on a custom port, use the `jetty.http.port` property:
 
 ```bash
