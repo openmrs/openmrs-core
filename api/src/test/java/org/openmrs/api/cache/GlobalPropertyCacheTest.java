@@ -9,8 +9,17 @@
  */
 package org.openmrs.api.cache;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.global.GlobalConfigurationBuilder;
+import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.spring.common.provider.SpringCache;
+import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,19 +28,21 @@ import org.openmrs.Privilege;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.cache.Cache;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionSynchronizationUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,7 +51,11 @@ public class GlobalPropertyCacheTest {
 
 	private AdministrationDAO dao;
 
+	private SpringEmbeddedCacheManager cacheManager;
+
 	private Cache cache;
+
+	private ExecutorService fillExecutor;
 
 	private GlobalPropertyCache globalPropertyCache;
 
@@ -49,9 +64,15 @@ public class GlobalPropertyCacheTest {
 		dao = mock(AdministrationDAO.class);
 		when(dao.isDatabaseStringComparisonCaseSensitive()).thenReturn(true);
 
-		ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager(GlobalPropertyCache.CACHE_NAME);
+		DefaultCacheManager nativeCacheManager = new DefaultCacheManager(new GlobalConfigurationBuilder().build());
+		nativeCacheManager.defineConfiguration(GlobalPropertyCache.CACHE_NAME,
+		    new ConfigurationBuilder().simpleCache(true).build());
+		cacheManager = new SpringEmbeddedCacheManager(nativeCacheManager);
 		cache = cacheManager.getCache(GlobalPropertyCache.CACHE_NAME);
-		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao);
+
+		fillExecutor = Executors.newSingleThreadExecutor();
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
+		        fillExecutor::submit);
 	}
 
 	@AfterEach
@@ -59,35 +80,49 @@ public class GlobalPropertyCacheTest {
 		if (TransactionSynchronizationManager.isSynchronizationActive()) {
 			TransactionSynchronizationManager.clearSynchronization();
 		}
+		TransactionSynchronizationManager.unbindResourceIfPossible(globalPropertyCache);
+		fillExecutor.shutdownNow();
+		cacheManager.stop();
 	}
 
 	@Test
-	public void get_shouldOnlyLoadAPropertyOnce() {
+	public void get_shouldReadAMissThroughTheDaoAndFillTheCacheInTheBackground() {
 		givenProperty("some.property", "value");
 
 		assertEquals("value", globalPropertyCache.get("some.property").getValue());
+		globalPropertyCache.awaitFills();
+
+		assertEquals("value", cached("some.property").getValue());
+	}
+
+	@Test
+	public void get_shouldNotLoadACachedProperty() {
+		givenProperty("some.property", "value");
+		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
+
 		assertEquals("value", globalPropertyCache.get("some.property").getValue());
 
-		verify(dao, times(1)).getGlobalPropertyObject("some.property");
+		// once for the caller's read and once for the fill
+		verify(dao, times(2)).getGlobalPropertyObject("some.property");
 	}
 
 	@Test
 	public void get_shouldCacheAbsentProperties() {
 		assertSame(GlobalPropertyCache.Entry.ABSENT, globalPropertyCache.get("missing.property"));
-		assertSame(GlobalPropertyCache.Entry.ABSENT, globalPropertyCache.get("missing.property"));
+		globalPropertyCache.awaitFills();
 
-		verify(dao, times(1)).getGlobalPropertyObject("missing.property");
+		assertSame(GlobalPropertyCache.Entry.ABSENT, cached("missing.property"));
 	}
 
 	@Test
 	public void get_shouldIgnoreCaseIfTheDaoIgnoresCase() {
 		givenProperty("some.property", "value");
-
 		globalPropertyCache.get("some.property");
-		assertEquals("value", globalPropertyCache.get("SOME.Property").getValue());
+		globalPropertyCache.awaitFills();
 
-		verify(dao, times(1)).getGlobalPropertyObject("some.property");
-		verify(dao, times(0)).getGlobalPropertyObject("SOME.Property");
+		assertEquals("value", globalPropertyCache.get("SOME.Property").getValue());
+		verify(dao, never()).getGlobalPropertyObject("SOME.Property");
 	}
 
 	@Test
@@ -96,7 +131,12 @@ public class GlobalPropertyCacheTest {
 		givenProperty("some.property", "value");
 
 		assertFalse(globalPropertyCache.get("SOME.Property").isPresent());
+		globalPropertyCache.awaitFills();
 		assertEquals("value", globalPropertyCache.get("some.property").getValue());
+		globalPropertyCache.awaitFills();
+
+		assertFalse(cached("SOME.Property").isPresent());
+		assertTrue(cached("some.property").isPresent());
 	}
 
 	@Test
@@ -104,55 +144,104 @@ public class GlobalPropertyCacheTest {
 		GlobalProperty property = givenProperty("some.property", "value");
 		property.setViewPrivilege(new Privilege("Some Privilege"));
 
-		GlobalPropertyCache.Entry entry = globalPropertyCache.get("some.property");
+		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
 
-		assertTrue(entry.isPresent());
-		assertEquals("Some Privilege", entry.getViewPrivilege());
+		assertEquals("Some Privilege", cached("some.property").getViewPrivilege());
 	}
 
 	@Test
-	public void get_shouldNotCacheAPresentPropertyUntilTheTransactionCommits() {
-		givenProperty("some.property", "value");
-		TransactionSynchronizationManager.initSynchronization();
+	public void get_shouldStartOneFillForConcurrentMissesOfTheSameProperty() {
+		List<Runnable> started = new ArrayList<>();
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class), task -> {
+			started.add(task);
+			return new CompletableFuture<>();
+		});
 
 		globalPropertyCache.get("some.property");
-		assertNull(cache.get("some.property"));
+		globalPropertyCache.get("some.property");
 
+		assertEquals(1, started.size());
+	}
+
+	@Test
+	public void get_shouldNotCacheAPropertyEvictedWhileTheFillIsLoadingIt() {
+		GlobalProperty property = new GlobalProperty("some.property", "old");
+		// the first read is the caller's; the second, on the fill's thread, races an eviction
+		when(dao.getGlobalPropertyObject("some.property")).thenReturn(property).thenAnswer(invocation -> {
+			globalPropertyCache.evict("some.property");
+			return property;
+		});
+
+		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
+
+		assertNull(cache.get("some.property"));
+	}
+
+	@Test
+	public void get_shouldNotCacheAnAbsenceEvictedWhileTheFillIsLoadingIt() {
+		when(dao.getGlobalPropertyObject("some.property")).thenReturn(null).thenAnswer(invocation -> {
+			globalPropertyCache.evict("some.property");
+			return null;
+		});
+
+		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
+
+		assertNull(cache.get("some.property"));
+	}
+
+	@Test
+	public void get_shouldReadTheTransactionsOwnWritesWithoutTheCache() {
+		givenProperty("some.property", "old");
+		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
+
+		TransactionSynchronizationManager.initSynchronization();
+		givenProperty("some.property", "new");
+		globalPropertyCache.evict("some.property");
+		// another transaction fills the cache with the committed value
+		cache.put("some.property", GlobalPropertyCache.Entry.of(new GlobalProperty("some.property", "old")));
+
+		assertEquals("new", globalPropertyCache.get("some.property").getValue());
+		assertNull(globalPropertyCache.getIfCached("some.property"));
+	}
+
+	@Test
+	public void get_shouldNotFillAPropertyTheTransactionHasWritten() {
+		TransactionSynchronizationManager.initSynchronization();
+		globalPropertyCache.evict("some.property");
+
+		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
+
+		assertNull(cache.get("some.property"));
+	}
+
+	@Test
+	public void get_shouldUseTheCacheAgainOnceTheWritingTransactionCompletes() {
+		givenProperty("some.property", "value");
+		TransactionSynchronizationManager.initSynchronization();
+		globalPropertyCache.evict("some.property");
 		commit();
-
-		assertEquals("value", cache.get("some.property", GlobalPropertyCache.Entry.class).getValue());
-	}
-
-	@Test
-	public void get_shouldNotCacheAPresentPropertyIfTheTransactionRollsBack() {
-		givenProperty("some.property", "value");
-		TransactionSynchronizationManager.initSynchronization();
+		TransactionSynchronizationManager.clearSynchronization();
 
 		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
 
-		rollback();
-
-		assertNull(cache.get("some.property"));
-	}
-
-	@Test
-	public void get_shouldCacheAnAbsentPropertyImmediatelyWithinATransaction() {
-		TransactionSynchronizationManager.initSynchronization();
-
-		globalPropertyCache.get("missing.property");
-
-		assertSame(GlobalPropertyCache.Entry.ABSENT, cache.get("missing.property", GlobalPropertyCache.Entry.class));
+		assertEquals("value", cached("some.property").getValue());
 	}
 
 	@Test
 	public void get_shouldLoadEveryTimeIfTheCacheIsUnavailable() {
-		globalPropertyCache = new GlobalPropertyCache(new ConcurrentMapCacheManager("someOtherCache") {
+		globalPropertyCache = new GlobalPropertyCache(new SpringEmbeddedCacheManager(cacheManager.getNativeCacheManager()) {
 
 			@Override
-			public Cache getCache(String name) {
+			public SpringCache getCache(String name) {
 				return GlobalPropertyCache.CACHE_NAME.equals(name) ? null : super.getCache(name);
 			}
-		}, dao);
+		}, dao, mock(PlatformTransactionManager.class), fillExecutor::submit);
 
 		assertFalse(globalPropertyCache.get("missing.property").isPresent());
 		assertFalse(globalPropertyCache.get("missing.property").isPresent());
@@ -164,9 +253,10 @@ public class GlobalPropertyCacheTest {
 	public void getIfCached_shouldReturnACachedPropertyWithoutLoadingIt() {
 		givenProperty("some.property", "value");
 		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
 
 		assertEquals("value", globalPropertyCache.getIfCached("SOME.Property").getValue());
-		verify(dao, times(1)).getGlobalPropertyObject("some.property");
+		verify(dao, times(2)).getGlobalPropertyObject("some.property");
 	}
 
 	@Test
@@ -174,15 +264,14 @@ public class GlobalPropertyCacheTest {
 		assertNull(globalPropertyCache.getIfCached("some.property"));
 
 		globalPropertyCache.get("other.property");
+		globalPropertyCache.awaitFills();
 		assertNull(globalPropertyCache.getIfCached("some.property"));
 
-		verify(dao, times(0)).getGlobalPropertyObject("some.property");
+		verify(dao, never()).getGlobalPropertyObject("some.property");
 	}
 
 	@Test
 	public void getIfCached_shouldReturnNullGivenANullPropertyName() {
-		globalPropertyCache.get("some.property");
-
 		assertNull(globalPropertyCache.getIfCached(null));
 	}
 
@@ -191,11 +280,12 @@ public class GlobalPropertyCacheTest {
 		givenProperty("some.property", "value");
 		globalPropertyCache.get("some.property");
 		globalPropertyCache.get("other.property");
+		globalPropertyCache.awaitFills();
 
 		globalPropertyCache.evict("Some.Property");
 
 		assertNull(cache.get("some.property"));
-		assertSame(GlobalPropertyCache.Entry.ABSENT, cache.get("other.property", GlobalPropertyCache.Entry.class));
+		assertSame(GlobalPropertyCache.Entry.ABSENT, cached("other.property"));
 	}
 
 	@Test
@@ -204,7 +294,9 @@ public class GlobalPropertyCacheTest {
 		givenProperty("some.property", "value");
 		givenProperty("SOME.Property", "value");
 		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
 		globalPropertyCache.get("SOME.Property");
+		globalPropertyCache.awaitFills();
 
 		globalPropertyCache.evict("some.property");
 
@@ -216,10 +308,12 @@ public class GlobalPropertyCacheTest {
 	public void evict_shouldReconsiderTheKeysIfTheCaseSensitivityPropertyChanges() {
 		givenProperty("some.property", "value");
 		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
 
 		when(dao.isDatabaseStringComparisonCaseSensitive()).thenReturn(false);
 		globalPropertyCache.evict(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
 		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
 
 		// with lower-cased keys this would find the entry cached for "some.property"
 		assertFalse(globalPropertyCache.get("SOME.Property").isPresent());
@@ -230,7 +324,7 @@ public class GlobalPropertyCacheTest {
 		TransactionSynchronizationManager.initSynchronization();
 		globalPropertyCache.evict("some.property");
 
-		// another transaction caches the old value while this one is still running
+		// another transaction fills the cache while this one is still running
 		cache.put("some.property", GlobalPropertyCache.Entry.of(new GlobalProperty("some.property", "old")));
 
 		commit();
@@ -243,8 +337,7 @@ public class GlobalPropertyCacheTest {
 		TransactionSynchronizationManager.initSynchronization();
 		globalPropertyCache.evict("some.property");
 
-		// the purging transaction cached the property as absent before rolling back
-		globalPropertyCache.get("some.property");
+		cache.put("some.property", GlobalPropertyCache.Entry.ABSENT);
 
 		rollback();
 
@@ -256,6 +349,7 @@ public class GlobalPropertyCacheTest {
 		givenProperty("some.property", "value");
 		globalPropertyCache.get("some.property");
 		globalPropertyCache.get("missing.property");
+		globalPropertyCache.awaitFills();
 
 		globalPropertyCache.clear();
 
@@ -264,14 +358,29 @@ public class GlobalPropertyCacheTest {
 	}
 
 	@Test
-	public void clear_shouldDiscardValuesTheTransactionReadBeforeClearing() {
-		givenProperty("some.property", "old");
+	public void clear_shouldBypassTheCacheForTheRestOfTheTransaction() {
+		givenProperty("some.property", "value");
 		TransactionSynchronizationManager.initSynchronization();
-		globalPropertyCache.get("some.property");
 
 		globalPropertyCache.clear();
-		commit();
+		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
 
+		assertNull(cache.get("some.property"));
+		assertNull(globalPropertyCache.getIfCached("some.property"));
+	}
+
+	@Test
+	public void clear_shouldNotKeepTheKeyModeIfItIsClearedWhileTheFillIsLoadingIt() {
+		when(dao.isDatabaseStringComparisonCaseSensitive()).thenAnswer(invocation -> {
+			globalPropertyCache.clear();
+			return true;
+		});
+
+		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
+
+		assertNull(globalPropertyCache.getIfCached("some.property"));
 		assertNull(cache.get("some.property"));
 	}
 
@@ -279,6 +388,7 @@ public class GlobalPropertyCacheTest {
 	public void onApplicationEvent_shouldEvictEveryProperty() {
 		givenProperty("some.property", "value");
 		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
 
 		globalPropertyCache.onApplicationEvent(new ContextRefreshedEvent(new GenericApplicationContext()));
 
@@ -289,6 +399,12 @@ public class GlobalPropertyCacheTest {
 		GlobalProperty property = new GlobalProperty(name, value);
 		when(dao.getGlobalPropertyObject(name)).thenReturn(property);
 		return property;
+	}
+
+	private GlobalPropertyCache.Entry cached(String key) {
+		GlobalPropertyCache.Entry entry = cache.get(key, GlobalPropertyCache.Entry.class);
+		assertNotNull(entry, "expected " + key + " to be cached");
+		return entry;
 	}
 
 	private static void commit() {
