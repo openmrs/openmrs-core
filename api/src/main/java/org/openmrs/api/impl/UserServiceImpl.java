@@ -210,6 +210,14 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		}
 
 		// TODO Check required fields for user!!
+		if (user.getPerson() == null) {
+			throw new APIException("User.creating.person.required", (Object[]) null);
+		}
+
+		if (StringUtils.isBlank(user.getUsername()) && StringUtils.isBlank(user.getSystemId())) {
+			throw new APIException("User.creating.username.required", (Object[]) null);
+		}
+
 		OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
 
 		return daoSaveUser(user, password);
