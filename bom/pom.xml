@@ -327,6 +327,11 @@
 				<artifactId>infinispan-hibernate-cache-v62</artifactId>
 				<version>${infinispanVersion}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.infinispan</groupId>
+				<artifactId>infinispan-clustered-counter</artifactId>
+				<version>${infinispanVersion}</version>
+			</dependency>
 
 			<!-- Lucene -->
 			<dependency>

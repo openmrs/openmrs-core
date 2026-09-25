@@ -20,6 +20,7 @@ import org.openmrs.ImplementationId;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.module.Module;
 import org.openmrs.util.DatabaseUpdateException;
@@ -102,6 +103,21 @@ public interface AdministrationService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public String getGlobalProperty(String propertyName);
+
+	/**
+	 * Gets the global property that has the given <code>propertyName</code> if it is in the global
+	 * property cache, without starting a transaction or reading the database. This suits callers on hot
+	 * paths that must avoid both, which should fall back to {@link #getGlobalProperty(String)} when
+	 * this returns null.
+	 *
+	 * @param propertyName property key to look for
+	 * @return the cached property, whose value is null if the property does not exist, or null if the
+	 *         property is not cached
+	 * @throws APIException if the property has a view privilege the user does not have
+	 * @since 2.8.10
+	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
+	public GlobalPropertyCache.Entry getGlobalPropertyIfCached(String propertyName);
 
 	/**
 	 * Gets the global property that has the given <code>propertyName</code>

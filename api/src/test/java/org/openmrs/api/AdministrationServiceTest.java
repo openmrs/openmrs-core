@@ -25,6 +25,8 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.Privilege;
 import org.openmrs.User;
+import org.openmrs.api.cache.GlobalPropertyCache;
+import org.openmrs.api.cache.GlobalPropertyCacheTestUtil;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.cache.RolePrivileges;
 import org.openmrs.api.context.Context;
@@ -551,6 +553,191 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// try to get a global property with invalid case
 		String noprop = adminService.getGlobalProperty("ANOTher-global-property");
 		assertEquals(orig, noprop);
+	}
+
+	@Test
+	public void getGlobalProperty_shouldReturnCachedValues() {
+		GlobalPropertyCacheTestUtil.seed(new GlobalProperty("another-global-property", "cached"));
+
+		assertEquals("cached", adminService.getGlobalProperty("another-global-property"));
+		assertEquals("cached", adminService.getGlobalProperty("ANOTHER-global-property"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldFillTheCacheInTheBackgroundOnAMiss() {
+		assertEquals("same-as", fill("concept.defaultConceptMapType"));
+
+		// changed behind the API, so only a cache hit still returns the old value
+		adminService.executeSQL(
+		    "update global_property set property_value = 'changed' where property = 'concept.defaultConceptMapType'", false);
+
+		assertEquals("same-as", adminService.getGlobalProperty("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldCacheUnsetProperties() {
+		assertNull(fill("unset.property"));
+
+		adminService.executeSQL("insert into global_property (property, property_value, uuid) "
+		        + "values ('unset.property', 'value', '3b5c8f3e-4f5a-4a55-9a4e-0b6f0b7c1d2e')",
+		    false);
+
+		assertNull(adminService.getGlobalProperty("unset.property"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldReadTheCurrentTransactionsOwnWrites() {
+		fill("concept.defaultConceptMapType");
+
+		adminService.setGlobalProperty("concept.defaultConceptMapType", "changed");
+
+		assertEquals("changed", adminService.getGlobalProperty("concept.defaultConceptMapType"));
+		GlobalPropertyCacheTestUtil.awaitFills();
+		assertEquals("changed", adminService.getGlobalProperty("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldNotCacheValuesWrittenByTheCurrentTransaction() {
+		adminService.setGlobalProperty("new.property", "value");
+
+		assertEquals("value", fill("new.property"));
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("new.property"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldCheckTheViewPrivilegeOfCachedValues() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalPropertyCacheTestUtil.forgetWritesInCurrentTransaction();
+		GlobalProperty property = new GlobalProperty("another-global-property", "cached");
+		property.setViewPrivilege(new Privilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
+		GlobalPropertyCacheTestUtil.seed(property);
+
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// the proxy privilege passes the @Authorized gate but not the view check
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> adminService.getGlobalProperty("another-global-property"));
+			assertFalse(exception instanceof APIAuthenticationException);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+	}
+
+	@Test
+	public void saveGlobalProperty_shouldEvictTheCachedValue() {
+		fill("concept.defaultConceptMapType");
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+
+		GlobalProperty property = adminService.getGlobalPropertyObject("concept.defaultConceptMapType");
+		property.setPropertyValue("saved");
+		adminService.saveGlobalProperty(property);
+
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void saveGlobalProperty_shouldEvictACachedUnsetProperty() {
+		fill("unset.property");
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("unset.property"));
+
+		adminService.saveGlobalProperty(new GlobalProperty("unset.property", "value"));
+
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("unset.property"));
+		assertEquals("value", adminService.getGlobalProperty("unset.property"));
+	}
+
+	@Test
+	public void setGlobalProperty_shouldEvictTheCachedValue() {
+		fill("concept.defaultConceptMapType");
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+
+		adminService.setGlobalProperty("CONCEPT.defaultConceptMapType", "set");
+
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void updateGlobalProperty_shouldEvictTheCachedValue() {
+		fill("concept.defaultConceptMapType");
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+
+		adminService.updateGlobalProperty("concept.defaultConceptMapType", "updated");
+
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void purgeGlobalProperty_shouldEvictTheCachedValue() {
+		fill("concept.defaultConceptMapType");
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+
+		adminService.purgeGlobalProperty(adminService.getGlobalPropertyObject("concept.defaultConceptMapType"));
+
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void globalPropertyCache_shouldBeConfiguredWithALifespan() {
+		org.infinispan.Cache<?, ?> nativeCache = (org.infinispan.Cache<?, ?>) getGlobalPropertyCache().getNativeCache();
+
+		assertEquals(3_600_000L, nativeCache.getCacheConfiguration().expiration().lifespan());
+	}
+
+	@Test
+	public void getGlobalPropertyIfCached_shouldReturnNullIfThePropertyIsNotCached() {
+		assertNull(adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void getGlobalPropertyIfCached_shouldReturnACachedProperty() {
+		fill("concept.defaultConceptMapType");
+
+		assertEquals("same-as", adminService.getGlobalPropertyIfCached("CONCEPT.defaultConceptMapType").getValue());
+	}
+
+	@Test
+	public void getGlobalPropertyIfCached_shouldReturnACachedUnsetProperty() {
+		fill("unset.property");
+
+		assertFalse(adminService.getGlobalPropertyIfCached("unset.property").isPresent());
+	}
+
+	@Test
+	public void getGlobalPropertyIfCached_shouldFailIfTheUserMayNotViewTheProperty() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalPropertyCacheTestUtil.forgetWritesInCurrentTransaction();
+		GlobalProperty property = new GlobalProperty("another-global-property", "cached");
+		property.setViewPrivilege(new Privilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
+		GlobalPropertyCacheTestUtil.seed(property);
+
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// the proxy privilege passes the @Authorized gate but not the view check
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> adminService.getGlobalPropertyIfCached("another-global-property"));
+			assertFalse(exception instanceof APIAuthenticationException);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+	}
+
+	@Test
+	public void getGlobalPropertyIfCached_shouldRequireTheGetGlobalPropertiesPrivilege() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalPropertyCacheTestUtil.forgetWritesInCurrentTransaction();
+		fill("concept.defaultConceptMapType");
+
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		assertThrows(APIAuthenticationException.class,
+		    () -> adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
 	}
 
 	@Test
@@ -1215,6 +1402,20 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		adminService.saveGlobalProperty(new GlobalProperty("test", "TEST"));
 
 		assertThat(getCacheForCurrentUser(), nullValue());
+	}
+
+	/**
+	 * Reads the property, missing the cache, and waits for the fill that the miss starts. Fills read
+	 * committed data, so this only caches properties the test has not changed.
+	 */
+	private String fill(String propertyName) {
+		String value = adminService.getGlobalProperty(propertyName);
+		GlobalPropertyCacheTestUtil.awaitFills();
+		return value;
+	}
+
+	private Cache getGlobalPropertyCache() {
+		return cacheManager.getCache(GlobalPropertyCache.CACHE_NAME);
 	}
 
 	private Cache.ValueWrapper getCacheForCurrentUser() {

@@ -7,3 +7,5 @@ caches:
         configuration: "entity"
     rolePrivileges:
         configuration: "role-privileges"
+    globalProperties:
+        configuration: "global-properties"
