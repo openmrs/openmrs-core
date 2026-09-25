@@ -23,8 +23,8 @@ import org.springframework.stereotype.Component;
 public class ImmutableOrderInterceptor extends ImmutableEntityInterceptor {
 
 	private static final String[] MUTABLE_PROPERTY_NAMES = new String[] { "dateStopped", "voided", "dateVoided", "voidedBy",
-	        "changedBy", "dateChanged", "voidReason", "patient", "fulfillerStatus", "fulfillerComment", "accessionNumber" };
-
+		"changedBy", "dateChanged", "voidReason", "patient", "fulfillerStatus", "fulfillerComment", "accessionNumber", "intent"};
+	
 	/**
 	 * @see ImmutableEntityInterceptor#getSupportedType()
 	 */
