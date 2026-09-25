@@ -21,6 +21,7 @@ import org.openmrs.ProviderRole;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * This service contains methods relating to providers.
@@ -38,7 +39,7 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @return a list of provider objects.
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasPermission(null, '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public List<Provider> getAllProviders();
 
 	/**
@@ -59,7 +60,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @param provider provider to retire
 	 * @param reason reason why the provider is retired
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROVIDERS })
+	@PreAuthorize("hasPermission(null, '" + PrivilegeConstants.MANAGE_PROVIDERS + "')")
 	public void retireProvider(Provider provider, String reason);
 
 	/**
@@ -90,7 +91,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @param providerId the provider id
 	 * @return the provider by it's id
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasPermission(null, '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public Provider getProvider(Integer providerId);
 
 	/**
