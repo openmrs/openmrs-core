@@ -11,7 +11,6 @@ package org.openmrs.api.cache;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -72,7 +71,7 @@ public class GlobalPropertyCacheTest {
 
 		fillExecutor = Executors.newSingleThreadExecutor();
 		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
-		        fillExecutor::submit);
+		        fillExecutor::execute);
 	}
 
 	@AfterEach
@@ -153,15 +152,27 @@ public class GlobalPropertyCacheTest {
 	@Test
 	public void get_shouldStartOneFillForConcurrentMissesOfTheSameProperty() {
 		List<Runnable> started = new ArrayList<>();
-		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class), task -> {
-			started.add(task);
-			return new CompletableFuture<>();
-		});
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
+		        started::add);
 
 		globalPropertyCache.get("some.property");
 		globalPropertyCache.get("some.property");
 
 		assertEquals(1, started.size());
+	}
+
+	@Test
+	public void get_shouldFillAgainAfterAFillThatRanOnTheCallingThread() {
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
+		        Runnable::run);
+		givenProperty("some.property", "value");
+		globalPropertyCache.get("some.property");
+		assertEquals("value", cached("some.property").getValue());
+
+		globalPropertyCache.evict("some.property");
+		globalPropertyCache.get("some.property");
+
+		assertEquals("value", cached("some.property").getValue());
 	}
 
 	@Test
@@ -241,7 +252,7 @@ public class GlobalPropertyCacheTest {
 			public SpringCache getCache(String name) {
 				return GlobalPropertyCache.CACHE_NAME.equals(name) ? null : super.getCache(name);
 			}
-		}, dao, mock(PlatformTransactionManager.class), fillExecutor::submit);
+		}, dao, mock(PlatformTransactionManager.class), fillExecutor::execute);
 
 		assertFalse(globalPropertyCache.get("missing.property").isPresent());
 		assertFalse(globalPropertyCache.get("missing.property").isPresent());

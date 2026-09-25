@@ -13,11 +13,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import org.infinispan.Cache;
 import org.infinispan.counter.EmbeddedCounterManagerFactory;
@@ -105,10 +104,10 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	private final SyncStrongCounter generation;
 
 	/** Starts a fill on another thread and returns a future that completes when it is done. */
-	private final Function<Runnable, Future<?>> backgroundRunner;
+	private final Consumer<Runnable> backgroundRunner;
 
 	/** Fills in progress, by property name, so concurrent misses start a single fill. */
-	private final ConcurrentMap<String, Future<?>> fills = new ConcurrentHashMap<>();
+	private final ConcurrentMap<String, CompletableFuture<Void>> fills = new ConcurrentHashMap<>();
 
 	@Autowired
 	public GlobalPropertyCache(@Qualifier("apiCacheManager") SpringEmbeddedCacheManager cacheManager, AdministrationDAO dao,
@@ -118,7 +117,7 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	}
 
 	GlobalPropertyCache(SpringEmbeddedCacheManager cacheManager, AdministrationDAO dao,
-	    PlatformTransactionManager transactionManager, Function<Runnable, Future<?>> backgroundRunner) {
+	    PlatformTransactionManager transactionManager, Consumer<Runnable> backgroundRunner) {
 		this.cacheManager = cacheManager;
 		this.dao = dao;
 		this.backgroundRunner = backgroundRunner;
@@ -256,16 +255,7 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	 * so this is only needed where a caller must observe a fill, for example in tests.
 	 */
 	void awaitFills() {
-		for (Future<?> fill : fills.values()) {
-			try {
-				fill.get();
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				return;
-			} catch (ExecutionException e) {
-				// the fill already logged its failure
-			}
-		}
+		fills.values().forEach(CompletableFuture::join);
 	}
 
 	/**
@@ -278,21 +268,36 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 		}
 	}
 
+	/**
+	 * Starts a fill unless one is already in progress for the property. The in-progress marker is
+	 * published before the fill starts and only that marker is removed when it finishes, so the fill
+	 * may run on any thread, including this one.
+	 */
 	private void startFill(String propertyName) {
+		CompletableFuture<Void> marker = new CompletableFuture<>();
+		if (fills.putIfAbsent(propertyName, marker) != null) {
+			return;
+		}
+
 		try {
-			fills.computeIfAbsent(propertyName, name -> backgroundRunner.apply(() -> {
+			backgroundRunner.accept(() -> {
 				try {
-					fill(name);
+					fill(propertyName);
 				} catch (RuntimeException e) {
-					log.warn("Could not fill the global property cache with {}", name, e);
+					log.warn("Could not fill the global property cache with {}", propertyName, e);
 				} finally {
-					fills.remove(name);
+					finish(propertyName, marker);
 				}
-			}));
+			});
 		} catch (RuntimeException e) {
 			log.warn("Could not start a fill of the global property cache with {}", propertyName, e);
-			fills.remove(propertyName);
+			finish(propertyName, marker);
 		}
+	}
+
+	private void finish(String propertyName, CompletableFuture<Void> marker) {
+		fills.remove(propertyName, marker);
+		marker.complete(null);
 	}
 
 	/**

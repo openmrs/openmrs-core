@@ -85,8 +85,8 @@ public class GlobalPropertyCacheClusterTest {
 		dao1 = mockDao();
 		dao2 = mockDao();
 		fillExecutor = Executors.newCachedThreadPool();
-		cache1 = new GlobalPropertyCache(node1, dao1, mock(PlatformTransactionManager.class), fillExecutor::submit);
-		cache2 = new GlobalPropertyCache(node2, dao2, mock(PlatformTransactionManager.class), fillExecutor::submit);
+		cache1 = new GlobalPropertyCache(node1, dao1, mock(PlatformTransactionManager.class), fillExecutor::execute);
+		cache2 = new GlobalPropertyCache(node2, dao2, mock(PlatformTransactionManager.class), fillExecutor::execute);
 	}
 
 	@AfterEach
