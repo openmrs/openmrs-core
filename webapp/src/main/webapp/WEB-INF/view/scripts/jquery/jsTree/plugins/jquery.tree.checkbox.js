@@ -25,10 +25,10 @@
 
 				var opts = $.extend(true, {}, $.tree.plugins.checkbox.defaults, t.settings.plugins.checkbox);
 				if(opts.three_state) {
-					n.find("li").andSelf().children("a").removeClass("unchecked undetermined").addClass("checked");
+					n.find("li").addBack().children("a").removeClass("unchecked undetermined").addClass("checked");
 					n.parents("li").each(function () { 
-						if($(this).children("ul").find("a:not(.checked):eq(0)").size() > 0) {
-							$(this).parents("li").andSelf().children("a").removeClass("unchecked checked").addClass("undetermined");
+						if($(this).children("ul").find("a:not(.checked):eq(0)").length > 0) {
+							$(this).parents("li").addBack().children("a").removeClass("unchecked checked").addClass("undetermined");
 							return false;
 						}
 						else $(this).children("a").removeClass("unchecked undetermined").addClass("checked");
@@ -45,10 +45,10 @@
 
 				var opts = $.extend(true, {}, $.tree.plugins.checkbox.defaults, t.settings.plugins.checkbox);
 				if(opts.three_state) {
-					n.find("li").andSelf().children("a").removeClass("checked undetermined").addClass("unchecked");
+					n.find("li").addBack().children("a").removeClass("checked undetermined").addClass("unchecked");
 					n.parents("li").each(function () { 
-						if($(this).find("a.checked, a.undetermined").size() - 1 > 0) {
-							$(this).parents("li").andSelf().children("a").removeClass("unchecked checked").addClass("undetermined");
+						if($(this).find("a.checked, a.undetermined").length - 1 > 0) {
+							$(this).parents("li").addBack().children("a").removeClass("unchecked checked").addClass("undetermined");
 							return false;
 						}
 						else $(this).children("a").removeClass("checked undetermined").addClass("unchecked");
