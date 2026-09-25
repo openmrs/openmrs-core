@@ -188,9 +188,8 @@ public class InitializationFilter extends StartupFilter {
 
 	/**
 	 * Variable set to true as soon as the installation begins and set to false when the process ends
-	 * This thread should only be accesses through the synchronized method.
 	 */
-	private static boolean isInstallationStarted = false;
+	private static volatile boolean isInstallationStarted = false;
 
 	// the actual driver loaded by the DatabaseUpdater class
 	private String loadedDriverString;
@@ -206,7 +205,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	private static volatile boolean initializationComplete = false;
 
-	protected static void setInitializationComplete(boolean complete) {
+	protected void setInitializationComplete(boolean complete) {
 		initializationComplete = complete;
 	}
 
@@ -1098,17 +1097,13 @@ public class InitializationFilter extends StartupFilter {
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
 		if (initializationRequired()) {
-			// the wizard handles every request until initialization completes
 			return false;
 		}
-		// Once initialization is done, the only request left to answer is the progress page's poll,
-		// which always arrives on the setup page. getServletPath() never parses parameters, so every
-		// other request is skipped without touching the query string or a POST body.
+		// Once initialization completes, only the progress page's final poll still needs this filter; without it
+		// progress.vm never leaves the wizard. Check the servlet path first so other requests aren't parsed.
 		if (!("/" + WebConstants.SETUP_PAGE_URL).equals(httpRequest.getServletPath())) {
 			return true;
 		}
-		// let the poll through so progress.vm can pick up the final
-		// "initializationComplete = true" response and leave the wizard
 		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"));
 	}
 
@@ -1124,7 +1119,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * @param isInstallationStarted the value to set
 	 */
-	protected static synchronized void setInstallationStarted(boolean isInstallationStarted) {
+	protected static void setInstallationStarted(boolean isInstallationStarted) {
 		InitializationFilter.isInstallationStarted = isInstallationStarted;
 	}
 

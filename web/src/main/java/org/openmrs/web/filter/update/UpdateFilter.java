@@ -528,17 +528,13 @@ public class UpdateFilter extends StartupFilter {
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
 		if (updatesRequired()) {
-			// the wizard handles every request while updates are pending
 			return false;
 		}
-		// Once the updates are done, the only request left to answer is the progress page's poll,
-		// which always arrives on the setup page. getServletPath() never parses parameters, so every
-		// other request is skipped without touching the query string or a POST body.
+		// Once updates finish, only the progress page's final poll still needs this filter; without it
+		// reviewchanges.vm never leaves the wizard. Check the servlet path first so other requests aren't parsed.
 		if (!("/" + WebConstants.SETUP_PAGE_URL).equals(httpRequest.getServletPath())) {
 			return true;
 		}
-		// let the poll through so reviewchanges.vm can pick up the final
-		// "updatesRequired = false" response and leave the wizard
 		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"));
 	}
 
@@ -762,6 +758,7 @@ public class UpdateFilter extends StartupFilter {
 							return;
 						} catch (Exception e) {
 							log.error("Unable to update the database", e);
+							reportError(ErrorMessageConstants.UPDATE_ERROR_UNABLE, e.getMessage());
 							return;
 						}
 
