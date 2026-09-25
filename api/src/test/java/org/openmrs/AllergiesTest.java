@@ -512,4 +512,56 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 
 		assertThrows(APIException.class, () -> new Allergies().addAll(0, allergies));
 	}
+
+	/**
+	 * @see {@link Allergies#containsAllergen(Allergy, java.util.Collection)}
+	 */
+	@Test
+	public void shouldReturnTrueWhenAllergenExists() {
+		Concept concept = new Concept(1);
+
+		Allergy allergy1 = new Allergy();
+		allergy1.setAllergen(new Allergen(null, concept, null));
+		
+		Allergy allergy2 = new Allergy();
+		allergy2.setAllergen(new Allergen(null, concept, null));
+		
+		List<Allergy> allergyList = new ArrayList<>();
+		allergyList.add(allergy2);
+		assertTrue(allergies.containsAllergen(allergy1, allergyList));
+	}
+
+	/**
+	 * @see {@link Allergies#containsAllergen(Allergy, java.util.Collection)}
+	 */
+	@Test
+	public void shouldReturnFalseWhenAllergenDoesNotExist() {
+		Concept concept1 = new Concept(1);
+		Concept concept2 = new Concept(2);
+
+		Allergy allergy1 = new Allergy();
+		allergy1.setAllergen(new Allergen(null, concept1, null));
+		
+		Allergy allergy2 = new Allergy();
+		allergy2.setAllergen(new Allergen(null, concept2, null));
+		
+		List<Allergy> allergyList = new ArrayList<>();
+		allergyList.add(allergy2);
+		assertFalse(allergies.containsAllergen(allergy1, allergyList));
+	}
+
+	/**
+	 * @see {@link Allergies#containsAllergen(Allergy, java.util.Collection)}
+	 */	
+	@Test
+	public void shouldReturnFalseWhenAllergyListIsEmpty() {
+		Concept concept = new Concept(1);
+
+		Allergy allergy = new Allergy();
+		allergy.setAllergen(new Allergen(null, concept, null));
+
+		List<Allergy> allergyList = new ArrayList<>();
+
+		assertFalse(allergies.containsAllergen(allergy, allergyList));
+	}
 }
