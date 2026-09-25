@@ -731,7 +731,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 *      java.lang.Object)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue) throws APIException {
 		if (defaultValue == null) {
 			throw new IllegalArgumentException("The defaultValue argument cannot be null");
@@ -742,16 +742,38 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			return defaultValue;
 		}
 
+		Class<?> type = defaultValue.getClass();
+
 		try {
-			return (T) defaultValue.getClass().getDeclaredConstructor(String.class).newInstance(propVal);
+			if (type == String.class) {
+				return (T) propVal;
+			}
+			if (type == Boolean.class) {
+				return (T) Boolean.valueOf(propVal);
+			}
+			if (type == Integer.class) {
+				return (T) Integer.valueOf(propVal);
+			}
+			if (type == Long.class) {
+				return (T) Long.valueOf(propVal);
+			}
+			if (type == Double.class) {
+				return (T) Double.valueOf(propVal);
+			}
+			if (type == Float.class) {
+				return (T) Float.valueOf(propVal);
+			}
+			if (type.isEnum()) {
+				return (T) Enum.valueOf((Class<? extends Enum>) type, propVal);
+			}
+
+			return (T) type.getDeclaredConstructor(String.class).newInstance(propVal);
 		} catch (InstantiationException e) {
-			throw new APIException("is.not.able.instantiated", new Object[] { defaultValue.getClass().getName(), propVal },
-			        e);
+			throw new APIException("is.not.able.instantiated", new Object[] { type.getName(), propVal }, e);
 		} catch (NoSuchMethodException e) {
-			throw new APIException("does.not.have.string.constructor", new Object[] { defaultValue.getClass().getName() },
-			        e);
+			throw new APIException("does.not.have.string.constructor", new Object[] { type.getName() }, e);
 		} catch (Exception e) {
-			log.error("Unable to turn value '" + propVal + "' into type " + defaultValue.getClass().getName(), e);
+			log.error("Unable to turn value '{}' into type {}", propVal, type.getName(), e);
 			return defaultValue;
 		}
 	}
