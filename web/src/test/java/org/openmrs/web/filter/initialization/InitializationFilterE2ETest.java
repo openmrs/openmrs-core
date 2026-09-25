@@ -955,4 +955,28 @@ class InitializationFilterE2ETest {
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 	}
+
+	@Test
+	void doGet_shouldClearPasswordsWhenPageIsNullAndPasswordsNotYetEntered() throws Exception {
+		filter.wizardModel.databaseRootPassword = "secret";
+		filter.wizardModel.createDatabasePassword = "secret";
+		filter.wizardModel.setPasswordsEntered(false);
+
+		filter.doGet(request, response);
+
+		assertEquals("", filter.wizardModel.databaseRootPassword);
+		assertEquals("", filter.wizardModel.createDatabasePassword);
+	}
+
+	@Test
+	void doGet_shouldNotClearPasswordsWhenPageIsNullButPasswordsAlreadyEntered() throws Exception {
+		filter.wizardModel.databaseRootPassword = "secret";
+		filter.wizardModel.createDatabasePassword = "secret";
+		filter.wizardModel.setPasswordsEntered(true);
+
+		filter.doGet(request, response);
+
+		assertEquals("secret", filter.wizardModel.databaseRootPassword);
+		assertEquals("secret", filter.wizardModel.createDatabasePassword);
+	}
 }
