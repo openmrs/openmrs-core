@@ -12,29 +12,13 @@ package org.openmrs.aop.event;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.openmrs.Order;
-import org.openmrs.Visit;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ServiceEventTestListener {
 
-	private final List<SaveServiceEvent<Order>> orderSaveEvents = new CopyOnWriteArrayList<>();
-
-	private final List<SaveServiceEvent<Visit>> visitSaveEvents = new CopyOnWriteArrayList<>();
-
 	private final List<MergePatientsServiceEvent> mergePatientsEvents = new CopyOnWriteArrayList<>();
-
-	@EventListener
-	public void onOrderSave(SaveServiceEvent<Order> event) {
-		orderSaveEvents.add(event);
-	}
-
-	@EventListener
-	public void onVisitSave(SaveServiceEvent<Visit> event) {
-		visitSaveEvents.add(event);
-	}
 
 	@EventListener
 	public void onMergePatients(MergePatientsServiceEvent event) {
