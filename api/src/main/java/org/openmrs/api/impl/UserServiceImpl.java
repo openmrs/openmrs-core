@@ -12,8 +12,10 @@ package org.openmrs.api.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openmrs.Location;
+import org.openmrs.LocationTag;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -932,6 +936,28 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	public List<Class<?>> getRefTypes() {
 		return Arrays.asList(Role.class, Privilege.class, User.class);
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#getAllowedLocationsByTag(User, LocationTag)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.GET_LOCATIONS)
+	public Set<Location> getAllowedLocationsByTag(User user, LocationTag tag) {
+		User persisted = (user == null || user.getUserId() == null) ? null : dao.getUser(user.getUserId());
+		if (tag == null || persisted == null) {
+			return Collections.emptySet();
+		}
+
+		List<Location> tagged = Context.getLocationService().getLocationsByTag(tag);
+
+		Set<Location> assigned = persisted.getAssignedLocations();
+		if (assigned == null || assigned.isEmpty()) {
+			return new LinkedHashSet<>(tagged);
+		}
+
+		return tagged.stream().filter(assigned::contains).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 }
