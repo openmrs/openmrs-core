@@ -301,14 +301,17 @@ public class HL7Util {
 	}
 
 	/**
-	 * Turn the given concept/concept-name pair into a string in the HL7 coded element format
+	 * Turn the given concept/concept-name pair into a string in the HL7 coded element format. The text
+	 * component is optional in HL7, so a concept without a name is still identified by its id and
+	 * coding system.
 	 *
 	 * @param concept Concept to convert to a string
-	 * @param localizedName specific localized concept-name
+	 * @param localizedName specific localized concept-name, or null to leave the name part empty
 	 * @return String representation of the given concept
 	 */
 	public static String conceptToString(Concept concept, ConceptName localizedName) {
-		return concept.getConceptId() + "^" + localizedName.getName() + "^" + HL7Constants.HL7_LOCAL_CONCEPT;
+		String name = localizedName == null ? "" : localizedName.getName();
+		return concept.getConceptId() + "^" + name + "^" + HL7Constants.HL7_LOCAL_CONCEPT;
 	}
 
 	/**

@@ -172,7 +172,7 @@ public class HL7Constants {
 	 *
 	 * @return the list of hl7 global properties
 	 */
-	public static List<GlobalProperty> HL7_GLOBAL_PROPERTIES() {
+	public static List<GlobalProperty> getGlobalProperties() {
 		List<GlobalProperty> props = new ArrayList<>();
 
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY, HL7_ARCHIVE_DIRECTORY_NAME,

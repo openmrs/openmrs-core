@@ -1259,7 +1259,7 @@ public class Context {
 			}
 
 			List<GlobalProperty> propsToRegister = new ArrayList<>(OpenmrsConstants.CORE_GLOBAL_PROPERTIES());
-			propsToRegister.addAll(HL7Constants.HL7_GLOBAL_PROPERTIES());
+			propsToRegister.addAll(HL7Constants.getGlobalProperties());
 
 			for (GlobalProperty coreProp : propsToRegister) {
 				String corePropName = coreProp.getProperty().toUpperCase();

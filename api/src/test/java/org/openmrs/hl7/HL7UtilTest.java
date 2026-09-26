@@ -124,6 +124,16 @@ public class HL7UtilTest {
 	}
 
 	/**
+	 * @see HL7Util#conceptToString(Concept, Locale)
+	 */
+	@Test
+	public void conceptToString_shouldLeaveTheNameEmptyWhenTheConceptHasNoName() {
+		Concept concept = new Concept(5089);
+
+		assertEquals("5089^^99DCT", HL7Util.conceptToString(concept, Locale.ENGLISH));
+	}
+
+	/**
 	 * @see HL7Util#drugToString(Drug)
 	 */
 	@Test

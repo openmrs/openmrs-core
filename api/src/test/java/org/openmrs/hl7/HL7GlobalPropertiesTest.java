@@ -29,12 +29,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class HL7GlobalPropertiesTest extends BaseContextSensitiveTest {
 
 	/**
-	 * @see HL7Constants#HL7_GLOBAL_PROPERTIES()
+	 * @see HL7Constants#getGlobalProperties()
 	 */
 	@Test
-	public void hl7GlobalProperties_shouldNotBeDeclaredAmongTheCoreGlobalProperties() {
+	public void getGlobalProperties_shouldNotBeDeclaredAmongTheCoreGlobalProperties() {
 		for (GlobalProperty coreProp : OpenmrsConstants.CORE_GLOBAL_PROPERTIES()) {
-			for (GlobalProperty hl7Prop : HL7Constants.HL7_GLOBAL_PROPERTIES()) {
+			for (GlobalProperty hl7Prop : HL7Constants.getGlobalProperties()) {
 				assertFalse(coreProp.getProperty().equalsIgnoreCase(hl7Prop.getProperty()),
 				    hl7Prop.getProperty() + " should be declared by hl7, not core");
 			}
