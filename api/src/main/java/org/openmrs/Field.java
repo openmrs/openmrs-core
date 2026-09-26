@@ -59,7 +59,7 @@ public class Field extends BaseChangeableOpenmrsMetadata {
 	private String defaultValue;
 
 	@Column(name = "select_multiple", nullable = false)
-	private Boolean selectMultiple = false;
+	private boolean selectMultiple = false;
 
 	// Constructors
 
@@ -158,26 +158,24 @@ public class Field extends BaseChangeableOpenmrsMetadata {
 		this.defaultValue = defaultValue;
 	}
 
-	/**
-	 * @deprecated as of 2.0, use {@link #getSelectMultiple()}
-	 */
-	@Deprecated
 	@JsonIgnore
-	public Boolean isSelectMultiple() {
-		return getSelectMultiple();
+	public boolean isSelectMultiple() {
+		return selectMultiple;
 	}
 
 	/**
 	 * @return Returns the selectMultiple.
+	 * @deprecated as of 2.0, use {@link #isSelectMultiple()}
 	 */
-	public Boolean getSelectMultiple() {
-		return selectMultiple;
+	@Deprecated
+	public boolean getSelectMultiple() {
+		return isSelectMultiple();
 	}
 
 	/**
 	 * @param selectMultiple The selectMultiple to set.
 	 */
-	public void setSelectMultiple(Boolean selectMultiple) {
+	public void setSelectMultiple(boolean selectMultiple) {
 		this.selectMultiple = selectMultiple;
 	}
 

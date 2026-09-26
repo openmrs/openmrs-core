@@ -49,7 +49,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 
 	@Column(name = "voided", nullable = false)
 	@GenericField
-	private Boolean voided = Boolean.FALSE;
+	private boolean voided = false;
 
 	@Column(name = "date_voided")
 	private Date dateVoided;
@@ -144,28 +144,28 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	}
 
 	/**
-	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 * @see org.openmrs.Voidable#isVoided()
 	 */
 	@Override
-	@Deprecated
-	public Boolean isVoided() {
-		return getVoided();
-	}
-
-	/**
-	 * @see org.openmrs.Voidable#getVoided()
-	 */
-	@Override
-	public Boolean getVoided() {
+	public boolean isVoided() {
 		return voided;
 	}
 
 	/**
-	 * @see org.openmrs.Voidable#setVoided(java.lang.Boolean)
+	 * @see org.openmrs.Voidable#getVoided()
+	 * @deprecated as of 2.0, use {@link #isVoided()}
 	 */
 	@Override
-	public void setVoided(Boolean voided) {
+	@Deprecated
+	public boolean getVoided() {
+		return isVoided();
+	}
+
+	/**
+	 * @see org.openmrs.Voidable#setVoided(boolean)
+	 */
+	@Override
+	public void setVoided(boolean voided) {
 		this.voided = voided;
 	}
 

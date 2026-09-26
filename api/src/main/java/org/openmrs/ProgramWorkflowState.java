@@ -27,7 +27,8 @@ import org.hibernate.envers.Audited;
  */
 @Entity
 @Table(name = "program_workflow_state")
-@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true, length = 255)) })
+@AttributeOverrides({
+		@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true, length = 255)) })
 @Audited
 public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 
@@ -50,10 +51,10 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	private Concept concept;
 
 	@Column(name = "initial", nullable = false, length = 1)
-	private Boolean initial;
+	private boolean initial = false;
 
 	@Column(name = "terminal", nullable = false, length = 1)
-	private Boolean terminal;
+	private boolean terminal = false;
 
 	// ******************
 	// Constructors
@@ -90,19 +91,35 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 		this.concept = concept;
 	}
 
-	public Boolean getInitial() {
+	public boolean isInitial() {
 		return initial;
 	}
 
-	public void setInitial(Boolean initial) {
+	/**
+	 * @deprecated as of 2.0, use {@link #isInitial()}
+	 */
+	@Deprecated(since = "2.0")
+	public boolean getInitial() {
+		return isInitial();
+	}
+
+	public void setInitial(boolean initial) {
 		this.initial = initial;
 	}
 
-	public Boolean getTerminal() {
+	public boolean isTerminal() {
 		return terminal;
 	}
 
-	public void setTerminal(Boolean terminal) {
+	/**
+	 * @deprecated as of 2.0, use {@link #isTerminal()}
+	 */
+	@Deprecated(since = "2.0")
+	public boolean getTerminal() {
+		return isTerminal();
+	}
+
+	public void setTerminal(boolean terminal) {
 		this.terminal = terminal;
 	}
 

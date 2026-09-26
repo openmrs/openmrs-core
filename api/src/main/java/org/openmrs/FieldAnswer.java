@@ -64,19 +64,19 @@ public class FieldAnswer extends BaseOpenmrsObject {
 
 	/**
 	 * @return boolean whether or not this fieldAnswer has been modified
-	 * @deprecated as of 2.0, use {@link #getDirty()}
 	 */
-	@Deprecated
 	@JsonIgnore
 	public boolean isDirty() {
-		return getDirty();
+		return dirty;
 	}
 
 	/**
 	 * @return boolean whether or not this fieldAnswer has been modified
+	 * @deprecated as of 2.0, use {@link #isDirty()}
 	 */
+	@Deprecated
 	public boolean getDirty() {
-		return dirty;
+		return isDirty();
 	}
 
 	public void setClean() {
