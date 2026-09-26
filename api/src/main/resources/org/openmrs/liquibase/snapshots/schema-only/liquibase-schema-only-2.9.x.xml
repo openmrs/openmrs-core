@@ -2239,7 +2239,7 @@
       <column name="event_type" type="VARCHAR(255)"> 
         <constraints nullable="false"/> 
       </column>  
-      <column name="payload" type="MEDIUMTEXT"> 
+      <column name="payload" type="LONGTEXT"> 
         <constraints nullable="false"/> 
       </column>  
       <column defaultValue="PENDING" name="status" type="VARCHAR(50)"> 

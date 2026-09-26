@@ -142,12 +142,12 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="TRUNK-6289-2026-07-11-outbox-payload-mediumtext" author="Tarekchehahde">
+	<changeSet id="TRUNK-6289-2026-07-11-outbox-payload-longtext" author="Tarekchehahde">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="outbox_event"/>
 		</preConditions>
-		<comment>Widen outbox_event payload columns to match @Lob intent (#6289 sign-off)</comment>
-		<modifyDataType tableName="outbox_event" columnName="payload" newDataType="MEDIUMTEXT"/>
+		<comment>Widen outbox_event payload to LONGTEXT to match OutboxEvent @Column columnDefinition (#6289 sign-off)</comment>
+		<modifyDataType tableName="outbox_event" columnName="payload" newDataType="LONGTEXT"/>
 		<modifyDataType tableName="outbox_event" columnName="completed_listeners" newDataType="MEDIUMTEXT"/>
 	</changeSet>
 	
