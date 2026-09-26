@@ -2062,6 +2062,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void purgePatient_shouldThrowIllegalArgumentExceptionWhenPatientIsNull() {
+		// purgePatient throws IllegalArgumentException when patient is null; null must not reach the DAO layer.
+		assertThrows(IllegalArgumentException.class, () -> patientService.purgePatient(null));
+	}
+
+	@Test
 	public void getPatients_shouldNotReturnVoidedPatients() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
 
