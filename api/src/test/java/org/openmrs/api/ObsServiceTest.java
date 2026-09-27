@@ -2704,6 +2704,19 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void saveObs_shouldRecalculateInterpretationWhenObsIsEdited() {
+		Obs obs = buildObservation();
+		obsService.saveObs(obs, null);
+
+		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
+
+		obs.setValueNumeric(119.0);
+		Obs newObs = obsService.saveObs(obs, "just testing");
+
+		assertEquals(Obs.Interpretation.HIGH, newObs.getInterpretation());
+	}
+
+	@Test
 	public void saveObs_shouldPopulateReferenceRangeAndInterpretationWhenValidationIsDisabled() {
 		Boolean previousDisableValidation = ValidateUtil.getDisableValidation();
 		ValidateUtil.setDisableValidation(true);

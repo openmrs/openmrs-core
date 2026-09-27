@@ -423,6 +423,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("accessionNumber"));
 		assertTrue(errors.hasFieldErrors("valueModifier"));
 		assertTrue(errors.hasFieldErrors("valueComplex"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 		assertTrue(errors.hasFieldErrors("comment"));
 
 	}

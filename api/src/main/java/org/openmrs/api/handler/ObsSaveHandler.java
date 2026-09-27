@@ -35,7 +35,7 @@ public class ObsSaveHandler implements SaveHandler<Obs> {
 			}
 		}
 
-		if (obs.getId() == null && obs.getPreviousVersion() == null && obs.getInterpretation() == null) {
+		if (obs.getPreviousVersion() != null || obs.getInterpretation() == null) {
 			setObsInterpretation(obs);
 		}
 	}
