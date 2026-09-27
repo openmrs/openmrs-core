@@ -62,6 +62,7 @@ import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -2700,6 +2701,23 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertEquals(originalRange.getLowAbsolute(), newRange.getLowAbsolute());
 		assertEquals(originalRange.getLowCritical(), newRange.getLowCritical());
 		assertEquals(originalRange.getLowNormal(), newRange.getLowNormal());
+	}
+
+	@Test
+	public void saveObs_shouldPopulateReferenceRangeAndInterpretationWhenValidationIsDisabled() {
+		Boolean previousDisableValidation = ValidateUtil.getDisableValidation();
+		ValidateUtil.setDisableValidation(true);
+
+		try {
+			Obs obs = buildObservation();
+
+			obsService.saveObs(obs, null);
+
+			assertNotNull(obs.getReferenceRange());
+			assertNotNull(obs.getInterpretation());
+		} finally {
+			ValidateUtil.setDisableValidation(previousDisableValidation);
+		}
 	}
 
 	private Obs buildObservation() {
