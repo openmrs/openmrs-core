@@ -145,6 +145,24 @@
 	</filter-mapping>
 	<!--  End second filter -->
 	
+	<!-- Spring Session filter (TRUNK-6415) must wrap requests before filters that inspect/clear session
+	     cookies. OptionalDelegatingFilterProxy makes it a pass-through unless session.distributed=true. -->
+	<filter>
+		<filter-name>springSessionRepositoryFilter</filter-name>
+		<filter-class>org.openmrs.web.filter.OptionalDelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>springSessionRepositoryFilter</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSessionRepositoryFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>ERROR</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>REQUEST</dispatcher>
+	</filter-mapping>
+
 	<!-- This filter should come before the OpenmrsFilter, i.e., before we've created
 	     a session. -->
 	<filter>
@@ -155,13 +173,13 @@
 		<filter-name>CookieClearingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
+
 	<filter>
-		<filter-name>OpenmrsFilter</filter-name> 
-		<filter-class>org.openmrs.web.filter.OpenmrsFilter</filter-class> 
+		<filter-name>OpenmrsFilter</filter-name>
+		<filter-class>org.openmrs.web.filter.OpenmrsFilter</filter-class>
 	</filter>
 	<filter-mapping>
-		<filter-name>OpenmrsFilter</filter-name> 
+		<filter-name>OpenmrsFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 		<dispatcher>ERROR</dispatcher>
 		<dispatcher>FORWARD</dispatcher>

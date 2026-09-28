@@ -12,8 +12,25 @@
 -->
 <infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
             xsi:schemaLocation="urn:infinispan:config:15.2 https://infinispan.org/schemas/infinispan-config-15.2.xsd" 
-            xmlns="urn:infinispan:config:15.2">>
+            xmlns="urn:infinispan:config:15.2">
 	<cache-container>
+		<!-- Single-node/dev session store (cache.type=local); mirrors infinispan-api.xml. Admits
+		     SessionPrincipal because org.openmrs.* is not in Infinispan's default allow-list; nothing crosses
+		     the wire here, so this is for parity with the clustered config rather than protection. -->
+		<serialization>
+			<allow-list>
+				<class>org.openmrs.api.context.SessionPrincipal</class>
+				<regex>org\.springframework\.session\..*</regex>
+				<regex>org\.openmrs\..*</regex>
+			</allow-list>
+		</serialization>
+
+		<local-cache name="sessions" statistics="false">
+			<encoding media-type="application/x-java-serialized-object"/>
+			<expiration lifespan="1800000" interval="60000"/>
+			<memory max-count="50000"/>
+		</local-cache>
+
 		<local-cache-configuration name="entity" simple-cache="true" statistics="false">
 			<encoding media-type="application/x-java-object"/>
 			<transaction mode="NONE" />

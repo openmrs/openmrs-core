@@ -99,9 +99,10 @@ public class CacheConfig {
 			jChannelConfig = getJChannelConfig(cacheStack);
 			JChannel jchannel = new JChannel(jChannelConfig);
 			Class<? extends TP> protocolClass = TCP.class;
-			if (cacheStack.trim().isEmpty() || cacheStack.trim().equals("udp")) {
+			String stackTrim = cacheStack.trim();
+			if (stackTrim.isEmpty() || stackTrim.equals("udp")) {
 				protocolClass = UDP.class;
-			} else if (cacheStack.trim().equals("tunnel")) {
+			} else if (stackTrim.equals("tunnel")) {
 				protocolClass = TUNNEL.class;
 			}
 			TP protocol = jchannel.getProtocolStack().findProtocol(protocolClass);
@@ -202,7 +203,8 @@ public class CacheConfig {
 
 	public String getJChannelConfig(String cacheStack) {
 		String jChannelConfig;
-		switch (cacheStack.trim()) {
+		String trimmed = cacheStack.trim();
+		switch (trimmed) {
 			case "tcp":
 				jChannelConfig = "default-configs/default-jgroups-tcp.xml";
 				break;
@@ -221,8 +223,14 @@ public class CacheConfig {
 			case "azure":
 				jChannelConfig = "default-configs/default-jgroups-azure.xml";
 				break;
-			default:
+			case "udp":
+			case "":
 				jChannelConfig = "default-configs/default-jgroups-udp.xml";
+				break;
+			default:
+				// If not a known short name, treat as a stack config resource (classpath:/file:/URL or XML path)
+				jChannelConfig = trimmed;
+				break;
 		}
 		return jChannelConfig;
 	}

@@ -109,6 +109,57 @@ public class UserContext implements Serializable {
 	}
 
 	/**
+	 * Captures this context as a marshallable {@link SessionPrincipal} (user uuid, locale, location)
+	 * for storage in a possibly replicated HTTP session. Proxy privileges are excluded.
+	 *
+	 * @return a serializable snapshot of this context
+	 * @since 3.0.0
+	 */
+	public SessionPrincipal toSessionPrincipal() {
+		return new SessionPrincipal(user, locale, locationId);
+	}
+
+	/**
+	 * Rebuilds a {@link UserContext} from a {@link #toSessionPrincipal()} snapshot. The user is
+	 * re-fetched by uuid via {@link org.openmrs.api.db.ContextDAO} (bypassing authorization, as login
+	 * does), so no privilege is needed to re-establish an authenticated session. A missing or retired
+	 * user yields an anonymous context, so a revoked account cannot keep acting from a valid session.
+	 *
+	 * @param authenticationScheme the scheme to inject; never serialized into the session
+	 * @param principal the snapshot to rebuild from; {@code null} yields an anonymous context
+	 * @return a rebuilt, thread-ready user context
+	 * @since 3.0.0
+	 */
+	public static UserContext fromSessionPrincipal(AuthenticationScheme authenticationScheme, SessionPrincipal principal) {
+		UserContext userContext = new UserContext(authenticationScheme);
+		if (principal == null) {
+			return userContext;
+		}
+		if (principal.getUserUuid() != null) {
+			try {
+				User user = Context.getContextDAO().getUserByUuid(principal.getUserUuid());
+				if (user != null && !user.getRetired()) {
+					userContext.user = user;
+				} else {
+					log.debug("Session principal referenced a missing or retired user {}; leaving context anonymous",
+					    principal.getUserUuid());
+				}
+			} catch (Exception e) {
+				// Transient failure to re-fetch (e.g. DB/Hibernate) - preserve context as-is for session
+				// write decisions; the filter will not invalidate the session solely due to this failure.
+				// Missing/retired users are handled above (anonymous). We log the full exception at warn
+				// but don't replace the user (user remains null in a fresh context) — however we need to
+				// signal that this was a transient failure? Better: re-throw to let caller decide.
+				log.warn("Transient failure re-establishing user {} from session principal", principal.getUserUuid(), e);
+				throw e;
+			}
+		}
+		userContext.locale = principal.getLocale();
+		userContext.locationId = principal.getLocationId();
+		return userContext;
+	}
+
+	/**
 	 * Authenticate user with the provided credentials. The authentication scheme must be Spring wired,
 	 * see {@link Context#getAuthenticationScheme()}.
 	 *
