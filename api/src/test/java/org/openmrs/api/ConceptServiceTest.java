@@ -1802,6 +1802,30 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ConceptService#purgeConcept(Concept)
+	 */
+	@Test
+	public void purgeConcept_shouldEvictConceptIdsByMappingCache() {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-purgeConceptCache.xml");
+		Concept concept = conceptService.getConcept(9999);
+		assertNotNull(concept);
+
+		String code = "PURGEPROBE";
+		String source = "SNOMED CT";
+
+		// Populate the cache with the concept's mapping.
+		List<Integer> conceptIds = conceptService.getConceptIdsByMapping(code, source, true);
+		assertTrue(conceptIds.contains(concept.getId()));
+
+		// Purge the concept.
+		conceptService.purgeConcept(concept);
+
+		// The cache should have been evicted, so the purged concept must no longer be returned.
+		conceptIds = conceptService.getConceptIdsByMapping(code, source, true);
+		assertFalse(conceptIds.contains(concept.getId()));
+	}
+
+	/**
 	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
