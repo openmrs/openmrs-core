@@ -353,6 +353,8 @@ public abstract class BaseContextSensitiveTest {
 			//after that, just update, if there are any changes. This is for performance reasons.
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
 		}
+
+		runtimeProperties.setProperty("hibernate.search.backend.directory.type", "local-heap");
 		
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
 		if (appDataDir == null || !appDataDir.contains("appdir-for-unit-tests-")) {
