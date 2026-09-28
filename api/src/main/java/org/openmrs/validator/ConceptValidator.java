@@ -218,7 +218,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 			errors.reject("Concept.error.no.FullySpecifiedName");
 		}
 
-		if (!conceptToValidate.getConceptMappings().isEmpty() && !conceptToValidate.getRetired()) {
+		if (!conceptToValidate.getConceptMappings().isEmpty() && !Boolean.TRUE.equals(conceptToValidate.getRetired())) {
 			//validate all the concept maps
 			int index = 0;
 			Set<Integer> mappedTermIds = null;

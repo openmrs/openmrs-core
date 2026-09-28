@@ -25,43 +25,43 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AttributeMatcherPredicateTest {
+class AttributeMatcherPredicateTest {
 
 	private VisitAttributeType attributeType;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		attributeType = new VisitAttributeType();
 	}
 
 	@Test
-	public void test_shouldReturnTrueIfAnActiveAttributeHasTheGivenValue() {
+	void test_shouldReturnTrueIfAnActiveAttributeHasTheGivenValue() {
 		Visit visit = visitWithAttribute("abc", false);
 
 		assertTrue(matcher("abc").test(visit));
 	}
 
 	@Test
-	public void test_shouldReturnFalseIfNoActiveAttributeHasTheGivenValue() {
+	void test_shouldReturnFalseIfNoActiveAttributeHasTheGivenValue() {
 		Visit visit = visitWithAttribute("abc", false);
 
 		assertFalse(matcher("xyz").test(visit));
 	}
 
 	@Test
-	public void test_shouldIgnoreVoidedAttributes() {
+	void test_shouldIgnoreVoidedAttributes() {
 		Visit visit = visitWithAttribute("abc", true);
 
 		assertFalse(matcher("abc").test(visit));
 	}
 
 	@Test
-	public void test_shouldReturnFalseIfTheObjectHasNoAttributes() {
+	void test_shouldReturnFalseIfTheObjectHasNoAttributes() {
 		assertFalse(matcher("abc").test(new Visit()));
 	}
 
 	@Test
-	public void negate_shouldRemoveNonMatchingObjectsWhenUsedWithRemoveIf() {
+	void negate_shouldRemoveNonMatchingObjectsWhenUsedWithRemoveIf() {
 		Visit matching = visitWithAttribute("abc", false);
 		Visit nonMatching = visitWithAttribute("xyz", false);
 		List<Visit> visits = new ArrayList<>(Arrays.asList(matching, nonMatching));
