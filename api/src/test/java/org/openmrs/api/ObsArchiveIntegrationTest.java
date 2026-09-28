@@ -1467,6 +1467,70 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 	}
 
 	@Test
+	public void purgeOrder_shouldCascadeToArchivedObsGroupMembersEvenWhenMemberLacksOrderRef() throws Exception {
+		// Create a fresh order for this test to avoid modifying the standard test dataset
+		TestOrder order = new TestOrder();
+		order.setConcept(Context.getConceptService().getConcept(5497));
+		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setEncounter(Context.getEncounterService().getEncounter(3));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setCareSetting(Context.getOrderService().getCareSetting(1));
+		order = (TestOrder) Context.getOrderService().saveOrder(order, null);
+		createdOrderIds.add(order.getOrderId());
+		int orderId = order.getOrderId();
+
+		// Create a parent obs linked to this order
+		Obs parent = new Obs();
+		parent.setPerson(Context.getPersonService().getPerson(7));
+		parent.setConcept(Context.getConceptService().getConcept(5089));
+		parent.setObsDatetime(new Date());
+		parent.setLocation(Context.getLocationService().getLocation(1));
+		parent.setOrder(order);
+		parent.setEncounter(order.getEncounter());
+
+		// Create a child obs linked to the parent but not directly to the order
+		Obs child = new Obs();
+		child.setPerson(Context.getPersonService().getPerson(7));
+		child.setConcept(Context.getConceptService().getConcept(5089));
+		child.setValueNumeric(43.0);
+		child.setObsDatetime(new Date());
+		child.setLocation(Context.getLocationService().getLocation(1));
+		child.setEncounter(order.getEncounter());
+		parent.addGroupMember(child);
+
+		parent = obsService.saveObs(parent, "save parent with child for order cascade purge test");
+		int parentId = parent.getObsId();
+		Obs childAfterSave = parent.getGroupMembers().iterator().next();
+		int childId = childAfterSave.getObsId();
+		createdObsIds.add(parentId);
+		createdObsIds.add(childId);
+
+		// Void only the child and archive it
+		obsService.voidObs(childAfterSave, "test voiding child");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(childId);
+
+		Context.clearSession();
+
+		// Purge order with cascade
+		Order ord = Context.getOrderService().getOrder(orderId);
+		assertNotNull(ord);
+		Context.getOrderService().purgeOrder(ord, true);
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify archived child obs is gone
+		assertFalse(obsArchiveHelper.isArchived(childId), "Archived child obs should be cascaded and purged");
+		assertNull(obsService.getObs(parentId), "Live parent obs should be cascaded and purged");
+		assertNull(Context.getOrderService().getOrder(orderId), "Order should be purged");
+	}
+
+	@Test
 	public void fetchNextBatch_shouldExcludeObsLinkedToConceptProposal() throws Exception {
 		// 1. Create and save a new obs
 		Obs obs = createAndSaveSingleObs(42.0);
