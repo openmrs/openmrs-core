@@ -553,8 +553,8 @@ public class OpenmrsUtil {
 		} else if (d2 == null) {
 			return false;
 		}
-		// This short circuit protects against ObjectRetrievalFailureException
-		// when unvoidObs pulls back previous versions but keeps previous version intact.
+		// This short circuit protects against ObjectRetrievalFailureException when ImmutableEntityInterceptor.onFlushDirty
+		// evaluates an uninitialized proxy for an archived row (e.g., the previousVersion of an Obs).
 		if (d1 == d2) {
 			return true;
 		}
