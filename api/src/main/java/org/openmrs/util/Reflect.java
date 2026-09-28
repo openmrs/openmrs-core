@@ -9,8 +9,12 @@
  */
 package org.openmrs.util;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -83,6 +87,42 @@ public class Reflect {
 			fieldClass = fieldClass.getSuperclass();
 		}
 		return fields;
+	}
+
+	/**
+	 * Returns the value of the named JavaBeans property of the given object by calling its getter.
+	 * <p>
+	 * <strong>Should</strong> return the value of the property<br/>
+	 * <strong>Should</strong> read a boolean property through its is getter<br/>
+	 * <strong>Should</strong> fail if the property does not exist<br/>
+	 * <strong>Should</strong> fail if the property has no getter
+	 *
+	 * @param bean the object to read the property from
+	 * @param propertyName the name of the property
+	 * @return the value returned by the property's getter
+	 * @throws NoSuchMethodException if the object has no readable property with the given name
+	 * @throws IllegalAccessException if the getter cannot be accessed
+	 * @throws InvocationTargetException if the getter throws an exception
+	 * @since 3.0.0
+	 */
+	public static Object getPropertyValue(Object bean, String propertyName)
+	        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+		PropertyDescriptor[] descriptors;
+		try {
+			descriptors = Introspector.getBeanInfo(bean.getClass()).getPropertyDescriptors();
+		} catch (IntrospectionException e) {
+			NoSuchMethodException ex = new NoSuchMethodException(
+			        "Cannot introspect class '" + bean.getClass().getName() + "'");
+			ex.initCause(e);
+			throw ex;
+		}
+		for (PropertyDescriptor descriptor : descriptors) {
+			if (descriptor.getName().equals(propertyName) && descriptor.getReadMethod() != null) {
+				return descriptor.getReadMethod().invoke(bean);
+			}
+		}
+		throw new NoSuchMethodException(
+		        "Unknown property '" + propertyName + "' on class '" + bean.getClass().getName() + "'");
 	}
 
 	/**

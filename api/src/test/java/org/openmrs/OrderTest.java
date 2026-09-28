@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -90,7 +89,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 			}
 		}
 
-		Order copy = (Order) MethodUtils.invokeExactMethod(original, methodName, null);
+		Order copy = (Order) original.getClass().getMethod(methodName).invoke(original);
 		for (Field field : fields) {
 			field.setAccessible(true);
 			Object copyValue = field.get(copy);

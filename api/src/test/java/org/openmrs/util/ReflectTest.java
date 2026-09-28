@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -237,6 +238,95 @@ public class ReflectTest {
 		assertFalse(reflect.isSuperClass(genericType));
 	}
 
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldReturnTheValueOfTheProperty() throws Exception {
+		Bean bean = new Bean();
+		bean.setName("abc");
+
+		assertEquals("abc", Reflect.getPropertyValue(bean, "name"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldReadABooleanPropertyThroughItsIsGetter() throws Exception {
+		Bean bean = new Bean();
+		bean.setActive(true);
+
+		assertEquals(true, Reflect.getPropertyValue(bean, "active"));
+	}
+
+	/**
+	 * JavaBeans only recognises the is prefix for primitive booleans, see TRUNK-6749.
+	 *
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldNotTreatAnIsGetterReturningABoxedBooleanAsAGetter() {
+		assertThrows(NoSuchMethodException.class, () -> Reflect.getPropertyValue(new Bean(), "boxed"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldFailIfThePropertyDoesNotExist() {
+		assertThrows(NoSuchMethodException.class, () -> Reflect.getPropertyValue(new Bean(), "unknown"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldFailIfThePropertyHasNoGetter() {
+		assertThrows(NoSuchMethodException.class, () -> Reflect.getPropertyValue(new Bean(), "writeOnly"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldWrapAnExceptionThrownByTheGetter() {
+		assertThrows(InvocationTargetException.class, () -> Reflect.getPropertyValue(new Bean(), "failing"));
+	}
+
+	public static class Bean {
+
+		private String name;
+
+		private boolean active;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public boolean isActive() {
+			return active;
+		}
+
+		public void setActive(boolean active) {
+			this.active = active;
+		}
+
+		public Boolean isBoxed() {
+			return Boolean.TRUE;
+		}
+
+		public void setWriteOnly(String value) {
+		}
+
+		public String getFailing() {
+			throw new IllegalStateException("getter failure");
+		}
+	}
 }
 
 class NormalClass {
