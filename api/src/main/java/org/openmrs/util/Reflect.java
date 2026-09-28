@@ -21,6 +21,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class has convenience methods to find the fields on a class and superclass as well as
@@ -90,23 +91,55 @@ public class Reflect {
 	}
 
 	/**
-	 * Returns the value of the named JavaBeans property of the given object by calling its getter.
+	 * Returns the value of a JavaBeans property of the given object by calling its getter. The name may
+	 * be a nested path such as <code>person.uuid</code>, which is resolved one segment at a time; a
+	 * segment applied to a {@link Map} reads the entry with that key. Indexed (<code>a[0]</code>) and
+	 * mapped (<code>a(key)</code>) expressions are not supported.
 	 * <p>
 	 * <strong>Should</strong> return the value of the property<br/>
 	 * <strong>Should</strong> read a boolean property through its is getter<br/>
+	 * <strong>Should</strong> return the value of a nested property<br/>
+	 * <strong>Should</strong> read map entries by key<br/>
+	 * <strong>Should</strong> fail if a property in the middle of the path is null<br/>
 	 * <strong>Should</strong> fail if the property does not exist<br/>
 	 * <strong>Should</strong> fail if the property has no getter
 	 *
 	 * @param bean the object to read the property from
-	 * @param propertyName the name of the property
-	 * @return the value returned by the property's getter
-	 * @throws NoSuchMethodException if the object has no readable property with the given name
-	 * @throws IllegalAccessException if the getter cannot be accessed
-	 * @throws InvocationTargetException if the getter throws an exception
+	 * @param propertyName the name of the property, or a dot-separated path of property names
+	 * @return the value returned by the last property's getter
+	 * @throws NoSuchMethodException if an object on the path has no readable property with the given
+	 *             name
+	 * @throws IllegalAccessException if a getter cannot be accessed
+	 * @throws InvocationTargetException if a getter throws an exception
+	 * @throws IllegalArgumentException if bean or propertyName is null, or if a property in the middle
+	 *             of the path is null
 	 * @since 3.0.0
 	 */
 	public static Object getPropertyValue(Object bean, String propertyName)
 	        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+		if (bean == null) {
+			throw new IllegalArgumentException("No bean specified");
+		}
+		if (propertyName == null) {
+			throw new IllegalArgumentException("No name specified for bean class '" + bean.getClass() + "'");
+		}
+		Object current = bean;
+		String[] segments = propertyName.split("\\.", -1);
+		for (int i = 0; i < segments.length; i++) {
+			if (current == null) {
+				throw new IllegalArgumentException(
+				        "Null property value for '" + propertyName + "' on bean class '" + bean.getClass() + "'");
+			}
+			current = getSimplePropertyValue(current, segments[i]);
+		}
+		return current;
+	}
+
+	private static Object getSimplePropertyValue(Object bean, String propertyName)
+	        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+		if (bean instanceof Map) {
+			return ((Map<?, ?>) bean).get(propertyName);
+		}
 		PropertyDescriptor[] descriptors;
 		try {
 			descriptors = Introspector.getBeanInfo(bean.getClass()).getPropertyDescriptors();

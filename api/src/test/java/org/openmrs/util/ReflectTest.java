@@ -15,7 +15,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.BaseOpenmrsObject;
@@ -261,6 +263,49 @@ public class ReflectTest {
 	}
 
 	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldReturnTheValueOfANestedProperty() throws Exception {
+		Bean child = new Bean();
+		child.setName("child");
+		Bean bean = new Bean();
+		bean.setChild(child);
+
+		assertEquals("child", Reflect.getPropertyValue(bean, "child.name"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldReadMapEntriesByKey() throws Exception {
+		Bean bean = new Bean();
+		bean.setAttributes(Collections.singletonMap("key", "value"));
+
+		assertEquals("value", Reflect.getPropertyValue(bean, "attributes.key"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldFailIfAPropertyInTheMiddleOfThePathIsNull() {
+		assertThrows(IllegalArgumentException.class, () -> Reflect.getPropertyValue(new Bean(), "child.name"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldFailIfANestedPropertyDoesNotExist() {
+		Bean bean = new Bean();
+		bean.setChild(new Bean());
+
+		assertThrows(NoSuchMethodException.class, () -> Reflect.getPropertyValue(bean, "child.unknown"));
+	}
+
+	/**
 	 * JavaBeans only recognises the is prefix for primitive booleans, see TRUNK-6749.
 	 *
 	 * @see Reflect#getPropertyValue(Object,String)
@@ -300,6 +345,10 @@ public class ReflectTest {
 
 		private boolean active;
 
+		private Bean child;
+
+		private Map<String, String> attributes;
+
 		public String getName() {
 			return name;
 		}
@@ -316,11 +365,28 @@ public class ReflectTest {
 			this.active = active;
 		}
 
+		public Bean getChild() {
+			return child;
+		}
+
+		public void setChild(Bean child) {
+			this.child = child;
+		}
+
+		public Map<String, String> getAttributes() {
+			return attributes;
+		}
+
+		public void setAttributes(Map<String, String> attributes) {
+			this.attributes = attributes;
+		}
+
 		public Boolean isBoxed() {
 			return Boolean.TRUE;
 		}
 
 		public void setWriteOnly(String value) {
+			// intentionally empty: fixture for a property that has a setter but no getter
 		}
 
 		public String getFailing() {
