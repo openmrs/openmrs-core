@@ -86,6 +86,7 @@ import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.test.Containers;
+import org.openmrs.test.H2MetadataHandler;
 import org.openmrs.test.OpenmrsMetadataHandler;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.SkipBaseSetupAnnotationExecutionListener;
@@ -362,6 +363,8 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 			//after that, just update, if there are any changes. This is for performance reasons.
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
 		}
+		
+		runtimeProperties.setProperty("hibernate.search.backend.directory.type", "local-heap");
 		
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
 		if (appDataDir == null || !appDataDir.contains("appdir-for-unit-tests-")) {
@@ -867,6 +870,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		if (useInMemoryDatabase()) {
 			//Setup the db connection to use H2 config.
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new H2MetadataHandler());
 		}
 		else {
 			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());

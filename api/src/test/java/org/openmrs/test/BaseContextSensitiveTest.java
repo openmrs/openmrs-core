@@ -353,6 +353,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
 		}
 		
+		runtimeProperties.setProperty("hibernate.search.backend.directory.type", "local-heap");
+		
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
 		if (appDataDir == null || !appDataDir.contains("appdir-for-unit-tests-")) {
 			try {
@@ -843,6 +845,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (useInMemoryDatabase()) {
 			//Setup the db connection to use H2 config.
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new H2MetadataHandler());
 		}
 		else {
 			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());
