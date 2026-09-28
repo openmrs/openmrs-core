@@ -61,8 +61,6 @@ public class HibernateUserDAO implements UserDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(HibernateUserDAO.class);
 
-	private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-
 	/**
 	 * Hibernate session factory
 	 */
@@ -74,22 +72,26 @@ public class HibernateUserDAO implements UserDAO {
 	}
 
 	/**
+	 * Rejects any call that did not arrive via {@link org.openmrs.api.UserService}, which is the only
+	 * supported way to change a user's password or login credential. The permit the service raises
+	 * covers the whole of the single DAO call it brackets, so a guarded method reached from within
+	 * another one is allowed.
+	 *
+	 * @param message the message for the {@link DAOException} thrown when the permit is absent
+	 * @see UserServiceImpl.UserPasswordGuard
+	 */
+	private static void requireUserService(String message) {
+		if (!UserServiceImpl.UserPasswordGuard.isPermitted()) {
+			throw new DAOException(message);
+		}
+	}
+
+	/**
 	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
 	 */
 	@Override
 	public User saveUser(User user, String password) {
-		var possibleFrame = STACK_WALKER
-		        .walk(s -> s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst());
-
-		if (possibleFrame.isEmpty()) {
-			throw new DAOException("Could not determine if saveUser() was called from appropriate place");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!UserServiceImpl.class.equals(callerClass) && !HibernateUserDAO.class.equals(callerClass)
-			        && !"org.openmrs.api.db.UserDAOTest".equals(callerClass.getName())) {
-				throw new DAOException("Illegal attempt to save user from unknown caller");
-			}
-		}
+		requireUserService("Illegal attempt to save user from unknown caller");
 
 		// only change the user's password when creating a new user
 		boolean isNewUser = user.getUserId() == null;
@@ -352,18 +354,7 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws DAOException {
-		var possibleFrame = STACK_WALKER
-		        .walk(s -> s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst());
-
-		if (possibleFrame.isEmpty()) {
-			throw new DAOException("Could not determine if saveUser() was called from appropriate place");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!UserServiceImpl.class.equals(callerClass)
-			        && !"org.openmrs.api.db.UserDAOTest".equals(callerClass.getName())) {
-				throw new DAOException("Illegal attempt to change user password from unknown caller");
-			}
-		}
+		requireUserService("Illegal attempt to change user password from unknown caller");
 
 		User authUser = Context.getAuthenticatedUser();
 
@@ -385,18 +376,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws DAOException {
-		var possibleFrame = STACK_WALKER
-		        .walk(s -> s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst());
-
-		if (possibleFrame.isEmpty()) {
-			throw new DAOException("Could not determine if saveUser() was called from appropriate place");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!UserServiceImpl.class.equals(callerClass)
-			        && !"org.openmrs.api.db.UserDAOTest".equals(callerClass.getName())) {
-				throw new DAOException("Illegal attempt to change user password from unknown caller");
-			}
-		}
+		requireUserService("Illegal attempt to change user password from unknown caller");
 
 		User authUser = Context.getAuthenticatedUser();
 		updateUserPassword(hashedPassword, salt, authUser.getUserId(), new Date(), user.getUserId());
@@ -424,7 +404,7 @@ public class HibernateUserDAO implements UserDAO {
 		credentials.setDateChanged(dateChanged);
 		credentials.setUuid(changeForUser.getUuid());
 
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credentials);
+		saveLoginCredential(credentials);
 
 		// reset lockout
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
@@ -438,18 +418,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changePassword(String oldPassword, String newPassword) throws DAOException {
-		var possibleFrame = STACK_WALKER
-		        .walk(s -> s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst());
-
-		if (possibleFrame.isEmpty()) {
-			throw new DAOException("Could not determine if saveUser() was called from appropriate place");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!UserServiceImpl.class.equals(callerClass)
-			        && !"org.openmrs.api.db.UserDAOTest".equals(callerClass.getName())) {
-				throw new DAOException("Illegal attempt to change user password from unknown caller");
-			}
-		}
+		requireUserService("Illegal attempt to change user password from unknown caller");
 
 		User u = Context.getAuthenticatedUser();
 		LoginCredential credentials = getLoginCredential(u);
@@ -497,7 +466,7 @@ public class HibernateUserDAO implements UserDAO {
 		credentials.setDateChanged(new Date());
 		credentials.setChangedBy(u);
 
-		updateLoginCredential(credentials);
+		saveLoginCredential(credentials);
 	}
 
 	/**
@@ -649,20 +618,17 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void updateLoginCredential(LoginCredential credential) {
-		var possibleFrame = STACK_WALKER
-		        .walk(s -> s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst());
+		requireUserService("Illegal attempt to change user password from unknown caller");
 
-		if (possibleFrame.isEmpty()) {
-			throw new DAOException("Could not determine if saveUser() was called from appropriate place");
-		} else {
-			var callerClass = possibleFrame.get();
-			if (!HibernateUserDAO.class.equals(callerClass)
-			        && !"org.openmrs.api.db.UserDAOTest".equals(callerClass.getName())
-			        && !"org.openmrs.api.UserServiceTest".equals(callerClass.getName())) {
-				throw new DAOException("Illegal attempt to change user password from unknown caller");
-			}
-		}
+		saveLoginCredential(credential);
+	}
 
+	/**
+	 * Persists a credential without the service-layer check
+	 * {@link #updateLoginCredential(LoginCredential)} applies, for the DAO methods that write a
+	 * credential as part of an operation of their own.
+	 */
+	private void saveLoginCredential(LoginCredential credential) {
 		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credential);
 	}
 
@@ -796,7 +762,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void setUserActivationKey(LoginCredential credentials) {
-		HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), credentials);
+		saveLoginCredential(credentials);
 	}
 
 	/**
