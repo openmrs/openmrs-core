@@ -611,7 +611,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		return SearchQueryUnique
 		        .search(searchSessionFactory,
-		            SearchQueryUnique.newQuery(
+		            SearchQueryUnique.newProjectedQuery(
 		                ConceptName.class, f -> newConceptNamePredicate(f, name, !searchOnPhrase,
 		                    Collections.singletonList(locale), false, false, classes, null, datatypes, null, null),
 		                "concept.conceptId", this::multiLoadConcepts));
@@ -2073,7 +2073,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		boolean searchExactLocale = (exactLocale == null) ? false : exactLocale;
 
 		return SearchQueryUnique.search(searchSessionFactory,
-		    SearchQueryUnique.newQuery(ConceptName.class,
+		    SearchQueryUnique.newProjectedQuery(ConceptName.class,
 		        f -> newConceptNamePredicate(f, name, true, locales, searchExactLocale, false, null, null, null, null, null),
 		        "concept.conceptId", this::multiLoadConcepts));
 	}
@@ -2553,16 +2553,20 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 
 	/**
-	 * Order-preserving list form of {@link #multiLoadConceptsByHit(List)} for searches that return the
-	 * concepts directly rather than pairing them into a {@link ConceptSearchResult}. Hits whose concept
-	 * is no longer present in the database - a stale index entry - are dropped from the results.
+	 * Order-preserving loader for the searches that return the concepts directly rather than pairing
+	 * them into a {@link ConceptSearchResult}. Hits whose concept is no longer present in the database
+	 * - a stale index entry - are dropped from the results.
 	 *
-	 * @param names the page of concept-name hits, in the order they should appear in the results
+	 * @param conceptIds the page's concept ids, in the order they should appear in the results
 	 * @return the concepts for the page, in hit order, with missing rows removed
 	 */
-	private List<Concept> multiLoadConcepts(List<ConceptName> names) {
-		Map<Integer, Concept> conceptsById = multiLoadConceptsByHit(names);
-		return names.stream().map(n -> conceptsById.get(n.getConcept().getConceptId())).filter(Objects::nonNull)
-		        .collect(Collectors.toList());
+	private List<Concept> multiLoadConcepts(List<Object> conceptIds) {
+		List<Concept> concepts = sessionFactory.getCurrentSession().findMultiple(Concept.class, conceptIds).stream()
+		        .filter(Objects::nonNull).collect(Collectors.toList());
+		if (concepts.size() < conceptIds.size()) {
+			log.debug("Dropped {} concept search hit(s) with no matching row (stale search index?)",
+			    conceptIds.size() - concepts.size());
+		}
+		return concepts;
 	}
 }

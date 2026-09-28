@@ -139,6 +139,15 @@ public class UserContextTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	void addProxyPrivilege_shouldThrowExceptionForNullString() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+
+		// act & assert
+		assertThrows(IllegalArgumentException.class, () -> userContext.addProxyPrivilege((String) null));
+	}
+
+	@Test
 	void removeProxyPrivilege_shouldRemoveMultiplePrivileges() {
 		// arrange
 		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
@@ -163,6 +172,19 @@ public class UserContextTest extends BaseContextSensitiveTest {
 
 		// act
 		userContext.removeProxyPrivilege((String[]) null);
+
+		// assert - should still have the privilege since null was passed
+		assertThat(userContext.hasPrivilege("Privilege1"), is(true));
+	}
+
+	@Test
+	void removeProxyPrivilege_shouldHandleNullStringGracefully() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+		userContext.addProxyPrivilege("Privilege1");
+
+		// act
+		userContext.removeProxyPrivilege((String) null);
 
 		// assert - should still have the privilege since null was passed
 		assertThat(userContext.hasPrivilege("Privilege1"), is(true));

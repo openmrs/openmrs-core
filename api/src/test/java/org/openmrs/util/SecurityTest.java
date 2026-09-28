@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -70,6 +71,27 @@ public class SecurityTest {
 	public void hashMatches_shouldMatchStringsHashedWithIncorrectSha1Algorithm() {
 		assertTrue(Security.hashMatches("4a1750c8607dfa237de36c6305715c223415189",
 		    "test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
+	}
+
+	/**
+	 * @see Security#encodePassword(String)
+	 * @see Security#checkPassword(String,String)
+	 */
+	@Test
+	public void checkPassword_shouldMatchPasswordsEncodedTogetherWithTheirSalt() {
+		String salt = Security.getRandomToken();
+		String encoded = Security.encodePassword("testPassword" + salt);
+		assertTrue(Security.checkPassword(encoded, "testPassword" + salt));
+		assertFalse(Security.checkPassword(encoded, "wrongPassword" + salt));
+	}
+
+	/**
+	 * @see Security#checkPassword(String,String)
+	 */
+	@Test
+	public void checkPassword_shouldReturnFalseForNullPasswordOrStoredValue() {
+		assertFalse(Security.checkPassword(null, "anyPassword"));
+		assertFalse(Security.checkPassword("storedValue", null));
 	}
 
 	/**

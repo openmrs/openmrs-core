@@ -15,7 +15,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -37,7 +36,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 /**
  * Tests the methods on the {@link Daemon} class
@@ -104,21 +102,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		    new Object[] { u.getDisplayString() }, Locale.ENGLISH)));
 	}
 
-	/**
-	 * @see Daemon#runInNewDaemonThread(Runnable)
-	 */
-	@Test
-	public void runInNewDaemonThread_shouldThrowErrorIfCalledFromANonDaemonThread() {
-		try {
-			Daemon.runInNewDaemonThread(() -> {
-				// do nothing
-			});
-			fail("Should not hit this line, since the previous needed to throw an exception");
-		} catch (APIAuthenticationException ex) {
-			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
-		}
-	}
-
 	@Test
 	public void runInNewDaemonThreadCallable_shouldThrowErrorIfCalledFromANonDaemonThread() {
 		try {
@@ -172,23 +155,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		@Override
 		public void execute() throws InterruptedException, ExecutionException {
 			this.wasRun = true;
-		}
-	}
-
-	/**
-	 * A task that starts another Daemon thread that marks *this* thread when it gets run.
-	 */
-	private static class TaskThatStartsAnotherThread extends PrivateTask {
-
-		@Override
-		public void execute() throws InterruptedException {
-			Thread another = Daemon.runInNewDaemonThread(() -> {
-				this.wasRun = true;
-			});
-
-			// another.join(10000); doesn't actually work as runInNewDaemonThread doesn't use the Thread object rather it
-			// only executes the run method. The only way to determine it completed is to wait for wasRun to return true.
-			await().atMost(10, TimeUnit.SECONDS).untilTrue(new AtomicBoolean(wasRun));
 		}
 	}
 

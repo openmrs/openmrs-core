@@ -41,7 +41,6 @@ The following dependencies are licensed under the [Apache License, Version 2.0](
 - Liquibase (`org.liquibase:liquibase-core`)
 - S3Mock (`com.adobe.testing:s3mock-testcontainers`)
 - Spring Framework (`org.springframework:spring-core`, `spring-beans`, `spring-context`, `spring-context-support`, `spring-aop`, `spring-orm`, `spring-tx`, `spring-jdbc`, `spring-web`, `spring-webmvc`, `spring-oxm`, `spring-test`)
-- Xerces (`xerces:xercesImpl`)
 
 ### Eclipse Public License 2.0
 
