@@ -17,7 +17,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
@@ -228,7 +227,7 @@ public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
 		private final List<String> attributeWrites = new ArrayList<>();
 
 		@Override
-		public void setAttribute(@NonNull String name, Object value) {
+		public void setAttribute(String name, Object value) {
 			attributeWrites.add(name);
 			super.setAttribute(name, value);
 		}
