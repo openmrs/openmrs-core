@@ -46,6 +46,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.openmrs.web.Listener;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebDaemon;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.initialization.InitializationFilter;
@@ -96,7 +97,7 @@ public class UpdateFilter extends StartupFilter {
 	 * Variable set as soon as the update is done or verified to not be needed so that future calls
 	 * through this filter are a simple boolean check
 	 */
-	private static boolean updatesRequired = true;
+	private static volatile boolean updatesRequired = true;
 
 	private UpdateFilterCompletion updateJob;
 
@@ -526,7 +527,15 @@ public class UpdateFilter extends StartupFilter {
 	 */
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
-		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page")) && !updatesRequired();
+		if (updatesRequired()) {
+			return false;
+		}
+		// Once updates finish, only the progress page's final poll still needs this filter; without it
+		// reviewchanges.vm never leaves the wizard. Check the servlet path first so other requests aren't parsed.
+		if (!("/" + WebConstants.SETUP_PAGE_URL).equals(httpRequest.getServletPath())) {
+			return true;
+		}
+		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"));
 	}
 
 	/**
@@ -537,14 +546,14 @@ public class UpdateFilter extends StartupFilter {
 	 * @see Listener#isSetupNeeded()
 	 * @see Listener#contextInitialized(ServletContextEvent)
 	 */
-	public static synchronized boolean updatesRequired() {
+	public static boolean updatesRequired() {
 		return updatesRequired;
 	}
 
 	/**
 	 * @param updatesRequired the updatesRequired to set
 	 */
-	public static synchronized void setUpdatesRequired(boolean updatesRequired) {
+	public static void setUpdatesRequired(boolean updatesRequired) {
 		UpdateFilter.updatesRequired = updatesRequired;
 	}
 
@@ -749,6 +758,7 @@ public class UpdateFilter extends StartupFilter {
 							return;
 						} catch (Exception e) {
 							log.error("Unable to update the database", e);
+							reportError(ErrorMessageConstants.UPDATE_ERROR_UNABLE, e.getMessage());
 							return;
 						}
 
@@ -758,13 +768,10 @@ public class UpdateFilter extends StartupFilter {
 						} catch (Exception e) {
 							log.error("Unable to complete the startup.", e);
 							reportError(ErrorMessageConstants.UPDATE_ERROR_COMPLETE_STARTUP, e.getMessage());
-							return;
 						}
-
-						// set this so that the wizard isn't run again on next page load
-						setUpdatesRequired(false);
 					} finally {
 						if (!hasErrors()) {
+							// set this so that the wizard isn't run again on next page load
 							setUpdatesRequired(false);
 						}
 						//reset to let other user's make requests after updates are run
