@@ -83,6 +83,13 @@
 		<property name="severity" value="warning" default="error"/>
 	</module>
 
+	<!-- Since Checkstyle 8.24, LineLength must be a direct child of Checker rather than TreeWalker -->
+	<module name="LineLength">
+		<property name="fileExtensions" value="java"/>
+		<property name="max" value="125"/>
+		<property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+	</module>
+
 	<module name="TreeWalker">
 		<!-- Defines expected tab width for checks that require a tab width -->
 		<property name="tabWidth" value="4"/>
@@ -98,10 +105,6 @@
 			<property name="allowEscapesForControlCharacters" value="true"/>
 			<property name="allowByTailComment" value="true"/>
 			<property name="allowNonPrintableEscapes" value="true"/>
-		</module>
-		<module name="LineLength">
-			<property name="max" value="125"/>
-			<property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
 		</module>
 		<module name="AvoidStarImport">
 			<property name="severity" value="error"/>
@@ -129,7 +132,6 @@
 		</module>
 		<module name="LeftCurly">
 			<property name="option" value="eol" />
-			<property name="maxLineLength" value="100"/>
 		</module>
 		<module name="RightCurly">
 			<property name="id" value="RightCurlySame"/>
@@ -340,13 +342,10 @@
 			<property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
 		</module>
 		<module name="JavadocMethod">
-			<property name="scope" value="public"/>
+			<property name="accessModifiers" value="public"/>
 			<property name="allowMissingParamTags" value="true"/>
-			<property name="allowMissingThrowsTags" value="true"/>
 			<property name="allowMissingReturnTag" value="true"/>
-			<property name="minLineCount" value="2"/>
 			<property name="allowedAnnotations" value="Override, Test"/>
-			<property name="allowThrowsTagsForSubclasses" value="true"/>
 		</module>
 		<module name="MethodName">
 			<property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
