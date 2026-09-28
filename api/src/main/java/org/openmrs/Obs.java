@@ -1201,7 +1201,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 				previousVersion.getUuid();
 				return previousVersion;
 			} catch (ObjectNotFoundException e) {
-				this.previousVersion = null;
+				return null;
 			}
 		}
 		return null;

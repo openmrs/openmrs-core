@@ -286,8 +286,8 @@
 			<column name="description" value="Periodically archives voided observations to the archive tables."/>
 			<column name="schedulable_class" value="org.openmrs.scheduler.tasks.ObsArchivingTask"/>
 			<column name="repeat_interval" valueNumeric="86400"/> <!-- 24 hours -->
-			<column name="start_on_startup" valueBoolean="true"/>
-			<column name="started" valueBoolean="false"/>
+			<column name="start_on_startup" valueBoolean="false"/>
+			<column name="started" valueBoolean="true"/>
 			<column name="date_created" valueDate="2026-06-07T00:00:00"/>
 			<column name="created_by" valueNumeric="1"/>
 			<column name="uuid" value="3c8c279a-8b1e-412e-9a88-7bba5b702344"/>
