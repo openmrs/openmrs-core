@@ -156,12 +156,30 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	
+	<!-- Spring Session filter (TRUNK-6415), before OpenmrsFilter. OptionalDelegatingFilterProxy makes it
+	     a pass-through unless session.distributed=true. -->
 	<filter>
-		<filter-name>OpenmrsFilter</filter-name> 
-		<filter-class>org.openmrs.web.filter.OpenmrsFilter</filter-class> 
+		<filter-name>springSessionRepositoryFilter</filter-name>
+		<filter-class>org.openmrs.web.filter.OptionalDelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>springSessionRepositoryFilter</param-value>
+		</init-param>
 	</filter>
 	<filter-mapping>
-		<filter-name>OpenmrsFilter</filter-name> 
+		<filter-name>springSessionRepositoryFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>ERROR</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>REQUEST</dispatcher>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>OpenmrsFilter</filter-name>
+		<filter-class>org.openmrs.web.filter.OpenmrsFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>OpenmrsFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 		<dispatcher>ERROR</dispatcher>
 		<dispatcher>FORWARD</dispatcher>
