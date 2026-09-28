@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
@@ -286,7 +285,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		for (Obs o : obsToRemove) {
 			encounter.removeObs(o);
 			Set<Obs> groupMembers = o.getGroupMembers(true);
-			if (CollectionUtils.isNotEmpty(groupMembers)) {
+			if (groupMembers != null && !groupMembers.isEmpty()) {
 				removeGivenObsAndTheirGroupMembersFromEncounter(groupMembers, encounter);
 			}
 		}
@@ -302,7 +301,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		for (Obs o : obsToAdd) {
 			encounter.addObs(o);
 			Set<Obs> groupMembers = o.getGroupMembers(true);
-			if (CollectionUtils.isNotEmpty(groupMembers)) {
+			if (groupMembers != null && !groupMembers.isEmpty()) {
 				addGivenObsAndTheirGroupMembersToEncounter(groupMembers, encounter);
 			}
 		}

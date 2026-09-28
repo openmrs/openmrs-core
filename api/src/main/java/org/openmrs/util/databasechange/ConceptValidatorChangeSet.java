@@ -19,15 +19,13 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptName;
 import org.openmrs.api.ConceptNameType;
@@ -285,7 +283,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 
 			//set default locale for names with no locale, if there was no fully specified name for the current concept,
 			//set the first name found as the fully specified and drop locale preferred mark and short name concept name type
-			if (!CollectionUtils.isEmpty(namesWithNoLocale)) {
+			if (namesWithNoLocale != null && !namesWithNoLocale.isEmpty()) {
 				for (ConceptName conceptName : namesWithNoLocale) {
 					conceptName.setLocale(defaultLocale);
 					reportUpdatedName(conceptName, "The locale for ConceptName with id " + conceptName.getConceptNameId()
@@ -320,10 +318,10 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 
 		}
 
-		if (!MapUtils.isEmpty(localeDuplicateNamesMap)) {
+		if (localeDuplicateNamesMap != null && !localeDuplicateNamesMap.isEmpty()) {
 			for (Map.Entry<Locale, Set<String>> entry : localeDuplicateNamesMap.entrySet()) {
 				//no duplicates found in the locale
-				if (CollectionUtils.isEmpty(entry.getValue())) {
+				if (entry.getValue() == null || entry.getValue().isEmpty()) {
 					continue;
 				}
 
@@ -369,7 +367,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		//Pick the first name in any locale by searching in order from the allowed locales
 		for (Locale allowedLoc : allowedLocales) {
 			List<ConceptName> possibleFullySpecNames = localeConceptNamesMap.get(allowedLoc);
-			if (CollectionUtils.isEmpty(possibleFullySpecNames)) {
+			if (possibleFullySpecNames == null || possibleFullySpecNames.isEmpty()) {
 				continue;
 			}
 
@@ -494,10 +492,9 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 * @param connection The database connection
 	 * @return A list of allowed locales
 	 */
-	@SuppressWarnings("unchecked")
 	private List<Locale> getAllowedLocalesList(JdbcConnection connection) {
 		Statement stmt = null;
-		ListOrderedSet allowedLocales = new ListOrderedSet();
+		Set<Locale> allowedLocales = new LinkedHashSet<>();
 
 		try {
 			//get the default locale
@@ -555,7 +552,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		//if it isn't among
 		allowedLocales.add(new Locale("en"));
 
-		return allowedLocales.asList();
+		return new ArrayList<>(allowedLocales);
 	}
 
 	/**

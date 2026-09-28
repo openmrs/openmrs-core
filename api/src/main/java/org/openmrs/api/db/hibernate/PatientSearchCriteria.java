@@ -18,7 +18,6 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.openmrs.Encounter;
@@ -240,13 +239,15 @@ public class PatientSearchCriteria {
 			return PatientSearchMode.PATIENT_SEARCH_BY_NAME_OR_IDENTIFIER;
 		}
 
-		if (!StringUtils.isBlank(name) && StringUtils.isBlank(identifier) && CollectionUtils.isEmpty(identifierTypes)) {
+		if (!StringUtils.isBlank(name) && StringUtils.isBlank(identifier)
+		        && (identifierTypes == null || identifierTypes.isEmpty())) {
 			return PatientSearchMode.PATIENT_SEARCH_BY_NAME;
 		}
 
 		// de Morgan's law coming to fruition: (!A||!B) <=> !(A&&B)
 		//
-		if (StringUtils.isBlank(name) && !(StringUtils.isBlank(identifier) && CollectionUtils.isEmpty(identifierTypes))) {
+		if (StringUtils.isBlank(name)
+		        && !(StringUtils.isBlank(identifier) && (identifierTypes == null || identifierTypes.isEmpty()))) {
 			return PatientSearchMode.PATIENT_SEARCH_BY_IDENTIFIER;
 		}
 
@@ -327,7 +328,7 @@ public class PatientSearchCriteria {
 		}
 
 		// do the type restriction
-		if (!CollectionUtils.isEmpty(identifierTypes)) {
+		if (identifierTypes != null && !identifierTypes.isEmpty()) {
 			predicates.add(idsJoin.get("identifierType").in(identifierTypes));
 		}
 

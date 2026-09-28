@@ -16,7 +16,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
@@ -171,7 +170,7 @@ public final class Daemon {
 				throw new APIException("User.creating.already.exists", new Object[] { user.getDisplayString() });
 			}
 
-			if (!CollectionUtils.isEmpty(roleNames)) {
+			if (roleNames != null && !roleNames.isEmpty()) {
 				List<Role> roles = roleNames.stream().map(roleName -> Context.getUserService().getRole(roleName))
 				        .collect(Collectors.toList());
 				roles.forEach(user::addRole);
