@@ -646,7 +646,8 @@ public class WebModuleUtil {
 	 * Removes all associated {@link ModuleFilterMapping}s and filter registrations under lock, then
 	 * invokes {@link Filter#destroy()} for each filter. Does nothing if {@code module} is {@code null}.
 	 *
-	 * @param module the {@link Module} whose filters and filter mappings should be unloaded and destroyed
+	 * @param module the {@link Module} whose filters and filter mappings should be unloaded and
+	 *            destroyed
 	 * @should destroy and remove all filters and filter mappings for the given module
 	 * @should not fail if module is null
 	 * @should continue destroying remaining filters if one throws an exception
