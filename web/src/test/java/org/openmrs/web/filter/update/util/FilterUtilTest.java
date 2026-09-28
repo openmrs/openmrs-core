@@ -10,11 +10,13 @@
 package org.openmrs.web.filter.update.util;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -74,6 +76,26 @@ public class FilterUtilTest extends BaseWebContextSensitiveTest {
 		// and returns null. On the earlier string-concatenated query this payload resolved a single
 		// row and returned "7", so this asserts the value is now treated as data, not query text.
 		assertNull(FilterUtil.getGlobalPropertyValue("nonexistent' OR property = 'concept.true"));
+	}
+
+	@Test
+	public void storeLocale_shouldReturnFalseForNullLocale() {
+		assertFalse(FilterUtil.storeLocale(null));
+	}
+
+	@Test
+	public void storeLocale_shouldReturnFalseForBlankLocale() {
+		assertFalse(FilterUtil.storeLocale(""));
+	}
+
+	@Test
+	public void restoreLocale_shouldReturnDefaultLocaleForNullUsername() {
+		assertEquals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE, FilterUtil.restoreLocale(null));
+	}
+
+	@Test
+	public void restoreLocale_shouldReturnDefaultLocaleForBlankUsername() {
+		assertEquals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE, FilterUtil.restoreLocale(""));
 	}
 
 }
