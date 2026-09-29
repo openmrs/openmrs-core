@@ -124,7 +124,7 @@
 
 		<!-- Testing -->
 		<junitVersion>6.1.3</junitVersion>
-		<mockitoVersion>5.23.0</mockitoVersion>
+		<mockitoVersion>5.24.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<h2Version>2.5.250</h2Version>
 		<dbunitVersion>3.5.2</dbunitVersion>
