@@ -12,9 +12,12 @@ package org.openmrs.api.db.hibernate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.TypedQuery;
@@ -97,16 +100,28 @@ public class HibernateObsDAO implements ObsDAO {
 			throw new APIException("Obs must be committed before its version history can be retrieved");
 		}
 
-		// Use a single recursive CTE to collect all obs_ids in the previousVersion chain,
-		// then load the Obs entities in one IN-clause query.
+		// Use a recursive CTE to collect the obs_ids in the previousVersion chain, then load the Obs
+		// entities in one IN-clause query. MySQL (cte_max_recursion_depth) and MariaDB
+		// (max_recursive_iterations) stop a recursive CTE after 1000 iterations by default, so each query
+		// walks at most 1000 versions and the next one resumes from where it stopped, until the chain ends
+		// or loops back on itself.
 		String cteSql = "WITH RECURSIVE version_chain (obs_id, previous_version, depth) AS ("
 		        + "  SELECT obs_id, previous_version, 0 FROM obs WHERE obs_id = :startId UNION ALL"
 		        + "  SELECT o.obs_id, o.previous_version, vc.depth + 1 FROM obs o"
-		        + "  INNER JOIN version_chain vc ON o.obs_id = vc.previous_version)"
-		        + " SELECT obs_id FROM version_chain ORDER BY depth";
+		        + "  INNER JOIN version_chain vc ON o.obs_id = vc.previous_version WHERE vc.depth < 999)"
+		        + " SELECT obs_id, previous_version FROM version_chain ORDER BY depth";
 
 		Session session = sessionFactory.getCurrentSession();
-		List<Integer> ids = session.createNativeQuery(cteSql, Integer.class).setParameter("startId", obs.getObsId()).list();
+		Set<Integer> ids = new LinkedHashSet<>();
+		Set<Integer> visited = new HashSet<>();
+		Integer startId = obs.getObsId();
+		while (startId != null && visited.add(startId)) {
+			List<Object[]> rows = session.createNativeQuery(cteSql, Object[].class).setParameter("startId", startId).list();
+			for (Object[] row : rows) {
+				ids.add(((Number) row[0]).intValue());
+				startId = row[1] == null ? null : ((Number) row[1]).intValue();
+			}
+		}
 
 		if (ids.isEmpty()) {
 			return Collections.emptyList();

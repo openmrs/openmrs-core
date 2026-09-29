@@ -2806,6 +2806,37 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * @see ObsService#getObsVersionHistory(Obs)
 	 */
 	@Test
+	public void getObsVersionHistory_shouldLoadChainsLongerThanTheRecursiveCteLimit() {
+		// MySQL and MariaDB abort a recursive CTE after 1000 iterations, so the lookup walks the chain in
+		// batches and resumes from the last version each query reached. A chain of 1001 versions needs two
+		// such queries, and the original version at the far end of the chain must still come back.
+		int chainLength = 1001;
+		Obs original = buildObservation();
+		Obs prev = Context.getObsService().saveObs(original, "chain original");
+		for (int i = 1; i < chainLength; i++) {
+			prev.setValueNumeric(60.0 + i);
+			prev = Context.getObsService().saveObs(prev, "chain revision " + i);
+		}
+
+		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
+		sessionFactory.getCurrentSession().flush();
+		sessionFactory.getCurrentSession().clear();
+		Statistics stats = sessionFactory.getStatistics();
+		stats.clear();
+
+		List<Obs> versions = obsService.getObsVersionHistory(prev);
+		assertEquals(chainLength, versions.size());
+		assertEquals(prev.getObsId(), versions.get(0).getObsId());
+		assertEquals(original.getObsId(), versions.get(chainLength - 1).getObsId());
+
+		// two CTE batches plus the single IN-clause load that fetches the entities
+		assertEquals(3, stats.getPrepareStatementCount());
+	}
+
+	/**
+	 * @see ObsService#getObsVersionHistory(Obs)
+	 */
+	@Test
 	public void getObsVersionHistory_shouldReturnOnlyTheObsItselfWhenNoPreviousVersionExists() {
 		executeDataSet(PREVIOUS_VERSIONS_OBS_XML);
 
