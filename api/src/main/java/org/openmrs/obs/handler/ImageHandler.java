@@ -76,37 +76,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 
 		// Raw image
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
-			String mimeType = null;
-			BufferedImage img = null;
-
-			DataWithMetadata dwm = null;
-			try {
-				dwm = storageService.getDataWithMetadata(key);
-			} catch (IOException e) {
-				log.error("Trying to read file: {}", key, e);
-				// Do not fail if image is missing
-			}
-
-			if (dwm != null) {
-				try (InputStream in = dwm.data()) {
-					ImageInputStream imageIn = ImageIO.createImageInputStream(in);
-					Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(imageIn);
-					if (imageReaders.hasNext()) {
-						ImageReader imgReader = imageReaders.next();
-						mimeType = "image/" + imgReader.getFormatName().toLowerCase();
-						ImageReadParam param = imgReader.getDefaultReadParam();
-						imgReader.setInput(imageIn, true, true);
-						try {
-							img = imgReader.read(0, param);
-						} finally {
-							imgReader.dispose();
-						}
-					}
-				} catch (IOException e) {
-					log.error("Trying to read file: {}", key, e);
-					// Do not fail if image is missing
-				}
-			}
+			LoadedImage loaded = readImage(key);
 
 			String filename = parseFilename(obs, "image");
 
@@ -116,10 +86,10 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 				filename = key.replaceFirst(getObsDir(), "");
 			}
 
-			ComplexData complexData = new ComplexData(filename, img);
-			complexData.setMimeType(mimeType); // Set mimeType based on file content and not filename
-			if (img != null) { // Do not inject if image is missing
-				injectMissingMetadata(key, complexData, dwm.metadata());
+			ComplexData complexData = new ComplexData(filename, loaded.image());
+			complexData.setMimeType(loaded.mimeType()); // Set mimeType based on file content and not filename
+			if (loaded.image() != null) { // Do not inject if image is missing
+				injectMissingMetadata(key, complexData, loaded.metadata());
 			}
 			complexData.setLength(null); // Reset as loaded image size is not equal to file size
 
@@ -131,6 +101,56 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		}
 
 		return obs;
+	}
+
+	/**
+	 * Reads and decodes the image stored under the given key, along with the mime type derived from its
+	 * content and the metadata that came with it. A missing or unreadable image is not an error here:
+	 * the returned image is then null, and the caller is expected to carry on without it.
+	 *
+	 * @param key the storage key
+	 * @return the decoded image, which may be null if the image is missing or could not be decoded
+	 */
+	private LoadedImage readImage(String key) {
+		DataWithMetadata dwm;
+		try {
+			dwm = storageService.getDataWithMetadata(key);
+		} catch (IOException e) {
+			log.error("Trying to read file: {}", key, e);
+			// Do not fail if image is missing
+			return new LoadedImage(null, null, null);
+		}
+
+		String mimeType = null;
+		BufferedImage img = null;
+		try (InputStream in = dwm.data()) {
+			ImageInputStream imageIn = ImageIO.createImageInputStream(in);
+			Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(imageIn);
+			if (imageReaders.hasNext()) {
+				ImageReader imgReader = imageReaders.next();
+				mimeType = "image/" + imgReader.getFormatName().toLowerCase();
+				ImageReadParam param = imgReader.getDefaultReadParam();
+				imgReader.setInput(imageIn, true, true);
+				try {
+					img = imgReader.read(0, param);
+				} finally {
+					imgReader.dispose();
+				}
+			}
+		} catch (IOException e) {
+			log.error("Trying to read file: {}", key, e);
+			// Do not fail if image is missing
+		}
+
+		return new LoadedImage(img, mimeType, dwm.metadata());
+	}
+
+	/**
+	 * The outcome of reading an image: the decoded image, the mime type derived from its content, and
+	 * the storage metadata that came with it. The image is null when it is missing or could not be
+	 * decoded.
+	 */
+	private record LoadedImage(BufferedImage image, String mimeType, ObjectMetadata metadata) {
 	}
 
 	/**

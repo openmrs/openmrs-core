@@ -270,6 +270,18 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 
 	@Override
 	public boolean exists(String key) {
-		return fileExists(storageDir.resolve(encodeKey(key))) || fileExists(getLegacyStorageDir().resolve(key));
+		if (fileExists(storageDir.resolve(encodeKey(key)))) {
+			return true;
+		}
+
+		// The legacy location is resolved from the raw key, so the key must be checked to be inside it
+		// before its existence is reported
+		Path legacyPath = getLegacyStorageDir().resolve(key);
+		if (fileExists(legacyPath)) {
+			assertKeyInLegacyStorageDir(legacyPath, key);
+			return true;
+		}
+
+		return false;
 	}
 }

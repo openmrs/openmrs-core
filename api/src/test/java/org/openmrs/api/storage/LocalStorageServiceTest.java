@@ -211,6 +211,11 @@ public class LocalStorageServiceTest extends BaseStorageServiceTest {
 				storageService.getData("../test");
 			});
 			assertThat(e2.getMessage(), is("Key must not point outside legacy storage dir. Wrong key: ../test"));
+
+			IllegalArgumentException e3 = assertThrows(IllegalArgumentException.class, () -> {
+				storageService.exists("../test");
+			});
+			assertThat(e3.getMessage(), is("Key must not point outside legacy storage dir. Wrong key: ../test"));
 		} finally {
 			if (testFile.toFile().exists()) {
 				testFile.toFile().delete();
