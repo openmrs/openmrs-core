@@ -197,25 +197,52 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * You should be able to remove a child location from a location.
+	 * Removing a child location from a location should not delete the child location.
 	 *
 	 * @see LocationService#saveLocation(Location)
 	 */
 	@Test
-	public void saveLocation_shouldRemoveChildLocationFromLocation() {
+	public void saveLocation_shouldNotDeleteChildLocationWhenRemovedFromParent() {
 		LocationService ls = Context.getLocationService();
 
 		// Retrieving a location with initially 2 child locations
 		Location location = ls.getLocation(1);
+		Location child = location.getChildLocations().iterator().next();
 
-		// Removing a child
-		location.removeChildLocation(location.getChildLocations().iterator().next());
+		// Removing a child from the collection should not delete the child location.
+		location.removeChildLocation(child);
 		ls.saveLocation(location);
 
-		Location newSavedLocation = ls.getLocation(location.getLocationId());
+		Context.flushSession();
+		Context.clearSession();
 
-		// Saved location should have 1 child locations now
-		assertEquals(1, newSavedLocation.getChildLocations().size());
+		assertNotNull(ls.getLocation(child.getLocationId()));
+	}
+
+	/**
+	 * @see Location#removeChildLocation(Location)
+	 */
+	@Test
+	public void removeChildLocation_shouldNotDeleteLocationWhenReparenting() {
+		LocationService locationService = Context.getLocationService();
+
+		Location child = locationService.getLocation(2);
+		Location oldParent = child.getParentLocation();
+		Location newParent = locationService.getLocation(3);
+
+		// Removing the child should not delete it when it is re-parented.
+		oldParent.removeChildLocation(child);
+		child.setParentLocation(newParent);
+		locationService.saveLocation(child);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		// Reload the child to verify that it still exists after the relationship change.
+		Location reloadedChild = locationService.getLocation(child.getLocationId());
+
+		assertNotNull(reloadedChild);
+		assertEquals(newParent.getLocationId(), reloadedChild.getParentLocation().getLocationId());
 	}
 
 	/**

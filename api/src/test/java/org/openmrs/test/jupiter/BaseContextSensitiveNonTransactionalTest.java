@@ -357,6 +357,8 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "validate");
 		}
 
+		runtimeProperties.setProperty("hibernate.search.backend.directory.type", "local-heap");
+
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
 		if (appDataDir == null || !appDataDir.contains("appdir-for-unit-tests-")) {
 			try {
