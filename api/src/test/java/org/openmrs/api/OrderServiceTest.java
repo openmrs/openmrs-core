@@ -22,6 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -234,49 +235,118 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * Simulate three application nodes by using three independent OrderServiceImpl instances. Each
+	 * instance has its own in-memory order number block, while all instances share the same database
+	 * and order number seed.
+	 *
 	 * @throws Exception
 	 * @see OrderNumberGenerator#getNewOrderNumber(OrderContext)
 	 */
 	@Test
-	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
+	public void getNewOrderNumber_shouldReturnUniqueOrderNumbersWhenCalledConcurrentlyAcrossMultipleServiceInstances()
 	        throws Exception {
+		//use clean OrderService not affected by previous tests
+		OrderService orderServiceNode0 = new OrderServiceImpl();
+		OrderService orderServiceNode1 = new OrderServiceImpl();
+		OrderService orderServiceNode2 = new OrderServiceImpl();
 
-		int taskCount = 50;
-		// Each call transiently holds two pooled connections: one for the getNewOrderNumber
-		// transaction and one for the REQUIRES_NEW transaction that increments the seed.
-		// Concurrency must therefore stay below half the c3p0 max_size of 50, otherwise
-		// every thread can end up holding one connection while waiting forever for a
-		// second one, deadlocking the pool. See TRUNK-6465.
-		int threadCount = 20;
-		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(taskCount));
-		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+		int threadCount = 7;
+		int tasksPerNode = 20 * OrderServiceImpl.ORDER_NUMBER_BLOCK_SIZE;
+		int taskCount = 3 * tasksPerNode;
+
+		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<>(taskCount));
+
+		//Each executor represents the thread pool of a separate application
+		//node. This allows the test to simulate concurrent order number
+		//generation across multiple nodes sharing the same database.
+		ExecutorService executor1 = Executors.newFixedThreadPool(threadCount);
+		ExecutorService executor2 = Executors.newFixedThreadPool(threadCount);
+		ExecutorService executor3 = Executors.newFixedThreadPool(threadCount);
 		try {
+
 			List<Future<?>> futures = new ArrayList<>();
-			for (int i = 0; i < taskCount; i++) {
-				futures.add(executor.submit(() -> {
-					try {
-						Context.openSession();
-						Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-						uniqueOrderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
-					} finally {
-						Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-						Context.closeSession();
-					}
-				}));
-			}
+
+			submitConcurrentOrderNumberGenerationTasks(executor1, orderServiceNode0, tasksPerNode, uniqueOrderNumbers,
+			    futures);
+			submitConcurrentOrderNumberGenerationTasks(executor2, orderServiceNode1, tasksPerNode, uniqueOrderNumbers,
+			    futures);
+			submitConcurrentOrderNumberGenerationTasks(executor3, orderServiceNode2, tasksPerNode, uniqueOrderNumbers,
+			    futures);
+
 			for (Future<?> future : futures) {
 				try {
 					future.get(30, TimeUnit.SECONDS);
+				} catch (ExecutionException e) {
+					fail("Order number generation failed", e.getCause());
 				} catch (TimeoutException e) {
 					fail("getNewOrderNumber timed out, likely a connection pool deadlock; see TRUNK-6465", e);
 				}
 			}
 		} finally {
-			executor.shutdownNow();
-			executor.awaitTermination(10, TimeUnit.SECONDS);
+			executor1.shutdownNow();
+			executor2.shutdownNow();
+			executor3.shutdownNow();
+			try {
+				//noinspection ResultOfMethodCallIgnored
+				executor1.awaitTermination(10, TimeUnit.SECONDS);
+				//noinspection ResultOfMethodCallIgnored
+				executor2.awaitTermination(10, TimeUnit.SECONDS);
+				//noinspection ResultOfMethodCallIgnored
+				executor3.awaitTermination(10, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
 		}
 		//since we used a set we should have the size as taskCount indicating that there were no duplicates
 		assertEquals(taskCount, uniqueOrderNumbers.size());
+	}
+
+	/**
+	 * Submits concurrent order number generation tasks to an application node. Each task opens its own
+	 * OpenMRS session and generates an order number using the specified OrderService instance.
+	 */
+	private void submitConcurrentOrderNumberGenerationTasks(ExecutorService executor, OrderService testOrderService,
+	        int taskCount, Set<String> uniqueOrderNumbers, List<Future<?>> futures) {
+
+		for (int i = 0; i < taskCount; i++) {
+			futures.add(executor.submit(() -> {
+				try {
+					Context.openSession();
+					Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+					uniqueOrderNumbers.add(((OrderNumberGenerator) testOrderService).getNewOrderNumber(null));
+				} finally {
+					Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+					Context.closeSession();
+				}
+			}));
+		}
+	}
+
+	/**
+	 * Verifies that order number generation rolls over to a new block when the current block is
+	 * exhausted.
+	 *
+	 * @see OrderNumberGenerator#getNewOrderNumber(OrderContext)
+	 */
+	@Test
+	public void getNewOrderNumber_shouldReturnSequentialOrderNumbersAcrossBlockBoundary() {
+		//use clean OrderService not affected by previous tests
+		OrderService orderService = new OrderServiceImpl();
+
+		int numberCount = OrderServiceImpl.ORDER_NUMBER_BLOCK_SIZE * 3;
+		List<String> orderNumbers = new ArrayList<>(numberCount);
+		for (int i = 0; i < numberCount; i++) {
+			orderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
+		}
+
+		for (int i = 1; i < orderNumbers.size(); i++) {
+			long previousNumber = Long
+			        .parseLong(orderNumbers.get(i - 1).substring(OrderServiceImpl.ORDER_NUMBER_PREFIX.length()));
+			long currentNumber = Long
+			        .parseLong(orderNumbers.get(i).substring(OrderServiceImpl.ORDER_NUMBER_PREFIX.length()));
+
+			assertEquals(previousNumber + 1, currentNumber);
+		}
 	}
 
 	/**

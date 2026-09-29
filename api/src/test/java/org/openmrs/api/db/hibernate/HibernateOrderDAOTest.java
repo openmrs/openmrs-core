@@ -13,9 +13,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.LockMode;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.OrderAttributeType;
 import org.openmrs.OrderGroup;
@@ -26,6 +29,7 @@ import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,6 +44,9 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private HibernateOrderDAO dao;
+
+	@Autowired
+	private SessionFactory sessionFactory;
 
 	private static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 
@@ -234,5 +241,43 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		dao.deleteOrderAttributeType(orderAttributeType);
 		assertNull(dao.getOrderAttributeTypeByUuid(UUID));
 		assertEquals(ORIGINAL_COUNT - 1, dao.getAllOrderAttributeTypes().size());
+	}
+
+	/**
+	 * @see {@link HibernateOrderDAO#allocateOrderNumberBlock(int)}
+	 * @throws Exception
+	 */
+	@Test
+	public void allocateOrderNumberBlock_shouldAllocateNonOverlappingBlocks() {
+		int blockSize = 100;
+
+		Long firstBlockStart = dao.allocateOrderNumberBlock(blockSize);
+		Long secondBlockStart = dao.allocateOrderNumberBlock(blockSize);
+
+		assertEquals(firstBlockStart + blockSize, secondBlockStart);
+	}
+
+	/**
+	 * @see {@link HibernateOrderDAO#allocateOrderNumberBlock(int)}
+	 * @throws Exception
+	 */
+	@Test
+	public void allocateOrderNumberBlock_shouldIncrementSeedByBlockSize() {
+		int blockSize = 100;
+
+		GlobalProperty globalProperty = sessionFactory.getCurrentSession().find(GlobalProperty.class,
+		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockMode.NONE);
+
+		long initialSeed = Long.parseLong(globalProperty.getPropertyValue());
+
+		Long allocatedSeed = dao.allocateOrderNumberBlock(blockSize);
+
+		GlobalProperty updatedGlobalProperty = sessionFactory.getCurrentSession().find(GlobalProperty.class,
+		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockMode.NONE);
+
+		long updatedSeed = Long.parseLong(updatedGlobalProperty.getPropertyValue());
+
+		assertEquals(initialSeed, allocatedSeed.longValue());
+		assertEquals(initialSeed + blockSize, updatedSeed);
 	}
 }

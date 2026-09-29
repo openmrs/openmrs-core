@@ -104,7 +104,7 @@ public interface OrderDAO {
 	 *
 	 * @return the order number seed
 	 */
-	public Long getNextOrderNumberSeedSequenceValue();
+	public Long allocateOrderNumberBlock(int blockSize);
 
 	/**
 	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
