@@ -12,6 +12,7 @@ package org.openmrs.api.db.hibernate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -130,7 +131,7 @@ public class HibernateObsDAO implements ObsDAO {
 		List<Obs> loaded = session
 		        .createQuery("FROM Obs o LEFT JOIN FETCH o.referenceRange WHERE o.obsId IN (:obsIds)", Obs.class)
 		        .setParameter("obsIds", ids).getResultList();
-		Map<Integer, Obs> byId = new java.util.HashMap<>();
+		Map<Integer, Obs> byId = new HashMap<>();
 		for (Obs o : loaded) {
 			byId.put(o.getObsId(), o);
 		}

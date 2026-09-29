@@ -13,7 +13,7 @@
 <!--
   Test data for getObsVersionHistory recursive CTE tests.
   Chain: obs_id=90102 -> previous_version=90101 -> previous_version=90100 (oldest)
-  obs 90100 is an isolated obs with no previous version (used for single-obs test).
+  obs 90100 is the tail of that chain: it has no previous version.
   Previous versions (90100, 90101) are voided=true because saveObs() voids old revisions.
   IDs use a high range (90100+) to avoid conflicts with standardTestDataset.xml and other fixtures.
 -->
