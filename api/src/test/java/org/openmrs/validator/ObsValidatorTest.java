@@ -26,6 +26,7 @@ import org.openmrs.ObsReferenceRange;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.handler.ObsSaveHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
@@ -47,6 +48,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private ObsValidator obsValidator;
+
+	private ObsSaveHandler obsSaveHandler = new ObsSaveHandler();
+
+	private void validate(Obs obs, Errors errors) {
+		obsSaveHandler.handle(obs, null, null, null);
+		obsValidator.validate(obs, errors);
+	}
 
 	Calendar calendar = Calendar.getInstance();
 
@@ -610,7 +618,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertNotNull(obs.getReferenceRange());
@@ -632,7 +640,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertNotNull(obs.getReferenceRange());
@@ -655,7 +663,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertNotNull(obs.getReferenceRange());
@@ -680,7 +688,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertNotNull(obs.getReferenceRange());
@@ -708,7 +716,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertNotNull(obs.getReferenceRange());
@@ -736,7 +744,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertTrue(errors.hasErrors());
 		assertNull(obs.getReferenceRange());
@@ -752,7 +760,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = getObs(10, 4090, 145.0);
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertTrue(errors.hasErrors());
 		assertTrue(errors.hasFieldErrors("valueNumeric"));
@@ -777,7 +785,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertTrue(errors.hasErrors());
 		assertTrue(errors.hasFieldErrors("valueNumeric"));
@@ -792,7 +800,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = getObs(60, 4090, 121.0);
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.HIGH, obs.getInterpretation());
@@ -806,7 +814,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = getObs(60, 4090, 131.0);
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.CRITICALLY_HIGH, obs.getInterpretation());
@@ -820,7 +828,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = getObs(60, 4090, 130.0);
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.CRITICALLY_HIGH, obs.getInterpretation());
@@ -834,7 +842,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = getObs(60, 4090, 75.0);
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.CRITICALLY_LOW, obs.getInterpretation());
@@ -848,7 +856,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = getObs(60, 4090, 100.0);
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
@@ -862,7 +870,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = getObs(60, 4090, 74.0);
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.CRITICALLY_LOW, obs.getInterpretation());
@@ -873,7 +881,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = createObsWithReferenceRange(60, 97, 4090, 95.0, null, 90.0, null, 0.0, 100.0);
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
@@ -884,7 +892,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = createObsWithReferenceRange(60, 100, 4090, null, 140.0, null, null, null, null);
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
@@ -898,7 +906,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setId(1);
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.HIGH, obs.getInterpretation());
@@ -912,7 +920,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setId(1);
 
 		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
+		validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.LOW, obs.getInterpretation());
