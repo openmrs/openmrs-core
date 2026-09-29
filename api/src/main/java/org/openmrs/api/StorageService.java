@@ -194,6 +194,7 @@ public interface StorageService extends OpenmrsService {
 	 * @return data with metadata
 	 * @throws IOException wrong key or IO error
 	 * @throws NoSuchFileException if no object is stored under the given key
+	 * @since 3.0.0
 	 */
 	default DataWithMetadata getDataWithMetadata(String key) throws IOException {
 		InputStream data = getData(key);

@@ -153,6 +153,15 @@ public class AbstractHandler {
 		injectMissingMetadata(key, complexData, null);
 	}
 
+	/**
+	 * Injects the mime type and length into the given complex data, using the supplied metadata when it
+	 * is available and falling back to a separate metadata lookup otherwise.
+	 *
+	 * @param key the storage key
+	 * @param complexData the complex data to enrich
+	 * @param metadata metadata already fetched alongside the data, or null to fetch it
+	 * @since 3.0.0
+	 */
 	protected void injectMissingMetadata(String key, ComplexData complexData, ObjectMetadata metadata) {
 		try {
 			if (metadata == null) {

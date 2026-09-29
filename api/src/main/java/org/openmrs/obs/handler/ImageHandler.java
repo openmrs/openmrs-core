@@ -79,33 +79,33 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			String mimeType = null;
 			BufferedImage img = null;
 
-			DataWithMetadata dwm;
+			DataWithMetadata dwm = null;
 			try {
 				dwm = storageService.getDataWithMetadata(key);
 			} catch (IOException e) {
 				log.error("Trying to read file: {}", key, e);
-				ComplexData complexData = new ComplexData(parseFilename(obs, "image"), null);
-				obs.setComplexData(complexData);
-				return obs;
+				// Do not fail if image is missing
 			}
 
-			try (InputStream in = dwm.data()) {
-				ImageInputStream imageIn = ImageIO.createImageInputStream(in);
-				Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(imageIn);
-				if (imageReaders.hasNext()) {
-					ImageReader imgReader = imageReaders.next();
-					mimeType = "image/" + imgReader.getFormatName().toLowerCase();
-					ImageReadParam param = imgReader.getDefaultReadParam();
-					imgReader.setInput(imageIn, true, true);
-					try {
-						img = imgReader.read(0, param);
-					} finally {
-						imgReader.dispose();
+			if (dwm != null) {
+				try (InputStream in = dwm.data()) {
+					ImageInputStream imageIn = ImageIO.createImageInputStream(in);
+					Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(imageIn);
+					if (imageReaders.hasNext()) {
+						ImageReader imgReader = imageReaders.next();
+						mimeType = "image/" + imgReader.getFormatName().toLowerCase();
+						ImageReadParam param = imgReader.getDefaultReadParam();
+						imgReader.setInput(imageIn, true, true);
+						try {
+							img = imgReader.read(0, param);
+						} finally {
+							imgReader.dispose();
+						}
 					}
+				} catch (IOException e) {
+					log.error("Trying to read file: {}", key, e);
+					// Do not fail if image is missing
 				}
-			} catch (IOException e) {
-				log.error("Trying to read file: {}", key, e);
-				// Do not fail if image is missing
 			}
 
 			String filename = parseFilename(obs, "image");
