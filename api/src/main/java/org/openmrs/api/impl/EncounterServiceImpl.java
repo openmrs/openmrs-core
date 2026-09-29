@@ -161,6 +161,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 					obs.setPerson(p);
 				}
 			}
+
+			// Sync any archived obs that belong to this encounter as well
+			Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class)
+			        .syncArchivedObsWithEncounter(encounter, originalDate, originalLocation);
 		}
 		// same goes for Orders
 		for (Order o : encounter.getOrders()) {

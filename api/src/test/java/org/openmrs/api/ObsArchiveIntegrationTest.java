@@ -415,6 +415,63 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 	}
 
 	@Test
+	public void unvoidObs_shouldNotThrowWhenPreviousVersionIsArchivedAndGetterWasCalledFirst() throws Exception {
+		// Repro from review: edit an obs so a new version supersedes it, archive the old row,
+		// void the new one, call getPreviousVersion() on it, then unvoid it.
+		// With this.previousVersion = null the flush would throw
+		// UnchangeableObjectException: Editing the fields [previousVersion] on Obs is not allowed
+		// because the interceptor sees the field changed from the Hibernate proxy to null.
+		// With return null the field stays as the proxy, and the d1 == d2 short circuit
+		// in nullSafeEquals keeps both sides identical.
+
+		// 1. Create obs1
+		Obs obs1 = createAndSaveSingleObs(10.0);
+		Integer id1 = obs1.getObsId();
+
+		// 2. Edit it — saveObs voids obs1 and creates obs2 with previousVersion = obs1
+		obs1.setValueNumeric(15.0);
+		Obs obs2 = obsService.saveObs(obs1, "edit to create version chain");
+		Integer id2 = obs2.getObsId();
+		createdObsIds.add(id2);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		// 3. Archive the superseded row (obs1 is now voided)
+		assertTrue(obsService.getObs(id1).getVoided(), "obs1 should be voided after edit");
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(id1);
+
+		Context.clearSession();
+
+		// 4. Void the live obs (obs2)
+		Obs liveObs = obsService.getObs(id2);
+		assertNotNull(liveObs);
+		obsService.voidObs(liveObs, "test voiding live version");
+		Context.flushSession();
+		Context.clearSession();
+
+		// 5. Read getPreviousVersion() — this triggers the catch in Obs.getPreviousVersion()
+		//    because obs1 is in the archive, not in the obs table.
+		//    If the catch did this.previousVersion = null, the next flush would fail.
+		Obs voidedObs = obsService.getObs(id2);
+		assertNotNull(voidedObs);
+		Obs prev = voidedObs.getPreviousVersion();
+		assertNull(prev, "Previous version was archived, getter should return null");
+
+		// 6. Unvoid — this must succeed without UnchangeableObjectException
+		obsService.unvoidObs(voidedObs);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs unvoidedObs = obsService.getObs(id2);
+		assertNotNull(unvoidedObs);
+		assertFalse(unvoidedObs.getVoided(), "Obs should be successfully unvoided");
+	}
+
+	@Test
 	public void unvoidObs_shouldRestoreParentAndItsGroupMembersFromArchive() throws Exception {
 		// 1. Create a parent obs and a child obs
 		Obs parent = createAndSaveObsTree(42.0);

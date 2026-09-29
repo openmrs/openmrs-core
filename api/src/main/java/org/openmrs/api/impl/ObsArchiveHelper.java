@@ -20,12 +20,15 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openmrs.Encounter;
+import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.ObsArchive;
 import org.openmrs.ObsReferenceRange;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
+import org.openmrs.Patient;
 import org.openmrs.api.APIException;
+import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,6 +161,48 @@ public class ObsArchiveHelper {
 		} catch (HibernateException e) {
 			log.debug("Failed to get archived obs for encounter {}.", encounterId, e);
 			return Collections.emptyList();
+		}
+	}
+
+	public void syncArchivedObsWithEncounter(Encounter encounter, Date originalDate, Location originalLocation) {
+		if (encounter == null || encounter.getEncounterId() == null || !doesArchiveHaveData()) {
+			return;
+		}
+		Date newDate = encounter.getEncounterDatetime();
+		Location newLocation = encounter.getLocation();
+		Patient p = encounter.getPatient();
+
+		try {
+			withManualFlush(() -> {
+				Session session = sessionFactory.getCurrentSession();
+				List<ObsArchive> archives = session
+				        .createQuery("FROM ObsArchive a WHERE a.encounter.encounterId = :encId", ObsArchive.class)
+				        .setParameter("encId", encounter.getEncounterId()).list();
+
+				for (ObsArchive archive : archives) {
+					boolean changed = false;
+					if (OpenmrsUtil.compare(originalDate, newDate) != 0
+					        && OpenmrsUtil.compare(archive.getObsDatetime(), originalDate) == 0) {
+						archive.setObsDatetime(newDate);
+						changed = true;
+					}
+					if (!OpenmrsUtil.nullSafeEquals(newLocation, originalLocation) && archive.getLocation() != null
+					        && archive.getLocation().equals(originalLocation)) {
+						archive.setLocation(newLocation);
+						changed = true;
+					}
+					if (archive.getPerson() != null && !archive.getPerson().getPersonId().equals(p.getPatientId())) {
+						archive.setPerson(p);
+						changed = true;
+					}
+					if (changed) {
+						session.merge(archive);
+					}
+				}
+				return null;
+			});
+		} catch (HibernateException e) {
+			log.warn("Failed to sync archived obs for encounter {}", encounter.getEncounterId(), e);
 		}
 	}
 
