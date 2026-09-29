@@ -87,6 +87,95 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	/**
+	 * Thread-scoped permit that marks the current thread as executing inside the user service. The
+	 * {@link UserDAO} implementation consults {@link #isPermitted()} before mutating a user's password
+	 * or login credential, so that those mutations can only happen on a code path that went through
+	 * {@link UserService} rather than straight to the DAO.
+	 * <p>
+	 * The permit is raised and lowered by {@code UserServiceImpl} alone: {@code enter()} and
+	 * {@code exit()} are private, and only a nestmate of {@code UserServiceImpl} can reach them. It is
+	 * re-entrant, so a service call nested inside another one leaves the permit raised until the
+	 * outermost call returns.
+	 * <p>
+	 * Reflection can still forge a permit. That is acceptable: this guards against accidentally routing
+	 * credential changes around the service layer, not against hostile code sharing the JVM, which
+	 * could already reach the DAO by other means.
+	 *
+	 * @since 2.8.10
+	 */
+	public static final class UserPasswordGuard {
+
+		private static final ThreadLocal<Integer> DEPTH = new ThreadLocal<>();
+
+		private UserPasswordGuard() {
+		}
+
+		private static void enter() {
+			Integer depth = DEPTH.get();
+			DEPTH.set(depth == null ? 1 : depth + 1);
+		}
+
+		private static void exit() {
+			Integer depth = DEPTH.get();
+			if (depth == null || depth <= 1) {
+				DEPTH.remove();
+			} else {
+				DEPTH.set(depth - 1);
+			}
+		}
+
+		/**
+		 * @return true if the calling thread is currently executing inside the user service
+		 */
+		public static boolean isPermitted() {
+			return DEPTH.get() != null;
+		}
+	}
+
+	/**
+	 * The service's single entry point to {@link UserDAO#saveUser(User, String)}, raising the permit
+	 * that the DAO requires of anything that can change a password.
+	 *
+	 * @see UserPasswordGuard
+	 */
+	private User daoSaveUser(User user, String password) {
+		UserPasswordGuard.enter();
+		try {
+			return dao.saveUser(user, password);
+		} finally {
+			UserPasswordGuard.exit();
+		}
+	}
+
+	/**
+	 * The service's single entry point to {@link UserDAO#changePassword(User, String)}.
+	 *
+	 * @see UserPasswordGuard
+	 */
+	private void daoChangePassword(User user, String newPassword) {
+		UserPasswordGuard.enter();
+		try {
+			dao.changePassword(user, newPassword);
+		} finally {
+			UserPasswordGuard.exit();
+		}
+	}
+
+	/**
+	 * The service's single entry point to {@link UserDAO#changeHashedPassword(User, String, String)}.
+	 *
+	 * @see UserPasswordGuard
+	 */
+	private void daoChangeHashedPassword(User user, String hashedPassword, String salt) {
+		UserPasswordGuard.enter();
+		try {
+			dao.changeHashedPassword(user, hashedPassword, salt);
+		} finally {
+			UserPasswordGuard.exit();
+		}
+	}
+
+	/**
 	 * @return the validTime for which the password reset activation key will be valid
 	 */
 	private int getValidTime() {
@@ -123,7 +212,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		// TODO Check required fields for user!!
 		OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
 
-		return dao.saveUser(user, password);
+		return daoSaveUser(user, password);
 	}
 
 	/**
@@ -184,7 +273,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			        "Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
 		}
 
-		return dao.saveUser(user, null);
+		return daoSaveUser(user, null);
 	}
 
 	public User voidUser(User user, String reason) throws APIException {
@@ -340,7 +429,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException {
-		dao.changeHashedPassword(user, hashedPassword, salt);
+		daoChangeHashedPassword(user, hashedPassword, salt);
 	}
 
 	/**
@@ -622,7 +711,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			throw new APIException("no.authenticated.user.found", (Object[]) null);
 		}
 		user.setUserProperty(key, value);
-		return dao.saveUser(user, null);
+		return daoSaveUser(user, null);
 	}
 
 	@Override
@@ -635,7 +724,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		for (Map.Entry<String, String> entry : properties.entrySet()) {
 			user.setUserProperty(entry.getKey(), entry.getValue());
 		}
-		return dao.saveUser(user, null);
+		return daoSaveUser(user, null);
 	}
 
 	/**
@@ -688,7 +777,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 	private void updatePassword(User user, String newPassword) {
 		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
-		dao.changePassword(user, newPassword);
+		daoChangePassword(user, newPassword);
 	}
 
 	@Override
