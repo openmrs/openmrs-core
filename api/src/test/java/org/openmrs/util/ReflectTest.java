@@ -291,7 +291,9 @@ public class ReflectTest {
 	 */
 	@Test
 	public void getPropertyValue_shouldFailIfAPropertyInTheMiddleOfThePathIsNull() {
-		assertThrows(IllegalArgumentException.class, () -> Reflect.getPropertyValue(new Bean(), "child.name"));
+		Bean bean = new Bean();
+
+		assertThrows(IllegalArgumentException.class, () -> Reflect.getPropertyValue(bean, "child.name"));
 	}
 
 	/**
