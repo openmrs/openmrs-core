@@ -341,7 +341,7 @@
 			<property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
 			<property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
 		</module>
-		<!-- Missing-Javadoc detection moved out of JavadocMethod in Checkstyle 8.20; same settings as before -->
+		<!-- Missing-Javadoc detection moved out of JavadocMethod into MissingJavadocMethod in Checkstyle 8.21; same settings as before -->
 		<module name="MissingJavadocMethod">
 			<property name="scope" value="public"/>
 			<property name="minLineCount" value="2"/>
