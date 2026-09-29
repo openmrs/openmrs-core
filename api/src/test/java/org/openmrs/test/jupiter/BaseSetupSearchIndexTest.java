@@ -9,6 +9,7 @@
  */
 package org.openmrs.test.jupiter;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
@@ -27,9 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Narrows {@link #getIndexedTypes()} the way several service tests do. When this is the first test
- * class in a JVM, the one-time standard-data setup runs on its behalf, so searches on types it
- * leaves out must still work (TRUNK-6814).
+ * Narrows {@link #getIndexedTypes()} the way several service tests do. When the one-time
+ * standard-data setup runs on behalf of such a class, searches on types it leaves out must still
+ * work (TRUNK-6814).
  */
 public class BaseSetupSearchIndexTest extends BaseContextSensitiveTest {
 
@@ -59,7 +60,15 @@ public class BaseSetupSearchIndexTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void baseSetup_shouldIndexConceptsAndDrugsWhenGetIndexedTypesIsNarrowed() {
+	public void baseSetup_shouldIndexConceptsAndDrugsWhenGetIndexedTypesIsNarrowed() throws SQLException {
+		// The standard data is set up once per JVM, usually by an earlier test class, so force it to run
+		// again on behalf of this one. Reindexing the empty database first drops anything an earlier
+		// setup left in the concept and drug indexes.
+		deleteAllData();
+		Context.updateSearchIndexForType(ConceptName.class);
+		Context.updateSearchIndexForType(Drug.class);
+		baseSetupWithStandardDataAndAuthentication();
+
 		ConceptService conceptService = Context.getConceptService();
 
 		assertFalse(conceptService.getConcepts("CD4 COUNT", new Locale("en", "GB"), true).isEmpty());
