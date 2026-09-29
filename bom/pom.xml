@@ -124,9 +124,9 @@
 
 		<!-- Testing -->
 		<junitVersion>6.1.3</junitVersion>
-		<mockitoVersion>5.23.0</mockitoVersion>
+		<mockitoVersion>5.24.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
-		<h2Version>2.5.250</h2Version>
+		<h2Version>2.5.252</h2Version>
 		<dbunitVersion>3.5.2</dbunitVersion>
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.5</testcontainersVersion>
@@ -152,7 +152,7 @@
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>3.10.2</version>
+				<version>3.10.3</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
