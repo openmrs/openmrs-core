@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class LocalizationToolTest {
+class LocalizationToolTest {
 
 	private final LocalizationTool tool = new LocalizationTool(Locale.ENGLISH);
 
@@ -25,7 +25,7 @@ public class LocalizationToolTest {
 	 * @see LocalizationTool#get(Object)
 	 */
 	@Test
-	public void get_shouldRenderTheMessageForTheCode() {
+	void get_shouldRenderTheMessageForTheCode() {
 		assertEquals("OpenMRS Core {0} Installation Wizard", tool.get("install.header.caption").toString());
 	}
 
@@ -33,7 +33,7 @@ public class LocalizationToolTest {
 	 * @see LocalizationTool.Message#insert(Object)
 	 */
 	@Test
-	public void insert_shouldFormatTheMessageWithTheArgument() {
+	void insert_shouldFormatTheMessageWithTheArgument() {
 		assertEquals("OpenMRS Core 3.0.0 Installation Wizard",
 		    tool.get("install.header.caption").insert("3.0.0").toString());
 	}
@@ -42,7 +42,7 @@ public class LocalizationToolTest {
 	 * @see LocalizationTool.Message#insert(Object[])
 	 */
 	@Test
-	public void insert_shouldAppendToPreviouslyInsertedArguments() {
+	void insert_shouldAppendToPreviouslyInsertedArguments() {
 		LocalizationTool.Message message = tool.get("install.header.caption");
 
 		assertEquals(message.insert("a").insert(Arrays.asList("b", "c")).toString(),
@@ -53,7 +53,7 @@ public class LocalizationToolTest {
 	 * @see LocalizationTool#get(Object)
 	 */
 	@Test
-	public void get_shouldRenderAMissingCodeWithQuestionMarks() {
+	void get_shouldRenderAMissingCodeWithQuestionMarks() {
 		assertEquals("???no.such.code???", tool.get("no.such.code").toString());
 	}
 
@@ -61,7 +61,7 @@ public class LocalizationToolTest {
 	 * @see LocalizationTool#get(Object)
 	 */
 	@Test
-	public void get_shouldRenderANullCodeAsAnEmptyString() {
+	void get_shouldRenderANullCodeAsAnEmptyString() {
 		assertEquals("", tool.get(null).toString());
 	}
 
@@ -69,7 +69,7 @@ public class LocalizationToolTest {
 	 * @see LocalizationTool#setLocale(Locale)
 	 */
 	@Test
-	public void get_shouldUseTheLocaleSetWhenTheMessageWasCreated() {
+	void get_shouldUseTheLocaleSetWhenTheMessageWasCreated() {
 		LocalizationTool localizedTool = new LocalizationTool(Locale.FRENCH);
 		LocalizationTool.Message french = localizedTool.get("install.header.caption");
 
