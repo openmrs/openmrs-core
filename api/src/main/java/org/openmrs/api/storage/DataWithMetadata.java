@@ -20,6 +20,27 @@ import java.io.InputStream;
  *
  * @since 3.0.0
  */
-public record DataWithMetadata(InputStream data,ObjectMetadata metadata)implements AutoCloseable{
+public class DataWithMetadata implements AutoCloseable {
 
-@Override public void close()throws IOException{data.close();}}
+	private final InputStream data;
+
+	private final ObjectMetadata metadata;
+
+	public DataWithMetadata(InputStream data, ObjectMetadata metadata) {
+		this.data = data;
+		this.metadata = metadata;
+	}
+
+	public InputStream data() {
+		return data;
+	}
+
+	public ObjectMetadata metadata() {
+		return metadata;
+	}
+
+	@Override
+	public void close() throws IOException {
+		data.close();
+	}
+}

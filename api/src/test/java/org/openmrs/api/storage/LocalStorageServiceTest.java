@@ -31,9 +31,117 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LocalStorageServiceTest extends BaseStorageServiceTest {
 
+	/**
+	 * Counts the number of existence checks a storage operation performs, which is what TRUNK-6682
+	 * bounds to one per read.
+	 */
+	private class CountingLocalStorageService extends LocalStorageService {
+
+		int existenceChecks;
+
+		CountingLocalStorageService() {
+			super(tempDir.toAbsolutePath().toString(), streamService);
+		}
+
+		@Override
+		boolean fileExists(Path path) {
+			existenceChecks++;
+			return super.fileExists(path);
+		}
+	}
+
 	@Override
 	public StorageService newStorageService() {
 		return new LocalStorageService(tempDir.toAbsolutePath().toString(), streamService);
+	}
+
+	@Test
+	public void getDataWithMetadata_shouldNotCheckExistenceWhenFileIsInStorageDir() throws IOException {
+		CountingLocalStorageService counting = new CountingLocalStorageService();
+
+		String key = null;
+		try {
+			key = counting.saveData(testFile, null, null, "counted_key");
+
+			try (DataWithMetadata dwm = counting.getDataWithMetadata(key)) {
+				assertEquals(testFileContent, IOUtils.toString(dwm.data(), Charset.defaultCharset()));
+			}
+
+			assertThat(counting.existenceChecks, is(0));
+		} finally {
+			if (key != null) {
+				counting.purgeData(key);
+			}
+		}
+	}
+
+	@Test
+	public void getData_shouldCheckExistenceOnceWhenFallingBackToLegacyFile() throws IOException {
+		CountingLocalStorageService counting = new CountingLocalStorageService();
+
+		Path legacyPath = null;
+		try {
+			Path dir = Files.createDirectories(Paths.get(OpenmrsUtil.getApplicationDataDirectory(), "storage"));
+			legacyPath = Files.createFile(dir.resolve(RandomStringUtils.insecure().nextAlphanumeric(8)));
+
+			try (OutputStream out = Files.newOutputStream(legacyPath)) {
+				IOUtils.write("test", out, Charset.defaultCharset());
+			}
+
+			try (InputStream data = counting.getData(legacyPath.toAbsolutePath().toString())) {
+				assertEquals("test", IOUtils.toString(data, Charset.defaultCharset()));
+			}
+
+			assertThat(counting.existenceChecks, is(1));
+		} finally {
+			if (legacyPath != null) {
+				Files.deleteIfExists(legacyPath);
+			}
+		}
+	}
+
+	@Test
+	public void exists_shouldCheckExistenceOnceWhenFileIsInStorageDir() throws IOException {
+		CountingLocalStorageService counting = new CountingLocalStorageService();
+
+		String key = null;
+		try {
+			key = counting.saveData(testFile, null, null, "counted_key");
+
+			assertThat(counting.exists(key), is(true));
+			assertThat(counting.existenceChecks, is(1));
+		} finally {
+			if (key != null) {
+				counting.purgeData(key);
+			}
+		}
+	}
+
+	/**
+	 * This is the read path {@code AbstractHandler} performs: it probes {@code exists} to resolve the
+	 * key layout, then reads the data and metadata together. Together they must cost a single existence
+	 * check.
+	 */
+	@Test
+	public void readAsHandler_shouldPerformOnlyOneExistenceCheck() throws IOException {
+		CountingLocalStorageService counting = new CountingLocalStorageService();
+
+		String key = null;
+		try {
+			key = counting.saveData(testFile, null, null, "counted_key");
+
+			if (counting.exists(key)) {
+				try (DataWithMetadata dwm = counting.getDataWithMetadata(key)) {
+					assertEquals(testFileContent, IOUtils.toString(dwm.data(), Charset.defaultCharset()));
+				}
+			}
+
+			assertThat(counting.existenceChecks, is(1));
+		} finally {
+			if (key != null) {
+				counting.purgeData(key);
+			}
+		}
 	}
 
 	@Test
