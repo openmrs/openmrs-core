@@ -144,6 +144,21 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void getObs_shouldNotThrowWhenTheObsDirGlobalPropertyHasNoValue() throws IOException {
+		// The TRUNK-6472 fallback strips the obs dir off the key, which must be skipped when the
+		// global property has no value to strip
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, null));
+
+		Obs obs = new Obs();
+		obs.setValueComplex("jpg|2026/01-01/2026-01-01-00-00-00-000-abcdefgh.jpg");
+
+		Obs complexObs = handler.getObs(obs, "RAW_VIEW");
+
+		assertNull(complexObs.getComplexData().getData(), "a missing image should yield no data");
+		assertEquals("jpg", complexObs.getComplexData().getTitle());
+	}
+
+	@Test
 	public void saveObs_shouldHandleByteArrays() throws IOException {
 		Path sourceFile = Paths.get("src", "test", "resources", "ComplexObsTestImage.png");
 
