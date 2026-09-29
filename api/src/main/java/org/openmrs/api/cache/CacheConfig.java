@@ -30,6 +30,9 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.remoting.transport.jgroups.JGroupsTransport;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.jgroups.JChannel;
+import org.jgroups.conf.ConfiguratorFactory;
+import org.jgroups.conf.ProtocolConfiguration;
+import org.jgroups.conf.ProtocolStackConfigurator;
 import org.jgroups.protocols.TCP;
 import org.jgroups.protocols.TP;
 import org.jgroups.protocols.TUNNEL;
@@ -64,6 +67,10 @@ public class CacheConfig {
 
 	private final static Logger log = LoggerFactory.getLogger(CacheConfig.class);
 
+	private static final String JGROUPS_BIND_PORT_PROPERTY = "jgroups.bind.port";
+
+	private static final String DEFAULT_JGROUPS_BIND_PORT = "7800";
+
 	@Value("${cache.type:local}")
 	private String cacheType;
 
@@ -76,8 +83,6 @@ public class CacheConfig {
 	@Value("${cache.api.bind.port:}")
 	private String apiCacheBindPort;
 
-	private String jChannelConfig;
-
 	@Bean(name = "apiCacheManager", destroyMethod = "stop")
 	public SpringEmbeddedCacheManager apiCacheManager() throws Exception {
 		if (StringUtils.isBlank(cacheConfig)) {
@@ -88,26 +93,7 @@ public class CacheConfig {
 		ParserRegistry parser = new ParserRegistry();
 		ConfigurationBuilderHolder baseConfigBuilder = parser.parseFile(cacheConfig);
 		if (cacheType.trim().equals("cluster")) {
-			jChannelConfig = getJChannelConfig(cacheStack);
-			JChannel jchannel = new JChannel(jChannelConfig);
-			Class<? extends TP> protocolClass = TCP.class;
-			if (cacheStack.trim().isEmpty() || cacheStack.trim().equals("udp")) {
-				protocolClass = UDP.class;
-			} else if (cacheStack.trim().equals("tunnel")) {
-				protocolClass = TUNNEL.class;
-			}
-			TP protocol = jchannel.getProtocolStack().findProtocol(protocolClass);
-			if (StringUtils.isBlank(apiCacheBindPort)) {
-				String hibernateCacheBindPort = System.getProperty("jgroups.bind.port");
-				if (hibernateCacheBindPort == null) {
-					hibernateCacheBindPort = "7800";
-				}
-				apiCacheBindPort = String.valueOf(Integer.parseInt(hibernateCacheBindPort) + 1);
-			}
-			protocol.setBindPort(Integer.parseInt(apiCacheBindPort));
-			JGroupsTransport transport = new JGroupsTransport(jchannel);
-			baseConfigBuilder.getGlobalConfigurationBuilder().transport().clusterName("infinispan-api-cluster")
-			        .transport(transport);
+			configureApiClusterTransport(baseConfigBuilder);
 		}
 		// Determine cache type based on loaded template for "entity"
 		String cacheType = baseConfigBuilder.getNamedConfigurationBuilders().get("entity").build().elementName();
@@ -130,6 +116,79 @@ public class CacheConfig {
 
 		DefaultCacheManager cacheManager = new DefaultCacheManager(baseConfigBuilder, true);
 		return new SpringEmbeddedCacheManager(cacheManager);
+	}
+
+	/**
+	 * Wires the api cache onto its own JGroups channel, one port above the hibernate cache channel, so
+	 * the two clusters do not share a transport.
+	 */
+	void configureApiClusterTransport(ConfigurationBuilderHolder baseConfigBuilder) throws Exception {
+		String channelConfig = getJChannelConfig(cacheStack);
+		if (StringUtils.isBlank(apiCacheBindPort)) {
+			apiCacheBindPort = nextPortAfterHibernateChannel();
+		}
+		int apiPort = parsePort(apiCacheBindPort, "cache.api.bind.port");
+		JChannel jchannel = buildApiChannel(channelConfig, Integer.toString(apiPort));
+		TP protocol = jchannel.getProtocolStack().findProtocol(apiProtocolClass());
+		protocol.setBindPort(apiPort);
+		JGroupsTransport transport = new JGroupsTransport(jchannel);
+		baseConfigBuilder.getGlobalConfigurationBuilder().transport().clusterName("infinispan-api-cluster")
+		        .transport(transport);
+	}
+
+	// The api channel runs alongside the hibernate cache channel, one port above it.
+	String nextPortAfterHibernateChannel() {
+		String hibernateCacheBindPort = System.getProperty(JGROUPS_BIND_PORT_PROPERTY);
+		if (hibernateCacheBindPort == null) {
+			hibernateCacheBindPort = DEFAULT_JGROUPS_BIND_PORT;
+		}
+		int next = parsePort(hibernateCacheBindPort, JGROUPS_BIND_PORT_PROPERTY) + 1;
+		if (next > 65535) {
+			throw new IllegalArgumentException(JGROUPS_BIND_PORT_PROPERTY + " is " + hibernateCacheBindPort
+			        + ", leaving no port for the api cache channel");
+		}
+		return String.valueOf(next);
+	}
+
+	// Parses a port, failing fast with a clear message on a non-numeric or out-of-range value.
+	private static int parsePort(String value, String source) {
+		int port;
+		try {
+			port = Integer.parseInt(value.trim());
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException(source + " must be a number but was '" + value + "'", e);
+		}
+		if (port < 1 || port > 65535) {
+			throw new IllegalArgumentException(source + " must be between 1 and 65535 but was " + port);
+		}
+		return port;
+	}
+
+	Class<? extends TP> apiProtocolClass() {
+		if (cacheStack.trim().isEmpty() || cacheStack.trim().equals("udp")) {
+			return UDP.class;
+		} else if (cacheStack.trim().equals("tunnel")) {
+			return TUNNEL.class;
+		}
+		return TCP.class;
+	}
+
+	/**
+	 * Builds the api channel with its bind port set directly on the parsed configuration. DNS_PING
+	 * caches the transport bind port at init() (when the channel is built), so setting it only on the
+	 * transport afterwards would leave discovery on the old port and the api cluster would never form.
+	 * Setting it on the parsed config - rather than the global jgroups.bind.port system property -
+	 * means building this channel cannot disturb the hibernate cache channel built elsewhere in the
+	 * same JVM.
+	 */
+	JChannel buildApiChannel(String channelConfig, String bindPort) throws Exception {
+		ProtocolStackConfigurator configurator = ConfiguratorFactory.getStackConfigurator(channelConfig);
+		for (ProtocolConfiguration protocol : configurator.getProtocolStack()) {
+			if (protocol.getProperties().containsKey("bind_port")) {
+				protocol.getProperties().put("bind_port", bindPort);
+			}
+		}
+		return new JChannel(configurator);
 	}
 
 	private static InputStream buildFullConfig(Yaml yaml, URL configFile, Set<String> templateNames, String cacheType)
