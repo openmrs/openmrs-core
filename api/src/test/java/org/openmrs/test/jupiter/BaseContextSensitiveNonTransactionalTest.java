@@ -27,11 +27,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JFrame;
@@ -162,6 +165,9 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 	 * Allows to determine if the DB is initialized with standard data
 	 */
 	private static volatile boolean isBaseSetup;
+
+	private static final Class<?>[] DEFAULT_INDEXED_TYPES = { ConceptName.class, Drug.class, PersonName.class,
+	        PersonAttribute.class, PatientIdentifier.class };
 
 	/**
 	 * Stores a user authenticated for running tests which allows to discover a situation when some test
@@ -894,7 +900,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 
 			connection.commit();
 
-			updateSearchIndex();
+			updateSearchIndexForBaseSetup();
 		} catch (SQLException | DatabaseUnitException e) {
 			throw new DatabaseUnitRuntimeException(e);
 		} finally {
@@ -960,7 +966,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 				//Commit so that it is not rolled back after a test.
 				getConnection().commit();
 
-				updateSearchIndex();
+				updateSearchIndexForBaseSetup();
 
 				isBaseSetup = true;
 			}
@@ -975,9 +981,32 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		Context.clearSession();
 	}
 
+	/**
+	 * The types {@link #updateSearchIndex()} reindexes. Subclasses may narrow this to speed up their
+	 * own reindexing, or extend it with additional types.
+	 * <p>
+	 * The standard-data setup runs once per JVM and always indexes the default types as well (see
+	 * {@link #getBaseSetupIndexedTypes()}), so narrowing this list cannot leave later test classes with
+	 * an incomplete search index.
+	 */
 	public Class<?>[] getIndexedTypes() {
-		return new Class<?>[] { ConceptName.class, Drug.class, PersonName.class, PersonAttribute.class,
-		        PatientIdentifier.class };
+		return DEFAULT_INDEXED_TYPES.clone();
+	}
+
+	/**
+	 * @return the types indexed when the standard data is set up or deleted: the default types plus any
+	 *         added by {@link #getIndexedTypes()}
+	 */
+	protected Set<Class<?>> getBaseSetupIndexedTypes() {
+		Set<Class<?>> types = new LinkedHashSet<>(Arrays.asList(DEFAULT_INDEXED_TYPES));
+		types.addAll(Arrays.asList(getIndexedTypes()));
+		return types;
+	}
+
+	private void updateSearchIndexForBaseSetup() {
+		for (Class<?> type : getBaseSetupIndexedTypes()) {
+			Context.updateSearchIndexForType(type);
+		}
 	}
 
 	/**
