@@ -10,21 +10,18 @@
 package org.openmrs.api.cache;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 
 import org.infinispan.Cache;
-import org.infinispan.counter.EmbeddedCounterManagerFactory;
-import org.infinispan.counter.api.CounterConfiguration;
-import org.infinispan.counter.api.CounterManager;
-import org.infinispan.counter.api.CounterType;
-import org.infinispan.counter.api.Storage;
-import org.infinispan.counter.api.SyncStrongCounter;
+import org.infinispan.context.Flag;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Daemon;
@@ -49,26 +46,34 @@ import org.springframework.transaction.support.TransactionTemplate;
  * properties that do not exist. Values are immutable {@link Entry} snapshots rather than
  * {@link GlobalProperty} entities, which are mutable and lazily load their privileges.
  * <p>
- * Keys follow the case rules of {@link AdministrationDAO#getGlobalPropertyObject(String)}, so every
- * name returns what the DAO would return for it. When
- * {@value OpenmrsConstants#GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON} is true the DAO ignores
- * case, so keys are lower-cased and a write evicts a single key. Otherwise whether the DAO ignores
- * case depends on the database, so keys are the exact names requested and a write clears the whole
- * cache, since other spellings of the name may be cached too.
+ * Entries are keyed by the lower-cased name, so a write evicts one key whatever spelling it was
+ * read with, and each entry is only served for the exact name it was loaded for, since
+ * {@link AdministrationDAO#getGlobalPropertyObject(String)} may treat other spellings differently.
+ * A property stored under a name that does not lower-case to the key it was read with is not
+ * cached, and an insert clears the whole cache, since it can change what a lookup of an equivalent
+ * spelling returns.
  * <p>
  * The caller never fills the cache. On a miss, the property is read through the caller's own
  * session, which sees the caller's uncommitted changes, and a fill is started in the background.
  * The fill reads the property in a new transaction on a daemon thread, so it only sees committed
- * data and never touches the caller's transaction. Evictions increment a cluster-wide counter,
- * which the fill reads before loading and checks after writing, so an entry is only kept if nothing
- * was evicted in between. After a write through the API commits, the property is therefore never
- * served from before that write. Properties the current transaction has written, or all of them
- * after a {@link #clear()}, bypass the cache until the transaction completes, so a transaction
- * always reads its own writes.
+ * data and never touches the caller's transaction. Every eviction replaces a generation token kept
+ * in the cache itself, which the fill reads before loading and checks after writing, so an entry is
+ * only kept if nothing was evicted in between. In a cluster, replacing the token invalidates it on
+ * every node. A token that expires or is evicted for space also reads as an eviction, which only
+ * costs an uncached load.
  * <p>
- * Callers that write a global property must call {@link #evict(String)}. Changes to the
- * {@code global_property} table made outside the API are not detected, but the {@code
- * global-properties} cache template's lifespan limits how long they can be served stale.
+ * Within a transaction, evictions are recorded rather than applied, and applied once when the
+ * transaction completes. Until then the transaction reads the properties it has written, or every
+ * property after a {@link #clear()}, without the cache, so it always reads its own writes, while
+ * other transactions keep reading the committed values. After a write through the API commits, the
+ * property is therefore never served from before that write.
+ * <p>
+ * {@link org.openmrs.api.AdministrationService} evicts a property as soon as it is written, and
+ * {@link org.openmrs.api.db.hibernate.GlobalPropertyCacheInterceptor} evicts any property Hibernate
+ * flushes, which covers code that changes a loaded {@link GlobalProperty} directly. Such a change
+ * is only visible to cache hits once it has been flushed. Changes to the {@code global_property}
+ * table made outside Hibernate, for example with SQL, are not detected, but the
+ * {@code global-properties} cache template's lifespan limits how long they can be served stale.
  *
  * @since 2.8.10
  */
@@ -80,12 +85,10 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	public static final String CACHE_NAME = "globalProperties";
 
 	/**
-	 * Caches whether keys are lower-cased. The NUL character keeps it from colliding with a property
-	 * name, and a plain string needs no special marshalling in a cluster.
+	 * Key of the generation token, which every eviction replaces. The NUL character keeps it from
+	 * colliding with a lower-cased property name.
 	 */
-	static final String KEY_MODE = "\0caseInsensitiveKeys";
-
-	private static final String GENERATION_COUNTER = "globalPropertyCacheGeneration";
+	static final String GENERATION = "\0generation";
 
 	/**
 	 * Recorded in the current transaction's written set by {@link #clear()}, meaning every property.
@@ -101,9 +104,7 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 
 	private final TransactionTemplate readOnlyTransaction;
 
-	private final SyncStrongCounter generation;
-
-	/** Starts a fill on another thread and returns a future that completes when it is done. */
+	/** Runs a fill on another thread without waiting for it. */
 	private final Consumer<Runnable> backgroundRunner;
 
 	/** Fills in progress, by property name, so concurrent misses start a single fill. */
@@ -124,11 +125,6 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 
 		this.readOnlyTransaction = new TransactionTemplate(transactionManager);
 		this.readOnlyTransaction.setReadOnly(true);
-
-		CounterManager counters = EmbeddedCounterManagerFactory.asCounterManager(cacheManager.getNativeCacheManager());
-		counters.defineCounter(GENERATION_COUNTER,
-		    CounterConfiguration.builder(CounterType.UNBOUNDED_STRONG).storage(Storage.VOLATILE).build());
-		this.generation = counters.getStrongCounter(GENERATION_COUNTER).sync();
 	}
 
 	/**
@@ -163,13 +159,20 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	 * @return a snapshot of the property
 	 */
 	public Entry get(String propertyName) {
-		Entry cached = getIfCached(propertyName);
-		if (cached != null) {
-			return cached;
+		Cache<Object, Object> cache = getCache();
+		if (cache == null || propertyName == null || isWrittenInCurrentTransaction(propertyName)) {
+			return Entry.of(dao.getGlobalPropertyObject(propertyName));
+		}
+
+		Object cached = cache.get(key(propertyName));
+		if (cached instanceof CachedEntry && ((CachedEntry) cached).isFor(propertyName)) {
+			return ((CachedEntry) cached).entry;
 		}
 
 		Entry loaded = Entry.of(dao.getGlobalPropertyObject(propertyName));
-		if (getCache() != null && !isWrittenInCurrentTransaction(propertyName)) {
+		// a fill cannot replace an entry cached for another spelling of the name, and loading may have
+		// flushed a write of the property
+		if (!(cached instanceof CachedEntry) && !isWrittenInCurrentTransaction(propertyName)) {
 			startFill(propertyName);
 		}
 		return loaded;
@@ -190,55 +193,35 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 			return null;
 		}
 
-		Object caseInsensitive = cache.get(KEY_MODE);
-		if (!(caseInsensitive instanceof Boolean)) {
-			return null;
-		}
-
-		Object cached = cache.get(key((Boolean) caseInsensitive, propertyName));
-		return cached instanceof Entry ? (Entry) cached : null;
+		Object cached = cache.get(key(propertyName));
+		return cached instanceof CachedEntry && ((CachedEntry) cached).isFor(propertyName) ? ((CachedEntry) cached).entry
+		        : null;
 	}
 
 	/**
-	 * Evicts the named property. Must be called whenever a global property is saved or purged.
+	 * Evicts the named property, for example because it has been saved or purged.
 	 * <p>
-	 * The property is evicted immediately and again when the current transaction completes, so that
-	 * values filled while it was running are discarded whether it commits or rolls back. Until then the
-	 * current transaction reads the property without the cache.
+	 * Within a transaction the property is evicted when the transaction completes, whether it commits
+	 * or rolls back, and until then the transaction reads the property without the cache. Outside one
+	 * it is evicted immediately.
 	 *
 	 * @param propertyName the name of the property, not null
 	 */
 	public void evict(String propertyName) {
-		Cache<Object, Object> cache = getCache();
-		if (cache == null) {
-			return;
-		}
-
-		if (OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON.equalsIgnoreCase(propertyName)
-		        || !Boolean.TRUE.equals(cache.get(KEY_MODE))) {
-			// the keys may be exact names, or unknown, so other spellings of the name may be cached
+		if (OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON.equalsIgnoreCase(propertyName)) {
+			// changes what the DAO returns for every spelling of every name
 			clear();
-			return;
+		} else {
+			invalidate(key(propertyName));
 		}
-
-		recordWrite(propertyName);
-		String key = key(true, propertyName);
-		invalidate(() -> cache.remove(key));
 	}
 
 	/**
-	 * Evicts every property. Use this when global properties may have been changed outside the API, for
-	 * example by Liquibase.
-	 * <p>
-	 * As with {@link #evict(String)}, the cache is cleared immediately and again when the current
-	 * transaction completes, and until then the current transaction reads every property without it.
+	 * Evicts every property. As with {@link #evict(String)}, within a transaction this happens when the
+	 * transaction completes, and until then the transaction reads every property without the cache.
 	 */
 	public void clear() {
-		Cache<Object, Object> cache = getCache();
-		if (cache != null) {
-			recordWrite(ALL_PROPERTIES);
-			invalidate(cache::clear);
-		}
+		invalidate(ALL_PROPERTIES);
 	}
 
 	/**
@@ -259,12 +242,29 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	}
 
 	/**
+	 * Evicts every property immediately, even within a transaction, which still reads every property
+	 * without the cache until it completes. Only for tests that load data behind the API.
+	 */
+	void clearNow() {
+		Cache<Object, Object> cache = getCache();
+		if (cache == null) {
+			return;
+		}
+
+		evictNow(cache, Collections.singleton(ALL_PROPERTIES));
+		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+			getWrittenInCurrentTransaction(cache).add(ALL_PROPERTIES);
+		}
+	}
+
+	/**
 	 * Forgets which properties the current transaction has written, so that it reads through the cache
-	 * again. Only for tests that load data behind the API but still need to observe cache hits.
+	 * again and does not evict them when it completes. Only for tests that load data behind the API but
+	 * still need to observe cache hits.
 	 */
 	void forgetWritesInCurrentTransaction() {
 		if (TransactionSynchronizationManager.hasResource(this)) {
-			getWrittenInCurrentTransaction().clear();
+			((Set<?>) TransactionSynchronizationManager.getResource(this)).clear();
 		}
 	}
 
@@ -301,8 +301,9 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	}
 
 	/**
-	 * Runs on a background thread: reads the property and the key mode in a new read-only transaction
-	 * and caches them unless an eviction happens in the meantime.
+	 * Runs on a background thread: reads the property in a new read-only transaction and caches it
+	 * unless an eviction happens in the meantime, or it is stored under a name that does not lower-case
+	 * to the same key, whose writes would evict a different key.
 	 */
 	private void fill(String propertyName) {
 		Cache<Object, Object> cache = getCache();
@@ -310,51 +311,84 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 			return;
 		}
 
-		long loadedAt = generation.getValue();
+		Object loadedAt = currentGeneration(cache);
 		readOnlyTransaction.executeWithoutResult(status -> {
-			boolean caseInsensitive = dao.isDatabaseStringComparisonCaseSensitive();
-			Entry entry = Entry.of(dao.getGlobalPropertyObject(propertyName));
-			putIfCurrent(cache, KEY_MODE, caseInsensitive, loadedAt);
-			putIfCurrent(cache, key(caseInsensitive, propertyName), entry, loadedAt);
+			GlobalProperty property = dao.getGlobalPropertyObject(propertyName);
+			if (property != null) {
+				String storedName = dao.getStoredGlobalPropertyName(propertyName);
+				if (storedName == null || !key(storedName).equals(key(propertyName))) {
+					return;
+				}
+			}
+			putIfCurrent(cache, key(propertyName), new CachedEntry(propertyName, Entry.of(property)), loadedAt);
 		});
 	}
 
 	/**
-	 * Caches <code>value</code> unless an eviction has happened since it was loaded. An eviction
-	 * increments the counter before removing entries, so if one runs while the value is being put, the
-	 * second check either sees it and removes the value, or the eviction removes it.
+	 * Returns this node's generation token, first creating one if there is none. The token is created
+	 * on this node only, since writing it cluster-wide would invalidate the other nodes' tokens.
 	 */
-	private void putIfCurrent(Cache<Object, Object> cache, String key, Object value, long loadedAt) {
-		if (generation.getValue() != loadedAt) {
+	private static Object currentGeneration(Cache<Object, Object> cache) {
+		Object generation = cache.get(GENERATION);
+		if (generation != null) {
+			return generation;
+		}
+
+		String created = UUID.randomUUID().toString();
+		Object existing = cache.getAdvancedCache().withFlags(Flag.CACHE_MODE_LOCAL).putIfAbsent(GENERATION, created);
+		return existing != null ? existing : created;
+	}
+
+	/**
+	 * Caches <code>value</code> unless an eviction has happened since it was loaded. An eviction
+	 * replaces the generation token before removing entries, so if one runs while the value is being
+	 * put, the second check either sees it and removes the value, or the eviction removes it. The
+	 * removal is local, since the value was only ever written on this node.
+	 */
+	private static void putIfCurrent(Cache<Object, Object> cache, String key, CachedEntry value, Object loadedAt) {
+		if (!loadedAt.equals(cache.get(GENERATION))) {
 			return;
 		}
 
 		cache.putForExternalRead(key, value);
-		if (generation.getValue() != loadedAt) {
-			cache.remove(key);
+		if (!loadedAt.equals(cache.get(GENERATION))) {
+			cache.getAdvancedCache().withFlags(Flag.CACHE_MODE_LOCAL).remove(key);
 		}
 	}
 
-	private static String key(boolean caseInsensitive, String propertyName) {
-		return caseInsensitive ? propertyName.toLowerCase(Locale.ROOT) : propertyName;
+	private static String key(String propertyName) {
+		return propertyName.toLowerCase(Locale.ROOT);
 	}
 
 	/**
-	 * Runs <code>removal</code> now and again when the current transaction completes, each time after
-	 * incrementing the generation so that fills already in progress are not kept.
+	 * Evicts <code>key</code> when the current transaction completes, or immediately outside one. Keys
+	 * recorded by one transaction are evicted together.
 	 */
-	private void invalidate(Runnable removal) {
-		generation.incrementAndGet();
-		removal.run();
-		if (TransactionSynchronizationManager.isSynchronizationActive()) {
-			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+	private void invalidate(String key) {
+		Cache<Object, Object> cache = getCache();
+		if (cache == null) {
+			return;
+		}
 
-				@Override
-				public void afterCompletion(int status) {
-					generation.incrementAndGet();
-					removal.run();
-				}
-			});
+		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+			getWrittenInCurrentTransaction(cache).add(key);
+		} else {
+			evictNow(cache, Collections.singleton(key));
+		}
+	}
+
+	/**
+	 * Replaces the generation token and then removes the keys, or every entry if they include
+	 * {@link #ALL_PROPERTIES}. The token must be replaced first: a clear does not lock every key, so a
+	 * fill could otherwise write behind it and still find its token. Replacing the token with a plain
+	 * put invalidates it on every other node before the removals are sent.
+	 */
+	private static void evictNow(Cache<Object, Object> cache, Set<String> keys) {
+		cache.put(GENERATION, UUID.randomUUID().toString());
+		if (keys.contains(ALL_PROPERTIES)) {
+			cache.clear();
+		} else {
+			keys.forEach(cache::remove);
 		}
 	}
 
@@ -363,43 +397,76 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 			return false;
 		}
 
-		Set<String> written = getWrittenInCurrentTransaction();
-		return written.contains(ALL_PROPERTIES) || written.contains(propertyName.toLowerCase(Locale.ROOT));
+		Set<?> written = (Set<?>) TransactionSynchronizationManager.getResource(this);
+		return written.contains(ALL_PROPERTIES) || written.contains(key(propertyName));
 	}
 
 	/**
-	 * Records that the current transaction has written the property, so that it bypasses the cache for
-	 * the rest of the transaction. Names are lower-cased, since skipping the cache for another spelling
-	 * of the name is harmless.
+	 * Returns the keys the current transaction has written, first arranging for them to be evicted when
+	 * it completes. The set is unbound while the transaction is suspended, so a transaction started in
+	 * the meantime records and evicts its own writes.
 	 */
-	private void recordWrite(String propertyName) {
-		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-			return;
+	@SuppressWarnings("unchecked")
+	private Set<String> getWrittenInCurrentTransaction(Cache<Object, Object> cache) {
+		if (TransactionSynchronizationManager.hasResource(this)) {
+			return (Set<String>) TransactionSynchronizationManager.getResource(this);
 		}
 
-		if (!TransactionSynchronizationManager.hasResource(this)) {
-			TransactionSynchronizationManager.bindResource(this, new HashSet<String>());
-			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+		Set<String> written = new HashSet<>();
+		TransactionSynchronizationManager.bindResource(this, written);
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 
-				@Override
-				public void afterCompletion(int status) {
+			@Override
+			public void suspend() {
+				TransactionSynchronizationManager.unbindResource(GlobalPropertyCache.this);
+			}
+
+			@Override
+			public void resume() {
+				TransactionSynchronizationManager.bindResource(GlobalPropertyCache.this, written);
+			}
+
+			@Override
+			public void afterCompletion(int status) {
+				try {
+					if (!written.isEmpty()) {
+						evictNow(cache, written);
+					}
+				} finally {
 					TransactionSynchronizationManager.unbindResourceIfPossible(GlobalPropertyCache.this);
 				}
-			});
-		}
-		getWrittenInCurrentTransaction()
-		        .add(ALL_PROPERTIES.equals(propertyName) ? propertyName : propertyName.toLowerCase(Locale.ROOT));
-	}
-
-	@SuppressWarnings("unchecked")
-	private Set<String> getWrittenInCurrentTransaction() {
-		return (Set<String>) TransactionSynchronizationManager.getResource(this);
+			}
+		});
+		return written;
 	}
 
 	@SuppressWarnings("unchecked")
 	private Cache<Object, Object> getCache() {
 		org.springframework.cache.Cache cache = cacheManager.getCache(CACHE_NAME);
 		return cache == null ? null : (Cache<Object, Object>) cache.getNativeCache();
+	}
+
+	/** A cached {@link Entry} and the exact name it was loaded for. */
+	static final class CachedEntry implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		private final String propertyName;
+
+		private final Entry entry;
+
+		CachedEntry(String propertyName, Entry entry) {
+			this.propertyName = propertyName;
+			this.entry = entry;
+		}
+
+		boolean isFor(String propertyName) {
+			return this.propertyName.equals(propertyName);
+		}
+
+		Entry getEntry() {
+			return entry;
+		}
 	}
 
 	/**

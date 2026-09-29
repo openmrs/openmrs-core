@@ -26,22 +26,26 @@ public final class GlobalPropertyCacheTestUtil {
 	private GlobalPropertyCacheTestUtil() {
 	}
 
-	/**
-	 * Caches <code>property</code> as a fill would. Assumes lower-cased keys, which is the case unless
-	 * the test sets the case-sensitivity global property to false.
-	 */
+	/** Caches <code>property</code> as a fill of its exact name would. */
 	public static void seed(GlobalProperty property) {
-		Cache cache = getCache();
-		cache.put(GlobalPropertyCache.KEY_MODE, Boolean.TRUE);
-		cache.put(property.getProperty().toLowerCase(Locale.ROOT), GlobalPropertyCache.Entry.of(property));
+		getCache().put(property.getProperty().toLowerCase(Locale.ROOT),
+		    new GlobalPropertyCache.CachedEntry(property.getProperty(), GlobalPropertyCache.Entry.of(property)));
 	}
 
 	/**
-	 * @return true if an entry, including one for an unset property, is cached under the lower-cased
+	 * @return true if an entry, including one for an unset property, is cached for any spelling of the
 	 *         name
 	 */
 	public static boolean isCached(String propertyName) {
 		return getCache().get(propertyName.toLowerCase(Locale.ROOT)) != null;
+	}
+
+	/**
+	 * Evicts every property immediately, even within a transaction, after data has been loaded behind
+	 * the API.
+	 */
+	public static void clearNow() {
+		getGlobalPropertyCache().clearNow();
 	}
 
 	/** Waits for fills started by earlier misses to finish. */

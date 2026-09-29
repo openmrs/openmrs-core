@@ -39,7 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -61,7 +60,6 @@ public class GlobalPropertyCacheTest {
 	@BeforeEach
 	public void setUp() {
 		dao = mock(AdministrationDAO.class);
-		when(dao.isDatabaseStringComparisonCaseSensitive()).thenReturn(true);
 
 		DefaultCacheManager nativeCacheManager = new DefaultCacheManager(new GlobalConfigurationBuilder().build());
 		nativeCacheManager.defineConfiguration(GlobalPropertyCache.CACHE_NAME,
@@ -115,27 +113,30 @@ public class GlobalPropertyCacheTest {
 	}
 
 	@Test
-	public void get_shouldIgnoreCaseIfTheDaoIgnoresCase() {
+	public void get_shouldOnlyServeAnEntryForTheSpellingItWasLoadedFor() {
 		givenProperty("some.property", "value");
+		givenProperty("SOME.Property", "other");
 		globalPropertyCache.get("some.property");
 		globalPropertyCache.awaitFills();
 
-		assertEquals("value", globalPropertyCache.get("SOME.Property").getValue());
-		verify(dao, never()).getGlobalPropertyObject("SOME.Property");
+		assertEquals("other", globalPropertyCache.get("SOME.Property").getValue());
+		globalPropertyCache.awaitFills();
+
+		// read by the caller only, since a fill cannot replace the entry for the other spelling
+		verify(dao, times(1)).getGlobalPropertyObject("SOME.Property");
+		assertEquals("value", cached("some.property").getValue());
 	}
 
 	@Test
-	public void get_shouldCacheEachSpellingSeparatelyIfTheDaoMayBeCaseSensitive() {
-		when(dao.isDatabaseStringComparisonCaseSensitive()).thenReturn(false);
-		givenProperty("some.property", "value");
+	public void get_shouldNotCacheAPropertyStoredUnderANameThatLowerCasesDifferently() {
+		// for example a collation that ignores trailing spaces
+		when(dao.getGlobalPropertyObject("some.property ")).thenReturn(new GlobalProperty("some.property", "value"));
+		when(dao.getStoredGlobalPropertyName("some.property ")).thenReturn("some.property");
 
-		assertFalse(globalPropertyCache.get("SOME.Property").isPresent());
-		globalPropertyCache.awaitFills();
-		assertEquals("value", globalPropertyCache.get("some.property").getValue());
+		assertEquals("value", globalPropertyCache.get("some.property ").getValue());
 		globalPropertyCache.awaitFills();
 
-		assertFalse(cached("SOME.Property").isPresent());
-		assertTrue(cached("some.property").isPresent());
+		assertNull(cache.get("some.property "));
 	}
 
 	@Test
@@ -183,6 +184,7 @@ public class GlobalPropertyCacheTest {
 			globalPropertyCache.evict("some.property");
 			return property;
 		});
+		when(dao.getStoredGlobalPropertyName("some.property")).thenReturn("some.property");
 
 		globalPropertyCache.get("some.property");
 		globalPropertyCache.awaitFills();
@@ -204,6 +206,36 @@ public class GlobalPropertyCacheTest {
 	}
 
 	@Test
+	public void get_shouldNotCacheAPropertyClearedWhileTheFillIsLoadingIt() {
+		GlobalProperty property = new GlobalProperty("some.property", "old");
+		when(dao.getGlobalPropertyObject("some.property")).thenReturn(property).thenAnswer(invocation -> {
+			globalPropertyCache.clear();
+			return property;
+		});
+		when(dao.getStoredGlobalPropertyName("some.property")).thenReturn("some.property");
+
+		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
+
+		assertNull(cache.get("some.property"));
+	}
+
+	@Test
+	public void get_shouldNotCacheAPropertyIfTheGenerationTokenExpiresWhileTheFillIsLoadingIt() {
+		GlobalProperty property = new GlobalProperty("some.property", "old");
+		when(dao.getGlobalPropertyObject("some.property")).thenReturn(property).thenAnswer(invocation -> {
+			cache.evict(GlobalPropertyCache.GENERATION);
+			return property;
+		});
+		when(dao.getStoredGlobalPropertyName("some.property")).thenReturn("some.property");
+
+		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
+
+		assertNull(cache.get("some.property"));
+	}
+
+	@Test
 	public void get_shouldReadTheTransactionsOwnWritesWithoutTheCache() {
 		givenProperty("some.property", "old");
 		globalPropertyCache.get("some.property");
@@ -213,7 +245,7 @@ public class GlobalPropertyCacheTest {
 		givenProperty("some.property", "new");
 		globalPropertyCache.evict("some.property");
 		// another transaction fills the cache with the committed value
-		cache.put("some.property", GlobalPropertyCache.Entry.of(new GlobalProperty("some.property", "old")));
+		seed("some.property", "old");
 
 		assertEquals("new", globalPropertyCache.get("some.property").getValue());
 		assertNull(globalPropertyCache.getIfCached("some.property"));
@@ -266,8 +298,17 @@ public class GlobalPropertyCacheTest {
 		globalPropertyCache.get("some.property");
 		globalPropertyCache.awaitFills();
 
-		assertEquals("value", globalPropertyCache.getIfCached("SOME.Property").getValue());
+		assertEquals("value", globalPropertyCache.getIfCached("some.property").getValue());
 		verify(dao, times(2)).getGlobalPropertyObject("some.property");
+	}
+
+	@Test
+	public void getIfCached_shouldReturnNullForAnotherSpellingOfACachedProperty() {
+		givenProperty("some.property", "value");
+		globalPropertyCache.get("some.property");
+		globalPropertyCache.awaitFills();
+
+		assertNull(globalPropertyCache.getIfCached("SOME.Property"));
 	}
 
 	@Test
@@ -300,43 +341,46 @@ public class GlobalPropertyCacheTest {
 	}
 
 	@Test
-	public void evict_shouldEvictEverySpellingIfTheDaoMayBeCaseSensitive() {
-		when(dao.isDatabaseStringComparisonCaseSensitive()).thenReturn(false);
-		givenProperty("some.property", "value");
+	public void evict_shouldEvictTheEntryCachedForAnySpelling() {
 		givenProperty("SOME.Property", "value");
-		globalPropertyCache.get("some.property");
-		globalPropertyCache.awaitFills();
 		globalPropertyCache.get("SOME.Property");
 		globalPropertyCache.awaitFills();
 
 		globalPropertyCache.evict("some.property");
 
 		assertNull(cache.get("some.property"));
-		assertNull(cache.get("SOME.Property"));
 	}
 
 	@Test
-	public void evict_shouldReconsiderTheKeysIfTheCaseSensitivityPropertyChanges() {
+	public void evict_shouldClearTheCacheIfTheCaseSensitivityPropertyChanges() {
 		givenProperty("some.property", "value");
 		globalPropertyCache.get("some.property");
 		globalPropertyCache.awaitFills();
 
-		when(dao.isDatabaseStringComparisonCaseSensitive()).thenReturn(false);
-		globalPropertyCache.evict(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
-		globalPropertyCache.get("some.property");
-		globalPropertyCache.awaitFills();
+		globalPropertyCache.evict(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON.toUpperCase());
 
-		// with lower-cased keys this would find the entry cached for "some.property"
-		assertFalse(globalPropertyCache.get("SOME.Property").isPresent());
+		assertNull(cache.get("some.property"));
 	}
 
 	@Test
-	public void evict_shouldEvictAgainWhenTheTransactionCommits() {
+	public void evict_shouldKeepServingOtherTransactionsUntilTheTransactionCompletes() {
+		seed("some.property", "old");
+		TransactionSynchronizationManager.initSynchronization();
+
+		globalPropertyCache.evict("some.property");
+
+		assertNotNull(cache.get("some.property"));
+		commit();
+		assertNull(cache.get("some.property"));
+	}
+
+	@Test
+	public void evict_shouldEvictWhenTheTransactionCommits() {
 		TransactionSynchronizationManager.initSynchronization();
 		globalPropertyCache.evict("some.property");
 
 		// another transaction fills the cache while this one is still running
-		cache.put("some.property", GlobalPropertyCache.Entry.of(new GlobalProperty("some.property", "old")));
+		seed("some.property", "old");
 
 		commit();
 
@@ -344,14 +388,50 @@ public class GlobalPropertyCacheTest {
 	}
 
 	@Test
-	public void evict_shouldEvictAgainWhenTheTransactionRollsBack() {
+	public void evict_shouldEvictWhenTheTransactionRollsBack() {
 		TransactionSynchronizationManager.initSynchronization();
 		globalPropertyCache.evict("some.property");
 
-		cache.put("some.property", GlobalPropertyCache.Entry.ABSENT);
+		cache.put("some.property", new GlobalPropertyCache.CachedEntry("some.property", GlobalPropertyCache.Entry.ABSENT));
 
 		rollback();
 
+		assertNull(cache.get("some.property"));
+	}
+
+	@Test
+	public void evict_shouldEvictATransactionsWritesTogether() {
+		seed("some.property", "old");
+		seed("other.property", "old");
+		TransactionSynchronizationManager.initSynchronization();
+
+		globalPropertyCache.evict("some.property");
+		globalPropertyCache.evict("other.property");
+		globalPropertyCache.evict("SOME.Property");
+
+		assertEquals(1, TransactionSynchronizationManager.getSynchronizations().size());
+		commit();
+		assertNull(cache.get("some.property"));
+		assertNull(cache.get("other.property"));
+	}
+
+	@Test
+	public void evict_shouldEvictTheWritesOfATransactionStartedWhileAnotherIsSuspended() {
+		seed("some.property", "old");
+		seed("other.property", "old");
+		TransactionSynchronizationManager.initSynchronization();
+		globalPropertyCache.evict("some.property");
+
+		List<TransactionSynchronization> suspended = suspend();
+		assertEquals("old", globalPropertyCache.getIfCached("some.property").getValue());
+		globalPropertyCache.evict("other.property");
+		commit();
+		assertNull(cache.get("other.property"));
+		assertNotNull(cache.get("some.property"));
+
+		resume(suspended);
+		assertNull(globalPropertyCache.getIfCached("some.property"));
+		commit();
 		assertNull(cache.get("some.property"));
 	}
 
@@ -382,17 +462,27 @@ public class GlobalPropertyCacheTest {
 	}
 
 	@Test
-	public void clear_shouldNotKeepTheKeyModeIfItIsClearedWhileTheFillIsLoadingIt() {
-		when(dao.isDatabaseStringComparisonCaseSensitive()).thenAnswer(invocation -> {
-			globalPropertyCache.clear();
-			return true;
-		});
+	public void clear_shouldKeepServingOtherTransactionsUntilTheTransactionCompletes() {
+		seed("some.property", "old");
+		TransactionSynchronizationManager.initSynchronization();
 
-		globalPropertyCache.get("some.property");
-		globalPropertyCache.awaitFills();
+		globalPropertyCache.clear();
 
-		assertNull(globalPropertyCache.getIfCached("some.property"));
+		assertNotNull(cache.get("some.property"));
+		commit();
 		assertNull(cache.get("some.property"));
+	}
+
+	@Test
+	public void clearNow_shouldEvictEveryPropertyImmediatelyWithinATransaction() {
+		seed("some.property", "old");
+		TransactionSynchronizationManager.initSynchronization();
+
+		globalPropertyCache.clearNow();
+
+		assertNull(cache.get("some.property"));
+		seed("some.property", "old");
+		assertNull(globalPropertyCache.getIfCached("some.property"));
 	}
 
 	@Test
@@ -409,13 +499,41 @@ public class GlobalPropertyCacheTest {
 	private GlobalProperty givenProperty(String name, String value) {
 		GlobalProperty property = new GlobalProperty(name, value);
 		when(dao.getGlobalPropertyObject(name)).thenReturn(property);
+		when(dao.getStoredGlobalPropertyName(name)).thenReturn(name);
 		return property;
 	}
 
+	/** Caches a value as a fill of <code>name</code> by another transaction would. */
+	private void seed(String name, String value) {
+		cache.put(name.toLowerCase(),
+		    new GlobalPropertyCache.CachedEntry(name, GlobalPropertyCache.Entry.of(new GlobalProperty(name, value))));
+	}
+
 	private GlobalPropertyCache.Entry cached(String key) {
-		GlobalPropertyCache.Entry entry = cache.get(key, GlobalPropertyCache.Entry.class);
-		assertNotNull(entry, "expected " + key + " to be cached");
-		return entry;
+		GlobalPropertyCache.CachedEntry cached = cache.get(key, GlobalPropertyCache.CachedEntry.class);
+		assertNotNull(cached, "expected " + key + " to be cached");
+		return cached.getEntry();
+	}
+
+	/**
+	 * Suspends the current transaction's synchronizations and starts a new, empty set, as starting a
+	 * new transaction would.
+	 */
+	private static List<TransactionSynchronization> suspend() {
+		List<TransactionSynchronization> suspended = TransactionSynchronizationManager.getSynchronizations();
+		suspended.forEach(TransactionSynchronization::suspend);
+		TransactionSynchronizationManager.clearSynchronization();
+		TransactionSynchronizationManager.initSynchronization();
+		return suspended;
+	}
+
+	private static void resume(List<TransactionSynchronization> suspended) {
+		TransactionSynchronizationManager.clearSynchronization();
+		TransactionSynchronizationManager.initSynchronization();
+		suspended.forEach(synchronization -> {
+			synchronization.resume();
+			TransactionSynchronizationManager.registerSynchronization(synchronization);
+		});
 	}
 
 	private static void commit() {

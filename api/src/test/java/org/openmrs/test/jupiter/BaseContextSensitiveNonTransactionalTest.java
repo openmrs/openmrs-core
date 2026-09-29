@@ -77,7 +77,6 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
-import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.cache.GlobalPropertyCacheTestUtil;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -833,7 +832,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 			DatabaseOperation.REFRESH.execute(dbUnitConn, dataset);
 
 			// the dataset may have written global properties behind the API
-			applicationContext.getBean(GlobalPropertyCache.class).clear();
+			GlobalPropertyCacheTestUtil.clearNow();
 
 			if (isPostgreSQL()) {
 				Context.getAdministrationService().updatePostgresSequence();
@@ -962,6 +961,8 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 
 				//Commit so that it is not rolled back after a test.
 				getConnection().commit();
+				// the data is committed, so this transaction need not keep bypassing the global property cache
+				GlobalPropertyCacheTestUtil.forgetWritesInCurrentTransaction();
 
 				updateSearchIndex();
 

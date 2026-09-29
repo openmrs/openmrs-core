@@ -18,6 +18,9 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
 import org.infinispan.configuration.parsing.ParserRegistry;
 import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.notifications.Listener;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
+import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
 import org.infinispan.remoting.transport.jgroups.JGroupsTransport;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.jgroups.JChannel;
@@ -31,6 +34,7 @@ import org.openmrs.api.db.AdministrationDAO;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -119,6 +123,27 @@ public class GlobalPropertyCacheClusterTest {
 	}
 
 	@Test
+	public void evict_shouldRemoveTheEntryOnANodeThatDidNotCacheIt() {
+		givenProperty("some.property", "value");
+		fill(cache2, "some.property");
+
+		cache1.evict("SOME.Property");
+
+		assertFalse(nativeCache(node2).containsKey("some.property"));
+	}
+
+	@Test
+	public void evict_shouldReplaceTheGenerationTokenOnEveryNode() {
+		givenProperty("some.property", "value");
+		fill(cache2, "some.property");
+		Object token = nativeCache(node2).get(GlobalPropertyCache.GENERATION);
+
+		cache1.evict("other.property");
+
+		assertNotEquals(token, nativeCache(node2).get(GlobalPropertyCache.GENERATION));
+	}
+
+	@Test
 	public void clear_shouldRemoveEveryEntryOnEveryNode() {
 		givenProperty("some.property", "value");
 		fill(cache2, "some.property");
@@ -137,6 +162,7 @@ public class GlobalPropertyCacheClusterTest {
 			cache1.evict("some.property");
 			return property;
 		});
+		when(dao2.getStoredGlobalPropertyName("some.property")).thenReturn("some.property");
 
 		fill(cache2, "some.property");
 
@@ -155,6 +181,25 @@ public class GlobalPropertyCacheClusterTest {
 		assertFalse(nativeCache(node2).containsKey("some.property"));
 	}
 
+	@Test
+	public void get_shouldOnlyDiscardAFillOnTheNodeThatMadeIt() {
+		givenProperty("some.property", "value");
+		fill(cache2, "some.property");
+
+		// node1's fill writes its entry and then finds that an unrelated eviction replaced the token
+		EvictOnCreate listener = new EvictOnCreate("some.property", () -> cache1.evict("other.property"));
+		nativeCache(node1).addListener(listener);
+		try {
+			fill(cache1, "some.property");
+		} finally {
+			nativeCache(node1).removeListener(listener);
+		}
+
+		assertTrue(listener.fired);
+		assertFalse(nativeCache(node1).containsKey("some.property"));
+		assertTrue(nativeCache(node2).containsKey("some.property"));
+	}
+
 	private static void fill(GlobalPropertyCache cache, String propertyName) {
 		cache.get(propertyName);
 		cache.awaitFills();
@@ -171,20 +216,44 @@ public class GlobalPropertyCacheClusterTest {
 		return new SpringEmbeddedCacheManager(cacheManager);
 	}
 
+	/** Runs an action on the writing thread once the given key has been written on this node. */
+	@Listener(sync = true)
+	public static class EvictOnCreate {
+
+		private final String key;
+
+		private final Runnable action;
+
+		private volatile boolean fired;
+
+		EvictOnCreate(String key, Runnable action) {
+			this.key = key;
+			this.action = action;
+		}
+
+		@CacheEntryCreated
+		public void created(CacheEntryCreatedEvent<Object, Object> event) {
+			if (!event.isPre() && key.equals(event.getKey()) && !fired) {
+				fired = true;
+				action.run();
+			}
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private static Cache<Object, Object> nativeCache(SpringEmbeddedCacheManager node) {
 		return (Cache<Object, Object>) node.getCache(GlobalPropertyCache.CACHE_NAME).getNativeCache();
 	}
 
 	private static AdministrationDAO mockDao() {
-		AdministrationDAO dao = mock(AdministrationDAO.class);
-		when(dao.isDatabaseStringComparisonCaseSensitive()).thenReturn(true);
-		return dao;
+		return mock(AdministrationDAO.class);
 	}
 
 	private void givenProperty(String name, String value) {
 		GlobalProperty property = new GlobalProperty(name, value);
-		when(dao1.getGlobalPropertyObject(name)).thenReturn(property);
-		when(dao2.getGlobalPropertyObject(name)).thenReturn(property);
+		for (AdministrationDAO dao : new AdministrationDAO[] { dao1, dao2 }) {
+			when(dao.getGlobalPropertyObject(name)).thenReturn(property);
+			when(dao.getStoredGlobalPropertyName(name)).thenReturn(name);
+		}
 	}
 }

@@ -18,6 +18,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Role;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -196,5 +197,27 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getGlobalPropertyObject_shouldFailGivenANullPropertyName() {
 		assertThrows(IllegalArgumentException.class, () -> dao.getGlobalPropertyObject(null));
+	}
+
+	@Test
+	public void getStoredGlobalPropertyName_shouldReturnTheStoredNameOfAPropertyFoundRegardlessOfCase() {
+		executeDataSet(ADMIN_GLOBAL_PROPERTIES_XML);
+
+		assertEquals("another-global-property", dao.getStoredGlobalPropertyName("ANOTHER-Global-Property"));
+	}
+
+	@Test
+	public void getStoredGlobalPropertyName_shouldReturnTheStoredNameOfAPropertyTheDatabaseMatchesToAnotherSpelling() {
+		executeDataSet(ADMIN_GLOBAL_PROPERTIES_XML);
+		dao.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON, "false"));
+		sessionFactory.getCurrentSession().flush();
+
+		// the lookup compares names exactly, but the test database ignores case
+		assertEquals("another-global-property", dao.getStoredGlobalPropertyName("ANOTHER-Global-Property"));
+	}
+
+	@Test
+	public void getStoredGlobalPropertyName_shouldReturnNullIfNoPropertyMatches() {
+		assertNull(dao.getStoredGlobalPropertyName("no.such.property"));
 	}
 }
