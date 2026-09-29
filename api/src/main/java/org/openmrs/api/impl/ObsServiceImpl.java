@@ -396,7 +396,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 			}
 		}
 
-		return Context.getObsService().saveObs(obs, "unvoided");
+		return Context.getObsService().saveObs(obs, "unvoid obs");
 	}
 
 	/**
