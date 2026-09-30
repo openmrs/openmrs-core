@@ -50,7 +50,7 @@
 		<springTestVersion>7.0.9</springTestVersion>
 		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
 		<springSecurityVersion>7.1.1</springSecurityVersion>
-		<hibernateVersion>7.4.10.Final</hibernateVersion>
+		<hibernateVersion>7.4.11.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.4.Final</hibernateValidatorVersion>
@@ -58,13 +58,13 @@
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.6.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
-		<jacksonVersion>2.22.2</jacksonVersion>
+		<jacksonVersion>2.22.3</jacksonVersion>
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.26.1</log4jVersion>
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
-		<owaspEncoderVersion>1.4.0</owaspEncoderVersion>
-		<graalJsVersion>25.3.4.1</graalJsVersion>
+		<owaspEncoderVersion>1.4.1</owaspEncoderVersion>
+		<graalJsVersion>25.4.4.1.1</graalJsVersion>
 		<nettyVersion>4.2.18.Final</nettyVersion>
 
 		<!-- Jakarta -->
@@ -124,9 +124,9 @@
 
 		<!-- Testing -->
 		<junitVersion>6.1.3</junitVersion>
-		<mockitoVersion>5.23.0</mockitoVersion>
+		<mockitoVersion>5.24.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
-		<h2Version>2.5.250</h2Version>
+		<h2Version>2.5.252</h2Version>
 		<dbunitVersion>3.5.2</dbunitVersion>
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.5</testcontainersVersion>
@@ -152,7 +152,7 @@
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>3.10.2</version>
+				<version>3.10.3</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>

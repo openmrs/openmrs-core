@@ -137,7 +137,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@JoinColumn(name = "parent_location")
 	private Location parentLocation;
 
-	@OneToMany(mappedBy = "parentLocation", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "parentLocation", cascade = CascadeType.ALL)
 	@BatchSize(size = 100)
 	@OrderBy("name")
 	private Set<Location> childLocations;
