@@ -176,7 +176,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
 	 */
 	@Override
-	@Transactional(readOnly = true)
+	// a cache hit needs no transaction, and a miss can read through the caller's session or one opened
+	// for the call
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public String getGlobalProperty(String propertyName) throws APIException {
 		// This method should not have any authorization check
 		if (propertyName == null) {
@@ -186,19 +188,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		GlobalPropertyCache.Entry gp = globalPropertyCache.get(propertyName);
 		checkCanView(gp, propertyName);
 		return gp.getValue();
-	}
-
-	/**
-	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyIfCached(java.lang.String)
-	 */
-	@Override
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public GlobalPropertyCache.Entry getGlobalPropertyIfCached(String propertyName) {
-		GlobalPropertyCache.Entry gp = globalPropertyCache.getIfCached(propertyName);
-		if (gp != null) {
-			checkCanView(gp, propertyName);
-		}
-		return gp;
 	}
 
 	private void checkCanView(GlobalPropertyCache.Entry gp, String propertyName) {
@@ -249,7 +238,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String, java.lang.String)
 	 */
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException {
 		String s = Context.getAdministrationService().getGlobalProperty(propertyName);
 		if (s == null) {
@@ -752,6 +741,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue) throws APIException {
 		if (defaultValue == null) {
 			throw new IllegalArgumentException("The defaultValue argument cannot be null");

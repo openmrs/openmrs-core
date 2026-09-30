@@ -54,7 +54,7 @@ public class GlobalPropertyCacheInterceptorIntegrationTest extends BaseContextSe
 		adminService.getGlobalProperty(OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED);
 		GlobalPropertyCacheTestUtil.awaitFills();
 		assertEquals(String.valueOf(seed + 1),
-		    adminService.getGlobalPropertyIfCached(OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED).getValue());
+		    GlobalPropertyCacheTestUtil.getIfCached(OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED).getValue());
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class GlobalPropertyCacheInterceptorIntegrationTest extends BaseContextSe
 		property.setPropertyValue("changed");
 		Context.flushSession();
 
-		assertNull(adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
 		assertEquals("changed", adminService.getGlobalProperty("concept.defaultConceptMapType"));
 		TestTransaction.end();
 		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
@@ -78,7 +78,7 @@ public class GlobalPropertyCacheInterceptorIntegrationTest extends BaseContextSe
 		adminDAO.deleteGlobalProperty(adminDAO.getGlobalPropertyObject("concept.defaultConceptMapType"));
 		Context.flushSession();
 
-		assertNull(adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
 		assertNull(adminService.getGlobalProperty("concept.defaultConceptMapType"));
 		TestTransaction.end();
 		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
@@ -91,7 +91,7 @@ public class GlobalPropertyCacheInterceptorIntegrationTest extends BaseContextSe
 		adminDAO.saveGlobalProperty(new GlobalProperty("inserted.property", "value"));
 		Context.flushSession();
 
-		assertNull(adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
 		TestTransaction.end();
 		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
 	}

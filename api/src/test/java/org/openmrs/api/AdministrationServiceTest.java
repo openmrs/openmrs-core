@@ -16,7 +16,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -31,6 +36,7 @@ import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.cache.RolePrivileges;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
@@ -47,6 +53,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.validation.BindException;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -644,7 +651,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		property.setPropertyValue("saved");
 		adminService.saveGlobalProperty(property);
 
-		assertNull(adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
 		TestTransaction.end();
 		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
 	}
@@ -668,7 +675,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		adminService.setGlobalProperty("CONCEPT.defaultConceptMapType", "set");
 
-		assertNull(adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
 		TestTransaction.end();
 		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
 	}
@@ -680,7 +687,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		adminService.updateGlobalProperty("concept.defaultConceptMapType", "updated");
 
-		assertNull(adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
 		TestTransaction.end();
 		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
 	}
@@ -692,7 +699,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		adminService.purgeGlobalProperty(adminService.getGlobalPropertyObject("concept.defaultConceptMapType"));
 
-		assertNull(adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
 		TestTransaction.end();
 		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
 	}
@@ -705,64 +712,17 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void getGlobalPropertyIfCached_shouldReturnNullIfThePropertyIsNotCached() {
-		assertNull(adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
-	}
-
-	@Test
-	public void getGlobalPropertyIfCached_shouldReturnACachedProperty() {
-		fill("concept.defaultConceptMapType");
-
-		assertEquals("same-as", adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType").getValue());
-	}
-
-	@Test
-	public void getGlobalPropertyIfCached_shouldReturnNullForAnotherSpellingOfACachedProperty() {
-		fill("concept.defaultConceptMapType");
-
-		assertNull(adminService.getGlobalPropertyIfCached("CONCEPT.defaultConceptMapType"));
-	}
-
-	@Test
-	public void getGlobalPropertyIfCached_shouldReturnACachedUnsetProperty() {
-		fill("unset.property");
-
-		assertFalse(adminService.getGlobalPropertyIfCached("unset.property").isPresent());
-	}
-
-	@Test
-	public void getGlobalPropertyIfCached_shouldFailIfTheUserMayNotViewTheProperty() {
-		executeDataSet(ADMIN_INITIAL_DATA_XML);
-		GlobalPropertyCacheTestUtil.forgetWritesInCurrentTransaction();
-		GlobalProperty property = new GlobalProperty("another-global-property", "cached");
-		property.setViewPrivilege(new Privilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
-		GlobalPropertyCacheTestUtil.seed(property);
-
-		Context.logout();
-		Context.authenticate(getTestUserCredentials());
-
-		// the proxy privilege passes the @Authorized gate but not the view check
-		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		try {
-			APIException exception = assertThrows(APIException.class,
-			    () -> adminService.getGlobalPropertyIfCached("another-global-property"));
-			assertFalse(exception instanceof APIAuthenticationException);
-		} finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		}
-	}
-
-	@Test
-	public void getGlobalPropertyIfCached_shouldRequireTheGetGlobalPropertiesPrivilege() {
+	public void getGlobalProperty_shouldRequireTheGetGlobalPropertiesPrivilegeForACachedValue() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		GlobalPropertyCacheTestUtil.forgetWritesInCurrentTransaction();
 		fill("concept.defaultConceptMapType");
+		assertNotNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
 
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
 
 		assertThrows(APIAuthenticationException.class,
-		    () -> adminService.getGlobalPropertyIfCached("concept.defaultConceptMapType"));
+		    () -> adminService.getGlobalProperty("concept.defaultConceptMapType"));
 	}
 
 	@Test
@@ -1427,6 +1387,47 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		adminService.saveGlobalProperty(new GlobalProperty("test", "TEST"));
 
 		assertThat(getCacheForCurrentUser(), nullValue());
+	}
+
+	@Test
+	public void getGlobalProperty_shouldNotStartATransactionForACachedValue() {
+		fill("concept.defaultConceptMapType");
+		TestTransaction.end();
+		Statistics statistics = Context.getRegisteredComponent("sessionFactory", SessionFactory.class).getStatistics();
+		long transactions = statistics.getTransactionCount();
+
+		assertEquals("same-as", adminService.getGlobalProperty("concept.defaultConceptMapType"));
+		assertEquals("same-as", adminService.getGlobalProperty("concept.defaultConceptMapType", "default"));
+		assertEquals("same-as", adminService.getGlobalPropertyValue("concept.defaultConceptMapType", "default"));
+		assertEquals(transactions, statistics.getTransactionCount());
+
+		// a read that does start one is counted
+		adminService.getGlobalPropertyObject("concept.defaultConceptMapType");
+		assertEquals(transactions + 1, statistics.getTransactionCount());
+	}
+
+	@Test
+	public void getGlobalProperty_shouldReadAMissWithoutATransactionOrSession() throws Exception {
+		TestTransaction.end();
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
+		SessionFactory sessionFactory = Context.getRegisteredComponent("sessionFactory", SessionFactory.class);
+		UserContext userContext = Context.getUserContext();
+
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		try {
+			Future<String> value = executor.submit(() -> {
+				Context.setUserContext(userContext);
+				try {
+					assertFalse(TransactionSynchronizationManager.hasResource(sessionFactory));
+					return adminService.getGlobalProperty("concept.defaultConceptMapType");
+				} finally {
+					Context.clearUserContext();
+				}
+			});
+			assertEquals("same-as", value.get());
+		} finally {
+			executor.shutdownNow();
+		}
 	}
 
 	/**

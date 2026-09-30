@@ -10,8 +10,6 @@
 package org.openmrs.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.context.Context;
 
 /**
@@ -20,13 +18,10 @@ import org.openmrs.api.context.Context;
 public class ConfigUtil {
 
 	/**
-	 * Gets the value of the given OpenMRS global property, from the global property cache without
-	 * starting a transaction when the property is cached.
+	 * Gets the value of the given OpenMRS global property
 	 */
 	public static String getGlobalProperty(String propertyName) {
-		AdministrationService service = Context.getAdministrationService();
-		GlobalPropertyCache.Entry cached = service.getGlobalPropertyIfCached(propertyName);
-		return cached != null ? cached.getValue() : service.getGlobalProperty(propertyName);
+		return Context.getAdministrationService().getGlobalProperty(propertyName);
 	}
 
 	/**

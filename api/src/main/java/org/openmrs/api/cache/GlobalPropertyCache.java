@@ -203,14 +203,12 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 
 	/**
 	 * Returns the cached snapshot of the named property without loading it, or null if it is not cached
-	 * or the current transaction has written it. Unlike {@link #get(String)}, this needs no transaction
-	 * or database access, which makes it suitable for callers that must avoid them. As with
-	 * {@link #get(String)}, callers must check whether the current user may view the property.
+	 * or the current transaction has written it. Only for tests that must observe the cache.
 	 *
 	 * @param propertyName the name of the property
 	 * @return a snapshot of the property, or null if it is not cached
 	 */
-	public Entry getIfCached(String propertyName) {
+	Entry getIfCached(String propertyName) {
 		Cache<Object, Object> cache = getCache();
 		if (cache == null || propertyName == null || isWrittenInCurrentTransaction(propertyName)) {
 			return null;

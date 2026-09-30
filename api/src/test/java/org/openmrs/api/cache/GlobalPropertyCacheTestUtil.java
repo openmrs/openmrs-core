@@ -48,6 +48,14 @@ public final class GlobalPropertyCacheTestUtil {
 		getGlobalPropertyCache().clearNow();
 	}
 
+	/**
+	 * @return the snapshot cached for exactly this name, or null if there is none or the current
+	 *         transaction has written the property
+	 */
+	public static GlobalPropertyCache.Entry getIfCached(String propertyName) {
+		return getGlobalPropertyCache().getIfCached(propertyName);
+	}
+
 	/** Waits for fills started by earlier misses to finish. */
 	public static void awaitFills() {
 		getGlobalPropertyCache().awaitFills();
