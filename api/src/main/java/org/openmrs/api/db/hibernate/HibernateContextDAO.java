@@ -611,6 +611,9 @@ public class HibernateContextDAO implements ContextDAO {
 			searchSessionFactory.getSearchSession().massIndexer().dropAndCreateSchemaOnStart(true).startAndWait();
 			saveSearchIndexVersion();
 			log.info("Finished rebuilding the search index");
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("Failed to rebuild the search index", e);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to rebuild the search index", e);
 		}
