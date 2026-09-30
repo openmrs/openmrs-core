@@ -29,6 +29,8 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 	private final String idForEncode;
 	
 	private final Map<String, PasswordEncoder> idToPasswordEncoder;
+
+	private final PasswordEncoder fallbackEncoder;
 	
 	public OpenmrsDelegatingPasswordEncoder(String idForEncode, Map<String, PasswordEncoder> idToPasswordEncoder, PasswordEncoder fallbackEncoder) {
 		if (idForEncode == null || idForEncode.isEmpty()) {
@@ -41,6 +43,7 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		
 		this.idForEncode = idForEncode;
 		this.idToPasswordEncoder = idToPasswordEncoder;
+		this.fallbackEncoder = fallbackEncoder;
 	}
 
 	@Override
@@ -57,19 +60,19 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		if (rawPassword == null && prefixedPassword == null) {
 			return true;
 		}
-		
+
 		String id = extractId(prefixedPassword);
 		String encodedPassword = prefixedPassword;
 		// if we have an id
 		if (id != null && !id.isEmpty()) {
 			encodedPassword = encodedPassword.substring(encodedPassword.indexOf("}") + 1);
 		}
-		
+
 		PasswordEncoder encoder = idToPasswordEncoder.get(id);
 		if (encoder == null) {
-			return defaultEncoder.matches(rawPassword, encodedPassword);
+			return fallbackEncoder.matches(rawPassword, encodedPassword);
 		}
-		
+
 		return encoder.matches(rawPassword, encodedPassword);
 	}
 
