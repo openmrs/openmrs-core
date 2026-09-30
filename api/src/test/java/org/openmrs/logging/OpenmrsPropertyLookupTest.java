@@ -207,5 +207,4 @@ class OpenmrsPropertyLookupTest {
 		contextMock.verify(() -> Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
 		contextMock.verify(() -> Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
 	}
-
 }
