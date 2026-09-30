@@ -407,17 +407,10 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	}
 
 	/**
-	 * Replaces the generation token and then removes the keys, or every entry if they include
-	 * {@link #ALL_PROPERTIES}. The token must be replaced first: a clear does not lock every key, so a
-	 * fill could otherwise write behind it and still find its token. Replacing the token with a plain
-	 * put invalidates it on every other node before the removals are sent. The removals are sent
-	 * together, so evicting several keys costs about one round trip to the other nodes.
-	 */
-	/**
 	 * Evicts the keys on every node or, if that fails, for example because the cluster is partitioned,
 	 * clears this node's cache instead, so that at least this node does not serve values from before
-	 * the write. Nodes the eviction did not reach may serve them until the lifespan expires, or, if
-	 * they were cut off by a partition, until it heals.
+	 * the write transaction. Nodes the eviction did not reach may serve them until the lifespan
+	 * expires, or, if they were cut off by a partition, until it heals.
 	 */
 	private static void evictOrClearLocally(Cache<Object, Object> cache, Set<String> keys) {
 		try {
