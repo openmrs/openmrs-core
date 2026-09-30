@@ -130,9 +130,9 @@ public class ModuleFactory {
 		} finally {
 			publishModuleEvents(new ModuleLoadEvent(ModuleFactory.class,
 				module != null ? module.getModuleId() : null, 
-				module !=null ? module.getName() : null,
-				module !=null ? module.getVersion() : null,
-				moduleFile.getName(), isModuleLoaded, failureReason));
+				module != null ? module.getName() : null,
+				module != null ? module.getVersion() : null,
+				moduleFile != null ? moduleFile.getName() : null, isModuleLoaded, failureReason));
 		}
 		return module;
 	}
@@ -141,20 +141,15 @@ public class ModuleFactory {
 	 * Add a module to the list of openmrs modules
 	 *
 	 * @param module
-	 * @param replaceIfExists unload a module that has the same moduleId if one is
-	 *                        loaded already
-	 *                        <strong>Should</strong> load module if it is currently
-	 *                        not loaded
-	 *                        <strong>Should</strong> not load module if already
-	 *                        loaded <strong>Should</strong>
-	 *                        always load module if replacement is wanted
-	 *                        <strong>Should</strong> not load an older
-	 *                        version of the same module <strong>Should</strong>
-	 *                        load a newer version of the same
+	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded already
+	 *                        <strong>Should</strong> load module if it is currently not loaded
+	 *                        <strong>Should</strong> not load module if already loaded <strong>Should</strong>
+	 *                        always load module if replacement is wanted <strong>Should</strong> not load an older
+	 *                        version of the same module <strong>Should</strong> load a newer version of the same
 	 *                        module
 	 * @return module the module that was loaded
-	 * @throws ModuleException if the module exists already with the same or newer
-	 *                         version
+	 * @throws ModuleException if a module with the same id is already loaded, at a newer version or
+	 *                         at the same version with replaceIfExists false
 	 */
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		

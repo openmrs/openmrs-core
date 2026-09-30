@@ -46,6 +46,9 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	@Resource(name = "testingModuleEventListener")
 	TestModuleEventListener testModuleEventListener;
 
+	@Resource(name = "throwingModuleEventListener")
+	ThrowingModuleEventListener throwingModuleEventListener;
+
 	@BeforeEach
 	public void before() {
 		ModuleUtil.shutdown();
@@ -408,18 +411,35 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		assertEquals("test1:Test1 Module:1.0-SNAPSHOT:MODULE_UNLOAD:false:" + exception.getMessage(), testModuleEventListener.events.get(1));
 	}
 
+	@Test
+	public void loadModule_shouldSucceedEvenWhenAListenerThrowsDuringEventPublishing() {
+		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
+
+		String moduleLocation = ModuleUtil.class.getClassLoader().getResource(MODULE1_PATH).getPath();
+		File moduleToLoad = new File(moduleLocation);
+
+		throwingModuleEventListener.arm();
+		try {
+			Module loaded = ModuleFactory.loadModule(moduleToLoad);
+			assertNotNull(loaded);
+			assertTrue(ModuleFactory.getLoadedModules().contains(loaded));
+		} finally {
+			throwingModuleEventListener.disarm();
+		}
+	}
+
 	private Module loadModule(String location, String moduleName, boolean replace) {
 		String moduleLocation = ModuleUtil.class.getClassLoader().getResource(location).getPath();
 
 		return ModuleFactory.loadModule(new File(moduleLocation), replace);
 	}
-	
+
 	private List<File> getModuleFiles() {
 		List<File> modulesToLoad = new ArrayList<>();
 		modulesToLoad.add(new File(ModuleUtil.class.getClassLoader().getResource(MODULE1_PATH).getPath()));
 		modulesToLoad.add(new File(ModuleUtil.class.getClassLoader().getResource(MODULE2_PATH).getPath()));
 		modulesToLoad.add(new File(ModuleUtil.class.getClassLoader().getResource(MODULE3_PATH).getPath()));
-		
+
 		return modulesToLoad;
 	}
 
@@ -463,6 +483,27 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 
 		public void clear() {
 			events.clear();
+		}
+	}
+
+	@Component("throwingModuleEventListener")
+	public static class ThrowingModuleEventListener {
+
+		private volatile boolean armed = false;
+
+		public void arm() {
+			armed = true;
+		}
+
+		public void disarm() {
+			armed = false;
+		}
+
+		@EventListener
+		public void onModuleEvent(AbstractModuleEvent moduleEvent) {
+			if (armed) {
+				throw new IllegalStateException("listener blew up");
+			}
 		}
 	}
 }
