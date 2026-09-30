@@ -18,10 +18,14 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 
 import org.infinispan.Cache;
 import org.infinispan.context.Flag;
+import org.infinispan.notifications.Listener;
+import org.infinispan.notifications.cachemanagerlistener.annotation.Merged;
+import org.infinispan.notifications.cachemanagerlistener.event.MergeEvent;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Daemon;
@@ -29,6 +33,7 @@ import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
@@ -60,7 +65,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  * in the cache itself, which the fill reads before loading and checks after writing, so an entry is
  * only kept if nothing was evicted in between. In a cluster, replacing the token invalidates it on
  * every node. A token that expires or is evicted for space also reads as an eviction, which only
- * costs an uncached load.
+ * costs an uncached load. If an eviction cannot reach every node, this node clears its own cache
+ * instead, and a node clears its cache when a network partition that cut it off heals.
  * <p>
  * Within a transaction, evictions are recorded rather than applied, and applied once when the
  * transaction completes. Until then the transaction reads the properties it has written, or every
@@ -78,7 +84,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @since 2.8.10
  */
 @Component("globalPropertyCache")
-public class GlobalPropertyCache implements ApplicationListener<ContextRefreshedEvent> {
+public class GlobalPropertyCache implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
 	private static final Logger log = LoggerFactory.getLogger(GlobalPropertyCache.class);
 
@@ -95,6 +101,8 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	 */
 	private static final String ALL_PROPERTIES = "\0all";
 
+	static final int MAX_CONCURRENT_FILLS = 4;
+
 	/** Capability token issued by {@link Daemon}, letting fills run on daemon threads. */
 	private static volatile Daemon.CallerKey daemonCallerKey;
 
@@ -109,6 +117,14 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 
 	/** Fills in progress, by property name, so concurrent misses start a single fill. */
 	private final ConcurrentMap<String, CompletableFuture<Void>> fills = new ConcurrentHashMap<>();
+
+	/**
+	 * Limits how many fills run at once, since each holds a database connection that callers may be
+	 * waiting for. A miss that finds none free skips its fill; a later miss starts one.
+	 */
+	private final Semaphore fillPermits = new Semaphore(MAX_CONCURRENT_FILLS);
+
+	private final PartitionMergeListener mergeListener = new PartitionMergeListener(this);
 
 	@Autowired
 	public GlobalPropertyCache(@Qualifier("apiCacheManager") SpringEmbeddedCacheManager cacheManager, AdministrationDAO dao,
@@ -125,6 +141,13 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 
 		this.readOnlyTransaction = new TransactionTemplate(transactionManager);
 		this.readOnlyTransaction.setReadOnly(true);
+
+		cacheManager.getNativeCacheManager().addListener(mergeListener);
+	}
+
+	@Override
+	public void destroy() {
+		cacheManager.getNativeCacheManager().removeListener(mergeListener);
 	}
 
 	/**
@@ -251,7 +274,7 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 			return;
 		}
 
-		evictNow(cache, Collections.singleton(ALL_PROPERTIES));
+		evictOrClearLocally(cache, Collections.singleton(ALL_PROPERTIES));
 		if (TransactionSynchronizationManager.isSynchronizationActive()) {
 			getWrittenInCurrentTransaction(cache).add(ALL_PROPERTIES);
 		}
@@ -269,13 +292,18 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	}
 
 	/**
-	 * Starts a fill unless one is already in progress for the property. The in-progress marker is
-	 * published before the fill starts and only that marker is removed when it finishes, so the fill
-	 * may run on any thread, including this one.
+	 * Starts a fill unless one is already in progress for the property or {@link #MAX_CONCURRENT_FILLS}
+	 * are running. The in-progress marker is published before the fill starts and only that marker is
+	 * removed when it finishes, so the fill may run on any thread, including this one.
 	 */
 	private void startFill(String propertyName) {
+		if (!fillPermits.tryAcquire()) {
+			return;
+		}
+
 		CompletableFuture<Void> marker = new CompletableFuture<>();
 		if (fills.putIfAbsent(propertyName, marker) != null) {
+			fillPermits.release();
 			return;
 		}
 
@@ -297,6 +325,7 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 
 	private void finish(String propertyName, CompletableFuture<Void> marker) {
 		fills.remove(propertyName, marker);
+		fillPermits.release();
 		marker.complete(null);
 	}
 
@@ -373,7 +402,7 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 		if (TransactionSynchronizationManager.isSynchronizationActive()) {
 			getWrittenInCurrentTransaction(cache).add(key);
 		} else {
-			evictNow(cache, Collections.singleton(key));
+			evictOrClearLocally(cache, Collections.singleton(key));
 		}
 	}
 
@@ -381,14 +410,39 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	 * Replaces the generation token and then removes the keys, or every entry if they include
 	 * {@link #ALL_PROPERTIES}. The token must be replaced first: a clear does not lock every key, so a
 	 * fill could otherwise write behind it and still find its token. Replacing the token with a plain
-	 * put invalidates it on every other node before the removals are sent.
+	 * put invalidates it on every other node before the removals are sent. The removals are sent
+	 * together, so evicting several keys costs about one round trip to the other nodes.
 	 */
+	/**
+	 * Evicts the keys on every node or, if that fails, for example because the cluster is partitioned,
+	 * clears this node's cache instead, so that at least this node does not serve values from before
+	 * the write. Nodes the eviction did not reach may serve them until the lifespan expires, or, if
+	 * they were cut off by a partition, until it heals.
+	 */
+	private static void evictOrClearLocally(Cache<Object, Object> cache, Set<String> keys) {
+		try {
+			evictNow(cache, keys);
+		} catch (RuntimeException e) {
+			log.error("Could not evict {} from the global property cache on every node, so clearing it on this node only",
+			    keys.contains(ALL_PROPERTIES) ? "every property" : keys, e);
+			clearLocally(cache);
+		}
+	}
+
+	/**
+	 * Clears this node's entries, including its generation token, so that fills in progress on this
+	 * node are discarded too.
+	 */
+	private static void clearLocally(Cache<Object, Object> cache) {
+		cache.getAdvancedCache().withFlags(Flag.CACHE_MODE_LOCAL).clear();
+	}
+
 	private static void evictNow(Cache<Object, Object> cache, Set<String> keys) {
 		cache.put(GENERATION, UUID.randomUUID().toString());
 		if (keys.contains(ALL_PROPERTIES)) {
 			cache.clear();
 		} else {
-			keys.forEach(cache::remove);
+			CompletableFuture.allOf(keys.stream().map(cache::removeAsync).toArray(CompletableFuture[]::new)).join();
 		}
 	}
 
@@ -430,7 +484,7 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 			public void afterCompletion(int status) {
 				try {
 					if (!written.isEmpty()) {
-						evictNow(cache, written);
+						evictOrClearLocally(cache, written);
 					}
 				} finally {
 					TransactionSynchronizationManager.unbindResourceIfPossible(GlobalPropertyCache.this);
@@ -444,6 +498,29 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	private Cache<Object, Object> getCache() {
 		org.springframework.cache.Cache cache = cacheManager.getCache(CACHE_NAME);
 		return cache == null ? null : (Cache<Object, Object>) cache.getNativeCache();
+	}
+
+	/**
+	 * Clears this node's cache when a network partition heals, since while it was cut off it missed the
+	 * evictions of writes made on the other side. Public only because Infinispan requires listeners to
+	 * be.
+	 */
+	@Listener
+	public static final class PartitionMergeListener {
+
+		private final GlobalPropertyCache owner;
+
+		PartitionMergeListener(GlobalPropertyCache owner) {
+			this.owner = owner;
+		}
+
+		@Merged
+		public void merged(MergeEvent event) {
+			Cache<Object, Object> cache = owner.getCache();
+			if (cache != null) {
+				clearLocally(cache);
+			}
+		}
 	}
 
 	/** A cached {@link Entry} and the exact name it was loaded for. */

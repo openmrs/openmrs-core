@@ -32,6 +32,9 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.db.AdministrationDAO;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionSynchronizationUtils;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -95,6 +98,8 @@ public class GlobalPropertyCacheClusterTest {
 
 	@AfterEach
 	public void tearDown() {
+		cache1.destroy();
+		cache2.destroy();
 		fillExecutor.shutdownNow();
 		nativeCache(node1).clear();
 	}
@@ -130,6 +135,27 @@ public class GlobalPropertyCacheClusterTest {
 		cache1.evict("SOME.Property");
 
 		assertFalse(nativeCache(node2).containsKey("some.property"));
+	}
+
+	@Test
+	public void evict_shouldRemoveEveryKeyATransactionWroteOnEveryNode() {
+		givenProperty("some.property", "value");
+		givenProperty("other.property", "value");
+		fill(cache2, "some.property");
+		fill(cache2, "other.property");
+
+		TransactionSynchronizationManager.initSynchronization();
+		try {
+			cache1.evict("some.property");
+			cache1.evict("other.property");
+			TransactionSynchronizationUtils.invokeAfterCompletion(TransactionSynchronizationManager.getSynchronizations(),
+			    TransactionSynchronization.STATUS_COMMITTED);
+		} finally {
+			TransactionSynchronizationManager.clearSynchronization();
+		}
+
+		assertFalse(nativeCache(node2).containsKey("some.property"));
+		assertFalse(nativeCache(node2).containsKey("other.property"));
 	}
 
 	@Test

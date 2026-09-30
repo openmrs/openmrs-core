@@ -13,15 +13,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.manager.EmbeddedCacheManager;
+import org.infinispan.notifications.Listener;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryModified;
+import org.infinispan.notifications.cachelistener.event.CacheEntryEvent;
+import org.infinispan.notifications.cachemanagerlistener.event.MergeEvent;
 import org.infinispan.spring.common.provider.SpringCache;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.api.db.AdministrationDAO;
@@ -39,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -158,6 +167,41 @@ public class GlobalPropertyCacheTest {
 
 		globalPropertyCache.get("some.property");
 		globalPropertyCache.get("some.property");
+
+		assertEquals(1, started.size());
+	}
+
+	@Test
+	public void get_shouldNotRunMoreThanTheMaximumNumberOfFillsAtOnce() {
+		List<Runnable> started = new ArrayList<>();
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
+		        started::add);
+
+		for (int i = 0; i <= GlobalPropertyCache.MAX_CONCURRENT_FILLS; i++) {
+			globalPropertyCache.get("property." + i);
+		}
+		assertEquals(GlobalPropertyCache.MAX_CONCURRENT_FILLS, started.size());
+
+		// a finished fill frees its permit for a later miss
+		started.get(0).run();
+		globalPropertyCache.get("property." + GlobalPropertyCache.MAX_CONCURRENT_FILLS);
+		assertEquals(GlobalPropertyCache.MAX_CONCURRENT_FILLS + 1, started.size());
+	}
+
+	@Test
+	public void get_shouldReleaseTheFillPermitIfTheFillCannotBeStarted() {
+		List<Runnable> started = new ArrayList<>();
+		AtomicInteger attempts = new AtomicInteger();
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class), task -> {
+			if (attempts.incrementAndGet() <= GlobalPropertyCache.MAX_CONCURRENT_FILLS) {
+				throw new IllegalStateException("no threads");
+			}
+			started.add(task);
+		});
+
+		for (int i = 0; i <= GlobalPropertyCache.MAX_CONCURRENT_FILLS; i++) {
+			globalPropertyCache.get("property." + i);
+		}
 
 		assertEquals(1, started.size());
 	}
@@ -494,6 +538,77 @@ public class GlobalPropertyCacheTest {
 		globalPropertyCache.onApplicationEvent(new ContextRefreshedEvent(new GenericApplicationContext()));
 
 		assertNull(cache.get("some.property"));
+	}
+
+	@Test
+	public void evict_shouldClearThisNodesCacheIfTheEvictionFails() {
+		seed("some.property", "old");
+		seed("other.property", "old");
+		failGenerationWrites();
+
+		globalPropertyCache.evict("some.property");
+
+		assertNull(cache.get("some.property"));
+		assertNull(cache.get("other.property"));
+	}
+
+	@Test
+	public void evict_shouldClearThisNodesCacheIfTheEvictionFailsWhenTheTransactionCompletes() {
+		seed("some.property", "old");
+		seed("other.property", "old");
+		TransactionSynchronizationManager.initSynchronization();
+		globalPropertyCache.evict("some.property");
+		failGenerationWrites();
+
+		commit();
+
+		assertNull(cache.get("some.property"));
+		assertNull(cache.get("other.property"));
+	}
+
+	@Test
+	public void merged_shouldClearThisNodesCache() {
+		seed("some.property", "old");
+
+		new GlobalPropertyCache.PartitionMergeListener(globalPropertyCache).merged(mock(MergeEvent.class));
+
+		assertNull(cache.get("some.property"));
+	}
+
+	@Test
+	public void destroy_shouldStopListeningForPartitionMerges() {
+		EmbeddedCacheManager nativeCacheManager = mock(EmbeddedCacheManager.class);
+		SpringEmbeddedCacheManager springCacheManager = mock(SpringEmbeddedCacheManager.class);
+		when(springCacheManager.getNativeCacheManager()).thenReturn(nativeCacheManager);
+		GlobalPropertyCache cacheWithMockedManager = new GlobalPropertyCache(springCacheManager, dao,
+		        mock(PlatformTransactionManager.class), fillExecutor::execute);
+		ArgumentCaptor<Object> listener = ArgumentCaptor.forClass(Object.class);
+		verify(nativeCacheManager).addListener(listener.capture());
+		assertTrue(listener.getValue() instanceof GlobalPropertyCache.PartitionMergeListener);
+
+		cacheWithMockedManager.destroy();
+
+		verify(nativeCacheManager).removeListener(listener.getValue());
+	}
+
+	/**
+	 * Makes every replacement of the generation token fail, as it would if the cluster were
+	 * unreachable.
+	 */
+	private void failGenerationWrites() {
+		((org.infinispan.Cache<?, ?>) cache.getNativeCache()).addListener(new FailGenerationWrites());
+	}
+
+	@Listener
+	public static class FailGenerationWrites {
+
+		@CacheEntryCreated
+		@CacheEntryModified
+		public void written(CacheEntryEvent<Object, Object> event) {
+			if (event.isPre() && GlobalPropertyCache.GENERATION.equals(event.getKey())) {
+				throw new IllegalStateException("the cluster is unreachable");
+			}
+		}
 	}
 
 	private GlobalProperty givenProperty(String name, String value) {
