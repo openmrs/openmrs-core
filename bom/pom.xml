@@ -80,7 +80,7 @@
 		<!-- Apache Commons -->
 		<commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
 		<commonsIoVersion>2.22.0</commonsIoVersion>
-		<commonsLang3Version>3.20.0</commonsLang3Version>
+		<commonsLang3Version>3.21.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
 		<commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
 		<commonsFileupload2JakartaVersion>2.0.0-M5</commonsFileupload2JakartaVersion>
