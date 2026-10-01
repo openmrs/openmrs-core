@@ -104,6 +104,7 @@ public interface OrderDAO {
 	 *
 	 * @param blockSize the number of order numbers to allocate
 	 * @return the first order number of the allocated block
+	 * @since 3.0.0
 	 */
 	public Long allocateOrderNumberBlock(int blockSize);
 

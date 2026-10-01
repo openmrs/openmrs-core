@@ -16,6 +16,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.cache.GlobalPropertyCacheTestUtil;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
+import org.openmrs.api.impl.OrderServiceImpl;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,17 +44,17 @@ public class GlobalPropertyCacheInterceptorIntegrationTest extends BaseContextSe
 	}
 
 	@Test
-	public void shouldEvictTheOrderNumberSeedWhenTheOrderDaoIncrementsIt() {
+	public void shouldEvictTheOrderNumberSeedWhenTheOrderDaoAllocatesOrderNumberBlock() {
 		long seed = Long.parseLong(fill(OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED));
 
-		// increments the seed and commits in a transaction of its own
-		Context.getOrderService().getNextOrderNumberSeedSequenceValue();
+		// allocates the order number block and commits in a transaction of its own
+		Context.getOrderService().allocateOrderNumberBlock();
 
 		assertFalse(GlobalPropertyCacheTestUtil.isCached(OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED));
 		// this test's own session still holds the old value, but the fill reads the committed one
 		adminService.getGlobalProperty(OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED);
 		GlobalPropertyCacheTestUtil.awaitFills();
-		assertEquals(String.valueOf(seed + 1),
+		assertEquals(String.valueOf(seed + OrderServiceImpl.ORDER_NUMBER_BLOCK_SIZE),
 		    GlobalPropertyCacheTestUtil.getIfCached(OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED).getValue());
 	}
 
