@@ -84,7 +84,6 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
 import org.openmrs.annotation.AddOnStartup;
 import org.openmrs.annotation.HasAddOnStartupPrivileges;
-import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
@@ -93,7 +92,6 @@ import org.openmrs.api.PasswordException;
 import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
 import org.openmrs.api.context.Context;
-import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.propertyeditor.CohortEditor;
@@ -466,60 +464,6 @@ public class OpenmrsUtil {
 			val = OpenmrsConstants.DATABASE_NAME;
 		}
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
-	}
-
-	/**
-	 * Gets the in-memory log appender. This method needed to be added as it is much more difficult to
-	 * get a specific appender in the Log4J2 architecture. This method is called in places where we need
-	 * to display logging message.
-	 *
-	 * @since 2.4.0
-	 * @deprecated As of 2.4.4, 2.5.1, and 2.6.0; replaced by
-	 *             {@link OpenmrsLoggingUtil#getMemoryAppender()} instead
-	 */
-	@Deprecated
-	public static MemoryAppender getMemoryAppender() {
-		return new MemoryAppender(OpenmrsLoggingUtil.getMemoryAppender());
-	}
-
-	/**
-	 * Set the org.openmrs log4j logger's level if global property log.level.openmrs (
-	 * OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL ) exists. Valid values for global property are trace,
-	 * debug, info, warn, error or fatal.
-	 *
-	 * @deprecated As of 2.4.4, 2.5.1, and 2.6.0; replaced by
-	 *             {@link OpenmrsLoggingUtil#applyLogLevels()}
-	 */
-	@Logging(ignore = true)
-	@Deprecated
-	public static void applyLogLevels() {
-		OpenmrsLoggingUtil.applyLogLevels();
-	}
-
-	/**
-	 * Setup root level log appenders.
-	 *
-	 * @since 1.9.2
-	 * @deprecated As of 2.4.4, 2.5.1, and 2.6.0; replaced by
-	 *             {@link OpenmrsLoggingUtil#reloadLoggingConfiguration()}
-	 */
-	@Deprecated
-	public static void setupLogAppenders() {
-		OpenmrsLoggingUtil.reloadLoggingConfiguration();
-	}
-
-	/**
-	 * Set the log4j log level for class <code>logClass</code> to <code>logLevel</code>.
-	 *
-	 * @param logClass optional string giving the class level to change. Defaults to
-	 *            OpenmrsConstants.LOG_CLASS_DEFAULT . Should be something like org.openmrs.___
-	 * @param logLevel one of OpenmrsConstants.LOG_LEVEL_*
-	 * @deprecated As of 2.4.4, 2.5.1, and 2.6.0; replaced by
-	 *             {@link OpenmrsLoggingUtil#applyLogLevel(String, String)}
-	 */
-	@Deprecated
-	public static void applyLogLevel(String logClass, String logLevel) {
-		OpenmrsLoggingUtil.applyLogLevel(logClass, logLevel);
 	}
 
 	/**
@@ -1044,24 +988,6 @@ public class OpenmrsUtil {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Returns the location of the OpenMRS log file.
-	 * <p/>
-	 * <strong>Warning:</strong> as of 2.4.4, 2.5.1, and 2.6.0 which allows configuration via a
-	 * configuration file, the result of this call can return null if either the file appender uses a
-	 * name other than {@link OpenmrsConstants#LOG_OPENMRS_FILE_APPENDER} or if the appender with that
-	 * name is not one of the default file appending types.
-	 *
-	 * @return the path to the OpenMRS log file
-	 * @since 1.9.2
-	 * @deprecated As of 2.4.4, 2.5.1, and 2.6.0; replaced by
-	 *             {@link OpenmrsLoggingUtil#getOpenmrsLogLocation()}
-	 */
-	@Deprecated
-	public static String getOpenmrsLogLocation() {
-		return OpenmrsLoggingUtil.getOpenmrsLogLocation();
 	}
 
 	/**
