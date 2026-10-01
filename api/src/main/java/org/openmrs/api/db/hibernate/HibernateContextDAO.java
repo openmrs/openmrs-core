@@ -313,16 +313,21 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
+	 * How many {@link #openSession()} calls on this thread joined a session that was already bound, and
+	 * so must not close it. Nested calls are counted so that only the call that bound the session
+	 * closes it.
+	 */
+	private final ThreadLocal<Integer> participationDepth = ThreadLocal.withInitial(() -> 0);
+
+	/**
 	 * @see org.openmrs.api.context.Context#openSession()
 	 */
-	private final ThreadLocal<Boolean> participate = ThreadLocal.withInitial(() -> false);
-
 	@Override
 	public void openSession() {
 		log.debug("HibernateContext: Opening Hibernate Session");
 		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
 			log.debug("Participating in existing session ({})", sessionFactory.hashCode());
-			participate.set(true);
+			participationDepth.set(participationDepth.get() + 1);
 		} else {
 			log.debug("Registering session with synchronization manager ({})", sessionFactory.hashCode());
 			Session session = sessionFactory.openSession();
@@ -337,7 +342,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	public void closeSession() {
 		log.debug("HibernateContext: closing Hibernate Session");
-		if (!Boolean.TRUE.equals(participate.get())) {
+		if (participationDepth.get() == 0) {
 			log.debug("Unbinding session from synchronization manager ({})", sessionFactory.hashCode());
 
 			if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
@@ -353,7 +358,12 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 		} else {
 			log.debug("Participating in existing session, so not releasing session through synchronization manager");
-			participate.remove();
+			int depth = participationDepth.get() - 1;
+			if (depth == 0) {
+				participationDepth.remove();
+			} else {
+				participationDepth.set(depth);
+			}
 		}
 	}
 
