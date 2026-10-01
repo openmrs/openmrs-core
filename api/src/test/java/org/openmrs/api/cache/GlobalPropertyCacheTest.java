@@ -23,7 +23,6 @@ import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryModified;
 import org.infinispan.notifications.cachelistener.event.CacheEntryEvent;
-import org.infinispan.notifications.cachemanagerlistener.event.MergeEvent;
 import org.infinispan.spring.common.provider.SpringCache;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.junit.jupiter.api.AfterEach;
@@ -268,7 +267,7 @@ public class GlobalPropertyCacheTest {
 	public void get_shouldNotCacheAPropertyIfTheGenerationTokenExpiresWhileTheFillIsLoadingIt() {
 		GlobalProperty property = new GlobalProperty("some.property", "old");
 		when(dao.getGlobalPropertyObject("some.property")).thenReturn(property).thenAnswer(invocation -> {
-			cache.evict(GlobalPropertyCache.GENERATION);
+			cache.evict(CacheInvalidation.GENERATION);
 			return property;
 		});
 		when(dao.getStoredGlobalPropertyName("some.property")).thenReturn("some.property");
@@ -567,15 +566,6 @@ public class GlobalPropertyCacheTest {
 	}
 
 	@Test
-	public void merged_shouldClearThisNodesCache() {
-		seed("some.property", "old");
-
-		new GlobalPropertyCache.PartitionMergeListener(globalPropertyCache).merged(mock(MergeEvent.class));
-
-		assertNull(cache.get("some.property"));
-	}
-
-	@Test
 	public void destroy_shouldStopListeningForPartitionMerges() {
 		EmbeddedCacheManager nativeCacheManager = mock(EmbeddedCacheManager.class);
 		SpringEmbeddedCacheManager springCacheManager = mock(SpringEmbeddedCacheManager.class);
@@ -584,7 +574,7 @@ public class GlobalPropertyCacheTest {
 		        mock(PlatformTransactionManager.class), fillExecutor::execute);
 		ArgumentCaptor<Object> listener = ArgumentCaptor.forClass(Object.class);
 		verify(nativeCacheManager).addListener(listener.capture());
-		assertTrue(listener.getValue() instanceof GlobalPropertyCache.PartitionMergeListener);
+		assertTrue(listener.getValue() instanceof CacheInvalidation.PartitionMergeListener);
 
 		cacheWithMockedManager.destroy();
 
@@ -605,7 +595,7 @@ public class GlobalPropertyCacheTest {
 		@CacheEntryCreated
 		@CacheEntryModified
 		public void written(CacheEntryEvent<Object, Object> event) {
-			if (event.isPre() && GlobalPropertyCache.GENERATION.equals(event.getKey())) {
+			if (event.isPre() && CacheInvalidation.GENERATION.equals(event.getKey())) {
 				throw new IllegalStateException("the cluster is unreachable");
 			}
 		}

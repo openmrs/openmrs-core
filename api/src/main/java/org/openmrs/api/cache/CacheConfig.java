@@ -129,7 +129,7 @@ public class CacheConfig {
 		}
 
 		DefaultCacheManager cacheManager = new DefaultCacheManager(baseConfigBuilder, true);
-		return new SpringEmbeddedCacheManager(cacheManager);
+		return new ExternalReadSpringCacheManager(cacheManager);
 	}
 
 	private static InputStream buildFullConfig(Yaml yaml, URL configFile, Set<String> templateNames, String cacheType)

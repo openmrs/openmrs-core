@@ -43,6 +43,7 @@ import org.openmrs.api.SerializationService;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
+import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -1057,6 +1058,13 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void clearEntireApiCache() {
 		CacheManager apiCacheManager = getRegisteredComponent("apiCacheManager", CacheManager.class);
-		apiCacheManager.getCacheNames().forEach(cacheName -> apiCacheManager.getCache(cacheName).invalidate());
+		apiCacheManager.getCacheNames().forEach(cacheName -> {
+			if (RolePrivilegeCache.CACHE_NAME.equals(cacheName)) {
+				// a plain clear would let loads in progress cache privileges read before it
+				getRegisteredComponent("rolePrivilegeCache", RolePrivilegeCache.class).clear();
+			} else {
+				apiCacheManager.getCache(cacheName).invalidate();
+			}
+		});
 	}
 }

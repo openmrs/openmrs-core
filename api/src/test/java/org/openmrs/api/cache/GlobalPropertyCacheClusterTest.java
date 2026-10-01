@@ -11,19 +11,12 @@ package org.openmrs.api.cache;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.infinispan.Cache;
-import org.infinispan.configuration.cache.ConfigurationBuilder;
-import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
-import org.infinispan.configuration.parsing.ParserRegistry;
-import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
-import org.infinispan.remoting.transport.jgroups.JGroupsTransport;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
-import org.jgroups.JChannel;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -65,26 +58,15 @@ public class GlobalPropertyCacheClusterTest {
 
 	@BeforeAll
 	public static void startCluster() throws Exception {
-		node1 = startNode("node1");
-		node2 = startNode("node2");
-
-		long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
-		while (node1.getNativeCacheManager().getMembers().size() < 2) {
-			if (System.nanoTime() > deadline) {
-				throw new IllegalStateException("The two cache managers did not form a cluster");
-			}
-			Thread.sleep(50);
-		}
+		SpringEmbeddedCacheManager[] nodes = InJvmCacheCluster.start("global-property-cache-test",
+		    GlobalPropertyCache.CACHE_NAME, "global-properties");
+		node1 = nodes[0];
+		node2 = nodes[1];
 	}
 
 	@AfterAll
 	public static void stopCluster() {
-		if (node2 != null) {
-			node2.stop();
-		}
-		if (node1 != null) {
-			node1.stop();
-		}
+		InJvmCacheCluster.stop(node1, node2);
 	}
 
 	@BeforeEach
@@ -162,11 +144,11 @@ public class GlobalPropertyCacheClusterTest {
 	public void evict_shouldReplaceTheGenerationTokenOnEveryNode() {
 		givenProperty("some.property", "value");
 		fill(cache2, "some.property");
-		Object token = nativeCache(node2).get(GlobalPropertyCache.GENERATION);
+		Object token = nativeCache(node2).get(CacheInvalidation.GENERATION);
 
 		cache1.evict("other.property");
 
-		assertNotEquals(token, nativeCache(node2).get(GlobalPropertyCache.GENERATION));
+		assertNotEquals(token, nativeCache(node2).get(CacheInvalidation.GENERATION));
 	}
 
 	@Test
@@ -229,17 +211,6 @@ public class GlobalPropertyCacheClusterTest {
 	private static void fill(GlobalPropertyCache cache, String propertyName) {
 		cache.get(propertyName);
 		cache.awaitFills();
-	}
-
-	private static SpringEmbeddedCacheManager startNode(String name) throws Exception {
-		ConfigurationBuilderHolder holder = new ParserRegistry().parseFile("infinispan-api.xml");
-		holder.getGlobalConfigurationBuilder().transport().clusterName("global-property-cache-test").nodeName(name)
-		        .transport(new JGroupsTransport(new JChannel("org/openmrs/api/cache/jgroups-in-jvm.xml")));
-
-		DefaultCacheManager cacheManager = new DefaultCacheManager(holder, true);
-		cacheManager.defineConfiguration(GlobalPropertyCache.CACHE_NAME, new ConfigurationBuilder()
-		        .read(cacheManager.getCacheConfiguration("global-properties")).template(false).build());
-		return new SpringEmbeddedCacheManager(cacheManager);
 	}
 
 	/** Runs an action on the writing thread once the given key has been written on this node. */
