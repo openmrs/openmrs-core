@@ -12,6 +12,9 @@ package org.openmrs.logging;
 import java.nio.file.Path;
 import java.util.Properties;
 
+import java.util.HashMap;
+import java.util.Map;
+import org.mockito.MockedStatic;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +26,9 @@ import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
@@ -68,13 +74,11 @@ class OpenmrsPropertyLookupTest {
 	}
 
 	/**
-	 * Removes any global-property values this test seeded into {@link ConfigUtil}'s static cache and any
+	 * Removes any global-property values this test seeded into {@link ConfigUtil} and any
 	 * system properties that would otherwise leak into other tests sharing the JVM fork.
 	 */
-	private static void clearLoggingState() {
-		ConfigUtil configUtil = new ConfigUtil();
-		configUtil.globalPropertyDeleted(OpenmrsConstants.GP_LOG_LOCATION);
-		configUtil.globalPropertyDeleted(OpenmrsConstants.GP_LOG_LAYOUT);
+	private void clearLoggingState() {
+		clearSeededGlobalProperties();
 		System.clearProperty(OpenmrsConstants.GP_LOG_LOCATION);
 		System.clearProperty(OpenmrsConstants.GP_LOG_LAYOUT);
 	}
@@ -84,8 +88,30 @@ class OpenmrsPropertyLookupTest {
 		Context.setUserContext(new UserContext(credentials -> null));
 	}
 
-	private static void seedGlobalProperty(String name, String value) {
-		new ConfigUtil().globalPropertyChanged(new GlobalProperty(name, value));
+
+	private final Map<String, String> seededGlobalProperties = new HashMap<>();
+
+	private MockedStatic<ConfigUtil> seededConfigUtil;
+
+	/**
+	 * Supplies <code>value</code> as the named global property by mocking
+	 * {@link ConfigUtil#getGlobalProperty(String)}, since these tests run without a service layer.
+	 */
+	private void seedGlobalProperty(String name, String value) {
+		if (seededConfigUtil == null) {
+			seededConfigUtil = mockStatic(ConfigUtil.class, CALLS_REAL_METHODS);
+			seededConfigUtil.when(() -> ConfigUtil.getGlobalProperty(anyString()))
+			        .thenAnswer(invocation -> seededGlobalProperties.get(invocation.<String> getArgument(0)));
+		}
+		seededGlobalProperties.put(name, value);
+	}
+
+	private void clearSeededGlobalProperties() {
+		seededGlobalProperties.clear();
+		if (seededConfigUtil != null) {
+			seededConfigUtil.close();
+			seededConfigUtil = null;
+		}
 	}
 
 	// --- applicationDirectory ---

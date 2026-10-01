@@ -119,6 +119,28 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		}
 	}
 
+	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#getStoredGlobalPropertyName(java.lang.String)
+	 */
+	@Override
+	public String getStoredGlobalPropertyName(String propertyName) {
+		if (propertyName == null) {
+			throw new IllegalArgumentException("propertyName is required");
+		}
+
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<String> query = cb.createQuery(String.class);
+		Root<GlobalProperty> root = query.from(GlobalProperty.class);
+		query.select(root.get(PROPERTY));
+		// matches the way getGlobalPropertyObject() finds the property, since session.get() compares the
+		// identifier in the database too
+		query.where(isDatabaseStringComparisonCaseSensitive()
+		        ? cb.equal(cb.lower(root.get(PROPERTY)), propertyName.toLowerCase())
+		        : cb.equal(root.get(PROPERTY), propertyName));
+		return session.createQuery(query).uniqueResult();
+	}
+
 	@Override
 	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException {
 		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, GlobalProperty.class, uuid);
