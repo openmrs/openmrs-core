@@ -386,7 +386,15 @@ public interface OrderService extends OpenmrsService {
 	 * @return the first order number of the allocated block
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
-	public Long allocateOrderNumberBlock();
+	/**
+ * Allocates a new block of order numbers and returns the first number in the block
+ *
+ * @return the first order number of the allocated block
+ *
+ * @since 3.0.0
+ */
+@Authorized(PrivilegeConstants.ADD_ORDERS)
+public Long allocateOrderNumberBlock();
 
 	/**
 	 * Gets the order matching the specified order number and its previous orders in the ordering they
