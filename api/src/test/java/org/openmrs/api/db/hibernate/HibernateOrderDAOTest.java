@@ -280,4 +280,24 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		assertEquals(initialSeed, allocatedSeed.longValue());
 		assertEquals(initialSeed + blockSize, updatedSeed);
 	}
+
+	/**
+	 * @see {@link HibernateOrderDAO#allocateOrderNumberBlock(int)}
+	 */
+	@Test
+	public void allocateOrderNumberBlock_shouldThrowExceptionWhenBlockSizeIsZero() {
+		APIException exception = assertThrows(APIException.class, () -> dao.allocateOrderNumberBlock(0));
+
+		assertEquals("Block size must be greater than zero", exception.getMessage());
+	}
+
+	/**
+	 * @see {@link HibernateOrderDAO#allocateOrderNumberBlock(int)}
+	 */
+	@Test
+	public void allocateOrderNumberBlock_shouldThrowExceptionWhenBlockSizeIsNegative() {
+		APIException exception = assertThrows(APIException.class, () -> dao.allocateOrderNumberBlock(-1));
+
+		assertEquals("Block size must be greater than zero", exception.getMessage());
+	}
 }

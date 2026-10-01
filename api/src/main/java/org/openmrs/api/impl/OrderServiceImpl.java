@@ -665,7 +665,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public synchronized String getNewOrderNumber(OrderContext orderContext) throws APIException {
 		if (remainingOrderNumbers <= 0) {
-			nextOrderNumber = Context.getOrderService().getNextOrderNumberSeedSequenceValue();
+			nextOrderNumber = Context.getOrderService().allocateOrderNumberBlock();
 			remainingOrderNumbers = ORDER_NUMBER_BLOCK_SIZE;
 		}
 		String orderNumber = ORDER_NUMBER_PREFIX + nextOrderNumber;
@@ -703,11 +703,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getNextOrderNumberSeedSequenceValue()
+	 * @see org.openmrs.api.OrderService#allocateOrderNumberBlock()
 	 */
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public Long getNextOrderNumberSeedSequenceValue() {
+	public Long allocateOrderNumberBlock() {
 		return dao.allocateOrderNumberBlock(ORDER_NUMBER_BLOCK_SIZE);
 	}
 
