@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -630,55 +631,40 @@ public class WebModuleUtil {
 
 			// Load Filter Mappings
 			Deque<ModuleFilterMapping> modMappings = ModuleFilterMapping.retrieveFilterMappings(module);
-			if (modMappings != null && !modMappings.isEmpty()) {
-				MODULE_FILTER_MAPPINGS.addAll(0, modMappings);
-			}
-			log.debug("Module {} successfully loaded {} filter mappings.", module,
-			    modMappings != null ? modMappings.size() : 0);
+			// IMPORTANT: Filter load order
+			// retrieveFilterMappings will return the list of filters in the order they occur in the config.xml file
+			// here we add them to the *front* of the filter mappings
+			MODULE_FILTER_MAPPINGS.addAll(0, modMappings);
+			log.debug("Module {} successfully loaded {} filter mappings.", module, modMappings.size());
 		} finally {
 			FILTERS_LOCK.unlock();
 		}
 	}
 
 	/**
-	 * Destroys and removes all filters and filter mappings registered by the specified {@link Module}.
-	 * <p>
-	 * Removes all associated {@link ModuleFilterMapping}s and filter registrations under lock, then
-	 * invokes {@link Filter#destroy()} for each filter. Does nothing if {@code module} is {@code null}.
+	 * This method will destroy and remove all filters that were registered by the passed {@link Module}
 	 *
-	 * @param module the {@link Module} whose filters and filter mappings should be unloaded and
-	 *            destroyed
-	 * @should destroy and remove all filters and filter mappings for the given module
-	 * @should not fail if module is null
-	 * @should continue destroying remaining filters if one throws an exception
+	 * @param module - The Module for which you want to remove and destroy filters.
 	 */
 	public static void unloadFilters(Module module) {
-		if (module == null) {
-			return;
-		}
-		Collection<Filter> filters = null;
-		FILTERS_LOCK.lock();
-		try {
-			// Unload Filter Mappings
-			MODULE_FILTER_MAPPINGS.removeIf(mapping -> module.equals(mapping.getModule()));
-			// unload Filters
-			filters = MODULE_FILTERS.remove(module);
-			if (filters != null) {
-				log.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
-				MODULE_FILTERS_BY_NAME.values().removeIf(filters::contains);
-			}
-		} finally {
-			FILTERS_LOCK.unlock();
-		}
+		// Unload Filter Mappings
+		MODULE_FILTER_MAPPINGS.removeIf(mapping -> module.equals(mapping.getModule()));
 
+		// unload Filters
+		Collection<Filter> filters = MODULE_FILTERS.get(module);
 		if (filters != null) {
-			for (Filter f : filters) {
-				try {
+			try {
+				for (Filter f : filters) {
 					f.destroy();
-				} catch (Exception e) {
-					log.warn("An error occurred while trying to destroy and remove module Filter.", e);
 				}
+			} catch (Exception e) {
+				log.warn("An error occurred while trying to destroy and remove module Filter.", e);
 			}
+
+			log.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
+			MODULE_FILTERS.remove(module);
+
+			MODULE_FILTERS_BY_NAME.values().removeIf(filters::contains);
 		}
 	}
 
@@ -692,12 +678,12 @@ public class WebModuleUtil {
 	}
 
 	/**
-	 * Returns the list of all {@link ModuleFilterMapping}s that have been registered by modules.
+	 * This method will return all Filter Mappings that have been registered by a module
 	 *
-	 * @return the list of all {@link ModuleFilterMapping}s
+	 * @return A Collection of all {@link ModuleFilterMapping}s that have been registered by a Module
 	 */
 	public static Collection<ModuleFilterMapping> getFilterMappings() {
-		return MODULE_FILTER_MAPPINGS;
+		return Collections.unmodifiableCollection(MODULE_FILTER_MAPPINGS);
 	}
 
 	/**
@@ -718,7 +704,7 @@ public class WebModuleUtil {
 				if (requestPath.startsWith(httpRequest.getContextPath())) {
 					requestPath = requestPath.substring(httpRequest.getContextPath().length());
 				}
-				for (ModuleFilterMapping filterMapping : WebModuleUtil.getFilterMappings()) {
+				for (ModuleFilterMapping filterMapping : MODULE_FILTER_MAPPINGS) {
 					if (ModuleFilterMapping.filterMappingPasses(filterMapping, requestPath)) {
 						Filter passedFilter = MODULE_FILTERS_BY_NAME.get(filterMapping.getFilterName());
 						if (passedFilter != null) {
