@@ -111,7 +111,7 @@ env:
   OMRS_DEV_VERSION: ${{ inputs.developmentVersion }}
   # passed to every image build; the production builds reuse the dev builds' compile
   # stages only while this value is byte-identical across the invocations
-  MVN_ARGS: clean install -DskipTests
+  MVN_ARGS: clean install -DskipTests -Prelease
 
 jobs:
   release:
@@ -308,7 +308,7 @@ jobs:
             -e MAVEN_REPO_USERNAME -e MAVEN_REPO_API_KEY \
             -v "${RUNNER_TEMP}/settings.xml:/.m2/settings.xml:ro" \
             "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}-dev" \
-            mvn deploy -DskipTests --batch-mode --settings /.m2/settings.xml
+            mvn deploy -DskipTests -Prelease --batch-mode --settings /.m2/settings.xml
 
       # the pre-flight's App token has likely expired by now (~1h lifetime, and the
       # builds and deploy take longer); mint a fresh one from the same source the
