@@ -10,6 +10,7 @@
 package org.openmrs.web.filter;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -71,27 +72,26 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		// 		 prevent stack traces being shown to non-authenticated users
 		UserContext userContext = (UserContext) httpSession.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
 
-		// default the session username attribute to anonymous
-		httpSession.setAttribute("username", "-anonymous user-");
-
-		// if there isn't a userContext on the session yet, create one
-		// and set it onto the session
+		// if there isn't a userContext on the session yet, create one and set it onto the session
 		if (userContext == null) {
 			userContext = new UserContext(Context.getAuthenticationScheme());
 			httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
 
 			log.debug("Just set user context {} as attribute on session", userContext);
-		} else {
-			// set username as attribute on session so parent servlet container
-			// can identify sessions easier
-			User user = userContext.getAuthenticatedUser();
-			if (user != null) {
-				httpSession.setAttribute("username", user.getUsername());
-			}
 		}
 
-		// set the locale on the session (for the servlet container as well)
-		httpSession.setAttribute("locale", userContext.getLocale());
+		// determine the username to store on the session
+		String username = "-anonymous user-";
+		User user = userContext.getAuthenticatedUser();
+
+		if (user != null) {
+			// set username as attribute on session so parent servlet container
+			// can identify sessions easier
+			username = user.getUsername();
+		}
+
+		setSessionAttributeIfChanged(httpSession, "username", username);
+		setSessionAttributeIfChanged(httpSession, "locale", userContext.getLocale());
 
 		//TODO We do not cache the csrfguard javascript file because it contains the
 		//csrf token that is dynamically embedded in forms. For this to work,
@@ -117,6 +117,12 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 
 		log.debug("after chain.doFilter");
 
+	}
+
+	private void setSessionAttributeIfChanged(HttpSession session, String name, Object value) {
+		if (!Objects.equals(session.getAttribute(name), value)) {
+			session.setAttribute(name, value);
+		}
 	}
 
 }
