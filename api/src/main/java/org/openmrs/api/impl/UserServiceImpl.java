@@ -37,6 +37,7 @@ import org.openmrs.api.CannotDeleteRoleWithChildrenException;
 import org.openmrs.api.InvalidActivationKeyException;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UserService;
+import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
@@ -72,6 +73,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 	@Autowired
 	protected UserDAO dao;
+
+	@Autowired
+	private RolePrivilegeCache rolePrivilegeCache;
 
 	private static final int MAX_VALID_TIME = 12 * 60 * 60 * 1000; //Period of 12 hours
 
@@ -341,22 +345,23 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * @see org.openmrs.api.UserService#purgePrivilege(org.openmrs.Privilege)
 	 */
 	@Override
-	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public void purgePrivilege(Privilege privilege) throws APIException {
 		if (OpenmrsUtil.getCorePrivileges().keySet().contains(privilege.getPrivilege())) {
 			throw new APIException("Privilege.cannot.delete.core", (Object[]) null);
 		}
 
 		dao.deletePrivilege(privilege);
+		rolePrivilegeCache.clear();
 	}
 
 	/**
 	 * @see org.openmrs.api.UserService#savePrivilege(org.openmrs.Privilege)
 	 */
 	@Override
-	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public Privilege savePrivilege(Privilege privilege) throws APIException {
-		return dao.savePrivilege(privilege);
+		Privilege saved = dao.savePrivilege(privilege);
+		rolePrivilegeCache.clear();
+		return saved;
 	}
 
 	/**
@@ -381,7 +386,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * @see org.openmrs.api.UserService#purgeRole(org.openmrs.Role)
 	 */
 	@Override
-	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public void purgeRole(Role role) throws APIException {
 		if (role == null || role.getRole() == null) {
 			return;
@@ -396,13 +400,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		}
 
 		dao.deleteRole(role);
+		rolePrivilegeCache.clear();
 	}
 
 	/**
 	 * @see org.openmrs.api.UserService#saveRole(org.openmrs.Role)
 	 */
 	@Override
-	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public Role saveRole(Role role) throws APIException {
 		// make sure one of the parents of this role isn't itself...this would
 		// cause an infinite loop
@@ -412,7 +416,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 		checkPrivileges(role);
 
-		return dao.saveRole(role);
+		Role saved = dao.saveRole(role);
+		rolePrivilegeCache.clear();
+		return saved;
 	}
 
 	/**
