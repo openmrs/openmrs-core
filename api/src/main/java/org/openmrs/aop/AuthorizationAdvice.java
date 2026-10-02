@@ -36,6 +36,11 @@ import org.springframework.stereotype.Component;
 /**
  * This class provides the authorization AOP advice performed before every service layer method
  * call.
+ * <p>
+ * As of 3.0.0, this is one of two independent, coexisting method-security mechanisms - the other
+ * being {@code @PreAuthorize}, wired via {@link org.openmrs.security.OpenmrsSecurityConfig}. This
+ * advice, and the {@link org.openmrs.annotation.Authorized} annotation it enforces, remain fully
+ * supported; there is no need to convert existing usages to {@code @PreAuthorize}.
  */
 @Component("authorizationInterceptor")
 public class AuthorizationAdvice implements MethodBeforeAdvice {

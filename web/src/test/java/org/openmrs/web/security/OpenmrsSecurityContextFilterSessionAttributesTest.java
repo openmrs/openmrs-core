@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.web.filter;
+package org.openmrs.web.security;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +36,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests the behavior of {@link OpenmrsFilter}, particularly its handling of username and locale
- * session attributes for anonymous and authenticated requests.
+ * Tests {@link OpenmrsSecurityContextFilter}'s handling of the "username"/"locale" session
+ * attributes for anonymous and authenticated requests - ported from
+ * {@code org.openmrs.web.filter.OpenmrsFilterTest} (TRUNK-6701, #6555) when
+ * {@code org.openmrs.web.filter.OpenmrsFilter} was superseded by this class. Kept as its own,
+ * {@link BaseWebContextSensitiveTest}-based file rather than folded into
+ * {@link OpenmrsSecurityContextFilterTest}, which is a plain unit test and stays that way for the
+ * {@link org.springframework.security.core.context.SecurityContextHolder} behavior it covers.
  *
- * @see OpenmrsFilter
+ * @see OpenmrsSecurityContextFilter
  */
-public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
+public class OpenmrsSecurityContextFilterSessionAttributesTest extends BaseWebContextSensitiveTest {
 
 	protected static final String FILTER_INITIAL_DATA_XML = "OpenmrsFilterTest-initial.xml";
 
@@ -57,7 +62,8 @@ public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
 	}
 
 	/**
-	 * @see OpenmrsFilter#doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain)
+	 * @see OpenmrsSecurityContextFilter#doFilterInternal(HttpServletRequest, HttpServletResponse,
+	 *      FilterChain)
 	 */
 	@Test
 	public void doFilterInternal_shouldSetAnonymousUsernameAndLocale() throws Exception {
@@ -67,7 +73,7 @@ public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
 		request.setSession(session);
 
 		// Process the request through the filter.
-		OpenmrsFilter filter = new OpenmrsFilter();
+		OpenmrsSecurityContextFilter filter = new OpenmrsSecurityContextFilter();
 		filter.doFilterInternal(request, new MockHttpServletResponse(), mock(FilterChain.class));
 
 		UserContext userContext = (UserContext) session.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
@@ -82,7 +88,8 @@ public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
 	}
 
 	/**
-	 * @see OpenmrsFilter#doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain)
+	 * @see OpenmrsSecurityContextFilter#doFilterInternal(HttpServletRequest, HttpServletResponse,
+	 *      FilterChain)
 	 */
 	@Test
 	public void doFilterInternal_shouldNotRewriteUnchangedAnonymousSessionAttributes() throws Exception {
@@ -92,7 +99,7 @@ public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
 		request.setSession(session);
 
 		// Process the initial request to populate the session attributes.
-		OpenmrsFilter filter = new OpenmrsFilter();
+		OpenmrsSecurityContextFilter filter = new OpenmrsSecurityContextFilter();
 		filter.doFilterInternal(request, new MockHttpServletResponse(), mock(FilterChain.class));
 
 		// Clear the initial writes so only the writes from the second request are measured.
@@ -115,7 +122,8 @@ public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
 	}
 
 	/**
-	 * @see OpenmrsFilter#doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain)
+	 * @see OpenmrsSecurityContextFilter#doFilterInternal(HttpServletRequest, HttpServletResponse,
+	 *      FilterChain)
 	 */
 	@Test
 	public void doFilterInternal_shouldSetAuthenticatedUsernameAndLocale() throws Exception {
@@ -132,7 +140,7 @@ public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
 		request.setSession(session);
 
 		// Process the authenticated request through the filter.
-		OpenmrsFilter filter = new OpenmrsFilter();
+		OpenmrsSecurityContextFilter filter = new OpenmrsSecurityContextFilter();
 		filter.doFilterInternal(request, new MockHttpServletResponse(), mock(FilterChain.class));
 
 		// Verify that the authenticated username and locale are stored in the session.
@@ -145,7 +153,8 @@ public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
 	}
 
 	/**
-	 * @see OpenmrsFilter#doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain)
+	 * @see OpenmrsSecurityContextFilter#doFilterInternal(HttpServletRequest, HttpServletResponse,
+	 *      FilterChain)
 	 */
 	@Test
 	public void doFilterInternal_shouldNotRewriteUnchangedAuthenticatedSessionAttributes() throws Exception {
@@ -162,7 +171,7 @@ public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
 		request.setSession(session);
 
 		// Process the initial authenticated request to populate the session attributes.
-		OpenmrsFilter filter = new OpenmrsFilter();
+		OpenmrsSecurityContextFilter filter = new OpenmrsSecurityContextFilter();
 		filter.doFilterInternal(request, new MockHttpServletResponse(), mock(FilterChain.class));
 
 		// Clear the initial writes so only the writes from the second request are measured.
@@ -183,7 +192,8 @@ public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
 	}
 
 	/**
-	 * @see OpenmrsFilter#doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain)
+	 * @see OpenmrsSecurityContextFilter#doFilterInternal(HttpServletRequest, HttpServletResponse,
+	 *      FilterChain)
 	 */
 	@Test
 	public void doFilterInternal_shouldUpdateChangedSessionAttributes() throws Exception {
@@ -200,7 +210,7 @@ public class OpenmrsFilterTest extends BaseWebContextSensitiveTest {
 		request.setSession(session);
 
 		// Process the request through the filter.
-		OpenmrsFilter filter = new OpenmrsFilter();
+		OpenmrsSecurityContextFilter filter = new OpenmrsSecurityContextFilter();
 		filter.doFilterInternal(request, new MockHttpServletResponse(), mock(FilterChain.class));
 
 		UserContext userContext = (UserContext) session.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
