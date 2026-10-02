@@ -9,12 +9,17 @@
  */
 package org.openmrs.api.cache;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
 import org.infinispan.configuration.parsing.ParserRegistry;
 import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.manager.EmbeddedCacheManager;
+import org.infinispan.notifications.Listener;
+import org.infinispan.notifications.cachemanagerlistener.annotation.ViewChanged;
+import org.infinispan.notifications.cachemanagerlistener.event.ViewChangedEvent;
 import org.infinispan.remoting.transport.jgroups.JGroupsTransport;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.jgroups.JChannel;
@@ -38,18 +43,38 @@ final class InJvmCacheCluster {
 	 * @return the two nodes
 	 */
 	static ExternalReadSpringCacheManager[] start(String clusterName, String... caches) throws Exception {
-		ExternalReadSpringCacheManager[] nodes = { startNode(clusterName, "node1", caches),
-		        startNode(clusterName, "node2", caches) };
-
-		long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
-		while (nodes[0].getNativeCacheManager().getMembers().size() < 2) {
-			if (System.nanoTime() > deadline) {
-				stop(nodes);
+		ExternalReadSpringCacheManager[] nodes = new ExternalReadSpringCacheManager[2];
+		nodes[0] = startNode(clusterName, "node1", caches);
+		EmbeddedCacheManager node1 = nodes[0].getNativeCacheManager();
+		TwoMemberViewListener listener = new TwoMemberViewListener();
+		node1.addListener(listener);
+		try {
+			nodes[1] = startNode(clusterName, "node2", caches);
+			// the view may have changed before the listener was registered
+			if (node1.getMembers().size() < 2 && !listener.formed.await(30, TimeUnit.SECONDS)) {
 				throw new IllegalStateException("The two cache managers did not form a cluster");
 			}
-			Thread.sleep(50);
+		} catch (Exception e) {
+			stop(nodes);
+			throw e;
+		} finally {
+			node1.removeListener(listener);
 		}
 		return nodes;
+	}
+
+	/** Opens a latch once a cache manager's view has two members. */
+	@Listener
+	public static final class TwoMemberViewListener {
+
+		private final CountDownLatch formed = new CountDownLatch(1);
+
+		@ViewChanged
+		public void viewChanged(ViewChangedEvent event) {
+			if (event.getNewMembers().size() >= 2) {
+				formed.countDown();
+			}
+		}
 	}
 
 	static void stop(SpringEmbeddedCacheManager... nodes) {
