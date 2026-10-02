@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.openmrs.util.OpenmrsJacksonLocaleModule;
 import org.springframework.beans.factory.ObjectProvider;
@@ -201,6 +202,8 @@ public class WebConfig implements WebMvcConfigurer {
 		Properties mappings = new Properties();
 		mappings.put("java.lang.Exception", "uncaughtException");
 		exceptionResolver.setExceptionMappings(mappings);
+		// without this, a JSON request renders the exception model through the default JSON view with HTTP 200
+		exceptionResolver.setDefaultStatusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		exceptionResolver.setOrder(100);
 		return exceptionResolver;
 	}
