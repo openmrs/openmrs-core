@@ -59,11 +59,24 @@ public class ChainingInterceptor implements Interceptor {
 		interceptors.add(interceptor);
 	}
 
+	/**
+	 * Hibernate calls this, not {@link #onDelete(Object, Object, Object[], String[], Type[])}, when an
+	 * entity is removed. Each interceptor's own default {@code onRemove} delegates to its
+	 * {@code onDelete}, so interceptors that only implement the deprecated method are still called,
+	 * exactly once.
+	 *
+	 * @since 2.9.0
+	 */
+	@Override
+	public void onRemove(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
+		for (Interceptor i : interceptors) {
+			i.onRemove(entity, id, state, propertyNames, types);
+		}
+	}
+
 	@Override
 	public void onDelete(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
-		for (Interceptor i : interceptors) {
-			i.onDelete(entity, id, state, propertyNames, types);
-		}
+		onRemove(entity, id, state, propertyNames, types);
 	}
 
 	@Override
@@ -91,16 +104,29 @@ public class ChainingInterceptor implements Interceptor {
 		return objectChanged;
 	}
 
+	/**
+	 * Hibernate calls this, not {@link #onSave(Object, Object, Object[], String[], Type[])}, when a new
+	 * entity is persisted. Each interceptor's own default {@code onPersist} delegates to its
+	 * {@code onSave}, so interceptors that only implement the deprecated method are still called,
+	 * exactly once.
+	 *
+	 * @since 2.9.0
+	 */
 	@Override
-	public boolean onSave(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
+	public boolean onPersist(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
 		boolean objectChanged = false;
 
 		for (Interceptor i : interceptors) {
 			// must be in this order so that java doesn't skip the method call for optimizations
-			objectChanged = i.onSave(entity, id, state, propertyNames, types) || objectChanged;
+			objectChanged = i.onPersist(entity, id, state, propertyNames, types) || objectChanged;
 		}
 
 		return objectChanged;
+	}
+
+	@Override
+	public boolean onSave(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
+		return onPersist(entity, id, state, propertyNames, types);
 	}
 
 	@Override
@@ -247,6 +273,49 @@ public class ChainingInterceptor implements Interceptor {
 	public void onCollectionUpdate(Object collection, Object key) throws CallbackException {
 		for (Interceptor i : interceptors) {
 			i.onCollectionUpdate(collection, key);
+		}
+	}
+
+	@Override
+	public void preMerge(Object entity, Object[] state, String[] propertyNames, Type[] propertyTypes) {
+		for (Interceptor i : interceptors) {
+			i.preMerge(entity, state, propertyNames, propertyTypes);
+		}
+	}
+
+	@Override
+	public void postMerge(Object source, Object target, Object id, Object[] targetState, Object[] originalState,
+	        String[] propertyNames, Type[] propertyTypes) {
+		for (Interceptor i : interceptors) {
+			i.postMerge(source, target, id, targetState, originalState, propertyNames, propertyTypes);
+		}
+	}
+
+	@Override
+	public void onInsert(Object entity, Object id, Object[] state, String[] propertyNames, Type[] propertyTypes) {
+		for (Interceptor i : interceptors) {
+			i.onInsert(entity, id, state, propertyNames, propertyTypes);
+		}
+	}
+
+	@Override
+	public void onUpdate(Object entity, Object id, Object[] state, String[] propertyNames, Type[] propertyTypes) {
+		for (Interceptor i : interceptors) {
+			i.onUpdate(entity, id, state, propertyNames, propertyTypes);
+		}
+	}
+
+	@Override
+	public void onUpsert(Object entity, Object id, Object[] state, String[] propertyNames, Type[] propertyTypes) {
+		for (Interceptor i : interceptors) {
+			i.onUpsert(entity, id, state, propertyNames, propertyTypes);
+		}
+	}
+
+	@Override
+	public void onDelete(Object entity, Object id, String[] propertyNames, Type[] propertyTypes) {
+		for (Interceptor i : interceptors) {
+			i.onDelete(entity, id, propertyNames, propertyTypes);
 		}
 	}
 }
