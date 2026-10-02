@@ -2854,6 +2854,21 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#mergePatients(Patient,Patient)
 	 */
 	@Test
+	public void mergePatients_shouldCreateExactlyOnePersonMergeLogPerMerge() throws Exception {
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+
+		patientService.mergePatients(preferred, notPreferred);
+
+		List<PersonMergeLog> logs = personService.getAllPersonMergeLogs(true);
+		assertEquals(1, logs.size(), "mergePatients should create exactly one PersonMergeLog, not " + logs.size());
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
 	public void mergePatients_shouldAuditPriorCauseOfDeath() throws Exception {
 		//retrieve preferred patient and set a cause of death
 		Patient preferred = patientService.getPatient(999);
