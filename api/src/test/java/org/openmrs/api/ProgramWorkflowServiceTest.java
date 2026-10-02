@@ -691,6 +691,39 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ProgramWorkflowService#saveProgram(Program)
+	 */
+	@Test
+	public void saveProgram_shouldUpdateProgramCreatedEarlierInTheSameSession() {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Program program = new Program();
+		program.setName("NEW PROGRAM");
+		program.setConcept(cs.getConcept(3));
+		ProgramWorkflow workflow = new ProgramWorkflow();
+		workflow.setConcept(cs.getConcept(4));
+		program.addWorkflow(workflow);
+		ProgramWorkflowState state = new ProgramWorkflowState();
+		state.setConcept(cs.getConcept(5));
+		state.setInitial(true);
+		state.setTerminal(false);
+		workflow.addState(state);
+		pws.saveProgram(program);
+
+		program = pws.getProgramByName("NEW PROGRAM");
+		ProgramWorkflowState newState = new ProgramWorkflowState();
+		newState.setConcept(cs.getConcept(6));
+		newState.setInitial(false);
+		newState.setTerminal(true);
+		program.getWorkflowByName("CIVIL STATUS").addState(newState);
+		pws.saveProgram(program);
+		Context.flushSession();
+		Context.clearSession();
+
+		program = pws.getProgramByName("NEW PROGRAM");
+		assertEquals(2, program.getWorkflowByName("CIVIL STATUS").getStates().size());
+	}
+
+	/**
 	 * @throws InterruptedException
 	 * @see ProgramWorkflowService#triggerStateConversion(Patient,Concept,Date)
 	 */
