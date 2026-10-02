@@ -41,14 +41,6 @@ public final class GlobalPropertyCacheTestUtil {
 	}
 	
 	/**
-	 * Evicts every property immediately, even within a transaction, after data has been loaded behind
-	 * the API.
-	 */
-	public static void clearNow() {
-		getGlobalPropertyCache().clearNow();
-	}
-	
-	/**
 	 * @return the snapshot cached for exactly this name, or null if there is none or the current
 	 *         transaction has written the property
 	 */

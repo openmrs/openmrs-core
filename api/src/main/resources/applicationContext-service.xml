@@ -221,6 +221,7 @@
 	</bean>
 	<bean id="userServiceTarget" class="org.openmrs.api.impl.UserServiceImpl">
 		<property name="userDAO" ref="userDAO"/>
+		<property name="rolePrivilegeCache" ref="rolePrivilegeCache"/>
 	</bean>
 	<bean id="obsServiceTarget" class="org.openmrs.api.impl.ObsServiceImpl">
 		<property name="obsDAO" ref="obsDAO"/>
