@@ -12,7 +12,9 @@ package org.openmrs;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -99,7 +101,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 
 	@ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
 	@JoinTable(name = "concept_name_tag_map", joinColumns = @JoinColumn(name = "concept_name_id"), inverseJoinColumns = @JoinColumn(name = "concept_name_tag_id"))
-	private Collection<ConceptNameTag> tags;
+	private Set<ConceptNameTag> tags;
 
 	@Column(name = "concept_name_type", length = 50)
 	@Type(value = StringEnumType.class, parameters = {
@@ -324,7 +326,12 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @param tags the tags to set.
 	 */
 	public void setTags(Collection<ConceptNameTag> tags) {
-		this.tags = tags;
+		if (tags == null || tags instanceof Set<ConceptNameTag>) {
+			this.tags = (Set<ConceptNameTag>) tags;
+		} else {
+			// the mapping has set semantics (as the 2.x hbm <set> did), so a non-Set argument is copied
+			this.tags = new LinkedHashSet<>(tags);
+		}
 	}
 
 	/**
