@@ -68,12 +68,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import static org.openmrs.util.XmlUtils.createDocumentBuilder;
-
 /**
- * Our Listener class performs the basic starting functions for our webapp. Basic needs for starting
- * the API: 1) Get the runtime properties 2) Start Spring 3) Start the OpenMRS APi (via
- * Context.startup) Basic startup needs specific to the web layer: 1) Do the web startup of the
- * modules 2) Copy the custom look/images/messages over into the web layer
+ * Our Listener class performs the basic starting functions for our webapp.
+ * * <p>Basic needs for starting the API:</p>
+ * <ol>
+ * <li>Get the runtime properties</li>
+ * <li>Start Spring</li>
+ * <li>Start the OpenMRS API (via Context.startup)</li>
+ * </ol>
+ * * <p>Basic startup needs specific to the web layer:</p>
+ * <ol>
+ * <li>Do the web startup of the modules</li>
+ * <li>Copy the custom look/images/messages over into the web layer</li>
+ * </ol>
  */
 public final class Listener extends ContextLoader implements ServletContextListener, HttpSessionListener {
 
