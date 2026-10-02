@@ -16,17 +16,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarEntry;
@@ -94,7 +94,7 @@ public class WebModuleUtil {
 
 	private static final Map<String, Filter> MODULE_FILTERS_BY_NAME = new HashMap<>();
 
-	private static final Deque<ModuleFilterMapping> MODULE_FILTER_MAPPINGS = new ArrayDeque<>();
+	private static final List<ModuleFilterMapping> MODULE_FILTER_MAPPINGS = new CopyOnWriteArrayList<>();
 
 	private static DispatcherServlet dispatcherServlet = null;
 
@@ -631,12 +631,10 @@ public class WebModuleUtil {
 
 			// Load Filter Mappings
 			Deque<ModuleFilterMapping> modMappings = ModuleFilterMapping.retrieveFilterMappings(module);
-
 			// IMPORTANT: Filter load order
 			// retrieveFilterMappings will return the list of filters in the order they occur in the config.xml file
 			// here we add them to the *front* of the filter mappings
-			modMappings.descendingIterator().forEachRemaining(MODULE_FILTER_MAPPINGS::addFirst);
-
+			MODULE_FILTER_MAPPINGS.addAll(0, modMappings);
 			log.debug("Module {} successfully loaded {} filter mappings.", module, modMappings.size());
 		} finally {
 			FILTERS_LOCK.unlock();
@@ -649,15 +647,8 @@ public class WebModuleUtil {
 	 * @param module - The Module for which you want to remove and destroy filters.
 	 */
 	public static void unloadFilters(Module module) {
-
 		// Unload Filter Mappings
-		for (Iterator<ModuleFilterMapping> mapIter = MODULE_FILTER_MAPPINGS.iterator(); mapIter.hasNext();) {
-			ModuleFilterMapping mapping = mapIter.next();
-			if (module.equals(mapping.getModule())) {
-				mapIter.remove();
-				log.debug("Removed ModuleFilterMapping: " + mapping);
-			}
-		}
+		MODULE_FILTER_MAPPINGS.removeIf(mapping -> module.equals(mapping.getModule()));
 
 		// unload Filters
 		Collection<Filter> filters = MODULE_FILTERS.get(module);
@@ -692,7 +683,7 @@ public class WebModuleUtil {
 	 * @return A Collection of all {@link ModuleFilterMapping}s that have been registered by a Module
 	 */
 	public static Collection<ModuleFilterMapping> getFilterMappings() {
-		return new ArrayList<>(MODULE_FILTER_MAPPINGS);
+		return Collections.unmodifiableCollection(MODULE_FILTER_MAPPINGS);
 	}
 
 	/**
@@ -713,7 +704,7 @@ public class WebModuleUtil {
 				if (requestPath.startsWith(httpRequest.getContextPath())) {
 					requestPath = requestPath.substring(httpRequest.getContextPath().length());
 				}
-				for (ModuleFilterMapping filterMapping : WebModuleUtil.getFilterMappings()) {
+				for (ModuleFilterMapping filterMapping : MODULE_FILTER_MAPPINGS) {
 					if (ModuleFilterMapping.filterMappingPasses(filterMapping, requestPath)) {
 						Filter passedFilter = MODULE_FILTERS_BY_NAME.get(filterMapping.getFilterName());
 						if (passedFilter != null) {
