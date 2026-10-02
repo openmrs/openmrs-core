@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 
 import org.infinispan.Cache;
@@ -49,10 +49,12 @@ import org.springframework.stereotype.Component;
  * The caller waits for the load, and concurrent misses for the same role share one. A role absent
  * from the database grants nothing.
  * <p>
- * If the load fails, or the cache was evicted while the caller waited for it, so that the load may
- * have read the role from before a change, the role is instead read once through the caller's own
- * session, without caching it. That read sees committed data and the caller's own changes, but a
- * role the session has already loaded is served as the session first loaded it.
+ * If the load fails, the caller is interrupted while waiting for it, or the cache was evicted while
+ * the caller waited, so that the load may have read the role from before a change, the role is
+ * instead read once through the caller's own session, without caching it. That read sees committed
+ * data and the caller's own changes, but a role the session has already loaded is served as the
+ * session first loaded it. If that read fails too, the role grants nothing, so a privilege check
+ * denies rather than throws.
  * <p>
  * The daemon only sees committed data. Evictions go through {@link CacheInvalidation}, so a load
  * only keeps its entry if nothing was evicted, on any node, while it ran, and a miss never waits on
@@ -71,7 +73,7 @@ import org.springframework.stereotype.Component;
  * are not detected, but the {@code role-privileges} cache template's lifespan limits how long they
  * can be served stale.
  *
- * @since 3.0.0, 2.9.0, 2.8.9
+ * @since 2.8.9
  */
 @Component("rolePrivilegeCache")
 public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
@@ -90,8 +92,11 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 
 	private final UserDAO dao;
 
-	/** Runs a load on another thread. */
-	private final Consumer<Runnable> backgroundRunner;
+	/**
+	 * Runs a load on another thread, returning a future for the thread's task, or null if there is
+	 * none. The task may fail without running the load, for example if a daemon cannot open a session.
+	 */
+	private final Function<Runnable, Future<?>> backgroundRunner;
 
 	/** Loads a role by name on the background thread, seeing only committed data. */
 	private final Function<String, Role> committedRoleLoader;
@@ -108,7 +113,7 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 		        roleName -> Context.getUserService().getRole(roleName));
 	}
 
-	RolePrivilegeCache(SpringEmbeddedCacheManager cacheManager, UserDAO dao, Consumer<Runnable> backgroundRunner,
+	RolePrivilegeCache(SpringEmbeddedCacheManager cacheManager, UserDAO dao, Function<Runnable, Future<?>> backgroundRunner,
 	    Function<String, Role> committedRoleLoader) {
 		this.cacheManager = cacheManager;
 		this.dao = dao;
@@ -141,11 +146,10 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 
 	/**
 	 * Returns the flattened privileges for the given role, loading and caching them on a miss. Never
-	 * returns {@code null}.
+	 * returns {@code null} and never throws; a role that cannot be loaded grants nothing.
 	 *
 	 * @param role the directly assigned role to resolve
 	 * @return the flattened privilege closure for the role
-	 * @throws APIException if the role could not be loaded
 	 */
 	public RolePrivileges getRolePrivileges(Role role) {
 		if (role == null || role.getRole() == null) {
@@ -153,7 +157,7 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 		}
 
 		if (invalidation.isWrittenInCurrentTransaction(null)) {
-			return resolveInCurrentSession(role.getRole());
+			return resolveInCurrentSession(role.getRole(), null);
 		}
 
 		Cache<Object, Object> cache = getCache();
@@ -170,16 +174,14 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 		try {
 			loaded = await(key, load);
 		} catch (APIException e) {
-			if (Thread.currentThread().isInterrupted()) {
-				throw e;
-			}
-			// the daemon may have failed for want of a connection the caller already holds
+			// the daemon may have failed for want of a connection the caller already holds, or the caller
+			// may have been interrupted
 			log.warn("Could not load the privileges of role {}; reading it through the caller's session", key, e);
 			return resolveInCurrentSession(role.getRole(), e);
 		}
 
 		if (cache != null && !CacheInvalidation.isCurrent(cache, load.generation)) {
-			return resolveInCurrentSession(role.getRole());
+			return resolveInCurrentSession(role.getRole(), null);
 		}
 		return loaded;
 	}
@@ -265,7 +267,13 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	 * waiting on, for example in tests.
 	 */
 	void awaitLoads() {
-		loads.values().forEach(load -> load.result.handle((result, e) -> null).join());
+		loads.forEach((key, load) -> {
+			try {
+				await(key, load);
+			} catch (APIException e) {
+				// the load's failure is its caller's to handle
+			}
+		});
 	}
 
 	/**
@@ -297,8 +305,9 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 			return current;
 		}
 
+		Future<?> task = null;
 		try {
-			backgroundRunner.accept(() -> {
+			task = backgroundRunner.apply(() -> {
 				try {
 					fresh.result.complete(load(key, roleName, cache, fresh.generation));
 				} catch (Throwable e) {
@@ -310,6 +319,8 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 		} catch (RuntimeException e) {
 			fresh.result.completeExceptionally(e);
 			loads.remove(key, fresh);
+		} finally {
+			fresh.task.complete(task);
 		}
 		return fresh;
 	}
@@ -328,35 +339,38 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	}
 
 	/**
-	 * Reads the role through the caller's own session and flattens it, without caching it.
+	 * Reads the role through the caller's own session and flattens it, without caching it. If the read
+	 * fails, the role grants nothing.
 	 *
-	 * @throws APIException if the role could not be read
+	 * @param loadFailure why the load failed, if it did, which is recorded on any failure of this read
 	 */
-	private RolePrivileges resolveInCurrentSession(String roleName) {
+	private RolePrivileges resolveInCurrentSession(String roleName, Exception loadFailure) {
 		try {
 			return computeRolePrivileges(dao.getRole(roleName));
-		} catch (APIException e) {
-			throw e;
 		} catch (RuntimeException e) {
-			throw new APIException("Could not load the privileges of role " + roleName, e);
+			if (loadFailure != null) {
+				e.addSuppressed(loadFailure);
+			}
+			log.error("Could not load the privileges of role {}; it grants nothing", roleName, e);
+			return new RolePrivileges(new HashSet<>(), false);
 		}
 	}
 
 	/**
-	 * As {@link #resolveInCurrentSession(String)}, after a load failed with <code>loadFailure</code>,
-	 * which is recorded on any failure of this read too.
+	 * Waits for the load. The thread's task is waited for first, since it can end without running the
+	 * load, which would then never complete.
 	 */
-	private RolePrivileges resolveInCurrentSession(String roleName, APIException loadFailure) {
+	private RolePrivileges await(String key, Load load) {
 		try {
-			return resolveInCurrentSession(roleName);
-		} catch (APIException e) {
-			e.addSuppressed(loadFailure);
-			throw e;
-		}
-	}
-
-	private static RolePrivileges await(String key, Load load) {
-		try {
+			Future<?> task = load.task.join();
+			if (task != null) {
+				try {
+					task.get();
+				} catch (ExecutionException e) {
+					load.result.completeExceptionally(e.getCause());
+					loads.remove(key, load);
+				}
+			}
 			return load.result.get();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
@@ -385,6 +399,9 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 		private final Object generation;
 
 		private final CompletableFuture<RolePrivileges> result = new CompletableFuture<>();
+
+		/** The thread's task running the load, completed as soon as it has been started. */
+		private final CompletableFuture<Future<?>> task = new CompletableFuture<>();
 
 		private Load(Object generation) {
 			this.generation = generation;

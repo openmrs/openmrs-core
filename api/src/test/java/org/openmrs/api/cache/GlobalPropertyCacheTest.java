@@ -11,6 +11,7 @@ package org.openmrs.api.cache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -77,7 +78,7 @@ public class GlobalPropertyCacheTest {
 
 		fillExecutor = Executors.newSingleThreadExecutor();
 		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
-		        fillExecutor::execute);
+		        fillExecutor::submit);
 	}
 
 	@AfterEach
@@ -161,8 +162,10 @@ public class GlobalPropertyCacheTest {
 	@Test
 	public void get_shouldStartOneFillForConcurrentMissesOfTheSameProperty() {
 		List<Runnable> started = new ArrayList<>();
-		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
-		        started::add);
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class), task -> {
+			started.add(task);
+			return null;
+		});
 
 		globalPropertyCache.get("some.property");
 		globalPropertyCache.get("some.property");
@@ -173,8 +176,10 @@ public class GlobalPropertyCacheTest {
 	@Test
 	public void get_shouldNotRunMoreThanTheMaximumNumberOfFillsAtOnce() {
 		List<Runnable> started = new ArrayList<>();
-		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
-		        started::add);
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class), task -> {
+			started.add(task);
+			return null;
+		});
 
 		for (int i = 0; i <= GlobalPropertyCache.MAX_CONCURRENT_FILLS; i++) {
 			globalPropertyCache.get("property." + i);
@@ -196,6 +201,26 @@ public class GlobalPropertyCacheTest {
 				throw new IllegalStateException("no threads");
 			}
 			started.add(task);
+			return null;
+		});
+
+		for (int i = 0; i <= GlobalPropertyCache.MAX_CONCURRENT_FILLS; i++) {
+			globalPropertyCache.get("property." + i);
+		}
+
+		assertEquals(1, started.size());
+	}
+
+	@Test
+	public void get_shouldReleaseTheFillPermitIfTheFillsTaskEndsWithoutRunningIt() {
+		List<Runnable> started = new ArrayList<>();
+		AtomicInteger attempts = new AtomicInteger();
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class), task -> {
+			if (attempts.incrementAndGet() <= GlobalPropertyCache.MAX_CONCURRENT_FILLS) {
+				return CompletableFuture.failedFuture(new IllegalStateException("no session"));
+			}
+			started.add(task);
+			return null;
 		});
 
 		for (int i = 0; i <= GlobalPropertyCache.MAX_CONCURRENT_FILLS; i++) {
@@ -207,8 +232,10 @@ public class GlobalPropertyCacheTest {
 
 	@Test
 	public void get_shouldFillAgainAfterAFillThatRanOnTheCallingThread() {
-		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
-		        Runnable::run);
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class), task -> {
+			task.run();
+			return null;
+		});
 		givenProperty("some.property", "value");
 		globalPropertyCache.get("some.property");
 		assertEquals("value", cached("some.property").getValue());
@@ -327,7 +354,7 @@ public class GlobalPropertyCacheTest {
 			public SpringCache getCache(String name) {
 				return GlobalPropertyCache.CACHE_NAME.equals(name) ? null : super.getCache(name);
 			}
-		}, dao, mock(PlatformTransactionManager.class), fillExecutor::execute);
+		}, dao, mock(PlatformTransactionManager.class), fillExecutor::submit);
 
 		assertFalse(globalPropertyCache.get("missing.property").isPresent());
 		assertFalse(globalPropertyCache.get("missing.property").isPresent());
@@ -571,7 +598,7 @@ public class GlobalPropertyCacheTest {
 		SpringEmbeddedCacheManager springCacheManager = mock(SpringEmbeddedCacheManager.class);
 		when(springCacheManager.getNativeCacheManager()).thenReturn(nativeCacheManager);
 		GlobalPropertyCache cacheWithMockedManager = new GlobalPropertyCache(springCacheManager, dao,
-		        mock(PlatformTransactionManager.class), fillExecutor::execute);
+		        mock(PlatformTransactionManager.class), fillExecutor::submit);
 		ArgumentCaptor<Object> listener = ArgumentCaptor.forClass(Object.class);
 		verify(nativeCacheManager).addListener(listener.capture());
 		assertTrue(listener.getValue() instanceof CacheInvalidation.PartitionMergeListener);

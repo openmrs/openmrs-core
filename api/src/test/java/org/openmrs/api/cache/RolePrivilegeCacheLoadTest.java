@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
-import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.springframework.transaction.TransactionDefinition;
@@ -50,8 +49,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -239,39 +236,52 @@ public class RolePrivilegeCacheLoadTest {
 	}
 
 	@Test
-	public void getRolePrivileges_shouldThrowAnAPIExceptionWhenTheCallersSessionCannotReadTheRoleEither() {
-		DAOException loadFailure = new DAOException("no connection for the daemon");
-		IllegalStateException sessionFailure = new IllegalStateException("no session");
-		RolePrivilegeCache cache = newCache(name -> {
-			throw loadFailure;
-		});
-		when(dao.getRole("Clerk")).thenThrow(sessionFailure);
+	public void getRolePrivileges_shouldReadTheRoleThroughTheCallersSessionWhenTheLoadsTaskEndsWithoutRunningIt() {
+		Function<String, Role> loader = mockLoader();
+		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManager, dao,
+		        task -> CompletableFuture.failedFuture(new IllegalStateException("no session")), loader);
+		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
 
-		APIException thrown = assertThrows(APIException.class, () -> cache.getRolePrivileges(role("Clerk", "Stale")));
+		assertTrue(cache.getRolePrivileges(new Role("Clerk")).containsPrivilege("View Patients"));
+		assertTrue(cache.getRolePrivileges(new Role("Clerk")).containsPrivilege("View Patients"));
 		cache.awaitLoads();
 
-		assertSame(sessionFailure, thrown.getCause());
-		assertSame(loadFailure, thrown.getSuppressed()[0]);
+		verify(loader, never()).apply("Clerk");
 		assertFalse(nativeCache().containsKey("clerk"));
 	}
 
 	@Test
-	public void getRolePrivileges_shouldNotFallBackWhenInterrupted() {
+	public void getRolePrivileges_shouldGrantNothingWhenTheCallersSessionCannotReadTheRoleEither() {
+		RolePrivilegeCache cache = newCache(name -> {
+			throw new DAOException("no connection for the daemon");
+		});
+		when(dao.getRole("Clerk")).thenThrow(new IllegalStateException("no session"));
+
+		RolePrivileges resolved = cache.getRolePrivileges(role("Clerk", "Stale"));
+		cache.awaitLoads();
+
+		assertFalse(resolved.containsPrivilege("Stale"));
+		assertFalse(resolved.grantsSuperuser());
+		assertFalse(nativeCache().containsKey("clerk"));
+	}
+
+	@Test
+	public void getRolePrivileges_shouldReadTheRoleThroughTheCallersSessionWhenInterrupted() {
 		CountDownLatch releaseLoad = new CountDownLatch(1);
 		RolePrivilegeCache cache = newCache(name -> {
 			await(releaseLoad);
-			return role("Clerk", "View Patients");
+			return role("Clerk", "Daemon Privilege");
 		});
+		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
 
 		Thread.currentThread().interrupt();
 		try {
-			assertThrows(APIException.class, () -> cache.getRolePrivileges(new Role("Clerk")));
+			assertTrue(cache.getRolePrivileges(new Role("Clerk")).containsPrivilege("View Patients"));
 			assertTrue(Thread.currentThread().isInterrupted());
 		} finally {
 			Thread.interrupted();
 			releaseLoad.countDown();
 		}
-		verify(dao, never()).getRole("Clerk");
 	}
 
 	@Test
@@ -356,7 +366,7 @@ public class RolePrivilegeCacheLoadTest {
 		when(failing.put(eq(CacheInvalidation.GENERATION), any())).thenThrow(new IllegalStateException("partitioned"));
 		when(failing.getAdvancedCache()).thenReturn(local);
 		when(local.withFlags(Flag.CACHE_MODE_LOCAL)).thenReturn(local);
-		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManagerFor(failing), dao, executor::execute,
+		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManagerFor(failing), dao, executor::submit,
 		        name -> role("Clerk", "View Patients"));
 
 		cache.clear();
@@ -371,7 +381,7 @@ public class RolePrivilegeCacheLoadTest {
 		when(failing.put(eq(CacheInvalidation.GENERATION), any())).thenThrow(new IllegalStateException("partitioned"));
 		when(failing.getAdvancedCache()).thenReturn(local);
 		when(local.withFlags(Flag.CACHE_MODE_LOCAL)).thenReturn(local);
-		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManagerFor(failing), dao, executor::execute,
+		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManagerFor(failing), dao, executor::submit,
 		        name -> role("Clerk", "View Patients"));
 		TransactionSynchronizationManager.initSynchronization();
 		cache.clear();
@@ -385,7 +395,7 @@ public class RolePrivilegeCacheLoadTest {
 	@Test
 	public void destroy_shouldStopListeningForPartitionMerges() {
 		SpringEmbeddedCacheManager springCacheManager = cacheManagerFor(mockNativeCache());
-		RolePrivilegeCache cache = new RolePrivilegeCache(springCacheManager, dao, executor::execute,
+		RolePrivilegeCache cache = new RolePrivilegeCache(springCacheManager, dao, executor::submit,
 		        name -> role("Clerk", "View Patients"));
 		ArgumentCaptor<Object> listener = ArgumentCaptor.forClass(Object.class);
 		verify(springCacheManager.getNativeCacheManager()).addListener(listener.capture());
@@ -459,7 +469,7 @@ public class RolePrivilegeCacheLoadTest {
 	}
 
 	private RolePrivilegeCache newCache(Function<String, Role> loader) {
-		return new RolePrivilegeCache(cacheManager, dao, executor::execute, loader);
+		return new RolePrivilegeCache(cacheManager, dao, executor::submit, loader);
 	}
 
 	@SuppressWarnings("unchecked")

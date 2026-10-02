@@ -62,8 +62,8 @@ public class RolePrivilegeCacheClusterTest {
 		clerk.addPrivilege(new Privilege("View Patients"));
 
 		loadExecutor = Executors.newCachedThreadPool();
-		cache1 = new RolePrivilegeCache(nodes[0], mock(UserDAO.class), loadExecutor::execute, name -> clerk);
-		cache2 = new RolePrivilegeCache(nodes[1], mock(UserDAO.class), loadExecutor::execute, name -> clerk);
+		cache1 = new RolePrivilegeCache(nodes[0], mock(UserDAO.class), loadExecutor::submit, name -> clerk);
+		cache2 = new RolePrivilegeCache(nodes[1], mock(UserDAO.class), loadExecutor::submit, name -> clerk);
 	}
 
 	@AfterEach
@@ -98,7 +98,7 @@ public class RolePrivilegeCacheClusterTest {
 		revoked.addPrivilege(new Privilege("Revoked Privilege"));
 		UserDAO dao = mock(UserDAO.class);
 		when(dao.getRole("Clerk")).thenReturn(clerk);
-		RolePrivilegeCache racing = new RolePrivilegeCache(nodes[1], dao, loadExecutor::execute, name -> {
+		RolePrivilegeCache racing = new RolePrivilegeCache(nodes[1], dao, loadExecutor::submit, name -> {
 			cache1.clear();
 			return revoked;
 		});
@@ -131,7 +131,7 @@ public class RolePrivilegeCacheClusterTest {
 	@Test
 	public void getRolePrivileges_shouldNotInvalidateAnotherNodesTokenWhenCreatingOne() {
 		RolePrivilegeCache creatingOnNode2 = cache2;
-		RolePrivilegeCache loadingOnNode1 = new RolePrivilegeCache(nodes[0], mock(UserDAO.class), loadExecutor::execute,
+		RolePrivilegeCache loadingOnNode1 = new RolePrivilegeCache(nodes[0], mock(UserDAO.class), loadExecutor::submit,
 		        name -> {
 			        // node2 has no token yet, so this creates one while node1's load is running
 			        creatingOnNode2.getRolePrivileges(new Role("Other"));

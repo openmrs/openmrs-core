@@ -14,8 +14,11 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 import org.infinispan.Cache;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
@@ -87,15 +90,20 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 
 	private final TransactionTemplate readOnlyTransaction;
 
-	/** Runs a fill on another thread without waiting for it. */
-	private final Consumer<Runnable> backgroundRunner;
+	/**
+	 * Runs a fill on another thread without waiting for it, returning a future for the thread's task,
+	 * or null if there is none. The task may fail without running the fill, for example if a daemon
+	 * cannot open a session.
+	 */
+	private final Function<Runnable, Future<?>> backgroundRunner;
 
 	/** Fills in progress, by property name, so concurrent misses start a single fill. */
-	private final ConcurrentMap<String, CompletableFuture<Void>> fills = new ConcurrentHashMap<>();
+	private final ConcurrentMap<String, Fill> fills = new ConcurrentHashMap<>();
 
 	/**
 	 * Limits how many fills run at once, since each holds a database connection that callers may be
-	 * waiting for. A miss that finds none free skips its fill; a later miss starts one.
+	 * waiting for. A miss that finds none free skips its fill; a later miss starts one. Each miss first
+	 * reclaims the permits of fills whose task ended without running them.
 	 */
 	private final Semaphore fillPermits = new Semaphore(MAX_CONCURRENT_FILLS);
 
@@ -109,7 +117,7 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	}
 
 	GlobalPropertyCache(SpringEmbeddedCacheManager cacheManager, AdministrationDAO dao,
-	    PlatformTransactionManager transactionManager, Consumer<Runnable> backgroundRunner) {
+	    PlatformTransactionManager transactionManager, Function<Runnable, Future<?>> backgroundRunner) {
 		this.cacheManager = cacheManager;
 		this.dao = dao;
 		this.backgroundRunner = backgroundRunner;
@@ -235,7 +243,20 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	 * so this is only needed where a caller must observe a fill, for example in tests.
 	 */
 	void awaitFills() {
-		fills.values().forEach(CompletableFuture::join);
+		fills.forEach((propertyName, fill) -> {
+			Future<?> task = fill.task.join();
+			if (task != null) {
+				try {
+					task.get();
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					return;
+				} catch (ExecutionException e) {
+					finish(propertyName, fill);
+				}
+			}
+			fill.done.join();
+		});
 	}
 
 	/**
@@ -261,18 +282,20 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	 * removed when it finishes, so the fill may run on any thread, including this one.
 	 */
 	private void startFill(String propertyName) {
+		reclaimFillsThatNeverRan();
 		if (!fillPermits.tryAcquire()) {
 			return;
 		}
 
-		CompletableFuture<Void> marker = new CompletableFuture<>();
+		Fill marker = new Fill();
 		if (fills.putIfAbsent(propertyName, marker) != null) {
 			fillPermits.release();
 			return;
 		}
 
+		Future<?> task = null;
 		try {
-			backgroundRunner.accept(() -> {
+			task = backgroundRunner.apply(() -> {
 				try {
 					fill(propertyName);
 				} catch (RuntimeException e) {
@@ -284,13 +307,31 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 		} catch (RuntimeException e) {
 			log.warn("Could not start a fill of the global property cache with {}", propertyName, e);
 			finish(propertyName, marker);
+		} finally {
+			marker.task.complete(task);
 		}
 	}
 
-	private void finish(String propertyName, CompletableFuture<Void> marker) {
-		fills.remove(propertyName, marker);
-		fillPermits.release();
-		marker.complete(null);
+	/**
+	 * Finishes the fills whose task has ended, which only leaves a fill unfinished if the task ended
+	 * without running it. There are at most {@link #MAX_CONCURRENT_FILLS}.
+	 */
+	private void reclaimFillsThatNeverRan() {
+		fills.forEach((propertyName, fill) -> {
+			Future<?> task = fill.task.getNow(null);
+			if (task != null && task.isDone()) {
+				finish(propertyName, fill);
+			}
+		});
+	}
+
+	/** Releases a fill's marker and permit. Only the first call for a fill has any effect. */
+	private void finish(String propertyName, Fill fill) {
+		if (fill.finished.compareAndSet(false, true)) {
+			fills.remove(propertyName, fill);
+			fillPermits.release();
+			fill.done.complete(null);
+		}
 	}
 
 	/**
@@ -326,6 +367,18 @@ public class GlobalPropertyCache implements ApplicationListener<ContextRefreshed
 	private Cache<Object, Object> getCache() {
 		org.springframework.cache.Cache cache = cacheManager.getCache(CACHE_NAME);
 		return cache == null ? null : (Cache<Object, Object>) cache.getNativeCache();
+	}
+
+	/** A fill in progress. */
+	private static final class Fill {
+
+		private final AtomicBoolean finished = new AtomicBoolean();
+
+		/** Completed once the fill has finished. */
+		private final CompletableFuture<Void> done = new CompletableFuture<>();
+
+		/** The thread's task running the fill, completed as soon as it has been started. */
+		private final CompletableFuture<Future<?>> task = new CompletableFuture<>();
 	}
 
 	/** A cached {@link Entry} and the exact name it was loaded for. */
