@@ -381,10 +381,22 @@ public interface OrderService extends OpenmrsService {
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
 
 	/**
+	 * Allocates a new block of order numbers and returns the first number in the block.<br>
+	 * Each call consumes a block of order numbers rather than a single number
+	 *
+	 * @return the first order number of the allocated block
+	 * @since 3.0.0
+	 */
+	@Authorized(PrivilegeConstants.ADD_ORDERS)
+	Long allocateOrderNumberBlock();
+
+	/**
 	 * Gets the next available order number seed
 	 *
 	 * @return the order number seed
+	 * @deprecated replaced by {@link #allocateOrderNumberBlock()}
 	 */
+	@Deprecated(since = "3.0.0")
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
 	public Long getNextOrderNumberSeedSequenceValue();
 

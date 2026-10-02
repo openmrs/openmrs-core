@@ -409,10 +409,14 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getNextOrderNumberSeedSequenceValue()
+	 * @see org.openmrs.api.db.OrderDAO#allocateOrderNumberBlock(int blockSize)
 	 */
 	@Override
-	public Long getNextOrderNumberSeedSequenceValue() {
+	public Long allocateOrderNumberBlock(int blockSize) {
+		if (blockSize <= 0) {
+			throw new APIException("Block size must be greater than zero");
+		}
+
 		GlobalProperty globalProperty = sessionFactory.getCurrentSession().get(GlobalProperty.class,
 		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockOptions.UPGRADE);
 
@@ -434,7 +438,7 @@ public class HibernateOrderDAO implements OrderDAO {
 			        new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
 		}
 
-		globalProperty.setPropertyValue(String.valueOf(gpNumericValue + 1));
+		globalProperty.setPropertyValue(String.valueOf(gpNumericValue + blockSize));
 
 		sessionFactory.getCurrentSession().persist(globalProperty);
 
