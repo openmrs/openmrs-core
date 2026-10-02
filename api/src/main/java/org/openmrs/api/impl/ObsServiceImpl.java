@@ -316,6 +316,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 */
 	@Override
 	public void purgeObs(Obs obs, boolean cascade) throws APIException {
+		if (obs == null) {
+			throw new IllegalArgumentException("obs cannot be null");
+		}
+
 		if (!purgeComplexData(obs)) {
 			// Log a warning instead of throwing an error.
 			// This allows purging the obs row even if the associated file is missing,
@@ -338,6 +342,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 */
 	@Override
 	public void purgeObs(Obs obs) throws APIException {
+		if (obs == null) {
+			throw new IllegalArgumentException("obs cannot be null");
+		}
 		Context.getObsService().purgeObs(obs, false);
 	}
 
