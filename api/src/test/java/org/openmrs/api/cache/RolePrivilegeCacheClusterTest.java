@@ -29,6 +29,7 @@ import org.openmrs.api.db.UserDAO;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests {@link RolePrivilegeCache} on a two-node cluster running within this JVM.
@@ -92,15 +93,21 @@ public class RolePrivilegeCacheClusterTest {
 	}
 
 	@Test
-	public void getRolePrivileges_shouldNotCacheALoadThatRacesAnEvictionOnAnotherNode() {
-		RolePrivilegeCache racing = new RolePrivilegeCache(nodes[1], mock(UserDAO.class), loadExecutor::execute, name -> {
+	public void getRolePrivileges_shouldNotCacheOrUseALoadThatRacesAnEvictionOnAnotherNode() {
+		Role revoked = new Role("Clerk");
+		revoked.addPrivilege(new Privilege("Revoked Privilege"));
+		UserDAO dao = mock(UserDAO.class);
+		when(dao.getRole("Clerk")).thenReturn(clerk);
+		RolePrivilegeCache racing = new RolePrivilegeCache(nodes[1], dao, loadExecutor::execute, name -> {
 			cache1.clear();
-			return clerk;
+			return revoked;
 		});
 
-		assertTrue(racing.getRolePrivileges(clerk).containsPrivilege("View Patients"));
+		RolePrivileges resolved = racing.getRolePrivileges(clerk);
 		racing.awaitLoads();
 
+		assertTrue(resolved.containsPrivilege("View Patients"));
+		assertFalse(resolved.containsPrivilege("Revoked Privilege"));
 		assertFalse(nativeCache(1).containsKey("clerk"));
 	}
 

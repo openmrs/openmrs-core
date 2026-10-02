@@ -46,8 +46,13 @@ import org.springframework.stereotype.Component;
  * caller-supplied instance, which may be a stale role graph held by a long-lived
  * {@code UserContext}. The role is loaded in a daemon thread, because loading it through the
  * secured {@code UserService} requires {@code Get Roles}, the very kind of check being resolved.
- * The caller waits for the load, and concurrent misses for the same role share one. If the load
- * fails, the failure propagates to the caller; a role absent from the database grants nothing.
+ * The caller waits for the load, and concurrent misses for the same role share one. A role absent
+ * from the database grants nothing.
+ * <p>
+ * If the load fails, or the cache was evicted while the caller waited for it, so that the load may
+ * have read the role from before a change, the role is instead read once through the caller's own
+ * session, without caching it. That read sees committed data and the caller's own changes, but a
+ * role the session has already loaded is served as the session first loaded it.
  * <p>
  * The daemon only sees committed data. Evictions go through {@link CacheInvalidation}, so a load
  * only keeps its entry if nothing was evicted, on any node, while it ran, and a miss never waits on
@@ -148,7 +153,7 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 		}
 
 		if (invalidation.isWrittenInCurrentTransaction(null)) {
-			return computeRolePrivileges(dao.getRole(role.getRole()));
+			return resolveInCurrentSession(role.getRole());
 		}
 
 		Cache<Object, Object> cache = getCache();
@@ -160,7 +165,23 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 			}
 		}
 
-		return await(key, startOrJoinLoad(key, role.getRole(), cache));
+		Load load = startOrJoinLoad(key, role.getRole(), cache);
+		RolePrivileges loaded;
+		try {
+			loaded = await(key, load);
+		} catch (APIException e) {
+			if (Thread.currentThread().isInterrupted()) {
+				throw e;
+			}
+			// the daemon may have failed for want of a connection the caller already holds
+			log.warn("Could not load the privileges of role {}; reading it through the caller's session", key, e);
+			return resolveInCurrentSession(role.getRole(), e);
+		}
+
+		if (cache != null && !CacheInvalidation.isCurrent(cache, load.generation)) {
+			return resolveInCurrentSession(role.getRole());
+		}
+		return loaded;
 	}
 
 	/**
@@ -304,6 +325,34 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 			CacheInvalidation.putIfCurrent(cache, key, loaded, generation);
 		}
 		return loaded;
+	}
+
+	/**
+	 * Reads the role through the caller's own session and flattens it, without caching it.
+	 *
+	 * @throws APIException if the role could not be read
+	 */
+	private RolePrivileges resolveInCurrentSession(String roleName) {
+		try {
+			return computeRolePrivileges(dao.getRole(roleName));
+		} catch (APIException e) {
+			throw e;
+		} catch (RuntimeException e) {
+			throw new APIException("Could not load the privileges of role " + roleName, e);
+		}
+	}
+
+	/**
+	 * As {@link #resolveInCurrentSession(String)}, after a load failed with <code>loadFailure</code>,
+	 * which is recorded on any failure of this read too.
+	 */
+	private RolePrivileges resolveInCurrentSession(String roleName, APIException loadFailure) {
+		try {
+			return resolveInCurrentSession(roleName);
+		} catch (APIException e) {
+			e.addSuppressed(loadFailure);
+			throw e;
+		}
 	}
 
 	private static RolePrivileges await(String key, Load load) {

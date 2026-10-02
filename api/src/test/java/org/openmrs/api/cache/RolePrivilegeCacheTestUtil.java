@@ -37,6 +37,14 @@ public final class RolePrivilegeCacheTestUtil {
 		getCache().put(key, new RolePrivileges(new HashSet<>(Arrays.asList(privileges)), false));
 	}
 
+	/**
+	 * @return true if an entry is cached for the role on this node, whether or not the current
+	 *         transaction would read it
+	 */
+	public static boolean isCached(String roleName) {
+		return getCache().get(RolePrivileges.normalize(roleName)) != null;
+	}
+
 	/** Removes every entry from this node's role cache immediately. */
 	public static void clear() {
 		getCache().clear();

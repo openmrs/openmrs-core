@@ -79,7 +79,7 @@ public class RolePrivilegeCacheLoadTest {
 		DefaultCacheManager nativeCacheManager = new DefaultCacheManager(holder, true);
 		nativeCacheManager.defineConfiguration(RolePrivilegeCache.CACHE_NAME, new ConfigurationBuilder()
 		        .read(nativeCacheManager.getCacheConfiguration("role-privileges")).template(false).build());
-		cacheManager = new ExternalReadSpringCacheManager(nativeCacheManager);
+		cacheManager = new ExternalReadSpringCacheManager(nativeCacheManager, CacheConfig.EXTERNAL_READ_CACHES);
 	}
 
 	@AfterAll
@@ -124,17 +124,20 @@ public class RolePrivilegeCacheLoadTest {
 	}
 
 	@Test
-	public void getRolePrivileges_shouldNotCacheALoadThatRacesAnEviction() {
+	public void getRolePrivileges_shouldReadARoleEvictedDuringItsLoadThroughTheCallersSession() {
+		// the load read the role before the change that caused the eviction, so it must not be used
 		RolePrivilegeCache[] holder = new RolePrivilegeCache[1];
 		holder[0] = newCache(name -> {
 			holder[0].clear();
-			return role("Clerk", "View Patients");
+			return role("Clerk", "Revoked Privilege");
 		});
+		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
 
 		RolePrivileges resolved = holder[0].getRolePrivileges(new Role("Clerk"));
 		holder[0].awaitLoads();
 
 		assertTrue(resolved.containsPrivilege("View Patients"));
+		assertFalse(resolved.containsPrivilege("Revoked Privilege"));
 		assertFalse(nativeCache().containsKey("clerk"));
 	}
 
@@ -145,6 +148,7 @@ public class RolePrivilegeCacheLoadTest {
 			nativeCache().remove(CacheInvalidation.GENERATION);
 			return role("Clerk", "View Patients");
 		});
+		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
 
 		RolePrivileges resolved = cache.getRolePrivileges(new Role("Clerk"));
 		cache.awaitLoads();
@@ -166,6 +170,8 @@ public class RolePrivilegeCacheLoadTest {
 			}
 			return role("Clerk", "After Privilege");
 		});
+		// the first caller waited across the eviction, so it reads the role through its own session
+		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "After Privilege"));
 
 		CompletableFuture<RolePrivileges> first = CompletableFuture
 		        .supplyAsync(() -> cache.getRolePrivileges(new Role("Clerk")), executor);
@@ -175,7 +181,7 @@ public class RolePrivilegeCacheLoadTest {
 		RolePrivileges second = cache.getRolePrivileges(new Role("Clerk"));
 
 		releaseFirstLoad.countDown();
-		assertTrue(first.get(10, TimeUnit.SECONDS).containsPrivilege("Before Privilege"));
+		assertTrue(first.get(10, TimeUnit.SECONDS).containsPrivilege("After Privilege"));
 		cache.awaitLoads();
 
 		assertEquals(2, loadCount.get());
@@ -208,29 +214,64 @@ public class RolePrivilegeCacheLoadTest {
 	}
 
 	@Test
-	public void getRolePrivileges_shouldPropagateALoadFailureWithoutCaching() {
-		DAOException failure = new DAOException("database unavailable");
+	public void getRolePrivileges_shouldReadTheRoleThroughTheCallersSessionWhenTheLoadFails() {
 		RolePrivilegeCache cache = newCache(name -> {
-			throw failure;
+			throw new DAOException("no connection for the daemon");
 		});
+		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
 
-		DAOException thrown = assertThrows(DAOException.class, () -> cache.getRolePrivileges(role("Clerk", "Stale")));
+		RolePrivileges resolved = cache.getRolePrivileges(role("Clerk", "Stale Privilege"));
 		cache.awaitLoads();
 
-		assertSame(failure, thrown);
+		assertTrue(resolved.containsPrivilege("View Patients"));
+		assertFalse(resolved.containsPrivilege("Stale Privilege"));
 		assertFalse(nativeCache().containsKey("clerk"));
 	}
 
 	@Test
-	public void getRolePrivileges_shouldWrapAFailureToStartALoadInAnAPIException() {
-		IllegalStateException failure = new IllegalStateException("no threads");
+	public void getRolePrivileges_shouldReadTheRoleThroughTheCallersSessionWhenALoadCannotStart() {
 		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManager, dao, task -> {
-			throw failure;
-		}, name -> role("Clerk", "View Patients"));
+			throw new IllegalStateException("no threads");
+		}, name -> role("Clerk", "Daemon Privilege"));
+		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
 
-		APIException thrown = assertThrows(APIException.class, () -> cache.getRolePrivileges(new Role("Clerk")));
+		assertTrue(cache.getRolePrivileges(new Role("Clerk")).containsPrivilege("View Patients"));
+	}
 
-		assertSame(failure, thrown.getCause());
+	@Test
+	public void getRolePrivileges_shouldThrowAnAPIExceptionWhenTheCallersSessionCannotReadTheRoleEither() {
+		DAOException loadFailure = new DAOException("no connection for the daemon");
+		IllegalStateException sessionFailure = new IllegalStateException("no session");
+		RolePrivilegeCache cache = newCache(name -> {
+			throw loadFailure;
+		});
+		when(dao.getRole("Clerk")).thenThrow(sessionFailure);
+
+		APIException thrown = assertThrows(APIException.class, () -> cache.getRolePrivileges(role("Clerk", "Stale")));
+		cache.awaitLoads();
+
+		assertSame(sessionFailure, thrown.getCause());
+		assertSame(loadFailure, thrown.getSuppressed()[0]);
+		assertFalse(nativeCache().containsKey("clerk"));
+	}
+
+	@Test
+	public void getRolePrivileges_shouldNotFallBackWhenInterrupted() {
+		CountDownLatch releaseLoad = new CountDownLatch(1);
+		RolePrivilegeCache cache = newCache(name -> {
+			await(releaseLoad);
+			return role("Clerk", "View Patients");
+		});
+
+		Thread.currentThread().interrupt();
+		try {
+			assertThrows(APIException.class, () -> cache.getRolePrivileges(new Role("Clerk")));
+			assertTrue(Thread.currentThread().isInterrupted());
+		} finally {
+			Thread.interrupted();
+			releaseLoad.countDown();
+		}
+		verify(dao, never()).getRole("Clerk");
 	}
 
 	@Test

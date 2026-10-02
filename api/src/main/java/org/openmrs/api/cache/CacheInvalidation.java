@@ -175,14 +175,23 @@ public final class CacheInvalidation {
 	 * @param generation the token {@link #currentGeneration(Cache)} returned before the value was read
 	 */
 	static void putIfCurrent(Cache<Object, Object> cache, Object key, Object value, Object generation) {
-		if (!generation.equals(cache.get(GENERATION))) {
+		if (!isCurrent(cache, generation)) {
 			return;
 		}
 
 		cache.putForExternalRead(key, value);
-		if (!generation.equals(cache.get(GENERATION))) {
+		if (!isCurrent(cache, generation)) {
 			cache.getAdvancedCache().withFlags(Flag.CACHE_MODE_LOCAL).remove(key);
 		}
+	}
+
+	/**
+	 * @param cache the cache
+	 * @param generation a token {@link #currentGeneration(Cache)} returned, or null
+	 * @return true if nothing has been evicted on this node since <code>generation</code> was read
+	 */
+	static boolean isCurrent(Cache<Object, Object> cache, Object generation) {
+		return generation != null && generation.equals(cache.get(GENERATION));
 	}
 
 	/**

@@ -21,7 +21,8 @@ import org.jgroups.JChannel;
 
 /**
  * Starts API cache managers that form a cluster within this JVM, built from the cluster
- * configuration in {@code infinispan-api.xml}.
+ * configuration in {@code infinispan-api.xml} and handing out the same Spring caches as
+ * {@code apiCacheManager}.
  */
 final class InJvmCacheCluster {
 
@@ -73,6 +74,6 @@ final class InJvmCacheCluster {
 			cacheManager.defineConfiguration(caches[i],
 			    new ConfigurationBuilder().read(cacheManager.getCacheConfiguration(caches[i + 1])).template(false).build());
 		}
-		return new ExternalReadSpringCacheManager(cacheManager);
+		return new ExternalReadSpringCacheManager(cacheManager, CacheConfig.EXTERNAL_READ_CACHES);
 	}
 }

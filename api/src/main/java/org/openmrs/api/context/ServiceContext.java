@@ -43,6 +43,7 @@ import org.openmrs.api.SerializationService;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
+import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
@@ -1059,9 +1060,12 @@ public class ServiceContext implements ApplicationContextAware {
 	public void clearEntireApiCache() {
 		CacheManager apiCacheManager = getRegisteredComponent("apiCacheManager", CacheManager.class);
 		apiCacheManager.getCacheNames().forEach(cacheName -> {
+			// these caches guard their loads with a generation token, which a plain clear would bypass,
+			// letting loads in progress cache values read before it
 			if (RolePrivilegeCache.CACHE_NAME.equals(cacheName)) {
-				// a plain clear would let loads in progress cache privileges read before it
 				getRegisteredComponent("rolePrivilegeCache", RolePrivilegeCache.class).clear();
+			} else if (GlobalPropertyCache.CACHE_NAME.equals(cacheName)) {
+				getRegisteredComponent("globalPropertyCache", GlobalPropertyCache.class).clear();
 			} else {
 				apiCacheManager.getCache(cacheName).invalidate();
 			}
