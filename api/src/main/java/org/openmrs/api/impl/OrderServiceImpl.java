@@ -712,6 +712,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
+	 * @deprecated use {@link #allocateOrderNumberBlock()}
+	 * @see org.openmrs.api.OrderService#getNextOrderNumberSeedSequenceValue()
+	 */
+	// self-invocation is intentional: this method already runs in its own REQUIRES_NEW transaction
+	@SuppressWarnings({ "squid:S2229", "java:S6809" })
+	@Deprecated(since = "3.0.0")
+	@Override
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public synchronized Long getNextOrderNumberSeedSequenceValue() {
+		return this.allocateOrderNumberBlock();
+	}
+
+	/**
 	 * @see org.openmrs.api.OrderService#getOrderHistoryByOrderNumber(java.lang.String)
 	 */
 	@Override
