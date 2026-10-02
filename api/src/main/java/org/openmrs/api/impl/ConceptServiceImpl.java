@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +22,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -102,8 +100,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 
 	private static Concept unknownConcept;
 
-	private static final String ERROR_MESSAGE = "Error generated";
-
 	private static final String CONCEPT_IDS_BY_MAPPING_CACHE_NAME = "conceptIdsByMapping";
 
 	/**
@@ -157,11 +153,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 						// put back the concept name id
 						clone.setConceptNameId(conceptName.getConceptNameId());
 						// Use the cloned version
-						try {
-							BeanUtils.copyProperties(conceptName, clone);
-						} catch (IllegalAccessException | InvocationTargetException e) {
-							log.error(ERROR_MESSAGE, e);
-						}
+						copyConceptName(clone, conceptName);
 					}
 				}
 			}
@@ -1431,19 +1423,41 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	private ConceptName cloneConceptName(ConceptName conceptName) {
 		ConceptName copy = new ConceptName();
-		try {
-			copy = (ConceptName) BeanUtils.cloneBean(conceptName);
-			// Create a new tags collection to avoid sharing the same Hibernate
-			// PersistentSet between the original and the clone, which causes
-			// "shared references to a collection" errors in Hibernate 7
-			if (conceptName.getTags() != null) {
-				copy.setTags(new HashSet<>(conceptName.getTags()));
-			}
-		} catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
-
-			log.warn(ERROR_MESSAGE, e);
+		copyConceptName(conceptName, copy);
+		// Create a new tags collection to avoid sharing the same Hibernate
+		// PersistentSet between the original and the clone, which causes
+		// "shared references to a collection" errors in Hibernate 7
+		if (conceptName.getTags() != null) {
+			copy.setTags(new HashSet<>(conceptName.getTags()));
 		}
 		return copy;
+	}
+
+	/**
+	 * Copies every read/write property of a conceptName onto another one. Properties are set in
+	 * alphabetical order because {@link ConceptName#setName(String)} depends on the conceptNameType
+	 * already being set. Package-private for testing.
+	 *
+	 * @param source the conceptName to copy from
+	 * @param target the conceptName to copy to
+	 */
+	static void copyConceptName(ConceptName source, ConceptName target) {
+		target.setChangedBy(source.getChangedBy());
+		target.setConcept(source.getConcept());
+		target.setConceptNameId(source.getConceptNameId());
+		target.setConceptNameType(source.getConceptNameType());
+		target.setCreator(source.getCreator());
+		target.setDateChanged(source.getDateChanged());
+		target.setDateCreated(source.getDateCreated());
+		target.setDateVoided(source.getDateVoided());
+		target.setLocale(source.getLocale());
+		target.setLocalePreferred(source.getLocalePreferred());
+		target.setName(source.getName());
+		target.setTags(source.getTags());
+		target.setUuid(source.getUuid());
+		target.setVoidReason(source.getVoidReason());
+		target.setVoided(source.getVoided());
+		target.setVoidedBy(source.getVoidedBy());
 	}
 
 	/**
