@@ -26,7 +26,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserContextTest extends BaseContextSensitiveTest {
 
@@ -57,6 +59,42 @@ public class UserContextTest extends BaseContextSensitiveTest {
 	void deleteUser() {
 		userService.purgeUser(testUser);
 		personService.purgePerson(testPerson);
+	}
+
+	@Test
+	public void hasPrivilege_shouldMatchAProxyPrivilegeCaseInsensitively() {
+		// proxy privileges were the one privilege comparison still using equals rather than
+		// equalsIgnoreCase; logged out, the proxy list is the only thing that can grant
+		Context.getUserContext().logout();
+		Context.addProxyPrivilege("Proxy Case Test Privilege");
+		try {
+			assertTrue(Context.hasPrivilege("PROXY CASE TEST PRIVILEGE"));
+			assertTrue(Context.hasPrivilege("proxy case test privilege"));
+		} finally {
+			Context.removeProxyPrivilege("Proxy Case Test Privilege");
+			// other tests in this class need privileges, and nothing re-authenticates between methods
+			Context.authenticate("admin", "test");
+		}
+	}
+
+	@Test
+	public void removeProxyPrivilege_shouldMatchCaseInsensitivelyAndRemoveOnlyOneInstance() {
+		// AuthorizationAdvice brackets every service call with an add/remove pair, so nested calls
+		// stack the same privilege and one remove must undo exactly one add - even now that the match
+		// ignores case
+		Context.getUserContext().logout();
+		Context.addProxyPrivilege("Proxy Case Test Privilege");
+		Context.addProxyPrivilege("Proxy Case Test Privilege");
+		try {
+			Context.removeProxyPrivilege("PROXY CASE TEST PRIVILEGE");
+			assertTrue(Context.hasPrivilege("Proxy Case Test Privilege"), "one add should remain");
+
+			Context.removeProxyPrivilege("proxy case test privilege");
+			assertFalse(Context.hasPrivilege("Proxy Case Test Privilege"), "both adds should now be undone");
+		} finally {
+			Context.removeProxyPrivilege("Proxy Case Test Privilege");
+			Context.authenticate("admin", "test");
+		}
 	}
 
 	@Test

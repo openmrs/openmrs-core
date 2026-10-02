@@ -19,6 +19,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.openmrs.security.PrivilegeNamingAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
@@ -26,11 +27,11 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 
 /**
- * Enforces every {@link AuthorizedUrlMatcher} rule via {@link OpenmrsAuthorizationManager}, exactly
- * as {@code authorizeHttpRequests(...)} did in {@link WebSecurityConfig} before this class existed
- * - but registered as its own {@code <filter>} in {@code web.xml}, positioned <em>after</em>
- * {@code ModuleFilter}, rather than as part of {@code @EnableWebSecurity}'s single composite
- * {@code springSecurityFilterChain}.
+ * Enforces every {@link AuthorizedUrlMatcher} rule via {@link OpenmrsAuthorizationManager},
+ * registered as its own {@code <filter>} in {@code web.xml} and positioned <em>after</em>
+ * {@code ModuleFilter} - deliberately not inside {@code @EnableWebSecurity}'s single composite
+ * {@code springSecurityFilterChain}, where {@code authorizeHttpRequests(...)} would otherwise put
+ * it (see {@link WebSecurityConfig}).
  * <p>
  * That composite chain runs before {@code ModuleFilter} (see the {@code springSecurityFilterChain}
  * entry in {@code web.xml}), and {@code @EnableWebSecurity} offers no way to place one of several
@@ -48,6 +49,20 @@ import org.springframework.security.web.authentication.Http403ForbiddenEntryPoin
  * {@code ExceptionTranslationFilter} decides "anonymous" by token type and
  * {@link OpenmrsAuthenticationToken} is never one.
  * <p>
+ * Sitting downstream of {@code ModuleFilter} has one consequence worth being explicit about: a
+ * module filter that handles a request itself and does not continue the chain skips this filter
+ * altogether, so none of the {@link AuthorizedUrlMatcher} rules are evaluated for that request.
+ * {@code ModuleFilterChain.doFilter} only reaches the outer chain once the module filter it is
+ * currently running calls {@code chain.doFilter(...)}, so a module filter that writes a response,
+ * redirects, or otherwise completes the request takes the URL rules out of it entirely. A rule
+ * enforced from the earlier {@code springSecurityFilterChain} seat could not be bypassed that way,
+ * which is the price of fixing the authenticate-inside-ModuleFilter case above - judged the better
+ * trade, since that case breaks valid credentials outright whereas this one needs a module filter
+ * that deliberately ends the request. A URL rule is therefore not quite the unconditional guarantee
+ * a service-method {@code @Authorized} is; a privilege that must hold no matter which module is
+ * installed belongs on the service method, with the URL rule as an additional restriction rather
+ * than the only one.
+ * <p>
  * {@link OpenmrsSecurityContextFilter} does not move: it stays in the early
  * {@code springSecurityFilterChain} seat, since {@code ModuleFilter}'s own filters (and everything
  * downstream) need the {@code Authentication} it installs from any <em>existing</em> session
@@ -63,6 +78,19 @@ import org.springframework.security.web.authentication.Http403ForbiddenEntryPoin
  * {@link AuthorizationFilter}, which is handed an {@link OpenmrsAuthorizationManager} adapted from
  * {@code AuthorizationManager<RequestAuthorizationContext>} to the
  * {@code AuthorizationManager<HttpServletRequest>} that class itself requires.
+ * <p>
+ * That manager is wrapped in a {@link PrivilegeNamingAuthorizationManager} first, so a denial
+ * caused by a missing privilege reports {@code error.privilegesRequired} naming it rather than
+ * {@code AuthorizationFilter}'s hard-coded "Access Denied" - the same treatment a denied
+ * {@code @PreAuthorize} gets. Throwing is safe at this position, unlike inside a method-security
+ * expression: nothing composes this manager, {@code AuthorizationFilter} does not catch what
+ * {@code authorize(...)} throws, and {@link ExceptionTranslationFilter} is waiting for it.
+ * <p>
+ * Spring's default {@code AccessDeniedHandlerImpl} would discard that message, answering with
+ * {@code sendError(403, "Forbidden")} without ever looking at the exception, so
+ * {@link OpenmrsAccessDeniedHandler} is installed in its place: it publishes the exception as the
+ * {@code WebAttributes.ACCESS_DENIED_403} request attribute first, leaving the status code and
+ * response body untouched. Whatever renders the 403 can then say which privilege was missing.
  *
  * @since 3.0.0
  */
@@ -73,11 +101,13 @@ public class OpenmrsAuthorizationFilter implements Filter {
 	private final AuthorizationFilter authorizationFilter;
 
 	public OpenmrsAuthorizationFilter(List<AuthorizedUrlMatchers> authorizedUrlMatchers) {
-		OpenmrsAuthorizationManager delegate = new OpenmrsAuthorizationManager(authorizedUrlMatchers);
-		AuthorizationManager<HttpServletRequest> adapter = (authentication, request) -> delegate.authorize(authentication,
+		OpenmrsAuthorizationManager rules = new OpenmrsAuthorizationManager(authorizedUrlMatchers);
+		AuthorizationManager<RequestAuthorizationContext> naming = new PrivilegeNamingAuthorizationManager<>(rules);
+		AuthorizationManager<HttpServletRequest> adapter = (authentication, request) -> naming.authorize(authentication,
 		    new RequestAuthorizationContext(request));
 
 		this.exceptionTranslationFilter = new ExceptionTranslationFilter(new Http403ForbiddenEntryPoint());
+		this.exceptionTranslationFilter.setAccessDeniedHandler(new OpenmrsAccessDeniedHandler());
 		this.authorizationFilter = new AuthorizationFilter(adapter);
 	}
 

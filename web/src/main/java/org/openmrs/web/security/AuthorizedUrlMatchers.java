@@ -78,8 +78,9 @@ public final class AuthorizedUrlMatchers {
 		}
 
 		/**
-		 * @param patterns one or more Ant-style path patterns, as accepted by
-		 *            {@link AuthorizedUrlMatcher#requestMatchers(String...)}
+		 * @param patterns one or more {@code PathPattern} path patterns, as accepted by
+		 *            {@link AuthorizedUrlMatcher#requestMatchers(String...)} - see there for the syntax
+		 *            {@code PathPatternParser} does and does not allow
 		 * @return a {@link RuleBuilder} for the given patterns, ready to be turned into a rule (added to
 		 *         this builder) by naming the authorization check that governs it
 		 */

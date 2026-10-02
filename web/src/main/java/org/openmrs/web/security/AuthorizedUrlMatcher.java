@@ -11,10 +11,9 @@ package org.openmrs.web.security;
 
 import java.util.Arrays;
 
+import org.openmrs.security.OpenmrsAuthorizationManagerFactory;
 import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
-import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationManager;
-import org.springframework.security.authorization.AuthorizationManagers;
 import org.springframework.security.authorization.SingleResultAuthorizationManager;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
@@ -23,20 +22,25 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * Lets core or a module require an {@link AuthorizationManager} decision to reach a URL pattern -
- * the web-request equivalent of guarding a service method with
+ * the web-request counterpart of guarding a service method with
  * {@link org.openmrs.annotation.Authorized}, but built entirely from Spring Security's own
  * vocabulary ({@code hasAuthority}, {@code hasRole}, {@code AuthorizationManagers.allOf(...)}, or
  * any hand-written {@link AuthorizationManager}) rather than a narrower, OpenMRS-specific shape.
- * This type itself is a plain value, not something registered as a bean directly - core or a module
- * bundles every rule it needs into one {@link AuthorizedUrlMatchers} bean instead (see that
- * interface's javadoc for the registration mechanics and why it is one bean per module, not one per
- * rule). {@link WebSecurityConfig} gathers every such bean once, when its
- * {@link OpenmrsAuthorizationFilter} bean is built, not re-queried per request. That is safe
- * because loading or unloading a module fully refreshes the Spring context anyway (and
- * {@link RefreshableDelegatingFilterProxy} makes sure the {@code web.xml} seat that filter occupies
- * picks up the freshly-rebuilt bean rather than the one from before the refresh), so a stale rule
- * from an unloaded module, or a missing rule from one loaded afterward, cannot persist past that
- * refresh.
+ * Counterpart rather than equivalent, in one respect that matters when deciding where to put a
+ * check: these rules are enforced by {@link OpenmrsAuthorizationFilter}, which runs after
+ * {@code ModuleFilter}, so a module filter that completes a request without continuing the chain
+ * skips them (see that class's javadoc). A privilege that has to hold whatever else is installed
+ * belongs on the service method; a URL rule is the right tool for narrowing access further, not for
+ * being the only thing standing in the way. This type itself is a plain value, not something
+ * registered as a bean directly - core or a module bundles every rule it needs into one
+ * {@link AuthorizedUrlMatchers} bean instead (see that interface's javadoc for the registration
+ * mechanics and why it is one bean per module, not one per rule). {@link WebSecurityConfig} gathers
+ * every such bean once, when its {@link OpenmrsAuthorizationFilter} bean is built, not re-queried
+ * per request. That is safe because loading or unloading a module fully refreshes the Spring
+ * context anyway (and {@link RefreshableDelegatingFilterProxy} makes sure the {@code web.xml} seat
+ * that filter occupies picks up the freshly-rebuilt bean rather than the one from before the
+ * refresh), so a stale rule from an unloaded module, or a missing rule from one loaded afterward,
+ * cannot persist past that refresh.
  * <p>
  * {@link #requestMatchers(String...)} is the intended way to build one: it returns a {@link Rule} -
  * itself a plain {@link RequestMatcher}, reusable anywhere one is expected, not a separate
@@ -76,8 +80,11 @@ public interface AuthorizedUrlMatcher {
 	AuthorizationManager<RequestAuthorizationContext> getAuthorizationManager();
 
 	/**
-	 * @param patterns one or more Ant-style path patterns (e.g. {@code "/moduleServlet/myModule/**"}),
-	 *            relative to the servlet context; a request matches if any one of them does
+	 * @param patterns one or more {@code PathPattern} path patterns (e.g.
+	 *            {@code "/moduleServlet/myModule/**"}), relative to the servlet context; a request
+	 *            matches if any one of them does. Parsed by {@code PathPatternParser}, so {@code **}
+	 *            may appear only once and only at the start or end of a pattern, and URI template
+	 *            variables ({@code "/a/{id}/b"}) are supported
 	 * @return a {@link Rule} for the given patterns, ready to be turned into a
 	 *         {@link AuthorizedUrlMatcher} by naming the authorization check that governs it
 	 */
@@ -114,12 +121,12 @@ public interface AuthorizedUrlMatcher {
 		}
 
 		/**
-		 * @param authority the privilege name required, checked via
-		 *            {@link org.springframework.security.core.Authentication#getAuthorities()}
+		 * @param authority the privilege name required, resolved through
+		 *            {@code Context.hasPrivilege(String)} (see {@link #factory()})
 		 * @return a rule requiring the current user hold {@code authority}
 		 */
 		default AuthorizedUrlMatcher hasAuthority(String authority) {
-			return access(AuthorityAuthorizationManager.hasAuthority(authority));
+			return access(factory().hasAuthority(authority));
 		}
 
 		/**
@@ -127,49 +134,41 @@ public interface AuthorizedUrlMatcher {
 		 * @return a rule requiring the current user hold at least one of {@code authorities}
 		 */
 		default AuthorizedUrlMatcher hasAnyAuthority(String... authorities) {
-			return access(AuthorityAuthorizationManager.hasAnyAuthority(authorities));
+			return access(factory().hasAnyAuthority(authorities));
 		}
 
 		/**
 		 * @param authorities the privilege names, every one of which is required
 		 * @return a rule requiring the current user hold every one of {@code authorities}
 		 */
-		@SuppressWarnings("unchecked")
 		default AuthorizedUrlMatcher hasAllAuthorities(String... authorities) {
-			return access(
-			    AuthorizationManagers.allOf(Arrays.stream(authorities)
-			            .map(authority -> (AuthorizationManager<RequestAuthorizationContext>) AuthorityAuthorizationManager
-			                    .<RequestAuthorizationContext> hasAuthority(authority))
-			            .toArray(AuthorizationManager[]::new)));
+			return access(factory().hasAllAuthorities(authorities));
 		}
 
 		/**
-		 * @param role the role name required (without the {@code ROLE_} prefix), checked via
-		 *            {@link org.springframework.security.core.Authentication#getAuthorities()}
+		 * @param role the role name required, with or without a {@code ROLE_} prefix, resolved through
+		 *            {@code User#hasRole(String)} (see {@link #factory()})
 		 * @return a rule requiring the current user hold {@code role}
 		 */
 		default AuthorizedUrlMatcher hasRole(String role) {
-			return access(AuthorityAuthorizationManager.hasRole(role));
+			return access(factory().hasRole(role));
 		}
 
 		/**
-		 * @param roles the role names (without the {@code ROLE_} prefix), any one of which suffices
+		 * @param roles the role names, with or without a {@code ROLE_} prefix, any one of which suffices
 		 * @return a rule requiring the current user hold at least one of {@code roles}
 		 */
 		default AuthorizedUrlMatcher hasAnyRole(String... roles) {
-			return access(AuthorityAuthorizationManager.hasAnyRole(roles));
+			return access(factory().hasAnyRole(roles));
 		}
 
 		/**
-		 * @param roles the role names (without the {@code ROLE_} prefix), every one of which is required
+		 * @param roles the role names, with or without a {@code ROLE_} prefix, every one of which is
+		 *            required
 		 * @return a rule requiring the current user hold every one of {@code roles}
 		 */
-		@SuppressWarnings("unchecked")
 		default AuthorizedUrlMatcher hasAllRoles(String... roles) {
-			return access(AuthorizationManagers.allOf(Arrays.stream(roles)
-			        .map(role -> (AuthorizationManager<RequestAuthorizationContext>) AuthorityAuthorizationManager
-			                .<RequestAuthorizationContext> hasRole(role))
-			        .toArray(AuthorizationManager[]::new)));
+			return access(factory().hasAllRoles(roles));
 		}
 
 		/**
@@ -189,6 +188,17 @@ public interface AuthorizedUrlMatcher {
 		 *            {@code Context.hasPrivilege(String)} parity
 		 * @return a rule requiring {@code manager} to grant access
 		 */
+		/**
+		 * @return the OpenMRS semantics behind the named checks above, shared with
+		 *         {@code @PreAuthorize}/{@code @PostAuthorize} (see
+		 *         {@code OpenmrsSecurityConfig#methodSecurityExpressionHandler}) so a privilege or role
+		 *         name means the same thing whether it guards a URL or a service method. Built per call,
+		 *         which happens while rules are being assembled at startup, not per request.
+		 */
+		private static OpenmrsAuthorizationManagerFactory<RequestAuthorizationContext> factory() {
+			return new OpenmrsAuthorizationManagerFactory<>();
+		}
+
 		default AuthorizedUrlMatcher access(AuthorizationManager<RequestAuthorizationContext> manager) {
 			RequestMatcher self = this;
 			return new AuthorizedUrlMatcher() {

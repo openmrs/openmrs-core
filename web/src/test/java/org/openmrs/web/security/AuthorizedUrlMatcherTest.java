@@ -21,17 +21,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Unit tests for {@link AuthorizedUrlMatcher}'s fluent methods themselves - {@code permitAll()},
- * {@code denyAll()}, {@code hasAuthority(...)}, {@code hasAnyAuthority(...)},
- * {@code hasAllAuthorities(...)}, {@code hasRole(...)}, {@code hasAnyRole(...)},
- * {@code hasAllRoles(...)}, and {@code authenticated()}, mirroring every terminal method Spring's
- * own {@code AuthorizeHttpRequestsConfigurer.AuthorizedUrl} offers via {@code requestMatchers(...)}
- * that has a meaningful equivalent against the single token type OpenMRS ever installs
- * ({@code OpenmrsAuthenticationToken}) - each wired up to the Spring Security
- * {@link AuthorizationManager} it claims to. Also covers that
- * {@link AuthorizedUrlMatcher#requestMatchers(String...)} matches any one of several patterns. See
- * {@link OpenmrsAuthorizationManagerTest} for how multiple rules combine, which is orthogonal to
- * what a single rule's own decision is.
+ * Unit tests for the {@link AuthorizedUrlMatcher} fluent methods that decide purely from the
+ * {@link Authentication} handed to them - {@code permitAll()}, {@code denyAll()},
+ * {@code authenticated()} and {@code access(...)} - plus the pattern matching of
+ * {@link AuthorizedUrlMatcher#requestMatchers(String...)}.
+ * <p>
+ * {@code hasAuthority(...)}, {@code hasAnyAuthority(...)}, {@code hasAllAuthorities(...)},
+ * {@code hasRole(...)}, {@code hasAnyRole(...)} and {@code hasAllRoles(...)} are covered by
+ * {@link AuthorizedUrlMatcherPrivilegeRuleTest} instead: they answer from the current thread's
+ * {@code UserContext} rather than the authority set, so they need a real OpenMRS context and cannot
+ * be driven by a hand-built token here. See {@link OpenmrsAuthorizationManagerTest} for how
+ * multiple rules combine, which is orthogonal to what a single rule's own decision is.
  */
 class AuthorizedUrlMatcherTest {
 
@@ -46,67 +46,9 @@ class AuthorizedUrlMatcherTest {
 	void denyAll_shouldDenyEvenWhenAuthenticated() {
 		AuthorizedUrlMatcher rule = AuthorizedUrlMatcher.requestMatchers("/locked/**").denyAll();
 
-		assertFalse(decide(rule, "/locked/x", "Anything"));
-	}
+		Authentication authenticated = new TestingAuthenticationToken("user", "pw", "Anything");
 
-	@Test
-	void hasAuthority_shouldGrantWhenTheAuthorityIsHeld() {
-		AuthorizedUrlMatcher rule = AuthorizedUrlMatcher.requestMatchers("/admin/**").hasAuthority("Manage Something");
-
-		assertTrue(decide(rule, "/admin/x", "Manage Something"));
-	}
-
-	@Test
-	void hasAuthority_shouldDenyWhenTheAuthorityIsNotHeld() {
-		AuthorizedUrlMatcher rule = AuthorizedUrlMatcher.requestMatchers("/admin/**").hasAuthority("Manage Something");
-
-		assertFalse(decide(rule, "/admin/x", "Something Else"));
-	}
-
-	@Test
-	void hasAnyAuthority_shouldGrantWhenAtLeastOneIsHeld() {
-		AuthorizedUrlMatcher rule = AuthorizedUrlMatcher.requestMatchers("/admin/**").hasAnyAuthority("A", "B");
-
-		assertTrue(decide(rule, "/admin/x", "B"));
-	}
-
-	@Test
-	void hasAnyAuthority_shouldDenyWhenNoneAreHeld() {
-		AuthorizedUrlMatcher rule = AuthorizedUrlMatcher.requestMatchers("/admin/**").hasAnyAuthority("A", "B");
-
-		assertFalse(decide(rule, "/admin/x", "C"));
-	}
-
-	@Test
-	void hasAllAuthorities_shouldGrantOnlyWhenEveryOneIsHeld() {
-		AuthorizedUrlMatcher rule = AuthorizedUrlMatcher.requestMatchers("/admin/**").hasAllAuthorities("A", "B");
-
-		assertFalse(decide(rule, "/admin/x", "A"));
-		assertTrue(decide(rule, "/admin/x", "A", "B"));
-	}
-
-	@Test
-	void hasRole_shouldCheckForTheRolePrefixedAuthorityNotTheBareRoleName() {
-		AuthorizedUrlMatcher rule = AuthorizedUrlMatcher.requestMatchers("/admin/**").hasRole("Nurse");
-
-		assertFalse(decide(rule, "/admin/x", "Nurse"));
-		assertTrue(decide(rule, "/admin/x", "ROLE_Nurse"));
-	}
-
-	@Test
-	void hasAnyRole_shouldGrantWhenAtLeastOneIsHeld() {
-		AuthorizedUrlMatcher rule = AuthorizedUrlMatcher.requestMatchers("/admin/**").hasAnyRole("Doctor", "Nurse");
-
-		assertTrue(decide(rule, "/admin/x", "ROLE_Nurse"));
-		assertFalse(decide(rule, "/admin/x", "ROLE_Clerk"));
-	}
-
-	@Test
-	void hasAllRoles_shouldGrantOnlyWhenEveryOneIsHeld() {
-		AuthorizedUrlMatcher rule = AuthorizedUrlMatcher.requestMatchers("/admin/**").hasAllRoles("Doctor", "Nurse");
-
-		assertFalse(decide(rule, "/admin/x", "ROLE_Doctor"));
-		assertTrue(decide(rule, "/admin/x", "ROLE_Doctor", "ROLE_Nurse"));
+		assertFalse(rule.getAuthorizationManager().authorize(() -> authenticated, contextFor("/locked/x")).isGranted());
 	}
 
 	@Test
@@ -136,12 +78,6 @@ class AuthorizedUrlMatcherTest {
 		AuthorizedUrlMatcher rule = AuthorizedUrlMatcher.requestMatchers("/admin/**").access(custom);
 
 		assertFalse(rule.getAuthorizationManager().authorize(() -> null, contextFor("/admin/x")).isGranted());
-	}
-
-	private static boolean decide(AuthorizedUrlMatcher rule, String path, String... authorities) {
-		Authentication authentication = new TestingAuthenticationToken("user", "pw", authorities);
-		return rule.getRequestMatcher().matches(new MockHttpServletRequest("GET", path))
-		        && rule.getAuthorizationManager().authorize(() -> authentication, contextFor(path)).isGranted();
 	}
 
 	private static RequestAuthorizationContext contextFor(String path) {

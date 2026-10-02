@@ -230,17 +230,18 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	}
 
 	/**
-	 * Checks if the user has a given role. Role name comparisons are case sensitive.
+	 * Checks if the user has a given role. Role name comparisons are not case sensitive.
 	 * <p>
 	 * <strong>Should</strong> return true if the user has the given role<br/>
-	 * <strong>Should</strong> return false if the user does not have the given role
+	 * <strong>Should</strong> return false if the user does not have the given role<br/>
+	 * <strong>Should</strong> be case insensitive
 	 *
 	 * @param roleName the name of the role to check
 	 * @return true if the user has the given role, else false
 	 */
 	public boolean containsRole(String roleName) {
 		for (Role role : getAllRoles()) {
-			if (role.getRole().equals(roleName)) {
+			if (role.getRole().equalsIgnoreCase(roleName)) {
 				return true;
 			}
 		}

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -305,7 +306,11 @@ public class UserContext implements Serializable {
 	}
 
 	/**
-	 * Will remove one instance of privilege from the privileges that are currently proxied
+	 * Will remove one instance of privilege from the privileges that are currently proxied. The name is
+	 * matched case-insensitively, like every other privilege check, but only the first match is
+	 * removed: {@link org.openmrs.aop.AuthorizationAdvice} brackets each service call with an
+	 * add/remove pair, so nested calls legitimately stack the same privilege and one remove must undo
+	 * exactly one add.
 	 *
 	 * @param privilege Privilege to remove in string form
 	 */
@@ -315,7 +320,15 @@ public class UserContext implements Serializable {
 		}
 
 		log.debug("Removing privilege: {}", privilege);
-		proxies.remove(privilege);
+		// Collections.synchronizedList requires manual synchronization to iterate
+		synchronized (proxies) {
+			for (Iterator<String> i = proxies.iterator(); i.hasNext();) {
+				if (i.next().equalsIgnoreCase(privilege)) {
+					i.remove();
+					return;
+				}
+			}
+		}
 	}
 
 	/**
@@ -491,7 +504,7 @@ public class UserContext implements Serializable {
 			log.debug("Checking '{}' against proxies: {}", privilege, proxies);
 			// check proxied privileges; ArrayList so we have a consistent view
 			for (String s : new ArrayList<>(proxies)) {
-				if (s.equals(privilege)) {
+				if (s.equalsIgnoreCase(privilege)) {
 					notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 					return true;
 				}
@@ -507,19 +520,12 @@ public class UserContext implements Serializable {
 	 * Resolves whether the current user (authenticated or anonymous) holds the given privilege by
 	 * consulting the per-role privilege cache instead of recursively re-expanding the role graph on
 	 * every call. Proxy privileges are handled separately by {@link #hasPrivilege(String)}.
-	 * <p>
-	 * Also flags, via {@link RolePrivilegeCache#warnIfUnregistered(String)}, a privilege name with no
-	 * corresponding {@link org.openmrs.Privilege} row - purely diagnostic, this never changes whether
-	 * the privilege is granted.
 	 *
 	 * @param privilege the privilege to check
 	 * @return true if the privilege is granted
 	 */
 	private boolean resolvePrivilege(String privilege) {
 		RolePrivilegeCache cache = getRolePrivilegeCache();
-		if (cache != null) {
-			cache.warnIfUnregistered(privilege);
-		}
 
 		// if a user has logged in, check their privileges
 		if (isAuthenticated()) {

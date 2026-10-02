@@ -12,6 +12,7 @@ package org.openmrs.api.cache;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -21,15 +22,23 @@ import java.util.Set;
  * superuser status. It is the cached value used by {@link RolePrivilegeCache} to answer privilege
  * checks without re-expanding the role graph on every call.
  * <p>
- * Privilege matching here - {@link #containsPrivilege(String)} and
- * {@link #equals(Object)}/{@link #hashCode()} - is exact, case-sensitive string comparison,
- * matching Spring Security's own built-in {@code hasAuthority(...)}/{@code hasRole(...)} SpEL
- * expressions (which compare {@code GrantedAuthority#getAuthority()} the same way) and
- * {@code @PreAuthorize}'s {@code hasPermission(null, '&lt;privilege&gt;')} form, backed by
- * {@link org.openmrs.security.OpenmrsPermissionEvaluator}. As of 3.0.0, this is also how legacy
- * {@code @Authorized} and {@code Context#hasPrivilege(String)} match, a deliberate break from the
- * case-insensitive matching {@link org.openmrs.Role#hasPrivilege(String)} still performs on its own
- * (unflattened, uncached) comparison - see that method's javadoc.
+ * Privilege comparison in OpenMRS is case-insensitive (see
+ * {@link org.openmrs.Role#hasPrivilege(String)}), so {@link #containsPrivilege(String)} and
+ * {@link #equals(Object)}/{@link #hashCode()} compare {@link #normalize(String) normalized} names.
+ * Every privilege check in the system inherits that: {@code @Authorized}, and the
+ * {@code @PreAuthorize} forms {@code hasPermission(null, '&lt;privilege&gt;')} and
+ * {@code hasAuthority('&lt;privilege&gt;')}, all resolve through
+ * {@code Context#hasPrivilege(String)} and so arrive here (see
+ * {@link org.openmrs.security.OpenmrsAuthorizationManagerFactory} for the latter - routing the
+ * built-in expression through {@code Context} rather than the authority set is what lets it be
+ * case-insensitive at all, since Spring's own {@code hasAuthority} would otherwise compare
+ * {@code GrantedAuthority#getAuthority()} by exact string equality).
+ * <p>
+ * {@link #getPrivilegeNames()} nonetheless reports the names in the casing they were supplied in,
+ * not normalized. Matching does not need the original, but
+ * {@code OpenmrsAuthenticationToken#getAuthorities()} turns these into
+ * {@code SimpleGrantedAuthority} names for generic Spring Security tooling to read, and lower-cased
+ * authorities there would misreport a privilege's real-world spelling.
  *
  * @since 3.0.0, 2.9.0, 2.8.9
  */
@@ -37,24 +46,31 @@ public final class RolePrivileges implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/** Names as supplied, for display and for the authority view; never used for matching. */
 	private final Set<String> privilegeNames;
+
+	/** The same names {@link #normalize(String) normalized}; what every comparison here uses. */
+	private final Set<String> normalizedNames;
 
 	private final boolean grantsSuperuser;
 
 	/**
 	 * @param privilegeNames privilege names granted by the role and its inherited closure; stored as
-	 *            supplied, null elements ignored
+	 *            supplied and additionally normalized for matching, null elements ignored
 	 * @param grantsSuperuser whether the role or any inherited role confers superuser status
 	 */
 	public RolePrivileges(Set<String> privilegeNames, boolean grantsSuperuser) {
 		Objects.requireNonNull(privilegeNames, "privilegeNames must not be null");
-		Set<String> original = new HashSet<>();
+		Set<String> supplied = new HashSet<>();
+		Set<String> normalized = new HashSet<>();
 		for (String privilegeName : privilegeNames) {
 			if (privilegeName != null) {
-				original.add(privilegeName);
+				supplied.add(privilegeName);
+				normalized.add(normalize(privilegeName));
 			}
 		}
-		this.privilegeNames = Collections.unmodifiableSet(original);
+		this.privilegeNames = Collections.unmodifiableSet(supplied);
+		this.normalizedNames = Collections.unmodifiableSet(normalized);
 		this.grantsSuperuser = grantsSuperuser;
 	}
 
@@ -66,18 +82,31 @@ public final class RolePrivileges implements Serializable {
 	}
 
 	/**
-	 * @param privilege the privilege name to test (compared case-sensitively)
+	 * @param privilege the privilege name to test (compared case-insensitively)
 	 * @return true if the role's closure grants the given privilege
 	 */
 	public boolean containsPrivilege(String privilege) {
-		return privilege != null && privilegeNames.contains(privilege);
+		return privilege != null && normalizedNames.contains(normalize(privilege));
 	}
 
 	/**
-	 * @return an unmodifiable view of the privilege names in this closure
+	 * @return an unmodifiable view of the privilege names in this closure, in their original casing
+	 *         (see this class's javadoc for why matching does not use them)
 	 */
 	public Set<String> getPrivilegeNames() {
 		return privilegeNames;
+	}
+
+	/**
+	 * Case-normalizes a privilege name for lookup. Uses {@link Locale#ROOT} so the normalization is
+	 * stable across server locales.
+	 *
+	 * @param privilege the privilege name to normalize; must not be null
+	 * @return the lower-cased privilege name
+	 * @throws NullPointerException if <code>privilege</code> is null
+	 */
+	public static String normalize(String privilege) {
+		return privilege.toLowerCase(Locale.ROOT);
 	}
 
 	@Override
@@ -89,11 +118,11 @@ public final class RolePrivileges implements Serializable {
 			return false;
 		}
 		RolePrivileges other = (RolePrivileges) o;
-		return grantsSuperuser == other.grantsSuperuser && privilegeNames.equals(other.privilegeNames);
+		return grantsSuperuser == other.grantsSuperuser && normalizedNames.equals(other.normalizedNames);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(privilegeNames, grantsSuperuser);
+		return Objects.hash(normalizedNames, grantsSuperuser);
 	}
 }

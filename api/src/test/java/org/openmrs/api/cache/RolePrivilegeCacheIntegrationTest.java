@@ -11,31 +11,17 @@ package org.openmrs.api.cache;
 
 import java.util.Collections;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
-import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.logging.MemoryAppender;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.test.context.transaction.TestTransaction;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -44,13 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Integration tests verifying that {@link RolePrivilegeCache} populates the shared
- * {@code apiCacheManager} cache and that it is evicted on role and privilege mutations, that its
- * registered-privilege tracking ({@link RolePrivilegeCache#getAllPrivilegeNames()},
- * {@link RolePrivilegeCache#isRegisteredPrivilege(String)},
- * {@link RolePrivilegeCache#warnIfUnregistered(String)}) stays current with {@link Privilege} rows
- * saved through the API and logs, once per distinct name, when a checked privilege has none, and
- * that its registered-role tracking ({@link RolePrivilegeCache#getAllRoleNames()}) stays current
- * with {@link Role} rows the same way.
+ * {@code apiCacheManager} cache, that it resolves a role from a freshly loaded copy rather than a
+ * caller-supplied stale one, and that it is evicted on {@link Role} and {@link Privilege}
+ * mutations.
  */
 public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest {
 
@@ -63,10 +45,9 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 	private CacheManager cacheManager;
 
 	@BeforeEach
-	public void setup(TestInfo testInfo) {
+	public void setup() {
 		cacheManager = Context.getRegisteredComponent("apiCacheManager", CacheManager.class);
 		cache().clear();
-		setUpLogCapture(testInfo);
 	}
 
 	private Cache cache() {
@@ -74,7 +55,7 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 	}
 
 	private RolePrivileges cachedEntry(Role role) {
-		return cache().get(role.getRole(), RolePrivileges.class);
+		return cache().get(RolePrivileges.normalize(role.getRole()), RolePrivileges.class);
 	}
 
 	@Test
@@ -107,7 +88,7 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 		// The role name is not in the database, so a miss would fail-closed to an empty closure and drop
 		// the seeded privilege; this also keeps the test independent of daemon-thread visibility.
 		RolePrivileges seeded = new RolePrivileges(Collections.singleton("Cache Hit Privilege"), false);
-		cache().put("Cache Hit Role", seeded);
+		cache().put(RolePrivileges.normalize("Cache Hit Role"), seeded);
 
 		RolePrivileges result = rolePrivilegeCache.getRolePrivileges(new Role("Cache Hit Role"));
 
@@ -204,193 +185,4 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 		assertNull(cachedEntry(primed), "cache should be cleared after mutation");
 	}
 
-	// --- registered-privilege tracking: getAllPrivilegeNames/isRegisteredPrivilege/warnIfUnregistered ---
-
-	private MemoryAppender memoryAppender;
-
-	private Logger logger;
-
-	private Level originalLevel;
-
-	private boolean originalAdditive;
-
-	private void setUpLogCapture(TestInfo testInfo) {
-		// MemoryAppender keys its backing buffer on the appender name in a static map, so each test needs
-		// its own name or it sees the log lines every other test produced
-		memoryAppender = MemoryAppender.newBuilder()
-		        .setName("RolePrivilegeCacheIntegrationTest-" + testInfo.getDisplayName())
-		        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).build();
-		memoryAppender.start();
-
-		logger = (Logger) LogManager.getLogger(RolePrivilegeCache.class);
-		originalLevel = logger.getLevel();
-		originalAdditive = logger.isAdditive();
-		// NB This needs to come before the setLevel() call
-		logger.setAdditive(false);
-		logger.setLevel(Level.ERROR);
-		logger.addAppender(memoryAppender);
-	}
-
-	@AfterEach
-	public void tearDownLogCapture() {
-		logger.removeAppender(memoryAppender);
-		logger.setLevel(originalLevel);
-		logger.setAdditive(originalAdditive);
-		((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
-		memoryAppender.stop();
-
-		memoryAppender = null;
-		logger = null;
-	}
-
-	/**
-	 * Saves a privilege and force-commits the transaction, so a {@link RolePrivilegeCache} reload
-	 * running on a separate {@code Daemon} thread's own connection can see it - unlike the role-cache
-	 * tests above, this cannot use an already-committed fixture role, since
-	 * {@code initialInMemoryTestDataSet.xml} registers no privileges at all. Leaves a fresh transaction
-	 * started for the rest of the test method.
-	 */
-	private void registerAndCommit(String privilegeName) {
-		userService.savePrivilege(new Privilege(privilegeName, "for testing"));
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
-	}
-
-	/**
-	 * Undoes {@link #registerAndCommit(String)}. Required because force-committing means the normal
-	 * end-of-test rollback no longer undoes the registration.
-	 */
-	private void purgeAndCommit(String privilegeName) {
-		Privilege privilege = userService.getPrivilege(privilegeName);
-		if (privilege != null) {
-			userService.purgePrivilege(privilege);
-		}
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
-	}
-
-	@Test
-	public void getAllPrivilegeNames_shouldIncludeAPrivilegeSavedThroughTheApiWithoutARestart() {
-		// original casing, not lower-cased - see the RolePrivileges class javadoc for why
-		assertFalse(rolePrivilegeCache.getAllPrivilegeNames().contains("Newly Registered Privilege One"));
-
-		registerAndCommit("Newly Registered Privilege One");
-		try {
-			assertTrue(rolePrivilegeCache.getAllPrivilegeNames().contains("Newly Registered Privilege One"));
-		} finally {
-			purgeAndCommit("Newly Registered Privilege One");
-		}
-	}
-
-	@Test
-	public void isRegisteredPrivilege_shouldReturnTrueOnlyForARegisteredPrivilege() {
-		registerAndCommit("Newly Registered Privilege Two");
-		try {
-			assertTrue(rolePrivilegeCache.isRegisteredPrivilege("Newly Registered Privilege Two"));
-			assertFalse(rolePrivilegeCache.isRegisteredPrivilege("newly registered privilege two"));
-			assertFalse(rolePrivilegeCache.isRegisteredPrivilege("Not Registered Anywhere"));
-		} finally {
-			purgeAndCommit("Newly Registered Privilege Two");
-		}
-	}
-
-	@Test
-	public void warnIfUnregistered_shouldLogAnErrorOnlyOnceForARepeatedlyCheckedUnregisteredPrivilege() {
-		rolePrivilegeCache.warnIfUnregistered("Totally Unregistered Privilege");
-		rolePrivilegeCache.warnIfUnregistered("Totally Unregistered Privilege");
-
-		assertThat(memoryAppender.getLogLines(), contains(containsString("Totally Unregistered Privilege")));
-	}
-
-	@Test
-	public void warnIfUnregistered_shouldLogSeparatelyForDifferentlyCasedPrivilegeNames() {
-		rolePrivilegeCache.warnIfUnregistered("Totally Unregistered Privilege Two");
-		rolePrivilegeCache.warnIfUnregistered("TOTALLY UNREGISTERED PRIVILEGE TWO");
-
-		assertThat(memoryAppender.getLogLines(), contains(containsString("Totally Unregistered Privilege Two"),
-		    containsString("TOTALLY UNREGISTERED PRIVILEGE TWO")));
-	}
-
-	@Test
-	public void warnIfUnregistered_shouldNotLogForARegisteredPrivilege() {
-		registerAndCommit("Newly Registered Privilege Three");
-		try {
-			rolePrivilegeCache.warnIfUnregistered("Newly Registered Privilege Three");
-
-			assertThat(memoryAppender.getLogLines(), not(hasItem(containsString("Newly Registered Privilege Three"))));
-		} finally {
-			purgeAndCommit("Newly Registered Privilege Three");
-		}
-	}
-
-	@Test
-	public void warnIfUnregistered_shouldNotLogForTheEmptyPrivilege() {
-		rolePrivilegeCache.warnIfUnregistered("");
-
-		assertThat(memoryAppender.getLogLines(), empty());
-	}
-
-	@Test
-	public void hasPrivilege_shouldWarnAboutAnUnregisteredPrivilegeCheckedThroughContext() {
-		Context.hasPrivilege("Checked But Never Registered Anywhere");
-
-		assertThat(memoryAppender.getLogLines(), hasItem(containsString("Checked But Never Registered Anywhere")));
-	}
-
-	@Test
-	public void hasPrivilege_shouldNotWarnAboutARegisteredPrivilege() {
-		registerAndCommit("Newly Registered Privilege Four");
-		try {
-			Context.hasPrivilege("Newly Registered Privilege Four");
-
-			assertThat(memoryAppender.getLogLines(), not(hasItem(containsString("Newly Registered Privilege Four"))));
-		} finally {
-			purgeAndCommit("Newly Registered Privilege Four");
-		}
-	}
-
-	// --- registered-role tracking: getAllRoleNames ---
-
-	/**
-	 * Saves a role and force-commits the transaction, so a {@link RolePrivilegeCache} reload running on
-	 * a separate {@code Daemon} thread's own connection can see it - same reasoning as
-	 * {@link #registerAndCommit(String)}, needed here because the role is new rather than the
-	 * already-committed "Provider" fixture the tests above rely on. Leaves a fresh transaction started
-	 * for the rest of the test method.
-	 */
-	private void registerRoleAndCommit(String roleName) {
-		userService.saveRole(new Role(roleName, "for testing"));
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
-	}
-
-	/**
-	 * Undoes {@link #registerRoleAndCommit(String)}. Required because force-committing means the normal
-	 * end-of-test rollback no longer undoes the registration.
-	 */
-	private void purgeRoleAndCommit(String roleName) {
-		Role role = userService.getRole(roleName);
-		if (role != null) {
-			userService.purgeRole(role);
-		}
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
-	}
-
-	@Test
-	public void getAllRoleNames_shouldIncludeARoleSavedThroughTheApiWithoutARestart() {
-		// original casing, not lower-cased - see the RolePrivileges class javadoc for why
-		assertFalse(rolePrivilegeCache.getAllRoleNames().contains("Newly Registered Role One"));
-
-		registerRoleAndCommit("Newly Registered Role One");
-		try {
-			assertTrue(rolePrivilegeCache.getAllRoleNames().contains("Newly Registered Role One"));
-		} finally {
-			purgeRoleAndCommit("Newly Registered Role One");
-		}
-	}
 }

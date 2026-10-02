@@ -50,6 +50,7 @@ import org.openmrs.util.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -1811,4 +1812,40 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.getPerson().setGender("M");
 		return userService.createUser(u, "Openmr5xy");
 	}
+
+	/**
+	 * Pins the superuser-assignment guard in {@code UserServiceImpl.checkSuperUserPrivilege}, which
+	 * compares the role name case-insensitively. It has to: a role differing from
+	 * {@link RoleConstants#SUPERUSER} only in case still confers superuser status, since
+	 * {@code RolePrivilegeCache} resolves that name with {@code equalsIgnoreCase}. Comparing exactly
+	 * here would let such a role be handed out without {@code ASSIGN_SYSTEM_DEVELOPER_ROLE}.
+	 */
+	@Test
+	public void saveUser_shouldRequireAssignSystemDeveloperRoleForADifferentlyCasedSuperuserRole() throws Exception {
+		// an already-valid user, because RequiredDataAdvice validates a save* call before the service
+		// method body runs - a hand-built User fails validation long before reaching the guard
+		User toSave = userService.getUser(1);
+		// drop admin's own exact-case System Developer role first, so the differently-cased one added
+		// below is the only thing that can trip the guard - otherwise the test passes either way
+		toSave.getRoles().clear();
+		toSave.addRole(new Role(RoleConstants.SUPERUSER.toUpperCase()));
+
+		// a principal with no roles, so it lacks ASSIGN_SYSTEM_DEVELOPER_ROLE. EDIT_USERS satisfies
+		// saveUser's own requirePrivilege and @Authorized; GET_GLOBAL_PROPERTIES is what the validator
+		// run by RequiredDataAdvice needs before the guard is reached.
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> withCurrentUserAs(new User(), () -> userService.saveUser(toSave)));
+
+			// the role guard, not the privileges one below it - the message arrives as its raw template
+			// here, since the test message source does not interpolate arguments
+			assertThat(exception.getMessage(), containsString("must have the role"));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		}
+	}
+
 }

@@ -40,15 +40,14 @@ public class RolePrivilegeCacheTest {
 	}
 
 	@Test
-	public void computeRolePrivileges_shouldMatchPrivilegesCaseSensitively() {
+	public void computeRolePrivileges_shouldMatchPrivilegesCaseInsensitively() {
 		Role role = new Role("Clerk");
 		role.addPrivilege(new Privilege("View Patients"));
 
 		RolePrivileges result = RolePrivilegeCache.computeRolePrivileges(role);
 
-		assertTrue(result.containsPrivilege("View Patients"));
-		assertFalse(result.containsPrivilege("VIEW PATIENTS"));
-		assertFalse(result.containsPrivilege("view patients"));
+		assertTrue(result.containsPrivilege("VIEW PATIENTS"));
+		assertTrue(result.containsPrivilege("view patients"));
 	}
 
 	@Test

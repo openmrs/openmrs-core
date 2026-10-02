@@ -11,9 +11,6 @@ package org.openmrs.web.security;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -34,26 +31,6 @@ class AuthorizedUrlMatchersTest {
 		        .hasAuthority("Manage Something").requestMatchers("/reports/**").hasAnyRole("Doctor", "Nurse").build();
 
 		assertEquals(2, matchers.getAuthorizedUrlMatchers().size());
-	}
-
-	@Test
-	void builder_hasAuthority_shouldMatchTheSameWayAsMatcherDoes() {
-		AuthorizedUrlMatchers matchers = AuthorizedUrlMatchers.builder().requestMatchers("/admin/**")
-		        .hasAuthority("Manage Something").build();
-		AuthorizedUrlMatcher rule = matchers.getAuthorizedUrlMatchers().get(0);
-
-		assertTrue(decide(rule, "/admin/x", "Manage Something"));
-		assertFalse(decide(rule, "/admin/x", "Something Else"));
-	}
-
-	@Test
-	void builder_hasAnyRole_shouldMatchTheSameWayAsMatcherDoes() {
-		AuthorizedUrlMatchers matchers = AuthorizedUrlMatchers.builder().requestMatchers("/reports/**")
-		        .hasAnyRole("Doctor", "Nurse").build();
-		AuthorizedUrlMatcher rule = matchers.getAuthorizedUrlMatchers().get(0);
-
-		assertTrue(decide(rule, "/reports/x", "ROLE_Nurse"));
-		assertFalse(decide(rule, "/reports/x", "ROLE_Clerk"));
 	}
 
 	@Test
@@ -78,15 +55,5 @@ class AuthorizedUrlMatchersTest {
 		builder.requestMatchers("/reports/**").hasAnyRole("Doctor", "Nurse");
 
 		assertEquals(1, matchers.getAuthorizedUrlMatchers().size());
-	}
-
-	private static boolean decide(AuthorizedUrlMatcher rule, String path, String... authorities) {
-		Authentication authentication = new TestingAuthenticationToken("user", "pw", authorities);
-		return rule.getRequestMatcher().matches(new MockHttpServletRequest("GET", path))
-		        && rule.getAuthorizationManager().authorize(() -> authentication, contextFor(path)).isGranted();
-	}
-
-	private static RequestAuthorizationContext contextFor(String path) {
-		return new RequestAuthorizationContext(new MockHttpServletRequest("GET", path));
 	}
 }

@@ -16,6 +16,8 @@ import java.util.LinkedHashSet;
 
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -30,12 +32,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class RolePrivilegesTest {
 
 	@Test
-	public void containsPrivilege_shouldMatchCaseSensitively() {
+	public void containsPrivilege_shouldMatchCaseInsensitively() {
 		RolePrivileges privileges = new RolePrivileges(Collections.singleton("View Patients"), false);
 
 		assertTrue(privileges.containsPrivilege("View Patients"));
-		assertFalse(privileges.containsPrivilege("VIEW PATIENTS"));
-		assertFalse(privileges.containsPrivilege("view patients"));
+		assertTrue(privileges.containsPrivilege("VIEW PATIENTS"));
+		assertTrue(privileges.containsPrivilege("view patients"));
 		assertFalse(privileges.containsPrivilege("Edit Patients"));
 	}
 
@@ -68,6 +70,18 @@ public class RolePrivilegesTest {
 	}
 
 	@Test
+	public void getPrivilegeNames_shouldReportTheCasingSuppliedNotTheNormalizedForm() {
+		// matching ignores case, but the reported names keep their real spelling, because
+		// OpenmrsAuthenticationToken#getAuthorities() turns these into GrantedAuthority names next to
+		// ROLE_ authorities built from Role#getRole() - which is the role's own casing. Normalizing
+		// only the privilege half would make that one collection inconsistent with itself.
+		RolePrivileges privileges = new RolePrivileges(Collections.singleton("View Patients"), false);
+
+		assertThat(privileges.getPrivilegeNames(), contains("View Patients"));
+		assertTrue(privileges.containsPrivilege("VIEW PATIENTS"));
+	}
+
+	@Test
 	public void getPrivilegeNames_shouldBeUnmodifiable() {
 		RolePrivileges privileges = new RolePrivileges(Collections.singleton("View Patients"), false);
 
@@ -75,21 +89,13 @@ public class RolePrivilegesTest {
 	}
 
 	@Test
-	public void equals_shouldBeInsensitiveToInsertionOrder() {
+	public void equals_shouldBeInsensitiveToInsertionOrderAndCase() {
 		RolePrivileges a = new RolePrivileges(new LinkedHashSet<>(Arrays.asList("View Patients", "Edit Patients")), false);
-		RolePrivileges b = new RolePrivileges(new LinkedHashSet<>(Arrays.asList("Edit Patients", "View Patients")), false);
+		RolePrivileges b = new RolePrivileges(new LinkedHashSet<>(Arrays.asList("EDIT PATIENTS", "VIEW PATIENTS")), false);
 
 		assertEquals(a, b);
 		assertEquals(b, a);
 		assertEquals(a.hashCode(), b.hashCode());
-	}
-
-	@Test
-	public void equals_shouldDistinguishByCase() {
-		RolePrivileges a = new RolePrivileges(Collections.singleton("View Patients"), false);
-		RolePrivileges b = new RolePrivileges(Collections.singleton("VIEW PATIENTS"), false);
-
-		assertNotEquals(a, b);
 	}
 
 	@Test

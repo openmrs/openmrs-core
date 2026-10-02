@@ -16,13 +16,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -86,6 +90,22 @@ class WebSecurityConfigIntegrationTest {
 		};
 
 		mockMvc(simulatedModuleFilterLogin).perform(get("/admin/x")).andExpect(status().isOk());
+	}
+
+	@Test
+	void filterChain_shouldPublishADenialReachingTheOuterChainAsARequestAttribute() throws Exception {
+		// a filter sitting between the two seats fails before openmrsAuthorizationFilter is entered, so
+		// this chain's own ExceptionTranslationFilter handles it - OpenmrsAccessDeniedHandler is wired
+		// there too, so the reason survives here as well
+		AccessDeniedException denial = new AccessDeniedException("Privileges required: Manage Something");
+		Filter failsBeforeAuthorization = (request, response, chain) -> {
+			throw denial;
+		};
+
+		MvcResult result = mockMvc(failsBeforeAuthorization).perform(get("/public/x")).andExpect(status().isForbidden())
+		        .andReturn();
+
+		assertSame(denial, result.getRequest().getAttribute(WebAttributes.ACCESS_DENIED_403));
 	}
 
 	@Test

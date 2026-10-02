@@ -76,6 +76,12 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
  * concurrent-session limits and session-fixation protection, both policy decisions
  * {@link OpenmrsSecurityContextFilter} does not make (and OpenMRS has never enforced); leaving it
  * enabled would add an unrelated, unconfigured session policy on top of the existing one.</li>
+ * <li>{@code exceptionHandling(...)} keeps Spring's default behavior but swaps in
+ * {@link OpenmrsAccessDeniedHandler}, so a denial reaching this chain publishes its
+ * {@code AccessDeniedException} as a request attribute rather than discarding the reason. The same
+ * handler is installed on {@link OpenmrsAuthorizationFilter}'s own
+ * {@code ExceptionTranslationFilter}; this one covers what never gets that far, such as a filter
+ * between the two failing before {@code openmrsAuthorizationFilter} is entered.</li>
  * <li>{@code authorizeHttpRequests(...)} is a blanket {@code permitAll()} here, deliberately - real
  * {@link AuthorizedUrlMatcher} enforcement happens later, in the standalone
  * {@link OpenmrsAuthorizationFilter} registered directly in {@code web.xml} <em>after</em>
@@ -120,6 +126,7 @@ public class WebSecurityConfig {
 		        .logout(AbstractHttpConfigurer::disable).requestCache(AbstractHttpConfigurer::disable)
 		        .servletApi(AbstractHttpConfigurer::disable).sessionManagement(AbstractHttpConfigurer::disable)
 		        .addFilterBefore(openmrsSecurityContextFilter, AuthorizationFilter.class)
+		        .exceptionHandling(exceptions -> exceptions.accessDeniedHandler(new OpenmrsAccessDeniedHandler()))
 		        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
 		return http.build();
 	}

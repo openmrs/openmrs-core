@@ -1076,7 +1076,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * a test grant privileges to a role without persisting them.
 	 */
 	private void setRolePrivilegesInCache(String roleName, String... privileges) {
-		cacheManager.getCache(RolePrivilegeCache.CACHE_NAME).put(roleName,
+		cacheManager.getCache(RolePrivilegeCache.CACHE_NAME).put(RolePrivileges.normalize(roleName),
 		    new RolePrivileges(new HashSet<>(Arrays.asList(privileges)), false));
 	}
 

@@ -36,42 +36,33 @@ import org.springframework.util.StringUtils;
  * {@code Context.userContextHolder}'s own javadoc for why), purely so Spring Security's own
  * machinery has an {@link org.springframework.security.core.Authentication} to evaluate.
  * <p>
- * {@link #getAuthorities()} is a role- and privilege-derived view of the user's authorities, useful
- * for generic Spring Security tooling ({@code hasAuthority(...)}/{@code hasRole(...)} expressions
- * or debug logging). Privilege names become plain authorities; role names become {@code "ROLE_" +}
- * the role name (see {@code ROLE_PREFIX}), matching what Spring's built-in {@code hasRole(...)}/
- * {@code hasAnyRole(...)} expressions look for by default.
+ * {@link #getAuthorities()} is a role- and privilege-derived view of the user's authorities, for
+ * generic Spring Security tooling that reads {@code Authentication#getAuthorities()} directly, and
+ * for debug logging. Privilege names become plain authorities; role names become {@code "ROLE_" +}
+ * the role name (see {@code ROLE_PREFIX}), the spelling Spring's own {@code hasRole(...)}
+ * conventions use. It is <em>not</em> what any OpenMRS authorization check consults:
+ * {@code @Authorized}, {@code hasPermission(null, ...)}, the built-in
+ * {@code hasAuthority(...)}/{@code hasRole(...)} (see {@link OpenmrsAuthorizationManagerFactory})
+ * and {@code AuthorizedUrlMatcher} rules all resolve through {@link Context#hasPrivilege(String)}
+ * or {@link User#hasRole(String)} against the wrapped {@link UserContext} instead.
  * <p>
  * The anonymous/authenticated implicit roles are included (see {@link UserContext#getAllRoles()}),
  * which already flattens role inheritance, so an inherited role's own privileges and its own
- * {@code ROLE_} authority are both present. A superuser is additionally granted every currently
- * registered {@link org.openmrs.Privilege} (see {@link RolePrivilegeCache#getAllPrivilegeNames()})
- * and every registered {@link org.openmrs.Role} (see {@link RolePrivilegeCache#getAllRoleNames()}),
- * not just their own - mirroring {@link User#hasRole(String)}'s own superuser bypass
- * ({@code ignoreSuperUser} defaults to {@code false} there too) for roles, and the same "satisfies
- * any name" reasoning as privileges, since a flat authority set can otherwise only approximate that
- * for names known in advance. Any privilege currently added via
+ * {@code ROLE_} authority are both present. Any privilege currently added via
  * {@link Context#addProxyPrivilege(String)} is included too, read live off
- * {@link UserContext#getProxyPrivileges()} on every call so a privilege added or removed
- * mid-request is reflected immediately, not just what was current when this token was constructed.
- * A {@link Daemon} thread is granted every registered privilege and role unconditionally, mirroring
- * {@link Context#hasPrivilege(String)}'s own Daemon check (independent of
- * {@link org.openmrs.aop.AuthorizationAdvice}'s), before any role is even looked at.
+ * {@link UserContext#getProxyPrivileges()} on every call, so a privilege added or removed
+ * mid-request is reflected immediately rather than only what was current when this token was
+ * constructed.
  * <p>
- * One gap remains against {@link Context#hasPrivilege(String)}: a superuser or Daemon thread is
- * only granted privileges and roles that are actually registered, not literally any string, which a
- * flat authority set cannot represent - see {@link RolePrivilegeCache#warnIfUnregistered(String)}
- * for the diagnostic that covers the privilege half of that gap (there is no role equivalent:
- * unlike a privilege name, a role name is always checked against real {@link org.openmrs.Role}
- * membership, so there is no "checked but never registered" case). Real authorization decisions
- * should still go through {@link Context#hasPrivilege(String)} (used by {@code @Authorized}/
- * {@code AuthorizationAdvice}) or {@link OpenmrsPermissionEvaluator} (used by
- * {@code @PreAuthorize}'s {@code hasPermission(null, ...)} form), both of which delegate to the
- * wrapped {@link UserContext} directly rather than to this collection. Unlike
- * {@code hasAuthority(...)}, {@code hasRole(...)} has no existing OpenMRS mechanism to agree with -
- * there is no role-based {@code @Authorized} equivalent - so "correct" here means matching
- * {@link User#hasRole(String)}'s own semantics, not bringing a built-in Spring expression into line
- * with an existing enforcement path.
+ * It is the user's own holdings and nothing more. In particular it does not express
+ * {@link Context#hasPrivilege(String)}'s superuser and {@link Daemon}-thread bypasses, which grant
+ * any privilege name at all: an enumerable set cannot represent that, because
+ * {@code AuthorityUtils.authorityListToSet} copies the collection by iteration rather than
+ * consulting it, so even listing every registered {@link org.openmrs.Privilege} would still omit
+ * the unregistered names those bypasses cover. Nothing is lost by not trying, since no
+ * authorization check reads this collection (see above) - but a module after the real answer has to
+ * ask {@link Context#hasPrivilege(String)} or {@link User#hasRole(String)} rather than inspect
+ * authorities.
  *
  * @since 3.0.0
  */
@@ -90,7 +81,7 @@ public class OpenmrsAuthenticationToken extends AbstractAuthenticationToken {
 	 * expect - they are sugar for {@code hasAuthority("ROLE_" + role)} using this exact default prefix
 	 * (see {@code GrantedAuthorityDefaults}, not customized anywhere in this codebase).
 	 */
-	private static final String ROLE_PREFIX = "ROLE_";
+	static final String ROLE_PREFIX = "ROLE_";
 
 	private final UserContext userContext;
 
@@ -139,29 +130,16 @@ public class OpenmrsAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	/**
-	 * @return every registered privilege and role if called on a {@link Daemon} thread (see the class
-	 *         javadoc for why); otherwise the current user's role- and privilege-derived authorities,
-	 *         plus every registered privilege and role if the user is a superuser. See the class
-	 *         javadoc for why this is still not a complete substitute for
-	 *         {@link Context#hasPrivilege(String)}
+	 * @return the current user's own roles, the privileges those roles grant (inheritance already
+	 *         flattened), and any privilege currently added via
+	 *         {@link Context#addProxyPrivilege(String)}. Deliberately not a substitute for
+	 *         {@link Context#hasPrivilege(String)} - see the class javadoc
 	 */
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
-		if (Daemon.isDaemonThread()) {
-			// Mirrors Context.hasPrivilege(String), which grants a Daemon thread everything before it
-			// ever looks at UserContext/roles; role membership is irrelevant here for the same reason,
-			// so this skips straight past the role/proxy-privilege walk below.
-			return Collections.unmodifiableSet(everyRegisteredPrivilegeAndRoleAsAuthorities());
-		}
-
 		try {
 			Set<GrantedAuthority> authorities = new HashSet<>();
-			boolean superuser = addRoleAndPrivilegeAuthorities(authorities);
-			if (superuser) {
-				// Mirrors User.hasRole(String)'s own superuser bypass (ignoreSuperUser defaults to
-				// false there too): a superuser "has" every role, not just their own.
-				authorities.addAll(everyRegisteredPrivilegeAndRoleAsAuthorities());
-			}
+			addRoleAndPrivilegeAuthorities(authorities);
 			addProxyPrivilegeAuthorities(authorities);
 			return Collections.unmodifiableSet(authorities);
 		} catch (Exception e) {
@@ -172,38 +150,18 @@ public class OpenmrsAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	/**
-	 * @return every registered privilege and role name (see the class javadoc for why), as authorities
-	 */
-	private Set<GrantedAuthority> everyRegisteredPrivilegeAndRoleAsAuthorities() {
-		Set<GrantedAuthority> authorities = new HashSet<>();
-		for (String privilegeName : getAllPrivilegeNames()) {
-			authorities.add(new SimpleGrantedAuthority(privilegeName));
-		}
-		for (String roleName : getAllRoleNames()) {
-			authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + roleName));
-		}
-		return authorities;
-	}
-
-	/**
 	 * Adds the authorities for the current user's own roles and their privileges (both flattened
 	 * through {@link #getRolePrivileges(Role)}) into {@code authorities}.
-	 *
-	 * @return true if any of those roles grants superuser status
 	 */
-	private boolean addRoleAndPrivilegeAuthorities(Set<GrantedAuthority> authorities) throws Exception {
-		boolean superuser = false;
+	private void addRoleAndPrivilegeAuthorities(Set<GrantedAuthority> authorities) throws Exception {
 		for (Role role : userContext.getAllRoles()) {
-			RolePrivileges rolePrivileges = getRolePrivileges(role);
-			superuser |= rolePrivileges.grantsSuperuser();
-			for (String privilegeName : rolePrivileges.getPrivilegeNames()) {
+			for (String privilegeName : getRolePrivileges(role).getPrivilegeNames()) {
 				authorities.add(new SimpleGrantedAuthority(privilegeName));
 			}
 			if (role.getRole() != null) {
 				authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + role.getRole()));
 			}
 		}
-		return superuser;
 	}
 
 	private void addProxyPrivilegeAuthorities(Set<GrantedAuthority> authorities) {
@@ -221,30 +179,6 @@ public class OpenmrsAuthenticationToken extends AbstractAuthenticationToken {
 			return getRolePrivilegeCache().getRolePrivileges(role);
 		} catch (Exception e) {
 			return RolePrivilegeCache.computeRolePrivileges(role);
-		}
-	}
-
-	/**
-	 * @return every currently registered privilege name, or an empty set if the cache component isn't
-	 *         available (fail safe, same as {@link #getAuthorities()} as a whole)
-	 */
-	private Set<String> getAllPrivilegeNames() {
-		try {
-			return getRolePrivilegeCache().getAllPrivilegeNames();
-		} catch (Exception e) {
-			return Collections.emptySet();
-		}
-	}
-
-	/**
-	 * @return every currently registered role name, or an empty set if the cache component isn't
-	 *         available (fail safe, same as {@link #getAuthorities()} as a whole)
-	 */
-	private Set<String> getAllRoleNames() {
-		try {
-			return getRolePrivilegeCache().getAllRoleNames();
-		} catch (Exception e) {
-			return Collections.emptySet();
 		}
 	}
 

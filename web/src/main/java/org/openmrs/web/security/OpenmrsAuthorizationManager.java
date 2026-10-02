@@ -29,6 +29,10 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
  * {@link AuthorizationManager} - there is nothing left for this class to do beyond finding which
  * rules match and combining their decisions.
  * <p>
+ * Evaluation stops at the first matching rule that denies, so when a request fails more than one
+ * rule the privilege named in the denial (see {@code PrivilegeNamingAuthorizationManager}, which
+ * wraps this class in {@link OpenmrsAuthorizationFilter}) is the one from that first rule.
+ * <p>
  * A request is granted unless some matching rule denies it: no matching rule at all grants access
  * (adding a rule can only narrow access, never be the sole thing granting it), and when more than
  * one rule matches the same path, every one of them must be satisfied. A rule that abstains

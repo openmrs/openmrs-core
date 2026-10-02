@@ -18,10 +18,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.WebAttributes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -64,6 +67,21 @@ class OpenmrsAuthorizationFilterTest {
 		filter.doFilter(request, response, chain);
 
 		assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
+	}
+
+	@Test
+	void doFilter_shouldPublishTheDenialAsARequestAttribute() throws Exception {
+		// OpenmrsAccessDeniedHandler replaces Spring's default, which would answer 403 without ever
+		// looking at the exception - so whatever renders the 403 can report the reason
+		AuthorizedUrlMatchers denyAdmin = AuthorizedUrlMatchers.builder().requestMatchers("/admin/**").denyAll().build();
+		OpenmrsAuthorizationFilter filter = new OpenmrsAuthorizationFilter(List.of(denyAdmin));
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin/x");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+
+		filter.doFilter(request, response, mock(FilterChain.class));
+
+		assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
+		assertInstanceOf(AccessDeniedException.class, request.getAttribute(WebAttributes.ACCESS_DENIED_403));
 	}
 
 	@Test

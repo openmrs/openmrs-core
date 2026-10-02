@@ -27,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Regression test for the ordering bug fixed by {@link OpenmrsSecurityConfig}'s
- * {@code offset = -700} (previously {@code -200}): at {@code -200},
- * {@code @PostAuthorize}/{@code @PostFilter} landed numerically behind the cache interceptor (order
- * 4 in {@link org.openmrs.aop.AOPConfig}) - nested inside it - so a cache hit returned before
- * either check ran, handing the first caller's cached result to every later caller with the same
- * arguments regardless of their own privileges. With the interceptors correctly ordered ahead of
- * caching, a cached value is still checked/filtered on every call.
+ * Pins {@code @PostAuthorize}/{@code @PostFilter} running <em>ahead</em> of the cache interceptor
+ * (order 4 in {@link org.openmrs.aop.AOPConfig}), which is what {@link OpenmrsSecurityConfig}'s
+ * {@code offset = -700} buys: an offset large enough for {@code @PreAuthorize} alone would leave
+ * these two numerically behind caching, i.e. nested inside it, and a cache hit would then return
+ * before either check ran - handing the first caller's cached result to every later caller with the
+ * same arguments regardless of their own privileges. Correctly ordered, a cached value is still
+ * checked and filtered on every call.
  */
 public class CachedPostAuthorizeOrderingTest extends BaseContextSensitiveTest {
 

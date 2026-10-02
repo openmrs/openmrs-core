@@ -101,7 +101,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 
 	private boolean containsPrivilege(Collection<Privilege> privileges, String privilegeName) {
 		for (Privilege privilege : privileges) {
-			if (privilege.getPrivilege().equals(privilegeName)) {
+			if (privilege.getPrivilege().equalsIgnoreCase(privilegeName)) {
 				return true;
 			}
 		}
@@ -155,13 +155,13 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	 */
 	public boolean hasPrivilege(String privilegeName) {
 
-		if (RoleConstants.SUPERUSER.equals(this.role)) {
+		if (RoleConstants.SUPERUSER.equalsIgnoreCase(this.role)) {
 			return true;
 		}
 
 		if (privileges != null) {
 			for (Privilege p : privileges) {
-				if (p.getPrivilege().equals(privilegeName)) {
+				if (p.getPrivilege().equalsIgnoreCase(privilegeName)) {
 					return true;
 				}
 			}

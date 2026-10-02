@@ -28,7 +28,7 @@ import org.springframework.security.core.Authentication;
  * {@code OpenmrsSecurityConfig#preAuthorizeAuthorizationManagerPostProcessor()} for how, and why
  * that bean is {@code @Primary}.
  * <p>
- * The naming has to happen here, outside the expression, rather than in
+ * For method security the naming has to happen here, outside the expression, rather than in
  * {@link OpenmrsPermissionEvaluator#hasPermission(Authentication, Object, Object)} itself: SpEL
  * composes {@code hasPermission(...)} with {@code or}, {@code and} and {@code !}, so a throw from
  * inside the expression decides the outcome before the rest of it has been evaluated (see that
@@ -45,23 +45,23 @@ import org.springframework.security.core.Authentication;
  *            {@code @PreAuthorize}, a {@code MethodInvocationResult} for {@code @PostAuthorize}
  * @since 3.0.0
  */
-class PrivilegeNamingAuthorizationManager<T> implements AuthorizationManager<T> {
+public class PrivilegeNamingAuthorizationManager<T> implements AuthorizationManager<T> {
 
 	private final AuthorizationManager<T> delegate;
 
-	PrivilegeNamingAuthorizationManager(AuthorizationManager<T> delegate) {
+	public PrivilegeNamingAuthorizationManager(AuthorizationManager<T> delegate) {
 		this.delegate = delegate;
 	}
 
 	@Override
 	public AuthorizationResult authorize(Supplier<? extends Authentication> authentication, T object) {
-		Set<String> enclosing = OpenmrsPermissionEvaluator.beginRecording();
+		Set<String> enclosing = MissingPrivilegeRecorder.begin();
 		AuthorizationResult result;
 		Set<String> missingPrivileges;
 		try {
 			result = delegate.authorize(authentication, object);
 		} finally {
-			missingPrivileges = OpenmrsPermissionEvaluator.endRecording(enclosing);
+			missingPrivileges = MissingPrivilegeRecorder.end(enclosing);
 		}
 
 		if (result != null && !result.isGranted() && !missingPrivileges.isEmpty()) {
