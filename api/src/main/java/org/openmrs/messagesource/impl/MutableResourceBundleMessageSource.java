@@ -352,7 +352,11 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 */
 	@Override
 	public PresentationMessage getPresentation(String key, Locale forLocale) {
-		// TODO Auto-generated method stub
+		for (PresentationMessage message : getPresentations()) {
+			if (message.getCode().equals(key) && message.getLocale().equals(forLocale)) {
+				return message;
+			}
+		}
 		return null;
 	}
 
@@ -361,8 +365,13 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 */
 	@Override
 	public Collection<PresentationMessage> getPresentationsInLocale(Locale locale) {
-		// TODO Auto-generated method stub
-		return null;
+		Collection<PresentationMessage> result = new ArrayList<>();
+		for (PresentationMessage message : getPresentations()) {
+			if (message.getLocale().equals(locale)) {
+				result.add(message);
+			}
+		}
+		return result;
 	}
 
 }
