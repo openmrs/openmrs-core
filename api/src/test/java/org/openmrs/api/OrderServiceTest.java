@@ -347,6 +347,19 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * Tests that {@link org.openmrs.annotation.Authorized} works on a default method
+	 *
+	 * @see OrderService#getNextOrderNumberSeedSequenceValue()
+	 */
+	@Test
+	public void getNextOrderNumberSeedSequenceValue_shouldRequireAuthentication() {
+		Context.getUserContext().logout();
+
+		// Intentionally test the deprecated method to verify backward compatibility and authorization
+		assertThrows(APIAuthenticationException.class, () -> orderService.getNextOrderNumberSeedSequenceValue());
+	}
+
+	/**
 	 * @see OrderService#getOrderByOrderNumber(String)
 	 */
 	@Test
