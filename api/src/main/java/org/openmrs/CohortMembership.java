@@ -172,7 +172,7 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	 */
 	@Override
 	public int compareTo(CohortMembership o) {
-		int ret = this.getVoided().compareTo(o.getVoided());
+		int ret = Boolean.compare(this.getVoided(), o.getVoided());
 		if (ret == 0) {
 			ret = -OpenmrsUtil.compareWithNullAsLatest(this.getEndDate(), o.getEndDate());
 		}

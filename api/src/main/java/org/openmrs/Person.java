@@ -42,9 +42,12 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * A Person in the system. This can be either a small person stub, or indicative of an actual
- * Patient in the system. This class holds the generic person things that both the stubs and
- * patients share. Things like birthdate, names, addresses, and attributes are all generified into
+ * A Person in the system. This can be either a small person stub, or indicative
+ * of an actual
+ * Patient in the system. This class holds the generic person things that both
+ * the stubs and
+ * patients share. Things like birthdate, names, addresses, and attributes are
+ * all generified into
  * the person table (and hence this super class)
  *
  * @see org.openmrs.Patient
@@ -80,7 +83,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	private Boolean deathdateEstimated = false;
 
 	@GenericField
-	private Boolean dead = false;
+	private boolean dead = false;
 
 	private Date deathDate;
 
@@ -96,7 +99,7 @@ public class Person extends BaseChangeableOpenmrsData {
 
 	private Date personDateChanged;
 
-	private Boolean personVoided = false;
+	private boolean personVoided = false;
 
 	private User personVoidedBy;
 
@@ -112,7 +115,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	/**
 	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br>
 	 * <br>
-	 * This is "cached" for each user upon first load. When an attribute is changed, the cache is
+	 * This is "cached" for each user upon first load. When an attribute is changed,
+	 * the cache is
 	 * cleared and rebuilt on next access.
 	 */
 	@Transient
@@ -128,9 +132,12 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * This constructor is used to build a new Person object copy from another person object (usually a
-	 * patient or a user subobject). All attributes are copied over to the new object. NOTE! All child
-	 * collection objects are copied as pointers, each individual element is not copied. <br>
+	 * This constructor is used to build a new Person object copy from another
+	 * person object (usually a
+	 * patient or a user subobject). All attributes are copied over to the new
+	 * object. NOTE! All child
+	 * collection objects are copied as pointers, each individual element is not
+	 * copied. <br>
 	 *
 	 * @param person Person to create this person object from
 	 */
@@ -197,10 +204,14 @@ public class Person extends BaseChangeableOpenmrsData {
 		this.personId = personId;
 	}
 
+	/**
+	 * @deprecated as of 2.0, use {@link #isVoided()}
+	 */
 	@IndexingDependency(derivedFrom = @ObjectPath(@PropertyValue(propertyName = "personVoided")))
 	@Override
-	public Boolean getVoided() {
-		return super.getVoided();
+	@Deprecated(since = "2.0")
+	public boolean getVoided() {
+		return isVoided();
 	}
 
 	/**
@@ -233,16 +244,18 @@ public class Person extends BaseChangeableOpenmrsData {
 
 	/**
 	 * @return true if person's birthdate is estimated
-	 * @deprecated as of 2.0, use {@link #getBirthdateEstimated()}
 	 */
-	@Deprecated
 	@JsonIgnore
 	public Boolean isBirthdateEstimated() {
-		return getBirthdateEstimated();
+		return birthdateEstimated;
 	}
 
+	/**
+	 * @deprecated as of 2.0, use {@link #isBirthdateEstimated()}
+	 */
+	@Deprecated(since = "2.0")
 	public Boolean getBirthdateEstimated() {
-		return birthdateEstimated;
+		return isBirthdateEstimated();
 	}
 
 	/**
@@ -271,7 +284,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * @return person's time of birth with the date portion set to the date from person's birthdate
+	 * @return person's time of birth with the date portion set to the date from
+	 *         person's birthdate
 	 */
 	public Date getBirthDateTime() {
 		if (birthdate != null && birthtime != null) {
@@ -296,25 +310,26 @@ public class Person extends BaseChangeableOpenmrsData {
 
 	/**
 	 * @return Returns the death status.
-	 * @deprecated as of 2.0, use {@link #getDead()}
 	 */
-	@Deprecated
+
 	@JsonIgnore
-	public Boolean isDead() {
-		return getDead();
+	public boolean isDead() {
+		return dead;
 	}
 
 	/**
 	 * @return Returns the death status.
+	 * @deprecated use {@link #isDead()}
 	 */
-	public Boolean getDead() {
-		return dead;
+	@Deprecated(since = "2.0")
+	public boolean getDead() {
+		return isDead();
 	}
 
 	/**
 	 * @param dead The dead to set.
 	 */
-	public void setDead(Boolean dead) {
+	public void setDead(boolean dead) {
 		this.dead = dead;
 	}
 
@@ -360,12 +375,15 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * This method sets the non coded cause of death with the value given as parameter
+	 * This method sets the non coded cause of death with the value given as
+	 * parameter
 	 * <p>
 	 * <strong>Should</strong> not fail with null causeOfDeathNonCoded<br/>
-	 * <strong>Should</strong> set the attribute causeOfDeathNonCoded with the given parameter
+	 * <strong>Should</strong> set the attribute causeOfDeathNonCoded with the given
+	 * parameter
 	 *
-	 * @param causeOfDeathNonCoded is a String that describes as text the cause of death
+	 * @param causeOfDeathNonCoded is a String that describes as text the cause of
+	 *                             death
 	 * @since 2.2.0
 	 */
 	public void setCauseOfDeathNonCoded(String causeOfDeathNonCoded) {
@@ -464,21 +482,28 @@ public class Person extends BaseChangeableOpenmrsData {
 	// Convenience methods
 
 	/**
-	 * Convenience method to add the <code>attribute</code> to this person's attribute list if the
+	 * Convenience method to add the <code>attribute</code> to this person's
+	 * attribute list if the
 	 * attribute doesn't exist already.<br>
 	 * <br>
-	 * Voids any current attribute with type = <code>newAttribute.getAttributeType()</code><br>
+	 * Voids any current attribute with type =
+	 * <code>newAttribute.getAttributeType()</code><br>
 	 * <br>
-	 * NOTE: This effectively limits persons to only one attribute of any given type **
+	 * NOTE: This effectively limits persons to only one attribute of any given type
+	 * **
 	 * <p>
 	 * <strong>Should</strong> fail when new attribute exist<br/>
-	 * <strong>Should</strong> fail when new atribute are the same type with same value<br/>
-	 * <strong>Should</strong> void old attribute when new attribute are the same type with different
+	 * <strong>Should</strong> fail when new atribute are the same type with same
 	 * value<br/>
-	 * <strong>Should</strong> remove attribute when old attribute are temporary<br/>
+	 * <strong>Should</strong> void old attribute when new attribute are the same
+	 * type with different
+	 * value<br/>
+	 * <strong>Should</strong> remove attribute when old attribute are
+	 * temporary<br/>
 	 * <strong>Should</strong> not save an attribute with a null value<br/>
 	 * <strong>Should</strong> not save an attribute with a blank string value<br/>
-	 * <strong>Should</strong> void old attribute when a null or blank string value is added
+	 * <strong>Should</strong> void old attribute when a null or blank string value
+	 * is added
 	 *
 	 * @param newAttribute PersonAttribute to add to the Person
 	 */
@@ -491,7 +516,8 @@ public class Person extends BaseChangeableOpenmrsData {
 				// if we have the same PersonAttributeId, don't add the new attribute
 				return;
 			} else if (currentAttribute.getAttributeType().equals(newAttribute.getAttributeType())) {
-				if (currentAttribute.getValue() != null && currentAttribute.getValue().equals(newAttribute.getValue())) {
+				if (currentAttribute.getValue() != null
+						&& currentAttribute.getValue().equals(newAttribute.getValue())) {
 					// this person already has this attribute
 					return;
 				}
@@ -517,7 +543,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get the <code>attribute</code> from this person's attribute list if the
+	 * Convenience method to get the <code>attribute</code> from this person's
+	 * attribute list if the
 	 * attribute exists already.
 	 * <p>
 	 * <strong>Should</strong> not fail when person attribute is null<br/>
@@ -534,16 +561,20 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience Method to return the first non-voided person attribute matching a person attribute
+	 * Convenience Method to return the first non-voided person attribute matching a
+	 * person attribute
 	 * type. <br>
 	 * <br>
-	 * Returns null if this person has no non-voided {@link PersonAttribute} with the given
-	 * {@link PersonAttributeType}, the given {@link PersonAttributeType} is null, or this person has no
+	 * Returns null if this person has no non-voided {@link PersonAttribute} with
+	 * the given
+	 * {@link PersonAttributeType}, the given {@link PersonAttributeType} is null,
+	 * or this person has no
 	 * attributes.
 	 * <p>
 	 * <strong>Should</strong> not fail when attribute type is null<br/>
 	 * <strong>Should</strong> not return voided attribute<br/>
-	 * <strong>Should</strong> return null when existing PersonAttributeType is voided
+	 * <strong>Should</strong> return null when existing PersonAttributeType is
+	 * voided
 	 *
 	 * @param pat the PersonAttributeType to look for (can be a stub, see
 	 *            {@link PersonAttributeType#equals(Object)} for how its compared)
@@ -561,17 +592,20 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get this person's first attribute that has a PersonAttributeType.name equal
+	 * Convenience method to get this person's first attribute that has a
+	 * PersonAttributeType.name equal
 	 * to <code>attributeName</code>.<br>
 	 * <br>
-	 * Returns null if this person has no non-voided {@link PersonAttribute} with the given type name,
+	 * Returns null if this person has no non-voided {@link PersonAttribute} with
+	 * the given type name,
 	 * the given name is null, or this person has no attributes.
 	 * <p>
 	 * <strong>Should</strong> return person attribute based on attributeName<br/>
 	 * <strong>Should</strong> return null if AttributeName is voided
 	 *
 	 * @param attributeName the name string to match on
-	 * @return PersonAttribute whose {@link PersonAttributeType#getName()} matchs the given name string
+	 * @return PersonAttribute whose {@link PersonAttributeType#getName()} matchs
+	 *         the given name string
 	 */
 	public PersonAttribute getAttribute(String attributeName) {
 		if (attributeName != null) {
@@ -587,20 +621,24 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get this person's first attribute that has a PersonAttributeTypeId equal to
+	 * Convenience method to get this person's first attribute that has a
+	 * PersonAttributeTypeId equal to
 	 * <code>attributeTypeId</code>.<br>
 	 * <br>
-	 * Returns null if this person has no non-voided {@link PersonAttribute} with the given type id or
+	 * Returns null if this person has no non-voided {@link PersonAttribute} with
+	 * the given type id or
 	 * this person has no attributes.<br>
 	 * <br>
 	 * The given id cannot be null.
 	 * <p>
 	 * <strong>Should</strong> return PersonAttribute based on attributeTypeId<br/>
-	 * <strong>Should</strong> return null when existing personAttribute with matching attribute type id
+	 * <strong>Should</strong> return null when existing personAttribute with
+	 * matching attribute type id
 	 * is voided
 	 *
 	 * @param attributeTypeId the id of the {@link PersonAttributeType} to look for
-	 * @return PersonAttribute whose {@link PersonAttributeType#getId()} equals the given Integer id
+	 * @return PersonAttribute whose {@link PersonAttributeType#getId()} equals the
+	 *         given Integer id
 	 */
 	public PersonAttribute getAttribute(Integer attributeTypeId) {
 		for (PersonAttribute attribute : getActiveAttributes()) {
@@ -612,10 +650,12 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get all of this person's attributes that have a PersonAttributeType.name
+	 * Convenience method to get all of this person's attributes that have a
+	 * PersonAttributeType.name
 	 * equal to <code>attributeName</code>.
 	 * <p>
-	 * <strong>Should</strong> return all PersonAttributes with matching attributeType names
+	 * <strong>Should</strong> return all PersonAttributes with matching
+	 * attributeType names
 	 *
 	 * @param attributeName
 	 */
@@ -633,11 +673,14 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get all of this person's attributes that have a PersonAttributeType.id
+	 * Convenience method to get all of this person's attributes that have a
+	 * PersonAttributeType.id
 	 * equal to <code>attributeTypeId</code>.
 	 * <p>
-	 * <strong>Should</strong> return empty list when matching personAttribute by id is voided<br/>
-	 * <strong>Should</strong> return list of person attributes based on AttributeTypeId
+	 * <strong>Should</strong> return empty list when matching personAttribute by id
+	 * is voided<br/>
+	 * <strong>Should</strong> return list of person attributes based on
+	 * AttributeTypeId
 	 *
 	 * @param attributeTypeId
 	 */
@@ -654,7 +697,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get all of this person's attributes that have a PersonAttributeType equal
+	 * Convenience method to get all of this person's attributes that have a
+	 * PersonAttributeType equal
 	 * to <code>personAttributeType</code>.
 	 *
 	 * @param personAttributeType
@@ -670,7 +714,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get this person's active attributes in map form: &lt;String,
+	 * Convenience method to get this person's active attributes in map form:
+	 * &lt;String,
 	 * PersonAttribute&gt;.
 	 */
 	public Map<String, PersonAttribute> getAttributeMap() {
@@ -689,7 +734,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get all of this person's attributes (including voided ones) in map form:
+	 * Convenience method to get all of this person's attributes (including voided
+	 * ones) in map form:
 	 * &lt;String, PersonAttribute&gt;.
 	 *
 	 * @return All person's attributes in map form
@@ -720,14 +766,15 @@ public class Person extends BaseChangeableOpenmrsData {
 
 		for (PersonAttribute attribute : getAttributes()) {
 			s.append(attribute.getAttributeType()).append(" : ").append(attribute.getValue()).append(" : voided? ")
-			        .append(attribute.getVoided()).append("\n");
+					.append(attribute.getVoided()).append("\n");
 		}
 
 		return s.toString();
 	}
 
 	/**
-	 * Convenience method to add the <code>name</code> to this person's name list if the name doesn't
+	 * Convenience method to add the <code>name</code> to this person's name list if
+	 * the name doesn't
 	 * exist already.
 	 *
 	 * @param name
@@ -745,7 +792,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method remove the <code>name</code> from this person's name list if the name exists
+	 * Convenience method remove the <code>name</code> from this person's name list
+	 * if the name exists
 	 * already.
 	 *
 	 * @param name
@@ -757,7 +805,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to add the <code>address</code> to this person's address list if the address
+	 * Convenience method to add the <code>address</code> to this person's address
+	 * list if the address
 	 * doesn't exist already.
 	 * <p>
 	 * <strong>Should</strong> not add a person address with blank fields
@@ -777,7 +826,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to remove the <code>address</code> from this person's address list if the
+	 * Convenience method to remove the <code>address</code> from this person's
+	 * address list if the
 	 * address exists already.
 	 *
 	 * @param address
@@ -789,28 +839,37 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get the {@link PersonName} object that is marked as "preferred". <br>
+	 * Convenience method to get the {@link PersonName} object that is marked as
+	 * "preferred". <br>
 	 * <br>
-	 * If two names are marked as preferred (or no names), the database ordering comes into effect and
+	 * If two names are marked as preferred (or no names), the database ordering
+	 * comes into effect and
 	 * the one that was created most recently will be returned. <br>
 	 * <br>
-	 * This method will never return a voided name, even if it is marked as preferred. <br>
+	 * This method will never return a voided name, even if it is marked as
+	 * preferred. <br>
 	 * <br>
 	 * Null is returned if this person has no names or all voided names.
 	 * <p>
-	 * <strong>Should</strong> get preferred and not-voided person name if exist<br/>
-	 * <strong>Should</strong> get not-voided person name if preferred address does not exist<br/>
-	 * <strong>Should</strong> get voided person address if person is voided and not-voided address does
+	 * <strong>Should</strong> get preferred and not-voided person name if
+	 * exist<br/>
+	 * <strong>Should</strong> get not-voided person name if preferred address does
 	 * not exist<br/>
-	 * <strong>Should</strong> return null if person is not-voided and have voided names
+	 * <strong>Should</strong> get voided person address if person is voided and
+	 * not-voided address does
+	 * not exist<br/>
+	 * <strong>Should</strong> return null if person is not-voided and have voided
+	 * names
 	 *
 	 * @return the "preferred" person name.
 	 * @see #getNames()
 	 * @see PersonName#getPreferred()
 	 */
 	public PersonName getPersonName() {
-		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
-		// has fetched a Person, changed their names around, and then calls this method, so we have to be careful.
+		// normally the DAO layer returns these in the correct order, i.e. preferred and
+		// non-voided first, but it's possible that someone
+		// has fetched a Person, changed their names around, and then calls this method,
+		// so we have to be careful.
 		if (getNames() != null && !getNames().isEmpty()) {
 			for (PersonName name : getNames()) {
 				if (name.getPreferred() && !name.getVoided()) {
@@ -831,7 +890,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get the given name attribute on this person's preferred PersonName
+	 * Convenience method to get the given name attribute on this person's preferred
+	 * PersonName
 	 *
 	 * @return String given name of the person
 	 */
@@ -845,7 +905,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get the middle name attribute on this person's preferred PersonName
+	 * Convenience method to get the middle name attribute on this person's
+	 * preferred PersonName
 	 *
 	 * @return String middle name of the person
 	 */
@@ -859,7 +920,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get the family name attribute on this person's preferred PersonName
+	 * Convenience method to get the family name attribute on this person's
+	 * preferred PersonName
 	 *
 	 * @return String family name of the person
 	 */
@@ -873,28 +935,37 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to get the {@link PersonAddress} object that is marked as "preferred". <br>
+	 * Convenience method to get the {@link PersonAddress} object that is marked as
+	 * "preferred". <br>
 	 * <br>
-	 * If two addresses are marked as preferred (or no addresses), the database ordering comes into
+	 * If two addresses are marked as preferred (or no addresses), the database
+	 * ordering comes into
 	 * effect and the one that was created most recently will be returned. <br>
 	 * <br>
-	 * This method will never return a voided address, even if it is marked as preferred. <br>
+	 * This method will never return a voided address, even if it is marked as
+	 * preferred. <br>
 	 * <br>
 	 * Null is returned if this person has no addresses or all voided addresses.
 	 * <p>
-	 * <strong>Should</strong> get preferred and not-voided person address if exist<br/>
-	 * <strong>Should</strong> get not-voided person address if preferred address does not exist<br/>
-	 * <strong>Should</strong> get voided person address if person is voided and not-voided address does
+	 * <strong>Should</strong> get preferred and not-voided person address if
+	 * exist<br/>
+	 * <strong>Should</strong> get not-voided person address if preferred address
+	 * does not exist<br/>
+	 * <strong>Should</strong> get voided person address if person is voided and
+	 * not-voided address does
 	 * not exist<br/>
-	 * <strong>Should</strong> return null if person is not-voided and have voided address
+	 * <strong>Should</strong> return null if person is not-voided and have voided
+	 * address
 	 *
 	 * @return the "preferred" person address.
 	 * @see #getAddresses()
 	 * @see PersonAddress#getPreferred()
 	 */
 	public PersonAddress getPersonAddress() {
-		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
-		// has fetched a Person, changed their addresses around, and then calls this method, so we have to be careful.
+		// normally the DAO layer returns these in the correct order, i.e. preferred and
+		// non-voided first, but it's possible that someone
+		// has fetched a Person, changed their addresses around, and then calls this
+		// method, so we have to be careful.
 		if (getAddresses() != null && !getAddresses().isEmpty()) {
 			for (PersonAddress addr : getAddresses()) {
 				if (addr.getPreferred() && !addr.getVoided()) {
@@ -915,7 +986,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method to calculate this person's age based on the birthdate For a person who lived
+	 * Convenience method to calculate this person's age based on the birthdate For
+	 * a person who lived
 	 * 1990 to 2000, age would be -5 in 1985, 5 in 1995, 10 in 2000, and 10 2010.
 	 * <p>
 	 * <strong>Should</strong> get correct age after death
@@ -927,7 +999,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method: calculates the person's age on a given date based on the birthdate
+	 * Convenience method: calculates the person's age on a given date based on the
+	 * birthdate
 	 * <p>
 	 * <strong>Should</strong> get age before birthday<br/>
 	 * <strong>Should</strong> get age on birthday with no minutes defined<br/>
@@ -1045,7 +1118,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	/**
 	 * Gets the age of a person with the specified ChronoUnit.
 	 *
-	 * @param chronoUnit the unit of precision for the age calculation (e.g. WEEKS, MONTHS, YEARS)
+	 * @param chronoUnit the unit of precision for the age calculation (e.g. WEEKS,
+	 *                   MONTHS, YEARS)
 	 * @return the age in the specified unit as an Integer
 	 * @since 2.7.0
 	 */
@@ -1084,11 +1158,13 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Convenience method: sets a person's birth date from an age as of the given date Also sets flag
-	 * indicating that the birth date is inexact. This sets the person's birth date to January 1 of the
+	 * Convenience method: sets a person's birth date from an age as of the given
+	 * date Also sets flag
+	 * indicating that the birth date is inexact. This sets the person's birth date
+	 * to January 1 of the
 	 * year that matches this age and date
 	 *
-	 * @param age (the age to set)
+	 * @param age       (the age to set)
 	 * @param ageOnDate (null defaults to today)
 	 */
 	public void setBirthdateFromAge(int age, Date ageOnDate) {
@@ -1147,22 +1223,22 @@ public class Person extends BaseChangeableOpenmrsData {
 		this.setDateVoided(dateVoided);
 	}
 
-	public void setPersonVoided(Boolean voided) {
+	public void setPersonVoided(boolean voided) {
 		this.personVoided = voided;
 		this.setVoided(voided);
 	}
 
-	public Boolean getPersonVoided() {
+	@JsonIgnore
+	public boolean isPersonVoided() {
 		return personVoided;
 	}
 
 	/**
-	 * @deprecated as of 2.0, use {@link #getPersonVoided()}
+	 * @deprecated as of 2.0, use {@link #isPersonVoided()}
 	 */
 	@Deprecated
-	@JsonIgnore
-	public Boolean isPersonVoided() {
-		return getPersonVoided();
+	public boolean getPersonVoided() {
+		return isPersonVoided();
 	}
 
 	public User getPersonVoidedBy() {
@@ -1185,22 +1261,25 @@ public class Person extends BaseChangeableOpenmrsData {
 
 	/**
 	 * @return true/false whether this person is a patient or not
-	 * @deprecated as of 2.0, use {@link #getIsPatient()}
 	 */
-	@Deprecated
 	@JsonIgnore
 	@NotAudited
 	public boolean isPatient() {
-		return getIsPatient();
-	}
-
-	@NotAudited
-	public boolean getIsPatient() {
 		return isPatient;
 	}
 
 	/**
-	 * This should only be set by the database layer by looking at whether a row exists in the patient
+	 * @deprecated as of 2.0, use {@link #isPatient()}
+	 */
+	@Deprecated
+	@NotAudited
+	public boolean getIsPatient() {
+		return isPatient();
+	}
+
+	/**
+	 * This should only be set by the database layer by looking at whether a row
+	 * exists in the patient
 	 * table
 	 *
 	 * @param isPatient whether this person is a patient or not
@@ -1237,3 +1316,4 @@ public class Person extends BaseChangeableOpenmrsData {
 
 	}
 }
+

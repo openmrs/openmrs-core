@@ -28,7 +28,7 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 	public void compare_shouldOrderProperly() {
 		PatientIdentifierType requiredNotRetired = new PatientIdentifierType();
 		requiredNotRetired.setRequired(true);
-		requiredNotRetired.setRetired(null);
+		requiredNotRetired.setRetired(false);
 		PatientIdentifierType requiredRetired1A = new PatientIdentifierType();
 		requiredRetired1A.setId(1);
 		requiredRetired1A.setRequired(true);
