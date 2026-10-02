@@ -10,30 +10,28 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
-import org.apache.commons.collections.Predicate;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.customdatatype.Customizable;
 
 /**
- * Used in conjunction with commons-collections filter to find attributes with values in the given
- * map.
+ * Matches {@link Customizable} objects having an active attribute whose value is in the given map.
  *
  * @since 1.9
  */
-public class AttributeMatcherPredicate<T extends Customizable, AT extends AttributeType> implements Predicate {
+public class AttributeMatcherPredicate<T extends Customizable, A extends AttributeType> implements Predicate<T> {
 
-	private final Map<AT, String> serializedAttributeValues;
+	private final Map<A, String> serializedAttributeValues;
 
-	public AttributeMatcherPredicate(Map<AT, String> serializedAttributeValues) {
+	public AttributeMatcherPredicate(Map<A, String> serializedAttributeValues) {
 		this.serializedAttributeValues = serializedAttributeValues;
 	}
 
 	@Override
-	public boolean evaluate(Object o) {
-		final T customizable = (T) o;
-		for (Map.Entry<AT, String> entry : serializedAttributeValues.entrySet()) {
+	public boolean test(T customizable) {
+		for (Map.Entry<A, String> entry : serializedAttributeValues.entrySet()) {
 			for (Object attr : customizable.getActiveAttributes(entry.getKey())) {
 				Attribute attribute = (Attribute) attr;
 				if (attribute.getValueReference().equals(entry.getValue())) {

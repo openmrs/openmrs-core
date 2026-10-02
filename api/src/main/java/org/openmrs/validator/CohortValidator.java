@@ -11,7 +11,6 @@ package org.openmrs.validator;
 
 import java.util.Collection;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
@@ -43,7 +42,7 @@ public class CohortValidator implements Validator {
 		Cohort cohort = (Cohort) obj;
 		if (!cohort.getVoided()) {
 			Collection<CohortMembership> members = cohort.getMemberships();
-			if (!CollectionUtils.isEmpty(members)) {
+			if (!members.isEmpty()) {
 				for (CohortMembership member : members) {
 					Patient p = Context.getPatientService().getPatient(member.getPatientId());
 					int dateCompare = OpenmrsUtil.compareWithNullAsLatest(member.getStartDate(), member.getEndDate());

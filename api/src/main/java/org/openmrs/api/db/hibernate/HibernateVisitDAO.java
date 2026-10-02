@@ -20,7 +20,6 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openmrs.Concept;
@@ -238,8 +237,7 @@ public class HibernateVisitDAO implements VisitDAO {
 		List<Visit> visits = session.createQuery(cq).getResultList();
 
 		if (serializedAttributeValues != null) {
-			CollectionUtils.filter(visits,
-			    new AttributeMatcherPredicate<Visit, VisitAttributeType>(serializedAttributeValues));
+			visits.removeIf(new AttributeMatcherPredicate<Visit, VisitAttributeType>(serializedAttributeValues).negate());
 		}
 
 		return visits;
@@ -298,8 +296,8 @@ public class HibernateVisitDAO implements VisitDAO {
 		List<Visit> visits = session.createQuery(cq).getResultList();
 
 		if (criteria.getSerializedAttributeValues() != null) {
-			CollectionUtils.filter(visits,
-			    new AttributeMatcherPredicate<Visit, VisitAttributeType>(criteria.getSerializedAttributeValues()));
+			visits.removeIf(
+			    new AttributeMatcherPredicate<Visit, VisitAttributeType>(criteria.getSerializedAttributeValues()).negate());
 		}
 
 		return visits;
@@ -384,7 +382,7 @@ public class HibernateVisitDAO implements VisitDAO {
 			predicates.add(cb.lessThanOrEqualTo(root.get("startDatetime"), maximumStartDate));
 		}
 
-		if (CollectionUtils.isNotEmpty(visitTypes)) {
+		if (visitTypes != null && !visitTypes.isEmpty()) {
 			predicates.add(root.get("visitType").in(visitTypes));
 		}
 
