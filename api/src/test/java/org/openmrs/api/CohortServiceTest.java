@@ -94,6 +94,11 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, (int) cohort.getCohortId());
 	}
 
+	private boolean containsPatientId(Cohort cohort, Integer patientId) {
+		return cohort.getMemberships().stream().filter(m -> !m.getVoided())
+		        .anyMatch(m -> m.getPatientId().equals(patientId));
+	}
+
 	/**
 	 * @see CohortService#getCohortByUuid(String)
 	 */
@@ -499,8 +504,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Patient patientToAdd = new Patient(7);
 		service.addPatientToCohort(service.getCohort(1), patientToAdd);
 		service.addPatientToCohort(service.getCohort(2), patientToAdd);
-		assertTrue(service.getCohort(1).contains(patientToAdd.getPatientId()));
-		assertTrue(service.getCohort(2).contains(patientToAdd.getPatientId()));
+		assertTrue(service.getCohort(1).hasActiveMembership(patientToAdd.getPatientId()));
+		assertTrue(service.getCohort(2).hasActiveMembership(patientToAdd.getPatientId()));
 
 		// call the method and it should not return the voided cohort
 		List<Cohort> cohortsWithPatientAdded = service.getCohortsContainingPatientId(patientToAdd.getId());
@@ -518,7 +523,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 
 		Patient patientToAdd = new Patient(7);
 		service.addPatientToCohort(service.getCohort(2), patientToAdd);
-		assertTrue(service.getCohort(2).contains(patientToAdd.getPatientId()));
+		assertTrue(service.getCohort(2).hasActiveMembership(patientToAdd.getPatientId()));
 
 		List<Cohort> cohortsWithGivenPatient = service.getCohortsContainingPatientId(patientToAdd.getId());
 		assertTrue(cohortsWithGivenPatient.contains(service.getCohort(2)));
@@ -535,7 +540,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Patient patientToAdd = Context.getPatientService().getPatient(3);
 		service.addPatientToCohort(service.getCohort(2), patientToAdd);
 		// proof of "save the cohort": see if the patient is in the cohort
-		assertTrue(service.getCohort(2).contains(3));
+		assertTrue(service.getCohort(2).hasActiveMembership(3));
 	}
 
 	/**
@@ -548,7 +553,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		// make a patient, add it using the method
 		Patient patientToAdd = Context.getPatientService().getPatient(3);
 		service.addPatientToCohort(service.getCohort(2), patientToAdd);
-		assertTrue(service.getCohort(2).contains(3));
+		assertTrue(service.getCohort(2).hasActiveMembership(3));
 
 		// do it again to see if it fails
 		try {
@@ -565,7 +570,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		// make a patient
 		Patient notInCohort = new Patient(4);
 		// verify that the patient is not already in the Cohort
-		assertFalse(service.getCohort(2).contains(notInCohort.getPatientId()));
+		assertFalse(service.getCohort(2).hasActiveMembership(notInCohort.getPatientId()));
 		// try to remove it from the cohort without failing
 		try {
 			service.removePatientFromCohort(service.getCohort(2), notInCohort);
@@ -583,7 +588,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(patientId);
 		service.removePatientFromCohort(cohort, patient);
 
-		assertFalse(cohort.contains(patientId));
+		assertFalse(cohort.hasActiveMembership(patientId));
 	}
 
 	@Test
@@ -596,7 +601,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 
 		Context.flushSession();
 		assertNull(service.getCohortMembershipByUuid("v9a9m5i6-17e6-407c-9d4v-hbi8teu9lf0f"));
-		assertFalse(service.getCohort(owner.getId()).contains(toPurge.getPatientId()));
+		assertFalse(service.getCohort(owner.getId()).hasActiveMembership(toPurge.getPatientId()));
 	}
 
 	@Test
@@ -610,7 +615,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(cm.getVoidedBy());
 		assertNotNull(cm.getDateVoided());
 		assertEquals(reason, cm.getVoidReason());
-		assertFalse(cohort.contains(cm.getPatientId()));
+		assertFalse(cohort.hasActiveMembership(cm.getPatientId()));
 	}
 
 	@Test
@@ -630,10 +635,15 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Cohort cohort = service.getCohort(1);
 		CohortMembership cm = cohort.getActiveMemberships().iterator().next();
 		assertNull(cm.getEndDate());
+
 		service.endCohortMembership(cm, endOnDate);
 		assertEquals(endOnDate, cm.getEndDate());
-		// Since TRUNK-5450 also CohortMembers with an end-date are taken into account by contains
-		assertTrue(cohort.contains(cm.getPatientId()));
+
+		// Membership is no longer active
+		assertFalse(cohort.hasActiveMembership(cm.getPatientId()));
+
+		// Verify patient ID exists in historical memberships
+		assertTrue(cohort.getMemberships().stream().anyMatch(m -> m.getPatientId().equals(cm.getPatientId())));
 	}
 
 	@Test
@@ -649,7 +659,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 
 		CohortMembership newMemberContainingVoidedPatient = new CohortMembership(voidedPatient.getPatientId());
 		cohort.addMembership(newMemberContainingVoidedPatient);
-		assertTrue(cohort.contains(voidedPatient.getPatientId()));
+		assertTrue(cohort.hasActiveMembership(voidedPatient.getPatientId()));
 
 		assertEquals(1, service.getCohortsContainingPatientId(voidedPatient.getId()).size());
 
@@ -797,7 +807,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Date startDate = dateFormat.parse("2017-01-01 00:00:00");
 		membership.setStartDate(startDate);
 		cohort.addMembership(membership);
-		assertTrue(cohort.contains(patient.getPatientId()));
+		assertTrue(cohort.hasActiveMembership(patient.getPatientId()));
 
 		Date endDate = dateFormat.parse("2017-01-31 00:00:00");
 		membership.setEndDate(endDate);

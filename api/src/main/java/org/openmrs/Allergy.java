@@ -191,24 +191,6 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 	}
 
 	/**
-	 * @return Returns the comment
-	 * @deprecated as of 2.3.0, replaced by {@link #getComments()}
-	 */
-	@Deprecated
-	public String getComment() {
-		return getComments();
-	}
-
-	/**
-	 * @param comment the comment to set
-	 * @deprecated as of 2.3.0, replaced by {@link #setComments(String)}
-	 */
-	@Deprecated
-	public void setComment(String comment) {
-		setComments(comment);
-	}
-
-	/**
 	 * @return Returns the comments
 	 * @since 2.3.0
 	 */
@@ -318,7 +300,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 				return false;
 			}
 		}
-		if (!OpenmrsUtil.nullSafeEquals(getComment(), allergy.getComment())) {
+		if (!OpenmrsUtil.nullSafeEquals(getComments(), allergy.getComments())) {
 			return false;
 		}
 		return hasSameReactions(allergy);
@@ -374,7 +356,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 		setPatient(allergy.getPatient());
 		setAllergen(allergy.getAllergen());
 		setSeverity(allergy.getSeverity());
-		setComment(allergy.getComment());
+		setComments(allergy.getComments());
 		setReactions(new ArrayList<>());
 
 		for (AllergyReaction reaction : allergy.getReactions()) {

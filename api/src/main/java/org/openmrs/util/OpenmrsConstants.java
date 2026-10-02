@@ -14,10 +14,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
@@ -194,22 +192,6 @@ public final class OpenmrsConstants {
 		stopWords.add("TO");
 
 		return stopWords;
-	}
-
-	/**
-	 * A gender character to gender name map<br>
-	 * TODO issues with localization. How should this be handled?
-	 *
-	 * @deprecated As of 2.2, replaced by {@link #GENDERS}
-	 * @return Map&lt;String, String&gt; of gender character to gender name
-	 */
-	@Deprecated
-	@SuppressWarnings("squid:S00100")
-	public static final Map<String, String> GENDER() {
-		Map<String, String> genders = new LinkedHashMap<>();
-		genders.put("M", "Male");
-		genders.put("F", "Female");
-		return genders;
 	}
 
 	/**
@@ -633,14 +615,6 @@ public final class OpenmrsConstants {
 	 * @since 1.12 Specifies the uuid of the concept which represents drug non coded
 	 */
 	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
-
-	/**
-	 * Global property that stores the base url for the application.
-	 *
-	 * @deprecated as of 2.6.0, replaced by {@link #GP_PASSWORD_RESET_URL}
-	 */
-	@Deprecated
-	public static final String GP_HOST_URL = "host.url";
 
 	/**
 	 * Global property that stores the base url for the password reset.

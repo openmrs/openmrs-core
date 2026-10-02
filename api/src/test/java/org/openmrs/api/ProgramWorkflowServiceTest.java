@@ -979,7 +979,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Cohort cohort = new Cohort();
 		Collection<Program> programs = pws.getAllPrograms();
 		List<PatientProgram> patientPrograms;
-		cohort.getMemberIds().clear();
+		cohort.getMemberships().clear(); // Updated from getMemberIds().clear()
 		patientPrograms = dao.getPatientPrograms(null, programs);
 		assertEquals(patientPrograms.size(), 4);
 	}
