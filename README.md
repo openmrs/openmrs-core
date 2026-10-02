@@ -191,6 +191,8 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-co
 
 If you change backend, you need to rebuild the search index by going to Legacy UI -> Administration -> Search Index. Alternatively, you can rebuild the search index using the `searchindexupdate` REST endpoint.
 
+When several OpenMRS instances share a single ElasticSearch cluster, each instance can keep its indices in its own namespace by setting the `search.index.prefix` runtime property (or the `OMRS_EXTRA_SEARCH_INDEX_PREFIX` environment variable), which prefixes every index and alias name. Just like a backend change, setting or changing this prefix on an install that already has indices requires rebuilding the search index in the same way: the startup reindex only runs when the index version changes, so otherwise the new prefixed indices come up empty and searches return no results until you rebuild. If the instances were already sharing the cluster before they got their prefixes, their documents are still in the unprefixed indices, so an instance that keeps the default names needs the same rebuild, or its searches keep matching the other instances' leftover documents and can return the wrong patient.
+
 ### Running with Grafana
 
 OpenMRS can run with Grafana for monitoring logs. You can run it with:
