@@ -11,8 +11,10 @@ package org.openmrs.api.cache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.infinispan.configuration.cache.ConfigurationBuilder;
@@ -23,7 +25,6 @@ import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryModified;
 import org.infinispan.notifications.cachelistener.event.CacheEntryEvent;
-import org.infinispan.notifications.cachemanagerlistener.event.MergeEvent;
 import org.infinispan.spring.common.provider.SpringCache;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.junit.jupiter.api.AfterEach;
@@ -78,7 +79,7 @@ public class GlobalPropertyCacheTest {
 
 		fillExecutor = Executors.newSingleThreadExecutor();
 		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
-		        fillExecutor::execute);
+		        fillExecutor::submit);
 	}
 
 	@AfterEach
@@ -162,8 +163,10 @@ public class GlobalPropertyCacheTest {
 	@Test
 	public void get_shouldStartOneFillForConcurrentMissesOfTheSameProperty() {
 		List<Runnable> started = new ArrayList<>();
-		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
-		        started::add);
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class), task -> {
+			started.add(task);
+			return null;
+		});
 
 		globalPropertyCache.get("some.property");
 		globalPropertyCache.get("some.property");
@@ -174,8 +177,10 @@ public class GlobalPropertyCacheTest {
 	@Test
 	public void get_shouldNotRunMoreThanTheMaximumNumberOfFillsAtOnce() {
 		List<Runnable> started = new ArrayList<>();
-		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
-		        started::add);
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class), task -> {
+			started.add(task);
+			return null;
+		});
 
 		for (int i = 0; i <= GlobalPropertyCache.MAX_CONCURRENT_FILLS; i++) {
 			globalPropertyCache.get("property." + i);
@@ -197,6 +202,26 @@ public class GlobalPropertyCacheTest {
 				throw new IllegalStateException("no threads");
 			}
 			started.add(task);
+			return null;
+		});
+
+		for (int i = 0; i <= GlobalPropertyCache.MAX_CONCURRENT_FILLS; i++) {
+			globalPropertyCache.get("property." + i);
+		}
+
+		assertEquals(1, started.size());
+	}
+
+	@Test
+	public void get_shouldReleaseTheFillPermitIfTheFillsTaskEndsWithoutRunningIt() {
+		List<Runnable> started = new ArrayList<>();
+		AtomicInteger attempts = new AtomicInteger();
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class), task -> {
+			if (attempts.incrementAndGet() <= GlobalPropertyCache.MAX_CONCURRENT_FILLS) {
+				return failedFuture(new IllegalStateException("no session"));
+			}
+			started.add(task);
+			return null;
 		});
 
 		for (int i = 0; i <= GlobalPropertyCache.MAX_CONCURRENT_FILLS; i++) {
@@ -208,8 +233,10 @@ public class GlobalPropertyCacheTest {
 
 	@Test
 	public void get_shouldFillAgainAfterAFillThatRanOnTheCallingThread() {
-		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class),
-		        Runnable::run);
+		globalPropertyCache = new GlobalPropertyCache(cacheManager, dao, mock(PlatformTransactionManager.class), task -> {
+			task.run();
+			return null;
+		});
 		givenProperty("some.property", "value");
 		globalPropertyCache.get("some.property");
 		assertEquals("value", cached("some.property").getValue());
@@ -268,7 +295,7 @@ public class GlobalPropertyCacheTest {
 	public void get_shouldNotCacheAPropertyIfTheGenerationTokenExpiresWhileTheFillIsLoadingIt() {
 		GlobalProperty property = new GlobalProperty("some.property", "old");
 		when(dao.getGlobalPropertyObject("some.property")).thenReturn(property).thenAnswer(invocation -> {
-			cache.evict(GlobalPropertyCache.GENERATION);
+			cache.evict(CacheInvalidation.GENERATION);
 			return property;
 		});
 		when(dao.getStoredGlobalPropertyName("some.property")).thenReturn("some.property");
@@ -328,7 +355,7 @@ public class GlobalPropertyCacheTest {
 			public SpringCache getCache(String name) {
 				return GlobalPropertyCache.CACHE_NAME.equals(name) ? null : super.getCache(name);
 			}
-		}, dao, mock(PlatformTransactionManager.class), fillExecutor::execute);
+		}, dao, mock(PlatformTransactionManager.class), fillExecutor::submit);
 
 		assertFalse(globalPropertyCache.get("missing.property").isPresent());
 		assertFalse(globalPropertyCache.get("missing.property").isPresent());
@@ -567,24 +594,15 @@ public class GlobalPropertyCacheTest {
 	}
 
 	@Test
-	public void merged_shouldClearThisNodesCache() {
-		seed("some.property", "old");
-
-		new GlobalPropertyCache.PartitionMergeListener(globalPropertyCache).merged(mock(MergeEvent.class));
-
-		assertNull(cache.get("some.property"));
-	}
-
-	@Test
 	public void destroy_shouldStopListeningForPartitionMerges() {
 		EmbeddedCacheManager nativeCacheManager = mock(EmbeddedCacheManager.class);
 		SpringEmbeddedCacheManager springCacheManager = mock(SpringEmbeddedCacheManager.class);
 		when(springCacheManager.getNativeCacheManager()).thenReturn(nativeCacheManager);
 		GlobalPropertyCache cacheWithMockedManager = new GlobalPropertyCache(springCacheManager, dao,
-		        mock(PlatformTransactionManager.class), fillExecutor::execute);
+		        mock(PlatformTransactionManager.class), fillExecutor::submit);
 		ArgumentCaptor<Object> listener = ArgumentCaptor.forClass(Object.class);
 		verify(nativeCacheManager).addListener(listener.capture());
-		assertTrue(listener.getValue() instanceof GlobalPropertyCache.PartitionMergeListener);
+		assertTrue(listener.getValue() instanceof CacheInvalidation.PartitionMergeListener);
 
 		cacheWithMockedManager.destroy();
 
@@ -605,7 +623,7 @@ public class GlobalPropertyCacheTest {
 		@CacheEntryCreated
 		@CacheEntryModified
 		public void written(CacheEntryEvent<Object, Object> event) {
-			if (event.isPre() && GlobalPropertyCache.GENERATION.equals(event.getKey())) {
+			if (event.isPre() && CacheInvalidation.GENERATION.equals(event.getKey())) {
 				throw new IllegalStateException("the cluster is unreachable");
 			}
 		}
@@ -661,5 +679,11 @@ public class GlobalPropertyCacheTest {
 		List<TransactionSynchronization> synchronizations = TransactionSynchronizationManager.getSynchronizations();
 		TransactionSynchronizationUtils.invokeAfterCompletion(synchronizations,
 		    TransactionSynchronization.STATUS_ROLLED_BACK);
+	}
+
+	private static Future<?> failedFuture(Throwable cause) {
+		CompletableFuture<Void> future = new CompletableFuture<>();
+		future.completeExceptionally(cause);
+		return future;
 	}
 }

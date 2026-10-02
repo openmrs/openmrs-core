@@ -30,9 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -52,8 +50,7 @@ import org.openmrs.Privilege;
 import org.openmrs.User;
 import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.cache.GlobalPropertyCacheTestUtil;
-import org.openmrs.api.cache.RolePrivilegeCache;
-import org.openmrs.api.cache.RolePrivileges;
+import org.openmrs.api.cache.RolePrivilegeCacheTestUtil;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UserContext;
@@ -786,11 +783,11 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// Grant the view privilege via the authoritative cache; role privileges resolve by role name,
 		// not from the in-memory role object, so no proxy privilege is involved.
 		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
-		setRolePrivilegesInCache("Provider", property.getViewPrivilege().getPrivilege());
+		RolePrivilegeCacheTestUtil.seed("Provider", property.getViewPrivilege().getPrivilege());
 		try {
 			assertNotNull(adminService.getGlobalProperty(property.getProperty()));
 		} finally {
-			clearRolePrivilegeCache();
+			RolePrivilegeCacheTestUtil.clear();
 		}
 	}
 
@@ -915,11 +912,11 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// Grant the view privilege via the authoritative cache; role privileges resolve by role name,
 		// not from the in-memory role object, so no proxy privilege is involved.
 		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
-		setRolePrivilegesInCache("Provider", property.getViewPrivilege().getPrivilege());
+		RolePrivilegeCacheTestUtil.seed("Provider", property.getViewPrivilege().getPrivilege());
 		try {
 			assertNotNull(adminService.getGlobalPropertyObject(property.getProperty()));
 		} finally {
-			clearRolePrivilegeCache();
+			RolePrivilegeCacheTestUtil.clear();
 		}
 	}
 	
@@ -958,14 +955,14 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// Grant the edit + view privileges via the authoritative cache; role privileges resolve by role
 		// name, not from the in-memory role object, so no proxy privilege is involved.
 		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
-		setRolePrivilegesInCache("Provider", PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES,
+		RolePrivilegeCacheTestUtil.seed("Provider", PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES,
 		    PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		try {
 			adminService.updateGlobalProperty(property.getProperty(), "new-value");
 			String newValue = adminService.getGlobalProperty(property.getProperty());
 			assertEquals("new-value", newValue);
 		} finally {
-			clearRolePrivilegeCache();
+			RolePrivilegeCacheTestUtil.clear();
 		}
 	}
 	
@@ -1065,20 +1062,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	private Credentials getTestUserCredentials() {
 		return new UsernamePasswordCredentials("test_user", "test");
-	}
-
-	/**
-	 * Records, in the authoritative role-privilege cache, that the named role grants the given
-	 * privileges. Privilege resolution reads role privileges from this cache by role name, so this lets
-	 * a test grant privileges to a role without persisting them.
-	 */
-	private void setRolePrivilegesInCache(String roleName, String... privileges) {
-		cacheManager.getCache(RolePrivilegeCache.CACHE_NAME).put(RolePrivileges.normalize(roleName),
-		    new RolePrivileges(new HashSet<>(Arrays.asList(privileges)), false));
-	}
-
-	private void clearRolePrivilegeCache() {
-		cacheManager.getCache(RolePrivilegeCache.CACHE_NAME).clear();
 	}
 
 	@Test
