@@ -15,9 +15,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.HttpRequestHandler;
+import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler;
+import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -25,6 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class WebConfigTest {
 
@@ -77,5 +87,40 @@ public class WebConfigTest {
 		handler.handleRequest(request, response);
 
 		verify(defaultDispatcher).forward(request, response);
+	}
+
+	/**
+	 * Clients such as the O3 frontend send {@code Accept: application/json}, so the exception model is
+	 * rendered by the JSON default view of the content negotiating view resolver. Without an explicit
+	 * status code that response went out as HTTP 200, making failures look like successes.
+	 */
+	@Test
+	public void simpleMappingExceptionResolver_shouldReturnInternalServerErrorForJsonRequests() throws Exception {
+		buildMockMvc().perform(get("/throw").accept(MediaType.APPLICATION_JSON)).andExpect(status().isInternalServerError());
+	}
+
+	@Test
+	public void simpleMappingExceptionResolver_shouldRenderUncaughtExceptionViewWithErrorStatusForHtmlRequests()
+	        throws Exception {
+		buildMockMvc().perform(get("/throw").accept(MediaType.TEXT_HTML)).andExpect(status().isInternalServerError())
+		        .andExpect(forwardedUrl("/WEB-INF/view/uncaughtException.jsp"));
+	}
+
+	private MockMvc buildMockMvc() {
+		WebConfig webConfig = new WebConfig();
+		ContentNegotiatingViewResolver contentNegotiatingViewResolver = webConfig.contentNegotiatingViewResolver();
+		contentNegotiatingViewResolver.setContentNegotiationManager(new ContentNegotiationManager());
+		return MockMvcBuilders.standaloneSetup(new ThrowingController())
+		        .setHandlerExceptionResolvers(webConfig.simpleMappingExceptionResolver())
+		        .setViewResolvers(contentNegotiatingViewResolver, webConfig.jspViewResolver()).build();
+	}
+
+	@Controller
+	static class ThrowingController {
+
+		@GetMapping("/throw")
+		public String throwException() {
+			throw new IllegalStateException("boom");
+		}
 	}
 }
