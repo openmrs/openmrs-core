@@ -26,6 +26,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Location;
+import org.openmrs.LocationTag;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -1076,6 +1078,20 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see UserService#purgeUser(User)
+	 */
+	@Test
+	public void purgeUser_shouldDeleteAUserAssignedToALocation() {
+		User user = userService.getUser(502);
+		user.setAssignedLocations(new HashSet<>(Collections.singletonList(Context.getLocationService().getLocation(1))));
+		userService.saveUser(user);
+
+		userService.purgeUser(userService.getUser(502));
+
+		assertNull(userService.getUser(502));
+	}
+
+	/**
 	 * @see UserService#removeUserProperty(User,String)
 	 */
 	@Test
@@ -1797,6 +1813,75 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP), notNullValue());
 		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP), not(emptyString()));
 		assertThat(Context.getUserService().getLastLoginTime(createdUser), not(emptyString()));
+	}
+
+	@Test
+	public void getAllowedLocationsByTag_shouldReturnAllTaggedLocationsIfTheUserHasNoAssignedLocations() {
+		LocationTag tag = tagLocations(1, 2);
+
+		Set<Location> allowed = userService.getAllowedLocationsByTag(userService.getUser(1), tag);
+
+		assertThat(allowed, hasSize(2));
+	}
+
+	@Test
+	public void getAllowedLocationsByTag_shouldReturnOnlyTheAssignedLocationsThatCarryTheTag() {
+		LocationTag tag = tagLocations(1, 2);
+		User user = assignLocations(1, 2, 3);
+
+		Set<Location> allowed = userService.getAllowedLocationsByTag(user, tag);
+
+		assertThat(allowed, hasSize(2));
+
+		user = assignLocations(2);
+
+		allowed = userService.getAllowedLocationsByTag(user, tag);
+
+		assertThat(allowed, hasSize(1));
+		assertEquals(Integer.valueOf(2), allowed.iterator().next().getLocationId());
+	}
+
+	@Test
+	public void getAllowedLocationsByTag_shouldReturnAnEmptySetIfNoAssignedLocationCarriesTheTag() {
+		LocationTag tag = tagLocations(1);
+		User user = assignLocations(2);
+
+		assertThat(userService.getAllowedLocationsByTag(user, tag), hasSize(0));
+	}
+
+	@Test
+	public void getAllowedLocationsByTag_shouldReturnAnEmptySetIfTheUserIsNotPersisted() {
+		LocationTag tag = tagLocations(1, 2);
+
+		assertThat(userService.getAllowedLocationsByTag(new User(), tag), hasSize(0));
+	}
+
+	@Test
+	public void getAllowedLocationsByTag_shouldReturnAnEmptySetIfTheTagIsNull() {
+		assertThat(userService.getAllowedLocationsByTag(userService.getUser(1), null), hasSize(0));
+	}
+
+	private LocationTag tagLocations(Integer... locationIds) {
+		LocationTag tag = new LocationTag("Login Location", "Locations users may log in at");
+		Context.getLocationService().saveLocationTag(tag);
+
+		for (Integer locationId : locationIds) {
+			Location location = Context.getLocationService().getLocation(locationId);
+			location.addTag(tag);
+			Context.getLocationService().saveLocation(location);
+		}
+
+		return tag;
+	}
+
+	private User assignLocations(Integer... locationIds) {
+		User user = userService.getUser(1);
+		Set<Location> locations = new HashSet<>();
+		for (Integer locationId : locationIds) {
+			locations.add(Context.getLocationService().getLocation(locationId));
+		}
+		user.setAssignedLocations(locations);
+		return userService.saveUser(user);
 	}
 
 	private Credentials getTestUserCredentials() {
