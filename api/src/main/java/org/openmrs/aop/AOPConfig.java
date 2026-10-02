@@ -63,6 +63,18 @@ import org.springframework.transaction.interceptor.TransactionAttributeSource;
 public class AOPConfig {
 
 	/**
+	 * Lets module services defined with
+	 * {@link org.springframework.transaction.interceptor.TransactionProxyFactoryBean} be matched by
+	 * type without being created before the advisors exist.
+	 *
+	 * @return the post processor
+	 */
+	@Bean
+	public static ProxyFactoryBeanObjectTypePostProcessor proxyFactoryBeanObjectTypePostProcessor() {
+		return new ProxyFactoryBeanObjectTypePostProcessor();
+	}
+
+	/**
 	 * Added for backwards compatibility with services defined in xml with TransactionProxyFactoryBean
 	 *
 	 * @param authorizationAdvice
