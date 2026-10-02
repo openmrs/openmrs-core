@@ -84,6 +84,18 @@
 		<url-pattern>/*</url-pattern> 
 	</filter-mapping>
 	
+	<!-- Handles /ws/... paths that end in a slash as the path without it, as Spring MVC did before
+	     Spring 6, so e.g. POST /ws/rest/v1/patient/ still reaches its handler. Mapped ahead of the
+	     other filters so that they and module filters (e.g. /ws/fhir2) all see the same path. -->
+	<filter>
+		<filter-name>TrailingSlashFilter</filter-name>
+		<filter-class>org.openmrs.web.filter.TrailingSlashFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>TrailingSlashFilter</filter-name>
+		<url-pattern>/ws/*</url-pattern>
+	</filter-mapping>
+
 	<!-- Should be the first real INTERCEPTING filter so that if any database 
 	     updates are needed, they can be run by an admin -->
 	<filter>
