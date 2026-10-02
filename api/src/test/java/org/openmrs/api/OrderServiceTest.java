@@ -22,12 +22,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,6 +87,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -96,7 +95,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.openmrs.Order.Action.DISCONTINUE;
 import static org.openmrs.Order.FulfillerStatus.COMPLETED;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
@@ -250,6 +248,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderService orderServiceNode1 = new OrderServiceImpl();
 		OrderService orderServiceNode2 = new OrderServiceImpl();
 
+		// Keep the number of concurrent threads below the 50-connection pool limit.
+		// Increasing the concurrency may cause tasks to wait for database connections.
+		// See TRUNK-6465.
 		int threadCount = 7;
 		int tasksPerNode = 20 * OrderServiceImpl.ORDER_NUMBER_BLOCK_SIZE;
 		int taskCount = 3 * tasksPerNode;
@@ -273,14 +274,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			submitConcurrentOrderNumberGenerationTasks(executor3, orderServiceNode2, tasksPerNode, uniqueOrderNumbers,
 			    futures);
 
+			// If a task times out, it may indicate that there are not enough database
+			// connections available for the concurrent tasks. See TRUNK-6465.
 			for (Future<?> future : futures) {
-				try {
-					future.get(30, TimeUnit.SECONDS);
-				} catch (ExecutionException e) {
-					fail("Order number generation failed", e.getCause());
-				} catch (TimeoutException e) {
-					fail("getNewOrderNumber timed out, likely a connection pool deadlock; see TRUNK-6465", e);
-				}
+				assertDoesNotThrow(() -> future.get(30, TimeUnit.SECONDS));
 			}
 		} finally {
 			executor1.shutdownNow();
@@ -331,12 +328,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getNewOrderNumber_shouldReturnSequentialOrderNumbersAcrossBlockBoundary() {
 		//use clean OrderService not affected by previous tests
-		OrderService orderService = new OrderServiceImpl();
+		OrderService testOrderService = new OrderServiceImpl();
 
 		int numberCount = OrderServiceImpl.ORDER_NUMBER_BLOCK_SIZE * 3;
 		List<String> orderNumbers = new ArrayList<>(numberCount);
 		for (int i = 0; i < numberCount; i++) {
-			orderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
+			orderNumbers.add(((OrderNumberGenerator) testOrderService).getNewOrderNumber(null));
 		}
 
 		for (int i = 1; i < orderNumbers.size(); i++) {
