@@ -347,11 +347,16 @@ public interface AdministrationService extends OpenmrsService {
 	 * Returns a global property according to the type specified
 	 * <p>
 	 * <strong>Should</strong> get property value in the proper type specified<br/>
-	 * <strong>Should</strong> return default value if property name does not exist
+	 * <strong>Should</strong> return default value if property name does not exist<br/>
+	 * <strong>Should</strong> return {@code null} without conversion if the default value is
+	 * {@code null}
 	 *
-	 * @param <T>
-	 * @param propertyName
-	 * @return property value in the type of the default value
+	 * @param <T> the return type
+	 * @param propertyName the name of the global property
+	 * @param defaultValue the default value and the type to use when converting the property value; if
+	 *            {@code null}, no conversion is performed and {@code null} is returned
+	 * @return property value in the type of the default value, the default value if the property does
+	 *         not exist, or {@code null} if the default value is {@code null}
 	 * @since 1.7
 	 */
 	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
