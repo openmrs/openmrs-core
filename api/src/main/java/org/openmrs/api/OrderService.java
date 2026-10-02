@@ -398,9 +398,7 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Deprecated(since = "3.0.0")
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
-	default Long getNextOrderNumberSeedSequenceValue() {
-		return allocateOrderNumberBlock();
-	}
+	public Long getNextOrderNumberSeedSequenceValue();
 
 	/**
 	 * Gets the order matching the specified order number and its previous orders in the ordering they

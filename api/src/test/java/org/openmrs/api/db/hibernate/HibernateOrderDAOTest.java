@@ -27,6 +27,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.OrderServiceImpl;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
@@ -249,7 +250,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void allocateOrderNumberBlock_shouldAllocateNonOverlappingBlocks() {
-		int blockSize = 100;
+		int blockSize = OrderServiceImpl.ORDER_NUMBER_BLOCK_SIZE;
 
 		Long firstBlockStart = dao.allocateOrderNumberBlock(blockSize);
 		Long secondBlockStart = dao.allocateOrderNumberBlock(blockSize);
@@ -263,19 +264,18 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void allocateOrderNumberBlock_shouldIncrementSeedByBlockSize() {
-		int blockSize = 100;
+		int blockSize = OrderServiceImpl.ORDER_NUMBER_BLOCK_SIZE;
 
 		GlobalProperty globalProperty = sessionFactory.getCurrentSession().find(GlobalProperty.class,
 		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockMode.NONE);
-
 		long initialSeed = Long.parseLong(globalProperty.getPropertyValue());
 
 		Long allocatedSeed = dao.allocateOrderNumberBlock(blockSize);
 
-		GlobalProperty updatedGlobalProperty = sessionFactory.getCurrentSession().find(GlobalProperty.class,
-		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockMode.NONE);
-
-		long updatedSeed = Long.parseLong(updatedGlobalProperty.getPropertyValue());
+		// push the pending update to the DB, then re-read the row bypassing the persistence context
+		sessionFactory.getCurrentSession().flush();
+		sessionFactory.getCurrentSession().refresh(globalProperty);
+		long updatedSeed = Long.parseLong(globalProperty.getPropertyValue());
 
 		assertEquals(initialSeed, allocatedSeed.longValue());
 		assertEquals(initialSeed + blockSize, updatedSeed);
