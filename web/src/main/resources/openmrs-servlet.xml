@@ -22,4 +22,9 @@
        		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<alias name="messageSourceService" alias="messageSource"/>
+
+	<!-- Distributed HTTP session config (TRUNK-6415). Registered here, not component-scanned: the
+	     org.openmrs scan does not reach the openmrs-web jar, and this must be in the root context so the
+	     web.xml DelegatingFilterProxy and Context.getRegisteredComponents can see its beans. Opt-in. -->
+	<bean class="org.openmrs.web.session.DistributedHttpSessionConfig"/>
 </beans>

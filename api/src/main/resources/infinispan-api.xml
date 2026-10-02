@@ -16,6 +16,31 @@
 	xmlns="urn:infinispan:config:15.2">
 
 	<cache-container>
+		<!-- Admits SessionPrincipal to the session store: org.openmrs.* is NOT in Infinispan's default
+		     deserialization allow-list, so this entry is required for our own type to (de)serialize. This is
+		     not a tight boundary - Infinispan already permits java.util.* and org.springframework.* (which
+		     is why the org.springframework.session regex is only explicitness), and it cannot be narrowed
+		     because Spring Session serialises the whole session attribute map. Deserialization safety
+		     therefore rests on securing the transport, not on this list. -->
+		<serialization>
+			<allow-list>
+				<class>org.openmrs.api.context.SessionPrincipal</class>
+				<regex>org\.springframework\.session\..*</regex>
+			</allow-list>
+		</serialization>
+
+		<!-- Distributed HTTP session store (TRUNK-6415): replicated so a session survives node loss.
+		     mode=SYNC is deliberate: the session must reach another node before the response returns, so a node
+		     dying immediately after login does not lose it (the point of the feature). Opt-in, only used when
+		     session.distributed=true. -->
+		<replicated-cache name="sessions" mode="SYNC" remote-timeout="20000" statistics="false">
+			<encoding media-type="application/x-java-serialized-object"/>
+			<locking concurrency-level="1000" acquire-timeout="15000"/>
+			<transaction mode="NONE" />
+			<expiration lifespan="1800000" interval="60000"/>
+			<memory max-count="50000"/>
+		</replicated-cache>
+
 		<!-- Default configuration is appropriate for entity/collection caching. -->
 		<invalidation-cache-configuration name="entity" remote-timeout="20000" statistics="false">
 			<encoding media-type="application/x-java-object"/>

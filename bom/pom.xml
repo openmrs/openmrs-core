@@ -50,6 +50,8 @@
 		<springTestVersion>7.0.9</springTestVersion>
 		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
 		<springSecurityVersion>7.1.1</springSecurityVersion>
+		<!-- springSessionVersion: the Spring Session line built against springVersion (7.0.x -> 4.0.x) -->
+		<springSessionVersion>4.0.2</springSessionVersion>
 		<hibernateVersion>7.4.11.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
@@ -275,6 +277,15 @@
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-bom</artifactId>
 				<version>${springSecurityVersion}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Spring Session (distributed HTTP session backend, TRUNK-6415) -->
+			<dependency>
+				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-bom</artifactId>
+				<version>${springSessionVersion}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
