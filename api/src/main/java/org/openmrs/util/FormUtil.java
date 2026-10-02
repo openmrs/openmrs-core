@@ -14,19 +14,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.openmrs.Concept;
-import org.openmrs.ConceptName;
-import org.openmrs.Drug;
 import org.openmrs.Form;
 import org.openmrs.FormField;
-import org.openmrs.hl7.HL7Constants;
 
 /**
  * OpenMRS utilities related to forms.
@@ -198,38 +193,5 @@ public class FormUtil {
 	 */
 	public static String getFormUriWithoutExtension(Form form) {
 		return form.getFormId() + "-" + form.getVersion() + "-" + form.getBuild();
-	}
-
-	/**
-	 * Turn the given concept into a string acceptable to for hl7 and forms
-	 *
-	 * @param concept Concept to convert to a string
-	 * @param locale Locale to use for the concept name
-	 * @return String representation of the given concept
-	 */
-	public static String conceptToString(Concept concept, Locale locale) {
-		ConceptName localizedName = concept.getName(locale, false);
-		return conceptToString(concept, localizedName);
-	}
-
-	/**
-	 * Turn the given concept/concept-name pair into a string acceptable for hl7 and forms
-	 *
-	 * @param concept Concept to convert to a string
-	 * @param localizedName specific localized concept-name
-	 * @return String representation of the given concept
-	 */
-	public static String conceptToString(Concept concept, ConceptName localizedName) {
-		return concept.getConceptId() + "^" + localizedName.getName() + "^" + HL7Constants.HL7_LOCAL_CONCEPT; // + "^"
-	}
-
-	/**
-	 * Turn the given drug into a string acceptable for hl7 and forms
-	 *
-	 * @param drug Drug to convert to a string
-	 * @return String representation of the given drug
-	 */
-	public static String drugToString(Drug drug) {
-		return drug.getDrugId() + "^" + drug.getName() + "^" + HL7Constants.HL7_LOCAL_DRUG;
 	}
 }

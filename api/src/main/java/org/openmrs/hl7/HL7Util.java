@@ -14,11 +14,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openmrs.Concept;
+import org.openmrs.ConceptName;
+import org.openmrs.Drug;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -271,10 +274,10 @@ public class HL7Util {
 	 */
 	public static File getHl7ArchivesDirectory() throws APIException {
 		String archiveDir = Context.getAdministrationService()
-		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
+		        .getGlobalProperty(HL7Constants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
 
 		if (StringUtils.isBlank(archiveDir)) {
-			log.warn("Invalid value for global property '" + OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY
+			log.warn("Invalid value for global property '" + HL7Constants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY
 			        + "', trying to set a default one");
 			archiveDir = HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME;
 
@@ -283,5 +286,41 @@ public class HL7Util {
 		}
 
 		return OpenmrsUtil.getDirectoryInApplicationDataDirectory(archiveDir);
+	}
+
+	/**
+	 * Turn the given concept into a string in the HL7 coded element format
+	 *
+	 * @param concept Concept to convert to a string
+	 * @param locale Locale to use for the concept name
+	 * @return String representation of the given concept
+	 */
+	public static String conceptToString(Concept concept, Locale locale) {
+		ConceptName localizedName = concept.getName(locale, false);
+		return conceptToString(concept, localizedName);
+	}
+
+	/**
+	 * Turn the given concept/concept-name pair into a string in the HL7 coded element format. The text
+	 * component is optional in HL7, so a concept without a name is still identified by its id and
+	 * coding system.
+	 *
+	 * @param concept Concept to convert to a string
+	 * @param localizedName specific localized concept-name, or null to leave the name part empty
+	 * @return String representation of the given concept
+	 */
+	public static String conceptToString(Concept concept, ConceptName localizedName) {
+		String name = localizedName == null ? "" : localizedName.getName();
+		return concept.getConceptId() + "^" + name + "^" + HL7Constants.HL7_LOCAL_CONCEPT;
+	}
+
+	/**
+	 * Turn the given drug into a string in the HL7 coded element format
+	 *
+	 * @param drug Drug to convert to a string
+	 * @return String representation of the given drug
+	 */
+	public static String drugToString(Drug drug) {
+		return drug.getDrugId() + "^" + drug.getName() + "^" + HL7Constants.HL7_LOCAL_DRUG;
 	}
 }
