@@ -1,0 +1,91 @@
+@startuml
+
+hide circle
+skinparam linetype ortho
+
+title Encounter Domain ER Diagram (Week 12)
+
+' 1. TABLE: ENCOUNTER (Center)
+entity "encounter" as e {
+  *encounter_id : int <<PK>>
+  --
+  *encounter_datetime : datetime
+  *patient_id : int <<FK>>
+  *location_id : int <<FK>>
+  *encounter_type_id : int <<FK>>
+  *visit_id : int <<FK>>
+  form_id : int
+}
+
+' 2. TABLE: ENCOUNTER TYPE
+entity "encounter_type" as et {
+  *encounter_type_id : int <<PK>>
+  --
+  *name : varchar
+  description : text
+}
+
+' 3. TABLE: VISIT
+entity "visit" as v {
+  *visit_id : int <<PK>>
+  --
+  *patient_id : int <<FK>>
+  start_datetime : datetime
+  end_datetime : datetime
+  visit_type_id : int
+}
+
+' 4. TABLE: PATIENT
+entity "patient" as p {
+  *patient_id : int <<PK>>
+  --
+  gender : varchar
+  birthdate : date
+}
+
+' 5. TABLE: LOCATION
+entity "location" as l {
+  *location_id : int <<PK>>
+  --
+  *name : varchar
+  address1 : varchar
+}
+
+' 6. TABLE: PROVIDER (Who did it?)
+entity "provider" as prov {
+  *provider_id : int <<PK>>
+  --
+  *person_id : int <<FK>>
+  identifier : varchar
+  name : varchar
+}
+
+' Junction Table (Penghubung Encounter & Provider)
+entity "encounter_provider" as ep {
+  *encounter_provider_id : int <<PK>>
+  --
+  *encounter_id : int <<FK>>
+  *provider_id : int <<FK>>
+  *encounter_role_id : int <<FK>>
+}
+
+' --- RELATIONSHIPS ---
+
+' Encounter is part of Visit
+v ||..o{ e : "contains"
+
+' Patient Relations
+p ||..o{ v : "has visits"
+p ||..o{ e : "has encounters"
+
+' Location Relations
+l ||..o{ e : "happens at"
+
+' Type Relations
+et ||..o{ e : "defines type of"
+
+' Provider Relations
+e ||..|{ ep : "has"
+ep }|..|| prov : "performed by"
+
+@enduml
