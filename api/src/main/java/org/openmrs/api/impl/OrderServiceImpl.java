@@ -569,6 +569,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return saveOrderInternal(order, null);
 	}
 
+	@Override
+	public Order updateOrderIntent(Order order, Order.Intent newIntent) {
+		if (order == null) {
+			throw new IllegalArgumentException("Order cannot be null");
+		}
+		if (newIntent == null) {
+			throw new IllegalArgumentException("Intent cannot be null");
+		}
+		order.setIntent(newIntent);
+		return saveOrderInternal(order, null);
+	}
+	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
