@@ -409,7 +409,9 @@ public interface LocationService extends OpenmrsService {
 	/**
 	 * Returns descendant locations of a given location, i.e. its children, grandchildren, etc.
 	 *
-	 * @param location the location whose descendants should be returned
+	 * @param location the location whose descendants should be returned. When {@code includeRetired} is
+	 *            false, a retired location prunes its whole subtree, so if this location is itself
+	 *            retired, none of its descendants are returned.
 	 * @param includeRetired whether or not to include retired locations
 	 * @return a list of descendant locations
 	 * @throws APIException

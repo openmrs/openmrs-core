@@ -458,7 +458,10 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @return Returns a Set&lt;Location&gt; of the descendant location.
 	 * @since 1.10
 	 * @deprecated since 2.8.7 in favor of
-	 *             {@link LocationService#getDescendantLocations(Location, boolean)}
+	 *             {@link LocationService#getDescendantLocations(Location, boolean)}, which differs when
+	 *             the ancestor itself is retired: with {@code includeRetired} false it returns none of
+	 *             the descendants of a retired ancestor, whereas this method never examines the
+	 *             ancestor's own retired flag.
 	 */
 	@Deprecated
 	public Set<Location> getDescendantLocations(boolean includeRetired) {
