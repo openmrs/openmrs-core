@@ -732,7 +732,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		if (Obs.class.equals(type)) {
 			return (T) getObsByUuid(uuid);
 		}
-		throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+		throw new APIException("Unsupported type for getRefByUuid: " + (type != null ? type.getName() : "null"));
 	}
 
 	@Override

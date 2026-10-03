@@ -439,7 +439,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		if (VisitAttributeType.class.equals(type)) {
 			return (T) getVisitAttributeTypeByUuid(uuid);
 		}
-		throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+		throw new APIException("Unsupported type for getRefByUuid: " + (type != null ? type.getName() : "null"));
 	}
 
 	@Override
