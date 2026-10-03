@@ -33,9 +33,15 @@ public class ModuleServlet extends HttpServlet {
 	private static final Logger log = LoggerFactory.getLogger(ModuleServlet.class);
 
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.debug("In service method for module servlet: " + request.getPathInfo());
+protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	try {
+		log.debug("In service method for module servlet: {}", request.getPathInfo());
+
 		String servletName = request.getPathInfo();
+		if (servletName == null) {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
 		int end = servletName.indexOf("/", 1);
 
 		String moduleId = null;
@@ -43,13 +49,13 @@ public class ModuleServlet extends HttpServlet {
 			moduleId = servletName.substring(1, end);
 		}
 
-		log.debug("ModuleId: " + moduleId);
+		log.debug("ModuleId: {}", moduleId);
 		Module mod = ModuleFactory.getModuleById(moduleId);
 
 		// where in the path to start trimming
 		int start = 1;
 		if (mod != null) {
-			log.debug("Module with id " + moduleId + " found.  Looking for servlet name after " + moduleId + " in url path");
+			log.debug("Module with id {} found. Looking for servlet name after {} in url path", moduleId, moduleId);
 			start = moduleId.length() + 2;
 			// this skips over the moduleId that is in the path
 		}
@@ -58,21 +64,33 @@ public class ModuleServlet extends HttpServlet {
 		if (end == -1 || end > servletName.length()) {
 			end = servletName.length();
 		}
+
 		servletName = servletName.substring(start, end);
 
-		log.debug("Servlet name: " + servletName);
+		log.debug("Servlet name: {}", servletName);
 
 		HttpServlet servlet = WebModuleUtil.getServlet(servletName);
 
 		if (servlet == null) {
-			log.warn("No servlet with name: " + servletName + " was found");
+			log.warn("No servlet with name: {} was found", servletName);
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
 
 		servlet.service(request, response);
-	}
 
+	} catch (Exception e) {
+		log.error("An unexpected error occurred while processing a request for {}", request.getPathInfo(), e);
+		try {
+			if (!response.isCommitted()) {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"An unexpected error occurred while processing the request.");
+			}
+		} catch (IOException ioException) {
+			log.warn("Failed to send error response", ioException);
+		}
+	}
+}
 	/**
 	 * Internal implementation of the ServletConfig interface, to be passed to module servlets when they
 	 * are first loaded
