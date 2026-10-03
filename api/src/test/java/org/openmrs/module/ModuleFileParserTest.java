@@ -9,16 +9,23 @@
  */
 package org.openmrs.module;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -36,16 +43,9 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.StringStartsWith.startsWith;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.openmrs.util.XmlUtils.createDocumentBuilder;
-
 /**
- * Tests {@link ModuleFileParser} with a database and file IO. Mostly deprecated methods are tested
- * but also contains one integration style test parsing the logic module from test resources.
+ * Tests {@link ModuleFileParser} with a database and file IO. Contains one integration style test
+ * parsing the logic module from test resources.
  */
 public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
@@ -65,34 +65,12 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void moduleFileParser_shouldFailCreatingParserFromFileIfGivenNull() {
-		expectModuleExceptionWithTranslatedMessage(() -> new ModuleFileParser((File) null), "Module.error.fileCannotBeNull");
-	}
-
-	@Test
-	public void moduleFileParser_shouldFailCreatingParserFromFileIfNotEndingInOmod() {
-		expectModuleExceptionWithTranslatedMessage(() -> new ModuleFileParser(new File("reporting.jar")),
-		    "Module.error.invalidFileExtension");
-	}
-
-	@Test
-	public void moduleFileParser_shouldFailCreatingParserFromFileIfInputStreamClosed() throws IOException {
-		File moduleFile = new File(getClass().getClassLoader().getResource(LOGIC_MODULE_PATH).getPath());
-
-		try (InputStream inputStream = new FileInputStream(moduleFile)) {
-			inputStream.close();
-			expectModuleExceptionWithTranslatedMessage(() -> new ModuleFileParser(inputStream),
-			    "Module.error.cannotCreateFile");
-		}
-	}
-
-	@Test
 	public void parse_shouldParseValidXmlConfigCreatedFromInputStream() throws IOException {
 		File moduleFile = new File(getClass().getClassLoader().getResource(LOGIC_MODULE_PATH).getPath());
 
 		Module module;
 		try (FileInputStream moduleFileInputStream = new FileInputStream(moduleFile)) {
-			module = new ModuleFileParser().parse(moduleFileInputStream);
+			module = new ModuleFileParser(messageSourceService).parse(moduleFileInputStream);
 		}
 
 		assertThat(module.getModuleId(), is("logic"));
@@ -123,8 +101,8 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		configXml.appendChild(root);
 		configXml.getDocumentElement().setAttribute("configVersion", invalidConfigVersion);
 
-		expectModuleExceptionWithMessage(() -> new ModuleFileParser().parse(writeConfigXmlToFile(configXml)),
-		    expectedMessage);
+		expectModuleExceptionWithMessage(
+		    () -> new ModuleFileParser(messageSourceService).parse(writeConfigXmlToFile(configXml)), expectedMessage);
 	}
 
 	@Test
@@ -141,11 +119,6 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		assertThat(module.getMappingFiles().size(), is(1));
 		assertThat(module.getMappingFiles(), hasItems("LogicRuleToken.hbm.xml"));
 		assertThat(module.getConfigVersion(), is("1.3"));
-	}
-
-	private void expectModuleExceptionWithTranslatedMessage(Executable executable, String s) {
-		String expectedMessage = messageSourceService.getMessage(s);
-		expectModuleExceptionWithMessage(executable, expectedMessage);
 	}
 
 	private void expectModuleExceptionWithMessage(Executable executable, String s) {
