@@ -26,7 +26,7 @@ import org.openmrs.logic.result.Result;
  */
 public class LogicTransform {
 
-	private Operator transformOperator;
+	private final Operator transformOperator;
 
 	private Integer numResults = null;
 
@@ -96,11 +96,9 @@ public class LogicTransform {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof LogicTransform)) {
+		if (!(obj instanceof LogicTransform compTransform)) {
 			return false;
 		}
-
-		LogicTransform compTransform = (LogicTransform) obj;
 
 		return safeEquals(this.transformOperator, compTransform.getTransformOperator())
 		        && safeEquals(numResults, compTransform.getNumResults())
