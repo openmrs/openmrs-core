@@ -875,7 +875,8 @@ public class ModuleUtil {
 		for (Module module : startedModules) {
 			try {
 				if (module.getModuleActivator() != null) {
-					log.debug("Run module willRefreshContext: {}", module.getModuleId());
+					log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Run module willRefreshContext: {}",
+					    module.getModuleId());
 					Thread.currentThread().setContextClassLoader(ModuleFactory.getModuleClassLoader(module));
 					module.getModuleActivator().willRefreshContext();
 				}
@@ -898,7 +899,7 @@ public class ModuleUtil {
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 
-		log.debug("Refreshing context");
+		log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Refreshing context");
 		ServiceContext.getInstance().startRefreshingContext();
 		try {
 			ctx.refresh();
@@ -908,7 +909,7 @@ public class ModuleUtil {
 		} finally {
 			ServiceContext.getInstance().doneRefreshingContext();
 		}
-		log.debug("Done refreshing context");
+		log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Done refreshing context");
 
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
@@ -916,7 +917,8 @@ public class ModuleUtil {
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
 
 		// reload the advice points that were lost when refreshing Spring
-		log.debug("Reloading advice for all started modules: {}", startedModules.size());
+		log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Reloading advice for all started modules: {}",
+		    startedModules.size());
 
 		try {
 			//The call backs in this block may need lazy loading of objects
@@ -934,20 +936,24 @@ public class ModuleUtil {
 					ModuleFactory.passDaemonToken(module);
 
 					if (module.getModuleActivator() != null) {
-						log.debug("Run module contextRefreshed: {}", module.getModuleId());
+						log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Run module contextRefreshed: {}",
+						    module.getModuleId());
 						module.getModuleActivator().contextRefreshed();
 						try {
 							//if it is system start up, call the started method for all started modules
 							if (isOpenmrsStartup) {
-								log.debug("Run module started: {}", module.getModuleId());
+								log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Run module started: {}",
+								    module.getModuleId());
 								module.getModuleActivator().started();
 							}
 							//if refreshing the context after a user started or uploaded a new module
 							else if (!isOpenmrsStartup && module.equals(startedModule)) {
-								log.debug("Run module started: {}", module.getModuleId());
+								log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Run module started: {}",
+								    module.getModuleId());
 								module.getModuleActivator().started();
 							}
-							log.debug("Done running module started: {}", module.getModuleId());
+							log.debug(OpenmrsConstants.PERFORMANCE_MARKER, "Done running module started: {}",
+							    module.getModuleId());
 						} catch (Error e) {
 							log.warn("Unable to invoke started() method on the module's activator", e);
 							ModuleFactory.stopModule(module, true, true);
