@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ImageHandlerTest extends BaseContextSensitiveTest {
@@ -125,6 +126,36 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 		// but we can at least make sure it ends with the full filename
 		assertTrue(complexObs.getComplexData().getTitle().endsWith(filename));
 
+	}
+
+	@Test
+	public void getObs_shouldFallBackToLegacyFilenameWhenTheFileIsMissing() throws IOException {
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, "obs"));
+
+		// old style value complex where the first part is the bare image extension, so that
+		// parseFilename resolves to an extension ImageIO recognises and the TRUNK-6472 fallback kicks in
+		Obs obs = new Obs();
+		obs.setValueComplex("jpg|2026/01-01/2026-01-01-00-00-00-000-abcdefgh.jpg");
+
+		Obs complexObs = handler.getObs(obs, "RAW_VIEW");
+
+		assertNull(complexObs.getComplexData().getData(), "a missing image should yield no data");
+		assertEquals("/2026/01-01/2026-01-01-00-00-00-000-abcdefgh.jpg", complexObs.getComplexData().getTitle());
+	}
+
+	@Test
+	public void getObs_shouldNotThrowWhenTheObsDirGlobalPropertyHasNoValue() throws IOException {
+		// The TRUNK-6472 fallback strips the obs dir off the key, which must be skipped when the
+		// global property has no value to strip
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, null));
+
+		Obs obs = new Obs();
+		obs.setValueComplex("jpg|2026/01-01/2026-01-01-00-00-00-000-abcdefgh.jpg");
+
+		Obs complexObs = handler.getObs(obs, "RAW_VIEW");
+
+		assertNull(complexObs.getComplexData().getData(), "a missing image should yield no data");
+		assertEquals("jpg", complexObs.getComplexData().getTitle());
 	}
 
 	@Test
