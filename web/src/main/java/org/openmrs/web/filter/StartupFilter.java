@@ -58,6 +58,7 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.WebUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
 import org.openmrs.web.filter.util.FilterUtil;
@@ -132,6 +133,7 @@ public abstract class StartupFilter implements Filter {
 			HttpServletResponse httpResponse = (HttpServletResponse) response;
 
 			String servletPath = httpRequest.getServletPath();
+			String sanitizedServletPath = WebUtil.sanitizeForLogging(servletPath);
 			// for all /images and /initfilter/scripts files, write the path
 			// (the "/initfilter" part is needed so that the openmrs_static_context-servlet.xml file doesn't
 			//  get instantiated early, before the locale messages are all set up)
@@ -140,16 +142,17 @@ public abstract class StartupFilter implements Filter {
 				servletPath = servletPath.replaceFirst("/initfilter", "/WEB-INF/view");
 				// writes the actual file path to the response
 				Path filePath = Paths.get(filterConfig.getServletContext().getRealPath(servletPath)).normalize();
+				String sanitizedFilePath = WebUtil.sanitizeForLogging(filePath.toString());
 				Path fullFilePath = filePath;
-
-				if (httpRequest.getPathInfo() != null) {
-					fullFilePath = fullFilePath.resolve(httpRequest.getPathInfo());
+				String pathInfo = httpRequest.getPathInfo();
+				if (pathInfo != null) {
+					fullFilePath = fullFilePath.resolve(pathInfo);
 					if (!(fullFilePath.normalize().startsWith(filePath))) {
-						log.warn("Detected attempted directory traversal in request for {}", httpRequest.getPathInfo());
+						String sanitizedPathInfo = WebUtil.sanitizeForLogging(pathInfo);
+						log.warn("Detected attempted directory traversal in request for {}", sanitizedPathInfo);
 						return;
 					}
 				}
-
 				String contentType = httpRequest.getServletContext().getMimeType(fullFilePath.toString());
 				if (contentType == null || contentType.isEmpty()) {
 					try {
@@ -169,14 +172,14 @@ public abstract class StartupFilter implements Filter {
 				try (InputStream fis = new FileInputStream(fullFilePath.normalize().toFile())) {
 					OpenmrsUtil.copyFile(fis, httpResponse.getOutputStream());
 				} catch (FileNotFoundException e) {
-					log.error("Unable to find file: {}", filePath, e);
+					log.error("Unable to find file: {}", sanitizedFilePath, e);
 				} catch (IOException e) {
-					log.warn("An error occurred while handling file {}", filePath, e);
+					log.warn("An error occurred while handling file {}", sanitizedFilePath, e);
 				}
 			} else if (servletPath.startsWith("/scripts")) {
 				log.error(
 				    "Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
-				            + servletPath + "' instead.");
+				            + sanitizedServletPath + "' instead.");
 			}
 			// for anything but /initialsetup
 			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)
