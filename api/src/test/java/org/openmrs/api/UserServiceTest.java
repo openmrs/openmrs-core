@@ -1544,10 +1544,33 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user.getUsername(), "userServiceTest");
 		
 		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class, () ->  userService.changePassword(user, "userServiceTest", "testTest123"));
-		
+
 		assertThat(exception.getMessage(), is(messages.getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null)));
 	}
-	
+
+	@Test
+	public void forcePasswordChange_shouldWorkForCallerWhoHoldsOnlyEditUserPasswordsPrivilege() throws IllegalAccessException {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		User target = createTestUser();
+		User caller = userService.getUser(6001);
+		assertFalse(caller.hasPrivilege(PrivilegeConstants.EDIT_USERS));
+
+		withCurrentUserAs(caller, () -> {
+			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			try {
+				userService.forcePasswordChange(target);
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
+			}
+		});
+
+		User reloaded = userService.getUser(target.getUserId());
+		assertEquals("true", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
+		assertEquals("true", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_EXPIRED));
+	}
+
 	@Test
 	public void changePasswordUsingSecretAnswer_shouldUpdatePasswordIfSecretIsCorrect() {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
