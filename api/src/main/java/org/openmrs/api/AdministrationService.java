@@ -463,6 +463,10 @@ public interface AdministrationService extends OpenmrsService {
 
 	/**
 	 * Checks whether a module setup needs to be run due to a version change.
+	 * <p>
+	 * A module whose version is a <code>-SNAPSHOT</code> always needs setup, because a snapshot version
+	 * is republished unchanged for every rebuild and so cannot distinguish an unchanged module from one
+	 * that has gained liquibase changesets since it was installed.
 	 *
 	 * @since 2.9.0
 	 * @param moduleId the identifier of the module to check
