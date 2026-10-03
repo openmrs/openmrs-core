@@ -9,6 +9,8 @@
  */
 package org.openmrs.module;
 
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +31,7 @@ import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -48,8 +51,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 /**
  * This class will parse an OpenMRS module, specifically its {@code config.xml} file into a
@@ -93,11 +94,6 @@ public class ModuleFileParser {
 		validConfigVersions.add("2.0");
 	}
 
-	// TODO - remove this field once ModuleFileParser(File), ModuleFileParser(InputStream) are removed.
-	// There is no need to keep the file as state since moduleFileParser.parse(File) does not need it.
-	// this is also why all private methods that need access to the file for parsing or error message get it as a parameter
-	private File moduleFile;
-
 	private MessageSourceService messageSourceService;
 
 	/**
@@ -108,20 +104,6 @@ public class ModuleFileParser {
 	 */
 	public ModuleFileParser(MessageSourceService messageSourceService) {
 		this.messageSourceService = Objects.requireNonNull(messageSourceService, "messageSourceService must not be null");
-	}
-
-	/**
-	 * Constructor
-	 *
-	 * @param moduleFile the module (jar)file that will be parsed
-	 * @deprecated since 2.2.0 use {@link #ModuleFileParser(MessageSourceService)}
-	 */
-	@Deprecated
-	public ModuleFileParser(File moduleFile) {
-		this.messageSourceService = Context.getMessageSourceService();
-		validateFileIsNotNull(moduleFile);
-		validateFileHasModuleFileExtension(moduleFile);
-		this.moduleFile = moduleFile;
 	}
 
 	private void validateFileIsNotNull(File moduleFile) {
@@ -135,20 +117,6 @@ public class ModuleFileParser {
 			throw new ModuleException(messageSourceService.getMessage("Module.error.invalidFileExtension"),
 			        moduleFile.getName());
 		}
-	}
-
-	/**
-	 * Convenience constructor to parse the given inputStream file into an omod. <br>
-	 * This copies the stream into a temporary file just so things can be parsed.<br>
-	 *
-	 * @param inputStream the inputStream pointing to an omod file
-	 * @deprecated since 2.2.0 use {@link #ModuleFileParser(MessageSourceService)}
-	 */
-	@Deprecated
-	public ModuleFileParser(InputStream inputStream) {
-		this.messageSourceService = Context.getMessageSourceService();
-		this.moduleFile = createTempFile("moduleUpgrade", OPENMRS_MODULE_FILE_EXTENSION);
-		copyInputStreamToFile(inputStream, this.moduleFile);
 	}
 
 	/**
@@ -184,29 +152,6 @@ public class ModuleFileParser {
 				inputStream.close();
 			} catch (Exception e) { /* pass */}
 		}
-	}
-
-	/**
-	 * This constructor was created for testing purposes and is now deprecated. DO NOT USE.
-	 *
-	 * @deprecated since 2.2.0 use {@link #ModuleFileParser(MessageSourceService)}
-	 */
-	@Deprecated
-	ModuleFileParser() {
-	}
-
-	/**
-	 * Get the module. If you use this method only do so together with {@link #ModuleFileParser(File)}
-	 * or {@link #ModuleFileParser(InputStream)}. Best use
-	 * {@link #ModuleFileParser(MessageSourceService)} and {@link #parse(File)} since this method is
-	 * deprecated.
-	 *
-	 * @return new module object
-	 * @deprecated since 2.2.0 use {@link #parse(File)}
-	 */
-	@Deprecated
-	public Module parse() throws ModuleException {
-		return parse(this.moduleFile);
 	}
 
 	/**
