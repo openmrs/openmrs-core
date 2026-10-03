@@ -110,20 +110,6 @@ public class ModuleFileParser {
 		this.messageSourceService = Objects.requireNonNull(messageSourceService, "messageSourceService must not be null");
 	}
 
-	/**
-	 * Constructor
-	 *
-	 * @param moduleFile the module (jar)file that will be parsed
-	 * @deprecated since 2.2.0 use {@link #ModuleFileParser(MessageSourceService)}
-	 */
-	@Deprecated
-	public ModuleFileParser(File moduleFile) {
-		this.messageSourceService = Context.getMessageSourceService();
-		validateFileIsNotNull(moduleFile);
-		validateFileHasModuleFileExtension(moduleFile);
-		this.moduleFile = moduleFile;
-	}
-
 	private void validateFileIsNotNull(File moduleFile) {
 		if (moduleFile == null) {
 			throw new ModuleException(messageSourceService.getMessage("Module.error.fileCannotBeNull"));
@@ -135,20 +121,6 @@ public class ModuleFileParser {
 			throw new ModuleException(messageSourceService.getMessage("Module.error.invalidFileExtension"),
 			        moduleFile.getName());
 		}
-	}
-
-	/**
-	 * Convenience constructor to parse the given inputStream file into an omod. <br>
-	 * This copies the stream into a temporary file just so things can be parsed.<br>
-	 *
-	 * @param inputStream the inputStream pointing to an omod file
-	 * @deprecated since 2.2.0 use {@link #ModuleFileParser(MessageSourceService)}
-	 */
-	@Deprecated
-	public ModuleFileParser(InputStream inputStream) {
-		this.messageSourceService = Context.getMessageSourceService();
-		this.moduleFile = createTempFile("moduleUpgrade", OPENMRS_MODULE_FILE_EXTENSION);
-		copyInputStreamToFile(inputStream, this.moduleFile);
 	}
 
 	/**
@@ -184,29 +156,6 @@ public class ModuleFileParser {
 				inputStream.close();
 			} catch (Exception e) { /* pass */}
 		}
-	}
-
-	/**
-	 * This constructor was created for testing purposes and is now deprecated. DO NOT USE.
-	 *
-	 * @deprecated since 2.2.0 use {@link #ModuleFileParser(MessageSourceService)}
-	 */
-	@Deprecated
-	ModuleFileParser() {
-	}
-
-	/**
-	 * Get the module. If you use this method only do so together with {@link #ModuleFileParser(File)}
-	 * or {@link #ModuleFileParser(InputStream)}. Best use
-	 * {@link #ModuleFileParser(MessageSourceService)} and {@link #parse(File)} since this method is
-	 * deprecated.
-	 *
-	 * @return new module object
-	 * @deprecated since 2.2.0 use {@link #parse(File)}
-	 */
-	@Deprecated
-	public Module parse() throws ModuleException {
-		return parse(this.moduleFile);
 	}
 
 	/**

@@ -266,8 +266,6 @@ public class WebModuleUtilTest {
 
 		Module mod = new Module("My Module");
 		mod.setModuleId("mymodule");
-		mod.setMessages(new HashMap<>());
-		mod.getMessages().put("en", englishMessages);
 		mod.setFile(new File("sampleFile.jar"));
 		mod.setConfig(moduleConfig);
 
