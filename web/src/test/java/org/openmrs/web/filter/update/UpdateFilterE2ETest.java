@@ -25,6 +25,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -159,6 +160,20 @@ class UpdateFilterE2ETest {
 	}
 
 	@Test
+	void maintenancePage_shouldRotateSessionIdOnValidLogin() throws Exception {
+		filter.authResult = true;
+		String sessionIdBeforeAuthentication = request.getSession().getId();
+		request.setParameter("page", "maintenance.vm");
+		request.setParameter("username", "admin");
+		request.setParameter("password", "Admin123");
+
+		filter.doPost(request, response);
+
+		assertNotEquals(sessionIdBeforeAuthentication, request.getSession().getId());
+		assertTrue(getAuthenticatedSuccessfully());
+	}
+
+	@Test
 	void maintenancePage_shouldShowProgressWhenUpdateAlreadyInProgress() throws Exception {
 		filter.authResult = true;
 		setDatabaseUpdateInProgress(true);
@@ -240,6 +255,16 @@ class UpdateFilterE2ETest {
 	// ========== AJAX Progress Endpoint ==========
 
 	@Test
+	void progressAjax_shouldRejectUnauthenticatedRequests() throws Exception {
+		request.setParameter("page", "updateProgress.vm.ajaxRequest");
+
+		filter.doPost(request, response);
+
+		assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
+		assertEquals("", response.getContentAsString());
+	}
+
+	@Test
 	void progressAjax_shouldReturnJsonContentType() throws Exception {
 		// Use a real response so we can check content type and written content
 		MockHttpServletResponse realResponse = new MockHttpServletResponse();
@@ -252,6 +277,7 @@ class UpdateFilterE2ETest {
 			}
 		});
 
+		setAuthenticatedSuccessfully(true);
 		request.setParameter("page", "updateProgress.vm.ajaxRequest");
 
 		ajaxFilter.doPost(request, realResponse);
@@ -263,6 +289,7 @@ class UpdateFilterE2ETest {
 	@Test
 	void progressAjax_shouldWriteJsonResponseBody() throws Exception {
 		MockHttpServletResponse realResponse = new MockHttpServletResponse();
+		setAuthenticatedSuccessfully(true);
 		request.setParameter("page", "updateProgress.vm.ajaxRequest");
 
 		filter.doPost(request, realResponse);

@@ -159,6 +159,7 @@ public class UpdateFilter extends StartupFilter {
 			log.debug("Attempting to authenticate user: " + username);
 			if (authenticateAsSuperUser(username, password)) {
 				log.debug("Authentication successful.  Redirecting to 'reviewupdates' page.");
+				httpRequest.changeSessionId();
 				// mark this session as authenticated so later steps can verify it
 				httpRequest.getSession().setAttribute(AUTHENTICATED_SUCCESSFULLY, Boolean.TRUE);
 
@@ -240,6 +241,11 @@ public class UpdateFilter extends StartupFilter {
 			renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
 
 		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
+
+			if (!Boolean.TRUE.equals(httpRequest.getSession().getAttribute(AUTHENTICATED_SUCCESSFULLY))) {
+				httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+				return;
+			}
 
 			httpResponse.setContentType("text/json");
 			httpResponse.setHeader("Cache-Control", "no-cache");
