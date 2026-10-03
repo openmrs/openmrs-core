@@ -406,6 +406,33 @@ class OpenmrsLoggingUtilTest {
 		}
 	}
 
+	/**
+	 * Regression test for the re-entrant logging initialization that broke downstream modules: reading
+	 * the {@code log.level} global property reaches into the service layer, which may be unavailable or
+	 * mid-initialization and therefore throw an unchecked exception. {@code applyLogLevels} must
+	 * swallow that failure (and still release the proxy privilege) rather than letting it propagate.
+	 * Without the broadened catch the exception escapes.
+	 */
+	@Test
+	void applyLogLevels_shouldNotPropagateRuntimeExceptionWhenReadingGlobalPropertyFails() {
+		try (MockedStatic<Context> contextMock = mockStatic(Context.class);
+		        MockedStatic<ConfigUtil> configUtilMock = mockStatic(ConfigUtil.class)) {
+			contextMock.when(Context::isSessionOpen).thenReturn(true);
+			configUtilMock.when(() -> ConfigUtil.getSystemProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getRuntimeProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenReturn(null);
+			configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL))
+			        .thenThrow(new NullPointerException("ServiceContext not initialized"));
+
+			// Must not throw
+			OpenmrsLoggingUtil.applyLogLevels();
+
+			// The proxy-privilege bracket must still be balanced even when the read fails
+			contextMock.verify(() -> Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
+		}
+	}
+
 	// --- stringToLevel ---
 
 	@Test
