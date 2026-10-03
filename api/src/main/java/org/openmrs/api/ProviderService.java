@@ -405,6 +405,19 @@ public interface ProviderService extends OpenmrsService {
 	ProviderRole getProviderRoleByUuid(String uuid);
 
 	/**
+	 * Get a {@link ProviderRole} by its exact name.
+	 * <p>
+	 * <strong>Should</strong> find provider role by name<br/>
+	 * <strong>Should</strong> return null if provider role is not found
+	 *
+	 * @param name The ProviderRole name
+	 * @return {@link ProviderRole}
+	 * @since 3.0.0
+	 */
+	@Authorized({ PrivilegeConstants.GET_PROVIDER_ROLES })
+	ProviderRole getProviderRoleByName(String name);
+
+	/**
 	 * Get providers for given roles
 	 *
 	 * @param roles The list of {@link ProviderRole}

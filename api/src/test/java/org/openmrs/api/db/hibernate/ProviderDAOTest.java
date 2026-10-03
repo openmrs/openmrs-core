@@ -110,6 +110,24 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ProviderDAO#getProviderRoleByName(String)
+	 */
+	@Test
+	public void getProviderRoleByName_shouldReturnTheProviderRoleIfExists() {
+		ProviderRole providerRole = providerDao.getProviderRoleByName("Cell supervisor");
+		assertNotNull(providerRole);
+		assertEquals(Integer.valueOf(1003), providerRole.getProviderRoleId());
+	}
+
+	/**
+	 * @see ProviderDAO#getProviderRoleByName(String)
+	 */
+	@Test
+	public void getProviderRoleByName_shouldReturnNullIfNotExists() {
+		assertNull(providerDao.getProviderRoleByName("Unknown role"));
+	}
+
+	/**
 	 * @see ProviderDAO#getProvidersByRoles(List, boolean)
 	 */
 	@Test
