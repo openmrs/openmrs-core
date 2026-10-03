@@ -600,10 +600,32 @@ public class HibernateContextDAO implements ContextDAO {
 			String gp = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION, "");
 
 			if (!OpenmrsConstants.SEARCH_INDEX_VERSION.toString().equals(gp)) {
-				updateSearchIndex();
+				rebuildSearchIndex();
 			}
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+	}
+
+	/**
+	 * Discards the indexes that are on disk and builds them again, then records the current
+	 * {@link OpenmrsConstants#SEARCH_INDEX_VERSION}.
+	 * <p>
+	 * The existing indexes are dropped and recreated rather than updated in place because an index
+	 * written by an older Lucene may not be readable by the Lucene we run now, let alone updated in
+	 * place, and the mass indexer fails on such an index instead of recovering from it.
+	 */
+	private void rebuildSearchIndex() {
+		try {
+			log.warn("Rebuilding the search index... It may take a few minutes.");
+			searchSessionFactory.getSearchSession().massIndexer().dropAndCreateSchemaOnStart(true).startAndWait();
+			saveSearchIndexVersion();
+			log.info("Finished rebuilding the search index");
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("Failed to rebuild the search index", e);
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to rebuild the search index", e);
 		}
 	}
 
@@ -615,20 +637,24 @@ public class HibernateContextDAO implements ContextDAO {
 		try {
 			log.warn("Updating the search index... It may take a few minutes.");
 			searchSessionFactory.getSearchSession().massIndexer().startAndWait();
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			GlobalProperty gp = Context.getAdministrationService()
-			        .getGlobalPropertyObject(OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
-			if (gp == null) {
-				gp = new GlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
-			}
-			gp.setPropertyValue(OpenmrsConstants.SEARCH_INDEX_VERSION.toString());
-			Context.getAdministrationService().saveGlobalProperty(gp);
+			saveSearchIndexVersion();
 			log.info("Finished updating the search index");
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to update the search index", e);
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
+	}
+
+	private void saveSearchIndexVersion() {
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		GlobalProperty gp = Context.getAdministrationService()
+		        .getGlobalPropertyObject(OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
+		if (gp == null) {
+			gp = new GlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
+		}
+		gp.setPropertyValue(OpenmrsConstants.SEARCH_INDEX_VERSION.toString());
+		Context.getAdministrationService().saveGlobalProperty(gp);
 	}
 
 	/**

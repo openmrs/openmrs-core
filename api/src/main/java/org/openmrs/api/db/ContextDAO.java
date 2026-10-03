@@ -180,7 +180,8 @@ public interface ContextDAO {
 	 * Updates the search index if necessary.
 	 * <p>
 	 * The update is triggered if {@link OpenmrsConstants#GP_SEARCH_INDEX_VERSION} is blank or the value
-	 * does not match {@link OpenmrsConstants#SEARCH_INDEX_VERSION}.
+	 * does not match {@link OpenmrsConstants#SEARCH_INDEX_VERSION}. If the version differs, the index
+	 * will be rebuilt (dropped and recreated) to ensure compatibility with the current Lucene version.
 	 */
 	public void setupSearchIndex();
 
