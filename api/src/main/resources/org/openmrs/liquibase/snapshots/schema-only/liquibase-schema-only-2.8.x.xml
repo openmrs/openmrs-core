@@ -2407,8 +2407,8 @@
       <column defaultValueNumeric="0" name="state" type="INT"> 
         <constraints nullable="false"/> 
       </column>  
-      <column name="start_date" type="date"/>  
-      <column name="end_date" type="date"/>  
+      <column name="start_date" type="datetime(0)"/>
+      <column name="end_date" type="datetime(0)"/> 
       <column defaultValueNumeric="0" name="creator" type="INT"> 
         <constraints nullable="false"/> 
       </column>  
