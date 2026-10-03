@@ -133,7 +133,7 @@ public class EncounterTest extends BaseContextMockTest {
 		Encounter encounter = new Encounter();
 
 		assertNotNull(encounter.getObs());
-		assertEquals(encounter.getObs().size(), 0);
+		assertEquals(0, encounter.getObs().size());
 	}
 
 	/**
