@@ -1670,4 +1670,107 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		assertTrue(obsArchiveHelper.isArchived(archivedObsId),
 		    "Should return true immediately, bypassing the TTL, because of explicit notification");
 	}
+
+	@Test
+	public void unvoidEncounter_shouldRestoreAndUnvoidArchivedObservations() throws Exception {
+		// 1. Create a fresh encounter with an obs
+		Encounter encounter = new Encounter();
+		encounter.setEncounterDatetime(new Date(System.currentTimeMillis() - 3600000)); // 1 hr ago
+		encounter.setPatient(Context.getPatientService().getPatient(7));
+		encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+		encounter.setLocation(Context.getLocationService().getLocation(1));
+
+		Obs obs = createSingleObs(42.0);
+		obs.setObsDatetime(encounter.getEncounterDatetime());
+		encounter.addObs(obs);
+
+		encounter = Context.getEncounterService().saveEncounter(encounter);
+		createdEncounterIds.add(encounter.getEncounterId());
+		int obsId = encounter.getObs().iterator().next().getObsId();
+		createdObsIds.add(obsId);
+
+		// 2. Void the encounter (this cascades to void the obs with the same dateVoided)
+		Context.getEncounterService().voidEncounter(encounter, "test voiding encounter");
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs voidedObs = obsService.getObs(obsId);
+		assertTrue(voidedObs.getVoided());
+		assertEquals(encounter.getDateVoided(), voidedObs.getDateVoided());
+
+		// 3. Archive the voided obs
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(obsId);
+
+		// 4. Unvoid the encounter
+		Context.clearSession();
+		Encounter encToUnvoid = Context.getEncounterService().getEncounter(encounter.getEncounterId());
+		Context.getEncounterService().unvoidEncounter(encToUnvoid);
+		Context.flushSession();
+		Context.clearSession();
+
+		// 5. Verify the archived obs was restored and unvoided
+		assertActive(obsId);
+		Obs restoredObs = obsService.getObs(obsId);
+		assertFalse(restoredObs.getVoided());
+	}
+
+	@Test
+	public void saveEncounter_shouldSyncPatientAndLocationToArchivedObservations() throws Exception {
+		// 1. Create a fresh encounter with an obs on Patient 7
+		Encounter encounter = new Encounter();
+		Date originalDate = new Date(System.currentTimeMillis() - 7200000); // 2 hours ago
+		encounter.setEncounterDatetime(originalDate);
+		encounter.setPatient(Context.getPatientService().getPatient(7));
+		encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+		encounter.setLocation(Context.getLocationService().getLocation(1));
+
+		Obs obs = createSingleObs(42.0);
+		obs.setObsDatetime(originalDate);
+		obs.setPerson(encounter.getPatient());
+		encounter.addObs(obs);
+
+		encounter = Context.getEncounterService().saveEncounter(encounter);
+		createdEncounterIds.add(encounter.getEncounterId());
+		int obsId = encounter.getObs().iterator().next().getObsId();
+		createdObsIds.add(obsId);
+
+		// 2. Void the obs and archive it
+		Obs savedObs = obsService.getObs(obsId);
+		obsService.voidObs(savedObs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(obsId);
+
+		// 3. Edit the encounter: change patient to 8, location to 2, datetime by -1 hr (still past)
+		Context.clearSession();
+		Encounter encToEdit = Context.getEncounterService().getEncounter(encounter.getEncounterId());
+		encToEdit.setPatient(Context.getPatientService().getPatient(8));
+		encToEdit.setLocation(Context.getLocationService().getLocation(2));
+
+		Date newDate = new Date(originalDate.getTime() - 3600000); // 1 hr earlier
+		encToEdit.setEncounterDatetime(newDate);
+
+		// 4. Save encounter (this simulates mergePatients moving an encounter)
+		Context.getEncounterService().saveEncounter(encToEdit);
+		Context.flushSession();
+		Context.clearSession();
+
+		// 5. Verify the archived obs was synced with the new person, location, and datetime
+		List<Obs> archivedObsList = obsArchiveHelper.getArchivedObsByEncounterId(encounter.getEncounterId());
+		assertEquals(1, archivedObsList.size());
+		Obs archivedObs = archivedObsList.get(0);
+
+		assertEquals(Integer.valueOf(8), archivedObs.getPersonId(), "Archived obs personId should be synced to 8");
+		assertEquals(Integer.valueOf(2), archivedObs.getLocation().getLocationId(),
+		    "Archived obs location should be synced to 2");
+		assertEquals(newDate.getTime() / 1000, archivedObs.getObsDatetime().getTime() / 1000,
+		    "Archived obs datetime should be synced");
+	}
 }
