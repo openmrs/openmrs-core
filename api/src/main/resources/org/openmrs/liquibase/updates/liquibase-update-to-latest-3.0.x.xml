@@ -142,5 +142,35 @@
 		</addColumn>
 	</changeSet>
 	
+	<changeSet id="TRUNK-6723-2026-08-26" author="Rocker810">
+		<preConditions onError="HALT" onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="concept_interpretation_rule"/>
+			</not>
+		</preConditions>
+		<comment>Creating 'concept_interpretation_rule' table</comment>
+		<createTable tableName="concept_interpretation_rule">
+			<column name="concept_interpretation_rule_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="concept_id" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="criteria" type="TEXT"/>
+			<column name="interpretation" type="VARCHAR(32)"/>
+			<column name="priority" type="INT"/>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint
+			baseTableName="concept_interpretation_rule"
+			baseColumnNames="concept_id"
+			constraintName="fk_concept_interpretation_rule_concept"
+			referencedTableName="concept"
+			referencedColumnNames="concept_id"/>
+	</changeSet>
+
 </databaseChangeLog>
 
