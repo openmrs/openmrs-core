@@ -88,9 +88,7 @@ public class PrefixIndexLayoutStrategy implements IndexLayoutStrategy {
 	private final String prefix;
 
 	/**
-	 * Reads the prefix from the OpenMRS runtime properties; {@code @Lazy} defers construction until the
-	 * Elasticsearch backend bootstraps. {@code @Autowired} marks this as the Spring constructor, the
-	 * other one is for tests only.
+	 * Configures this {@code IndexLayoutStrategy} using the prefix from the OpenMRS runtime properties.
 	 */
 	@Autowired
 	public PrefixIndexLayoutStrategy() {
@@ -98,6 +96,8 @@ public class PrefixIndexLayoutStrategy implements IndexLayoutStrategy {
 	}
 
 	/**
+	 * Only use for testing.
+	 *
 	 * @param prefix the prefix, or {@code null}/blank for none
 	 */
 	PrefixIndexLayoutStrategy(String prefix) {
@@ -152,7 +152,7 @@ public class PrefixIndexLayoutStrategy implements IndexLayoutStrategy {
 	 * @return the normalised prefix, or an empty string if none is configured
 	 * @since 3.0.0
 	 */
-	public static String getConfiguredPrefix() {
+	static String getConfiguredPrefix() {
 		return normalizePrefix(configuredPrefixRaw());
 	}
 
@@ -172,7 +172,7 @@ public class PrefixIndexLayoutStrategy implements IndexLayoutStrategy {
 		config.remove(HIBERNATE_PROPERTY_PREFIX + INDEX_PREFIX_RUNTIME_PROPERTY);
 
 		String rawPrefix = configuredPrefixRaw();
-		if (rawPrefix == null || rawPrefix.trim().isEmpty()) {
+		if (rawPrefix == null || rawPrefix.isBlank()) {
 			// No prefix configured, so leave Hibernate Search on its default layout.
 			return;
 		}
@@ -214,12 +214,16 @@ public class PrefixIndexLayoutStrategy implements IndexLayoutStrategy {
 	static String configuredPrefixRaw() {
 		Properties runtimeProperties = Context.getRuntimeProperties();
 		String prefix = runtimeProperties.getProperty(INDEX_PREFIX_RUNTIME_PROPERTY);
-		if (prefix != null && !prefix.trim().isEmpty()) {
+		if (prefix != null && !prefix.isBlank()) {
 			return prefix;
 		}
 		// Accept the "hibernate."-prefixed spelling too, since backend properties in
 		// hibernate.default.properties follow the hibernate.search.backend.* convention.
-		return runtimeProperties.getProperty(HIBERNATE_PROPERTY_PREFIX + INDEX_PREFIX_RUNTIME_PROPERTY);
+		prefix = runtimeProperties.getProperty(HIBERNATE_PROPERTY_PREFIX + INDEX_PREFIX_RUNTIME_PROPERTY);
+		if (prefix == null || prefix.isBlank()) {
+			return null;
+		}
+		return prefix;
 	}
 
 	private static boolean isElasticsearchBackend(Properties config) {
@@ -227,7 +231,7 @@ public class PrefixIndexLayoutStrategy implements IndexLayoutStrategy {
 	}
 
 	private static String normalizePrefix(String prefix) {
-		if (prefix == null) {
+		if (prefix == null || prefix.isBlank()) {
 			return "";
 		}
 
