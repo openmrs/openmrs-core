@@ -230,10 +230,11 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	}
 
 	/**
-	 * Depth-first walk over a role and its inherited roles, collecting normalized privilege names.
+	 * Depth-first walk over a role and its inherited roles, collecting privilege names.
 	 *
 	 * @param role the role currently being visited
-	 * @param privileges accumulates normalized privilege names
+	 * @param privileges accumulates privilege names in their original casing; {@link RolePrivileges}
+	 *            normalizes them for matching on construction, so raw names are fine here
 	 * @param visited role names already visited, to break inheritance cycles
 	 * @return true if this role or any role reachable from it confers superuser status
 	 */
@@ -248,7 +249,6 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 		if (role.getPrivileges() != null) {
 			for (Privilege privilege : role.getPrivileges()) {
 				if (privilege != null && privilege.getPrivilege() != null) {
-					// RolePrivileges normalizes names on construction, so raw names are fine here.
 					privileges.add(privilege.getPrivilege());
 				}
 			}

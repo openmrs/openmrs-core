@@ -32,7 +32,6 @@ import java.util.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleConstants;
@@ -41,6 +40,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 
 /**
  * Contains static methods to be used by the installation wizard when creating a testing
@@ -258,7 +258,7 @@ public class TestInstallUtil {
 		log.info("Http response message: {}, Code: {}", connection.getResponseMessage(), connection.getResponseCode());
 
 		if (connection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-			throw new APIAuthenticationException("Invalid username or password");
+			throw new AccessDeniedException("Invalid username or password");
 		} else if (connection.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
 			throw new APIException("error.occurred.on.remote.server", (Object[]) null);
 		}
