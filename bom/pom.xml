@@ -63,7 +63,7 @@
 		<log4jVersion>2.26.1</log4jVersion>
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
-		<owaspEncoderVersion>1.4.1</owaspEncoderVersion>
+		<owaspEncoderVersion>1.5.0</owaspEncoderVersion>
 		<graalJsVersion>25.4.4.1.1</graalJsVersion>
 		<nettyVersion>4.2.18.Final</nettyVersion>
 
