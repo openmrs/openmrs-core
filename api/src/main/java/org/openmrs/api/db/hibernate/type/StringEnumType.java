@@ -32,8 +32,8 @@ import org.openmrs.util.OpenmrsClassLoader;
  *         <param name="enumClass">org.openmrs.Obs$Status</param>
  *     </type>
  * </property>
- * }</pre> NOTE: This class should be deleted once Obs, ConceptName, and OrderSet are migrated from
- * hibernate xml mapping files to annotations.
+ * }</pre> The enum class is loaded through {@link OpenmrsClassLoader}, so modules can map their own
+ * enums with this type too. Keep it after core's own mappings move to annotations.
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class StringEnumType implements EnhancedUserType<Enum>, DynamicParameterizedType {
