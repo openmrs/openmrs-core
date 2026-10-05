@@ -21,7 +21,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -344,31 +343,31 @@ public class HibernateObsDAO implements ObsDAO {
 
 		List<Predicate> predicates = new ArrayList<>();
 
-		if (CollectionUtils.isNotEmpty(whom)) {
+		if (whom != null && !whom.isEmpty()) {
 			predicates.add(root.get("person").in(whom));
 		}
 
-		if (CollectionUtils.isNotEmpty(encounters)) {
+		if (encounters != null && !encounters.isEmpty()) {
 			predicates.add(root.get("encounter").in(encounters));
 		}
 
-		if (CollectionUtils.isNotEmpty(questions)) {
+		if (questions != null && !questions.isEmpty()) {
 			predicates.add(root.get("concept").in(questions));
 		}
 
-		if (CollectionUtils.isNotEmpty(answers)) {
+		if (answers != null && !answers.isEmpty()) {
 			predicates.add(root.get("valueCoded").in(answers));
 		}
 
-		if (CollectionUtils.isNotEmpty(personTypes)) {
+		if (personTypes != null && !personTypes.isEmpty()) {
 			predicates.addAll(getCriteriaPersonModifier(cb, root, personTypes));
 		}
 
-		if (CollectionUtils.isNotEmpty(locations)) {
+		if (locations != null && !locations.isEmpty()) {
 			predicates.add(root.get("location").in(locations));
 		}
 
-		if (CollectionUtils.isNotEmpty(visits)) {
+		if (visits != null && !visits.isEmpty()) {
 			predicates.add(root.get("encounter").get("visit").in(visits));
 		}
 
@@ -384,7 +383,7 @@ public class HibernateObsDAO implements ObsDAO {
 			predicates.add(cb.lessThanOrEqualTo(root.get(OBS_DATETIME), toDate));
 		}
 
-		if (CollectionUtils.isNotEmpty(valueCodedNameAnswers)) {
+		if (valueCodedNameAnswers != null && !valueCodedNameAnswers.isEmpty()) {
 			predicates.add(root.get("valueCodedName").in(valueCodedNameAnswers));
 		}
 
@@ -401,7 +400,7 @@ public class HibernateObsDAO implements ObsDAO {
 
 	private List<Order> createOrderList(CriteriaBuilder cb, Root<Obs> root, List<String> sortList) {
 		List<Order> orders = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(sortList)) {
+		if (sortList != null && !sortList.isEmpty()) {
 			for (String sort : sortList) {
 				if (StringUtils.isNotBlank(sort)) {
 					String fieldName = getSortField(sort);

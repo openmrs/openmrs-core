@@ -21,7 +21,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -1999,7 +1998,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		List<Concept> concepts = Context.getConceptService().getAllConcepts();
 		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
 		for (Concept concept : concepts) {
-			if (!CollectionUtils.isEmpty(concept.getNames())) {
+			if (!concept.getNames().isEmpty()) {
 				for (ConceptName cn : concept.getNames()) {
 					assertTrue(allowedLocales.contains(cn.getLocale()),
 					    "The locale '" + cn.getLocale() + "' of conceptName with id: " + cn.getConceptNameId()
@@ -2020,7 +2019,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
 		for (Concept concept : concepts) {
 			for (Locale locale : allowedLocales) {
-				if (!CollectionUtils.isEmpty(concept.getNames(locale))) {
+				if (!concept.getNames(locale).isEmpty()) {
 					assertNotNull(concept.getPreferredName(locale),
 					    "Concept with Id: " + concept.getConceptId() + " has no preferred name in locale:" + locale);
 					assertTrue(concept.getPreferredName(locale).getLocalePreferred());
@@ -2041,7 +2040,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		for (Concept concept : concepts) {
 			for (Locale locale : allowedLocales) {
 				Collection<ConceptName> namesInLocale = concept.getNames(locale);
-				if (!CollectionUtils.isEmpty(namesInLocale)) {
+				if (!namesInLocale.isEmpty()) {
 					int preferredNamesFound = 0;
 					for (ConceptName conceptName : namesInLocale) {
 						if (conceptName.getLocalePreferred()) {

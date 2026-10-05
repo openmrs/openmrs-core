@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
@@ -2981,7 +2980,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void mergePatients_shouldNotCopyOverDuplicatePatientIdentifiers() throws Exception {
 		List<Location> locations = Context.getLocationService().getAllLocations();
-		assertTrue(CollectionUtils.isNotEmpty(locations));
+		assertFalse(locations.isEmpty());
 		// check if we have patient identifiers already
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getPatientIdentifierType(5);
 		assertNotNull(patientIdentifierType);

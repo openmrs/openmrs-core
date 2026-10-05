@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.OrderSet;
 import org.openmrs.OrderSetAttribute;
@@ -77,7 +76,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	 * @see org.openmrs.api.OrderSetService#saveOrderSet(OrderSet)
 	 */
 	private synchronized OrderSet saveOrderSetInternal(OrderSet orderSet) throws APIException {
-		if (CollectionUtils.isEmpty(orderSet.getOrderSetMembers())) {
+		if (orderSet.getOrderSetMembers().isEmpty()) {
 			// Why do we have to do this?
 			CustomDatatypeUtil.saveAttributesIfNecessary(orderSet);
 			return dao.save(orderSet);
