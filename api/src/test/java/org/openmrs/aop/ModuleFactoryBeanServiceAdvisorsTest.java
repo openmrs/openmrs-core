@@ -11,6 +11,7 @@ package org.openmrs.aop;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.aopalliance.aop.Advice;
 import org.junit.jupiter.api.Test;
@@ -21,12 +22,17 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.aop.framework.Advised;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
+import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -66,14 +72,38 @@ public class ModuleFactoryBeanServiceAdvisorsTest extends BaseContextSensitiveTe
 	}
 
 	@Test
-	public void moduleFactoryBeanService_shouldBeMatchedByItsProxiedInterfaceOnly() {
-		assertTrue(Arrays.asList(applicationContext.getBeanNamesForType(FactoryBeanModuleService.class))
-		        .contains("test.FactoryBeanModuleService"));
-		assertArrayEquals(new String[] { "test.FactoryBeanModuleServiceImpl" },
-		    applicationContext.getBeanNamesForType(FactoryBeanModuleServiceImpl.class));
-		assertTrue(AopUtils.isJdkDynamicProxy(applicationContext.getBean("test.FactoryBeanModuleService")));
-		assertTrue(Arrays.asList(applicationContext.getBeanNamesForType(FactoryBeanModuleService.class))
-		        .contains("test.FactoryBeanModuleInnerService"));
+	public void moduleFactoryBeanService_shouldBeMatchedByItsProxyTypeBeforeItIsCreated() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("impl", new RootBeanDefinition(FactoryBeanModuleServiceImpl.class));
+		registerFactoryBean(beanFactory, "service", new RuntimeBeanReference("impl"));
+		registerFactoryBean(beanFactory, "innerService",
+		    new BeanDefinitionHolder(new RootBeanDefinition(FactoryBeanModuleInnerServiceImpl.class), "inner"));
+		registerFactoryBean(beanFactory, "optimizedService", new RuntimeBeanReference("impl")).getPropertyValues()
+		        .add("optimize", "true");
+
+		new ProxyFactoryBeanObjectTypePostProcessor().postProcessBeanFactory(beanFactory);
+		// the application context does the same after running its post processors
+		beanFactory.clearMetadataCache();
+
+		Set<String> byInterface = Set.of(beanFactory.getBeanNamesForType(FactoryBeanModuleService.class));
+		Set<String> byClass = Set.of(beanFactory.getBeanNamesForType(FactoryBeanModuleServiceImpl.class));
+		assertEquals(0, beanFactory.getSingletonCount());
+		assertEquals(Set.of("impl", "service", "innerService", "optimizedService"), byInterface);
+		// an optimized proxy subclasses its target, the others only implement its interfaces
+		assertEquals(Set.of("impl", "optimizedService"), byClass);
+
+		beanFactory.preInstantiateSingletons();
+		assertEquals(byInterface, Set.of(beanFactory.getBeanNamesForType(FactoryBeanModuleService.class)));
+		assertEquals(byClass, Set.of(beanFactory.getBeanNamesForType(FactoryBeanModuleServiceImpl.class)));
+	}
+
+	private static RootBeanDefinition registerFactoryBean(DefaultListableBeanFactory beanFactory, String name,
+	        Object target) {
+		RootBeanDefinition definition = new RootBeanDefinition(TransactionProxyFactoryBean.class);
+		definition.getPropertyValues().add("target", target).add("transactionAttributeSource",
+		    new AnnotationTransactionAttributeSource());
+		beanFactory.registerBeanDefinition(name, definition);
+		return definition;
 	}
 
 	public interface FactoryBeanModuleService {}

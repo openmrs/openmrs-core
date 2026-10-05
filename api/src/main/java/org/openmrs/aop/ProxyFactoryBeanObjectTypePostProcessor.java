@@ -64,8 +64,10 @@ public class ProxyFactoryBeanObjectTypePostProcessor implements BeanFactoryPostP
 			try {
 				Class<?> targetClass = getTargetClass(beanFactory, properties.get("target"), classLoader);
 				if (targetClass != null) {
+					boolean proxyTargetClass = isTrue(properties.get("proxyTargetClass"))
+					        || isTrue(properties.get("optimize"));
 					definition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE,
-					    getProxyClass(targetClass, isProxyTargetClass(properties.get("proxyTargetClass")), classLoader));
+					    getProxyClass(targetClass, proxyTargetClass, classLoader));
 				}
 			} catch (RuntimeException | LinkageError e) {
 				log.debug("Could not determine the object type of {}, Spring will determine it", beanName, e);
@@ -87,14 +89,16 @@ public class ProxyFactoryBeanObjectTypePostProcessor implements BeanFactoryPostP
 		return null;
 	}
 
-	private boolean isProxyTargetClass(Object value) {
+	private boolean isTrue(Object value) {
 		Object raw = value instanceof TypedStringValue typed ? typed.getValue() : value;
 		return raw != null && Boolean.parseBoolean(raw.toString());
 	}
 
 	/**
 	 * Mirrors {@link AbstractSingletonProxyFactoryBean#afterPropertiesSet()}: the target's interfaces
-	 * are proxied unless the target class is proxied or it has no interfaces.
+	 * are proxied unless the target class is proxied or it has no interfaces. Like
+	 * {@code proxyTargetClass}, {@code optimize} makes Spring proxy the target class, see
+	 * {@link org.springframework.aop.framework.DefaultAopProxyFactory}.
 	 */
 	private Class<?> getProxyClass(Class<?> targetClass, boolean proxyTargetClass, ClassLoader classLoader) {
 		Class<?>[] interfaces = ClassUtils.getAllInterfacesForClass(targetClass, classLoader);
