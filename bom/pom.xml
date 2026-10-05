@@ -378,6 +378,7 @@
 				<artifactId>commons-lang3</artifactId>
 				<version>${commonsLang3Version}</version>
 			</dependency>
+			<!-- not used by core directly; pins the version velocity-tools-generic pulls in -->
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
