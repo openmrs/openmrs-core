@@ -409,43 +409,6 @@ class PrefixIndexLayoutStrategyTest {
 		}
 	}
 
-	@Test
-	void configureIndexLayout_shouldWarnWhenPrefixIsPresentInTheConfigOnly() {
-		// A prefix that exists in the Hibernate config but not in the runtime properties (e.g. set via
-		// module config properties, which configureIndexLayout intentionally does not read) must warn
-		// instead of silently not applying.
-		Properties runtimeProps = new Properties();
-
-		try (MockedStatic<Context> contextMock = mockStatic(Context.class)) {
-			contextMock.when(Context::getRuntimeProperties).thenReturn(runtimeProps);
-
-			Properties config = backend("elasticsearch");
-			config.setProperty(PrefixIndexLayoutStrategy.INDEX_PREFIX_RUNTIME_PROPERTY, PREFIX);
-
-			PrefixIndexLayoutStrategy.configureIndexLayout(config);
-
-			assertFalse(config.containsKey(PrefixIndexLayoutStrategy.LAYOUT_STRATEGY_PROPERTY));
-			assertTrue(loggedWarning("set in the Hibernate configuration, but not as the"));
-		}
-	}
-
-	@Test
-	void configureIndexLayout_shouldWarnWhenOnlyTheHibernatePrefixedConfigKeyIsPresent() {
-		Properties runtimeProps = new Properties();
-
-		try (MockedStatic<Context> contextMock = mockStatic(Context.class)) {
-			contextMock.when(Context::getRuntimeProperties).thenReturn(runtimeProps);
-
-			Properties config = backend("elasticsearch");
-			config.setProperty("hibernate." + PrefixIndexLayoutStrategy.INDEX_PREFIX_RUNTIME_PROPERTY, PREFIX);
-
-			PrefixIndexLayoutStrategy.configureIndexLayout(config);
-
-			assertFalse(config.containsKey(PrefixIndexLayoutStrategy.LAYOUT_STRATEGY_PROPERTY));
-			assertTrue(loggedWarning("set in the Hibernate configuration, but not as the"));
-		}
-	}
-
 	private static Stream<Arguments> elasticsearchBackendAndPrefix() {
 		// The Elasticsearch backend value is matched case-insensitively and with surrounding
 		// whitespace tolerated, and the configured prefix is normalised on registration.

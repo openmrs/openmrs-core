@@ -65,11 +65,9 @@ public class PrefixIndexLayoutStrategy implements IndexLayoutStrategy {
 
 	private static final String READ_ALIAS_SUFFIX = "-read";
 
-	private static final Pattern UNIQUE_KEY_EXTRACTION_PATTERN = Pattern.compile("(.*)-\\d{6}");
-
-	// Index names must be legal Elasticsearch index names: lower case, starting with a letter or
-	// digit (a leading '-', '_' or '+' is forbidden in Elasticsearch).
-	private static final Pattern VALID_PREFIX_PATTERN = Pattern.compile("[a-z0-9][a-z0-9_-]*");
+	// As SimpleIndexLayoutStrategy, with an explicit end anchor ($); a no-op under Matcher.matches(),
+	// but makes the bound explicit.
+	private static final Pattern UNIQUE_KEY_EXTRACTION_PATTERN = Pattern.compile("(.*)-\\d{6}$");
 
 	// Elasticsearch limits an index name to 255 bytes. A generated name is the prefix, the entity index
 	// name and a suffix such as "-000001"; the prefix (ASCII only, so bytes equal characters) is capped
@@ -80,6 +78,12 @@ public class PrefixIndexLayoutStrategy implements IndexLayoutStrategy {
 
 	private static final int MAX_PREFIX_LENGTH = MAX_ES_INDEX_NAME_LENGTH - INITIAL_INDEX_SUFFIX.length()
 	        - RESERVED_FOR_INDEX_NAME;
+
+	// Index names must be legal Elasticsearch index names: lower case, starting with a letter or digit
+	// (a leading '-', '_' or '+' is forbidden in Elasticsearch), and bounded to MAX_PREFIX_LENGTH so the
+	// pattern itself cannot match an over-long prefix.
+	private static final Pattern VALID_PREFIX_PATTERN = Pattern
+	        .compile("[a-z0-9][a-z0-9_-]{0," + (MAX_PREFIX_LENGTH - 1) + "}");
 
 	private final String prefix;
 
@@ -165,15 +169,11 @@ public class PrefixIndexLayoutStrategy implements IndexLayoutStrategy {
 	public static void configureIndexLayout(Properties config) {
 		// HibernateSessionFactoryBean mirrors the prefix to "hibernate."; Hibernate Search would
 		// warn about that unknown property, so drop it.
-		String hibernateSpelledPrefix = config.getProperty(HIBERNATE_PROPERTY_PREFIX + INDEX_PREFIX_RUNTIME_PROPERTY);
 		config.remove(HIBERNATE_PROPERTY_PREFIX + INDEX_PREFIX_RUNTIME_PROPERTY);
 
 		String rawPrefix = configuredPrefixRaw();
 		if (rawPrefix == null || rawPrefix.trim().isEmpty()) {
-			// No prefix in the runtime properties. If one is present in the Hibernate configuration
-			// under either spelling anyway (e.g. set via module config properties, which
-			// configureIndexLayout deliberately does not read), it would be silently ignored - warn.
-			warnIfPrefixPresentButNotApplied(config.getProperty(INDEX_PREFIX_RUNTIME_PROPERTY), hibernateSpelledPrefix);
+			// No prefix configured, so leave Hibernate Search on its default layout.
 			return;
 		}
 
@@ -207,31 +207,12 @@ public class PrefixIndexLayoutStrategy implements IndexLayoutStrategy {
 	}
 
 	/**
-	 * Warns when a prefix value is only present in the Hibernate configuration, which
-	 * {@link #configureIndexLayout(Properties)} does not read, so it would otherwise be silently
-	 * ignored. Also fires when the {@code hibernate.}-prefixed spelling is used, which Hibernate Search
-	 * does not define as its own property.
-	 */
-	private static void warnIfPrefixPresentButNotApplied(String configPrefix, String hibernateSpelledPrefix) {
-		boolean configHasPrefix = (configPrefix != null && !configPrefix.trim().isEmpty())
-		        || (hibernateSpelledPrefix != null && !hibernateSpelledPrefix.trim().isEmpty());
-		if (configHasPrefix) {
-			log.warn("A search index prefix is set in the Hibernate configuration, but not as the {} runtime property; "
-			        + "the {} strategy is not applied",
-			    INDEX_PREFIX_RUNTIME_PROPERTY, BEAN_NAME);
-		}
-	}
-
-	/**
 	 * @return the raw, un-normalised index prefix from the OpenMRS runtime properties (the bare
 	 *         property or its {@code hibernate.}-prefixed spelling), or {@code null} if none is
 	 *         configured
 	 */
 	static String configuredPrefixRaw() {
 		Properties runtimeProperties = Context.getRuntimeProperties();
-		if (runtimeProperties == null) {
-			return null;
-		}
 		String prefix = runtimeProperties.getProperty(INDEX_PREFIX_RUNTIME_PROPERTY);
 		if (prefix != null && !prefix.trim().isEmpty()) {
 			return prefix;
@@ -255,15 +236,17 @@ public class PrefixIndexLayoutStrategy implements IndexLayoutStrategy {
 			return "";
 		}
 
-		if (!VALID_PREFIX_PATTERN.matcher(normalized).matches()) {
-			throw new SearchException("Invalid " + INDEX_PREFIX_RUNTIME_PROPERTY + " '" + prefix
-			        + "': a search index prefix must start with a letter or digit and contain only "
-			        + "lower-case letters, digits, '_' or '-'");
-		}
+		// Length is checked before the pattern so an over-long prefix reports the specific length limit
+		// rather than the pattern's generic "invalid characters" message.
 		if (normalized.length() > MAX_PREFIX_LENGTH) {
 			throw new SearchException("Invalid " + INDEX_PREFIX_RUNTIME_PROPERTY + " '" + prefix
 			        + "': a search index prefix must be at most " + MAX_PREFIX_LENGTH
 			        + " characters so generated Elasticsearch index names stay within the 255-character limit");
+		}
+		if (!VALID_PREFIX_PATTERN.matcher(normalized).matches()) {
+			throw new SearchException("Invalid " + INDEX_PREFIX_RUNTIME_PROPERTY + " '" + prefix
+			        + "': a search index prefix must start with a letter or digit and contain only "
+			        + "lower-case letters, digits, '_' or '-'");
 		}
 		return normalized;
 	}
