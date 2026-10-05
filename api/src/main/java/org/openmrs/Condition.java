@@ -21,6 +21,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -65,7 +66,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	@Column(name = "verification_status")
 	private ConditionVerificationStatus verificationStatus;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "previous_version")
 	private Condition previousVersion;
 	
@@ -81,7 +82,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	@Transient
 	private String endReason;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
 	
