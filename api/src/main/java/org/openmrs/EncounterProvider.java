@@ -11,6 +11,7 @@ package org.openmrs;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,15 +40,15 @@ public class EncounterProvider extends BaseChangeableOpenmrsData {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer encounterProviderId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "provider_id", nullable = false)
 	private Provider provider;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "encounter_role_id", nullable = false)
 	private EncounterRole encounterRole;
 

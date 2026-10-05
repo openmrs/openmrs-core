@@ -21,7 +21,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -53,17 +52,6 @@ public class GZIPFilterTest extends BaseWebContextSensitiveTest {
 	@BeforeEach
 	public void before() {
 		globalProperties = new GlobalPropertiesTestHelper(Context.getAdministrationService());
-	}
-
-	/**
-	 * The transaction each test runs in is rolled back, but the global property listeners fired when
-	 * the property was saved have already written to caches that are static and outlive it — notably
-	 * {@link org.openmrs.util.ConfigUtil}'s. Purging the property fires the listeners again and evicts
-	 * it, so the value does not leak into whatever test runs next in this JVM.
-	 */
-	@AfterEach
-	public void purgeAcceptedPathsProperty() {
-		globalProperties.purgeGlobalProperty(ACCEPT_PATHS);
 	}
 
 	/**
@@ -117,8 +105,8 @@ public class GZIPFilterTest extends BaseWebContextSensitiveTest {
 
 	/**
 	 * The accepted paths are compiled once and held until the property changes. This checks the whole
-	 * chain that makes a change visible: saving the property notifies ConfigUtil, which is a
-	 * GlobalPropertyListener, and the filter then sees the new value and recompiles.
+	 * chain that makes a change visible: saving the property evicts it from the global property cache,
+	 * and the filter then sees the new value and recompiles.
 	 */
 	@Test
 	public void performGZIPRequest_shouldPickUpChangesToTheAcceptedPathsGlobalProperty() throws Exception {
