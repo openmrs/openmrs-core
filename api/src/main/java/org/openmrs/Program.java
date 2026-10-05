@@ -50,7 +50,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "program_id")
 	private Integer programId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 
@@ -58,7 +58,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	 * Represents the possible outcomes for this program. The concept should have answers or a
 	 * memberSet.
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "outcomes_concept_id")
 	private Concept outcomesConcept;
 

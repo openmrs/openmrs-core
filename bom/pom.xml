@@ -80,7 +80,7 @@
 		<!-- Apache Commons -->
 		<commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
 		<commonsIoVersion>2.22.0</commonsIoVersion>
-		<commonsLang3Version>3.20.0</commonsLang3Version>
+		<commonsLang3Version>3.21.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
 		<commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
 		<commonsFileupload2JakartaVersion>2.0.0-M5</commonsFileupload2JakartaVersion>
@@ -116,7 +116,7 @@
 		<groovyVersion>2.4.21</groovyVersion>
 		<tomcatVersion>11.0.26</tomcatVersion>
 		<jodaTimeVersion>2.14.4</jodaTimeVersion>
-		<guavaVersion>33.7.1-jre</guavaVersion>
+		<guavaVersion>33.7.2-jre</guavaVersion>
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
 		<jobrunrVersion>8.8.2</jobrunrVersion>

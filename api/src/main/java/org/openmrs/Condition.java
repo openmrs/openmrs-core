@@ -20,6 +20,7 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -70,7 +71,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	@Column(name = "verification_status")
 	private ConditionVerificationStatus verificationStatus;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "previous_version")
 	private Condition previousVersion;
 
@@ -86,7 +87,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	@Transient
 	private String endReason;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
 
