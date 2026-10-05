@@ -77,7 +77,8 @@ public class ProxyFactoryBeanObjectTypePostProcessor implements BeanFactoryPostP
 
 	private Class<?> getTargetClass(ConfigurableListableBeanFactory beanFactory, Object target, ClassLoader classLoader) {
 		if (target instanceof RuntimeBeanReference reference) {
-			return beanFactory.getType(reference.getBeanName(), false);
+			return beanFactory.isFactoryBean(reference.getBeanName()) ? null
+			        : beanFactory.getType(reference.getBeanName(), false);
 		}
 		BeanDefinition inner = target instanceof BeanDefinitionHolder holder ? holder.getBeanDefinition()
 		        : target instanceof BeanDefinition definition ? definition : null;

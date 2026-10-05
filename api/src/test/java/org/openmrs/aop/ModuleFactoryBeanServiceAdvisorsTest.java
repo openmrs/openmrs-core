@@ -97,6 +97,21 @@ public class ModuleFactoryBeanServiceAdvisorsTest extends BaseContextSensitiveTe
 		assertEquals(byClass, Set.of(beanFactory.getBeanNamesForType(FactoryBeanModuleServiceImpl.class)));
 	}
 
+	@Test
+	public void moduleFactoryBeanServiceWithFactoryBeanTarget_shouldStillBeMatchedByItsInterface() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("impl", new RootBeanDefinition(FactoryBeanModuleServiceImpl.class));
+		registerFactoryBean(beanFactory, "service", new RuntimeBeanReference("impl"));
+		registerFactoryBean(beanFactory, "wrappingService", new RuntimeBeanReference("service"));
+
+		new ProxyFactoryBeanObjectTypePostProcessor().postProcessBeanFactory(beanFactory);
+		beanFactory.clearMetadataCache();
+
+		// its type is left to Spring, which creates it to find out
+		assertEquals(Set.of("impl", "service", "wrappingService"),
+		    Set.of(beanFactory.getBeanNamesForType(FactoryBeanModuleService.class)));
+	}
+
 	private static RootBeanDefinition registerFactoryBean(DefaultListableBeanFactory beanFactory, String name,
 	        Object target) {
 		RootBeanDefinition definition = new RootBeanDefinition(TransactionProxyFactoryBean.class);
