@@ -24,6 +24,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -97,5 +98,23 @@ public class HibernateContextDAOTest extends BaseContextSensitiveTest {
 
 		verify(massIndexer, never()).dropAndCreateSchemaOnStart(anyBoolean());
 		verify(massIndexer, never()).startAndWait();
+	}
+
+	/**
+	 * Recording the new index version proxies {@code Get Global Properties}, and whoever records it is
+	 * responsible for taking the proxy back off again. If the rebuild leaves it behind, the privilege
+	 * stays granted on the thread for the rest of the request.
+	 *
+	 * @see HibernateContextDAO#setupSearchIndex()
+	 */
+	@Test
+	public void setupSearchIndex_shouldNotLeaveTheGetGlobalPropertiesPrivilegeProxied() throws Exception {
+		when(searchSession.massIndexer()).thenReturn(massIndexer);
+		when(massIndexer.dropAndCreateSchemaOnStart(true)).thenReturn(massIndexer);
+		setStoredIndexVersion("1");
+
+		assertFalse(Context.getUserContext().hasProxyPrivileges());
+		dao.setupSearchIndex();
+		assertFalse(Context.getUserContext().hasProxyPrivileges());
 	}
 }

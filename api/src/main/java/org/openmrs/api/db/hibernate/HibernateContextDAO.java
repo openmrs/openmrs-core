@@ -598,8 +598,9 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
-	 * Discards the indexes that are on disk and builds them again, then records the current
-	 * {@link OpenmrsConstants#SEARCH_INDEX_VERSION}.
+	 * Discards core's indexes and builds them again, then records the current
+	 * {@link OpenmrsConstants#SEARCH_INDEX_VERSION}. This runs before any module has started, so the
+	 * indexes of module entities are left as they are.
 	 * <p>
 	 * The existing indexes are dropped and recreated rather than updated in place because an index
 	 * written by an older Lucene may not be readable by the Lucene we run now, let alone updated in
@@ -616,6 +617,8 @@ public class HibernateContextDAO implements ContextDAO {
 			throw new RuntimeException("Failed to rebuild the search index", e);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to rebuild the search index", e);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 	}
 
