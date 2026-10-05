@@ -39,10 +39,11 @@ public class OutboxTaskSchedulerInitializer {
 	}
 
 	public void schedule() {
+		boolean opened = !Context.isSessionOpen();
+		if (opened) {
+			Context.openSession();
+		}
 		try {
-			if (!Context.isSessionOpen()) {
-				Context.openSession();
-			}
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 
 			// Schedule the outbox polling task to run recurrently in the background
@@ -62,20 +63,27 @@ public class OutboxTaskSchedulerInitializer {
 			);
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
+			if (opened) {
+				Context.closeSession();
+			}
 		}
 	}
 
 	public void deleteScheduledTasks() {
+		boolean opened = !Context.isSessionOpen();
+		if (opened) {
+			Context.openSession();
+		}
 		try {
-			if (!Context.isSessionOpen()) {
-				Context.openSession();
-			}
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 
 			schedulerService.deleteRecurringTask(OUTBOX_POLLER_TASK_UUID);
 			schedulerService.deleteRecurringTask(OUTBOX_CLEANUP_TASK_UUID);
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
+			if (opened) {
+				Context.closeSession();
+			}
 		}
 	}
 }
