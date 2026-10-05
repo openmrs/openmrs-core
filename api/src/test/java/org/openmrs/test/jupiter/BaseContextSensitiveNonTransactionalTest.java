@@ -77,6 +77,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
+import org.openmrs.api.cache.ApiCacheTestUtil;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
@@ -832,6 +833,9 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 			//insert new rows, update existing rows, and leave others alone
 			DatabaseOperation.REFRESH.execute(dbUnitConn, dataset);
 
+			// the dataset may have written global properties, roles or privileges behind the API
+			ApiCacheTestUtil.clearNow();
+
 			if (isPostgreSQL()) {
 				Context.getAdministrationService().updatePostgresSequence();
 			}
@@ -959,6 +963,8 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 
 				//Commit so that it is not rolled back after a test.
 				getConnection().commit();
+				// the data is committed, so this transaction need not keep bypassing the API caches
+				ApiCacheTestUtil.forgetWritesInCurrentTransaction();
 
 				updateSearchIndex();
 
@@ -993,6 +999,9 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 
 	@AfterEach
 	public void clearSessionAfterEachTest() {
+		// a load still running from this test would otherwise land in the next one
+		ApiCacheTestUtil.awaitLoads();
+
 		// clear the session to make sure nothing is cached, etc
 		Context.clearSession();
 		Context.clearEntireCache();

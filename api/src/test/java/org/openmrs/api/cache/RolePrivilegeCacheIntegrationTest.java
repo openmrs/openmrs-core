@@ -13,11 +13,13 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Location;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -128,17 +130,17 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 	}
 
 	@Test
-	public void saveRole_shouldEvictTheCache() {
+	public void saveRole_shouldStopTheTransactionReadingTheCache() {
 		primeCache();
 
 		Role role = new Role("Evicting Save Role", "role saved to trigger eviction");
 		userService.saveRole(role);
 
-		assertCacheCleared();
+		assertPrimedEntryNotServed();
 	}
 
 	@Test
-	public void purgeRole_shouldEvictTheCache() {
+	public void purgeRole_shouldStopTheTransactionReadingTheCache() {
 		Role role = new Role("Purgeable Role", "role that will be purged");
 		userService.saveRole(role);
 
@@ -146,21 +148,21 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 
 		userService.purgeRole(role);
 
-		assertCacheCleared();
+		assertPrimedEntryNotServed();
 	}
 
 	@Test
-	public void savePrivilege_shouldEvictTheCache() {
+	public void savePrivilege_shouldStopTheTransactionReadingTheCache() {
 		primeCache();
 
 		Privilege privilege = new Privilege("Evicting Save Privilege", "privilege saved to trigger eviction");
 		userService.savePrivilege(privilege);
 
-		assertCacheCleared();
+		assertPrimedEntryNotServed();
 	}
 
 	@Test
-	public void purgePrivilege_shouldEvictTheCache() {
+	public void purgePrivilege_shouldStopTheTransactionReadingTheCache() {
 		Privilege privilege = new Privilege("Purgeable Privilege", "privilege that will be purged");
 		userService.savePrivilege(privilege);
 
@@ -168,18 +170,74 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 
 		userService.purgePrivilege(privilege);
 
-		assertCacheCleared();
+		assertPrimedEntryNotServed();
+	}
+
+	@Test
+	public void getRolePrivileges_shouldSeeRoleChangesMadeEarlierInTheSameTransaction() {
+		// The daemon load cannot see this transaction's uncommitted role, so resolving it through the cache
+		// would grant nothing and cache that for every session.
+		Privilege privilege = userService.savePrivilege(new Privilege("Uncommitted Privilege", "an uncommitted privilege"));
+		Role role = new Role("Uncommitted Role", "role saved in the current transaction");
+		role.addPrivilege(privilege);
+		userService.saveRole(role);
+
+		RolePrivileges resolved = rolePrivilegeCache.getRolePrivileges(role);
+
+		assertTrue(resolved.containsPrivilege("Uncommitted Privilege"));
+		assertNull(cachedEntry(role), "a role changed in the current transaction must not be cached");
+	}
+
+	@Test
+	public void flushingAChangeToALoadedRole_shouldStopTheTransactionReadingTheCache() {
+		Role provider = userService.getRole("Provider");
+		primeCache();
+
+		provider.setDescription("changed without saving through the service");
+		Context.flushSession();
+
+		assertPrimedEntryNotServed();
+	}
+
+	@Test
+	public void flushingAChangeToALoadedRolesInheritedRoles_shouldStopTheTransactionReadingTheCache() {
+		// flushed as an update of the role's collection, not of the role
+		Role provider = userService.getRole("Provider");
+		Role authenticated = userService.getRole(RoleConstants.AUTHENTICATED);
+		primeCache();
+
+		provider.getInheritedRoles().add(authenticated);
+		Context.flushSession();
+
+		assertPrimedEntryNotServed();
+	}
+
+	@Test
+	public void flushingAnUnrelatedChange_shouldNotAffectTheCache() {
+		Location location = Context.getLocationService().getLocation(1);
+		primeCache();
+
+		location.setDescription("changed");
+		Context.flushSession();
+
+		assertTrue(rolePrivilegeCache.getRolePrivileges(new Role("Primed Role")).containsPrivilege("Primed Privilege"));
 	}
 
 	private void primeCache() {
+		// Seeded directly: after a role or privilege change in this transaction, lookups bypass the cache.
 		Role role = new Role("Primed Role");
-		role.addPrivilege(new Privilege("Primed Privilege"));
-		rolePrivilegeCache.getRolePrivileges(role);
+		cache().put(RolePrivileges.normalize(role.getRole()),
+		    new RolePrivileges(Collections.singleton("Primed Privilege"), false));
 		assertNotNull(cachedEntry(role), "cache should be primed");
 	}
 
-	private void assertCacheCleared() {
-		Role primed = new Role("Primed Role");
-		assertNull(cachedEntry(primed), "cache should be cleared after mutation");
+	/**
+	 * The cache is only evicted when the test's transaction completes, so this checks what the
+	 * transaction itself sees: "Primed Role" is not in the database, so resolving it without the cache
+	 * grants nothing.
+	 */
+	private void assertPrimedEntryNotServed() {
+		assertFalse(rolePrivilegeCache.getRolePrivileges(new Role("Primed Role")).containsPrivilege("Primed Privilege"),
+		    "the transaction should resolve roles without the cache after a change");
 	}
 }
