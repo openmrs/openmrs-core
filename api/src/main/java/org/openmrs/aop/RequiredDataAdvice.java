@@ -12,11 +12,16 @@ package org.openmrs.aop;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Retireable;
@@ -83,6 +88,10 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 
 	private static final String UNABLE_GETTER_METHOD = "unable.getter.method";
 
+	private static final AtomicInteger METADATA_COMPUTATION_COUNT = new AtomicInteger();
+
+	private static volatile ClassValue<ClassMetadata> classMetadataCache = createClassValue();
+
 	/**
 	 * <p>
 	 * <strong>Should</strong> not fail on update method with no arguments
@@ -94,6 +103,10 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	@SuppressWarnings("unchecked")
 	public void before(Method method, Object[] args, Object target) throws Throwable {
 		String methodName = method.getName();
+
+		if (!isHandledMethodName(methodName)) {
+			return;
+		}
 
 		// skip out early if there are no arguments
 		if (args == null || args.length == 0) {
@@ -199,7 +212,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @param mainArgumentClass class to compare
 	 * @return true if method's name ends with the mainArgumentClasses simple name
 	 */
-	private boolean methodNameEndsWithClassName(Method method, Class<?> mainArgumentClass) {
+	boolean methodNameEndsWithClassName(Method method, Class<?> mainArgumentClass) {
 		String methodName = method.getName();
 		if (methodName.endsWith(mainArgumentClass.getSimpleName())) {
 			return true;
@@ -213,6 +226,11 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		}
 
 		return false;
+	}
+
+	private static boolean isHandledMethodName(String methodName) {
+		return methodName.startsWith("save") || methodName.startsWith("create") || methodName.startsWith("void")
+		        || methodName.startsWith("unvoid") || methodName.startsWith("retire") || methodName.startsWith("unretire");
 	}
 
 	/**
@@ -296,28 +314,20 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 
 		alreadyHandled.add(openmrsObject);
 
-		Reflect reflect = new Reflect(OpenmrsObject.class);
-		List<Field> allInheritedFields = reflect.getInheritedFields(openmrsObjectClass);
+		ClassMetadata metadata = getClassMetadata(openmrsObjectClass);
 
 		// loop over all child collections of OpenmrsObjects and recursively save on those
-		for (Field field : allInheritedFields) {
-
-			// skip field if it's declared independent
-			if (Reflect.isAnnotationPresent(openmrsObjectClass, field.getName(), Independent.class)) {
+		for (CollectionFieldMetadata collectionField : metadata.getCollectionFields()) {
+			if (collectionField.isHandlerDisabled(handlerType)) {
 				continue;
 			}
 
-			if (reflect.isCollectionField(field) && !isHandlerMarkedAsDisabled(handlerType, field)) {
+			Collection<OpenmrsObject> childCollection = collectionField.getCollection(openmrsObject);
 
-				// the collection we'll be looping over
-				Collection<OpenmrsObject> childCollection = getChildCollection(openmrsObject, field);
-
-				if (childCollection != null) {
-					for (OpenmrsObject collectionElement : childCollection) {
-						if (!alreadyHandled.contains(collectionElement)) {
-							recursivelyHandle(handlerType, collectionElement, currentUser, currentDate, other,
-							    alreadyHandled);
-						}
+			if (childCollection != null) {
+				for (OpenmrsObject collectionElement : childCollection) {
+					if (!alreadyHandled.contains(collectionElement)) {
+						recursivelyHandle(handlerType, collectionElement, currentUser, currentDate, other, alreadyHandled);
 					}
 				}
 			}
@@ -339,27 +349,30 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 */
 	@SuppressWarnings("unchecked")
 	protected static Collection<OpenmrsObject> getChildCollection(OpenmrsObject openmrsObject, Field field) {
+		ClassMetadata metadata = getClassMetadata(openmrsObject.getClass());
+		CollectionFieldMetadata collectionField = metadata.getCollectionField(field.getName());
+		if (collectionField != null) {
+			return collectionField.getCollection(openmrsObject);
+		}
+
+		return getChildCollectionReflectively(openmrsObject, field);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Collection<OpenmrsObject> getChildCollectionReflectively(OpenmrsObject openmrsObject, Field field) {
 		String fieldName = field.getName();
 		String getterName = "get" + StringUtils.capitalize(fieldName);
 
 		try {
-
 			// checks if direct access is allowed
 			if (field.isAnnotationPresent(AllowDirectAccess.class)) {
-
-				boolean previousFieldAccessibility = field.isAccessible();
 				field.setAccessible(true);
-				Collection<OpenmrsObject> childCollection = (Collection<OpenmrsObject>) field.get(openmrsObject);
-				field.setAccessible(previousFieldAccessibility);
-				return childCollection;
-
+				return (Collection<OpenmrsObject>) field.get(openmrsObject);
 			} else {
 				// access the field via its getter method
 				Class<? extends OpenmrsObject> openmrsObjectClass = openmrsObject.getClass();
-
-				Method getterMethod = openmrsObjectClass.getMethod(getterName, (Class[]) null);
-				return (Collection<OpenmrsObject>) getterMethod.invoke(openmrsObject, new Object[] {});
-
+				Method getterMethod = openmrsObjectClass.getMethod(getterName);
+				return (Collection<OpenmrsObject>) getterMethod.invoke(openmrsObject);
 			}
 		} catch (IllegalAccessException e) {
 			if (field.isAnnotationPresent(AllowDirectAccess.class)) {
@@ -406,19 +419,191 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @return true if the handlerType has been marked as disabled, false otherwise
 	 */
 	protected static boolean isHandlerMarkedAsDisabled(Class<? extends RequiredDataHandler> handlerType, Field field) {
-
-		// if the annotation isn't present, return false
 		if (!field.isAnnotationPresent(DisableHandlers.class)) {
 			return false;
-		} else {
-			// otherwise we need to see if the handler type is one of the types specified in the annotation
-			for (Class<? extends RequiredDataHandler> h : field.getAnnotation(DisableHandlers.class).handlerTypes()) {
-				if (h.isAssignableFrom(handlerType)) {
+		}
+		return isHandlerDisabled(field.getAnnotation(DisableHandlers.class).handlerTypes(), handlerType);
+	}
+
+	static boolean isHandlerDisabled(Class<? extends RequiredDataHandler>[] disabledHandlerTypes,
+	        Class<? extends RequiredDataHandler> handlerType) {
+		if (disabledHandlerTypes == null || disabledHandlerTypes.length == 0) {
+			return false;
+		}
+		for (Class<? extends RequiredDataHandler> h : disabledHandlerTypes) {
+			if (h.isAssignableFrom(handlerType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static ClassValue<ClassMetadata> createClassValue() {
+		return new ClassValue<ClassMetadata>() {
+
+			@Override
+			@SuppressWarnings("unchecked")
+			protected ClassMetadata computeValue(Class<?> type) {
+				METADATA_COMPUTATION_COUNT.incrementAndGet();
+				return buildClassMetadata((Class<? extends OpenmrsObject>) type);
+			}
+		};
+	}
+
+	/**
+	 * Clears the cached reflection metadata for all classes.
+	 */
+	public static void clearReflectionCache() {
+		METADATA_COMPUTATION_COUNT.set(0);
+		classMetadataCache = createClassValue();
+	}
+
+	/**
+	 * Package-private method to get the count of metadata computations.
+	 */
+	static int getMetadataComputationCount() {
+		return METADATA_COMPUTATION_COUNT.get();
+	}
+
+	private static ClassMetadata getClassMetadata(Class<? extends OpenmrsObject> openmrsObjectClass) {
+		return classMetadataCache.get(openmrsObjectClass);
+	}
+
+	private static ClassMetadata buildClassMetadata(Class<? extends OpenmrsObject> openmrsObjectClass) {
+		Reflect reflect = new Reflect(OpenmrsObject.class);
+		List<Field> allInheritedFields = reflect.getInheritedFields(openmrsObjectClass);
+		List<CollectionFieldMetadata> collectionFields = new ArrayList<>();
+
+		for (Field field : allInheritedFields) {
+			if (isFieldIndependent(openmrsObjectClass, field)) {
+				continue;
+			}
+
+			if (reflect.isCollectionField(field)) {
+				boolean directAccess = field.isAnnotationPresent(AllowDirectAccess.class);
+				String fieldName = field.getName();
+				String getterName = "get" + StringUtils.capitalize(fieldName);
+				Method getterMethod = null;
+
+				if (!directAccess) {
+					try {
+						getterMethod = openmrsObjectClass.getMethod(getterName);
+					} catch (NoSuchMethodException ignored) {
+						// getterMethod remains null, will throw APIException if invoked
+					}
+				}
+
+				Class<? extends RequiredDataHandler>[] disabledHandlerTypes = null;
+				if (field.isAnnotationPresent(DisableHandlers.class)) {
+					disabledHandlerTypes = field.getAnnotation(DisableHandlers.class).handlerTypes();
+				}
+
+				collectionFields.add(
+				    new CollectionFieldMetadata(field, getterMethod, directAccess, getterName, disabledHandlerTypes));
+			}
+		}
+
+		return new ClassMetadata(collectionFields);
+	}
+
+	private static boolean isFieldIndependent(Class<?> targetClass, Field field) {
+		if (field.isAnnotationPresent(Independent.class)) {
+			return true;
+		}
+
+		for (Class<?> current = targetClass; current != null
+		        && current != field.getDeclaringClass(); current = current.getSuperclass()) {
+			for (Field declaredField : current.getDeclaredFields()) {
+				if (declaredField.getName().equals(field.getName())
+				        && declaredField.isAnnotationPresent(Independent.class)) {
 					return true;
 				}
 			}
 		}
 
 		return false;
+	}
+
+	private static class ClassMetadata {
+
+		private final List<CollectionFieldMetadata> collectionFields;
+
+		private final Map<String, CollectionFieldMetadata> collectionFieldsByName;
+
+		public ClassMetadata(List<CollectionFieldMetadata> collectionFields) {
+			this.collectionFields = Collections.unmodifiableList(collectionFields);
+			Map<String, CollectionFieldMetadata> byName = new HashMap<>();
+			for (CollectionFieldMetadata fieldMetadata : collectionFields) {
+				byName.put(fieldMetadata.getField().getName(), fieldMetadata);
+			}
+			this.collectionFieldsByName = Collections.unmodifiableMap(byName);
+		}
+
+		public List<CollectionFieldMetadata> getCollectionFields() {
+			return collectionFields;
+		}
+
+		public CollectionFieldMetadata getCollectionField(String fieldName) {
+			return collectionFieldsByName.get(fieldName);
+		}
+	}
+
+	private static class CollectionFieldMetadata {
+
+		private final Field field;
+
+		private final Method getterMethod;
+
+		private final boolean directAccess;
+
+		private final String getterName;
+
+		private final Class<? extends RequiredDataHandler>[] disabledHandlerTypes;
+
+		public CollectionFieldMetadata(Field field, Method getterMethod, boolean directAccess, String getterName,
+		    Class<? extends RequiredDataHandler>[] disabledHandlerTypes) {
+			this.field = field;
+			this.getterMethod = getterMethod;
+			this.directAccess = directAccess;
+			this.getterName = getterName;
+			this.disabledHandlerTypes = disabledHandlerTypes;
+			if (directAccess && field != null) {
+				field.setAccessible(true);
+			}
+		}
+
+		public Field getField() {
+			return field;
+		}
+
+		public boolean isHandlerDisabled(Class<? extends RequiredDataHandler> handlerType) {
+			return RequiredDataAdvice.isHandlerDisabled(disabledHandlerTypes, handlerType);
+		}
+
+		@SuppressWarnings("unchecked")
+		public Collection<OpenmrsObject> getCollection(OpenmrsObject openmrsObject) {
+			try {
+				if (directAccess) {
+					return (Collection<OpenmrsObject>) field.get(openmrsObject);
+				} else if (getterMethod != null) {
+					return (Collection<OpenmrsObject>) getterMethod.invoke(openmrsObject);
+				} else {
+					throw new NoSuchMethodException(getterName);
+				}
+			} catch (IllegalAccessException e) {
+				if (directAccess) {
+					throw new APIException("unable.get.field", new Object[] { field.getName(), openmrsObject.getClass() });
+				} else {
+					throw new APIException(UNABLE_GETTER_METHOD,
+					        new Object[] { "use", getterName, field.getName(), openmrsObject.getClass() });
+				}
+			} catch (InvocationTargetException e) {
+				throw new APIException(UNABLE_GETTER_METHOD,
+				        new Object[] { "run", getterName, field.getName(), openmrsObject.getClass() });
+			} catch (NoSuchMethodException e) {
+				throw new APIException(UNABLE_GETTER_METHOD,
+				        new Object[] { "find", getterName, field.getName(), openmrsObject.getClass() });
+			}
+		}
 	}
 }
