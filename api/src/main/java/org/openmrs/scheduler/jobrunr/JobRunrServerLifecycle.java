@@ -22,7 +22,7 @@ import org.springframework.context.SmartLifecycle;
  * {@link #deferStartUntilOpenmrsStarted()} first, and the server then starts only once
  * {@link #openmrsStarted()} reports that OpenMRS has finished starting.
  *
- * @since 3.0.0
+ * @since 2.9.0
  */
 public class JobRunrServerLifecycle implements SmartLifecycle {
 
