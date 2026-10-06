@@ -15,14 +15,14 @@ import com.fasterxml.jackson.core.io.SerializedString;
 
 /**
  * An instance of this class can be passed to an ObjectMapper instance when serializing objects to
- * JSON using the jackson API so as to escape html and scripts inside html tags
+ * JSON using the jackson API so as to escape HTML and scripts inside HTML tags
  */
 public class OpenmrsCharacterEscapes extends CharacterEscapes {
 
 	private final int[] asciiEscapes;
 
 	public OpenmrsCharacterEscapes() {
-		// start with set of characters known to require escaping (double-quote, backslash etc)
+		// start with set of characters known to require escaping (double-quote, backslash etc.)
 		int[] esc = CharacterEscapes.standardAsciiEscapesForJSON();
 
 		// and force escaping of a few others:
