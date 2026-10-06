@@ -127,6 +127,12 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	}
 
 	@Override
+	public void onShutdown() {
+		// the webapp never closes its application context, so the lifecycle would not stop the server
+		jobRunrServerLifecycle.stop();
+	}
+
+	@Override
 	public String getStatus(Integer id) {
 		TaskDefinition task = getTask(id);
 		if (task != null && Boolean.TRUE.equals(task.getStarted())) {
