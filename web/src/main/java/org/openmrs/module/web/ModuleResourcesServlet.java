@@ -12,6 +12,7 @@ package org.openmrs.module.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serial;
 import java.nio.file.Path;
 
 import jakarta.servlet.ServletException;
@@ -29,6 +30,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 
 	private static final String MODULE_PATH = "/WEB-INF/view/module/";
 
+	@Serial
 	private static final long serialVersionUID = 1239820102030344L;
 
 	private static final Logger log = LoggerFactory.getLogger(ModuleResourcesServlet.class);
@@ -52,7 +54,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		log.debug("In service method for module servlet: " + request.getPathInfo());
+		log.debug("In service method for module servlet: {}", request.getPathInfo());
 
 		File f = getFile(request);
 		if (f == null) {
@@ -85,7 +87,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 
 		Module module = ModuleUtil.getModuleForPath(path);
 		if (module == null) {
-			log.warn("No module handles the path: " + path);
+			log.warn("No module handles the path: {}", path);
 			return null;
 		}
 
@@ -107,13 +109,13 @@ public class ModuleResourcesServlet extends HttpServlet {
 		Path normalizedPath = Path.of(realPath).normalize();
 		Path normalizedBase = Path.of(basePath).normalize();
 		if (!normalizedPath.startsWith(normalizedBase)) {
-			log.warn("Detected attempted directory traversal with path: " + path);
+			log.warn("Detected attempted directory traversal with path: {}", path);
 			return null;
 		}
 
 		File f = normalizedPath.toFile();
 		if (!f.exists()) {
-			log.warn("No file with path '" + normalizedPath + "' exists for module '" + module.getModuleId() + "'");
+			log.warn("No file with path '{}' exists for module '{}'", normalizedPath, module.getModuleId());
 			return null;
 		}
 
