@@ -425,7 +425,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			Document doc = db.parse(dwrFile);
 			Element elem = doc.getDocumentElement();
 			elem.setTextContent("");
-			OpenmrsUtil.saveDocument(doc, dwrFile);
+			WebModuleUtil.saveDwrModulesXml(doc, dwrFile);
 		} catch (Exception e) {
 			// got here because the dwr-modules.xml file is empty for some reason.  This might
 			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
@@ -435,8 +435,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			OutputStreamWriter writer = null;
 			try {
 				writer = new OutputStreamWriter(new FileOutputStream(dwrFile), StandardCharsets.UTF_8);
-				writer.write(
-				    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
+				writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + WebModuleUtil.DWR_MODULES_XML_DOCTYPE
+				        + "\n<dwr></dwr>");
 			} catch (IOException io) {
 				log.error("Unable to clear out the {} file.  Please redeploy the openmrs war file",
 				    dwrFile.getAbsolutePath(), io);
