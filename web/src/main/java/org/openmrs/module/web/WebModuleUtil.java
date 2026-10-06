@@ -16,9 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,17 +82,6 @@ public class WebModuleUtil {
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
-
-	/**
-	 * The document type of dwr-modules.xml. Each module's entries carry a moduleId attribute so they
-	 * can be removed again when the module stops, and DWR validates the file against its DTD, which
-	 * does not declare that attribute, so the internal subset declares it.
-	 *
-	 * @since 3.0.0
-	 */
-	public static final String DWR_MODULES_XML_DOCTYPE = "<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\" [\n"
-	        + "<!ATTLIST init moduleId CDATA #IMPLIED>\n" + "<!ATTLIST allow moduleId CDATA #IMPLIED>\n"
-	        + "<!ATTLIST signatures moduleId CDATA #IMPLIED>\n" + "]>";
 
 	private static final Lock SERVLET_LOCK = new ReentrantLock();
 
@@ -283,7 +269,7 @@ public class WebModuleUtil {
 					moduleNeedsContextRefresh = true;
 
 					// save the dwr-modules.xml file.
-					saveDwrModulesXml(dwrmodulexml, f);
+					OpenmrsUtil.saveDocument(dwrmodulexml, f);
 				}
 			} catch (FileNotFoundException e) {
 				throw new ModuleException(realPath + "/WEB-INF/dwr-modules.xml file doesn't exist.", e);
@@ -885,7 +871,7 @@ public class WebModuleUtil {
 				}
 
 				// save the dwr-modules.xml file.
-				saveDwrModulesXml(dwrmodulexml, f);
+				OpenmrsUtil.saveDocument(dwrmodulexml, f);
 			}
 		} catch (FileNotFoundException e) {
 			throw new ModuleException(realPath + "/WEB-INF/dwr-modules.xml file doesn't exist.", e);
@@ -1011,33 +997,29 @@ public class WebModuleUtil {
 
 	public static void createDwrModulesXml(String realPath) {
 		try {
-			Document doc = createDocumentBuilder().newDocument();
-			doc.appendChild(doc.createElement("dwr"));
-			saveDwrModulesXml(doc, new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
-		} catch (APIException e) {
-			log.error("Failed to create dwr-modules.xml", e);
-		}
-	}
+			DocumentBuilder docBuilder = createDocumentBuilder();
 
-	/**
-	 * Writes dwr-modules.xml with the {@link #DWR_MODULES_XML_DOCTYPE} document type, which the
-	 * transformer cannot write by itself because it drops the internal subset.
-	 *
-	 * @param dwrModulesXml the document to write
-	 * @param file the dwr-modules.xml file
-	 * @since 3.0.0
-	 */
-	public static void saveDwrModulesXml(Document dwrModulesXml, File file) {
-		try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
-			writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-			writer.write(DWR_MODULES_XML_DOCTYPE);
-			writer.write("\n");
-			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.transform(new DOMSource(dwrModulesXml.getDocumentElement()), new StreamResult(writer));
-		} catch (IOException | TransformerException e) {
-			throw new ModuleException("Error while saving " + file.getAbsolutePath(), e);
+			// root elements
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement("dwr");
+			doc.appendChild(rootElement);
+
+			// write the content into xml file
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			// DWR validates the file, so it needs the same document type that Listener writes
+			transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN");
+			transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://directwebremoting.org/schema/dwr20.dtd");
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(
+			        new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
+
+			transformer.transform(source, result);
+
+		} catch (APIException pce) {
+			log.error("Failed to parse document", pce);
+		} catch (TransformerException tfe) {
+			log.error("Failed to transorm xml source", tfe);
 		}
 	}
 
