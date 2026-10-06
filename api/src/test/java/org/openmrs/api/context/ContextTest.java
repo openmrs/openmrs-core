@@ -16,14 +16,19 @@ import java.util.Map;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.cache.GlobalPropertyCacheTestUtil;
+import org.openmrs.api.cache.RolePrivilegeCache;
+import org.openmrs.api.cache.RolePrivilegeCacheTestUtil;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -40,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -366,6 +372,28 @@ public class ContextTest extends BaseContextSensitiveTest {
 		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
 		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
 		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+	}
+
+	/**
+	 * @see Context#clearEntireCache()
+	 */
+	@Test
+	public void clearEntireCache_shouldEvictTheGlobalPropertyAndRolePrivilegeCachesAsTheyEvictThemselves() {
+		GlobalPropertyCacheTestUtil.seed(new GlobalProperty("seeded.property", "value"));
+		RolePrivilegeCacheTestUtil.seed("Seeded Role", "Seeded Privilege");
+		RolePrivilegeCache rolePrivilegeCache = Context.getRegisteredComponent("rolePrivilegeCache",
+		    RolePrivilegeCache.class);
+		assertNotNull(GlobalPropertyCacheTestUtil.getIfCached("seeded.property"));
+		assertTrue(rolePrivilegeCache.getRolePrivileges(new Role("Seeded Role")).containsPrivilege("Seeded Privilege"));
+
+		Context.clearEntireCache();
+
+		// unlike a plain clear, their own eviction waits for the transaction to complete, while the
+		// transaction reads without them
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("seeded.property"));
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("seeded.property"));
+		assertTrue(RolePrivilegeCacheTestUtil.isCached("Seeded Role"));
+		assertFalse(rolePrivilegeCache.getRolePrivileges(new Role("Seeded Role")).containsPrivilege("Seeded Privilege"));
 	}
 
 	/**

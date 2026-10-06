@@ -101,6 +101,10 @@ public interface ContextDAO {
 
 	/**
 	 * Close session.
+	 * <p>
+	 * A call that would close a session while a Spring transaction is running on it is ignored with a
+	 * warning. The session was opened before that transaction began, so the close is unmatched, and
+	 * closing the session would break the transaction's cleanup.
 	 */
 	public void closeSession();
 
