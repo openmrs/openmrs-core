@@ -75,6 +75,8 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	
 	private SchedulerDAO schedulerDAO;
 	
+	private JobRunrServerLifecycle jobRunrServerLifecycle;
+	
 	public JobRunrSchedulerService(StorageProvider storageProvider, JobRequestScheduler jobRequestScheduler, 
 								   JobScheduler jobScheduler, SchedulerDAO schedulerDAO) {
 		this.jobRequestScheduler = jobRequestScheduler;
@@ -83,8 +85,13 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		this.schedulerDAO = schedulerDAO;
 	}
 	
+	public void setJobRunrServerLifecycle(JobRunrServerLifecycle jobRunrServerLifecycle) {
+		this.jobRunrServerLifecycle = jobRunrServerLifecycle;
+	}
+	
 	@Override
 	public void onStartup() {
+		jobRunrServerLifecycle.openmrsStarted();
 		for (TaskDefinition taskDefinition: schedulerDAO.getTasks()) {
 			if (Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
 				String scheduledBy = taskDefinition.getCreator() != null ? taskDefinition.getCreator().getSystemId() : "daemon";
@@ -111,6 +118,12 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onShutdown() {
+		// the webapp never closes its application context, so the lifecycle would not stop the server
+		jobRunrServerLifecycle.stop();
 	}
 
 	@Override
