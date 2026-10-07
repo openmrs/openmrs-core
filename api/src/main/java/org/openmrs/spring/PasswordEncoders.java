@@ -16,19 +16,14 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * The set of password encoders OpenMRS ships with, and the encoder to use when no Spring context
- * exists yet.
- * <p>
- * This is the only place that knows which algorithms are available and what their work factors
- * are. {@link org.openmrs.util.Security} reaches the encoders only through here, so adding an
- * algorithm is a change to this class and the {@code openmrsPasswordEncoder} bean definition
- * rather than to the hashing utility.
+ * Builds the fallback password encoder OpenMRS uses when no Spring context exists yet, for
+ * example while the database upgrade wizard authenticates a superuser.
  * <p>
  * The {@code workFactor} methods are referenced from the {@code argon2PasswordEncoder} bean
  * definition, so the range a configured work factor has to fall in lives alongside the rest of the
  * Argon2 policy rather than being spread between the properties file and a comment.
  *
- * @since 2.8.10
+ * @since 2.8.11
  */
 public final class PasswordEncoders {
 
@@ -48,33 +43,26 @@ public final class PasswordEncoders {
 	/**
 	 * Defaults for the three tunable work factors. The {@code openmrsPasswordEncoder} bean takes
 	 * these from {@code security.argon2.*} in {@code openmrs-runtime.properties}, so an
-	 * administrator can raise them without a rebuild.
+	 * administrator can raise them without a rebuild. The memory default is 19456 KiB rather than
+	 * Spring's 16384 because it is the floor OWASP recommends for Argon2id.
 	 */
 	private static final int DEFAULT_PARALLELISM = 1;
 	private static final int DEFAULT_MEMORY = 19456;
 	private static final int DEFAULT_ITERATIONS = 2;
 
 	/**
-	 * Bounds the {@code security.argon2.parallelism} property. The upper bound is BouncyCastle's
-	 * own: it rejects more lanes than this, and it does so from the first encode rather than from
-	 * bean creation, so an install with too high a value would start and then fail every login.
+	 * Bounds the {@code security.argon2.parallelism} property.
 	 */
 	private static final int MIN_PARALLELISM = 1;
 	private static final int MAX_PARALLELISM = 16777215;
 
 	/**
-	 * Lower bound for {@code security.argon2.memory}. Argon2 requires at least 8 blocks (RFC 9106)
-	 * and BouncyCastle enforces no floor at all here: a memory cost of 0 or a negative one encodes
-	 * successfully into a hash carrying {@code m=0}, which looks like a deliberate setting in the
-	 * database and is not memory-hard at all. The floor is a constant rather than a multiple of the
-	 * configured parallelism, which is the tighter reading of the spec but yields a useless error
-	 * at the top of the parallelism range, where 8 per lane would ask for 128 GiB.
+	 * Lower bound for {@code security.argon2.memory}. Argon2 requires at least 8 blocks (RFC 9106).
 	 */
 	private static final int MIN_MEMORY = 8;
 
 	/**
-	 * Lower bound for {@code security.argon2.iterations}. BouncyCastle rejects anything below 1,
-	 * but again only when the first password is hashed.
+	 * Lower bound for {@code security.argon2.iterations}.
 	 */
 	private static final int MIN_ITERATIONS = 1;
 
@@ -87,9 +75,9 @@ public final class PasswordEncoders {
 	 * <p>
 	 * This deliberately fails the application context rather than substituting a value. A
 	 * password policy the administrator did not intend is not something to correct quietly on their
-	 * behalf, and the alternative is worse than a failed start: BouncyCastle accepts a memory cost
-	 * of 0, so a mistyped value would otherwise be stored in the database as a working hash that
-	 * is not one.
+	 * behalf, and the alternative is worse than a failed start: a mistyped value would otherwise be
+	 * written to the database as a hash that looks deliberate but is not memory-hard at all, which
+	 * is what a memory cost of 0 produces.
 	 *
 	 * @param name the property name, used only to make the failure actionable
 	 * @param value the raw configured value

@@ -34,9 +34,9 @@
 	<bean id="openmrsLegacyPasswordEncoder" class="org.openmrs.spring.LegacyOpenmrsPasswordEncoder" />
 	<!-- Argon2id password encoder.  Salt and hash length are hard-coded at OWASP-recommended
 	     values; only the three work factors are configurable via openmrs-runtime.properties.
-	     The work factors are passed through PasswordEncoders so that a value Argon2 will refuse
-	     stops the application from starting.  BouncyCastle would otherwise not object to a
-	     memory cost of 0 until the first password was written, and would write it. -->
+	     The work factors are passed through PasswordEncoders so that an out-of-range value
+	     stops the application from starting, rather than being written to the database at the
+	     first password change as a hash that does not do what it says. -->
 	<bean id="argon2PasswordEncoder" class="org.springframework.security.crypto.argon2.Argon2PasswordEncoder">
 		<constructor-arg index="0" value="16" />
 		<constructor-arg index="1" value="32" />

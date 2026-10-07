@@ -86,14 +86,13 @@ class PasswordEncodersTest {
 
 	/**
 	 * The work factors reach the encoder as constructor arguments, so an out-of-range value has to
-	 * be refused while the bean is being built. The boundaries are the ones Argon2 itself imposes;
-	 * BouncyCastle is what rejects the parallelism and iteration bounds, and it does so from the
-	 * first encode rather than from bean creation.
+	 * be refused while the bean is being built. The boundaries are the ones Argon2 itself imposes,
+	 * and nothing downstream re-checks them once the encoder has been built.
 	 */
 	@Test
 	void workFactor_shouldAcceptTheArgon2Boundaries() {
 		assertEquals(1, PasswordEncoders.parallelismWorkFactor("1"));
-		assertEquals(16777215, PasswordEncoders.parallelismWorkFactor("16777215"), "BouncyCastle's lane ceiling");
+		assertEquals(16777215, PasswordEncoders.parallelismWorkFactor("16777215"), "Argon2's lane ceiling");
 		assertEquals(1, PasswordEncoders.iterationsWorkFactor("1"));
 		assertEquals(19456, PasswordEncoders.memoryWorkFactor("19456"));
 		assertEquals(8, PasswordEncoders.memoryWorkFactor("8"), "Argon2's smallest usable memory cost");
@@ -111,9 +110,9 @@ class PasswordEncodersTest {
 	}
 
 	/**
-	 * A memory cost of 0 encodes successfully in BouncyCastle and produces a hash carrying
-	 * {@code m=0}, so without this check a mistyped value reaches the database as a working-looking
-	 * password hash that is not one. Nothing downstream rejects it either, which is why the
+	 * A memory cost of 0 would be written to the database as a hash carrying {@code m=0}, so
+	 * without this check a mistyped value reaches the database as a working-looking password hash
+	 * that is not memory-hard at all. Nothing downstream rejects it either, which is why the
 	 * failure has to happen before the bean is built.
 	 */
 	@Test

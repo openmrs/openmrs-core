@@ -73,13 +73,14 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 			encodedPassword = encodedPassword.substring(encodedPassword.indexOf("}") + 1);
 		}
 		
+		// An unprefixed value is a legacy hash (SHA-1/SHA-512) that the encoder new
+		// passwords are written with cannot parse, so verify it against the fallback.
+		if (id == null) {
+			return fallbackEncoder.matches(rawPassword, encodedPassword);
+		}
+		
 		PasswordEncoder encoder = idToPasswordEncoder.get(id);
 		if (encoder == null) {
-			// An unprefixed value is a legacy hash (SHA-1/SHA-512) that the encoder new
-			// passwords are written with cannot parse.
-			if (id == null) {
-				return fallbackEncoder.matches(rawPassword, encodedPassword);
-			}
 			return defaultEncoder.matches(rawPassword, encodedPassword);
 		}
 		
@@ -96,8 +97,7 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		}
 		PasswordEncoder encoder = idToPasswordEncoder.get(id);
 		if (encoder == null) {
-			// we don't manage this prefix and passing it to the default encoder
-			// might throw
+			// we don't manage this prefix
 			return false;
 		}
 		String encodedPassword = prefixedPassword.substring(prefixedPassword.indexOf("}") + 1);
