@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -261,13 +260,8 @@ public class WebModuleUtilTest {
 	}
 
 	private Module buildModuleForMessageTest(Document moduleConfig) throws ParserConfigurationException {
-		Properties englishMessages = new Properties();
-		englishMessages.put("withoutPrefix", "Without prefix");
-
 		Module mod = new Module("My Module");
 		mod.setModuleId("mymodule");
-		mod.setMessages(new HashMap<>());
-		mod.getMessages().put("en", englishMessages);
 		mod.setFile(new File("sampleFile.jar"));
 		mod.setConfig(moduleConfig);
 
