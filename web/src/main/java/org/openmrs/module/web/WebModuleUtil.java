@@ -33,6 +33,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -1006,6 +1007,9 @@ public class WebModuleUtil {
 			// write the content into xml file
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
+			// DWR validates the file, so it needs the same document type that Listener writes
+			transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN");
+			transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://directwebremoting.org/schema/dwr20.dtd");
 			DOMSource source = new DOMSource(doc);
 			StreamResult result = new StreamResult(
 			        new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
