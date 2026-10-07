@@ -1105,6 +1105,22 @@ public class Context {
 	 * Stops the OpenMRS System Should be called after all activity has ended and application is closing
 	 */
 	public static void shutdown() {
+		log.debug("Shutting down the scheduler");
+		try {
+			SchedulerService schedulerService = null;
+			try {
+				schedulerService = getSchedulerService();
+			} catch (APIException e) {
+				// pass
+			}
+			if (schedulerService != null) {
+				// stops running tasks before the modules and the database they use are shut down
+				schedulerService.onShutdown();
+			}
+		} catch (Exception e) {
+			log.warn("Error while shutting down the scheduler", e);
+		}
+
 		log.debug("Shutting down the modules");
 		try {
 			ModuleUtil.shutdown();
