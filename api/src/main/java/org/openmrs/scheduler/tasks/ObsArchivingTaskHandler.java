@@ -143,8 +143,8 @@ public class ObsArchivingTaskHandler implements TaskHandler<ObsArchivingTaskData
 		new TransactionTemplate(transactionManager).execute(status -> {
 			Session session = sessionFactory.getCurrentSession();
 
-			List<Obs> obsList = session
-			        .createQuery("FROM Obs o LEFT JOIN FETCH o.referenceRange WHERE o.obsId IN (:batchIds)", Obs.class)
+			List<Obs> obsList = session.createQuery(
+			    "FROM Obs o LEFT JOIN FETCH o.referenceRange WHERE o.obsId IN (:batchIds) AND o.voided = true", Obs.class)
 			        .setParameter("batchIds", batchIds).list();
 
 			List<Integer> idsToProcess = new ArrayList<>();
