@@ -18,6 +18,7 @@ import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
 import org.jobrunr.jobs.filters.RetryFilter;
 import org.jobrunr.scheduling.JobRequestScheduler;
 import org.jobrunr.scheduling.JobScheduler;
+import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
@@ -51,12 +52,25 @@ public class JobRunrConfig {
 
 		JobRunrConfiguration config = JobRunr.configure().useJsonMapper(new JacksonJsonMapper(objectMapper))
 		        .useStorageProvider(storageProvider).useJobActivator(applicationContext::getBean)
-		        .withJobFilter(new RetryFilter(3)).useBackgroundJobServer();
+		        .withJobFilter(new RetryFilter(3)).useBackgroundJobServer(
+		            BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration(), false);
 		if (dashboardEnabled) {
 			config.useDashboard(JobRunrDashboardWebServerConfiguration.usingStandardDashboardConfiguration().andPort(port)
 			        .andBasicAuthentication(user, password));
 		}
 		return config.initialize();
+	}
+
+	/**
+	 * Starts the background job server once the application context has finished refreshing and stops
+	 * it before the context is closed. Started while the context is still being created, it would run
+	 * jobs before the context is ready, e.g. against the already closed session factory of the context
+	 * being replaced when the context is refreshed after modules start.
+	 */
+	@Bean
+	public JobRunrServerLifecycle jobRunrServerLifecycle(
+	        JobRunrConfiguration.JobRunrConfigurationResult jobRunrConfiguration) {
+		return new JobRunrServerLifecycle(jobRunrConfiguration.getBackgroundJobServer());
 	}
 
 	@Bean
