@@ -32,10 +32,26 @@
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
 	<bean id="openmrsLegacyPasswordEncoder" class="org.openmrs.spring.LegacyOpenmrsPasswordEncoder" />
+	<!-- Argon2id password encoder.  Salt and hash length are hard-coded at OWASP-recommended
+	     values; only the three work factors are configurable via openmrs-runtime.properties.
+	     The work factors are passed through PasswordEncoders so that an out-of-range value
+	     stops the application from starting, rather than being written to the database at the
+	     first password change as a hash that does not do what it says. -->
+	<bean id="argon2PasswordEncoder" class="org.springframework.security.crypto.argon2.Argon2PasswordEncoder">
+		<constructor-arg index="0" value="16" />
+		<constructor-arg index="1" value="32" />
+		<constructor-arg index="2" value="#{T(org.openmrs.spring.PasswordEncoders).parallelismWorkFactor('${security.argon2.parallelism:1}')}" />
+		<constructor-arg index="3" value="#{T(org.openmrs.spring.PasswordEncoders).memoryWorkFactor('${security.argon2.memory:19456}')}" />
+		<constructor-arg index="4" value="#{T(org.openmrs.spring.PasswordEncoders).iterationsWorkFactor('${security.argon2.iterations:2}')}" />
+	</bean>
 	<bean id="openmrsPasswordEncoder" class="org.openmrs.spring.OpenmrsDelegatingPasswordEncoder">
-		<constructor-arg type="java.lang.String" value="" />
+		<!-- an empty value keeps newly written passwords on the legacy (SHA-512) encoder;
+		     set security.passwordEncoder=argon2 in openmrs-runtime.properties to opt in -->
+		<constructor-arg type="java.lang.String" value="${security.passwordEncoder:}" />
 		<constructor-arg>
-			<map />
+			<map>
+				<entry key="argon2" value-ref="argon2PasswordEncoder" />
+			</map>
 		</constructor-arg>
 		<constructor-arg ref="openmrsLegacyPasswordEncoder" />
 	</bean>

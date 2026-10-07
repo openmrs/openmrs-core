@@ -17,6 +17,9 @@ import java.util.Base64;
 import java.util.Base64.Decoder;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.context.ServiceContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -92,6 +95,31 @@ public class SecurityTest {
 	public void checkPassword_shouldReturnFalseForNullPasswordOrStoredValue() {
 		assertFalse(Security.checkPassword(null, "anyPassword"));
 		assertFalse(Security.checkPassword("storedValue", null));
+	}
+
+	/**
+	 * @see Security#checkPassword(String,String)
+	 */
+	@Test
+	public void checkPassword_shouldVerifyAnArgon2HashWhenNoApplicationContextIsAvailable() {
+		boolean wasInstantiated = ServiceContext.isInstantiated();
+		ApplicationContext saved = wasInstantiated ? ServiceContext.getInstance().getApplicationContext() : null;
+		if (wasInstantiated) {
+			ServiceContext.getInstance().setApplicationContext(null);
+		}
+		try {
+			String toHash = "test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f";
+			String stored = "{argon2}" + Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8().encode(toHash);
+
+			assertTrue(Security.checkPassword(stored, toHash));
+			assertFalse(Security.checkPassword(stored, "wrong"));
+			assertTrue(Security.checkPassword(Security.encodeString(toHash), toHash));
+		}
+		finally {
+			if (wasInstantiated) {
+				ServiceContext.getInstance().setApplicationContext(saved);
+			}
+		}
 	}
 
 	/**
