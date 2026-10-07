@@ -613,7 +613,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	 * Gets a valid creator system ID from the given task definition.
 	 *
 	 * @param taskDefinition the task definition
-	 * @return the system ID of the creator, or the authenticated user's system ID if none exists
+	 * @return the system ID of the creator, or {@code daemon} if the creator is missing or retired
 	 * @since 3.0.0
 	 */
 	private String getValidCreatorSystemId(TaskDefinition taskDefinition) {

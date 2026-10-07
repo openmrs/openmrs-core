@@ -9,6 +9,8 @@
  */
 package org.openmrs.scheduler.tasks;
 
+import java.lang.reflect.Method;
+import java.util.List;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.AfterEach;
@@ -262,5 +264,19 @@ public class ObsArchivingTaskHandlerTest extends BaseContextSensitiveNonTransact
 
 		// Clean up the dummy row to avoid issues in cleanup
 		jdbcTemplate.update("DELETE FROM obs_archive WHERE uuid = 'dummy-uuid-for-9'");
+	}
+
+	@Test
+	public void execute_shouldNotArchiveUnvoidedObservationDuringFallback() throws Exception {
+		// Obs 7 is active in the standard dataset — simulates an obs unvoided after fetchNextBatch
+		Obs obs = obsService.getObs(7);
+		assertFalse(obs.getVoided());
+
+		Method method = ObsArchivingTaskHandler.class.getDeclaredMethod("archiveAndDeleteBatch", List.class);
+		method.setAccessible(true);
+		method.invoke(handler, List.of(7));
+
+		// Without AND o.voided = true in the batch query, obs 7 would land in obs_archive
+		assertActive(7);
 	}
 }
