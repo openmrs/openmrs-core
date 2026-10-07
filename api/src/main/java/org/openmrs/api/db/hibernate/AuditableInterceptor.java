@@ -19,6 +19,7 @@ import org.hibernate.Interceptor;
 import org.hibernate.collection.spi.PersistentSet;
 import org.hibernate.type.Type;
 import org.openmrs.Auditable;
+import org.openmrs.Changeable;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -77,7 +78,7 @@ public class AuditableInterceptor implements Interceptor {
 
 		objectWasChanged = setCreatorAndDateCreatedIfNull(entity, currentState, propertyNames);
 
-		if (entity instanceof Auditable && propertyNames != null) {
+		if (entity instanceof Changeable && propertyNames != null) {
 			log.debug("Setting changed by fields on {}", entity.getClass());
 
 			Map<String, Object> propertyValues = getPropertyValuesToUpdate();
