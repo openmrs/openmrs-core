@@ -50,11 +50,11 @@
 		<springTestVersion>7.0.9</springTestVersion>
 		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
 		<springSecurityVersion>7.1.1</springSecurityVersion>
-		<hibernateVersion>7.4.11.Final</hibernateVersion>
+		<hibernateVersion>7.4.12.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
 		<hibernateValidatorVersion>9.1.4.Final</hibernateValidatorVersion>
-		<luceneVersion>10.5.1</luceneVersion>
+		<luceneVersion>10.5.2</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.6.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
@@ -63,7 +63,7 @@
 		<log4jVersion>2.26.1</log4jVersion>
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
-		<owaspEncoderVersion>1.4.1</owaspEncoderVersion>
+		<owaspEncoderVersion>1.5.0</owaspEncoderVersion>
 		<graalJsVersion>25.4.4.1.1</graalJsVersion>
 		<nettyVersion>4.2.18.Final</nettyVersion>
 
@@ -115,11 +115,11 @@
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
 		<tomcatVersion>11.0.26</tomcatVersion>
-		<jodaTimeVersion>2.14.4</jodaTimeVersion>
+		<jodaTimeVersion>2.15.0</jodaTimeVersion>
 		<guavaVersion>33.7.2-jre</guavaVersion>
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
-		<jobrunrVersion>8.8.2</jobrunrVersion>
+		<jobrunrVersion>9.0.0</jobrunrVersion>
 		<shedlockVersion>7.10.1</shedlockVersion>
 
 		<!-- Testing -->

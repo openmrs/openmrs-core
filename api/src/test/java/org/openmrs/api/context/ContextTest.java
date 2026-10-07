@@ -16,6 +16,7 @@ import java.util.Map;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
@@ -29,8 +30,10 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.cache.GlobalPropertyCacheTestUtil;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.cache.RolePrivilegeCacheTestUtil;
+import org.openmrs.api.db.ContextDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
+import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -48,6 +51,8 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 /**
  * TODO add methods for all context tests
@@ -470,5 +475,28 @@ public class ContextTest extends BaseContextSensitiveTest {
 			Context.removeProxyPrivilege("Some Test Privilege");
 			authenticate();
 		}
+	}
+
+	/**
+	 * @see Context#shutdown()
+	 */
+	@Test
+	public void shutdown_shouldShutDownTheSchedulerBeforeTheDatabase() {
+		ContextDAO contextDAO = Context.getContextDAO();
+		SchedulerService schedulerService = Context.getSchedulerService();
+		ContextDAO mockContextDAO = mock(ContextDAO.class);
+		SchedulerService mockSchedulerService = mock(SchedulerService.class);
+		Context.setDAO(mockContextDAO);
+		Context.getServiceContext().setSchedulerService(mockSchedulerService);
+		try {
+			Context.shutdown();
+		} finally {
+			Context.getServiceContext().setSchedulerService(schedulerService);
+			Context.setDAO(contextDAO);
+		}
+
+		InOrder inOrder = inOrder(mockSchedulerService, mockContextDAO);
+		inOrder.verify(mockSchedulerService).onShutdown();
+		inOrder.verify(mockContextDAO).shutdown();
 	}
 }

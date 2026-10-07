@@ -46,6 +46,7 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleMustStartException;
 import org.openmrs.module.web.OpenmrsJspServlet;
 import org.openmrs.module.web.WebModuleUtil;
+import org.openmrs.scheduler.jobrunr.JobRunrServerLifecycle;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
@@ -202,6 +203,10 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		try {
 			// validate the current JVM version
 			OpenmrsUtil.validateJavaVersion();
+
+			// the application context is refreshed before modules start, so hold off scheduled jobs
+			// until startOpenmrs has started them
+			JobRunrServerLifecycle.deferStartUntilOpenmrsStarted();
 
 			ServletContext servletContext = event.getServletContext();
 
