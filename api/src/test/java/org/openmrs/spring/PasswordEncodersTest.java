@@ -51,7 +51,7 @@ class PasswordEncodersTest {
 	 * properties are absent. Note that Spring's own
 	 * {@code Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8()} is deliberately not the
 	 * reference: it uses m=16384, whereas OpenMRS ships the OWASP-recommended m=19456.
-	 * {@code OpenmrsPasswordEncoderContextTest} checks the two definitions against each other.
+	 * {@code OpenmrsPasswordEncoderBeanTest} checks the two definitions against each other.
 	 */
 	@Test
 	void noContextEncoder_shouldUseTheOwaspRecommendedArgon2WorkFactors() {
