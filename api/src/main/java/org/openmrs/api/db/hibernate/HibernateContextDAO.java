@@ -395,6 +395,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	public void evictAllEntities(Class<?> entityClass) {
 		sessionFactory.getCache().evictEntityData(entityClass);
+		sessionFactory.getCache().evictNaturalIdData(entityClass);
 		sessionFactory.getCache().evictCollectionData();
 		sessionFactory.getCache().evictQueryRegions();
 	}

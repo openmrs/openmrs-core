@@ -24,6 +24,7 @@ import jakarta.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
+import org.hibernate.KeyType;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
@@ -32,6 +33,9 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.metamodel.mapping.SingularAttributeMapping;
+import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
@@ -49,6 +53,8 @@ public class HibernateUtil {
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(HibernateUtil.class);
+
+	private static final String UUID_PROPERTY = "uuid";
 
 	/**
 	 * Persists a new entity or merges a detached entity, emulating the old Hibernate
@@ -233,6 +239,12 @@ public class HibernateUtil {
 
 	/**
 	 * Retrieves a unique entity by its UUID.
+	 * <p>
+	 * When the entity maps its uuid as its natural id, the lookup goes through the natural id API, so
+	 * an entity whose natural id and state are held in the second-level cache is returned without a
+	 * database round trip. Otherwise, the entity is looked up with a query on its uuid. The query is
+	 * also used when an enabled filter restricts the entity, because loading by natural id does not
+	 * apply filters.
 	 *
 	 * @param sessionFactory the session factory to create sessions.
 	 * @param entityClass the class of the entity to retrieve.
@@ -243,12 +255,36 @@ public class HibernateUtil {
 	public static <T> T getUniqueEntityByUUID(SessionFactory sessionFactory, Class<T> entityClass, String uuid)
 	        throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
+		if (uuid != null && canLoadByUuidNaturalId(session, entityClass)) {
+			return session.find(entityClass, uuid, KeyType.NATURAL);
+		}
+
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<T> query = cb.createQuery(entityClass);
 		Root<T> root = query.from(entityClass);
 
-		query.where(cb.equal(root.get("uuid"), uuid));
+		query.where(cb.equal(root.get(UUID_PROPERTY), uuid));
 		return session.createQuery(query).uniqueResult();
+	}
+
+	/**
+	 * Checks whether the given entity class can be loaded by its uuid through the natural id API. That
+	 * needs the entity to map its uuid, and nothing else, as its natural id, and no filter enabled on
+	 * the session to restrict the entity.
+	 *
+	 * @param session the session the entity is loaded in
+	 * @param entityClass the entity class to check
+	 * @return true if the entity can be loaded by its uuid as a natural id, false otherwise
+	 */
+	private static boolean canLoadByUuidNaturalId(Session session, Class<?> entityClass) {
+		SharedSessionContractImplementor sessionImplementor = session.unwrap(SharedSessionContractImplementor.class);
+		EntityPersister persister = sessionImplementor.getFactory().getMappingMetamodel().findEntityDescriptor(entityClass);
+		if (persister == null || persister.getNaturalIdMapping() == null) {
+			return false;
+		}
+		List<SingularAttributeMapping> naturalIdAttributes = persister.getNaturalIdMapping().getNaturalIdAttributes();
+		return naturalIdAttributes.size() == 1 && UUID_PROPERTY.equals(naturalIdAttributes.get(0).getAttributeName())
+		        && !persister.isAffectedByEnabledFilters(sessionImplementor.getLoadQueryInfluencers(), false);
 	}
 
 	/**
