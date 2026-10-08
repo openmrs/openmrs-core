@@ -61,6 +61,7 @@ import org.openmrs.Provider;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.Visit;
+import org.openmrs.aop.event.SaveServiceEvent;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
@@ -78,6 +79,8 @@ import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.PayloadApplicationEvent;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -632,6 +635,63 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(discontinueOrder.getAction(), Action.DISCONTINUE);
 		assertEquals(discontinueOrder.getOrderReasonNonCoded(), discontinueReasonNonCoded);
 		assertEquals(discontinueOrder.getPreviousOrder(), order);
+	}
+
+	/**
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date,
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
+	 */
+	@Test
+	public void discontinueOrder_shouldPublishSaveServiceEventForTheStoppedOrder() {
+		List<Order> savedOrders = listenForSavedOrders();
+
+		Order order = orderService.getOrderByOrderNumber("111");
+		Integer orderId = order.getOrderId();
+		Encounter encounter = encounterService.getEncounter(3);
+		Provider orderer = providerService.getProvider(1);
+
+		orderService.discontinueOrder(order, "Test if I can discontinue this", new Date(), orderer, encounter);
+
+		assertTrue(savedOrders.stream()
+		        .anyMatch(savedOrder -> orderId.equals(savedOrder.getOrderId()) && savedOrder.getDateStopped() != null));
+	}
+
+	/**
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPublishSaveServiceEventForTheStoppedPreviousOrder() {
+		List<Order> savedOrders = listenForSavedOrders();
+
+		Order previousOrder = orderService.getOrder(111);
+		Integer previousOrderId = previousOrder.getOrderId();
+		Order order = previousOrder.cloneForDiscontinuing();
+		order.setOrderReasonNonCoded("Discontinue this");
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setOrderer(providerService.getProvider(1));
+		order.setDateActivated(new Date());
+
+		orderService.saveOrder(order, null);
+
+		assertTrue(savedOrders.stream().anyMatch(
+		    savedOrder -> previousOrderId.equals(savedOrder.getOrderId()) && savedOrder.getDateStopped() != null));
+	}
+
+	private List<Order> listenForSavedOrders() {
+		List<Order> savedOrders = new ArrayList<>();
+		((ConfigurableApplicationContext) applicationContext).addApplicationListener(event -> {
+			Object payload = event;
+			if (event instanceof PayloadApplicationEvent<?>) {
+				payload = ((PayloadApplicationEvent<?>) event).getPayload();
+			}
+			if (payload instanceof SaveServiceEvent<?>) {
+				Object entity = ((SaveServiceEvent<?>) payload).getEntity();
+				if (entity instanceof Order) {
+					savedOrders.add((Order) entity);
+				}
+			}
+		});
+		return savedOrders;
 	}
 
 	/**
