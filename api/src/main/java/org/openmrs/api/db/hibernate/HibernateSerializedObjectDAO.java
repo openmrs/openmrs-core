@@ -20,6 +20,7 @@ import jakarta.persistence.criteria.Root;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.openmrs.Changeable;
 import org.openmrs.Creatable;
 import org.openmrs.OpenmrsData;
 import org.openmrs.OpenmrsMetadata;
@@ -215,6 +216,11 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 				creatableObj.setDateCreated(new Date());
 			}
 			serializedObject.setDateCreated(creatableObj.getDateCreated());
+		}
+
+		if (object instanceof Changeable changeableObj) {
+			serializedObject.setChangedBy(changeableObj.getChangedBy());
+			serializedObject.setDateChanged(changeableObj.getDateChanged());
 		}
 
 		String data;
