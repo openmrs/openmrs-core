@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<conditions condition_id="101" patient_id="7" encounter_id="3" condition_coded="5497" condition_coded_name="1847"
+				clinical_status="INACTIVE" verification_status="CONFIRMED" onset_date="2008-08-01 00:00:00.0"
+				creator="1" date_created="2008-08-01 00:00:00.0" voided="true" date_voided="2008-08-02 00:00:00.0"
+				voided_by="1" void_reason="edited" uuid="0d1b6a2e-2f3c-4f6e-9d51-6c1a1e5d0101"/>
+	<conditions condition_id="102" patient_id="7" encounter_id="3" condition_coded="5497" condition_coded_name="1847"
+				clinical_status="ACTIVE" verification_status="CONFIRMED" onset_date="2008-08-01 00:00:00.0"
+				previous_version="101" creator="1" date_created="2008-08-02 00:00:00.0" voided="false"
+				uuid="0d1b6a2e-2f3c-4f6e-9d51-6c1a1e5d0102"/>
+	<encounter_diagnosis diagnosis_id="101" encounter_id="3" patient_id="7" condition_id="102" diagnosis_coded="5089"
+						 diagnosis_coded_name="1439" dx_rank="1" certainty="CONFIRMED" creator="1"
+						 date_created="2008-08-02 00:00:00.0" voided="false" uuid="0d1b6a2e-2f3c-4f6e-9d51-6c1a1e5d0201"/>
+</dataset>

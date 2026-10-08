@@ -57,11 +57,11 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	@Column(name = "patient_program_id")
 	private Integer patientProgramId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "program_id")
 	private Program program;
 
@@ -75,7 +75,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	@Column(name = "date_completed")
 	private Date dateCompleted;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "outcome_concept_id")
 	private Concept outcome;
 

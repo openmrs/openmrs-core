@@ -68,6 +68,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param patient patient to be created or updated
 	 * @return patient who was created or updated
 	 * @throws APIException regression 1375
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.ADD_PATIENTS, PrivilegeConstants.EDIT_PATIENTS })
 	public Patient savePatient(Patient patient) throws APIException;
@@ -82,6 +84,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientId internal patient identifier
 	 * @return patient with given internal identifier
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
 	public Patient getPatient(Integer patientId) throws APIException;
@@ -93,6 +97,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientOrPersonId
 	 * @return a new unsaved patient or null if person or patient is not found
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
 	Patient getPatientOrPromotePerson(Integer patientOrPersonId) throws APIException;
@@ -106,6 +112,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param uuid universally unique identifier
 	 * @return the patient that matches the uuid
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
 	public Patient getPatientByUuid(String uuid) throws APIException;
@@ -119,6 +127,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param uuid universally unique identifier
 	 * @return the patient identifier that matches the uuid
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_IDENTIFIERS })
 	public PatientIdentifier getPatientIdentifierByUuid(String uuid) throws APIException;
@@ -129,6 +139,8 @@ public interface PatientService extends OpenmrsService {
 	 * <strong>Should</strong> fetch all non voided patients
 	 *
 	 * @return non voided patients in the system
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see #getAllPatients(boolean)
 	 * @throws APIException
 	 */
@@ -144,6 +156,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param includeVoided if false, will limit the search to non-voided patients
 	 * @return patients in the system
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
 	public List<Patient> getAllPatients(boolean includeVoided) throws APIException;
@@ -180,6 +194,8 @@ public interface PatientService extends OpenmrsService {
 	 * @return patients that matched the given criteria (and are not voided)
 	 * @throws APIException is null exactly equals false and if <code>name</code> argument is null
 	 *             equals true and if <code>name</code> argument is null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
@@ -198,6 +214,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param patient patient to be voided
 	 * @param reason reason for voiding patient
 	 * @return the voided patient
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.DELETE_PATIENTS })
 	public Patient voidPatient(Patient patient, String reason) throws APIException;
@@ -212,6 +230,8 @@ public interface PatientService extends OpenmrsService {
 	 *
 	 * @param patient patient to be revived
 	 * @return the revived Patient
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.DELETE_PATIENTS })
 	public Patient unvoidPatient(Patient patient) throws APIException;
@@ -224,6 +244,8 @@ public interface PatientService extends OpenmrsService {
 	 *
 	 * @param patient patient to be deleted
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see #voidPatient(org.openmrs.Patient,java.lang.String)
 	 */
 	@Authorized({ PrivilegeConstants.PURGE_PATIENTS })
@@ -255,6 +277,8 @@ public interface PatientService extends OpenmrsService {
 	 *            null, ignores preferred status
 	 * @return PatientIdentifiers matching these criteria
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_IDENTIFIERS })
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
@@ -272,6 +296,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientIdentifierType PatientIdentifierType to create or update
 	 * @return the saved type
 	 * @throws APIException types are locked
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
@@ -286,6 +312,8 @@ public interface PatientService extends OpenmrsService {
 	 *
 	 * @return patientIdentifier types list
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes() throws APIException;
@@ -304,6 +332,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param includeRetired true/false whether retired types should be included
 	 * @return patientIdentifier types list
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired) throws APIException;
@@ -335,6 +365,8 @@ public interface PatientService extends OpenmrsService {
 	 *            checkdigit'd. if null, ignores checkDigit
 	 * @return patientIdentifier types list
 	 * @throws APIException false
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
 	public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
@@ -349,6 +381,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientIdentifierTypeId
 	 * @return patientIdentifierType with specified internal identifier
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException;
@@ -362,6 +396,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param uuid
 	 * @return patientIdentifierType with specified internal identifier
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
 	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) throws APIException;
@@ -376,6 +412,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param name
 	 * @return patientIdentifierType with given name
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
 	public PatientIdentifierType getPatientIdentifierTypeByName(String name) throws APIException;
@@ -392,6 +430,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param reason the reason to retire this identifier type
 	 * @return the retired type
 	 * @throws APIException types are locked
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType retirePatientIdentifierType(PatientIdentifierType patientIdentifierType, String reason)
@@ -408,6 +448,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientIdentifierType type of patient identifier to be unretired
 	 * @return the unretired type
 	 * @throws APIException identifier types are locked
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType unretirePatientIdentifierType(PatientIdentifierType patientIdentifierType)
@@ -423,6 +465,8 @@ public interface PatientService extends OpenmrsService {
 	 *
 	 * @param patientIdentifierType PatientIdentifierType to purge from the database
 	 * @throws APIException types are locked
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.PURGE_IDENTIFIER_TYPES })
 	public void purgePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
@@ -443,6 +487,8 @@ public interface PatientService extends OpenmrsService {
 	 * <strong>Should</strong> require one non voided patient identifier
 	 *
 	 * @param patient patient for which to validate identifiers
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see #checkPatientIdentifiers(Patient)
 	 * @throws PatientIdentifierException if one or more of the identifiers are invalid identifiers
 	 */
@@ -466,6 +512,8 @@ public interface PatientService extends OpenmrsService {
 	 *
 	 * @param query the string to search on
 	 * @return a list of matching Patients
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
 	public List<Patient> getPatients(String query) throws APIException;
@@ -483,6 +531,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param length the number of patients to return
 	 * @return a list of matching Patients
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
@@ -495,6 +545,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param length the number of patients to return
 	 * @return a list of matching Patients
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.11
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
@@ -540,6 +592,8 @@ public interface PatientService extends OpenmrsService {
 	 *
 	 * @param patientToMatch
 	 * @return null if no match found, a fresh patient object from the db if is found
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
 	public Patient getPatientByExample(Patient patientToMatch) throws APIException;
@@ -557,6 +611,8 @@ public interface PatientService extends OpenmrsService {
 	 *            middleName, familyName]
 	 * @return list of patients that match other patients
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) throws APIException;
@@ -632,6 +688,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param notPreferred The Patient to merge from (and then void)
 	 * @throws APIException
 	 * @throws SerializationException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see PersonMergeLogData patient
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_PATIENTS })
@@ -663,6 +721,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param otherReason - if the concept representing the reason is OTHER NON-CODED, and a
 	 *            string-based "other" reason is supplied
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_PATIENTS })
 	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason) throws APIException;
@@ -687,6 +747,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param otherReason - if the concept representing the reason is OTHER NON-CODED, and a
 	 *            string-based "other" reason is supplied
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(value = { PrivilegeConstants.GET_PATIENTS, PrivilegeConstants.EDIT_OBS }, requireAll = true)
 	public void saveCauseOfDeathObs(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason)
@@ -748,6 +810,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientIdentifier the patient identifier to look for in other patients
 	 * @return whether or not the identifier is in use by a patient other than patientIdentifier.patient
 	 *         id id this id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_PATIENTS)
 	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier);
@@ -760,6 +824,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientIdentifierId the patientIdentifier id
 	 * @return the patientIdentifier matching the Id
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_IDENTIFIERS })
 	public PatientIdentifier getPatientIdentifier(Integer patientIdentifierId) throws APIException;
@@ -776,6 +842,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param reason reason for voiding patient identifier
 	 * @return the voided patient identifier
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.DELETE_PATIENT_IDENTIFIERS })
 	public PatientIdentifier voidPatientIdentifier(PatientIdentifier patientIdentifier, String reason) throws APIException;
@@ -794,6 +862,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientIdentifier patientIndentifier to be created or updated
 	 * @return patientIndentifier that was created or updated
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.ADD_PATIENT_IDENTIFIERS, PrivilegeConstants.EDIT_PATIENT_IDENTIFIERS })
 	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException;
@@ -805,6 +875,8 @@ public interface PatientService extends OpenmrsService {
 	 *
 	 * @param patientIdentifier PatientIdentifier to purge from the database
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.PURGE_PATIENT_IDENTIFIERS })
 	public void purgePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException;
@@ -816,6 +888,8 @@ public interface PatientService extends OpenmrsService {
 	 *
 	 * @param patient the patient
 	 * @return the allergies object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_ALLERGIES })
 	Allergies getAllergies(Patient patient);
@@ -844,6 +918,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param patient the patient
 	 * @param allergies the allergies
 	 * @return the saved allergies
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.ADD_ALLERGIES, PrivilegeConstants.EDIT_ALLERGIES })
 	Allergies setAllergies(Patient patient, Allergies allergies);
@@ -854,6 +930,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param allergyListId identifies allergy by internal Ingerger Id
 	 * @return the allergy
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_ALLERGIES })
 	public Allergy getAllergy(Integer allergyListId) throws APIException;
@@ -868,6 +946,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param uuid identifies allergy
 	 * @return the allergy matching the given uuid
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_ALLERGIES })
 	public Allergy getAllergyByUuid(String uuid) throws APIException;
@@ -880,6 +960,8 @@ public interface PatientService extends OpenmrsService {
 	 *
 	 * @param allergy the Allergy
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.ADD_ALLERGIES, PrivilegeConstants.EDIT_ALLERGIES })
 	public void saveAllergy(Allergy allergy) throws APIException;
@@ -893,6 +975,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param allergy the Allergy
 	 * @param reason the reason of remove
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_ALLERGIES })
 	public void removeAllergy(Allergy allergy, String reason) throws APIException;
@@ -903,6 +987,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param allergy
 	 * @param reason
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.DELETE_ALLERGIES })
 	public void voidAllergy(Allergy allergy, String reason) throws APIException;
@@ -921,6 +1007,8 @@ public interface PatientService extends OpenmrsService {
 	 *
 	 * @param query the string to search on
 	 * @return the number of patients matching the given search phrase
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
@@ -930,6 +1018,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param query the string to search on
 	 * @param includeVoided true/false whether or not to included voided patients
 	 * @return the number of patients matching the given search phrase
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
 	public Integer getCountOfPatients(String query, boolean includeVoided);
@@ -950,6 +1040,8 @@ public interface PatientService extends OpenmrsService {
 	 * @param length the number of patients to return
 	 * @return patients that matched the given criteria (and are not voided)
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENTS })
@@ -969,6 +1061,8 @@ public interface PatientService extends OpenmrsService {
 	 *
 	 * @param patientProgram the patientProgram to be used to fetch the associated identifiers
 	 * @return PatientIdentifiers matching the patient program
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.6.0
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_IDENTIFIERS })

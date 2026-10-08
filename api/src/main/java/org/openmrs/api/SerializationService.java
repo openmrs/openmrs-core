@@ -65,6 +65,8 @@ public interface SerializationService extends OpenmrsService {
 	 * @param serializerClass - The {@link OpenmrsSerializer} class to use to perform the
 	 *            deserialization
 	 * @return hydrated object of the appropriate type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Logging(ignoredArgumentIndexes = { 0 })
 	@Authorized

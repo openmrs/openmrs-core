@@ -56,6 +56,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.UuidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,6 +78,8 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	private SchedulerDAO schedulerDAO;
 
+	private JobRunrServerLifecycle jobRunrServerLifecycle;
+
 	public JobRunrSchedulerService(StorageProvider storageProvider, JobRequestScheduler jobRequestScheduler,
 	    JobScheduler jobScheduler, SchedulerDAO schedulerDAO) {
 		this.jobRequestScheduler = jobRequestScheduler;
@@ -85,8 +88,14 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		this.schedulerDAO = schedulerDAO;
 	}
 
+	@Autowired
+	public void setJobRunrServerLifecycle(JobRunrServerLifecycle jobRunrServerLifecycle) {
+		this.jobRunrServerLifecycle = jobRunrServerLifecycle;
+	}
+
 	@Override
 	public void onStartup() {
+		jobRunrServerLifecycle.openmrsStarted();
 		for (TaskDefinition taskDefinition : schedulerDAO.getTasks()) {
 			if (Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
 				String scheduledBy = taskDefinition.getCreator() != null ? taskDefinition.getCreator().getSystemId()
@@ -115,6 +124,12 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onShutdown() {
+		// the webapp never closes its application context, so the lifecycle would not stop the server
+		jobRunrServerLifecycle.stop();
 	}
 
 	@Override
