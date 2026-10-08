@@ -17,6 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Tests the {@link BaseChangeableOpenmrsData} and {@link BaseChangeableOpenmrsMetadata} base
+ * classes and verifies that change audit information is only available through the
+ * {@link Changeable} contract.
+ */
 public class BaseChangeableOpenmrsTest {
 
 	@Test
