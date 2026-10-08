@@ -150,14 +150,18 @@ public class Context {
 
 	private static AuthenticationScheme authenticationScheme;
 
-	private static final Logger log = LoggerFactory.getLogger(Context.class);
-
 	/**
 	 * The authoritative, per-thread store for the current {@link UserContext}. Setting the
 	 * {@code UserContext} copies this into {@link SecurityContextHolder}, which is how Spring
 	 * Security's machinery gets a handle to the context.
+	 * <p>
+	 * It is initialized before {@link #log}: creating the logger can start log4j, and
+	 * {@link org.openmrs.logging.OpenmrsConfigurationFactory} calls {@link #isSessionOpen()} while it
+	 * configures logging, which then happens while this class is still being initialized.
 	 */
 	private static final ThreadLocal<UserContext> userContextHolder = new ThreadLocal<>();
+
+	private static final Logger log = LoggerFactory.getLogger(Context.class);
 
 	/**
 	 * Default public constructor
