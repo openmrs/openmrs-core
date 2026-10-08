@@ -1319,6 +1319,13 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		List<Location> withoutRetiredResult = ls.getLocations(withoutRetired);
 		assertTrue(withoutRetiredResult.isEmpty());
 
+		Location idOnlyRoot = new Location(root.getLocationId());
+		LocationSearchCriteria idOnlyWithoutRetired = new LocationSearchCriteria();
+		idOnlyWithoutRetired.setDescendantOfLocation(idOnlyRoot);
+		idOnlyWithoutRetired.setIncludeRetired(false);
+		List<Location> idOnlyWithoutRetiredResult = ls.getLocations(idOnlyWithoutRetired);
+		assertTrue(idOnlyWithoutRetiredResult.isEmpty());
+
 		LocationSearchCriteria withRetired = new LocationSearchCriteria();
 		withRetired.setDescendantOfLocation(root);
 		withRetired.setIncludeRetired(true);
