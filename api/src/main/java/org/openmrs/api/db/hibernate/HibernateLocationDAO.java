@@ -462,6 +462,10 @@ public class HibernateLocationDAO implements LocationDAO {
 		if (criteria.getDescendantOfLocation() == null) {
 			return null;
 		}
+		if (!Boolean.TRUE.equals(criteria.getIncludeRetired())
+		        && Boolean.TRUE.equals(criteria.getDescendantOfLocation().getRetired())) {
+			return Collections.emptyList();
+		}
 
 		String retiredFilter = criteria.getIncludeRetired() ? "" : " AND retired = false";
 		String cteSql = "WITH RECURSIVE descendants (location_id) AS ("

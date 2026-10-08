@@ -1300,6 +1300,37 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 * @see LocationService#getLocations(LocationSearchCriteria)
 	 */
 	@Test
+	public void getLocations_withDescendantOf_shouldReturnEmptyListWhenAncestorIsRetiredAndIncludeRetiredIsFalse() {
+		LocationService ls = Context.getLocationService();
+
+		Location root = new Location();
+		root.setName("Retired Root");
+		ls.saveLocation(root);
+		ls.retireLocation(root, "test");
+
+		Location child = new Location();
+		child.setName("Active Child of Retired Root");
+		child.setParentLocation(root);
+		ls.saveLocation(child);
+
+		LocationSearchCriteria withoutRetired = new LocationSearchCriteria();
+		withoutRetired.setDescendantOfLocation(root);
+		withoutRetired.setIncludeRetired(false);
+		List<Location> withoutRetiredResult = ls.getLocations(withoutRetired);
+		assertTrue(withoutRetiredResult.isEmpty());
+
+		LocationSearchCriteria withRetired = new LocationSearchCriteria();
+		withRetired.setDescendantOfLocation(root);
+		withRetired.setIncludeRetired(true);
+		List<Location> withRetiredResult = ls.getLocations(withRetired);
+		assertEquals(1, withRetiredResult.size());
+		assertTrue(withRetiredResult.contains(child));
+	}
+
+	/**
+	 * @see LocationService#getLocations(LocationSearchCriteria)
+	 */
+	@Test
 	public void getLocations_withDescendantOf_shouldReturnEmptyListForLeafLocation() {
 		LocationService ls = Context.getLocationService();
 
