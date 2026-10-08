@@ -12,6 +12,7 @@ package org.openmrs.messagesource.impl;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.PresentationMessage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,4 +60,49 @@ public class CachedMessageSourceTest {
 		assertEquals(valueAsString, valueAsPM.getMessage());
 	}
 
+	/**
+	 * The merge operation should not overwrite an existing message when overwrite is false.
+	 *
+	 * @see CachedMessageSource#merge(MutableMessageSource, boolean)
+	 */
+	@Test
+	public void merge_shouldNotOverwriteExistingMessageWhenOverwriteIsFalse() {
+		CachedMessageSource cachedMessages = new CachedMessageSource();
+
+		PresentationMessage existingMessage = new PresentationMessage("test.code", Locale.ENGLISH, "Old message",
+		        "Old message");
+		PresentationMessage newMessage = new PresentationMessage("test.code", Locale.ENGLISH, "New message", "New message");
+
+		cachedMessages.addPresentation(existingMessage);
+
+		CachedMessageSource source = new CachedMessageSource();
+		source.addPresentation(newMessage);
+
+		cachedMessages.merge(source, false);
+
+		assertEquals("Old message", cachedMessages.getPresentation("test.code", Locale.ENGLISH).getMessage());
+	}
+
+	/**
+	 * The merge operation should overwrite an existing message when overwrite is true.
+	 *
+	 * @see CachedMessageSource#merge(MutableMessageSource, boolean)
+	 */
+	@Test
+	public void merge_shouldOverwriteExistingMessageWhenOverwriteIsTrue() {
+		CachedMessageSource cachedMessages = new CachedMessageSource();
+
+		PresentationMessage existingMessage = new PresentationMessage("test.code", Locale.ENGLISH, "Old message",
+		        "Old message");
+		PresentationMessage newMessage = new PresentationMessage("test.code", Locale.ENGLISH, "New message", "New message");
+
+		cachedMessages.addPresentation(existingMessage);
+
+		CachedMessageSource source = new CachedMessageSource();
+		source.addPresentation(newMessage);
+
+		cachedMessages.merge(source, true);
+
+		assertEquals("New message", cachedMessages.getPresentation("test.code", Locale.ENGLISH).getMessage());
+	}
 }
