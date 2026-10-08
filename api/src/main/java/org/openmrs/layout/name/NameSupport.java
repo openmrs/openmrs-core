@@ -21,6 +21,7 @@ import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.LayoutSupport;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +60,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 		}
 		Context.getAdministrationService().addGlobalPropertyListener(singleton);
 		// Get configured name template to override the existing one if any
-		String layoutTemplateXml = Context.getAdministrationService()
-		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
+		String layoutTemplateXml = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
 		NameTemplate nameTemplate = deserializeXmlTemplate(layoutTemplateXml);
 
 		if (nameTemplate != null) {
@@ -108,9 +108,21 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 */
 	@Override
 	public String getDefaultLayoutFormat() {
-		String ret = Context.getAdministrationService()
-		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT);
+		String ret = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT);
 		return (ret != null && ret.length() > 0) ? ret : defaultLayoutFormat;
+	}
+
+	/**
+	 * Reads a name layout global property whatever the authenticated user's privileges, so that every
+	 * user who can see a person's name sees it in the configured layout
+	 */
+	private static String getGlobalProperty(String propertyName) {
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			return Context.getAdministrationService().getGlobalProperty(propertyName);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
 	}
 
 	/**
