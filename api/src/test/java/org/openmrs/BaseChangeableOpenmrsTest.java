@@ -66,7 +66,7 @@ public class BaseChangeableOpenmrsTest {
 	}
 
 	@Test
-	public void providerRole_shouldNotBeChangeable() {
-		assertFalse(Changeable.class.isAssignableFrom(ProviderRole.class));
+	public void providerRole_shouldBeChangeable() {
+		assertTrue(Changeable.class.isAssignableFrom(ProviderRole.class));
 	}
 }
