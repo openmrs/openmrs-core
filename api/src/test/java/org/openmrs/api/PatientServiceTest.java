@@ -72,6 +72,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -3736,7 +3737,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getAllergies_shouldRequireTheGetAllergiesPrivilege() {
 		Patient patient = patientService.getPatient(2);
 		Context.logout();
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> patientService.getAllergies(patient));
 		assertTrue(exception.getMessage().contains(PrivilegeConstants.GET_ALLERGIES));
 	}
@@ -3752,7 +3753,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = patientService.getPatient(2);
 		Allergies allergies = new Allergies();
 		Context.logout();
-		assertThrows(APIAuthenticationException.class, () -> patientService.setAllergies(patient, allergies));
+		assertThrows(AccessDeniedException.class, () -> patientService.setAllergies(patient, allergies));
 	}
 
 	/**

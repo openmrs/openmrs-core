@@ -10,6 +10,7 @@
 package org.openmrs.attribute;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -36,11 +37,11 @@ import org.openmrs.util.OpenmrsUtil;
 @Audited
 public abstract class BaseAttribute<AT extends AttributeType, OwningType extends Customizable<?>> extends BaseChangeableOpenmrsData implements Attribute<AT, OwningType>, Comparable<Attribute> {
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "owner_id", nullable = false)
 	private OwningType owner;
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "attribute_type_id", nullable = false)
 	private AT attributeType;
 

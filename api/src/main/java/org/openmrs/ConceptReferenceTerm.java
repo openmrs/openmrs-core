@@ -53,7 +53,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "concept_reference_term_id")
 	private Integer conceptReferenceTermId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_source_id", nullable = false)
 	private ConceptSource conceptSource;
 

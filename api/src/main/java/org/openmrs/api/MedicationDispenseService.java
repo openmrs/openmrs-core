@@ -28,6 +28,8 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 *
 	 * @param medicationDispenseId the id of the MedicationDispense to retrieve
 	 * @return the MedicationDispense with the given id, or null if none exists
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_MEDICATION_DISPENSE })
 	MedicationDispense getMedicationDispense(Integer medicationDispenseId);
@@ -37,6 +39,8 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 *
 	 * @param uuid - uuid of the MedicationDispense to be returned
 	 * @return the MedicationDispense
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_MEDICATION_DISPENSE })
 	MedicationDispense getMedicationDispenseByUuid(String uuid);
@@ -46,6 +50,8 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 *
 	 * @param criteria - the criteria for the returned MedicationDispense results
 	 * @return a list of MedicationDispenses
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_MEDICATION_DISPENSE })
 	List<MedicationDispense> getMedicationDispenseByCriteria(MedicationDispenseCriteria criteria);
@@ -54,6 +60,8 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 * Saves a MedicationDispense
 	 *
 	 * @param medicationDispense - the MedicationDispense to be saved
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_MEDICATION_DISPENSE })
 	MedicationDispense saveMedicationDispense(MedicationDispense medicationDispense);
@@ -63,6 +71,8 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 *
 	 * @param medicationDispense the MedicationDispense to be voided
 	 * @param reason the reason for voiding the MedicationDispense
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_MEDICATION_DISPENSE })
 	MedicationDispense voidMedicationDispense(MedicationDispense medicationDispense, String reason);
@@ -71,6 +81,8 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 * Un-void a previously voided MedicationDispense
 	 *
 	 * @param medicationDispense MedicationDispense to un-void
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.EDIT_MEDICATION_DISPENSE)
 	MedicationDispense unvoidMedicationDispense(MedicationDispense medicationDispense);
@@ -82,6 +94,8 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 * If other data references this medicationDispense, an error will be thrown.
 	 *
 	 * @param medicationDispense the MedicationDispense to be purged
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.DELETE_MEDICATION_DISPENSE)
 	void purgeMedicationDispense(MedicationDispense medicationDispense);

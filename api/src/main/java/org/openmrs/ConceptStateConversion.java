@@ -11,6 +11,7 @@ package org.openmrs;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,15 +39,15 @@ public class ConceptStateConversion extends BaseOpenmrsObject {
 	@Column(name = "concept_state_conversion_id", nullable = false)
 	private Integer conceptStateConversionId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "program_workflow_id", nullable = false)
 	private ProgramWorkflow programWorkflow;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "program_workflow_state_id", nullable = false)
 	private ProgramWorkflowState programWorkflowState;
 
