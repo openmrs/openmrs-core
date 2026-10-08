@@ -26,12 +26,13 @@ import org.junit.jupiter.api.TestInfo;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.openmrs.annotation.Authorized;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.logging.MemoryAppender;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.test.jupiter.BaseContextMockTest;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -81,6 +82,12 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 
 		@Authorized(value = { PrivilegeConstants.GET_CONCEPTS, PrivilegeConstants.GET_OBS }, requireAll = true)
 		Object getThingRequiringAllPrivileges();
+
+		/**
+		 * Guarded by Spring Security instead of {@link Authorized}, as converted methods are.
+		 */
+		@PreAuthorize("hasPermission(null, '" + PrivilegeConstants.GET_CONCEPTS + "')")
+		Object getThingGuardedBySpringSecurity();
 
 		/**
 		 * An {@link Authorized} naming no privilege, which asks only that the caller be authenticated.
@@ -159,6 +166,11 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 		}
 
 		@Override
+		public String getThingGuardedBySpringSecurity() {
+			return null;
+		}
+
+		@Override
 		public String getThingRequiringAuthenticationOnly() {
 			return null;
 		}
@@ -198,6 +210,11 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 
 		@Override
 		public Object getThingRequiringAuthenticationOnly() {
+			return null;
+		}
+
+		@Override
+		public Object getThingGuardedBySpringSecurity() {
 			return null;
 		}
 
@@ -308,7 +325,7 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 	public void before_shouldEnforceThePrivilegeInheritedThroughACovariantRedeclaration() {
 		userHolds();
 
-		assertThrows(APIAuthenticationException.class,
+		assertThrows(AccessDeniedException.class,
 		    () -> advice.before(declaredMethod(NarrowedTestServiceImpl.class, "getGuardedThing"), NO_ARGS, null));
 	}
 
@@ -324,7 +341,7 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 	public void before_shouldEnforceTheInheritedPrivilegeThroughTheGeneratedBridgeMethod() {
 		userHolds();
 
-		assertThrows(APIAuthenticationException.class,
+		assertThrows(AccessDeniedException.class,
 		    () -> advice.before(bridgeMethod(NarrowedTestServiceImpl.class, "getGuardedThing"), NO_ARGS, null));
 	}
 
@@ -341,7 +358,7 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 		// the privilege the parent declared no longer opens the method
 		userHolds(PrivilegeConstants.GET_CONCEPTS);
 
-		assertThrows(APIAuthenticationException.class,
+		assertThrows(AccessDeniedException.class,
 		    () -> advice.before(declaredMethod(RedeclaringTestServiceImpl.class, "getGuardedThing"), NO_ARGS, null));
 	}
 
@@ -359,7 +376,7 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 		// supplies requireAll = true
 		userHolds(PrivilegeConstants.GET_CONCEPTS);
 
-		assertThrows(APIAuthenticationException.class, () -> advice
+		assertThrows(AccessDeniedException.class, () -> advice
 		        .before(declaredMethod(NarrowedTestServiceImpl.class, "getThingRequiringAllPrivileges"), NO_ARGS, null));
 	}
 
@@ -395,7 +412,7 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 	public void before_shouldRejectAnUnauthenticatedCallerWhenTheInheritedAnnotationNamesNoPrivilege() {
 		when(userContext.getAuthenticatedUser()).thenReturn(null);
 
-		assertThrows(APIAuthenticationException.class,
+		assertThrows(AccessDeniedException.class,
 		    () -> advice.before(declaredMethod(NarrowedTestServiceImpl.class, "getThingRequiringAuthenticationOnly"),
 		        NO_ARGS, null));
 	}
@@ -433,7 +450,7 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 		Method oneArgument = declaredMethod(NarrowedTestServiceImpl.class, "getOverloadedThing", String.class);
 
 		assertDoesNotThrow(() -> advice.before(noArgument, NO_ARGS, null));
-		assertThrows(APIAuthenticationException.class, () -> advice.before(oneArgument, NO_ARGS, null));
+		assertThrows(AccessDeniedException.class, () -> advice.before(oneArgument, NO_ARGS, null));
 	}
 
 	@Test
@@ -443,7 +460,7 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 		Method oneArgument = declaredMethod(NarrowedTestServiceImpl.class, "getOverloadedThing", String.class);
 
 		assertDoesNotThrow(() -> advice.before(oneArgument, NO_ARGS, null));
-		assertThrows(APIAuthenticationException.class, () -> advice.before(noArgument, NO_ARGS, null));
+		assertThrows(AccessDeniedException.class, () -> advice.before(noArgument, NO_ARGS, null));
 	}
 
 	@Test
@@ -456,10 +473,10 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 		Method unguarded = declaredMethod(NarrowedTestServiceImpl.class, "getUnguardedThing");
 
 		assertDoesNotThrow(() -> advice.before(guarded, NO_ARGS, null));
-		assertThrows(APIAuthenticationException.class, () -> advice.before(needsEncounters, NO_ARGS, null));
+		assertThrows(AccessDeniedException.class, () -> advice.before(needsEncounters, NO_ARGS, null));
 		assertDoesNotThrow(() -> advice.before(unguarded, NO_ARGS, null));
 		assertDoesNotThrow(() -> advice.before(guarded, NO_ARGS, null));
-		assertThrows(APIAuthenticationException.class, () -> advice.before(needsEncounters, NO_ARGS, null));
+		assertThrows(AccessDeniedException.class, () -> advice.before(needsEncounters, NO_ARGS, null));
 	}
 
 	@Test
@@ -476,7 +493,16 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 		advice.before(declaredMethod(NarrowedTestServiceImpl.class, "getUnguardedThing"), NO_ARGS, null);
 
 		assertThat(memoryAppender.getLogLines(), hasItem(containsString(
-		    "No @Authorized annotation applies to " + NarrowedTestServiceImpl.class.getName() + ".getUnguardedThing()")));
+		    "No authorization annotation applies to " + NarrowedTestServiceImpl.class.getName() + ".getUnguardedThing()")));
+	}
+
+	@Test
+	public void before_shouldNotWarnAboutAMethodGuardedBySpringSecurity() throws Throwable {
+		// this advice only looks for @Authorized, so a converted method has none - but it is checked, by
+		// the method-security interceptor, and reporting it as unchecked would be wrong
+		advice.before(declaredMethod(NarrowedTestServiceImpl.class, "getThingGuardedBySpringSecurity"), NO_ARGS, null);
+
+		assertThat(memoryAppender.getLogLines(), empty());
 	}
 
 	@Test
@@ -511,7 +537,7 @@ public class AuthorizationAdviceHierarchyTest extends BaseContextMockTest {
 	public void before_shouldReportThePrivilegesOfTheResolvedAnnotationWhenNoneAreHeld() {
 		userHolds();
 
-		APIAuthenticationException thrown = assertThrows(APIAuthenticationException.class, () -> advice
+		AccessDeniedException thrown = assertThrows(AccessDeniedException.class, () -> advice
 		        .before(declaredMethod(NarrowedTestServiceImpl.class, "getThingRequiringAnyPrivilege"), NO_ARGS, null));
 
 		// the privileges are those of the inherited annotation, in the order it declared them

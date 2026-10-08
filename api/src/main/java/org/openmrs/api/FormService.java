@@ -41,6 +41,8 @@ public interface FormService extends OpenmrsService {
 	 * @param form the Form to save
 	 * @return the Form that was saved
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Form saveForm(Form form) throws APIException;
@@ -54,6 +56,8 @@ public interface FormService extends OpenmrsService {
 	 * @param formId internal identifier
 	 * @return requested form
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public Form getForm(Integer formId) throws APIException;
@@ -67,6 +71,8 @@ public interface FormService extends OpenmrsService {
 	 * @param name exact name of the form to fetch
 	 * @return requested form
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public Form getForm(String name) throws APIException;
@@ -79,6 +85,8 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return form or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public Form getFormByUuid(String uuid) throws APIException;
@@ -93,6 +101,8 @@ public interface FormService extends OpenmrsService {
 	 * @param version exact version of the form to fetch
 	 * @return requested form
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public Form getForm(String name, String version) throws APIException;
@@ -104,6 +114,8 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @return all Forms, including retired ones
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Form> getAllForms() throws APIException;
@@ -117,6 +129,8 @@ public interface FormService extends OpenmrsService {
 	 * @param includeRetired whether or not to return retired forms
 	 * @return all forms, possibly including retired ones
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Form> getAllForms(boolean includeRetired) throws APIException;
@@ -131,6 +145,8 @@ public interface FormService extends OpenmrsService {
 	 * @param fuzzyName approximate name to match
 	 * @param onlyLatestVersion whether or not to return only the latest version of each form (by name)
 	 * @return forms with names similar to fuzzyName
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Form> getForms(String fuzzyName, boolean onlyLatestVersion);
@@ -161,6 +177,8 @@ public interface FormService extends OpenmrsService {
 	 * @param fields whether the form has any of these fields. If a field is used more than once on a
 	 *            form, that form is returning more than once in this list
 	 * @return All forms that match the criteria
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Form> getForms(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
@@ -172,6 +190,8 @@ public interface FormService extends OpenmrsService {
 	 * {@link #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)}
 	 * except that it returns an integer that is the size of the list that would be returned
 	 *
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
@@ -186,6 +206,8 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @return all published non-retired forms
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Form> getPublishedForms() throws APIException;
@@ -196,6 +218,8 @@ public interface FormService extends OpenmrsService {
 	 * <strong>Should</strong> should merge fields with similar attributes
 	 *
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public int mergeDuplicateFields() throws APIException;
@@ -211,6 +235,8 @@ public interface FormService extends OpenmrsService {
 	 * @param form
 	 * @return New duplicated form
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Form duplicateForm(Form form) throws APIException;
@@ -223,6 +249,8 @@ public interface FormService extends OpenmrsService {
 	 * @param form the Form to retire
 	 * @param reason the retiredReason to set
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void retireForm(Form form, String reason) throws APIException;
@@ -234,6 +262,8 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @param form the Form to revive
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void unretireForm(Form form) throws APIException;
@@ -248,6 +278,8 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @param form
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void purgeForm(Form form) throws APIException;
@@ -261,6 +293,8 @@ public interface FormService extends OpenmrsService {
 	 * @param form
 	 * @param cascade whether or not to cascade delete all dependent objects (including encounters!)
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void purgeForm(Form form, boolean cascade) throws APIException;
@@ -272,6 +306,8 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @return list of all field types
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FIELD_TYPES)
 	public List<FieldType> getAllFieldTypes() throws APIException;
@@ -286,6 +322,8 @@ public interface FormService extends OpenmrsService {
 	 * @param includeRetired true/false whether to include the retired field types
 	 * @return list of all field types
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FIELD_TYPES)
 	public List<FieldType> getAllFieldTypes(boolean includeRetired) throws APIException;
@@ -298,6 +336,8 @@ public interface FormService extends OpenmrsService {
 	 * @param fieldTypeId Integer id of FieldType to get
 	 * @return fieldType with given internal identifier
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FIELD_TYPES)
 	public FieldType getFieldType(Integer fieldTypeId) throws APIException;
@@ -335,6 +375,8 @@ public interface FormService extends OpenmrsService {
 	 * @param concept the concept to search for in forms
 	 * @return forms containing the specified concept in their schema
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Form> getFormsContainingConcept(Concept concept) throws APIException;
@@ -346,6 +388,8 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @return all FormFields in the database
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<FormField> getAllFormFields() throws APIException;
@@ -362,6 +406,8 @@ public interface FormService extends OpenmrsService {
 	 * @param fuzzySearchPhrase
 	 * @return Fields with names similar to or containing the given phrase
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Field> getFields(String fuzzySearchPhrase) throws APIException;
@@ -374,6 +420,8 @@ public interface FormService extends OpenmrsService {
 	 * @param concept the concept to search for in the Field table
 	 * @return fields that point to the given concept
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Field> getFieldsByConcept(Concept concept) throws APIException;
@@ -385,6 +433,8 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @return all Fields
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Field> getAllFields() throws APIException;
@@ -398,6 +448,8 @@ public interface FormService extends OpenmrsService {
 	 * @param includeRetired whether or not to include retired Fields
 	 * @return all Fields
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Field> getAllFields(boolean includeRetired) throws APIException;
@@ -424,6 +476,8 @@ public interface FormService extends OpenmrsService {
 	 * @param retired only retired/unretired fields
 	 * @return all Fields matching the given criteria
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
@@ -439,6 +493,8 @@ public interface FormService extends OpenmrsService {
 	 * @param fieldId the id of the Field to fetch
 	 * @return the Field with the given id
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public Field getField(Integer fieldId) throws APIException;
@@ -474,6 +530,8 @@ public interface FormService extends OpenmrsService {
 	 * @param field the Field to save
 	 * @return the Field that was saved
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Field saveField(Field field) throws APIException;
@@ -485,6 +543,8 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @param field the Field to purge
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void purgeField(Field field) throws APIException;
@@ -498,6 +558,8 @@ public interface FormService extends OpenmrsService {
 	 * @param field the Field to purge
 	 * @param cascade whether to cascade delete all FormFields pointing to this field
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void purgeField(Field field, boolean cascade) throws APIException;
@@ -510,6 +572,8 @@ public interface FormService extends OpenmrsService {
 	 * @param formFieldId the internal id to search on
 	 * @return the FormField with the given id
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public FormField getFormField(Integer formFieldId) throws APIException;
@@ -547,6 +611,8 @@ public interface FormService extends OpenmrsService {
 	 *            ignoreFormFields) than the first result is returned
 	 * @return Formfield for this concept on this form
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
@@ -562,6 +628,8 @@ public interface FormService extends OpenmrsService {
 	 * @param formField the FormField to save
 	 * @return the formField that was just saved
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public FormField saveFormField(FormField formField) throws APIException;
@@ -573,6 +641,8 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @param formField the FormField to purge
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void purgeFormField(FormField formField) throws APIException;
@@ -585,6 +655,8 @@ public interface FormService extends OpenmrsService {
 	 * @param field the Field to retire
 	 * @return the Field that was retired
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Field retireField(Field field) throws APIException;
@@ -597,6 +669,8 @@ public interface FormService extends OpenmrsService {
 	 * @param field the Field to unretire
 	 * @return the Field that was unretired
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Field unretireField(Field field) throws APIException;
@@ -610,6 +684,8 @@ public interface FormService extends OpenmrsService {
 	 * @param fieldType the field type to save
 	 * @return the saved field type
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FIELD_TYPES)
 	public FieldType saveFieldType(FieldType fieldType) throws APIException;
@@ -622,6 +698,8 @@ public interface FormService extends OpenmrsService {
 	 *
 	 * @param fieldType the field type to purge
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PURGE_FIELD_TYPES)
 	public void purgeFieldType(FieldType fieldType) throws APIException;

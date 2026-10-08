@@ -102,6 +102,26 @@ public class RoleTest {
 	}
 
 	@Test
+	public void hasPrivilege_shouldTreatTheSuperuserRoleNameCaseInsensitively() {
+		// a role differing from "System Developer" only in case still confers superuser through
+		// Context.hasPrivilege, since RolePrivilegeCache's own detection ignores case - this method
+		// has to agree with it or the two disagree about who is a superuser
+		Role superuserDifferentlyCased = new Role(RoleConstants.SUPERUSER.toUpperCase());
+
+		assertTrue(superuserDifferentlyCased.hasPrivilege("Anything At All"));
+	}
+
+	@Test
+	public void addPrivilege_shouldNotAddAPrivilegeAlreadyHeldUnderADifferentCasing() {
+		Role role = new Role();
+		role.addPrivilege(new Privilege("PrIv1"));
+
+		role.addPrivilege(new Privilege("priv1"));
+
+		assertEquals(1, role.getPrivileges().size());
+	}
+
+	@Test
 	public void hasPrivilege_shouldBeCaseInsensitive() {
 		Role role = new Role();
 

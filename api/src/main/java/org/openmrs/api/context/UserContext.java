@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -28,15 +29,20 @@ import org.openmrs.User;
 import org.openmrs.UserSessionListener;
 import org.openmrs.UserSessionListener.Event;
 import org.openmrs.UserSessionListener.Status;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.cache.RolePrivileges;
+import org.openmrs.security.AuthenticatedResultToken;
+import org.openmrs.security.CredentialsAuthenticationToken;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * Represents an OpenMRS <code>User Context</code> which stores the current user information. Only
@@ -109,8 +115,14 @@ public class UserContext implements Serializable {
 	}
 
 	/**
-	 * Authenticate user with the provided credentials. The authentication scheme must be Spring wired,
-	 * see {@link Context#getAuthenticationScheme()}.
+	 * Authenticate user with the provided credentials.
+	 * <p>
+	 * As of 3.0.0, this delegates to Spring Security's
+	 * {@link org.springframework.security.authentication.AuthenticationManager}, which in turn invokes
+	 * whichever {@link AuthenticationScheme} is configured (the authentication scheme must be Spring
+	 * wired, see {@link Context#getAuthenticationScheme()}) - Spring Security is the real entry point
+	 * for authentication; this method's observable behavior (event notifications, thrown exception
+	 * type, location/locale side effects) is unchanged.
 	 *
 	 * @param credentials The credentials to use to authenticate
 	 * @return The authenticated client information
@@ -124,7 +136,7 @@ public class UserContext implements Serializable {
 
 		Authenticated authenticated = null;
 		try {
-			authenticated = authenticationScheme.authenticate(credentials);
+			authenticated = performAuthenticate(credentials);
 			this.user = authenticated.getUser();
 			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
 		} catch (ContextAuthenticationException e) {
@@ -140,6 +152,54 @@ public class UserContext implements Serializable {
 		log.debug("Authenticated as: {}", this.user);
 
 		return authenticated;
+	}
+
+	/**
+	 * Routes authentication through the Spring Security {@link AuthenticationManager}, falling back to
+	 * invoking the configured {@link AuthenticationScheme} directly if no {@code AuthenticationManager}
+	 * bean is available yet (for example a very early bootstrap phase, or a {@link UserContext}
+	 * constructed directly outside of a running Spring context, as some tests do) - preserving
+	 * pre-3.0.0 behavior in that fallback case.
+	 * <p>
+	 * Either way this context's own {@link AuthenticationScheme} answers, carried on the
+	 * {@link CredentialsAuthenticationToken} rather than resolved globally by the provider.
+	 *
+	 * @param credentials The credentials to use to authenticate
+	 * @return The authenticated client information
+	 * @throws ContextAuthenticationException if authentication fails
+	 */
+	private Authenticated performAuthenticate(Credentials credentials) throws ContextAuthenticationException {
+		AuthenticationManager authenticationManager = resolveAuthenticationManager();
+		if (authenticationManager == null) {
+			return authenticationScheme.authenticate(credentials);
+		}
+
+		try {
+			Authentication result = authenticationManager
+			        .authenticate(new CredentialsAuthenticationToken(credentials, authenticationScheme));
+			if (result instanceof AuthenticatedResultToken authenticatedResult) {
+				return authenticatedResult.getAuthenticatedResult();
+			}
+
+			// a module can replace the authenticationManager bean or order a provider ahead of ours, so
+			// fail closed with the documented exception rather than a ClassCastException
+			throw new ContextAuthenticationException("The authenticationManager bean did not answer with an "
+			        + AuthenticatedResultToken.class.getSimpleName() + ", so no OpenMRS authentication was performed");
+		} catch (AuthenticationException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof ContextAuthenticationException contextAuthenticationException) {
+				throw contextAuthenticationException;
+			}
+			throw new ContextAuthenticationException(e.getMessage(), e);
+		}
+	}
+
+	private AuthenticationManager resolveAuthenticationManager() {
+		try {
+			return Context.getRegisteredComponent("authenticationManager", AuthenticationManager.class);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	/**
@@ -170,7 +230,7 @@ public class UserContext implements Serializable {
 	 */
 	public User becomeUser(String systemId) throws ContextAuthenticationException {
 		if (!Daemon.isDaemonThread() && !Context.getAuthenticatedUser().isSuperUser()) {
-			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
+			throw new AccessDeniedException("You must be a superuser to assume another user's identity");
 		}
 
 		log.debug("Turning the authenticated user into user with systemId: {}", systemId);
@@ -257,7 +317,11 @@ public class UserContext implements Serializable {
 	}
 
 	/**
-	 * Will remove one instance of privilege from the privileges that are currently proxied
+	 * Will remove one instance of privilege from the privileges that are currently proxied. The name is
+	 * matched case-insensitively, like every other privilege check, but only the first match is
+	 * removed: {@link org.openmrs.aop.AuthorizationAdvice} brackets each service call with an
+	 * add/remove pair, so nested calls legitimately stack the same privilege and one remove must undo
+	 * exactly one add.
 	 *
 	 * @param privilege Privilege to remove in string form
 	 */
@@ -267,7 +331,15 @@ public class UserContext implements Serializable {
 		}
 
 		log.debug("Removing privilege: {}", privilege);
-		proxies.remove(privilege);
+		// Collections.synchronizedList requires manual synchronization to iterate
+		synchronized (proxies) {
+			for (Iterator<String> i = proxies.iterator(); i.hasNext();) {
+				if (i.next().equalsIgnoreCase(privilege)) {
+					i.remove();
+					return;
+				}
+			}
+		}
 	}
 
 	/**
@@ -334,6 +406,16 @@ public class UserContext implements Serializable {
 	 */
 	public boolean hasProxyPrivileges() {
 		return !proxies.isEmpty();
+	}
+
+	/**
+	 * @return a snapshot of the privilege names currently added via
+	 *         {@link #addProxyPrivilege(String...)} on this context - a defensive copy, since
+	 *         {@link #proxies} may be mutated concurrently by the thread that owns this context
+	 * @since 3.0.0
+	 */
+	public List<String> getProxyPrivileges() {
+		return new ArrayList<>(proxies);
 	}
 
 	/**
@@ -433,7 +515,7 @@ public class UserContext implements Serializable {
 			log.debug("Checking '{}' against proxies: {}", privilege, proxies);
 			// check proxied privileges; ArrayList so we have a consistent view
 			for (String s : new ArrayList<>(proxies)) {
-				if (s.equals(privilege)) {
+				if (s.equalsIgnoreCase(privilege)) {
 					notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 					return true;
 				}

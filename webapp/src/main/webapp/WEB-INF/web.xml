@@ -145,8 +145,9 @@
 	</filter-mapping>
 	<!--  End second filter -->
 	
-	<!-- This filter should come before the OpenmrsFilter, i.e., before we've created
-	     a session. -->
+	<!-- This filter should come before org.openmrs.web.security.OpenmrsSecurityContextFilter (the
+	     seat org.openmrs.web.filter.OpenmrsFilter used to occupy directly in this file), i.e.,
+	     before we've created a session. -->
 	<filter>
 		<filter-name>CookieClearingFilter</filter-name>
 		<filter-class>org.openmrs.web.filter.CookieClearingFilter</filter-class>
@@ -156,12 +157,26 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	
+	<!-- Installs the SecurityContext for this request onto the thread (via
+	     org.openmrs.web.security.OpenmrsSecurityContextFilter, added to this chain in
+	     org.openmrs.web.security.WebSecurityConfig - the seat org.openmrs.web.filter.OpenmrsFilter
+	     used to occupy directly in this file), before CSRFGuard/ModuleFilter and everything
+	     downstream - URL rule enforcement itself happens later, in the separate
+	     openmrsAuthorizationFilter seat below ModuleFilter (see
+	     org.openmrs.web.security.OpenmrsAuthorizationFilter's javadoc for why). The dispatcher list
+	     matches OpenmrsFilter's former mapping, so forwarded/included/error-dispatched requests keep
+	     getting a UserContext exactly as before. Uses
+	     org.openmrs.web.security.RefreshableDelegatingFilterProxy rather than Spring's own
+	     DelegatingFilterProxy: starting or stopping a module refreshes the root context this bean
+	     lives in, in place, and the stock proxy resolves and caches its delegate only once, so it
+	     would keep running the pre-refresh SecurityFilterChain bean for the rest of the webapp's
+	     life. See that class's javadoc for the fix. -->
 	<filter>
-		<filter-name>OpenmrsFilter</filter-name> 
-		<filter-class>org.openmrs.web.filter.OpenmrsFilter</filter-class> 
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.openmrs.web.security.RefreshableDelegatingFilterProxy</filter-class>
 	</filter>
 	<filter-mapping>
-		<filter-name>OpenmrsFilter</filter-name> 
+		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/*</url-pattern>
 		<dispatcher>ERROR</dispatcher>
 		<dispatcher>FORWARD</dispatcher>
@@ -186,6 +201,27 @@
 	<filter-mapping>
 		<filter-name>ModuleFilter</filter-name> 
 		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
+
+	<!-- Enforces every org.openmrs.web.security.AuthorizedUrlMatcher rule (see
+	     org.openmrs.web.security.OpenmrsAuthorizationFilter's javadoc for why this runs as its own
+	     filter, positioned after ModuleFilter, rather than as part of springSecurityFilterChain
+	     above: some modules (webservices.rest, fhir2) authenticate a request from inside their own
+	     ModuleFilter-dispatched filter, and a rule enforced before that ran would deny the request
+	     before it had a chance to authenticate, valid credentials or not). Uses
+	     org.openmrs.web.security.RefreshableDelegatingFilterProxy for the same module-refresh reason
+	     springSecurityFilterChain does. -->
+	<filter>
+		<filter-name>openmrsAuthorizationFilter</filter-name>
+		<filter-class>org.openmrs.web.security.RefreshableDelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>openmrsAuthorizationFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>ERROR</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
 	</filter-mapping>
 
     <filter>
@@ -376,6 +412,11 @@
 	    <cookie-config>
 	        <http-only>true</http-only>
 	    </cookie-config>
+	    <!-- cookie only, so the container never appends ;jsessionid= to a URL. That path parameter is
+	         the one shape a strict request firewall would otherwise have to be relaxed for, and
+	         relaxing it lets a URL authorization rule be walked around on anything a servlet serves
+	         from a path the container has already cleaned up. -->
+	    <tracking-mode>COOKIE</tracking-mode>
 	</session-config>
 	
 	<mime-mapping>
