@@ -437,7 +437,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void shutdown() {
-		if (log.isInfoEnabled()) {
+		if (log.isDebugEnabled()) {
 			showUsageStatistics();
 		}
 
@@ -467,14 +467,14 @@ public class HibernateContextDAO implements ContextDAO {
 			log.debug("Getting query statistics: ");
 			Statistics stats = sessionFactory.getStatistics();
 			for (String query : stats.getQueries()) {
-				log.info("QUERY: " + query);
+				log.debug("QUERY: " + query);
 				QueryStatistics qstats = stats.getQueryStatistics(query);
-				log.info("Cache Hit Count : " + qstats.getCacheHitCount());
-				log.info("Cache Miss Count: " + qstats.getCacheMissCount());
-				log.info("Cache Put Count : " + qstats.getCachePutCount());
-				log.info("Execution Count : " + qstats.getExecutionCount());
-				log.info("Average time    : " + qstats.getExecutionAvgTime());
-				log.info("Row Count       : " + qstats.getExecutionRowCount());
+				log.debug("Cache Hit Count : " + qstats.getCacheHitCount());
+				log.debug("Cache Miss Count: " + qstats.getCacheMissCount());
+				log.debug("Cache Put Count : " + qstats.getCachePutCount());
+				log.debug("Execution Count : " + qstats.getExecutionCount());
+				log.debug("Average time    : " + qstats.getExecutionAvgTime());
+				log.debug("Row Count       : " + qstats.getExecutionRowCount());
 			}
 		}
 	}
