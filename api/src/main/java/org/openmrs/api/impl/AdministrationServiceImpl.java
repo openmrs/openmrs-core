@@ -744,7 +744,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue) throws APIException {
 		if (defaultValue == null) {
-			throw new IllegalArgumentException("The defaultValue argument cannot be null");
+			return null;
 		}
 
 		String propVal = Context.getAdministrationService().getGlobalProperty(propertyName);
