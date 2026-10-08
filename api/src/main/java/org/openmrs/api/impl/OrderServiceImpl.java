@@ -90,12 +90,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 
 	private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-	private static final String ORDER_NUMBER_PREFIX = "ORD-";
+	public static final String ORDER_NUMBER_PREFIX = "ORD-";
 
 	@Autowired
 	protected OrderDAO dao;
 
 	private static OrderNumberGenerator orderNumberGenerator = null;
+
+	private Long nextOrderNumber;
+
+	private int remainingOrderNumbers;
+
+	public static final int ORDER_NUMBER_BLOCK_SIZE = 100;
 
 	public OrderServiceImpl() {
 	}
@@ -657,8 +663,15 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public String getNewOrderNumber(OrderContext orderContext) throws APIException {
-		return ORDER_NUMBER_PREFIX + Context.getOrderService().getNextOrderNumberSeedSequenceValue();
+	public synchronized String getNewOrderNumber(OrderContext orderContext) throws APIException {
+		if (remainingOrderNumbers <= 0) {
+			nextOrderNumber = Context.getOrderService().allocateOrderNumberBlock();
+			remainingOrderNumbers = ORDER_NUMBER_BLOCK_SIZE;
+		}
+		String orderNumber = ORDER_NUMBER_PREFIX + nextOrderNumber;
+		remainingOrderNumbers--;
+		nextOrderNumber++;
+		return orderNumber;
 	}
 
 	/**
@@ -690,12 +703,25 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getNextOrderNumberSeedSequenceValue()
+	 * @see org.openmrs.api.OrderService#allocateOrderNumberBlock()
 	 */
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public Long allocateOrderNumberBlock() {
+		return dao.allocateOrderNumberBlock(ORDER_NUMBER_BLOCK_SIZE);
+	}
+
+	/**
+	 * @deprecated use {@link #allocateOrderNumberBlock()}
+	 * @see org.openmrs.api.OrderService#getNextOrderNumberSeedSequenceValue()
+	 */
+	// self-invocation is intentional: this method already runs in its own REQUIRES_NEW transaction
+	@SuppressWarnings({ "squid:S2229", "java:S6809" })
+	@Deprecated(since = "3.0.0")
+	@Override
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public synchronized Long getNextOrderNumberSeedSequenceValue() {
-		return dao.getNextOrderNumberSeedSequenceValue();
+		return this.allocateOrderNumberBlock();
 	}
 
 	/**

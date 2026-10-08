@@ -100,11 +100,13 @@ public interface OrderDAO {
 	public Order getOrderByOrderNumber(String orderNumber);
 
 	/**
-	 * Gets the next available order number seed
+	 * Atomically allocates a block of order numbers by incrementing the next order number seed
 	 *
-	 * @return the order number seed
+	 * @param blockSize the number of order numbers to allocate
+	 * @return the first order number of the allocated block
+	 * @since 3.0.0
 	 */
-	public Long getNextOrderNumberSeedSequenceValue();
+	public Long allocateOrderNumberBlock(int blockSize);
 
 	/**
 	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,

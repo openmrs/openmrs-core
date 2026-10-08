@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,6 +87,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -95,7 +95,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.openmrs.Order.Action.DISCONTINUE;
 import static org.openmrs.Order.FulfillerStatus.COMPLETED;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
@@ -234,49 +233,117 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * Simulate three application nodes by using three independent OrderServiceImpl instances. Each
+	 * instance has its own in-memory order number block, while all instances share the same database
+	 * and order number seed.
+	 *
 	 * @throws Exception
 	 * @see OrderNumberGenerator#getNewOrderNumber(OrderContext)
 	 */
 	@Test
-	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
+	public void getNewOrderNumber_shouldReturnUniqueOrderNumbersWhenCalledConcurrentlyAcrossMultipleServiceInstances()
 	        throws Exception {
+		//use clean OrderService not affected by previous tests
+		OrderService orderServiceNode0 = new OrderServiceImpl();
+		OrderService orderServiceNode1 = new OrderServiceImpl();
+		OrderService orderServiceNode2 = new OrderServiceImpl();
 
-		int taskCount = 50;
-		// Each call transiently holds two pooled connections: one for the getNewOrderNumber
-		// transaction and one for the REQUIRES_NEW transaction that increments the seed.
-		// Concurrency must therefore stay below half the c3p0 max_size of 50, otherwise
-		// every thread can end up holding one connection while waiting forever for a
-		// second one, deadlocking the pool. See TRUNK-6465.
-		int threadCount = 20;
-		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(taskCount));
-		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+		// Keep the number of concurrent threads below the 50-connection pool limit.
+		// Increasing the concurrency may cause tasks to wait for database connections.
+		// See TRUNK-6465.
+		int threadCount = 7;
+		int tasksPerNode = 20 * OrderServiceImpl.ORDER_NUMBER_BLOCK_SIZE;
+		int taskCount = 3 * tasksPerNode;
+
+		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<>(taskCount));
+
+		//Each executor represents the thread pool of a separate application
+		//node. This allows the test to simulate concurrent order number
+		//generation across multiple nodes sharing the same database.
+		ExecutorService executor1 = Executors.newFixedThreadPool(threadCount);
+		ExecutorService executor2 = Executors.newFixedThreadPool(threadCount);
+		ExecutorService executor3 = Executors.newFixedThreadPool(threadCount);
 		try {
+
 			List<Future<?>> futures = new ArrayList<>();
-			for (int i = 0; i < taskCount; i++) {
-				futures.add(executor.submit(() -> {
-					try {
-						Context.openSession();
-						Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-						uniqueOrderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
-					} finally {
-						Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-						Context.closeSession();
-					}
-				}));
-			}
+
+			submitConcurrentOrderNumberGenerationTasks(executor1, orderServiceNode0, tasksPerNode, uniqueOrderNumbers,
+			    futures);
+			submitConcurrentOrderNumberGenerationTasks(executor2, orderServiceNode1, tasksPerNode, uniqueOrderNumbers,
+			    futures);
+			submitConcurrentOrderNumberGenerationTasks(executor3, orderServiceNode2, tasksPerNode, uniqueOrderNumbers,
+			    futures);
+
+			// If a task times out, it may indicate that there are not enough database
+			// connections available for the concurrent tasks. See TRUNK-6465.
 			for (Future<?> future : futures) {
-				try {
-					future.get(30, TimeUnit.SECONDS);
-				} catch (TimeoutException e) {
-					fail("getNewOrderNumber timed out, likely a connection pool deadlock; see TRUNK-6465", e);
-				}
+				assertDoesNotThrow(() -> future.get(30, TimeUnit.SECONDS));
 			}
 		} finally {
-			executor.shutdownNow();
-			executor.awaitTermination(10, TimeUnit.SECONDS);
+			executor1.shutdownNow();
+			executor2.shutdownNow();
+			executor3.shutdownNow();
+			try {
+				//noinspection ResultOfMethodCallIgnored
+				executor1.awaitTermination(10, TimeUnit.SECONDS);
+				//noinspection ResultOfMethodCallIgnored
+				executor2.awaitTermination(10, TimeUnit.SECONDS);
+				//noinspection ResultOfMethodCallIgnored
+				executor3.awaitTermination(10, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
 		}
 		//since we used a set we should have the size as taskCount indicating that there were no duplicates
 		assertEquals(taskCount, uniqueOrderNumbers.size());
+	}
+
+	/**
+	 * Submits concurrent order number generation tasks to an application node. Each task opens its own
+	 * OpenMRS session and generates an order number using the specified OrderService instance.
+	 */
+	private void submitConcurrentOrderNumberGenerationTasks(ExecutorService executor, OrderService testOrderService,
+	        int taskCount, Set<String> uniqueOrderNumbers, List<Future<?>> futures) {
+
+		for (int i = 0; i < taskCount; i++) {
+			futures.add(executor.submit(() -> {
+				try {
+					Context.openSession();
+					Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+					uniqueOrderNumbers.add(((OrderNumberGenerator) testOrderService).getNewOrderNumber(null));
+				} finally {
+					Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+					Context.closeSession();
+				}
+			}));
+		}
+	}
+
+	/**
+	 * Verifies that order number generation rolls over to a new block when the current block is
+	 * exhausted.
+	 *
+	 * @see OrderNumberGenerator#getNewOrderNumber(OrderContext)
+	 */
+	@Test
+	public void getNewOrderNumber_shouldReturnSequentialOrderNumbersAcrossBlockBoundary() {
+		//use clean OrderService not affected by previous tests
+		OrderService testOrderService = new OrderServiceImpl();
+
+		int numberCount = OrderServiceImpl.ORDER_NUMBER_BLOCK_SIZE * 3;
+		List<String> orderNumbers = new ArrayList<>(numberCount);
+		for (int i = 0; i < numberCount; i++) {
+			orderNumbers.add(((OrderNumberGenerator) testOrderService).getNewOrderNumber(null));
+		}
+
+		for (int i = 1; i < orderNumbers.size(); i++) {
+			long previousNumber = Long
+			        .parseLong(orderNumbers.get(i - 1).substring(OrderServiceImpl.ORDER_NUMBER_PREFIX.length()));
+			long currentNumber = Long
+			        .parseLong(orderNumbers.get(i).substring(OrderServiceImpl.ORDER_NUMBER_PREFIX.length()));
+
+			assertEquals(previousNumber + 1, currentNumber);
+		}
 	}
 
 	/**
