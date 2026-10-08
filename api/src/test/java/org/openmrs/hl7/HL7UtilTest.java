@@ -12,9 +12,13 @@ package org.openmrs.hl7;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.Concept;
+import org.openmrs.ConceptName;
+import org.openmrs.Drug;
 
 import ca.uhn.hl7v2.HL7Exception;
 
@@ -96,4 +100,47 @@ public class HL7UtilTest {
 		TimeZone.setDefault(originalTimeZone);
 	}
 
+	/**
+	 * @see HL7Util#conceptToString(Concept, ConceptName)
+	 */
+	@Test
+	public void conceptToString_shouldRenderTheConceptAsAnHl7LocalConceptToken() {
+		Concept concept = new Concept(5089);
+		ConceptName name = new ConceptName("WEIGHT (KG)", Locale.ENGLISH);
+
+		assertEquals("5089^WEIGHT (KG)^99DCT", HL7Util.conceptToString(concept, name));
+	}
+
+	/**
+	 * @see HL7Util#conceptToString(Concept, Locale)
+	 */
+	@Test
+	public void conceptToString_shouldUseTheConceptNameInTheGivenLocale() {
+		Concept concept = new Concept(5089);
+		concept.addName(new ConceptName("WEIGHT (KG)", Locale.ENGLISH));
+		concept.addName(new ConceptName("POIDS (KG)", Locale.FRENCH));
+
+		assertEquals("5089^POIDS (KG)^99DCT", HL7Util.conceptToString(concept, Locale.FRENCH));
+	}
+
+	/**
+	 * @see HL7Util#conceptToString(Concept, Locale)
+	 */
+	@Test
+	public void conceptToString_shouldLeaveTheNameEmptyWhenTheConceptHasNoName() {
+		Concept concept = new Concept(5089);
+
+		assertEquals("5089^^99DCT", HL7Util.conceptToString(concept, Locale.ENGLISH));
+	}
+
+	/**
+	 * @see HL7Util#drugToString(Drug)
+	 */
+	@Test
+	public void drugToString_shouldRenderTheDrugAsAnHl7LocalDrugToken() {
+		Drug drug = new Drug(2);
+		drug.setName("Triomune-30");
+
+		assertEquals("2^Triomune-30^99RX", HL7Util.drugToString(drug));
+	}
 }

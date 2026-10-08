@@ -11,6 +11,7 @@ package org.openmrs.api.context;
 
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -59,6 +60,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.event.outbox.tasks.OutboxTaskSchedulerInitializer;
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -1255,7 +1257,7 @@ public class Context {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_PRIVILEGES);
 		}
 
-		// setting core global properties
+		// setting core and hl7 global properties
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
@@ -1272,7 +1274,10 @@ public class Context {
 				}
 			}
 
-			for (GlobalProperty coreProp : OpenmrsConstants.CORE_GLOBAL_PROPERTIES()) {
+			List<GlobalProperty> propsToRegister = new ArrayList<>(OpenmrsConstants.CORE_GLOBAL_PROPERTIES());
+			propsToRegister.addAll(HL7Constants.getGlobalProperties());
+
+			for (GlobalProperty coreProp : propsToRegister) {
 				String corePropName = coreProp.getProperty().toUpperCase();
 				// if the prop doesn't exist, save it
 				if (!currentPropNames.contains(corePropName)) {

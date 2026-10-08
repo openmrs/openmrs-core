@@ -29,7 +29,6 @@ import org.openmrs.hl7.impl.HL7ServiceImpl;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +95,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 
 		//set a global property for the archives directory as a temporary folder
 		GlobalProperty gp = new GlobalProperty();
-		gp.setProperty(OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
+		gp.setProperty(HL7Constants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
 		gp.setPropertyValue(tempDir.getAbsolutePath());
 		gp.setDescription("temp test dir");
 		Context.getAdministrationService().saveGlobalProperty(gp);
