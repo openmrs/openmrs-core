@@ -12,8 +12,8 @@ package org.openmrs.comparator;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import org.apache.commons.collections.comparators.ComparatorChain;
-import org.apache.commons.collections.comparators.NullComparator;
+import org.apache.commons.collections4.comparators.ComparatorChain;
+import org.apache.commons.collections4.comparators.NullComparator;
 import org.openmrs.PatientIdentifierType;
 
 /**

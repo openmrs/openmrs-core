@@ -31,7 +31,7 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -125,7 +125,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			boolean wasStubInserted = insertPatientStubIfNeeded(patient);
 
 			if (wasStubInserted) {
-				// This is a Person→Patient promotion. The session was already contaminated
+				// This is a Personâ†’Patient promotion. The session was already contaminated
 				// with a Person entity that's been evicted. In Hibernate 7, the orphaned
 				// PersistentSet CollectionEntry references cause merge failures.
 				// Flush pending changes and clear the session, then merge cleanly.
