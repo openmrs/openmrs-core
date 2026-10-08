@@ -67,6 +67,8 @@ public class ContextTest extends BaseContextSensitiveTest {
 
 	private static final Integer PERSON_NAME_ID_8 = 8;
 
+	private static final String LOCATION_UUID = "8d6c993e-c2cc-11de-8d13-0010c6dffd0f";
+
 	@Autowired
 	private SessionFactory sf;
 
@@ -348,6 +350,29 @@ public class ContextTest extends BaseContextSensitiveTest {
 		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
 		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+	}
+
+	/**
+	 * @see Context#evictAllEntities(Class)
+	 */
+	@Test
+	public void evictAllEntities_shouldClearNaturalIdsFromCaches() {
+		TestTransaction.end();
+
+		// Load the location by uuid so that its natural id is stored in the cache
+		Context.getLocationService().getLocationByUuid(LOCATION_UUID);
+
+		// Clear session so that the first-level cache is empty
+		Context.flushSession();
+		Context.clearSession();
+
+		// evictAllEntities
+		Context.evictAllEntities(Location.class);
+
+		// Assert that the natural id has been removed from cache
+		long hitCount = sf.getStatistics().getNaturalIdCacheHitCount();
+		Context.getLocationService().getLocationByUuid(LOCATION_UUID);
+		assertThat(sf.getStatistics().getNaturalIdCacheHitCount(), is(hitCount));
 	}
 
 	/**

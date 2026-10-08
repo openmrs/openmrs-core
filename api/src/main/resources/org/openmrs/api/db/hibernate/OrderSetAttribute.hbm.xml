@@ -24,6 +24,10 @@
 			</generator>
 		</id>
 
+		<natural-id>
+			<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+		</natural-id>
+
         <many-to-one name="orderSet" class="OrderSet" not-null="true" column="order_set_id" />
 
         <many-to-one name="attributeType" class="OrderSetAttributeType" not-null="true" column="attribute_type_id" />
@@ -45,8 +49,6 @@
         <property name="dateVoided" type="java.util.Date" column="date_voided" length="19" />
 
         <property name="voidReason" type="java.lang.String" column="void_reason" length="255" />
-
-        <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
 
     </class>
 

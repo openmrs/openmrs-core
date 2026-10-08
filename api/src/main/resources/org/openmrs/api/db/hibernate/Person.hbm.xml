@@ -18,6 +18,7 @@
 	<class name="Person" table="person">
 
         <cache usage="read-write"/>
+        <natural-id-cache region="org.openmrs.Person##NaturalId"/>
 
 		<id name="personId" type="java.lang.Integer" column="person_id" unsaved-value="0">
 			<generator class="identity">
@@ -25,8 +26,10 @@
 			</generator>
 		</id>
 
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true"/>
+		<natural-id>
+			<property name="uuid" type="java.lang.String"
+				column="uuid" length="38" unique="true"/>
+		</natural-id>
 
 		<property name="gender" type="java.lang.String" column="gender"
 			not-null="false" length="50" />

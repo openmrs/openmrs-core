@@ -17,6 +17,7 @@ import jakarta.persistence.MappedSuperclass;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.NaturalId;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.UuidUtil;
 
@@ -28,6 +29,7 @@ import org.openmrs.util.UuidUtil;
 @Audited
 public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 
+	@NaturalId
 	@Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false)
 	private String uuid = UuidUtil.newUuidString();
 

@@ -33,6 +33,7 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.NaturalIdCache;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
@@ -50,6 +51,7 @@ import org.openmrs.api.context.Context;
 @Table(name = "location")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@NaturalIdCache
 @Audited
 public class Location extends BaseCustomizableMetadata<LocationAttribute> implements java.io.Serializable, Attributable<Location>, Address {
 
