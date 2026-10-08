@@ -366,6 +366,12 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 		Context.clearSession();
 
+		// Assert that the natural id is in the cache before it is evicted
+		long cachedHitCount = sf.getStatistics().getNaturalIdCacheHitCount();
+		Context.getLocationService().getLocationByUuid(LOCATION_UUID);
+		assertThat(sf.getStatistics().getNaturalIdCacheHitCount(), is(cachedHitCount + 1));
+		Context.clearSession();
+
 		// evictAllEntities
 		Context.evictAllEntities(Location.class);
 
