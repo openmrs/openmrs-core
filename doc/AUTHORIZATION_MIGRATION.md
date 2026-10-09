@@ -116,18 +116,18 @@ and `hasRole('ROLE_X')` both mean the OpenMRS role named `X`.
 
 | | `@Authorized` | Spring Security |
 |---|---|---|
-| Exception on denial | `APIAuthenticationException`, which as of 3.0.0 is a subclass of `AuthorizationDeniedException` | the same `APIAuthenticationException` when the denial names the missing privilege, a plain `AuthorizationDeniedException` otherwise; both are `org.springframework.security.access.AccessDeniedException`s |
-| Denial message | names the missing privilege (`error.privilegesRequired`) | same, via `PrivilegeNamingAuthorizationManager` |
+| Exception on denial | `APIAuthenticationException`, which as of 3.0.0 is a subclass of `AuthorizationDeniedException` | the same `APIAuthenticationException` when the denial names the missing privilege or `isAuthenticated()` denied, a plain `AuthorizationDeniedException` otherwise; both are `org.springframework.security.access.AccessDeniedException`s |
+| Denial message | names the missing privilege (`error.privilegesRequired`); a no-value `@Authorized` says authentication is required (`error.aunthenticationRequired`) | the same, via `PrivilegeNamingAuthorizationManager`, for a missing privilege or a denying `isAuthenticated()`; Spring Security's "Access Denied" otherwise |
 | Relative to the transaction | before it opens | before it opens for `@PreAuthorize`; after commit for `@PostAuthorize`/`@PostFilter` |
 
-So converting a method does not change what its callers catch for a missing privilege.
+So converting a method by the translation table does not change what its callers catch.
 `APIAuthenticationException` is deprecated as of 3.0.0 but still thrown, now as an
-`AccessDeniedException`: code written before 3.0.0 that catches it keeps recognizing a missing
-privilege, and new code catches `AccessDeniedException`. Only the latter catches every denial, since
-an expression that denies without naming a privilege — `isAuthenticated()`, for one — throws a
-plain `AuthorizationDeniedException`, so code that maps authorization failures by exception type —
-webservices.rest's `BaseRestController` and legacyui's error handling among them — should handle
-`AccessDeniedException`.
+`AccessDeniedException` and no longer an `APIException`: code written before 3.0.0 that catches it
+keeps recognizing the denials it did, and new code catches `AccessDeniedException`. Only the latter
+catches every denial, since an expression that denies for a reason other than a missing privilege
+or authentication — `denyAll()`, for one — throws a plain `AuthorizationDeniedException`, so code
+that maps authorization failures by exception type — webservices.rest's `BaseRestController` and
+legacyui's error handling among them — should handle `AccessDeniedException`.
 `ExceptionUtil.rethrowAPIAuthenticationException` recognizes any `AccessDeniedException`, so a
 module that still throws the deprecated exception keeps working.
 
@@ -144,8 +144,8 @@ module that still throws the deprecated exception keeps working.
    method carries one.
 4. Add the converted method to `PreAuthorizeConversionEquivalenceTest` (or give it an equivalent
    test of its own): allowed for the default test context, denied once logged out. Tests asserting
-   on the denial need no change, since both mechanisms deny with `AccessDeniedException` — core's
-   tests assert on that supertype rather than on `AuthorizationDeniedException`.
+   on the denial need no change, since a method converted by the translation table denies with the
+   same exception and message.
 5. Run `mvn -pl api test` (plus `-pl web` if a web class is involved) and `mvn spotless:apply`.
 
 ## Pitfalls
@@ -155,7 +155,8 @@ module that still throws the deprecated exception keeps working.
 | `#someArgName` silently evaluates to `null` | the build does not compile with `-parameters`, and service annotations sit on interfaces | refer to arguments positionally as `#p0`, or name them with `@P("someArgName")` |
 | A write survives a `@PostAuthorize` denial | method security runs outside the transaction boundary | guard writes with `@PreAuthorize` |
 | A `@PostFilter`ed `@Cacheable` method serves one user's filtered view to everyone | `@PostFilter` filters in place | key the cache by the caller (`UserKeyGenerator.BEAN_NAME`) |
-| A module's error handling misses a denial | an expression that denies without naming a privilege throws a plain `AuthorizationDeniedException`, not `APIAuthenticationException` | handle `AccessDeniedException`, which every denial is; `ExceptionUtil.rethrowAPIAuthenticationException` covers it |
+| A module's error handling misses a denial | an expression that denies for a reason other than a missing privilege or authentication, such as `denyAll()`, throws a plain `AuthorizationDeniedException`, not `APIAuthenticationException` | handle `AccessDeniedException`, which every denial is; `ExceptionUtil.rethrowAPIAuthenticationException` covers it |
+| A module class fails to load, or OpenMRS fails to start, with `java.lang.VerifyError: Stack map does not match the one at exception handler`, because `Type 'org/openmrs/api/APIAuthenticationException' ... is not assignable to 'org/openmrs/api/APIException'` | the module was compiled against a core where `APIAuthenticationException` extended `APIException`: `catch (APIAuthenticationException \| ContextAuthenticationException e)` types its handler as their common supertype, `APIException` | rebuild the module against 3.0.0, and catch `AccessDeniedException` there instead |
 | Both `@Authorized` and `@PreAuthorize` on one method | both advisors run, so both must pass | keep exactly one of them |
 | `@Authorized` on a class instead of a method | `AuthorizationAdvice` only resolves method-level annotations | annotate methods; `@PreAuthorize` may be placed on the type if a class-wide default is wanted |
 

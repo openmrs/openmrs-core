@@ -17,9 +17,10 @@ import org.springframework.security.authorization.AuthorizationResult;
  * privileges. In certain presentation environments, this exception is caught and the user is
  * redirected to the login page where they can provide new or higher credentials.
  * <p>
- * As of 3.0.0 it is a Spring Security {@link AuthorizationDeniedException}. Core denies with it
- * from the deprecated {@code @Authorized}, from a {@code @PreAuthorize} or {@code @PostAuthorize}
- * check that names the missing privilege, and from the explicit checks that threw it before 3.0.0,
+ * As of 3.0.0 it is a Spring Security {@link AuthorizationDeniedException}, and no longer an
+ * {@link APIException}. Core denies with it from the deprecated {@code @Authorized}, from a
+ * {@code @PreAuthorize} or {@code @PostAuthorize} check that names the missing privilege or in
+ * which {@code isAuthenticated()} denied, and from the explicit checks that threw it before 3.0.0,
  * so code written to catch it keeps recognizing those denials, and code catching
  * {@link org.springframework.security.access.AccessDeniedException} recognizes them as well.
  *

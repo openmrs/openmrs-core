@@ -12,6 +12,7 @@ package org.openmrs.security;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,7 +52,9 @@ public class OpenmrsMethodSecurityConfigTest extends BaseContextSensitiveTest {
 	@Test
 	public void preAuthorize_shouldNameTheMissingPrivilegeWhenDenied() {
 		Context.getUserContext().logout();
-		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
+		// the exception AuthorizationAdvice denies a missing privilege with, so a caller catching it
+		// recognizes the denial whichever annotation guards the method
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
 		    () -> preAuthorizeTestService.requireGetConcepts());
 		assertEquals(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { PrivilegeConstants.GET_CONCEPTS }, Locale.getDefault()), exception.getMessage());
@@ -59,10 +63,56 @@ public class OpenmrsMethodSecurityConfigTest extends BaseContextSensitiveTest {
 	@Test
 	public void postAuthorize_shouldNameTheMissingPrivilegeWhenDenied() {
 		Context.getUserContext().logout();
-		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
 		    () -> preAuthorizeTestService.postAuthorizedRequiringGetConcepts());
 		assertEquals(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { PrivilegeConstants.GET_CONCEPTS }, Locale.getDefault()), exception.getMessage());
+	}
+
+	@Test
+	public void postAuthorize_shouldSayAuthenticationIsRequiredWhenIsAuthenticatedDenies() {
+		Context.getUserContext().logout();
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		    () -> preAuthorizeTestService.postAuthorizedRequiringAuthentication());
+		assertEquals("Basic authentication required", exception.getMessage());
+	}
+
+	@Test
+	public void preAuthorize_shouldNameTheMissingPrivilegeRatherThanAuthenticationWhenBothDenied() {
+		// both are missing, and the privilege is what gets named - as it is when hasAuthority(...) alone
+		// denies a logged-out caller, and when @Authorized does
+		Context.getUserContext().logout();
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		    () -> preAuthorizeTestService.requireGetConceptsOrAuthentication());
+		assertEquals(Context.getMessageSourceService().getMessage("error.privilegesRequired",
+		    new Object[] { PrivilegeConstants.GET_CONCEPTS }, Locale.getDefault()), exception.getMessage());
+	}
+
+	@Test
+	public void preAuthorize_shouldNotSayAuthenticationIsRequiredOfAnAuthenticatedCaller() {
+		// isAuthenticated() grants the test context's user, so denyAll() is the only thing that denied
+		AuthorizationDeniedException exception = assertThrows(AuthorizationDeniedException.class,
+		    () -> preAuthorizeTestService.requireAuthenticationAndDenyEveryone());
+		assertEquals(AuthorizationDeniedException.class, exception.getClass());
+		assertEquals("Access Denied", exception.getMessage());
+	}
+
+	@Test
+	public void preAuthorize_shouldLeaveADenialThatRecordedNeitherToSpringSecurity() {
+		// denyAll() checks neither a privilege nor authentication, so there is nothing to name even for a
+		// caller who is not logged in
+		Context.getUserContext().logout();
+		AuthorizationDeniedException exception = assertThrows(AuthorizationDeniedException.class,
+		    () -> preAuthorizeTestService.denyEveryone());
+		assertEquals(AuthorizationDeniedException.class, exception.getClass());
+		assertEquals("Access Denied", exception.getMessage());
+	}
+
+	@Test
+	public void preAuthorize_shouldAllowALoggedOutCallerThroughANegatedIsAuthenticated() {
+		// isAuthenticated() denies inside the expression, but the expression as a whole grants
+		Context.getUserContext().logout();
+		assertEquals("ok", preAuthorizeTestService.requireNotAuthenticated());
 	}
 
 	@Test
@@ -90,6 +140,31 @@ public class OpenmrsMethodSecurityConfigTest extends BaseContextSensitiveTest {
 
 		@PostAuthorize("hasPermission(null, '" + PrivilegeConstants.GET_CONCEPTS + "')")
 		public String postAuthorizedRequiringGetConcepts() {
+			return "ok";
+		}
+
+		@PostAuthorize("isAuthenticated()")
+		public String postAuthorizedRequiringAuthentication() {
+			return "ok";
+		}
+
+		@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CONCEPTS + "') or isAuthenticated()")
+		public String requireGetConceptsOrAuthentication() {
+			return "ok";
+		}
+
+		@PreAuthorize("isAuthenticated() and denyAll()")
+		public String requireAuthenticationAndDenyEveryone() {
+			return "ok";
+		}
+
+		@PreAuthorize("denyAll()")
+		public String denyEveryone() {
+			return "ok";
+		}
+
+		@PreAuthorize("!isAuthenticated()")
+		public String requireNotAuthenticated() {
 			return "ok";
 		}
 	}

@@ -41,10 +41,9 @@ public class ExceptionUtilTest {
 	}
 
 	/**
-	 * A plain Spring Security denial - from a {@code @PreAuthorize} expression that names no privilege,
-	 * for one - is not an {@link APIAuthenticationException}, so a caller relying on this would
-	 * otherwise bury the denial in its own exception (see
-	 * {@code HibernateSerializedObjectDAO.convertSerializedObject}).
+	 * A plain Spring Security denial - from {@code @PreAuthorize("denyAll()")}, for one - is not an
+	 * {@link APIAuthenticationException}, so a caller relying on this would otherwise bury the denial
+	 * in its own exception (see {@code HibernateSerializedObjectDAO.convertSerializedObject}).
 	 *
 	 * @see ExceptionUtil#rethrowAPIAuthenticationException(Throwable)
 	 */
