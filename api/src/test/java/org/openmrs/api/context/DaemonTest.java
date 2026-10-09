@@ -23,10 +23,10 @@ import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -107,7 +107,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		try {
 			Daemon.runInNewDaemonThread(() -> null);
 			fail("Should not hit this line, since the previous needed to throw an exception");
-		} catch (APIAuthenticationException ex) {
+		} catch (AccessDeniedException ex) {
 			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 		}
 	}
@@ -117,7 +117,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		try {
 			Daemon.runNewDaemonTask(() -> {});
 			fail("Should not hit this line, since the previous needed to throw an exception");
-		} catch (APIAuthenticationException ex) {
+		} catch (AccessDeniedException ex) {
 			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 		}
 	}

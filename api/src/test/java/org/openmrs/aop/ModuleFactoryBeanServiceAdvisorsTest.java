@@ -15,7 +15,6 @@ import java.util.Set;
 
 import org.aopalliance.aop.Advice;
 import org.junit.jupiter.api.Test;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
@@ -28,6 +27,7 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
@@ -68,7 +68,7 @@ public class ModuleFactoryBeanServiceAdvisorsTest extends BaseContextSensitiveTe
 	@Test
 	public void coreServicesReferencedByModuleFactoryBean_shouldStillBeAuthorized() {
 		Context.logout();
-		assertThrows(APIAuthenticationException.class, () -> conceptService.getConcept(3));
+		assertThrows(AccessDeniedException.class, () -> conceptService.getConcept(3));
 	}
 
 	@Test

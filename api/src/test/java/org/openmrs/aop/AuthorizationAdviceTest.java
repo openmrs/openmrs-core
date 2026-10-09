@@ -18,10 +18,10 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.PrivilegeListener;
 import org.openmrs.User;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -91,9 +91,9 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	public static class Listener2 extends Listener1 {}
 
 	@Test
-	public void before_shouldThrowAPIAuthenticationException() {
+	public void before_shouldThrowAccessDeniedException() {
 		Context.getUserContext().logout();
-		assertThrows(APIAuthenticationException.class, () -> Context.getConceptService().getConcept(3));
+		assertThrows(AccessDeniedException.class, () -> Context.getConceptService().getConcept(3));
 	}
 
 }

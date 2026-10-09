@@ -36,6 +36,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 *
 	 * @param diagnosis - the diagnosis to be saved
 	 * @return the diagnosis
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_DIAGNOSES })
 	Diagnosis save(Diagnosis diagnosis);
@@ -46,6 +48,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 * @param diagnosis - the diagnosis to be voided
 	 * @param voidReason - the reason for voiding the diagnosis
 	 * @return the diagnosis that was voided
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_DIAGNOSES })
 	Diagnosis voidDiagnosis(Diagnosis diagnosis, String voidReason);
@@ -55,6 +59,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 *
 	 * @param uuid - uuid of the diagnosis to be returned
 	 * @return diagnosis matching the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
 	Diagnosis getDiagnosisByUuid(String uuid);
@@ -65,6 +71,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 * @param patient the patient whose diagnosis we are to get
 	 * @param fromDate the date used to filter diagnosis which happened from this date and later
 	 * @return the list of diagnoses for the given patient and starting from the given date
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
 	List<Diagnosis> getDiagnoses(Patient patient, Date fromDate);
@@ -76,6 +84,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 * @param primaryOnly whether to return only primary diagnoses
 	 * @param confirmedOnly whether to return only confirmed diagnoses
 	 * @return the list of diagnoses for the given encounter
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 */
 	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
@@ -88,6 +98,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 * @param primaryOnly whether to return only primary diagnoses
 	 * @param confirmedOnly whether to return only confirmed diagnoses
 	 * @return the list of diagnoses for the given visit
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 */
 	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
@@ -117,6 +129,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 *
 	 * @param diagnosisId - id of the diagnosis to be returned
 	 * @return diagnosis matching the given id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
 	Diagnosis getDiagnosis(Integer diagnosisId);
@@ -129,6 +143,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 * @param diagnosis diagnosis to unvoid
 	 * @throws APIException
 	 * @return the unvoided diagnosis
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.EDIT_DIAGNOSES)
 	Diagnosis unvoidDiagnosis(Diagnosis diagnosis) throws APIException;
@@ -143,6 +159,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 *
 	 * @param diagnosis diagnosis to remove from the database
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see #purgeDiagnosis(Diagnosis)
 	 */
 	@Authorized(PrivilegeConstants.DELETE_DIAGNOSES)
@@ -154,6 +172,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 * <strong>Should</strong> return all diagnosis attribute types including retired ones.
 	 *
 	 * @return all {@link DiagnosisAttributeType}s
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 */
 	@Authorized(PrivilegeConstants.GET_DIAGNOSES_ATTRIBUTE_TYPES)
@@ -167,6 +187,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 *
 	 * @param id the id of the diagnosis attribute type to fetch
 	 * @return the {@link DiagnosisAttributeType} with the given id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 */
 	@Authorized(PrivilegeConstants.GET_DIAGNOSES_ATTRIBUTE_TYPES)
@@ -180,6 +202,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 *
 	 * @param uuid the uuid of the diagnosis attribute type to fetch
 	 * @return the {@link DiagnosisAttributeType} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 */
 	@Authorized(PrivilegeConstants.GET_DIAGNOSES_ATTRIBUTE_TYPES)
@@ -193,6 +217,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 *
 	 * @param diagnosisAttributeType the diagnosis attribute type to save or update
 	 * @return the DiagnosisAttributeType created/saved
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 */
 	@Authorized(PrivilegeConstants.EDIT_DIAGNOSES)
@@ -206,6 +232,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 * @param diagnosisAttributeType the diagnosis attribute type to retire
 	 * @param reason the reason why the diagnosis attribute type is being retired
 	 * @return the diagnosisAttributeType retired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 */
 	@Authorized(PrivilegeConstants.EDIT_DIAGNOSES)
@@ -219,6 +247,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 *
 	 * @param diagnosisAttributeType the diagnosis attribute type to unretire.
 	 * @return the DiagnosisAttributeType unretired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 */
 	@Authorized(PrivilegeConstants.EDIT_DIAGNOSES)
@@ -230,6 +260,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 * <strong>Should</strong> completely remove a diagnosis attribute type
 	 *
 	 * @param diagnosisAttributeType the diagnosis attribute type to purge
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 */
 	@Authorized(PrivilegeConstants.DELETE_DIAGNOSES)
@@ -243,6 +275,8 @@ public interface DiagnosisService extends OpenmrsService {
 	 *
 	 * @param uuid the uuid of the diagnosis attribute to fetch
 	 * @return the {@link DiagnosisAttribute} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 */
 	@Authorized(PrivilegeConstants.GET_DIAGNOSES)

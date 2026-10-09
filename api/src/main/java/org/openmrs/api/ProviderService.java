@@ -21,6 +21,7 @@ import org.openmrs.ProviderRole;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * This service contains methods relating to providers.
@@ -37,8 +38,10 @@ public interface ProviderService extends OpenmrsService {
 	 * <strong>Should</strong> get all providers
 	 *
 	 * @return a list of provider objects.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public List<Provider> getAllProviders();
 
 	/**
@@ -47,6 +50,8 @@ public interface ProviderService extends OpenmrsService {
 	 * <strong>Should</strong> get all providers that are unretired
 	 *
 	 * @param includeRetired - if true, retired providers are also included
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
 	public List<Provider> getAllProviders(boolean includeRetired);
@@ -58,8 +63,10 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param provider provider to retire
 	 * @param reason reason why the provider is retired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROVIDERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_PROVIDERS + "')")
 	public void retireProvider(Provider provider, String reason);
 
 	/**
@@ -68,6 +75,8 @@ public interface ProviderService extends OpenmrsService {
 	 * <strong>Should</strong> unretire a provider
 	 *
 	 * @param provider provider to unretire
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROVIDERS })
 	public Provider unretireProvider(Provider provider);
@@ -78,6 +87,8 @@ public interface ProviderService extends OpenmrsService {
 	 * <strong>Should</strong> delete a provider
 	 *
 	 * @param provider provider to be deleted
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.PURGE_PROVIDERS })
 	public void purgeProvider(Provider provider);
@@ -89,8 +100,10 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param providerId the provider id
 	 * @return the provider by it's id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public Provider getProvider(Integer providerId);
 
 	/**
@@ -100,6 +113,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param provider
 	 * @return the Provider object after saving it in the database
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROVIDERS })
 	public Provider saveProvider(Provider provider);
@@ -110,6 +125,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return the Provider object having the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
 	public Provider getProviderByUuid(String uuid);
@@ -122,6 +139,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param person
 	 * @return providers or empty collection
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
 	public Collection<Provider> getProvidersByPerson(Person person);
@@ -138,6 +157,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @param person
 	 * @param includeRetired
 	 * @return providers or empty collection
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10, 1.9.1
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
@@ -166,6 +187,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @param attributes
 	 * @param includeRetired
 	 * @return the list of Providers given the query , current page and page length Provider
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
 	public List<Provider> getProviders(String query, Integer start, Integer length,
@@ -193,6 +216,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @param length
 	 * @param attributes
 	 * @return the list of Providers given the query , current page and page length Provider
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
 	public List<Provider> getProviders(String query, Integer start, Integer length,
@@ -204,6 +229,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param query
 	 * @return Count-Integer
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
 	public Integer getCountOfProviders(String query);
@@ -218,6 +245,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @param query the text to match
 	 * @param includeRetired specifies whether retired providers should be include or not
 	 * @return Count-Integer
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9.4
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
@@ -271,6 +300,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param name the name of the provider attribute type
 	 * @return the provider attribute type for the given name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0, 2.6.3
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDER_ATTRIBUTE_TYPES })
@@ -346,6 +377,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @param provider the provider whose identifier to check
 	 * @return true if the identifier is unique otherwise false
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
 	public boolean isProviderIdentifierUnique(Provider provider) throws APIException;
@@ -357,6 +390,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param identifier the identifier to match against
 	 * @return a {@link Provider}
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
 	public Provider getProviderByIdentifier(String identifier);
@@ -369,6 +404,8 @@ public interface ProviderService extends OpenmrsService {
 	 * <strong>Should</strong> get the unknown provider account
 	 *
 	 * @return a {@link Provider}
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
@@ -379,6 +416,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param providerRoleId
 	 * @return {@link ProviderRole}
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.8.0
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDER_ROLES })
@@ -389,6 +428,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param includeRetired whether to include retired provider roles or not
 	 * @return list of all provider roles in the system
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.8.1
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDER_ROLES })
@@ -399,6 +440,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param uuid The ProviderRole UUID
 	 * @return {@link ProviderRole}
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.8.0
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDER_ROLES })
@@ -409,6 +452,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param roles The list of {@link ProviderRole}
 	 * @return a list of matching {@link Provider} instances
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.8.0
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
@@ -419,6 +464,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param providerRole the provider role to save
 	 * @return the saved provider role
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.8.2
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROVIDER_ROLES })
@@ -429,6 +476,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param providerRole the role to retire
 	 * @param reason the reason the role is being retired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.8.2
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROVIDER_ROLES })
@@ -438,6 +487,8 @@ public interface ProviderService extends OpenmrsService {
 	 * Unretires a provider role
 	 *
 	 * @param providerRole the role to unretire
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.8.2
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROVIDER_ROLES })
@@ -447,6 +498,8 @@ public interface ProviderService extends OpenmrsService {
 	 * Deletes a provider role entirely from the database
 	 *
 	 * @param providerRole the provider role to delete
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.8.2
 	 */
 	@Authorized({ PrivilegeConstants.PURGE_PROVIDER_ROLES })

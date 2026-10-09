@@ -30,6 +30,8 @@ public interface ConditionService extends OpenmrsService {
 	 * @param uuid - uuid of the condition to be returned
 	 * @throws APIException
 	 * @return the condition
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
 	Condition getConditionByUuid(String uuid) throws APIException;
@@ -40,6 +42,8 @@ public interface ConditionService extends OpenmrsService {
 	 * @param patient - the patient to retrieve conditions for
 	 * @throws APIException
 	 * @return a list of the patient's active conditions
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
 	List<Condition> getActiveConditions(Patient patient) throws APIException;
@@ -50,6 +54,8 @@ public interface ConditionService extends OpenmrsService {
 	 * @param patient - the patient to retrieve conditions for
 	 * @throws APIException
 	 * @return a list of the patient's conditions
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.2.1
 	 */
 	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
@@ -71,6 +77,8 @@ public interface ConditionService extends OpenmrsService {
 	 * @param conditionId the id of the Condition to retrieve
 	 * @return the Condition with the given id, or null if none exists
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
 	Condition getCondition(Integer conditionId) throws APIException;
@@ -80,6 +88,8 @@ public interface ConditionService extends OpenmrsService {
 	 *
 	 * @param condition - the condition to be saved
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
 	Condition saveCondition(Condition condition) throws APIException;
@@ -90,6 +100,8 @@ public interface ConditionService extends OpenmrsService {
 	 * @param condition the condition to be voided
 	 * @param voidReason the reason for voiding the condition
 	 * @throws APIException if an error occurs while voiding the condition
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
 	Condition voidCondition(Condition condition, String voidReason) throws APIException;
@@ -101,6 +113,8 @@ public interface ConditionService extends OpenmrsService {
 	 *
 	 * @param condition Condition to unvoid
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.EDIT_CONDITIONS)
 	Condition unvoidCondition(Condition condition) throws APIException;
@@ -115,6 +129,8 @@ public interface ConditionService extends OpenmrsService {
 	 *
 	 * @param condition
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.DELETE_CONDITIONS)
 	void purgeCondition(Condition condition) throws APIException;

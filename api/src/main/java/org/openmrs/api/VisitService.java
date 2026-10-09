@@ -39,6 +39,8 @@ public interface VisitService extends OpenmrsService {
 	 * <strong>Should</strong> get all visit types
 	 *
 	 * @return a list of visit type objects.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_VISIT_TYPES })
 	List<VisitType> getAllVisitTypes();
@@ -50,6 +52,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param includeRetired
 	 * @return List of all visit types
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_VISIT_TYPES })
@@ -62,6 +66,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param visitTypeId the visit type id.
 	 * @return the visit type object found with the given id, else null.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_VISIT_TYPES })
 	VisitType getVisitType(Integer visitTypeId);
@@ -73,6 +79,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param uuid the visit type UUID.
 	 * @return the visit type object found with the given uuid, else null.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_VISIT_TYPES })
 	VisitType getVisitTypeByUuid(String uuid);
@@ -84,6 +92,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param fuzzySearchPhrase the search phrase to use.
 	 * @return a list of all visit types with names similar to or containing the given phrase
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_VISIT_TYPES })
 	List<VisitType> getVisitTypes(String fuzzySearchPhrase);
@@ -98,6 +108,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param visitType the visit type to create or update.
 	 * @return the created or updated visit type.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_VISIT_TYPES })
 	VisitType saveVisitType(VisitType visitType) throws APIException;
@@ -110,6 +122,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param visitType the visit type to retire.
 	 * @param reason the reason why the visit type is retired.
 	 * @return the visit type that has been retired.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_VISIT_TYPES })
 	VisitType retireVisitType(VisitType visitType, String reason);
@@ -121,6 +135,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param visitType the visit type to unretire.
 	 * @return the unretired visit type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_VISIT_TYPES })
 	VisitType unretireVisitType(VisitType visitType);
@@ -131,6 +147,8 @@ public interface VisitService extends OpenmrsService {
 	 * <strong>Should</strong> delete given visit type
 	 *
 	 * @param visitType the visit type to delete from the database.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_VISIT_TYPES })
 	void purgeVisitType(VisitType visitType);
@@ -142,6 +160,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @return a list of visit objects.
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
 	public List<Visit> getAllVisits() throws APIException;
@@ -152,6 +172,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param visitId the visit id.
 	 * @return the visit object found with the given id, else null.
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
 	public Visit getVisit(Integer visitId) throws APIException;
@@ -164,6 +186,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param uuid the visit UUID.
 	 * @return the visit object found with the given uuid, else null.
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
 	public Visit getVisitByUuid(String uuid) throws APIException;
@@ -185,6 +209,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param visit the visit to create or update.
 	 * @return the created or updated visit.
 	 * @throws APIException explicitly
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.ADD_VISITS, PrivilegeConstants.EDIT_VISITS })
 	public Visit saveVisit(Visit visit) throws APIException;
@@ -200,6 +226,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param visit the visit whose stopDate is to be set
 	 * @param stopDate the date and time the visit is ending. if null, current date is used
 	 * @return the visit that was ended
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_VISITS })
 	public Visit endVisit(Visit visit, Date stopDate) throws APIException;
@@ -214,6 +242,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param reason the reason why the visit is voided
 	 * @return the visit that has been voided
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.DELETE_VISITS)
 	public Visit voidVisit(Visit visit, String reason) throws APIException;
@@ -227,6 +257,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param visit the visit to unvoid
 	 * @return the unvoided visit
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.DELETE_VISITS)
 	public Visit unvoidVisit(Visit visit) throws APIException;
@@ -239,6 +271,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param visit the visit to delete from the database.
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PURGE_VISITS)
 	public void purgeVisit(Visit visit) throws APIException;
@@ -268,6 +302,8 @@ public interface VisitService extends OpenmrsService {
 	 *            visits are returned
 	 * @param includeVoided specifies if voided visits should also be returned
 	 * @return a list of visits
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see #getActiveVisitsByPatient(Patient)
 	 * @throws APIException
 	 */
@@ -283,6 +319,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param visitSearchCriteria
 	 * @return
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.6.8
 	 * @since 2.7.0
 	 */
@@ -297,6 +335,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param patient the patient whose visits to get
 	 * @return a list of visits
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
 	public List<Visit> getVisitsByPatient(Patient patient) throws APIException;
@@ -307,6 +347,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param patient the patient whose visits to get
 	 * @return a list of visits
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
 	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException;
@@ -323,6 +365,8 @@ public interface VisitService extends OpenmrsService {
 	 * @param includeVoided
 	 * @return a list of visits
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
 	public List<Visit> getVisitsByPatient(Patient patient, boolean includeInactive, boolean includeVoided)
@@ -333,6 +377,8 @@ public interface VisitService extends OpenmrsService {
 	 * <strong>Should</strong> return all visit attribute types including retired ones
 	 *
 	 * @return all {@link VisitAttributeType}s
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_VISIT_ATTRIBUTE_TYPES)
 	List<VisitAttributeType> getAllVisitAttributeTypes();
@@ -344,6 +390,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param id
 	 * @return the {@link VisitAttributeType} with the given internal id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_VISIT_ATTRIBUTE_TYPES)
 	VisitAttributeType getVisitAttributeType(Integer id);
@@ -355,6 +403,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return the {@link VisitAttributeType} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_VISIT_ATTRIBUTE_TYPES)
 	VisitAttributeType getVisitAttributeTypeByUuid(String uuid);
@@ -367,6 +417,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param visitAttributeType
 	 * @return the VisitAttributeType created/saved
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_VISIT_ATTRIBUTE_TYPES)
 	VisitAttributeType saveVisitAttributeType(VisitAttributeType visitAttributeType);
@@ -378,6 +430,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param visitAttributeType
 	 * @return the visitAttribute retired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_VISIT_ATTRIBUTE_TYPES)
 	VisitAttributeType retireVisitAttributeType(VisitAttributeType visitAttributeType, String reason);
@@ -389,6 +443,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param visitAttributeType
 	 * @return the VisitAttributeType unretired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_VISIT_ATTRIBUTE_TYPES)
 	VisitAttributeType unretireVisitAttributeType(VisitAttributeType visitAttributeType);
@@ -399,6 +455,8 @@ public interface VisitService extends OpenmrsService {
 	 * <strong>Should</strong> completely remove a visit attribute type
 	 *
 	 * @param visitAttributeType
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PURGE_VISIT_ATTRIBUTE_TYPES)
 	void purgeVisitAttributeType(VisitAttributeType visitAttributeType);
@@ -410,6 +468,8 @@ public interface VisitService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return the {@link VisitAttribute} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
 	VisitAttribute getVisitAttributeByUuid(String uuid);
@@ -422,6 +482,8 @@ public interface VisitService extends OpenmrsService {
 	 * <strong>Should</strong> close all unvoided active visit matching the specified visit types
 	 *
 	 * @param maximumStartDate Visits started on or before this date time value will get stopped
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.EDIT_VISITS)
 	public void stopVisits(Date maximumStartDate);

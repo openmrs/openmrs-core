@@ -41,6 +41,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.handler.HandlerExceptionResolverComposite;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter;
@@ -59,6 +60,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableWebMvc
 @ComponentScan(basePackages = "org.openmrs.web.controller")
 public class WebConfig implements WebMvcConfigurer {
+
+	/**
+	 * Spring Security's rethrowing resolver, matched by name because the class is package-private - see
+	 * {@link #removeRethrowingAccessDeniedExceptionResolver(ObjectProvider)}. A rename upstream would
+	 * silently restore the bare 403 page, which is what
+	 * {@code WebConfigTest#removeRethrowingAccessDeniedExceptionResolver_*} pins by producing the
+	 * resolver through Spring Security's own configurer rather than standing in for it.
+	 */
+	private static final String RETHROWING_ACCESS_DENIED_RESOLVER = "org.springframework.security.config.annotation."
+	        + "method.configuration.AuthorizationProxyWebConfiguration$AccessDeniedExceptionResolver";
 
 	/**
 	 * Registers OpenMRS custom property editors globally on the handler adapter. This restores the
@@ -193,6 +204,44 @@ public class WebConfig implements WebMvcConfigurer {
 		converter.setMarshaller(xStreamMarshaller());
 		converter.setUnmarshaller(xStreamMarshaller());
 		return converter;
+	}
+
+	/**
+	 * {@code @EnableMethodSecurity} (on {@code OpenmrsSecurityConfig}) imports Spring Security's
+	 * {@code AuthorizationProxyWebConfiguration}, a {@code WebMvcConfigurer} that inserts a resolver
+	 * ahead of {@code DefaultHandlerExceptionResolver} whose whole body is to rethrow the first
+	 * {@code AccessDeniedException} in the cause chain. That is meant to let a lazy denial from an
+	 * {@code @AuthorizeReturnObject} proxy reach the filter chain instead of being swallowed by a
+	 * catch-all MVC resolver, but in OpenMRS it also stops {@link #simpleMappingExceptionResolver()}
+	 * (order 100, a separate bean, so consulted only after the whole {@code @EnableWebMvc} composite)
+	 * from ever seeing a denial. An under-privileged user then gets the container's bare 403 page with
+	 * no privilege named, where {@code APIAuthenticationException} used to reach
+	 * {@code uncaughtException} and a UI module's login redirect.
+	 * <p>
+	 * Removing it restores that route for every MVC consumer at once, rather than each module adding an
+	 * {@code @ExceptionHandler}. {@code @ExceptionHandler} methods still win, since
+	 * {@code ExceptionHandlerExceptionResolver} sits ahead of this one in the composite - which is why
+	 * webservices.rest keeps answering 401/403 itself. OpenMRS gives up Spring's propagate-to-the-
+	 * filter-chain behaviour for denials in exchange, having its own {@code OpenmrsAccessDeniedHandler}
+	 * there already.
+	 * <p>
+	 * Done as a {@link SmartInitializingSingleton} rather than by overriding
+	 * {@code extendHandlerExceptionResolvers}: neither configurer carries an order, so both would sit
+	 * at {@code LOWEST_PRECEDENCE} and a removal could run before Spring Security's insert. This runs
+	 * once every singleton exists, so the composite is whole whatever order they contributed in.
+	 */
+	@Bean
+	public SmartInitializingSingleton removeRethrowingAccessDeniedExceptionResolver(
+	        ObjectProvider<HandlerExceptionResolverComposite> compositeProvider) {
+		return () -> {
+			HandlerExceptionResolverComposite composite = compositeProvider.getIfAvailable();
+			if (composite == null || composite.getExceptionResolvers() == null) {
+				return;
+			}
+
+			composite.setExceptionResolvers(composite.getExceptionResolvers().stream()
+			        .filter(resolver -> !RETHROWING_ACCESS_DENIED_RESOLVER.equals(resolver.getClass().getName())).toList());
+		};
 	}
 
 	@Bean
