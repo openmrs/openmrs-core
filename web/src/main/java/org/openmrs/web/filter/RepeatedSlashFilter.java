@@ -36,7 +36,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * {@code WebSecurityConfig} leaves {@code StrictHttpFirewall} at its defaults because a URL rule
  * matches the request URI, not the path the container dispatches on. Once this filter has run, the
  * two agree about repeated slashes, so one cannot walk around a rule. Encoded slashes, path
- * parameters and dot segments are left as they are, for the firewall to reject as before.
+ * parameters and dot segments are left as they are: {@code /openmrs/ws;x=y/rest/v1/session} and
+ * {@code /openmrs/x/../ws/rest/v1/session} still fail with a 500 in
+ * {@code ServletRequestPathFilter}, as they did before this filter.
  *
  * @since 3.0.0
  */
