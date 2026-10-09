@@ -145,6 +145,31 @@
 	</filter-mapping>
 	<!--  End second filter -->
 	
+	<!-- Spring Session filter (TRUNK-6415) must wrap requests before filters that inspect or clear
+	     session cookies (CookieClearingFilter below, and everything downstream including
+	     springSecurityFilterChain), so the session it manages is the one those see. It is opt-in and
+	     off by default: OptionalDelegatingFilterProxy makes the seat a transparent pass-through unless
+	     session.distributed=true, when DistributedHttpSessionConfig registers the real
+	     springSessionRepositoryFilter bean. It cannot use
+	     org.openmrs.web.security.RefreshableDelegatingFilterProxy, which requires its target bean to
+	     exist (it answers 503 when it cannot resolve one); this seat is legitimately absent whenever
+	     the feature is off. -->
+	<filter>
+		<filter-name>springSessionRepositoryFilter</filter-name>
+		<filter-class>org.openmrs.web.filter.OptionalDelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>springSessionRepositoryFilter</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSessionRepositoryFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>ERROR</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>REQUEST</dispatcher>
+	</filter-mapping>
+
 	<!-- This filter should come before org.openmrs.web.security.OpenmrsSecurityContextFilter (the
 	     seat org.openmrs.web.filter.OpenmrsFilter used to occupy directly in this file), i.e.,
 	     before we've created a session. -->
