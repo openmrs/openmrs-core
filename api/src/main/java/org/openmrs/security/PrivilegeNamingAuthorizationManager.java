@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.authorization.AuthorizationManager;
@@ -29,7 +30,10 @@ import org.springframework.security.core.Authentication;
  * {@code AuthorizationAdvice} uses, rather than a generic "Access Denied". Installed by
  * {@link OpenmrsSecurityConfig}.
  * <p>
- * The named exception is <em>returned</em> as the {@link AuthorizationResult}, not thrown:
+ * The named exception is an {@link APIAuthenticationException}, the
+ * {@link AuthorizationDeniedException} {@code AuthorizationAdvice} denies {@code @Authorized} with,
+ * so converting a method does not change what its callers catch for a missing privilege. It is
+ * <em>returned</em> as the {@link AuthorizationResult}, not thrown:
  * {@link AuthorizationDeniedException} is itself a result, and returning it keeps a method's
  * {@code @HandleAuthorizationDenied} handler in play, since
  * {@code AuthorizationManagerAfterMethodInterceptor} does not catch what {@code authorize(...)}
@@ -74,7 +78,7 @@ public class PrivilegeNamingAuthorizationManager<T> implements AuthorizationMana
 		if (result != null && !result.isGranted() && !missingPrivileges.isEmpty()) {
 			// returned rather than thrown: see the class javadoc. Joined the same way
 			// AuthorizationAdvice joins a multi-privilege @Authorized.
-			return new AuthorizationDeniedException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
+			return new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 			    new Object[] { String.join(",", missingPrivileges) }, Locale.getDefault()), result);
 		}
 

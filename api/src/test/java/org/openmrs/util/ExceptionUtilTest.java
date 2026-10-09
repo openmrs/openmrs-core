@@ -41,9 +41,9 @@ public class ExceptionUtilTest {
 	}
 
 	/**
-	 * A method converted from {@code @Authorized} to {@code @PreAuthorize} denies with Spring
-	 * Security's exception instead, which shares no supertype with {@link APIAuthenticationException} -
-	 * so a caller relying on this would otherwise bury the denial in its own exception (see
+	 * A plain Spring Security denial - from a {@code @PreAuthorize} expression that names no privilege,
+	 * for one - is not an {@link APIAuthenticationException}, so a caller relying on this would
+	 * otherwise bury the denial in its own exception (see
 	 * {@code HibernateSerializedObjectDAO.convertSerializedObject}).
 	 *
 	 * @see ExceptionUtil#rethrowAPIAuthenticationException(Throwable)

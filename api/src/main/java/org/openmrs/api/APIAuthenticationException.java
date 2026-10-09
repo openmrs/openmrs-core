@@ -9,17 +9,26 @@
  */
 package org.openmrs.api;
 
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.authorization.AuthorizationResult;
+
 /**
  * Represents often fatal errors that occur within the API infrastructure involving a user's lack of
  * privileges. In certain presentation environments, this exception is caught and the user is
  * redirected to the login page where they can provide new or higher credentials.
+ * <p>
+ * As of 3.0.0 it is a Spring Security {@link AuthorizationDeniedException}. Core denies with it
+ * from the deprecated {@code @Authorized}, from a {@code @PreAuthorize} or {@code @PostAuthorize}
+ * check that names the missing privilege, and from the explicit checks that threw it before 3.0.0,
+ * so code written to catch it keeps recognizing those denials, and code catching
+ * {@link org.springframework.security.access.AccessDeniedException} recognizes them as well.
  *
  * @deprecated as of 3.0.0, catch and throw Spring Security's
- *             {@link org.springframework.security.access.AccessDeniedException} instead, which is
- *             what both {@code @PreAuthorize} and the deprecated {@code @Authorized} now deny with
+ *             {@link org.springframework.security.access.AccessDeniedException} instead, which
+ *             every denial is, including one an expression makes without naming a privilege
  */
 @Deprecated(since = "3.0.0")
-public class APIAuthenticationException extends APIException {
+public class APIAuthenticationException extends AuthorizationDeniedException {
 
 	public static final long serialVersionUID = 12121213L;
 
@@ -29,6 +38,7 @@ public class APIAuthenticationException extends APIException {
 	 * where/why the authentication has failed
 	 */
 	public APIAuthenticationException() {
+		super((String) null);
 	}
 
 	/**
@@ -49,7 +59,9 @@ public class APIAuthenticationException extends APIException {
 	 * @param cause error further up the stream that caused this authentication failure
 	 */
 	public APIAuthenticationException(String message, Throwable cause) {
-		super(message, cause);
+		// AuthorizationDeniedException takes no cause
+		super(message);
+		initCause(cause);
 	}
 
 	/**
@@ -59,7 +71,21 @@ public class APIAuthenticationException extends APIException {
 	 * @param cause error further up the stream that caused this authentication failure
 	 */
 	public APIAuthenticationException(Throwable cause) {
-		super(cause);
+		// the message RuntimeException(Throwable) gave before 3.0.0
+		super(cause == null ? null : cause.toString());
+		initCause(cause);
+	}
+
+	/**
+	 * Constructor for a denial that carries the authorization decision behind it, as Spring Security's
+	 * method security returns one.
+	 *
+	 * @param message String describing where/why the authentication failed
+	 * @param result the decision that denied access
+	 * @since 3.0.0
+	 */
+	public APIAuthenticationException(String message, AuthorizationResult result) {
+		super(message, result);
 	}
 
 }

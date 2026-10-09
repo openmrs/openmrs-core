@@ -116,16 +116,20 @@ and `hasRole('ROLE_X')` both mean the OpenMRS role named `X`.
 
 | | `@Authorized` | Spring Security |
 |---|---|---|
-| Exception on denial | `AccessDeniedException` — as of 3.0.0, same as Spring Security | `AuthorizationDeniedException`, a subclass of `org.springframework.security.access.AccessDeniedException` |
+| Exception on denial | `APIAuthenticationException`, which as of 3.0.0 is a subclass of `AuthorizationDeniedException` | the same `APIAuthenticationException` when the denial names the missing privilege, a plain `AuthorizationDeniedException` otherwise; both are `org.springframework.security.access.AccessDeniedException`s |
 | Denial message | names the missing privilege (`error.privilegesRequired`) | same, via `PrivilegeNamingAuthorizationManager` |
 | Relative to the transaction | before it opens | before it opens for `@PreAuthorize`; after commit for `@PostAuthorize`/`@PostFilter` |
 
-So converting a method no longer changes what its callers catch. That is a 3.0.0 change in its own
-right: `AuthorizationAdvice` denied with `APIAuthenticationException` before, and that exception is
-now deprecated. Code that maps authorization failures by exception type — webservices.rest's
-`BaseRestController` and legacyui's error handling among them — has to handle `AccessDeniedException`,
-whichever mechanism guards the method. `ExceptionUtil.rethrowAPIAuthenticationException` recognizes
-both, so a module that still throws the deprecated exception keeps working.
+So converting a method does not change what its callers catch for a missing privilege.
+`APIAuthenticationException` is deprecated as of 3.0.0 but still thrown, now as an
+`AccessDeniedException`: code written before 3.0.0 that catches it keeps recognizing a missing
+privilege, and new code catches `AccessDeniedException`. Only the latter catches every denial, since
+an expression that denies without naming a privilege — `isAuthenticated()`, for one — throws a
+plain `AuthorizationDeniedException`, so code that maps authorization failures by exception type —
+webservices.rest's `BaseRestController` and legacyui's error handling among them — should handle
+`AccessDeniedException`.
+`ExceptionUtil.rethrowAPIAuthenticationException` recognizes any `AccessDeniedException`, so a
+module that still throws the deprecated exception keeps working.
 
 ## Step-by-Step
 
@@ -151,7 +155,7 @@ both, so a module that still throws the deprecated exception keeps working.
 | `#someArgName` silently evaluates to `null` | the build does not compile with `-parameters`, and service annotations sit on interfaces | refer to arguments positionally as `#p0`, or name them with `@P("someArgName")` |
 | A write survives a `@PostAuthorize` denial | method security runs outside the transaction boundary | guard writes with `@PreAuthorize` |
 | A `@PostFilter`ed `@Cacheable` method serves one user's filtered view to everyone | `@PostFilter` filters in place | key the cache by the caller (`UserKeyGenerator.BEAN_NAME`) |
-| A module's error handling stops recognizing a denial | `@Authorized` denies with `AccessDeniedException` as of 3.0.0, not `APIAuthenticationException` | handle `AccessDeniedException`; `ExceptionUtil.rethrowAPIAuthenticationException` covers both |
+| A module's error handling misses a denial | an expression that denies without naming a privilege throws a plain `AuthorizationDeniedException`, not `APIAuthenticationException` | handle `AccessDeniedException`, which every denial is; `ExceptionUtil.rethrowAPIAuthenticationException` covers it |
 | Both `@Authorized` and `@PreAuthorize` on one method | both advisors run, so both must pass | keep exactly one of them |
 | `@Authorized` on a class instead of a method | `AuthorizationAdvice` only resolves method-level annotations | annotate methods; `@PreAuthorize` may be placed on the type if a class-wide default is wanted |
 
