@@ -11,7 +11,9 @@ package org.openmrs.api.impl;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -152,10 +154,16 @@ public class ObsArchiveHelper {
 		try {
 			return withManualFlush(() -> {
 				Session session = sessionFactory.getCurrentSession();
-				List<ObsArchive> archives = session.createQuery("FROM ObsArchive a WHERE a.encounter.encounterId = :encId "
-				        + "OR a.obsGroupId IN (SELECT o.obsId FROM Obs o WHERE o.encounter.encounterId = :encId) "
-				        + "OR a.obsGroupId IN (SELECT oa.obsId FROM ObsArchive oa WHERE oa.encounter.encounterId = :encId)",
-				    ObsArchive.class).setParameter("encId", encounterId).list();
+				Set<ObsArchive> archives = new LinkedHashSet<>();
+				archives.addAll(
+				    session.createQuery("FROM ObsArchive a WHERE a.encounter.encounterId = :encId", ObsArchive.class)
+				            .setParameter("encId", encounterId).list());
+				archives.addAll(session.createQuery(
+				    "FROM ObsArchive a WHERE a.obsGroupId IN (SELECT o.obsId FROM Obs o WHERE o.encounter.encounterId = :encId)",
+				    ObsArchive.class).setParameter("encId", encounterId).list());
+				archives.addAll(session.createQuery(
+				    "FROM ObsArchive a WHERE a.obsGroupId IN (SELECT oa.obsId FROM ObsArchive oa WHERE oa.encounter.encounterId = :encId)",
+				    ObsArchive.class).setParameter("encId", encounterId).list());
 				return archives.stream().map(this::convertToObs).collect(Collectors.toList());
 			});
 		} catch (HibernateException e) {
