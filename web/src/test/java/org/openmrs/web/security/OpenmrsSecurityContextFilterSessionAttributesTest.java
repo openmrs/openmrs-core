@@ -33,6 +33,7 @@ import org.springframework.mock.web.MockHttpSession;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -222,6 +223,48 @@ public class OpenmrsSecurityContextFilterSessionAttributesTest extends BaseWebCo
 		// Verify that each changed attribute was written exactly once.
 		assertEquals(1, session.countWrites(USERNAME_ATTRIBUTE));
 		assertEquals(1, session.countWrites(LOCALE_ATTRIBUTE));
+	}
+
+	/**
+	 * The csrfguard script has the CSRF token dynamically embedded in it, so it must never be cached: a
+	 * cached copy would hand one user's token to another. This guards that behaviour wherever
+	 * {@code applyCsrfCacheHeaders} is invoked from within the filter chain.
+	 *
+	 * @see OpenmrsSecurityContextFilter#doFilterInternal(HttpServletRequest, HttpServletResponse,
+	 *      FilterChain)
+	 */
+	@Test
+	public void doFilterInternal_shouldDisableCachingForTheCsrfguardResource() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setRequestURI("/csrfguard");
+		request.setSession(new MockHttpSession());
+		MockHttpServletResponse response = new MockHttpServletResponse();
+
+		new OpenmrsSecurityContextFilter().doFilterInternal(request, response, mock(FilterChain.class));
+
+		assertEquals("no-cache, no-store, must-revalidate", response.getHeader("Cache-Control"));
+		assertEquals("no-cache", response.getHeader("Pragma"));
+		assertEquals("0", response.getHeader("Expires"));
+	}
+
+	/**
+	 * The no-cache headers must be scoped to the csrfguard resource, not applied to every response.
+	 *
+	 * @see OpenmrsSecurityContextFilter#doFilterInternal(HttpServletRequest, HttpServletResponse,
+	 *      FilterChain)
+	 */
+	@Test
+	public void doFilterInternal_shouldNotDisableCachingForOrdinaryResources() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setRequestURI("/ws/rest/v1/session");
+		request.setSession(new MockHttpSession());
+		MockHttpServletResponse response = new MockHttpServletResponse();
+
+		new OpenmrsSecurityContextFilter().doFilterInternal(request, response, mock(FilterChain.class));
+
+		assertNull(response.getHeader("Cache-Control"));
+		assertNull(response.getHeader("Pragma"));
+		assertNull(response.getHeader("Expires"));
 	}
 
 	/**

@@ -115,6 +115,58 @@ public class UserContext implements Serializable {
 	}
 
 	/**
+	 * Captures this context as a marshallable {@link SessionPrincipal} (user uuid, locale, location)
+	 * for storage in a possibly replicated HTTP session. Proxy privileges are excluded.
+	 *
+	 * @return a serializable snapshot of this context
+	 * @since 3.0.0
+	 */
+	public SessionPrincipal toSessionPrincipal() {
+		return new SessionPrincipal(user, locale, locationId);
+	}
+
+	/**
+	 * Rebuilds a {@link UserContext} from a {@link #toSessionPrincipal()} snapshot. The user is
+	 * re-fetched by uuid via {@link org.openmrs.api.db.ContextDAO} (bypassing authorization, as login
+	 * does), so no privilege is needed to re-establish an authenticated session. A missing or retired
+	 * user yields an anonymous context, so a revoked account cannot keep acting from a valid session.
+	 * <p>
+	 * A transient failure to re-fetch the user (for example the database is briefly unavailable) is
+	 * propagated rather than degrading to anonymous: the caller must not mistake it for a logged-out
+	 * session and invalidate the replicated session, which would log the user out.
+	 *
+	 * @param authenticationScheme the scheme to inject; never serialized into the session
+	 * @param principal the snapshot to rebuild from; {@code null} yields an anonymous context
+	 * @return a rebuilt, thread-ready user context
+	 * @since 3.0.0
+	 */
+	public static UserContext fromSessionPrincipal(AuthenticationScheme authenticationScheme, SessionPrincipal principal) {
+		UserContext userContext = new UserContext(authenticationScheme);
+		if (principal == null) {
+			return userContext;
+		}
+		if (principal.getUserUuid() != null) {
+			User user;
+			try {
+				user = Context.getContextDAO().getUserByUuid(principal.getUserUuid());
+			} catch (RuntimeException e) {
+				log.warn("Transient failure re-establishing user {} from session principal", principal.getUserUuid(), e);
+				throw new RuntimeException(
+					"Failed to re-establish user from session principal: " + principal.getUserUuid(), e);
+			}
+			if (user != null && !user.getRetired()) {
+				userContext.user = user;
+			} else {
+				log.debug("Session principal referenced a missing or retired user {}; leaving context anonymous",
+				    principal.getUserUuid());
+			}
+		}
+		userContext.locale = principal.getLocale();
+		userContext.locationId = principal.getLocationId();
+		return userContext;
+	}
+
+	/**
 	 * Authenticate user with the provided credentials.
 	 * <p>
 	 * As of 3.0.0, this delegates to Spring Security's
