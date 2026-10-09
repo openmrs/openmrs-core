@@ -113,7 +113,7 @@
 		<!-- Other Runtime -->
 		<javassistVersion>3.33.0-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
-		<groovyVersion>2.4.21</groovyVersion>
+		<groovyVersion>6.0.0</groovyVersion>
 		<tomcatVersion>11.0.26</tomcatVersion>
 		<jodaTimeVersion>2.15.0</jodaTimeVersion>
 		<guavaVersion>33.7.2-jre</guavaVersion>
@@ -361,6 +361,11 @@
 				<artifactId>jackson-datatype-hibernate7</artifactId>
 				<version>${jacksonVersion}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-yaml</artifactId>
+				<version>${jacksonVersion}</version>
+			</dependency>
 
 			<!-- Apache Commons -->
 			<dependency>
@@ -592,9 +597,80 @@
 				<version>${reflectionsVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.codehaus.groovy</groupId>
+				<groupId>org.apache.groovy</groupId>
 				<artifactId>groovy-all</artifactId>
 				<version>${groovyVersion}</version>
+				<type>pom</type>
+				<exclusions>
+					<!-- Build, desktop and interactive-shell tooling: not needed by
+					     server-side code or modules at runtime, but groovy-all as a POM
+					     pulls them all in at compile scope and ships them in the WAR -->
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-ant</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-cli-picocli</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-console</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-docgenerator</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-groovydoc</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-groovysh</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-swing</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-test</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-test-junit6</artifactId>
+					</exclusion>
+					<!-- Belt and braces: groovy-test and groovy-test-junit6 (excluded
+					     above) are what pull these in at compile scope, which would
+					     promote JUnit to a compile dependency of openmrs-api and ship
+					     it in the WAR -->
+					<exclusion>
+						<groupId>junit</groupId>
+						<artifactId>junit</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.junit.jupiter</groupId>
+						<artifactId>junit-jupiter-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.junit.jupiter</groupId>
+						<artifactId>junit-jupiter-engine</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.junit.platform</groupId>
+						<artifactId>junit-platform-launcher</artifactId>
+					</exclusion>
+					<!-- @Grab support pulls Ivy and a pre-release Maven stack into the WAR -->
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-grape-ivy</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-grape-maven</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
