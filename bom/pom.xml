@@ -602,9 +602,49 @@
 				<version>${groovyVersion}</version>
 				<type>pom</type>
 				<exclusions>
-					<!-- groovy-test and groovy-test-junit6 pull these in at compile scope,
-					     which would promote JUnit to a compile dependency of openmrs-api
-					     and ship it in the WAR -->
+					<!-- Build, desktop and interactive-shell tooling: not needed by
+					     server-side code or modules at runtime, but groovy-all as a POM
+					     pulls them all in at compile scope and ships them in the WAR -->
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-ant</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-cli-picocli</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-console</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-docgenerator</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-groovydoc</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-groovysh</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-swing</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-test</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.groovy</groupId>
+						<artifactId>groovy-test-junit6</artifactId>
+					</exclusion>
+					<!-- Belt and braces: groovy-test and groovy-test-junit6 (excluded
+					     above) are what pull these in at compile scope, which would
+					     promote JUnit to a compile dependency of openmrs-api and ship
+					     it in the WAR -->
 					<exclusion>
 						<groupId>junit</groupId>
 						<artifactId>junit</artifactId>
