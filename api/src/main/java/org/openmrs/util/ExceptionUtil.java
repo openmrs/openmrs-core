@@ -39,10 +39,11 @@ public class ExceptionUtil {
 	}
 
 	/**
-	 * If any cause in the given exception chain is an authorization failure, rethrow that. Both the
-	 * deprecated {@link APIAuthenticationException} and Spring Security's {@link AccessDeniedException}
-	 * count, since they share no supertype and either can reach a caller. The name is kept for
-	 * compatibility, though it now reads narrower than it behaves.
+	 * If any cause in the given exception chain is an authorization failure, rethrow that. Any Spring
+	 * Security {@link AccessDeniedException} counts, and the deprecated
+	 * {@link APIAuthenticationException} is one; where a chain holds more than one, an
+	 * {@code APIAuthenticationException} is preferred. The name is kept for compatibility, though it
+	 * now reads narrower than it behaves.
 	 *
 	 * @param thrown
 	 */

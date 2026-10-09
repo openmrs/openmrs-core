@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -299,5 +300,19 @@ public class UserContextTest extends BaseContextSensitiveTest {
 
 		// assert
 		assertThat(userContext.hasPrivilege("Privilege1"), is(true));
+	}
+
+	@Test
+	void becomeUser_shouldDenyANonSuperuserWithAnAPIAuthenticationException() {
+		// what this threw before 3.0.0, which is now also an AccessDeniedException
+		Context.becomeUser("3-4");
+		try {
+			APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+			    () -> Context.becomeUser("admin"));
+			assertThat(denial.getMessage(), is("You must be a superuser to assume another user's identity"));
+		} finally {
+			// deleteUser() purges as the superuser this test stopped being
+			authenticate();
+		}
 	}
 }

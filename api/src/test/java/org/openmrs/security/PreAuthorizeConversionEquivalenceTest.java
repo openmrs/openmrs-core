@@ -11,12 +11,16 @@ package org.openmrs.security;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.Provider;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -63,5 +67,15 @@ public class PreAuthorizeConversionEquivalenceTest extends BaseContextSensitiveT
 		UserService userService = Context.getUserService();
 		Context.getUserContext().logout();
 		assertThrows(AccessDeniedException.class, () -> userService.getUser(1));
+	}
+
+	@Test
+	public void getAllProviders_shouldDenyAMissingPrivilegeWithTheExceptionAuthorizedDeniesWith() {
+		// converting a method must not change what a caller catching the deprecated exception sees
+		ProviderService providerService = Context.getProviderService();
+		Context.getUserContext().logout();
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class, providerService::getAllProviders);
+		assertInstanceOf(AuthorizationDeniedException.class, denial);
+		assertEquals("Privileges required: Get Providers", denial.getMessage());
 	}
 }

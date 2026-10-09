@@ -23,6 +23,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -120,6 +121,21 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		} catch (AccessDeniedException ex) {
 			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 		}
+	}
+
+	@Test
+	public void runInNewDaemonThreadCallable_shouldDenyANonDaemonThreadWithAnAPIAuthenticationException() {
+		// what this threw before 3.0.0, which is now also an AccessDeniedException
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Daemon.runInNewDaemonThread(() -> null));
+		assertThat(denial.getMessage(), is("Only daemon threads can spawn new daemon threads"));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldDenyANonDaemonThreadWithAnAPIAuthenticationException() {
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Daemon.runNewDaemonTask(() -> {}));
+		assertThat(denial.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 	}
 
 	@Test
