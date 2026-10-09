@@ -9,91 +9,89 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 
 /**
- * ObsReferenceRange is typically a reference range of a numeric Observation The reference range is
- * created at the point of creating {@link Obs}
+ * Entity representing archived observation reference ranges.
  *
- * @since 2.7.0
+ * @since 3.0.0
  */
 @Audited
 @Entity
-@Table(name = "obs_reference_range")
-public class ObsReferenceRange extends BaseReferenceRange {
+@Table(name = "obs_reference_range_archive")
+public class ObsArchiveReferenceRange extends BaseReferenceRange {
 
-	private static final long serialVersionUID = 473299L;
+	private static final long serialVersionUID = 473300L;
 
-	@DocumentId
 	@Id
 	@Column(name = "obs_reference_range_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer obsReferenceRangeId;
 
 	@OneToOne
 	@JoinColumn(name = "obs_id", referencedColumnName = "obs_id", unique = true)
-	private Obs obs;
+	private ObsArchive obsArchive;
 
-	public ObsReferenceRange() {
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "archived_by")
+	private User archivedBy;
+
+	@Column(name = "date_archived")
+	private Date dateArchived;
+
+	public ObsArchiveReferenceRange() {
+		// required by Hibernate
 	}
 
-	/**
-	 * Gets the obsReferenceRangeId
-	 *
-	 * @return Returns the obsReferenceRangeId.
-	 */
 	public Integer getObsReferenceRangeId() {
 		return obsReferenceRangeId;
 	}
 
-	/**
-	 * Sets the obsReferenceRangeId
-	 *
-	 * @param obsReferenceRangeId The obsReferenceRangeId to set.
-	 */
 	public void setObsReferenceRangeId(Integer obsReferenceRangeId) {
 		this.obsReferenceRangeId = obsReferenceRangeId;
 	}
 
-	/**
-	 * @see org.openmrs.OpenmrsObject#getId()
-	 */
+	public ObsArchive getObsArchive() {
+		return obsArchive;
+	}
+
+	public void setObsArchive(ObsArchive obsArchive) {
+		this.obsArchive = obsArchive;
+	}
+
+	public User getArchivedBy() {
+		return archivedBy;
+	}
+
+	public void setArchivedBy(User archivedBy) {
+		this.archivedBy = archivedBy;
+	}
+
+	public Date getDateArchived() {
+		return dateArchived;
+	}
+
+	public void setDateArchived(Date dateArchived) {
+		this.dateArchived = dateArchived;
+	}
+
+	@Override
 	public Integer getId() {
 		return getObsReferenceRangeId();
 	}
 
-	/**
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 */
+	@Override
 	public void setId(Integer id) {
 		setObsReferenceRangeId(id);
-	}
-
-	/**
-	 * Gets Obs
-	 *
-	 * @return Obs
-	 */
-	public Obs getObs() {
-		return obs;
-	}
-
-	/**
-	 * Sets obs
-	 *
-	 * @param obs Obs to set
-	 */
-	public void setObs(Obs obs) {
-		this.obs = obs;
 	}
 }

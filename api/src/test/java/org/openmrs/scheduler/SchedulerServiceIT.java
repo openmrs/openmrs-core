@@ -135,6 +135,36 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 	}
 
 	@Test
+	void scheduleTask_shouldRunAsDaemonIfCreatorIsRetired() throws SchedulerException, InterruptedException {
+		TaskDefinition task = new TaskDefinition();
+		task.setName("scheduleTask_shouldRunAsDaemonIfCreatorIsRetired");
+		task.setTaskClass(LegacyDaemonTestTask.class.getName());
+		task.setStartOnStartup(false);
+		task.setStartTime(null);
+		Person person = new Person();
+		person.addName(new PersonName("test_retired", "test_retired", "test_retired"));
+		person.setGender("M");
+		User user = new User();
+		user.setPerson(person);
+		user.setSystemId("test_retired");
+		user.addRole(userService.getRole("System developer"));
+		user = userService.createUser(user, "Test12345");
+		task.setCreator(user);
+
+		schedulerService.saveTaskDefinition(task);
+
+		userService.retireUser(user, "Testing retired creator fallback");
+
+		assertNotNull(task.getId());
+		TaskDefinition savedTask = schedulerService.getTask(task.getId());
+		assertNotNull(savedTask);
+		assertEquals("scheduleTask_shouldRunAsDaemonIfCreatorIsRetired", savedTask.getName());
+
+		schedulerService.scheduleTask(task);
+		waitForExecutedCount(1);
+	}
+
+	@Test
 	void scheduleTask_shouldNotFailIfCalledTwiceForTheSameTaskDefinition() throws SchedulerException {
 		TaskDefinition task = new TaskDefinition();
 		task.setName("scheduleTask_shouldNotFailIfCalledTwice");
@@ -644,6 +674,28 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 		public void execute() {
 			// Assert authenticated as task creator
 			assertThat(Context.getAuthenticatedUser().getSystemId(), equalTo(getTaskDefinition().getCreatorSystemId()));
+
+			// Assert user authenticated with person assigned
+			assertThat(Context.getAuthenticatedUser().getPerson(), notNullValue());
+
+			// Using SQL to do atomic counter updates
+			try (PreparedStatement statement = Context.getDatabaseConnection()
+			        .prepareStatement("UPDATE global_property SET property_value = property_value + 1 WHERE property = ?")) {
+				statement.setString(1, EXECUTED_COUNT);
+				statement.executeUpdate();
+				statement.getConnection().commit();
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	public static class LegacyDaemonTestTask extends AbstractTask {
+
+		@Override
+		public void execute() {
+			// Assert authenticated as daemon
+			assertThat(Context.getAuthenticatedUser().getSystemId(), equalTo("daemon"));
 
 			// Assert user authenticated with person assigned
 			assertThat(Context.getAuthenticatedUser().getPerson(), notNullValue());
