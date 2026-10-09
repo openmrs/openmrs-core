@@ -701,7 +701,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService, 
 		        && OpenmrsUtil.nullSafeEquals(field.getConcept(), fieldToBeReplaced.getConcept())
 		        && OpenmrsUtil.nullSafeEquals(field.getTableName(), fieldToBeReplaced.getTableName())
 		        && OpenmrsUtil.nullSafeEquals(field.getDefaultValue(), fieldToBeReplaced.getDefaultValue())
-		        && field.getRetired() != null && !field.getRetired());
+		        && !field.getRetired());
 	}
 
 	/**

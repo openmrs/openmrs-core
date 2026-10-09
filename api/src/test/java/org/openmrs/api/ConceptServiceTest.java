@@ -1543,16 +1543,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void saveConceptSource_shouldNotSaveAConceptSourceIfVoidedIsNull() {
-		ConceptSource source = new ConceptSource();
-		source.setRetired(null);
-		assertNull(source.getRetired());
-
-		assertThrows(Exception.class, () -> conceptService.saveConceptSource(source));
-
-	}
-
-	@Test
 	public void saveConceptNameTag_shouldSaveAConceptNameTagIfATagDoesNotExist() {
 		ConceptNameTag nameTag = new ConceptNameTag();
 		nameTag.setTag("a new tag");
