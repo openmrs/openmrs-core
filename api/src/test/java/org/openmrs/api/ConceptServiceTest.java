@@ -731,6 +731,16 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(cnt.getConceptNameTagId(), savedConceptNameTag.getConceptNameTagId());
 	}
 
+	@Test
+	public void getConceptName_shouldLoadTagsFromConceptNameTagMapDataset() {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-conceptNameTagMap.xml");
+
+		ConceptName conceptName = Context.getConceptService().getConceptName(2473);
+
+		assertEquals(1, conceptName.getTags().size());
+		assertEquals("short", conceptName.getTags().iterator().next().getTag());
+	}
+
 	/**
 	 * @see ConceptService#saveConceptSource(ConceptSource)
 	 */
