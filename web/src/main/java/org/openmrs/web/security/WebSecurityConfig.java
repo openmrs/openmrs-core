@@ -64,7 +64,9 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
  * servlet, so relaxing semicolons or encoded slashes and periods would let a rule be walked around
  * with {@code /x/..;/admin/y}. {@code web.xml} asks for
  * {@code <tracking-mode>COOKIE</tracking-mode>} so the {@code ;jsessionid=} a container would
- * otherwise append never needs allowing.
+ * otherwise append never needs allowing. Repeated slashes reach this chain already collapsed into
+ * the path the container dispatches on, by {@link org.openmrs.web.filter.RepeatedSlashFilter},
+ * which {@code web.xml} runs ahead of it.
  *
  * @since 3.0.0
  */
