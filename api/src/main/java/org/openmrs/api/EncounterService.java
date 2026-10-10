@@ -25,11 +25,13 @@ import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Services for Encounters and Encounter Types
@@ -80,7 +82,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#encounter, '" + PrivilegeConstants.ADD_ENCOUNTERS + "') or hasPermission(#encounter, '"
+	        + PrivilegeConstants.EDIT_ENCOUNTERS + "')")
 	public Encounter saveEncounter(Encounter encounter) throws APIException;
 
 	/**
@@ -96,7 +99,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#encounterId, 'Encounter', '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public Encounter getEncounter(Integer encounterId) throws APIException;
 
 	/**
@@ -110,7 +113,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#uuid, 'Encounter', '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public Encounter getEncounterByUuid(String uuid) throws APIException;
 
 	/**
@@ -124,7 +127,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public List<Encounter> getEncountersByPatient(Patient patient);
 
 	/**
@@ -139,7 +143,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#patientId, 'Patient', '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws APIException;
 
 	/**
@@ -154,7 +159,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public List<Encounter> getEncountersByPatientIdentifier(String identifier) throws APIException;
 
 	/**
@@ -189,7 +195,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @deprecated As of 2.0, replaced by {@link #getEncounters(EncounterSearchCriteria)}
 	 */
 	@Deprecated
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#who, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
 	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided);
@@ -207,7 +214,8 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.12
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#encounterSearchCriteria?.patient, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria);
 
 	/**
@@ -226,7 +234,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#encounter, '" + PrivilegeConstants.EDIT_ENCOUNTERS + "')")
 	public Encounter voidEncounter(Encounter encounter, String reason);
 
 	/**
@@ -242,7 +250,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#encounter, '" + PrivilegeConstants.EDIT_ENCOUNTERS + "')")
 	public Encounter unvoidEncounter(Encounter encounter) throws APIException;
 
 	/**
@@ -257,7 +265,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#encounter, '" + PrivilegeConstants.PURGE_ENCOUNTERS + "')")
 	public void purgeEncounter(Encounter encounter) throws APIException;
 
 	/**
@@ -273,7 +281,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#encounter, '" + PrivilegeConstants.PURGE_ENCOUNTERS + "')")
 	public void purgeEncounter(Encounter encounter, boolean cascade) throws APIException;
 
 	/**
@@ -291,7 +299,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
+	@PreAuthorize("hasPermission(#encounterType, '" + PrivilegeConstants.MANAGE_ENCOUNTER_TYPES + "')")
 	public EncounterType saveEncounterType(EncounterType encounterType) throws APIException;
 
 	/**
@@ -305,7 +313,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTER_TYPES })
+	@PreAuthorize("hasPermission(#encounterTypeId, 'EncounterType', '" + PrivilegeConstants.GET_ENCOUNTER_TYPES + "')")
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException;
 
 	/**
@@ -319,7 +327,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTER_TYPES })
+	@PreAuthorize("hasPermission(#uuid, 'EncounterType', '" + PrivilegeConstants.GET_ENCOUNTER_TYPES + "')")
 	public EncounterType getEncounterTypeByUuid(String uuid) throws APIException;
 
 	/**
@@ -336,7 +344,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTER_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTER_TYPES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ENCOUNTER_TYPES + "')")
 	public EncounterType getEncounterType(String name) throws APIException;
 
 	/**
@@ -349,7 +358,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTER_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTER_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTER_TYPES + "')")
 	public List<EncounterType> getAllEncounterTypes() throws APIException;
 
 	/**
@@ -364,7 +374,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTER_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTER_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTER_TYPES + "')")
 	public List<EncounterType> getAllEncounterTypes(boolean includeRetired) throws APIException;
 
 	/**
@@ -383,7 +394,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTER_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTER_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTER_TYPES + "')")
 	public List<EncounterType> findEncounterTypes(String name) throws APIException;
 
 	/**
@@ -401,7 +413,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
+	@PreAuthorize("hasPermission(#encounterType, '" + PrivilegeConstants.MANAGE_ENCOUNTER_TYPES + "')")
 	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws APIException;
 
 	/**
@@ -417,7 +429,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
+	@PreAuthorize("hasPermission(#encounterType, '" + PrivilegeConstants.MANAGE_ENCOUNTER_TYPES + "')")
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException;
 
 	/**
@@ -432,7 +444,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_ENCOUNTER_TYPES })
+	@PreAuthorize("hasPermission(#encounterType, '" + PrivilegeConstants.PURGE_ENCOUNTER_TYPES + "')")
 	public void purgeEncounterType(EncounterType encounterType) throws APIException;
 
 	/**
@@ -446,7 +458,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @see EncounterService#getEncountersByPatient(String, boolean)
 	 * @since 1.7
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public List<Encounter> getEncountersByPatient(String query) throws APIException;
 
 	/**
@@ -465,7 +478,8 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.7
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public List<Encounter> getEncountersByPatient(String query, boolean includeVoided) throws APIException;
 
 	/**
@@ -488,7 +502,8 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.8
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	//TODO: DAO auth filter
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
 	        throws APIException;
 
@@ -517,7 +532,8 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#patientId, 'Patient', '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	//TODO: DAO auth filter
 	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
 	        boolean includeVoided) throws APIException;
 
@@ -529,7 +545,10 @@ public interface EncounterService extends OpenmrsService {
 	 * @param patients Cohort of patients to search
 	 * @return Map of all encounters for specified patients.
 	 * @since 1.8
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
+	@PreAuthorize("hasPermission(#patients, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients);
 
 	/**
@@ -544,7 +563,8 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.8
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	//TODO: DAO auth filter
 	public Integer getCountOfEncounters(String query, boolean includeVoided);
 
 	/**
@@ -560,7 +580,8 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#visit, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided);
 
 	/**
@@ -599,7 +620,7 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	@PreAuthorize("hasPermission(#encounterRole, '" + PrivilegeConstants.MANAGE_ENCOUNTER_ROLES + "')")
 	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws APIException;
 
 	/**
@@ -612,7 +633,7 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTER_ROLES })
+	@PreAuthorize("hasPermission(#encounterRoleId, 'EncounterRole', '" + PrivilegeConstants.GET_ENCOUNTER_ROLES + "')")
 	public EncounterRole getEncounterRole(Integer encounterRoleId) throws APIException;
 
 	/**
@@ -626,7 +647,7 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_ENCOUNTER_ROLES })
+	@PreAuthorize("hasPermission(#encounterRole, '" + PrivilegeConstants.PURGE_ENCOUNTER_ROLES + "')")
 	public void purgeEncounterRole(EncounterRole encounterRole) throws APIException;
 
 	/**
@@ -640,7 +661,8 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTER_ROLES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTER_ROLES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTER_ROLES + "')")
 	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired);
 
 	/**
@@ -654,7 +676,7 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTER_ROLES })
+	@PreAuthorize("hasPermission(#uuid, 'EncounterRole', '" + PrivilegeConstants.GET_ENCOUNTER_ROLES + "')")
 	public EncounterRole getEncounterRoleByUuid(String uuid) throws APIException;
 
 	/**
@@ -668,7 +690,8 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTER_ROLES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTER_ROLES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ENCOUNTER_ROLES + "')")
 	public EncounterRole getEncounterRoleByName(String name);
 
 	/**
@@ -685,7 +708,7 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
+	@PreAuthorize("hasPermission(#encounterRole, '" + PrivilegeConstants.MANAGE_ENCOUNTER_ROLES + "')")
 	public EncounterRole retireEncounterRole(EncounterRole encounterRole, String reason) throws APIException;
 
 	/**
@@ -694,14 +717,14 @@ public interface EncounterService extends OpenmrsService {
 	 * <p>
 	 * <strong>Should</strong> unretire type and unmark attributes
 	 *
-	 * @param encounterType the encounter role to unretire
+	 * @param encounterRole the encounter role to unretire
 	 * @throws APIException
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
-	public EncounterRole unretireEncounterRole(EncounterRole encounterType) throws APIException;
+	@PreAuthorize("hasPermission(#encounterRole, '" + PrivilegeConstants.MANAGE_ENCOUNTER_ROLES + "')")
+	public EncounterRole unretireEncounterRole(EncounterRole encounterRole) throws APIException;
 
 	/**
 	 * Gets the unvoided encounters for the specified patient that are not assigned to any visit. Note
@@ -716,7 +739,8 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws APIException;
 
 	/**
@@ -736,7 +760,8 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.GET_VISITS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_VISITS + "')")
+	//TODO: DAO auth filter
 	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
 	        Integer start, Integer length) throws APIException;
 
@@ -753,7 +778,8 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.GET_VISITS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_VISITS + "')")
+	//TODO: DAO auth filter
 	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query)
 	        throws APIException;
 
@@ -772,7 +798,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#encounters, '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
 	public List<Encounter> filterEncountersByViewPermissions(List<Encounter> encounters, User user);
 
 	/**
@@ -845,7 +871,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @since 1.11
 	 */
 
-	@Authorized({ PrivilegeConstants.GET_ENCOUNTER_ROLES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTER_ROLES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ENCOUNTER_ROLES + "')")
 	public List<EncounterRole> getEncounterRolesByName(String name);
 
 	/**
@@ -863,6 +890,6 @@ public interface EncounterService extends OpenmrsService {
 	 *             permission
 	 * @since 1.12
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ENCOUNTERS })
+	@PreAuthorize("hasPermission(#encounter, '" + PrivilegeConstants.EDIT_ENCOUNTERS + "')")
 	public Encounter transferEncounter(Encounter encounter, Patient patient);
 }

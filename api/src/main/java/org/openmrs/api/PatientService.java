@@ -21,13 +21,15 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Contains methods pertaining to Patients in the system <pre>
@@ -70,7 +72,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_PATIENTS, PrivilegeConstants.EDIT_PATIENTS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.ADD_PATIENTS + "') or hasPermission(#patient, '"
+	        + PrivilegeConstants.EDIT_PATIENTS + "')")
 	public Patient savePatient(Patient patient) throws APIException;
 
 	/**
@@ -86,7 +89,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasPermission(#patientId, 'Patient', '" + PrivilegeConstants.GET_PATIENTS + "')")
 	public Patient getPatient(Integer patientId) throws APIException;
 
 	/**
@@ -99,7 +102,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasPermission(#patientOrPersonId, 'Patient', '" + PrivilegeConstants.GET_PATIENTS + "')")
 	Patient getPatientOrPromotePerson(Integer patientOrPersonId) throws APIException;
 
 	/**
@@ -114,7 +117,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasPermission(#uuid, 'Patient', '" + PrivilegeConstants.GET_PATIENTS + "')")
 	public Patient getPatientByUuid(String uuid) throws APIException;
 
 	/**
@@ -129,7 +132,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_IDENTIFIERS })
+	@PreAuthorize("hasPermission(#uuid, 'PatientIdentifier', '" + PrivilegeConstants.GET_PATIENT_IDENTIFIERS + "')")
 	public PatientIdentifier getPatientIdentifierByUuid(String uuid) throws APIException;
 
 	/**
@@ -143,7 +146,8 @@ public interface PatientService extends OpenmrsService {
 	 * @see #getAllPatients(boolean)
 	 * @throws APIException
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENTS + "')")
 	public List<Patient> getAllPatients() throws APIException;
 
 	/**
@@ -158,7 +162,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENTS + "')")
 	public List<Patient> getAllPatients(boolean includeVoided) throws APIException;
 
 	/**
@@ -196,7 +201,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENTS + "')")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) throws APIException;
 
@@ -216,7 +222,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.DELETE_PATIENTS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.DELETE_PATIENTS + "')")
 	public Patient voidPatient(Patient patient, String reason) throws APIException;
 
 	/**
@@ -232,7 +238,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.DELETE_PATIENTS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.DELETE_PATIENTS + "')")
 	public Patient unvoidPatient(Patient patient) throws APIException;
 
 	/**
@@ -247,7 +253,7 @@ public interface PatientService extends OpenmrsService {
 	 *             permission
 	 * @see #voidPatient(org.openmrs.Patient,java.lang.String)
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_PATIENTS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.PURGE_PATIENTS + "')")
 	public void purgePatient(Patient patient) throws APIException;
 
 	/**
@@ -279,7 +285,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_IDENTIFIERS })
+	@PreAuthorize("hasPermission(#patients, '" + PrivilegeConstants.GET_PATIENT_IDENTIFIERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_IDENTIFIERS + "')")
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
 	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,
 	        Boolean isPreferred) throws APIException;
@@ -298,7 +305,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
+	@PreAuthorize("hasPermission(#patientIdentifierType, '" + PrivilegeConstants.MANAGE_IDENTIFIER_TYPES + "')")
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
 
 	/**
@@ -314,7 +321,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_IDENTIFIER_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_IDENTIFIER_TYPES + "')")
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes() throws APIException;
 
 	/**
@@ -334,7 +342,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_IDENTIFIER_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_IDENTIFIER_TYPES + "')")
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired) throws APIException;
 
 	/**
@@ -367,7 +376,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_IDENTIFIER_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_IDENTIFIER_TYPES + "')")
 	public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
 	        Boolean hasCheckDigit) throws APIException;
 
@@ -383,7 +393,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
+	@PreAuthorize("hasPermission(#patientIdentifierTypeId, 'PatientIdentifierType', '"
+	        + PrivilegeConstants.GET_IDENTIFIER_TYPES + "')")
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException;
 
 	/**
@@ -398,7 +409,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
+	@PreAuthorize("hasPermission(#uuid, 'PatientIdentifierType', '" + PrivilegeConstants.GET_IDENTIFIER_TYPES + "')")
 	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) throws APIException;
 
 	/**
@@ -414,7 +425,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_IDENTIFIER_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_IDENTIFIER_TYPES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_IDENTIFIER_TYPES + "')")
 	public PatientIdentifierType getPatientIdentifierTypeByName(String name) throws APIException;
 
 	/**
@@ -432,7 +444,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
+	@PreAuthorize("hasPermission(#patientIdentifierType, '" + PrivilegeConstants.MANAGE_IDENTIFIER_TYPES + "')")
 	public PatientIdentifierType retirePatientIdentifierType(PatientIdentifierType patientIdentifierType, String reason)
 	        throws APIException;
 
@@ -450,7 +462,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
+	@PreAuthorize("hasPermission(#patientIdentifierType, '" + PrivilegeConstants.MANAGE_IDENTIFIER_TYPES + "')")
 	public PatientIdentifierType unretirePatientIdentifierType(PatientIdentifierType patientIdentifierType)
 	        throws APIException;
 
@@ -467,7 +479,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_IDENTIFIER_TYPES })
+	@PreAuthorize("hasPermission(#patientIdentifierType, '" + PrivilegeConstants.PURGE_IDENTIFIER_TYPES + "')")
 	public void purgePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
 
 	/**
@@ -491,7 +503,7 @@ public interface PatientService extends OpenmrsService {
 	 * @see #checkPatientIdentifiers(Patient)
 	 * @throws PatientIdentifierException if one or more of the identifiers are invalid identifiers
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_IDENTIFIERS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_PATIENT_IDENTIFIERS + "')")
 	public void checkPatientIdentifiers(Patient patient) throws PatientIdentifierException;
 
 	/**
@@ -514,7 +526,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENTS + "')")
 	public List<Patient> getPatients(String query) throws APIException;
 
 	/**
@@ -534,7 +547,8 @@ public interface PatientService extends OpenmrsService {
 	 *             permission
 	 * @since 1.8
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
+	//TODO: DAO auth filter
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException;
 
 	/**
@@ -548,7 +562,8 @@ public interface PatientService extends OpenmrsService {
 	 *             permission
 	 * @since 1.11
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
+	//TODO: DAO auth filter
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws APIException;
 
 	/**
@@ -566,7 +581,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasPermission(#patientToMatch, '" + PrivilegeConstants.GET_PATIENTS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_PATIENTS + "')")
 	public Patient getPatientByExample(Patient patientToMatch) throws APIException;
 
 	/**
@@ -585,7 +601,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENTS + "')")
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) throws APIException;
 
 	/**
@@ -663,7 +680,8 @@ public interface PatientService extends OpenmrsService {
 	 *             permission
 	 * @see PersonMergeLogData patient
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_PATIENTS })
+	@PreAuthorize("hasPermission(#preferred, '" + PrivilegeConstants.EDIT_PATIENTS + "') and hasPermission(#notPreferred, '"
+	        + PrivilegeConstants.EDIT_PATIENTS + "')")
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException, SerializationException;
 
 	/**
@@ -676,7 +694,11 @@ public interface PatientService extends OpenmrsService {
 	 * @param notPreferred
 	 * @throws APIException
 	 * @throws SerializationException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
+	@PreAuthorize("hasPermission(#preferred, '" + PrivilegeConstants.EDIT_PATIENTS + "') and hasPermission(#notPreferred, '"
+	        + PrivilegeConstants.EDIT_PATIENTS + "')")
 	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException, SerializationException;
 
 	/**
@@ -695,7 +717,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_PATIENTS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.EDIT_PATIENTS + "')")
 	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason) throws APIException;
 
 	/**
@@ -721,7 +743,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(value = { PrivilegeConstants.GET_PATIENTS, PrivilegeConstants.EDIT_OBS }, requireAll = true)
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_PATIENTS + "') and hasPermission(#patient, '"
+	        + PrivilegeConstants.EDIT_OBS + "')")
 	public void saveCauseOfDeathObs(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason)
 	        throws APIException;
 
@@ -784,7 +807,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_PATIENTS)
+	@PreAuthorize("hasPermission(#patientIdentifier, '" + PrivilegeConstants.GET_PATIENTS + "')")
 	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier);
 
 	/**
@@ -798,7 +821,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_IDENTIFIERS })
+	@PreAuthorize("hasPermission(#patientIdentifierId, 'PatientIdentifier', '" + PrivilegeConstants.GET_PATIENT_IDENTIFIERS
+	        + "')")
 	public PatientIdentifier getPatientIdentifier(Integer patientIdentifierId) throws APIException;
 
 	/**
@@ -816,7 +840,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.DELETE_PATIENT_IDENTIFIERS })
+	@PreAuthorize("hasPermission(#patientIdentifier, '" + PrivilegeConstants.DELETE_PATIENT_IDENTIFIERS + "')")
 	public PatientIdentifier voidPatientIdentifier(PatientIdentifier patientIdentifier, String reason) throws APIException;
 
 	/**
@@ -836,7 +860,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_PATIENT_IDENTIFIERS, PrivilegeConstants.EDIT_PATIENT_IDENTIFIERS })
+	@PreAuthorize("hasPermission(#patientIdentifier, '" + PrivilegeConstants.ADD_PATIENT_IDENTIFIERS
+	        + "') or hasPermission(#patientIdentifier, '" + PrivilegeConstants.EDIT_PATIENT_IDENTIFIERS + "')")
 	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException;
 
 	/**
@@ -849,7 +874,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_PATIENT_IDENTIFIERS })
+	@PreAuthorize("hasPermission(#patientIdentifier, '" + PrivilegeConstants.PURGE_PATIENT_IDENTIFIERS + "')")
 	public void purgePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException;
 
 	/**
@@ -862,7 +887,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ALLERGIES })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_ALLERGIES + "')")
 	Allergies getAllergies(Patient patient);
 
 	/**
@@ -892,20 +917,21 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_ALLERGIES, PrivilegeConstants.EDIT_ALLERGIES })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.ADD_ALLERGIES + "') or hasPermission(#patient, '"
+	        + PrivilegeConstants.EDIT_ALLERGIES + "')")
 	Allergies setAllergies(Patient patient, Allergies allergies);
 
 	/**
 	 * Returns the Allergy identified by internal Ingerger Id
 	 *
-	 * @param allergyListId identifies allergy by internal Ingerger Id
+	 * @param allergyId identifies allergy by internal Ingerger Id
 	 * @return the allergy
 	 * @throws APIException
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ALLERGIES })
-	public Allergy getAllergy(Integer allergyListId) throws APIException;
+	@PreAuthorize("hasPermission(#allergyId, 'Allergy', '" + PrivilegeConstants.GET_ALLERGIES + "')")
+	public Allergy getAllergy(Integer allergyId) throws APIException;
 
 	/**
 	 * Returns the Allergy identified by uuid
@@ -920,7 +946,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_ALLERGIES })
+	@PreAuthorize("hasPermission(#uuid, 'Allergy', '" + PrivilegeConstants.GET_ALLERGIES + "')")
 	public Allergy getAllergyByUuid(String uuid) throws APIException;
 
 	/**
@@ -934,7 +960,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_ALLERGIES, PrivilegeConstants.EDIT_ALLERGIES })
+	@PreAuthorize("hasPermission(#allergy, '" + PrivilegeConstants.ADD_ALLERGIES + "') or hasPermission(#allergy, '"
+	        + PrivilegeConstants.EDIT_ALLERGIES + "')")
 	public void saveAllergy(Allergy allergy) throws APIException;
 
 	/**
@@ -949,7 +976,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ALLERGIES })
+	@PreAuthorize("hasPermission(#allergy, '" + PrivilegeConstants.EDIT_ALLERGIES + "')")
 	public void removeAllergy(Allergy allergy, String reason) throws APIException;
 
 	/**
@@ -961,7 +988,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.DELETE_ALLERGIES })
+	@PreAuthorize("hasPermission(#allergy, '" + PrivilegeConstants.DELETE_ALLERGIES + "')")
 	public void voidAllergy(Allergy allergy, String reason) throws APIException;
 
 	/**
@@ -982,7 +1009,7 @@ public interface PatientService extends OpenmrsService {
 	 *             permission
 	 * @since 1.8
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
 	public Integer getCountOfPatients(String query);
 
 	/**
@@ -992,7 +1019,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
 	public Integer getCountOfPatients(String query, boolean includeVoided);
 
 	/**
@@ -1015,7 +1042,8 @@ public interface PatientService extends OpenmrsService {
 	 *             permission
 	 * @since 1.8
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
+	//TODO: DAO auth filter
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length) throws APIException;
 
@@ -1036,6 +1064,7 @@ public interface PatientService extends OpenmrsService {
 	 *             permission
 	 * @since 2.6.0
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_IDENTIFIERS })
+	@PreAuthorize("hasPermission(#patientProgram, '" + PrivilegeConstants.GET_PATIENT_IDENTIFIERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_IDENTIFIERS + "')")
 	public List<PatientIdentifier> getPatientIdentifiersByPatientProgram(PatientProgram patientProgram);
 }

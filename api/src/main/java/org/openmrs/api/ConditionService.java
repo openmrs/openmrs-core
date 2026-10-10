@@ -14,8 +14,9 @@ import java.util.List;
 import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * This interface defines methods for condition objects.
@@ -33,7 +34,7 @@ public interface ConditionService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
+	@PreAuthorize("hasPermission(#uuid, 'Condition', '" + PrivilegeConstants.GET_CONDITIONS + "')")
 	Condition getConditionByUuid(String uuid) throws APIException;
 
 	/**
@@ -45,7 +46,8 @@ public interface ConditionService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_CONDITIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CONDITIONS + "')")
 	List<Condition> getActiveConditions(Patient patient) throws APIException;
 
 	/**
@@ -58,7 +60,8 @@ public interface ConditionService extends OpenmrsService {
 	 *             permission
 	 * @since 2.2.1
 	 */
-	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_CONDITIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CONDITIONS + "')")
 	List<Condition> getAllConditions(Patient patient) throws APIException;
 
 	/**
@@ -68,7 +71,11 @@ public interface ConditionService extends OpenmrsService {
 	 * @return a list of encounter's conditions
 	 * @throws APIException
 	 * @since 2.4.0, 2.3.1
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks *
+	 *             permission
 	 */
+	@PreAuthorize("hasPermission(#encounter, '" + PrivilegeConstants.GET_CONDITIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CONDITIONS + "')")
 	List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException;
 
 	/**
@@ -80,7 +87,7 @@ public interface ConditionService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
+	@PreAuthorize("hasPermission(#conditionId, 'Condition', '" + PrivilegeConstants.GET_CONDITIONS + "')")
 	Condition getCondition(Integer conditionId) throws APIException;
 
 	/**
@@ -91,7 +98,7 @@ public interface ConditionService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
+	@PreAuthorize("hasPermission(#condition, '" + PrivilegeConstants.EDIT_CONDITIONS + "')")
 	Condition saveCondition(Condition condition) throws APIException;
 
 	/**
@@ -103,7 +110,7 @@ public interface ConditionService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
+	@PreAuthorize("hasPermission(#condition, '" + PrivilegeConstants.EDIT_CONDITIONS + "')")
 	Condition voidCondition(Condition condition, String voidReason) throws APIException;
 
 	/**
@@ -116,7 +123,7 @@ public interface ConditionService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.EDIT_CONDITIONS)
+	@PreAuthorize("hasPermission(#condition, '" + PrivilegeConstants.EDIT_CONDITIONS + "')")
 	Condition unvoidCondition(Condition condition) throws APIException;
 
 	/**
@@ -132,6 +139,6 @@ public interface ConditionService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.DELETE_CONDITIONS)
+	@PreAuthorize("hasPermission(#condition, '" + PrivilegeConstants.DELETE_CONDITIONS + "')")
 	void purgeCondition(Condition condition) throws APIException;
 }

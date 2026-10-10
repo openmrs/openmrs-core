@@ -115,6 +115,15 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to get provider attribute types")
 	public static final String GET_PROVIDER_ATTRIBUTE_TYPES = "Get Provider Attribute Types";
 
+	@AddOnStartup(description = "Able to delete provider attribute types")
+	public static final String DELETE_PROVIDER_ATTRIBUTE_TYPES = "Delete Provider Attribute Types";
+
+	@AddOnStartup(description = "Able to purge provider attribute types")
+	public static final String PURGE_PROVIDER_ATTRIBUTE_TYPES = "Purge Provider Attribute Types";
+
+	@AddOnStartup(description = "Able to get provider attributes")
+	public static final String GET_PROVIDER_ATTRIBUTES = "Get Provider Attributes";
+
 	@AddOnStartup(description = "Able to get person objects")
 	public static final String GET_PERSONS = "Get People";
 

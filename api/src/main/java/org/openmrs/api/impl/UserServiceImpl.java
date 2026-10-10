@@ -29,7 +29,6 @@ import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -745,7 +744,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * @see UserService#changePassword(User, String, String)
 	 */
 	@Override
-	@Authorized(PrivilegeConstants.EDIT_USER_PASSWORDS)
 	@Logging(ignoredArgumentIndexes = { 1, 2 })
 	public void changePassword(User user, String oldPassword, String newPassword) throws APIException {
 		if (user.getUserId() == null) {

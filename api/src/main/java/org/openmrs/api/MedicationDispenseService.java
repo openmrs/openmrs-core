@@ -12,9 +12,10 @@ package org.openmrs.api;
 import java.util.List;
 
 import org.openmrs.MedicationDispense;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.parameter.MedicationDispenseCriteria;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * This interface defines an API for interacting with MedicationDispense objects.
@@ -31,7 +32,8 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_MEDICATION_DISPENSE })
+	@PreAuthorize("hasPermission(#medicationDispenseId, 'MedicationDispense', '" + PrivilegeConstants.GET_MEDICATION_DISPENSE
+	        + "')")
 	MedicationDispense getMedicationDispense(Integer medicationDispenseId);
 
 	/**
@@ -42,7 +44,7 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_MEDICATION_DISPENSE })
+	@PreAuthorize("hasPermission(#uuid, 'MedicationDispense', '" + PrivilegeConstants.GET_MEDICATION_DISPENSE + "')")
 	MedicationDispense getMedicationDispenseByUuid(String uuid);
 
 	/**
@@ -53,7 +55,8 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_MEDICATION_DISPENSE })
+	@PreAuthorize("hasPermission(#criteria?.patient, '" + PrivilegeConstants.GET_MEDICATION_DISPENSE + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_MEDICATION_DISPENSE + "')")
 	List<MedicationDispense> getMedicationDispenseByCriteria(MedicationDispenseCriteria criteria);
 
 	/**
@@ -63,7 +66,7 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_MEDICATION_DISPENSE })
+	@PreAuthorize("hasPermission(#medicationDispense, '" + PrivilegeConstants.EDIT_MEDICATION_DISPENSE + "')")
 	MedicationDispense saveMedicationDispense(MedicationDispense medicationDispense);
 
 	/**
@@ -74,7 +77,7 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_MEDICATION_DISPENSE })
+	@PreAuthorize("hasPermission(#medicationDispense, '" + PrivilegeConstants.EDIT_MEDICATION_DISPENSE + "')")
 	MedicationDispense voidMedicationDispense(MedicationDispense medicationDispense, String reason);
 
 	/**
@@ -84,7 +87,7 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.EDIT_MEDICATION_DISPENSE)
+	@PreAuthorize("hasPermission(#medicationDispense, '" + PrivilegeConstants.EDIT_MEDICATION_DISPENSE + "')")
 	MedicationDispense unvoidMedicationDispense(MedicationDispense medicationDispense);
 
 	/**
@@ -97,6 +100,6 @@ public interface MedicationDispenseService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.DELETE_MEDICATION_DISPENSE)
+	@PreAuthorize("hasPermission(#medicationDispense, '" + PrivilegeConstants.DELETE_MEDICATION_DISPENSE + "')")
 	void purgeMedicationDispense(MedicationDispense medicationDispense);
 }
