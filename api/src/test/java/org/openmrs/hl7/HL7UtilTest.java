@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import ca.uhn.hl7v2.HL7Exception;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests methods on the {@link HL7Util} class
@@ -94,6 +95,24 @@ public class HL7UtilTest {
 
 		// reset the timezone
 		TimeZone.setDefault(originalTimeZone);
+	}
+
+	/**
+	 * @throws HL7Exception
+	 * @see HL7Util#parseHL7Timestamp(String)
+	 */
+	@Test
+	public void parseHL7Timestamp_shouldRejectInvalidDate() {
+		assertThrows(HL7Exception.class, () -> HL7Util.parseHL7Timestamp("20240230"));
+	}
+
+	/**
+	 * @throws HL7Exception
+	 * @see HL7Util#parseHL7Timestamp(String)
+	 */
+	@Test
+	public void parseHL7Timestamp_shouldRejectInvalidTime() {
+		assertThrows(HL7Exception.class, () -> HL7Util.parseHL7Timestamp("20240101250000.000+0000"));
 	}
 
 }
