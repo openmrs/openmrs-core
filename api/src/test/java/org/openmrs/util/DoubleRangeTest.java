@@ -269,4 +269,10 @@ public class DoubleRangeTest {
 		DoubleRange r = new DoubleRange(null, 1.0);
 		assertEquals("< 1.0", r.toString());
 	}
+
+	@Test
+	public void shouldNotAppendAndWhenHighIsPositiveInfinity() {
+		DoubleRange range = new DoubleRange(1.0, null);
+		assertEquals(">= 1.0", range.toString());
+	}
 }
