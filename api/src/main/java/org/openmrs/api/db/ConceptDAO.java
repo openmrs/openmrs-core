@@ -31,6 +31,7 @@ import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptReferenceRange;
+import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -699,6 +700,14 @@ public interface ConceptDAO {
 	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer)
 	 */
 	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId);
+
+	/**
+	 * Resolves the reference range for the given numeric concept and context, holding the session
+	 * unflushed for the whole resolution, including the evaluation of each range's criteria.
+	 *
+	 * @see ConceptService#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	ConceptReferenceRange getConceptReferenceRange(ConceptNumeric conceptNumeric, ConceptReferenceRangeContext context);
 
 	/**
 	 * @see ConceptService#getConceptReferenceRangeByUuid(String)
