@@ -23,7 +23,8 @@ import org.springframework.web.filter.UrlHandlerFilter;
 /**
  * Trims the trailing slash from a request to the {@code /ws/*} mapping of the openmrs
  * DispatcherServlet, so {@code /openmrs/ws/rest/v1/session/} reaches the handler for
- * {@code /openmrs/ws/rest/v1/session}, as it did on OpenMRS 2.x.
+ * {@code /openmrs/ws/rest/v1/session}, as it did on OpenMRS 2.x. {@code /openmrs/ws/} itself is
+ * left as it is, where legacyui serves its index page.
  * <p>
  * Spring 7 has no option to match a handler mapping to a path with a trailing slash.
  * {@link UrlHandlerFilter} is what Spring offers in its place, and this filter hands it the
