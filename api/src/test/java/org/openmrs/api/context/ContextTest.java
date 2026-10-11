@@ -402,6 +402,28 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * The distributed HTTP sessions (TRUNK-6415) are not derived data: clearing them would log out
+	 * every user on every node, so {@code clearEntireApiCache} must leave that cache alone.
+	 *
+	 * @see Context#clearEntireCache()
+	 */
+	@Test
+	public void clearEntireCache_shouldNotDeleteDistributedHttpSessions() {
+		TestTransaction.end();
+
+		org.springframework.cache.CacheManager apiCacheManager = Context.getRegisteredComponent("apiCacheManager",
+		    org.springframework.cache.CacheManager.class);
+		org.infinispan.Cache<Object, Object> sessions = ((org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager) apiCacheManager)
+		        .getNativeCacheManager().getCache(org.openmrs.api.cache.CacheConfig.SESSIONS_CACHE_NAME);
+		sessions.put("session-1", "session content");
+
+		Context.clearEntireCache();
+
+		assertEquals("session content", sessions.get("session-1"),
+		    "clearEntireCache is for derived caches: it must not destroy distributed HTTP sessions");
+	}
+
+	/**
 	 * @see Context#addProxyPrivilege(String...)
 	 */
 	@Test

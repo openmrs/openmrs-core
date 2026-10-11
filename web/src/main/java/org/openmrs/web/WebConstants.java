@@ -23,6 +23,15 @@ public class WebConstants {
 
 	public static final String OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR = "__openmrs_user_context";
 
+	/**
+	 * Session attribute holding the marshallable {@link org.openmrs.api.context.SessionPrincipal}
+	 * stored when distributed sessions are enabled - the replicable counterpart to
+	 * {@link #OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR}.
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String OPENMRS_SESSION_PRINCIPAL_HTTPSESSION_ATTR = "__openmrs_session_principal";
+
 	public static final String OPENMRS_CLIENT_IP_HTTPSESSION_ATTR = "__openmrs_client_ip";
 
 	public static final String OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR = "__openmrs_login_redirect";
