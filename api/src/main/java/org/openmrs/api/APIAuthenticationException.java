@@ -13,7 +13,12 @@ package org.openmrs.api;
  * Represents often fatal errors that occur within the API infrastructure involving a user's lack of
  * privileges. In certain presentation environments, this exception is caught and the user is
  * redirected to the login page where they can provide new or higher credentials.
+ *
+ * @deprecated as of 3.0.0, catch and throw Spring Security's
+ *             {@link org.springframework.security.access.AccessDeniedException} instead, which is
+ *             what both {@code @PreAuthorize} and the deprecated {@code @Authorized} now deny with
  */
+@Deprecated(since = "3.0.0")
 public class APIAuthenticationException extends APIException {
 
 	public static final long serialVersionUID = 12121213L;
