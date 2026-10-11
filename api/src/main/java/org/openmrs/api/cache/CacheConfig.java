@@ -87,7 +87,7 @@ public class CacheConfig {
 	private String jChannelConfig;
 
 	@Bean(name = "apiCacheManager", destroyMethod = "stop")
-	public SpringEmbeddedCacheManager apiCacheManager() throws Exception {
+	public SpringEmbeddedCacheManager apiCacheManager() throws IOException {
 		if (StringUtils.isBlank(cacheConfig)) {
 			String local = "local".equalsIgnoreCase(cacheType.trim()) ? "-local" : "";
 			cacheConfig = "infinispan-api" + local + ".xml";
@@ -96,45 +96,11 @@ public class CacheConfig {
 		ParserRegistry parser = new ParserRegistry();
 		ConfigurationBuilderHolder baseConfigBuilder = parser.parseFile(cacheConfig);
 		if (cacheType.trim().equals("cluster")) {
-			jChannelConfig = getJChannelConfig(cacheStack);
-			JChannel jchannel = new JChannel(jChannelConfig);
-			Class<? extends TP> protocolClass = TCP.class;
-			if (cacheStack.trim().isEmpty() || cacheStack.trim().equals("udp")) {
-				protocolClass = UDP.class;
-			} else if (cacheStack.trim().equals("tunnel")) {
-				protocolClass = TUNNEL.class;
-			}
-			TP protocol = jchannel.getProtocolStack().findProtocol(protocolClass);
-			if (StringUtils.isBlank(apiCacheBindPort)) {
-				String hibernateCacheBindPort = System.getProperty("jgroups.bind.port");
-				if (hibernateCacheBindPort == null) {
-					hibernateCacheBindPort = "7800";
-				}
-				apiCacheBindPort = String.valueOf(Integer.parseInt(hibernateCacheBindPort) + 1);
-			}
-			protocol.setBindPort(Integer.parseInt(apiCacheBindPort));
-			JGroupsTransport transport = new JGroupsTransport(jchannel);
-			baseConfigBuilder.getGlobalConfigurationBuilder().transport().clusterName("infinispan-api-cluster")
-			        .transport(transport);
+			configureClusterTransport(baseConfigBuilder);
 		}
-		// Determine cache type based on loaded template for "entity"
-		String cacheType = baseConfigBuilder.getNamedConfigurationBuilders().get("entity").build().elementName();
-		cacheType = StringUtils.removeEnd(cacheType, "-configuration");
-		cacheType = CaseUtils.toCamelCase(cacheType, false, '-');
+		String resolvedCacheType = resolveCacheType(baseConfigBuilder);
 
-		DumperOptions options = new DumperOptions();
-		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-		options.setPrettyFlow(true);
-		Yaml yaml = new Yaml(options);
-
-		for (URL configFile : getCacheConfigurations()) {
-			// Apply cache type for caches using the 'entity' template
-			// and add the 'infinispan.cacheContainer.caches' parent.
-			// Skip already defined caches.
-			InputStream fullConfig = buildFullConfig(yaml, configFile,
-			    baseConfigBuilder.getNamedConfigurationBuilders().keySet(), cacheType);
-			parser.parse(fullConfig, baseConfigBuilder, ConfigurationResourceResolver.DEFAULT, MediaType.APPLICATION_YAML);
-		}
+		parseAdditionalCacheConfigs(baseConfigBuilder, resolvedCacheType, parser);
 
 		DefaultCacheManager cacheManager = new DefaultCacheManager(baseConfigBuilder, true);
 		return new ExternalReadSpringCacheManager(cacheManager, EXTERNAL_READ_CACHES);
@@ -202,7 +168,8 @@ public class CacheConfig {
 
 	public String getJChannelConfig(String cacheStack) {
 		String jChannelConfig;
-		switch (cacheStack.trim()) {
+		String trimmed = cacheStack.trim();
+		switch (trimmed) {
 			case "tcp":
 				jChannelConfig = "default-configs/default-jgroups-tcp.xml";
 				break;
@@ -221,9 +188,81 @@ public class CacheConfig {
 			case "azure":
 				jChannelConfig = "default-configs/default-jgroups-azure.xml";
 				break;
-			default:
+			case "udp", "":
 				jChannelConfig = "default-configs/default-jgroups-udp.xml";
+				break;
+			default:
+				// If not a known short name, treat as a stack config resource (classpath:/file:/URL or XML path)
+				jChannelConfig = trimmed;
+				break;
 		}
 		return jChannelConfig;
 	}
+
+	private void configureClusterTransport(ConfigurationBuilderHolder baseConfigBuilder) {
+		try {
+			jChannelConfig = getJChannelConfig(cacheStack);
+			JChannel jchannel = new JChannel(jChannelConfig);
+			Class<? extends TP> protocolClass = determineProtocolClass();
+			TP protocol = jchannel.getProtocolStack().findProtocol(protocolClass);
+			if (protocol == null) {
+				protocol = jchannel.getProtocolStack().getTransport();
+			}
+			String apiPort = resolveApiBindPort();
+			if (protocol != null) {
+				protocol.setBindPort(Integer.parseInt(apiPort));
+			}
+			JGroupsTransport transport = new JGroupsTransport(jchannel);
+			baseConfigBuilder.getGlobalConfigurationBuilder().transport().clusterName("infinispan-api-cluster")
+			        .transport(transport);
+		} catch (Exception e) {
+			throw new IllegalStateException("Unable to configure the JGroups transport for the API cache cluster", e);
+		}
+	}
+
+	private Class<? extends TP> determineProtocolClass() {
+		String stackTrim = cacheStack.trim();
+		if (stackTrim.isEmpty() || stackTrim.equals("udp")) {
+			return UDP.class;
+		}
+		if (stackTrim.equals("tunnel")) {
+			return TUNNEL.class;
+		}
+		return TCP.class;
+	}
+
+	private String resolveApiBindPort() {
+		if (!StringUtils.isBlank(apiCacheBindPort)) {
+			return apiCacheBindPort;
+		}
+		String hibernateCacheBindPort = System.getProperty("jgroups.bind.port");
+		if (hibernateCacheBindPort == null) {
+			hibernateCacheBindPort = "7800";
+		}
+		return String.valueOf(Integer.parseInt(hibernateCacheBindPort) + 1);
+	}
+
+	private void parseAdditionalCacheConfigs(ConfigurationBuilderHolder baseConfigBuilder, String cacheType,
+	        ParserRegistry parser) throws IOException {
+		DumperOptions options = new DumperOptions();
+		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+		options.setPrettyFlow(true);
+		Yaml yaml = new Yaml(options);
+
+		for (URL configFile : getCacheConfigurations()) {
+			// Apply cache type for caches using the 'entity' template
+			// and add the 'infinispan.cacheContainer.caches' parent.
+			// Skip already defined caches.
+			InputStream fullConfig = buildFullConfig(yaml, configFile,
+			    baseConfigBuilder.getNamedConfigurationBuilders().keySet(), cacheType);
+			parser.parse(fullConfig, baseConfigBuilder, ConfigurationResourceResolver.DEFAULT, MediaType.APPLICATION_YAML);
+		}
+	}
+
+	private String resolveCacheType(ConfigurationBuilderHolder baseConfigBuilder) {
+		String cacheType = baseConfigBuilder.getNamedConfigurationBuilders().get("entity").build().elementName();
+		cacheType = StringUtils.removeEnd(cacheType, "-configuration");
+		return CaseUtils.toCamelCase(cacheType, false, '-');
+	}
+
 }
