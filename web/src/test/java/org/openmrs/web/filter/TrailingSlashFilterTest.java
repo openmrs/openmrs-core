@@ -53,7 +53,8 @@ class TrailingSlashFilterTest {
 
 	@Test
 	void doFilter_shouldLeaveTheWsRootAlone() throws Exception {
-		// legacyui's index page answers /openmrs/ws/, and /openmrs/ws has no handler
+		// legacyui's index page answers /openmrs/ws/, and /openmrs/ws has no handler. The filter's own
+		// guard lets this through; UrlHandlerFilter is what leaves the servlet's root path alone
 		MockHttpServletRequest request = request("/openmrs/ws/", "/ws", "/");
 
 		assertSame(request, filter(request));

@@ -16,6 +16,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.openmrs.web.security.AuthorizedUrlMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.filter.UrlHandlerFilter;
 
@@ -30,18 +31,17 @@ import org.springframework.web.filter.UrlHandlerFilter;
  * <ul>
  * <li>Only requests the container mapped to {@code /ws}, the prefix mapping through which the
  * openmrs DispatcherServlet serves module controllers such as webservices.rest's.</li>
- * <li>Only a request URI that starts with the context path and {@code /ws}.
+ * <li>Only a request URI that starts with the context path and {@code /ws/}.
  * {@link UrlHandlerFilter} cannot parse any other, such as {@code /openmrs//ws/x/}, which Tomcat
  * maps on the collapsed path, so those pass on unchanged.</li>
  * </ul>
  * {@code web.xml} runs this ahead of {@code springSecurityFilterChain}, as {@link UrlHandlerFilter}
- * asks, so a URL rule judges the path the handler is chosen on.
+ * asks, and so ahead of {@code openmrsAuthorizationFilter}, so an {@link AuthorizedUrlMatcher} rule
+ * judges the path the handler is chosen on.
  *
  * @since 3.0.0
  */
 public class TrailingSlashFilter extends OncePerRequestFilter {
-
-	private static final String WS_SERVLET_PATH = "/ws";
 
 	private final UrlHandlerFilter trailingSlashHandler = UrlHandlerFilter.trailingSlashHandler("/**").wrapRequest().build();
 
@@ -57,7 +57,8 @@ public class TrailingSlashFilter extends OncePerRequestFilter {
 
 	private static boolean hasTrailingSlashBelowWs(HttpServletRequest request) {
 		String pathInfo = request.getPathInfo();
-		return WS_SERVLET_PATH.equals(request.getServletPath()) && pathInfo != null && pathInfo.endsWith("/")
-		        && request.getRequestURI().startsWith(request.getContextPath() + WS_SERVLET_PATH + "/");
+		return AuthorizedUrlMatcher.WS_PREFIX_PATH.equals(request.getServletPath()) && pathInfo != null
+		        && pathInfo.endsWith("/")
+		        && request.getRequestURI().startsWith(request.getContextPath() + AuthorizedUrlMatcher.WS_PREFIX_PATH + "/");
 	}
 }

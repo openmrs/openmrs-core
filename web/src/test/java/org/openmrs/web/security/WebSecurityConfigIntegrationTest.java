@@ -216,17 +216,18 @@ class WebSecurityConfigIntegrationTest {
 	}
 
 	@Test
-	void filterChain_shouldServeAWsRequestWithATrailingSlashFromTheHandlerForThePathWithout() throws Exception {
+	void filterChain_shouldServeAWsRequestWithATrailingSlashFromTheHandlerForThePathWithoutIt() throws Exception {
 		// Spring 7 does not match "/public/x" to /public/x/, so without TrailingSlashFilter this
 		// request finds no handler
-		mockMvcBehindTrailingSlashFilter().perform(wsGet("/openmrs/ws/public/x/")).andExpect(status().isOk());
+		mockMvcBehind(new TrailingSlashFilter()).perform(wsGet("/openmrs/ws/public/x/")).andExpect(status().isOk());
 	}
 
 	@Test
 	void filterChain_shouldChallengeAWsUrlGuardedByAnExactRuleWhenReachedWithATrailingSlash() throws Exception {
-		// "/secure/x" names no trailing slash, so it judges /ws/secure/x/ only because the slash is
-		// trimmed before springSecurityFilterChain, as it is before the handler is chosen
-		mockMvcBehindTrailingSlashFilter().perform(wsGet("/openmrs/ws/secure/x/")).andExpect(status().isUnauthorized());
+		// "/secure/x" names no trailing slash, so openmrsAuthorizationFilter judges /ws/secure/x/ only
+		// because the slash is trimmed before it, as it is before the handler is chosen
+		mockMvcBehind(new TrailingSlashFilter()).perform(wsGet("/openmrs/ws/secure/x/"))
+		        .andExpect(status().isUnauthorized());
 	}
 
 	@Test
@@ -275,26 +276,34 @@ class WebSecurityConfigIntegrationTest {
 	}
 
 	private MockMvc mockMvc(Filter... between) {
+		return mockMvc(new Filter[0], between);
+	}
+
+	/**
+	 * @param before filters to run ahead of springSecurityFilterChain, as web.xml runs
+	 *            TrailingSlashFilter
+	 */
+	private MockMvc mockMvcBehind(Filter... before) {
+		return mockMvc(before, new Filter[0]);
+	}
+
+	/**
+	 * @param before filters to run ahead of springSecurityFilterChain
+	 * @param between filters to run between springSecurityFilterChain and openmrsAuthorizationFilter,
+	 *            where web.xml runs ModuleFilter among others
+	 */
+	private MockMvc mockMvc(Filter[] before, Filter[] between) {
 		springContext = new AnnotationConfigApplicationContext(WebSecurityConfig.class, TestUrlRulesConfig.class);
 		Filter springSecurityFilterChain = springContext.getBean("springSecurityFilterChain", Filter.class);
 		Filter openmrsAuthorizationFilter = springContext.getBean("openmrsAuthorizationFilter", Filter.class);
 
-		Filter[] chain = new Filter[2 + between.length];
-		chain[0] = springSecurityFilterChain;
-		System.arraycopy(between, 0, chain, 1, between.length);
+		Filter[] chain = new Filter[before.length + 2 + between.length];
+		System.arraycopy(before, 0, chain, 0, before.length);
+		chain[before.length] = springSecurityFilterChain;
+		System.arraycopy(between, 0, chain, before.length + 1, between.length);
 		chain[chain.length - 1] = openmrsAuthorizationFilter;
 
 		return MockMvcBuilders.standaloneSetup(new TestController()).addFilters(chain).build();
-	}
-
-	private MockMvc mockMvcBehindTrailingSlashFilter() {
-		springContext = new AnnotationConfigApplicationContext(WebSecurityConfig.class, TestUrlRulesConfig.class);
-		// in web.xml's order: TrailingSlashFilter, then springSecurityFilterChain, with ModuleFilter
-		// between the security chain and openmrsAuthorizationFilter in a real deployment
-		return MockMvcBuilders.standaloneSetup(new TestController())
-		        .addFilters(new TrailingSlashFilter(), springContext.getBean("springSecurityFilterChain", Filter.class),
-		            springContext.getBean("openmrsAuthorizationFilter", Filter.class))
-		        .build();
 	}
 
 	/**
