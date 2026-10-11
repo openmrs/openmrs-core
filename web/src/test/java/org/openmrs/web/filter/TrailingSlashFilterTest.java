@@ -84,6 +84,14 @@ class TrailingSlashFilterTest {
 	}
 
 	@Test
+	void doFilter_shouldLeaveAWsRequestWhoseUriEndsInTwoSlashesAlone() throws Exception {
+		// Tomcat collapses // in the path info but keeps it in the request URI
+		MockHttpServletRequest request = request("/openmrs/ws/rest/v1/session//", "/ws", "/rest/v1/session/");
+
+		assertSame(request, filter(request));
+	}
+
+	@Test
 	void doFilter_shouldLeaveARequestMappedToAnotherServletAloneWhateverItsUriStartsWith() throws Exception {
 		// the container resolves the dot segment before it picks the servlet; the URI keeps it
 		MockHttpServletRequest request = request("/openmrs/ws/../scripts/x/", "/scripts", "/x/");

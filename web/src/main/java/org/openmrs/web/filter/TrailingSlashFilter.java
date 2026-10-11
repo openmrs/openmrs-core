@@ -35,6 +35,10 @@ import org.springframework.web.filter.UrlHandlerFilter;
  * <li>Only a request URI that starts with the context path and {@code /ws/}.
  * {@link UrlHandlerFilter} cannot parse any other, such as {@code /openmrs//ws/x/}, which Tomcat
  * maps on the collapsed path, so those pass on unchanged.</li>
+ * <li>Only a request URI that does not end in {@code //}. {@link UrlHandlerFilter} trims one slash,
+ * which would leave {@code /openmrs/ws/rest/v1/session//} ending in a single slash, a shape the
+ * firewall of {@code springSecurityFilterChain} no longer rejects with 400. Passed on unchanged,
+ * the firewall rejects it.</li>
  * </ul>
  * {@code web.xml} runs this ahead of {@code springSecurityFilterChain}, as {@link UrlHandlerFilter}
  * asks, and so ahead of {@code openmrsAuthorizationFilter}, so an {@link AuthorizedUrlMatcher} rule
@@ -60,6 +64,7 @@ public class TrailingSlashFilter extends OncePerRequestFilter {
 		String pathInfo = request.getPathInfo();
 		return AuthorizedUrlMatcher.WS_PREFIX_PATH.equals(request.getServletPath()) && pathInfo != null
 		        && pathInfo.endsWith("/")
-		        && request.getRequestURI().startsWith(request.getContextPath() + AuthorizedUrlMatcher.WS_PREFIX_PATH + "/");
+		        && request.getRequestURI().startsWith(request.getContextPath() + AuthorizedUrlMatcher.WS_PREFIX_PATH + "/")
+		        && !request.getRequestURI().endsWith("//");
 	}
 }

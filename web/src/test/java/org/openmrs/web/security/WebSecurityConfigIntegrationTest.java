@@ -223,6 +223,14 @@ class WebSecurityConfigIntegrationTest {
 	}
 
 	@Test
+	void filterChain_shouldRejectAWsRequestWhoseUriEndsInTwoSlashes() throws Exception {
+		// Tomcat collapses // in the path info but keeps it in the request URI. Trimmed to one trailing
+		// slash ahead of the firewall, the URI would pass it and find no handler
+		mockMvcBehind(new TrailingSlashFilter()).perform(wsGet("/openmrs/ws/public/x//").pathInfo("/public/x/"))
+		        .andExpect(status().isBadRequest());
+	}
+
+	@Test
 	void filterChain_shouldChallengeAWsUrlGuardedByAnExactRuleWhenReachedWithATrailingSlash() throws Exception {
 		// "/secure/x" names no trailing slash, so openmrsAuthorizationFilter judges /ws/secure/x/ only
 		// because the slash is trimmed before it, as it is before the handler is chosen
