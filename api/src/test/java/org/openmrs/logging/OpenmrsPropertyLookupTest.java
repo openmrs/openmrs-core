@@ -148,7 +148,7 @@ class OpenmrsPropertyLookupTest {
 		// isSessionOpen() defaults to false; system/runtime properties default to null
 		String result = lookup.lookup(null, "logLayout");
 
-		assertThat(result, equalTo("%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n"));
+		assertThat(result, equalTo(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN));
 	}
 
 	// --- logLayout during normal operations ---
@@ -170,7 +170,7 @@ class OpenmrsPropertyLookupTest {
 
 		String result = lookup.lookup(null, "logLayout");
 
-		assertThat(result, equalTo("%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n"));
+		assertThat(result, equalTo(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN));
 	}
 
 	@Test
@@ -180,7 +180,7 @@ class OpenmrsPropertyLookupTest {
 
 		String result = lookup.lookup(null, "logLayout");
 
-		assertThat(result, equalTo("%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n"));
+		assertThat(result, equalTo(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN));
 	}
 
 	// --- unknown key ---

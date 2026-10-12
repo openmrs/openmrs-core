@@ -93,6 +93,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return concept or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getConceptByUuid(String uuid);
@@ -105,6 +107,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptSearchCriteria the search criteria
 	 * @return list of matching concepts
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.8.7
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -148,6 +152,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @throws ConceptsLockedException
 	 * @throws ConceptInUseException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_CONCEPTS })
 	public Concept saveConcept(Concept concept) throws APIException;
@@ -164,6 +170,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param drug The Drug to save or update
 	 * @return the Drug that was saved or updated
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_CONCEPTS })
 	public Drug saveDrug(Drug drug) throws APIException;
@@ -179,6 +187,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptOrConceptNumeric The <code>Concept</code> or <code>ConceptNumeric</code> to remove
 	 *            from the system
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPTS)
 	public void purgeConcept(Concept conceptOrConceptNumeric) throws APIException;
@@ -193,6 +203,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param reason The retire reason
 	 * @return the retired <code>Concept</code> or <code>ConceptNumeric</code>
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Concept retireConcept(Concept conceptOrConceptNumeric, String reason) throws APIException;
@@ -206,6 +218,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param reason The retire reason
 	 * @throws APIException
 	 * @return the retired Drug
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Drug retireDrug(Drug drug, String reason) throws APIException;
@@ -219,6 +233,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param drug that is current set as retired
 	 * @return the given drug, marked as not retired now, and saved to the db
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Drug unretireDrug(Drug drug) throws APIException;
@@ -231,6 +247,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param drug The Drug to remove from the system
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPTS)
 	public void purgeDrug(Drug drug) throws APIException;
@@ -241,6 +259,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptId
 	 * @return the matching Concept object
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getConcept(Integer conceptId) throws APIException;
@@ -251,6 +271,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptNameId
 	 * @return the matching Concept object
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public ConceptName getConceptName(Integer conceptNameId) throws APIException;
@@ -261,6 +283,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptAnswerId
 	 * @return the matching ConceptAnswer object
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public ConceptAnswer getConceptAnswer(Integer conceptAnswerId) throws APIException;
@@ -271,6 +295,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param drugId
 	 * @return the matching Drug object
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Drug getDrug(Integer drugId) throws APIException;
@@ -281,6 +307,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptId The ConceptNumeric id
 	 * @return the matching ConceptNumeric object
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public ConceptNumeric getConceptNumeric(Integer conceptId) throws APIException;
@@ -291,6 +319,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @param conceptClassId the concept class identifier
 	 * @return the matching ConceptClass
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public ConceptClass getConceptClass(Integer conceptClassId) throws APIException;
@@ -300,6 +330,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @return a List&lt;Concept&gt; object containing all of the sorted concepts
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getAllConcepts() throws APIException;
@@ -318,6 +350,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param includeRetired If <code>true</code>, retired concepts will also be returned
 	 * @return a List&lt;Concept&gt; object containing all of the sorted concepts
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getAllConcepts(String sortBy, boolean asc, boolean includeRetired) throws APIException;
@@ -331,6 +365,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param name The search string
 	 * @throws APIException
 	 * @return a List&lt;Concept&gt; object containing all of the matching concepts
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getConceptsByName(String name) throws APIException;
@@ -348,6 +384,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param name The search string
 	 * @throws APIException
 	 * @return the found Concept
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getConceptByName(String name) throws APIException;
@@ -360,6 +398,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptIdOrName
 	 * @return the found Concept
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getConcept(String conceptIdOrName) throws APIException;
@@ -372,6 +412,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptRef the concept string identifier
 	 * @since 2.6.0
 	 * @return the concept if it exists otherwise null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getConceptByReference(String conceptRef);
@@ -384,6 +426,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return drug of null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Drug getDrugByUuid(String uuid);
@@ -396,6 +440,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid the uuid for the drug ingredient to get
 	 * @return the drug ingredient if found, else null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public DrugIngredient getDrugIngredientByUuid(String uuid);
@@ -409,6 +455,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param drugNameOrId String name or drugId to match exactly on
 	 * @return matching Drug object
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Drug getDrug(String drugNameOrId) throws APIException;
@@ -420,6 +468,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @throws APIException
 	 * @return a List&lt;Drug&gt; object containing all drugs
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Drug> getAllDrugs() throws APIException;
@@ -430,6 +480,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @param concept
 	 * @return a List&lt;Drug&gt; object containing all matching drugs
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Drug> getDrugsByConcept(Concept concept) throws APIException;
@@ -443,6 +495,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param includeRetired If <code>true</code> then the search will include voided Drugs
 	 * @return A List&lt;Drug&gt; object containing all matching Drugs
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Drug> getAllDrugs(boolean includeRetired);
@@ -459,6 +513,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param phrase Search phrase
 	 * @throws APIException
 	 * @return A List&lt;Drug&gt; object containing all Drug matches
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Drug> getDrugs(String phrase) throws APIException;
@@ -470,6 +526,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param cc ConceptClass
 	 * @return Returns all concepts in a given class
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getConceptsByClass(ConceptClass cc) throws APIException;
@@ -480,6 +538,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param name
 	 * @return ConceptClass matching the given name
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_CLASSES)
 	public ConceptClass getConceptClassByName(String name) throws APIException;
@@ -491,6 +551,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @throws APIException
 	 * @return List&lt;ConceptClass&gt; object with all ConceptClass objects
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_CLASSES)
 	public List<ConceptClass> getAllConceptClasses() throws APIException;
@@ -504,6 +566,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param includeRetired include retired concept classes in the search results?
 	 * @throws APIException
 	 * @return List&lt;ConceptClass&gt; object with all ConceptClass objects
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_CLASSES)
 	public List<ConceptClass> getAllConceptClasses(boolean includeRetired) throws APIException;
@@ -516,6 +580,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return concept class or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_CLASSES)
 	public ConceptClass getConceptClassByUuid(String uuid);
@@ -528,6 +594,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return concept answer or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public ConceptAnswer getConceptAnswerByUuid(String uuid);
@@ -540,6 +608,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return concept name or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public ConceptName getConceptNameByUuid(String uuid);
@@ -552,6 +622,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return concept set or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public ConceptSet getConceptSetByUuid(String uuid);
@@ -564,6 +636,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return concept source or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public ConceptSource getConceptSourceByUuid(String uuid);
@@ -575,6 +649,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param cc ConceptClass to create or update
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_CLASSES)
 	public ConceptClass saveConceptClass(ConceptClass cc) throws APIException;
@@ -586,6 +662,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param cc ConceptClass to delete
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPT_CLASSES)
 	public void purgeConceptClass(ConceptClass cc) throws APIException;
@@ -597,6 +675,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param cnt ConceptNameTag to delete
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_NAME_TAGS)
@@ -609,6 +689,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @throws APIException
 	 * @return List of ConceptDatatypes
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_DATATYPES)
 	public List<ConceptDatatype> getAllConceptDatatypes() throws APIException;
@@ -622,6 +704,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param includeRetired boolean - include the retired datatypes?
 	 * @throws APIException
 	 * @return List of ConceptDatatypes
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_DATATYPES)
 	public List<ConceptDatatype> getAllConceptDatatypes(boolean includeRetired) throws APIException;
@@ -632,6 +716,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param i Integer for the requested ConceptDatatype
 	 * @return ConceptDatatype matching the given identifier
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_DATATYPES)
 	public ConceptDatatype getConceptDatatype(Integer i) throws APIException;
@@ -644,6 +730,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return concept data type or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_DATATYPES)
 	public ConceptDatatype getConceptDatatypeByUuid(String uuid);
@@ -657,6 +745,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param name
 	 * @return ConceptDatatype matching the given name
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_DATATYPES)
 	public ConceptDatatype getConceptDatatypeByName(String name) throws APIException;
@@ -670,6 +760,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param concept The concept representing the concept set
 	 * @return A List&lt;ConceptSet&gt; object containing all matching ConceptSets
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<ConceptSet> getConceptSetsByConcept(Concept concept) throws APIException;
@@ -680,6 +772,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param concept The concept representing the concept set
 	 * @return A List&lt;Concept&gt; object containing all objects within the ConceptSet
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getConceptsByConceptSet(Concept concept) throws APIException;
@@ -694,6 +788,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param concept
 	 * @throws APIException
 	 * @return A List&lt;ConceptSet&gt; object with all parent concept sets
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<ConceptSet> getSetsContainingConcept(Concept concept) throws APIException;
@@ -707,6 +803,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param includeCompleted boolean - include completed proposals as well?
 	 * @return a List&lt;ConceptProposal&gt; object of all found ConceptProposals
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public List<ConceptProposal> getAllConceptProposals(boolean includeCompleted) throws APIException;
@@ -719,6 +817,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return concept numeric or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public ConceptNumeric getConceptNumericByUuid(String uuid);
@@ -729,6 +829,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptProposalId the Integer concept proposal Id
 	 * @return the found ConceptProposal
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public ConceptProposal getConceptProposal(Integer conceptProposalId) throws APIException;
@@ -739,6 +841,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param text
 	 * @return a List&lt;ConceptProposal&gt; object containing matching concept proposals
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public List<ConceptProposal> getConceptProposals(String text) throws APIException;
@@ -749,6 +853,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param text
 	 * @return a List&lt;Concept&gt; object containing matching proposed concepts
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public List<Concept> getProposedConcepts(String text) throws APIException;
@@ -759,6 +865,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptProposal The ConceptProposal to save
 	 * @throws APIException
 	 * @return the saved/updated ConceptProposal object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.ADD_CONCEPT_PROPOSALS, PrivilegeConstants.EDIT_CONCEPT_PROPOSALS })
 	public ConceptProposal saveConceptProposal(ConceptProposal conceptProposal) throws APIException;
@@ -770,6 +878,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param cp
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPT_PROPOSALS)
 	public void purgeConceptProposal(ConceptProposal cp) throws APIException;
@@ -785,6 +895,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param mappedConcept
 	 * @return the mappedConcept
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException;
@@ -804,6 +916,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param locale of concept proposal
 	 * @return the mappedConcept
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept, Locale locale) throws APIException;
@@ -818,6 +932,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @return A List&lt;Concept&gt; containing all possible questions to which this concept is a
 	 *         valued_Coded answer
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getConceptsByAnswer(Concept concept) throws APIException;
@@ -830,6 +946,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param concept the offset Concept
 	 * @return the foundConcept
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getPrevConcept(Concept concept) throws APIException;
@@ -842,6 +960,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param concept the offset Concept
 	 * @return the foundConcept
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getNextConcept(Concept concept) throws APIException;
@@ -850,6 +970,8 @@ public interface ConceptService extends OpenmrsService {
 	 * Check if the concepts are locked and if so, throw exception during manipulation of concept
 	 *
 	 * @throws ConceptsLockedException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public void checkIfLocked() throws ConceptsLockedException;
@@ -862,6 +984,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return concept proposal or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public ConceptProposal getConceptProposalByUuid(String uuid);
@@ -873,6 +997,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @return A List&lt;Concept&gt; object of all concepts that occur as a Drug.concept.
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getConceptsWithDrugsInFormulary() throws APIException;
@@ -885,6 +1011,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return the conceptNameTag with a matching uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see Concept#setPreferredName(ConceptName)
 	 * @see Concept#setFullySpecifiedName(ConceptName)
 	 * @see Concept#setShortName(ConceptName)
@@ -899,6 +1027,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptId of the ComplexConcept
 	 * @return a ConceptComplex object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -909,6 +1039,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param tag String name of ConceptNameTag
 	 * @return ConceptNameTag matching the given String tag
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see Concept#getPreferredName(Locale)
 	 * @see Concept#getFullySpecifiedName(Locale)
 	 * @see Concept#getShortNameInLocale(Locale)
@@ -923,6 +1055,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return a list of matching locales
 	 *
 	 * @return set of used Locales
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Set<Locale> getLocalesOfConceptNames();
@@ -936,6 +1070,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param includeRetired whether or not to include retired sources
 	 * @return List of Concept source objects
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public List<ConceptSource> getAllConceptSources(boolean includeRetired) throws APIException;
@@ -945,6 +1081,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param i Integer conceptSourceId
 	 * @return ConceptSource
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public ConceptSource getConceptSource(Integer i) throws APIException;
@@ -959,6 +1097,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptSource ConceptSource to create
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_SOURCES)
 	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws APIException;
@@ -970,6 +1110,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param cs ConceptSource object delete
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPT_SOURCES)
 	public ConceptSource purgeConceptSource(ConceptSource cs) throws APIException;
@@ -984,6 +1126,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param reason why the concept source is to be retired, must not be empty of null
 	 * @return the retired concept source
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPT_SOURCES)
 	public ConceptSource retireConceptSource(ConceptSource cs, String reason) throws APIException;
@@ -1000,6 +1144,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param nameTag the concept name tag to be saved
 	 * @return the newly created or existing concept name tag
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_NAME_TAGS)
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
@@ -1010,6 +1156,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> give the maximum concept-id
 	 *
 	 * @return highest concept-id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Integer getMaxConceptId();
@@ -1021,6 +1169,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> iterate over all concepts
 	 *
 	 * @return the Iterator
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Iterator<Concept> conceptIterator();
@@ -1041,6 +1191,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
 	 * @return the {@link Concept} that has the given mapping, or null if no {@link Concept} found
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getConceptByMapping(String code, String sourceName) throws APIException;
@@ -1068,6 +1220,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param includeRetired whether or not to include retired concepts
 	 * @return the {@link Concept} that has the given mapping, or null if no {@link Concept} found
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getConceptByMapping(String code, String sourceName, Boolean includeRetired) throws APIException;
@@ -1089,6 +1243,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the list of non-voided {@link Concept}s that has the given mapping, or null if no
 	 *         {@link Concept} found
 	 * @throws APIException if the specified source+code maps to more than one concept
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1112,6 +1268,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the list of non-voided {@link Concept}s that has the given mapping, or null if no
 	 *         {@link Concept} found
 	 * @throws APIException if the specified source+code maps to more than one concept
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1134,6 +1292,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return empty list if source code does not exist
 	 * @should return empty list if mapping does not exist
 	 * @should include retired concepts
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.3
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1146,6 +1306,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @since 1.5
 	 * @return a list of the concept name tags stored in the dataset
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<ConceptNameTag> getAllConceptNameTags();
@@ -1155,6 +1317,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param id the concept name tag id to find
 	 * @return the matching {@link ConceptNameTag} or null if none found
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1168,6 +1332,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return concept description or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_CONCEPTS })
 	public ConceptDescription getConceptDescriptionByUuid(String uuid);
@@ -1181,6 +1347,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptSourceName
 	 * @return ConceptSource
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException;
@@ -1196,6 +1364,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uniqueId the unique id
 	 * @return the concept source matching given unique id
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public ConceptSource getConceptSourceByUniqueId(String uniqueId) throws APIException;
@@ -1211,6 +1381,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param hl7Code the hl7Code
 	 * @return the concept source matching given hl7Code
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public ConceptSource getConceptSourceByHL7Code(String hl7Code) throws APIException;
@@ -1221,6 +1393,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param concept which used or not used by an observation
 	 * @return boolean true if the concept is used by an observation
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public boolean hasAnyObservation(Concept concept);
@@ -1231,6 +1405,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return the true concept
 	 *
 	 * @return true concept
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getTrueConcept();
@@ -1241,6 +1417,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return the false concept
 	 *
 	 * @return false concept
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getFalseConcept();
@@ -1251,6 +1429,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return the unknown concept
 	 *
 	 * @return unknown concept
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getUnknownConcept();
@@ -1266,6 +1446,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptToChange the concept which to change
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_CONCEPTS })
 	public void convertBooleanConceptToCoded(Concept conceptToChange) throws APIException;
@@ -1276,6 +1458,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptName which is used or not used by an observation
 	 * @return boolean true if the conceptName is used by an observation otherwise false
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since Version 1.7
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1305,6 +1489,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param size if non zero, all results after <code>start</code> + <code>size</code> will be removed
 	 * @return a list of conceptSearchResults
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1323,6 +1509,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param concept the answers to match on
 	 * @return a list of conceptSearchResults
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1335,6 +1523,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param concept the concept whose index is to be updated
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_CONCEPTS })
@@ -1344,6 +1534,8 @@ public interface ConceptService extends OpenmrsService {
 	 * Iterates over all concepts and calls updateConceptIndexes(Concept concept)
 	 *
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_CONCEPTS })
@@ -1359,6 +1551,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param includeRetired Specifies whether to include retired concepts
 	 * @return a list ConceptSearchResults
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1379,6 +1573,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param answersToConcept all results will be a possible answer to this concept
 	 * @return the number of concepts matching the given search phrase
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1400,6 +1596,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param includeRetired specifies whether to include retired drugs
 	 * @return the number of matching drugs
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1424,6 +1622,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param length number of drugs to return in the batch
 	 * @return a list of matching drugs
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1439,6 +1639,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param locale The locale in which to search for the <code>ConceptStopWord</code>
 	 * @return list of concept stop words for given locale
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1461,6 +1663,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptStopWord The <code>ConceptStopWord</code> to save or update
 	 * @return the <code>ConceptStopWord</code> that was saved or updated
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_STOP_WORDS)
@@ -1473,6 +1677,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptStopWordId The <code>ConceptStopWord</code> to delete
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_STOP_WORDS)
@@ -1485,6 +1691,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return empty list if nothing found
 	 *
 	 * @return List of <code>ConceptStopWord</code>
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1499,6 +1707,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> raise exception if no concept is given
 	 *
 	 * @return the list of drugs
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1510,6 +1720,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return all the concept map types excluding hidden ones
 	 *
 	 * @return List of concept map type objects
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1528,6 +1740,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param includeRetired specifies if retired concept map types should be included
 	 * @return List of concept map type objects
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1539,6 +1753,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptMapTypeId Integer concept map type id
 	 * @return ConceptMapType
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1552,6 +1768,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid the uuid to search against
 	 * @return ConceptMapType
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1566,6 +1784,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param name the name to search against
 	 * @return ConceptMapType
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1581,6 +1801,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptMapType the concept map type to save
 	 * @return the saved conceptMapType
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1596,6 +1818,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptMapType the concept map type to retire
 	 * @param retireReason the reason why the concept map type is being retired
 	 * @return the retired concept map type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1610,6 +1834,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptMapType the concept map type to unretire
 	 * @return the unretired concept map type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1622,6 +1848,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> delete the specified conceptMapType from the database
 	 *
 	 * @param conceptMapType the concept map type to purge from the database
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1635,6 +1863,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptSource
 	 * @return a List&lt;ConceptMap&gt; object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1647,6 +1877,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return all concept reference terms in the database
 	 *
 	 * @return a list of concept reference terms
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1663,6 +1895,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param includeRetired specifies if retired concept reference terms should be included
 	 * @return a list of concept reference terms
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1674,6 +1908,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptReferenceTermId the concept reference term id to search against
 	 * @return the concept reference term object with the given concept reference term id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1687,6 +1923,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid the uuid to search against
 	 * @return the concept reference term object with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1705,6 +1943,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param name the name to match against
 	 * @param conceptSource the concept source to match against
 	 * @return concept reference term object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1720,6 +1960,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param code the code to match against
 	 * @param conceptSource the concept source to match against
 	 * @return concept reference term object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1736,6 +1978,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptSource the concept source to match against
 	 * @param includeRetired specifies if retired concept reference terms should be included
 	 * @return concept reference term object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7
 	 * @throws APIException
 	 */
@@ -1751,6 +1995,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptReferenceTerm the concept reference term object to save
 	 * @return the saved concept reference term object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1767,6 +2013,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptReferenceTerm the concept reference term object to retire
 	 * @param retireReason the reason why the concept reference term is being retired
 	 * @return the retired concept reference term object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1782,6 +2030,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptReferenceTerm the concept reference term to unretire
 	 * @return the unretired concept reference term
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1795,6 +2045,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> fail if given concept reference term is in use
 	 *
 	 * @param conceptReferenceTerm the concept reference term object to purge
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1814,6 +2066,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param length number of terms to return in the batch
 	 * @param includeRetired specifies if the retired terms should be included
 	 * @return a list if {@link ConceptReferenceTerm}s
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1831,6 +2085,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptSource the concept source from which the terms should be looked up
 	 * @param includeRetired specifies if retired concept reference terms should be included
 	 * @return the count of matching concept reference terms
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1847,6 +2103,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param term the term to match against
 	 * @return a list of {@link ConceptReferenceTermMap}s
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 * @throws APIException
 	 */
@@ -1870,6 +2128,8 @@ public interface ConceptService extends OpenmrsService {
 	 *            <code>true</code> if <code>null</code>
 	 * @return the list of concepts
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9, 1.8.4 locale
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1885,6 +2145,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.9
 	 * @return the {@link ConceptMapType}
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_MAP_TYPES)
 	public ConceptMapType getDefaultConceptMapType() throws APIException;
@@ -1904,6 +2166,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param name
 	 * @return true if it is a duplicate name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.11
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1934,6 +2198,8 @@ public interface ConceptService extends OpenmrsService {
 	 *            case en_GB is passed in then en will be matched
 	 * @param includeRetired Specifies if retired drugs that match should be included or not
 	 * @return A list of matching drugs
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1962,6 +2228,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.10
 	 * @return the list of {@link Drug}
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
@@ -1986,6 +2254,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.10
 	 * @return the {@link Drug}
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
@@ -2004,6 +2274,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param start start index of search results
 	 * @param length number of concept results to be returned
 	 * @return List of ConceptSearchResults
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -2015,6 +2287,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return all concept attribute types including retired ones
 	 *
 	 * @return all {@link ConceptAttributeType}s
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.0
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES)
@@ -2028,6 +2302,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptAttributeType
 	 * @return the ConceptAttributeType created/saved
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.0
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_ATTRIBUTE_TYPES)
@@ -2040,6 +2316,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param id
 	 * @return the {@link ConceptAttributeType} with the given internal id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.0
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES)
@@ -2052,6 +2330,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return the {@link ConceptAttributeType} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.0
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES)
@@ -2063,6 +2343,8 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> completely remove a concept attribute type
 	 *
 	 * @param conceptAttributeType
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.0
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPT_ATTRIBUTE_TYPES)
@@ -2077,6 +2359,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param name (optional) The name of type
 	 * @return list of ConceptAttributeTypes that matches <em>name</em> partially or completely
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.0
 	 * @throws APIException
 	 */
@@ -2092,6 +2376,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param exactName
 	 * @return the {@link ConceptAttributeType} with the specified name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.0
 	 */
 	@Authorized({ PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES })
@@ -2105,6 +2391,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptAttributeType the concept attribute type to be retired
 	 * @param reason for retiring the concept attribute type
 	 * @return the retired concept attribute type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.0
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_ATTRIBUTE_TYPES)
@@ -2117,6 +2405,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptAttributeType the concept type attribute to unretire
 	 * @return the unretire concept attribute type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.0
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_ATTRIBUTE_TYPES)
@@ -2129,6 +2419,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return the {@link ConceptAttribute} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.0
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -2139,6 +2431,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 2.0 Checks if there are any concept attributes (including voided attributes) for a concept
 	 *        attribute type.
 	 * @return boolean true if the concept attribute type is used by a concept
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	boolean hasAnyConceptAttribute(ConceptAttributeType conceptAttributeType);
@@ -2151,6 +2445,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptReferenceRange ConceptReferenceRange to save
 	 * @return the created ConceptReferenceRange
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
@@ -2165,6 +2461,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param conceptId conceptId
 	 * @return list of {@link ConceptReferenceRange}
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -2178,6 +2476,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param uuid uuid
 	 * @return {@link ConceptReferenceRange}
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -2189,6 +2489,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param person The person
 	 * @param concept The concept
 	 * @return the matching ConceptReferenceRange object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -2200,6 +2502,8 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param context the context containing person, concept, and optional date
 	 * @return the matching ConceptReferenceRange, or null if none found
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 3.0.0, 2.9.0, 2.8.5, 2.7.9
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -2209,6 +2513,8 @@ public interface ConceptService extends OpenmrsService {
 	 * Completely purge a <code>ConceptReferenceRange</code> from the database.
 	 *
 	 * @param conceptReferenceRange The <code>ConceptReferenceRange</code> to remove from the system
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0
 	 */
 	@Authorized(PrivilegeConstants.PURGE_CONCEPTS)
