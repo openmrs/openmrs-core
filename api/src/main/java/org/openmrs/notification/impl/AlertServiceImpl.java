@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
@@ -29,6 +28,7 @@ import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -172,7 +172,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		boolean targetsAnotherUser = user != null && user.getUserId() != null
 		        && (authenticatedUser == null || !user.getUserId().equals(authenticatedUser.getUserId()));
 		if (targetsAnotherUser && !canViewAllAlerts()) {
-			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.GET_ALERTS);
+			throw new AccessDeniedException("Privilege required: " + PrivilegeConstants.GET_ALERTS);
 		}
 
 		return dao.getAlerts(user, includeRead, includeExpired);

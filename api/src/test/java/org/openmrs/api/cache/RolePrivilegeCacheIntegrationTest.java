@@ -32,7 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Integration tests verifying that {@link RolePrivilegeCache} populates the shared
- * {@code apiCacheManager} cache and that it is evicted on role and privilege mutations.
+ * {@code apiCacheManager} cache, that it resolves a role from a freshly loaded copy rather than a
+ * caller-supplied stale one, and that it is evicted on {@link Role} and {@link Privilege}
+ * mutations.
  */
 public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest {
 
@@ -240,4 +242,5 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 		assertFalse(rolePrivilegeCache.getRolePrivileges(new Role("Primed Role")).containsPrivilege("Primed Privilege"),
 		    "the transaction should resolve roles without the cache after a change");
 	}
+
 }

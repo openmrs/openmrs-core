@@ -40,6 +40,7 @@ import org.openmrs.api.impl.ProgramWorkflowServiceImpl;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -480,8 +481,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		// log out so the context no longer holds the Get Patient Programs privilege
 		Context.logout();
 
-		assertThrows(APIAuthenticationException.class,
-		    () -> Context.getProgramWorkflowService().getPatientProgramByUuid(uuid));
+		assertThrows(AccessDeniedException.class, () -> Context.getProgramWorkflowService().getPatientProgramByUuid(uuid));
 	}
 
 	/**
@@ -513,8 +513,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		// log out so the context no longer holds the Get Patient Programs privilege
 		Context.logout();
 
-		assertThrows(APIAuthenticationException.class,
-		    () -> Context.getProgramWorkflowService().getPatientStateByUuid(uuid));
+		assertThrows(AccessDeniedException.class, () -> Context.getProgramWorkflowService().getPatientStateByUuid(uuid));
 	}
 
 	/**
@@ -810,7 +809,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		// log out so the context no longer holds the Get Patient Programs privilege
 		Context.logout();
 
-		assertThrows(APIAuthenticationException.class,
+		assertThrows(AccessDeniedException.class,
 		    () -> Context.getProgramWorkflowService().getPatientProgramAttributeByAttributeName(patients, attributeName));
 	}
 
