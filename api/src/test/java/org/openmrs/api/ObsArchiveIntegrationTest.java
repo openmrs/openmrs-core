@@ -19,6 +19,8 @@ import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
@@ -1772,5 +1774,84 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		    "Archived obs location should be synced to 2");
 		assertEquals(newDate.getTime() / 1000, archivedObs.getObsDatetime().getTime() / 1000,
 		    "Archived obs datetime should be synced");
+	}
+
+	@Test
+	public void hasAnyObservation_shouldReturnTrueAndPreventDatatypeChangeWhenConceptHasOnlyArchivedObs() throws Exception {
+		ConceptService conceptService = Context.getConceptService();
+		// Concept 28 in standard dataset is Text datatype and has no observations initially
+		Concept concept = conceptService.getConcept(28);
+		assertNotNull(concept);
+		assertEquals("Text", concept.getDatatype().getName());
+
+		// 1. Create an obs for concept 28
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(7));
+		obs.setConcept(concept);
+		obs.setValueText("probe value");
+		obs.setObsDatetime(new Date());
+		obs.setLocation(Context.getLocationService().getLocation(1));
+		obs = obsService.saveObs(obs, null);
+		Integer obsId = obs.getObsId();
+		createdObsIds.add(obsId);
+
+		// 2. Void the obs and archive it
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(obsId);
+
+		// 3. Verify hasAnyObservation returns true even though obs table is empty for this concept
+		Context.clearSession();
+		concept = conceptService.getConcept(28);
+		assertTrue(conceptService.hasAnyObservation(concept));
+
+		// 4. Attempt to change datatype (e.g., from Text to Coded) and save concept — should be refused
+		concept.setDatatype(conceptService.getConceptDatatypeByName("Coded"));
+		final Concept conceptToSave = concept;
+		assertThrows(ConceptInUseException.class, () -> conceptService.saveConcept(conceptToSave));
+	}
+
+	@Test
+	public void hasAnyObservation_shouldReturnTrueAndPreventPurgeWhenConceptNameHasOnlyArchivedObs() throws Exception {
+		ConceptService conceptService = Context.getConceptService();
+		Concept concept = conceptService.getConceptByName("cd4 count");
+		assertNotNull(concept);
+		ConceptName conceptName = concept.getName();
+		assertNotNull(conceptName);
+
+		// 1. Create a voided obs using this conceptName as valueCodedName
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(7));
+		obs.setConcept(Context.getConceptService().getConcept(4));
+		obs.setValueCoded(concept);
+		obs.setValueCodedName(conceptName);
+		obs.setObsDatetime(new Date());
+		obs.setLocation(Context.getLocationService().getLocation(1));
+		obs = obsService.saveObs(obs, null);
+		Integer obsId = obs.getObsId();
+		createdObsIds.add(obsId);
+
+		// 2. Void the obs and archive it
+		obsService.voidObs(obs, "test voiding");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(obsId);
+
+		// 3. Verify hasAnyObservation returns true for the conceptName
+		Context.clearSession();
+		assertTrue(conceptService.hasAnyObservation(conceptName));
+
+		// 4. Attempt to purge the concept — should throw ConceptNameInUseException, not DB foreign key error
+		final Concept conceptToPurge = conceptService.getConceptByName("cd4 count");
+		assertThrows(ConceptNameInUseException.class, () -> conceptService.purgeConcept(conceptToPurge));
 	}
 }

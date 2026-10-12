@@ -21,6 +21,8 @@ import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -248,6 +250,30 @@ public class ObsArchiveHelper {
 			log.debug("Failed to get archived obs for person {} and concept {}.", personId, conceptId, e);
 			return Collections.emptyList();
 		}
+	}
+
+	public boolean hasArchivedObs(Concept concept) {
+		if (concept == null || concept.getConceptId() == null) {
+			return false;
+		}
+		return withManualFlush(() -> {
+			Session session = sessionFactory.getCurrentSession();
+			Object result = session.createQuery("SELECT 1 FROM ObsArchive a WHERE a.concept = :concept")
+			        .setParameter("concept", concept).setMaxResults(1).uniqueResult();
+			return result != null;
+		});
+	}
+
+	public boolean hasArchivedObs(ConceptName conceptName) {
+		if (conceptName == null || conceptName.getConceptNameId() == null) {
+			return false;
+		}
+		return withManualFlush(() -> {
+			Session session = sessionFactory.getCurrentSession();
+			Object result = session.createQuery("SELECT 1 FROM ObsArchive a WHERE a.valueCodedName = :name")
+			        .setParameter("name", conceptName).setMaxResults(1).uniqueResult();
+			return result != null;
+		});
 	}
 
 	public Obs getObsFromArchive(Integer obsId) {
