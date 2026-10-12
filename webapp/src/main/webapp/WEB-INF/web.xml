@@ -84,6 +84,18 @@
 		<url-pattern>/*</url-pattern> 
 	</filter-mapping>
 	
+	<!-- Collapses repeated slashes in the request URI before anything below reads the path, and so
+	     before springSecurityFilterChain - see org.openmrs.web.filter.RepeatedSlashFilter's javadoc
+	     for why. -->
+	<filter>
+		<filter-name>RepeatedSlashFilter</filter-name>
+		<filter-class>org.openmrs.web.filter.RepeatedSlashFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>RepeatedSlashFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
 	<!-- Should be the first real INTERCEPTING filter so that if any database 
 	     updates are needed, they can be run by an admin -->
 	<filter>
