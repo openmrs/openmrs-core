@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.cache.GlobalPropertyCache;
@@ -35,6 +34,7 @@ import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
+import org.springframework.security.access.AccessDeniedException;
 
 /**
  * This class allows certain tasks to run with elevated privileges. Primary use is scheduling and
@@ -211,7 +211,7 @@ public final class Daemon {
 	public static <T> Future<T> runInNewDaemonThread(final Callable<T> callable) {
 		// make sure we're already in a daemon thread
 		if (!isDaemonThread()) {
-			throw new APIAuthenticationException("Only daemon threads can spawn new daemon threads");
+			throw new AccessDeniedException("Only daemon threads can spawn new daemon threads");
 		}
 
 		return runInDaemonThreadInternal(callable);
@@ -230,7 +230,7 @@ public final class Daemon {
 	public static Future<?> runNewDaemonTask(final Runnable runnable) {
 		// make sure we're already in a daemon thread
 		if (!isDaemonThread()) {
-			throw new APIAuthenticationException("Only daemon threads can spawn new daemon threads");
+			throw new AccessDeniedException("Only daemon threads can spawn new daemon threads");
 		}
 
 		return runInDaemonThreadInternal(runnable);

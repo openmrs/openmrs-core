@@ -14,11 +14,50 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.db.DAOException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ExceptionUtilTest {
+
+	/**
+	 * @see ExceptionUtil#rethrowAPIAuthenticationException(Throwable)
+	 */
+	@Test
+	public void rethrowAPIAuthenticationException_shouldRethrowALegacyAuthorizationFailure() {
+		APIAuthenticationException denial = new APIAuthenticationException("Privileges required: Get Users");
+		Exception wrapped = new DAOException("Unable to deserialize object", denial);
+
+		APIAuthenticationException rethrown = assertThrows(APIAuthenticationException.class,
+		    () -> ExceptionUtil.rethrowAPIAuthenticationException(wrapped));
+
+		assertSame(denial, rethrown);
+	}
+
+	/**
+	 * A method converted from {@code @Authorized} to {@code @PreAuthorize} denies with Spring
+	 * Security's exception instead, which shares no supertype with {@link APIAuthenticationException} -
+	 * so a caller relying on this would otherwise bury the denial in its own exception (see
+	 * {@code HibernateSerializedObjectDAO.convertSerializedObject}).
+	 *
+	 * @see ExceptionUtil#rethrowAPIAuthenticationException(Throwable)
+	 */
+	@Test
+	public void rethrowAPIAuthenticationException_shouldRethrowASpringSecurityAuthorizationFailure() {
+		AuthorizationDeniedException denial = new AuthorizationDeniedException("Privileges required: Get Users");
+		Exception wrapped = new DAOException("Unable to deserialize object", denial);
+
+		AccessDeniedException rethrown = assertThrows(AccessDeniedException.class,
+		    () -> ExceptionUtil.rethrowAPIAuthenticationException(wrapped));
+
+		assertSame(denial, rethrown);
+	}
 
 	/**
 	 * @see ExceptionUtil#rethrowIfCause(Throwable,Class)
