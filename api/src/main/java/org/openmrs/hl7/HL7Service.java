@@ -45,6 +45,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @param hl7Source the source to save
 	 * @return the saved source
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PRIV_UPDATE_HL7_SOURCE)
 	public HL7Source saveHL7Source(HL7Source hl7Source) throws APIException;
@@ -54,6 +56,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @param hl7SourceId
 	 * @return <code>HL7Source</code>object for given identifier
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_SOURCE)
 	public HL7Source getHL7Source(Integer hl7SourceId) throws APIException;
@@ -63,6 +67,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @param name string to 'search' on
 	 * @return hl7 source object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_SOURCE)
 	public HL7Source getHL7SourceByName(String name) throws APIException;
@@ -71,6 +77,8 @@ public interface HL7Service extends OpenmrsService {
 	 * Get all of the hl7 source objects from the database. This includes retired ones
 	 *
 	 * @return list of hl7 source objects
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_SOURCE)
 	public List<HL7Source> getAllHL7Sources() throws APIException;
@@ -80,6 +88,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @param hl7Source the source to retire
 	 * @return the retired source
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PRIV_UPDATE_HL7_SOURCE)
 	public HL7Source retireHL7Source(HL7Source hl7Source) throws APIException;
@@ -89,6 +99,8 @@ public interface HL7Service extends OpenmrsService {
 	 * {@link #retireHL7Source(HL7Source)}
 	 *
 	 * @param hl7Source
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PRIV_PURGE_HL7_SOURCE)
 	public void purgeHL7Source(HL7Source hl7Source) throws APIException;
@@ -100,6 +112,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @param hl7InQueue the queue item to save
 	 * @return the saved queue item
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(value = { PrivilegeConstants.PRIV_UPDATE_HL7_IN_QUEUE,
 	        PrivilegeConstants.PRIV_ADD_HL7_IN_QUEUE }, requireAll = false)
@@ -111,6 +125,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param hl7InQueueId the id to search on
 	 * @return the desired hl7InQueue object or null if none found
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_QUEUE)
 	public HL7InQueue getHL7InQueue(Integer hl7InQueueId) throws APIException;
@@ -121,6 +137,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param uuid
 	 * @return the HL7InQueue or <code>null</code>
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_QUEUE)
@@ -131,6 +149,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @return all hl7 queue items
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_QUEUE)
 	public List<HL7InQueue> getAllHL7InQueues() throws APIException;
@@ -144,6 +164,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param query search string
 	 * @return all matching hl7 queue items within batch window
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.7
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_QUEUE)
@@ -156,6 +178,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param query search string
 	 * @return the count of matching HL7InQueue items
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.7
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_QUEUE)
@@ -169,6 +193,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param query search string
 	 * @return all matching hl7 queue items within batch window
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.7
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_QUEUE)
@@ -180,6 +206,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param query search string
 	 * @return the count of matching HL7InError items
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.7
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_QUEUE)
@@ -194,6 +222,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param query search string
 	 * @return all matching hl7 archive items within batch window
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.7
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_ARCHIVE)
@@ -207,6 +237,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param query search string
 	 * @return the count of matching HL7InArchive items
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.7
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_ARCHIVE)
@@ -216,6 +248,8 @@ public interface HL7Service extends OpenmrsService {
 	 * Get the first queue item in the database
 	 *
 	 * @return the first queue item
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_QUEUE)
 	public HL7InQueue getNextHL7InQueue() throws APIException;
@@ -224,6 +258,8 @@ public interface HL7Service extends OpenmrsService {
 	 * Completely delete the hl7 in queue item from the database.
 	 *
 	 * @param hl7InQueue
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PRIV_PURGE_HL7_IN_QUEUE)
 	public void purgeHL7InQueue(HL7InQueue hl7InQueue);
@@ -234,6 +270,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param hl7InArchive the archive to save
 	 * @return the saved archive item
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(value = { PrivilegeConstants.PRIV_UPDATE_HL7_IN_ARCHIVE,
 	        PrivilegeConstants.PRIV_ADD_HL7_IN_ARCHIVE }, requireAll = false)
@@ -245,6 +283,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @param hl7InArchiveId the id to search on
 	 * @return the matching archive item
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_ARCHIVE)
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId);
@@ -255,6 +295,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param uuid to search on
 	 * @return the archive with the matching uuid if any found
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since Version 1.7
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_ARCHIVE)
@@ -269,6 +311,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @return list of archive items that match the state
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_ARCHIVE)
@@ -279,6 +323,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @return list of hl7 queue items that match the given state
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.7
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_QUEUE)
@@ -288,6 +334,8 @@ public interface HL7Service extends OpenmrsService {
 	 * Get all archive hl7 queue items from the database
 	 *
 	 * @return list of archive items
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_ARCHIVE)
 	public List<HL7InArchive> getAllHL7InArchives() throws APIException;
@@ -297,6 +345,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @param hl7InArchive the archived item to delete
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PRIV_PURGE_HL7_IN_ARCHIVE)
 	public void purgeHL7InArchive(HL7InArchive hl7InArchive) throws APIException;
@@ -307,6 +357,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param hl7InError the item to save
 	 * @return the saved item
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(value = { PrivilegeConstants.PRIV_UPDATE_HL7_IN_EXCEPTION,
 	        PrivilegeConstants.PRIV_ADD_HL7_IN_EXCEPTION }, requireAll = false)
@@ -317,6 +369,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @param hl7InErrorId the id to search on
 	 * @return the matching error item
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_EXCEPTION)
 	public HL7InError getHL7InError(Integer hl7InErrorId) throws APIException;
@@ -327,6 +381,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @param uuid
 	 * @return the HL7InError or <code>null</code>
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_EXCEPTION)
@@ -337,6 +393,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @return a List&lt;HL7InError&gt; object with all <code>HL7InError</code> items from the database
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.GET_HL7_IN_EXCEPTION)
 	public List<HL7InError> getAllHL7InErrors() throws APIException;
@@ -346,6 +404,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @param hl7InError the item to remove
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(PrivilegeConstants.PRIV_PURGE_HL7_IN_EXCEPTION)
 	public void purgeHL7InError(HL7InError hl7InError) throws APIException;
@@ -459,6 +519,8 @@ public interface HL7Service extends OpenmrsService {
 	 *
 	 * @param progressStatusMap the map holding the number of archives transferred and failed transfers
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized(requireAll = true, value = { PrivilegeConstants.GET_HL7_IN_ARCHIVE,
 	        PrivilegeConstants.PRIV_PURGE_HL7_IN_ARCHIVE, PrivilegeConstants.PRIV_ADD_HL7_IN_QUEUE })
