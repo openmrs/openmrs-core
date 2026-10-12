@@ -10,23 +10,31 @@
 package org.openmrs.web.security;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.MappingMatch;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.openmrs.web.filter.RepeatedSlashFilter;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.mock.web.MockHttpServletMapping;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -180,6 +188,33 @@ class WebSecurityConfigIntegrationTest {
 		mockMvc().perform(get(URI.create(requestUri))).andExpect(status().isBadRequest());
 	}
 
+	/**
+	 * {@code web.xml} runs {@link RepeatedSlashFilter} ahead of this chain, so a repeated slash arrives
+	 * collapsed into the path the container dispatched on, which is the path a rule matches. Sent to
+	 * the chain directly, each of these fails before any rule is consulted: the firewall rejects the
+	 * {@code //} (see filterChain_shouldRejectAUrlShapeThatCouldWalkAroundAUrlRule), or, at or before
+	 * the {@code /ws} servlet path, Spring's {@code ServletRequestPathFilter} throws first.
+	 */
+	@ParameterizedTest
+	@CsvSource({ "/openmrs//admin/x, '', /admin/x", "/openmrs///admin/x, '', /admin/x",
+	        "/openmrs//ws/admin/x, /ws, /admin/x", "/openmrs/ws//admin/x, /ws, /admin/x" })
+	void filterChain_shouldChallengeAGuardedUrlReachedThroughARepeatedSlash(String requestUri, String servletPath,
+	        String pathInfo) throws Exception {
+		mockMvcBehind(new RepeatedSlashFilter()).perform(asTomcatPresents(requestUri, servletPath, pathInfo))
+		        .andExpect(status().isUnauthorized());
+	}
+
+	/**
+	 * The second shape is the one the O3 patient chart's visit history sends, which answered 500.
+	 */
+	@ParameterizedTest
+	@CsvSource({ "/openmrs//public/x, '', /public/x", "/openmrs//ws/public/x, /ws, /public/x" })
+	void filterChain_shouldServeAPublicUrlReachedThroughARepeatedSlash(String requestUri, String servletPath,
+	        String pathInfo) throws Exception {
+		mockMvcBehind(new RepeatedSlashFilter()).perform(asTomcatPresents(requestUri, servletPath, pathInfo))
+		        .andExpect(status().isOk());
+	}
+
 	@Test
 	void filterChain_shouldNotSaveARequestChallengedByTheAuthorizationFilterIntoTheSession() throws Exception {
 		// ExceptionTranslationFilter saves the request before handing it to the entry point, and its
@@ -259,16 +294,45 @@ class WebSecurityConfigIntegrationTest {
 	}
 
 	private MockMvc mockMvc(Filter... between) {
+		return mockMvcBehind(null, between);
+	}
+
+	/**
+	 * @param ahead a filter {@code web.xml} runs before {@code springSecurityFilterChain}, or null
+	 */
+	private MockMvc mockMvcBehind(Filter ahead, Filter... between) {
 		springContext = new AnnotationConfigApplicationContext(WebSecurityConfig.class, TestUrlRulesConfig.class);
 		Filter springSecurityFilterChain = springContext.getBean("springSecurityFilterChain", Filter.class);
 		Filter openmrsAuthorizationFilter = springContext.getBean("openmrsAuthorizationFilter", Filter.class);
 
-		Filter[] chain = new Filter[2 + between.length];
-		chain[0] = springSecurityFilterChain;
-		System.arraycopy(between, 0, chain, 1, between.length);
-		chain[chain.length - 1] = openmrsAuthorizationFilter;
+		List<Filter> chain = new ArrayList<>();
+		if (ahead != null) {
+			chain.add(ahead);
+		}
+		chain.add(springSecurityFilterChain);
+		chain.addAll(Arrays.asList(between));
+		chain.add(openmrsAuthorizationFilter);
 
-		return MockMvcBuilders.standaloneSetup(new TestController()).addFilters(chain).build();
+		return MockMvcBuilders.standaloneSetup(new TestController()).addFilters(chain.toArray(new Filter[0])).build();
+	}
+
+	/**
+	 * @return a request for {@code requestUri} as Tomcat presents it under the {@code /openmrs}
+	 *         context: the servlet path and path info come from the normalized path it dispatched on,
+	 *         while the request URI stays as sent. A {@code /ws} servlet path is the {@code openmrs}
+	 *         {@code DispatcherServlet}'s {@code /ws/*} mapping
+	 */
+	private static MockHttpServletRequestBuilder asTomcatPresents(String requestUri, String servletPath, String pathInfo) {
+		MockHttpServletRequestBuilder request = get(URI.create(requestUri)).contextPath("/openmrs").servletPath(servletPath)
+		        .pathInfo(pathInfo);
+		if (servletPath.isEmpty()) {
+			return request;
+		}
+		return request.with(mock -> {
+			mock.setHttpServletMapping(
+			    new MockHttpServletMapping(pathInfo.substring(1), servletPath + "/*", "openmrs", MappingMatch.PATH));
+			return mock;
+		});
 	}
 
 	static class TestUrlRulesConfig {
