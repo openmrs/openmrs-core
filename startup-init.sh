@@ -185,6 +185,10 @@ if [[ -n "${EXTRA_VARS+x}" ]]; then
 	do
 	  :
 	  var=${i#OMRS_EXTRA_}
+	  if [[ -z "$var" ]]; then
+	    echo "Warning: $i does not name a property. Ignoring it."
+	    continue
+	  fi
 	  if [[ "$var" != *[[:lower:]]* ]]; then
 	    # tr with ASCII ranges, as ${var,,} follows the locale (e.g. I becomes ı under tr_TR)
 	    var=$(tr 'A-Z' 'a-z' <<< "$var")
@@ -199,7 +203,9 @@ if [[ -n "${EXTRA_VARS+x}" ]]; then
 	  EXTRA_PROPERTIES+=("${var}=$(escape_property "${!i}")")
 	done
 	
-	printf '%s\n' "${EXTRA_PROPERTIES[@]}" >> "openmrs-extra.properties"
+	if [[ ${#EXTRA_PROPERTIES[@]} -gt 0 ]]; then
+	  printf '%s\n' "${EXTRA_PROPERTIES[@]}" >> "openmrs-extra.properties"
+	fi
 fi
 
 if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
