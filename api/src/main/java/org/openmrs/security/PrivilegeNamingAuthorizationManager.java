@@ -16,9 +16,11 @@ import java.util.function.Supplier;
 import org.aopalliance.intercept.MethodInvocation;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.authorization.AuthorizationResult;
+import org.springframework.security.authorization.ExpressionAuthorizationDecision;
 import org.springframework.security.authorization.method.MethodAuthorizationDeniedHandler;
 import org.springframework.security.authorization.method.MethodInvocationResult;
 import org.springframework.security.authorization.method.ThrowingMethodAuthorizationDeniedHandler;
@@ -47,8 +49,16 @@ import org.springframework.security.core.Authentication;
  * Naming happens here, outside the expression, because SpEL composes {@code hasPermission(...)}
  * with {@code or}/{@code and}/{@code !}: throwing from inside would decide the outcome before the
  * rest of the expression was evaluated (see {@link OpenmrsPermissionEvaluator}). A denial that
- * recorded neither a missing privilege nor a denying {@code isAuthenticated()} is left to Spring
- * Security, since expressions can deny for reasons that name none.
+ * recorded neither a missing privilege nor a denying {@code isAuthenticated()} keeps Spring
+ * Security's generic message, since expressions can deny for reasons that name none, with the
+ * denying expression appended so it still says which guard refused.
+ * <p>
+ * Every denial carries a plain {@link AuthorizationDecision} rather than the delegate's result. The
+ * delegate's is an {@link ExpressionAuthorizationDecision} holding the live SpEL expression, and
+ * anything serializing the exception - a controller with no handler of its own renders it as the
+ * response body, through {@code WebConfig}'s {@code SimpleMappingExceptionResolver} - walks from
+ * there into the expression's evaluation context and fails on Jackson. Passing the expression as a
+ * string keeps the diagnostic without the object graph.
  *
  * @param <T> what the wrapped manager authorizes - a {@code MethodInvocation} for
  *            {@code @PreAuthorize}, a {@code MethodInvocationResult} for {@code @PostAuthorize}
@@ -79,16 +89,32 @@ public class PrivilegeNamingAuthorizationManager<T> implements AuthorizationMana
 
 		Set<String> missingPrivileges = recorded.getMissingPrivileges();
 		if (result != null && !result.isGranted() && !missingPrivileges.isEmpty()) {
-			// returned rather than thrown: see the class javadoc. Joined the same way
-			// AuthorizationAdvice joins a multi-privilege @Authorized.
-			return new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
-			    new Object[] { String.join(",", missingPrivileges) }, Locale.getDefault()), result);
+			// returned rather than thrown, and carrying a plain decision: see the class javadoc. Joined
+			// the same way AuthorizationAdvice joins a multi-privilege @Authorized. No expression here -
+			// the message already names what was missing.
+			return new APIAuthenticationException(
+			        Context.getMessageSourceService().getMessage("error.privilegesRequired",
+			            new Object[] { String.join(",", missingPrivileges) }, Locale.getDefault()),
+			        new AuthorizationDecision(false));
 		}
 
 		if (result != null && !result.isGranted() && recorded.isAuthenticationMissing()) {
-			// the message AuthorizationAdvice denies a no-value @Authorized with
+			// the message AuthorizationAdvice denies a no-value @Authorized with, and a plain decision
+			// for the same serialization reason
 			return new APIAuthenticationException(
-			        Context.getMessageSourceService().getMessage("error.aunthenticationRequired"), result);
+			        Context.getMessageSourceService().getMessage("error.aunthenticationRequired"),
+			        new AuthorizationDecision(false));
+		}
+
+		if (result instanceof ExpressionAuthorizationDecision denied && !result.isGranted()) {
+			// Also a plain decision, and for the same serialization reason, but the expression is worth
+			// keeping here: this is the denial that names no privilege, so "Access Denied" on its own
+			// says nothing about which guard refused. The expression string carries that and is just a
+			// String. Which DomainObjectAuthorizationRule denied, when one did, is logged by
+			// OpenmrsPermissionEvaluator rather than returned - a module's class name is not the
+			// caller's business.
+			return new AuthorizationDeniedException("Access Denied: " + denied.getExpression().getExpressionString(),
+			        new AuthorizationDecision(false));
 		}
 
 		return result;

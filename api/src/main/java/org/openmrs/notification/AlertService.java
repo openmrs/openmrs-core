@@ -12,11 +12,12 @@ package org.openmrs.notification;
 import java.util.List;
 
 import org.openmrs.User;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.notification.db.AlertDAO;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Alerts in the system Use:<br>
@@ -49,7 +50,7 @@ public interface AlertService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
+	@PreAuthorize("hasPermission(#alert, '" + PrivilegeConstants.MANAGE_ALERTS + "')")
 	public Alert saveAlert(Alert alert) throws APIException;
 
 	/**
@@ -67,7 +68,7 @@ public interface AlertService extends OpenmrsService {
 	 *         {@link PrivilegeConstants#GET_ALERTS} privilege
 	 * @throws APIException
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	public Alert getAlert(Integer alertId) throws APIException;
 
 	/**
@@ -78,7 +79,7 @@ public interface AlertService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
+	@PreAuthorize("hasPermission(#alert, '" + PrivilegeConstants.MANAGE_ALERTS + "')")
 	public void purgeAlert(Alert alert) throws APIException;
 
 	/**
@@ -92,7 +93,7 @@ public interface AlertService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if <code>user</code> is another
 	 *             user and the caller lacks the {@link PrivilegeConstants#GET_ALERTS} privilege
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	public List<Alert> getAllActiveAlerts(User user) throws APIException;
 
 	/**
@@ -108,7 +109,7 @@ public interface AlertService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if <code>user</code> is another
 	 *             user and the caller lacks the {@link PrivilegeConstants#GET_ALERTS} privilege
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	public List<Alert> getAlertsByUser(User user) throws APIException;
 
 	/**
@@ -123,7 +124,7 @@ public interface AlertService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if <code>user</code> is another
 	 *             user and the caller lacks the {@link PrivilegeConstants#GET_ALERTS} privilege
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws APIException;
 
 	/**
@@ -134,7 +135,8 @@ public interface AlertService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ALERTS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ALERTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ALERTS + "')")
 	public List<Alert> getAllAlerts() throws APIException;
 
 	/**
@@ -146,7 +148,8 @@ public interface AlertService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ALERTS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ALERTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ALERTS + "')")
 	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException;
 
 	/**
@@ -162,6 +165,6 @@ public interface AlertService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_ALERTS + "')")
 	public void notifySuperUsers(String messageCode, Exception cause, Object... messageArguments);
 }
