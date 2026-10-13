@@ -390,11 +390,12 @@ public class HibernateOrderDAO implements OrderDAO {
 	public void deleteObsThatReference(Order order) {
 		if (order != null) {
 			Session session = sessionFactory.getCurrentSession();
-			List<Obs> obsToDelete = session.createQuery("from Obs where order = :order", Obs.class)
-			        .setParameter("order", order).list();
 			session.createMutationQuery("delete Obs where order = :order").setParameter("order", order).executeUpdate();
-			// the bulk delete bypasses the session, so detach the deleted obs to keep lookups from returning them
-			obsToDelete.forEach(session::detach);
+			// the bulk delete bypasses the session, so detach the deleted obs it holds to keep lookups from returning them
+			List<Obs> deletedObs = session.getManagedEntities(Obs.class).stream()
+			        .filter(obs -> obs.getOrder() != null && order.getOrderId().equals(obs.getOrder().getOrderId()))
+			        .toList();
+			deletedObs.forEach(session::detach);
 		}
 	}
 
