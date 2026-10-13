@@ -65,7 +65,7 @@ public class ChainingInterceptor implements Interceptor {
 	 * {@code onDelete}, so interceptors that only implement the deprecated method are still called,
 	 * exactly once.
 	 *
-	 * @since 2.9.0
+	 * @since 3.0.0
 	 */
 	@Override
 	public void onRemove(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
@@ -110,7 +110,7 @@ public class ChainingInterceptor implements Interceptor {
 	 * {@code onSave}, so interceptors that only implement the deprecated method are still called,
 	 * exactly once.
 	 *
-	 * @since 2.9.0
+	 * @since 3.0.0
 	 */
 	@Override
 	public boolean onPersist(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
