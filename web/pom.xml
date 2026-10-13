@@ -97,6 +97,12 @@
          <groupId>org.springframework.security</groupId>
          <artifactId>spring-security-config</artifactId>
       </dependency>
+      <!-- spring-session-core (TRUNK-6415): infinispan-spring6-embedded declares it 'provided', so it
+           is not transitive and must be added explicitly. -->
+      <dependency>
+         <groupId>org.springframework.session</groupId>
+         <artifactId>spring-session-core</artifactId>
+      </dependency>
       <dependency>
          <groupId>org.liquibase</groupId>
          <artifactId>liquibase-core</artifactId>
