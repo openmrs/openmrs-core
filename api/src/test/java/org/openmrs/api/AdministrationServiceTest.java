@@ -10,9 +10,7 @@
 package org.openmrs.api;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -32,8 +30,7 @@ import org.openmrs.Privilege;
 import org.openmrs.User;
 import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.cache.GlobalPropertyCacheTestUtil;
-import org.openmrs.api.cache.RolePrivilegeCache;
-import org.openmrs.api.cache.RolePrivileges;
+import org.openmrs.api.cache.RolePrivilegeCacheTestUtil;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UserContext;
@@ -52,6 +49,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.validation.BindException;
@@ -634,9 +632,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// the proxy privilege passes the @Authorized gate but not the view check
 		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		try {
-			APIException exception = assertThrows(APIException.class,
-			    () -> adminService.getGlobalProperty("another-global-property"));
-			assertFalse(exception instanceof APIAuthenticationException);
+			// an APIException, not the gate's AccessDeniedException, means the proxy passed the gate but
+			// the impl's view check denied it
+			assertThrows(APIException.class, () -> adminService.getGlobalProperty("another-global-property"));
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
@@ -721,8 +719,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
 
-		assertThrows(APIAuthenticationException.class,
-		    () -> adminService.getGlobalProperty("concept.defaultConceptMapType"));
+		assertThrows(AccessDeniedException.class, () -> adminService.getGlobalProperty("concept.defaultConceptMapType"));
 	}
 
 	@Test
@@ -768,7 +765,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
 
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> adminService.getGlobalProperty(property.getProperty()));
 		assertEquals(exception.getMessage(), String.format("Privileges required: %s", property.getViewPrivilege()));
 	}
@@ -787,11 +784,11 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// Grant the view privilege via the authoritative cache; role privileges resolve by role name,
 		// not from the in-memory role object, so no proxy privilege is involved.
 		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
-		setRolePrivilegesInCache("Provider", property.getViewPrivilege().getPrivilege());
+		RolePrivilegeCacheTestUtil.seed("Provider", property.getViewPrivilege().getPrivilege());
 		try {
 			assertNotNull(adminService.getGlobalProperty(property.getProperty()));
 		} finally {
-			clearRolePrivilegeCache();
+			RolePrivilegeCacheTestUtil.clear();
 		}
 	}
 
@@ -815,12 +812,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// lets the call past the gate; the impl's proxy-excluding canViewGlobalProperty must still deny it.
 		Context.addProxyPrivilege(property.getViewPrivilege().getPrivilege());
 		try {
-			APIException exception = assertThrows(APIException.class,
-			    () -> adminService.getGlobalProperty(property.getProperty()));
-			// a plain APIException, not the gate's APIAuthenticationException, means the proxy passed the
-			// gate but the resource-level check denied it
-			assertFalse(exception instanceof APIAuthenticationException,
-			    "denial should come from the impl view check, not the @Authorized gate");
+			// an APIException, not the gate's AccessDeniedException, means the proxy passed the gate but
+			// the resource-level check denied it
+			assertThrows(APIException.class, () -> adminService.getGlobalProperty(property.getProperty()));
 		} finally {
 			Context.removeProxyPrivilege(property.getViewPrivilege().getPrivilege());
 		}
@@ -846,10 +840,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		Context.addProxyPrivilege(property.getEditPrivilege().getPrivilege());
 		try {
-			APIException exception = assertThrows(APIException.class,
-			    () -> adminService.updateGlobalProperty(property.getProperty(), "new-value"));
-			assertFalse(exception instanceof APIAuthenticationException,
-			    "denial should come from the impl edit check, not the @Authorized gate");
+			// an APIException, not the gate's AccessDeniedException, means the impl's edit check denied it
+			assertThrows(APIException.class, () -> adminService.updateGlobalProperty(property.getProperty(), "new-value"));
 		} finally {
 			Context.removeProxyPrivilege(property.getEditPrivilege().getPrivilege());
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
@@ -876,9 +868,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.addProxyPrivilege(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES);
 		Context.addProxyPrivilege(property.getDeletePrivilege().getPrivilege());
 		try {
-			APIException exception = assertThrows(APIException.class, () -> adminService.purgeGlobalProperty(property));
-			assertFalse(exception instanceof APIAuthenticationException,
-			    "denial should come from the impl delete check, not the @Authorized gate");
+			// an APIException, not the gate's AccessDeniedException, means the impl's delete check denied it
+			assertThrows(APIException.class, () -> adminService.purgeGlobalProperty(property));
 		} finally {
 			Context.removeProxyPrivilege(property.getDeletePrivilege().getPrivilege());
 			Context.removeProxyPrivilege(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES);
@@ -897,7 +888,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
 
-		APIException exception = assertThrows(APIException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> adminService.getGlobalPropertyObject(property.getProperty()));
 		assertEquals(exception.getMessage(), String.format("Privileges required: %s", property.getViewPrivilege()));
 	}
@@ -916,11 +907,11 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// Grant the view privilege via the authoritative cache; role privileges resolve by role name,
 		// not from the in-memory role object, so no proxy privilege is involved.
 		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
-		setRolePrivilegesInCache("Provider", property.getViewPrivilege().getPrivilege());
+		RolePrivilegeCacheTestUtil.seed("Provider", property.getViewPrivilege().getPrivilege());
 		try {
 			assertNotNull(adminService.getGlobalPropertyObject(property.getProperty()));
 		} finally {
-			clearRolePrivilegeCache();
+			RolePrivilegeCacheTestUtil.clear();
 		}
 	}
 
@@ -938,7 +929,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
 
-		APIException exception = assertThrows(APIException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> adminService.updateGlobalProperty(property.getProperty(), "new-value"));
 		assertEquals(exception.getMessage(), String.format("Privileges required: %s", property.getEditPrivilege()));
 	}
@@ -961,14 +952,14 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// Grant the edit + view privileges via the authoritative cache; role privileges resolve by role
 		// name, not from the in-memory role object, so no proxy privilege is involved.
 		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
-		setRolePrivilegesInCache("Provider", PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES,
+		RolePrivilegeCacheTestUtil.seed("Provider", PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES,
 		    PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		try {
 			adminService.updateGlobalProperty(property.getProperty(), "new-value");
 			String newValue = adminService.getGlobalProperty(property.getProperty());
 			assertEquals("new-value", newValue);
 		} finally {
-			clearRolePrivilegeCache();
+			RolePrivilegeCacheTestUtil.clear();
 		}
 	}
 
@@ -1068,20 +1059,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	private Credentials getTestUserCredentials() {
 		return new UsernamePasswordCredentials("test_user", "test");
-	}
-
-	/**
-	 * Records, in the authoritative role-privilege cache, that the named role grants the given
-	 * privileges. Privilege resolution reads role privileges from this cache by role name, so this lets
-	 * a test grant privileges to a role without persisting them.
-	 */
-	private void setRolePrivilegesInCache(String roleName, String... privileges) {
-		cacheManager.getCache(RolePrivilegeCache.CACHE_NAME).put(RolePrivileges.normalize(roleName),
-		    new RolePrivileges(new HashSet<>(Arrays.asList(privileges)), false));
-	}
-
-	private void clearRolePrivilegeCache() {
-		cacheManager.getCache(RolePrivilegeCache.CACHE_NAME).clear();
 	}
 
 	@Test

@@ -66,6 +66,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param program is the Program to be saved to the database
 	 * @return The Program that was saved
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program saveProgram(Program program) throws APIException;
@@ -80,6 +82,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param programId integer primary key of the program to find
 	 * @return Program object that has program.programId = <code>programId</code> passed in.
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
 	public Program getProgram(Integer programId) throws APIException;
@@ -97,6 +101,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 * @throws ProgramNameDuplicatedException when there are more than one program in the dB with the
 	 *             given name.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
 	public Program getProgramByName(String name) throws APIException;
@@ -107,6 +113,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @return List&lt;Program&gt; of all existing programs, including retired programs
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
 	public List<Program> getAllPrograms() throws APIException;
@@ -121,6 +129,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param includeRetired whether or not to include retired programs
 	 * @return List&lt;Program&gt; all existing programs, including retired based on the input parameter
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
 	public List<Program> getAllPrograms(boolean includeRetired) throws APIException;
@@ -143,6 +153,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param nameFragment is the string used to search for programs
 	 * @return List&lt;Program&gt; - list of Programs whose name matches the input parameter
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
 	public List<Program> getPrograms(String nameFragment) throws APIException;
@@ -155,6 +167,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @param program the Program to clean out of the database.
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeProgram(Program program) throws APIException;
@@ -169,6 +183,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @param cascade <code>true</code> to delete related content
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeProgram(Program program, boolean cascade) throws APIException;
@@ -184,6 +200,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param reason String for retiring the program
 	 * @return the Program which has been retired
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program retireProgram(Program program, String reason) throws APIException;
@@ -198,6 +216,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param program Program to be unretired
 	 * @return the Program which has been unretired
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program unretireProgram(Program program) throws APIException;
@@ -231,6 +251,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @param uuid the universally unique identifier
 	 * @return the program which matches the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public PatientState getPatientStateByUuid(String uuid);
@@ -245,6 +267,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param patientProgram is the PatientProgram to be saved to the database
 	 * @return PatientProgram - the saved PatientProgram
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public PatientProgram savePatientProgram(PatientProgram patientProgram) throws APIException;
@@ -261,6 +285,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @return PatientProgram object that has patientProgram.patientProgramId =
 	 *         <code>patientProgramId</code> passed in.
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public PatientProgram getPatientProgram(Integer patientProgramId) throws APIException;
@@ -300,6 +326,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param includeVoided if true, will also include voided PatientPrograms
 	 * @return List&lt;PatientProgram&gt; of PatientPrograms that match the passed input parameters
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
@@ -314,6 +342,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @param patientProgram the PatientProgram to clean out of the database.
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.PURGE_PATIENT_PROGRAMS })
 	public void purgePatientProgram(PatientProgram patientProgram) throws APIException;
@@ -328,6 +358,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param patientProgram the PatientProgram to clean out of the database.
 	 * @param cascade <code>true</code> to delete related content
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.PURGE_PATIENT_PROGRAMS })
 	public void purgePatientProgram(PatientProgram patientProgram, boolean cascade) throws APIException;
@@ -342,6 +374,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param reason is the reason why the patientProgram is being voided
 	 * @return the voided PatientProgram
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.DELETE_PATIENT_PROGRAMS })
 	public PatientProgram voidPatientProgram(PatientProgram patientProgram, String reason) throws APIException;
@@ -354,6 +388,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param patientProgram patientProgram to be un-voided
 	 * @return the voided PatientProgram
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.DELETE_PATIENT_PROGRAMS })
 	public PatientProgram unvoidPatientProgram(PatientProgram patientProgram) throws APIException;
@@ -365,6 +401,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @param programId
 	 * @return outcome concepts or empty List if none exist
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
 	public List<Concept> getPossibleOutcomes(Integer programId);
@@ -401,6 +439,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param conceptStateConversion - The ConceptStateConversion to save
 	 * @return ConceptStateConversion - The saved ConceptStateConversion
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion conceptStateConversion)
@@ -417,6 +457,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @return ConceptStateConversion object that has conceptStateConversion.conceptStateConversionId =
 	 *         <code>conceptStateConversionId</code> passed in.
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
 	public ConceptStateConversion getConceptStateConversion(Integer conceptStateConversionId) throws APIException;
@@ -428,6 +470,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @return List&lt;ConceptStateConversion&gt; of all ConceptStateConversions that exist
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PROGRAMS })
 	public List<ConceptStateConversion> getAllConceptStateConversions() throws APIException;
@@ -438,6 +482,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @param conceptStateConversion the ConceptStateConversion to clean out of the database.
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion) throws APIException;
@@ -453,6 +499,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param conceptStateConversion the ConceptStateConversion to clean out of the database.
 	 * @param cascade <code>true</code> to delete related content
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion, boolean cascade)
@@ -506,6 +554,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @param uuid the universally unique identifier
 	 * @return the patient program which matches the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public PatientProgram getPatientProgramByUuid(String uuid);
@@ -527,6 +577,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param programs
 	 * @return List&lt;PatientProgram&gt; for all Patients in the given Cohort that are in the given
 	 *         programs
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
@@ -536,6 +588,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @param concept - The Concept being used.
 	 * @return - A List of Programs
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<Program> getProgramsByConcept(Concept concept);
@@ -545,6 +599,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @param concept - The Concept being used.
 	 * @return - A List of ProgramWorkflows
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept);
@@ -554,6 +610,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *
 	 * @param concept - The Concept being used.
 	 * @return - A List of ProgramWorkflowStates
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Authorized({ PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
