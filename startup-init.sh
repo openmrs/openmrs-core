@@ -186,7 +186,8 @@ if [[ -n "${EXTRA_VARS+x}" ]]; then
 	  :
 	  var=${i#OMRS_EXTRA_}
 	  if [[ "$var" != *[[:lower:]]* ]]; then
-	    var=${var,,}
+	    # tr with ASCII ranges, as ${var,,} follows the locale (e.g. I becomes ı under tr_TR)
+	    var=$(tr 'A-Z' 'a-z' <<< "$var")
 	  fi
 	  var=${var//_/.}
 	  var=${var//../_}
