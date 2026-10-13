@@ -160,14 +160,19 @@ property.hibernate.search.backend.discovery.enabled=true
 EOF
 
 # Supports any custom env variable with the OMRS_EXTRA_ prefix, which translates to a property without the 
-# OMRS_EXTRA_ prefix. The '_' is replaced with '.' and '__' with '_'.
+# OMRS_EXTRA_ prefix. The '_' is replaced with '.' and '__' with '_'. An all upper case name is lowercased,
+# while a name containing any lower case letter keeps its case, e.g. OMRS_EXTRA_mail_smtp_socketFactory_class
+# becomes mail.smtp.socketFactory.class
 EXTRA_VARS=(${!OMRS_EXTRA_@})
-if [[ -n "${EXTRA_VARS+x}" ]]; then 
+if [[ -n "${EXTRA_VARS+x}" ]]; then
 	EXTRA_PROPERTIES=""
 	for i in "${EXTRA_VARS[@]}"
 	do
 	  :
-	  var=$(echo "${i#OMRS_EXTRA_}" | tr [:upper:] [:lower:])
+	  var=${i#OMRS_EXTRA_}
+	  if [[ "$var" != *[[:lower:]]* ]]; then
+	    var=${var,,}
+	  fi
 	  var=${var//_/.}
 	  var=${var//../_}
 	  EXTRA_PROPERTIES+="${var}=${!i}\n"
