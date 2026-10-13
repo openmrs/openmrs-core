@@ -147,6 +147,8 @@ escape_property() {
   fi
   printf '%s' "$value"
 }
+# allexport (-a) exports functions too; keep this one out of Tomcat's environment
+export -fn escape_property
 
 echo "Writing out $OMRS_SERVER_PROPERTIES_FILE"
 
