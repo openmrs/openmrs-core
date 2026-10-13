@@ -20,7 +20,7 @@ jobs:
         uses: transifex/cli-action@v2
         with:
           token: ${{ secrets.TRANSIFEX_TOKEN }}
-          args: pull --force --all --mode onlytranslated
+          args: pull --force --all --mode onlytranslated --minimum-perc 1
       - name: 🔄 Create PR if necessary
         id: cpr
         uses: peter-evans/create-pull-request@v8.1.1
