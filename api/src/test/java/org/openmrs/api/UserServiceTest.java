@@ -40,7 +40,11 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.messagesource.MutableMessageSource;
+import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
+import org.openmrs.notification.MessageSender;
+import org.openmrs.notification.MessageService;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
@@ -58,6 +62,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -65,6 +70,12 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.openmrs.test.TestUtil.containsId;
 
 /**
@@ -1712,6 +1723,128 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		InvalidActivationKeyException exception = assertThrows(InvalidActivationKeyException.class,
 		    () -> userService.changePasswordUsingActivationKey(key, "Pa55w0rd"));
 		assertThat(exception.getMessage(), is(messages.getMessage("activation.key.not.correct")));
+	}
+
+	@Test
+	public void changePasswordUsingActivationKey_shouldClearActivationKeyOnceUsed() {
+		User createdUser = createTestUser();
+		String key = givenPendingActivationKey(createdUser);
+		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		userService.changePasswordUsingActivationKey(key, "Admin123");
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
+	}
+
+	@Test
+	public void changePasswordUsingActivationKey_shouldNotAllowReusingActivationKey() {
+		User createdUser = createTestUser();
+		String key = givenPendingActivationKey(createdUser);
+		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		userService.changePasswordUsingActivationKey(key, "Admin123");
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+
+		InvalidActivationKeyException exception = assertThrows(InvalidActivationKeyException.class,
+		    () -> userService.changePasswordUsingActivationKey(key, "Pa55w0rd"));
+		assertThat(exception.getMessage(), is(messages.getMessage("activation.key.not.correct")));
+	}
+
+	@Test
+	public void changePassword_shouldClearPendingActivationKeyWhenUserChangesOwnPassword() {
+		User createdUser = createTestUser();
+		givenPendingActivationKey(createdUser);
+		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		userService.changePassword("Openmr5xy", "Admin123");
+		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
+	}
+
+	@Test
+	public void changePassword_shouldClearPendingActivationKeyWhenAdminChangesUsersPassword() {
+		User createdUser = createTestUser();
+		givenPendingActivationKey(createdUser);
+		userService.changePassword(createdUser, "Admin123");
+		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
+	}
+
+	@Test
+	public void changePassword_shouldKeepPendingActivationKeyIfOldPasswordIsNotCorrect() {
+		User createdUser = createTestUser();
+		givenPendingActivationKey(createdUser);
+		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		assertThrows(APIException.class, () -> userService.changePassword("wrongPassword", "Admin123"));
+		assertNotNull(dao.getLoginCredential(createdUser).getActivationKey());
+	}
+
+	/**
+	 * Stores a pending, unexpired activation key on the user's login credential and returns the raw key
+	 * the user would have received by email.
+	 *
+	 * @param user the user to give a pending password reset
+	 * @return the raw (unhashed) activation key
+	 */
+	private String givenPendingActivationKey(User user) {
+		String key = "h4ph0fpNzQCIPSw8plJI";
+		long tokenTime = System.currentTimeMillis() + 10 * 60 * 1000;
+		LoginCredential credentials = dao.getLoginCredential(user);
+		credentials.setActivationKey(
+		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
+		            + tokenTime);
+		dao.setUserActivationKey(credentials);
+		return key;
+	}
+
+	@Test
+	public void setUserActivationKey_shouldAppendResetLinkAfterMessageBody() throws Exception {
+		User createdUser = createTestUser();
+		String content = sendPasswordResetEmail(createdUser, "Hi {name}, use the link below.", "text/plain");
+		assertThat(content.substring(content.lastIndexOf("\n\n") + 2), startsWith(RESET_URL_PREFIX));
+	}
+
+	@Test
+	public void setUserActivationKey_shouldNotSubstituteResetLinkIntoMessageBody() throws Exception {
+		User createdUser = createTestUser();
+		String content = sendPasswordResetEmail(createdUser, "Go to https://evil.example/?u={link}", "text/plain");
+		assertThat(content, not(containsString("?u=http")));
+	}
+
+	@Test
+	public void setUserActivationKey_shouldAppendResetLinkAsAnchorForHtmlMail() throws Exception {
+		User createdUser = createTestUser();
+		String content = sendPasswordResetEmail(createdUser, "Hi {name},<br/>use the link below.",
+		    "text/html; charset=UTF-8");
+		assertThat(content.substring(content.lastIndexOf("<br/><br/>") + 10), startsWith("<a href=\"" + RESET_URL_PREFIX));
+	}
+
+	private static final String RESET_URL_PREFIX = "http://localhost:8080/openmrs/reset/";
+
+	/**
+	 * Sends the password reset email for the user with the given text as the mail.passwordreset.content
+	 * template and the given mail content type, and returns the email body.
+	 */
+	private String sendPasswordResetEmail(User user, String template, String contentType) throws MessageException {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL,
+		    RESET_URL_PREFIX + "{activationKey}");
+		Context.getAdministrationService().setGlobalProperty("mail.default_content_type", contentType);
+		MutableMessageSource source = mock(MutableMessageSource.class);
+		when(source.getMessage(eq("mail.passwordreset.content"), isNull(), anyString(), any(Locale.class)))
+		        .thenReturn(template);
+		when(source.getMessage(eq("mail.passwordreset.subject"), isNull(), anyString(), any(Locale.class)))
+		        .thenReturn("Password Reset");
+		MessageSourceService messageSourceService = Context.getMessageSourceService();
+		MutableMessageSource originalSource = messageSourceService.getActiveMessageSource();
+		MessageService messageService = Context.getMessageService();
+		MessageSender originalSender = messageService.getMessageSender();
+		List<Message> sent = new ArrayList<>();
+		messageSourceService.setActiveMessageSource(source);
+		messageService.setMessageSender(sent::add);
+		try {
+			userService.setUserActivationKey(user);
+		} finally {
+			messageService.setMessageSender(originalSender);
+			messageSourceService.setActiveMessageSource(originalSource);
+		}
+		return sent.getFirst().getContent();
 	}
 
 	/**
