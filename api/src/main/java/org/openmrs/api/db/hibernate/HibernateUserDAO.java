@@ -403,6 +403,7 @@ public class HibernateUserDAO implements UserDAO {
 		credentials.setChangedBy(changedByUser);
 		credentials.setDateChanged(dateChanged);
 		credentials.setUuid(changeForUser.getUuid());
+		credentials.setActivationKey(null);
 
 		saveLoginCredential(credentials);
 
