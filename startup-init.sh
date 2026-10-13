@@ -166,7 +166,7 @@ EOF
 # order is used and the others are ignored with a warning.
 EXTRA_VARS=(${!OMRS_EXTRA_@})
 if [[ -n "${EXTRA_VARS+x}" ]]; then
-	EXTRA_PROPERTIES=""
+	EXTRA_PROPERTIES=()
 	declare -A EXTRA_PROPERTY_SOURCES=()
 	for i in "${EXTRA_VARS[@]}"
 	do
@@ -182,10 +182,10 @@ if [[ -n "${EXTRA_VARS+x}" ]]; then
 	    continue
 	  fi
 	  EXTRA_PROPERTY_SOURCES[$var]=$i
-	  EXTRA_PROPERTIES+="${var}=${!i}\n"
+	  EXTRA_PROPERTIES+=("${var}=${!i}")
 	done
 	
-	echo -e "$EXTRA_PROPERTIES" >> "openmrs-extra.properties"
+	printf '%s\n' "${EXTRA_PROPERTIES[@]}" >> "openmrs-extra.properties"
 fi
 
 if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
@@ -209,7 +209,7 @@ else
   	fi
   	
   	while IFS="" read -r line; do
-  	  [[ -n "$line" ]] && echo -e "property.$line" >> openmrs-extra.properties.tmp
+  	  [[ -n "$line" ]] && printf 'property.%s\n' "$line" >> openmrs-extra.properties.tmp
 	done < openmrs-extra.properties
 	
 	echo >> openmrs-extra.properties.tmp
