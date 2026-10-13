@@ -30,6 +30,9 @@ import org.openmrs.Order;
 import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ObsArchiveHelper;
+import org.openmrs.obs.ComplexData;
+import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.scheduler.tasks.ObsArchivingTaskData;
 import org.openmrs.scheduler.tasks.ObsArchivingTaskHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
@@ -55,6 +58,9 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 	private ObsService obsService;
 
 	@Autowired
+	private StorageService storageService;
+
+	@Autowired
 	private AdministrationService adminService;
 
 	@Autowired
@@ -74,6 +80,8 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 	private List<Integer> createdEncounterIds = new ArrayList<>();
 
 	private List<Integer> createdOrderIds = new ArrayList<>();
+
+	private List<Integer> createdConceptIds = new ArrayList<>();
 
 	private JdbcTemplate jdbcTemplate;
 
@@ -241,6 +249,19 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 			}
 		}
 		createdOrderIds.clear();
+
+		for (Integer id : createdConceptIds) {
+			try {
+				jdbcTemplate.update("DELETE FROM obs WHERE concept_id = ?", id);
+				jdbcTemplate.update("DELETE FROM concept_complex WHERE concept_id = ?", id);
+				jdbcTemplate.update("DELETE FROM concept_name WHERE concept_id = ?", id);
+				jdbcTemplate.update("DELETE FROM concept_description WHERE concept_id = ?", id);
+				jdbcTemplate.update("DELETE FROM concept WHERE concept_id = ?", id);
+			} catch (DataAccessException e) {
+				// Best-effort cleanup
+			}
+		}
+		createdConceptIds.clear();
 
 		GlobalProperty p = adminService.getGlobalPropertyObject("obs.archive.enabled");
 		if (p != null)
@@ -1429,6 +1450,77 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		assertNull(Context.getEncounterService().getEncounter(encounterId), "Encounter should be purged");
 		assertFalse(obsArchiveHelper.isArchived(obs1Id), "Archived obs1 should be cascaded and purged");
 		assertFalse(obsArchiveHelper.isArchived(obs2Id), "Archived obs2 should be cascaded and purged");
+	}
+
+	@Test
+	public void purgeEncounter_shouldCascadeToArchivedComplexObsAndPurgeStoredDataWhenCascadeIsTrue() throws Exception {
+		executeDataSet("org/openmrs/api/include/ObsServiceTest-complex.xml");
+		createdObsIds.add(44);
+		createdObsIds.add(45);
+		createdConceptIds.add(8473);
+		createdConceptIds.add(8474);
+
+		try {
+			// Create a fresh encounter
+			Encounter encounter = new Encounter();
+			encounter.setEncounterDatetime(new Date());
+			encounter.setPatient(Context.getPatientService().getPatient(7));
+			encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+			encounter.setLocation(Context.getLocationService().getLocation(1));
+			encounter = Context.getEncounterService().saveEncounter(encounter);
+			createdEncounterIds.add(encounter.getEncounterId());
+			int encounterId = encounter.getEncounterId();
+
+			Concept concept8474 = Context.getConceptService().getConcept(8474);
+			Obs complexObs = new Obs();
+			complexObs.setPerson(encounter.getPatient());
+			complexObs.setConcept(concept8474);
+			complexObs.setObsDatetime(new Date());
+			complexObs.setLocation(encounter.getLocation());
+			complexObs.setEncounter(encounter);
+			complexObs.setComplexData(
+			    new ComplexData("test_cascade_purge.txt", "Sample text data for archive purge test".toCharArray()));
+			complexObs = obsService.saveObs(complexObs, "save complex obs for encounter");
+			createdObsIds.add(complexObs.getObsId());
+			int obsId = complexObs.getObsId();
+
+			ComplexObsHandler handler = obsService.getHandler(complexObs);
+			assertNotNull(handler);
+			String key = ((AbstractHandler) handler).parseDataKey(complexObs);
+			assertTrue(storageService.exists(key), "Stored complex file should exist before purge");
+
+			// Void and archive the complex obs
+			obsService.voidObs(complexObs, "test voiding");
+			Context.flushSession();
+			Context.clearSession();
+
+			ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+			archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+			assertArchived(obsId);
+			assertTrue(storageService.exists(key), "Stored complex file should still exist in archive");
+
+			Context.clearSession();
+
+			// Purge encounter with cascade — should remove archived complex obs and delete stored data file
+			Encounter enc = Context.getEncounterService().getEncounter(encounterId);
+			assertNotNull(enc);
+			Context.getEncounterService().purgeEncounter(enc, true);
+			Context.flushSession();
+			Context.clearSession();
+
+			// Verify everything is gone
+			assertNull(Context.getEncounterService().getEncounter(encounterId), "Encounter should be purged");
+			assertFalse(obsArchiveHelper.isArchived(obsId), "Archived complex obs should be cascaded and purged");
+			assertNull(obsService.getObs(obsId), "Complex obs should be purged from obs table");
+			assertFalse(storageService.exists(key), "Stored complex data file should be purged");
+		} finally {
+			jdbcTemplate.update("DELETE FROM obs WHERE obs_id IN (44, 45)");
+			jdbcTemplate.update("DELETE FROM concept_complex WHERE concept_id IN (8473, 8474)");
+			jdbcTemplate.update("DELETE FROM concept_name WHERE concept_id IN (8473, 8474)");
+			jdbcTemplate.update("DELETE FROM concept_description WHERE concept_id IN (8473, 8474)");
+			jdbcTemplate.update("DELETE FROM concept WHERE concept_id IN (8473, 8474)");
+		}
 	}
 
 	@Test

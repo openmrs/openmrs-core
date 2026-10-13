@@ -22,6 +22,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -32,6 +33,8 @@ import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
+import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -541,6 +544,9 @@ public class ObsArchiveHelper {
 					}
 				}
 
+				// Purge complex obs data before deleting database rows
+				purgeComplexDataFromArchive(session, obsId);
+
 				// Ensure FK order: delete reference range archive first
 				session.createNativeQuery("DELETE FROM obs_reference_range_archive WHERE obs_id = :obsId")
 				        .setParameter("obsId", obsId).executeUpdate();
@@ -559,6 +565,48 @@ public class ObsArchiveHelper {
 		} catch (HibernateException e) {
 			log.warn("Failed to purge obs {} from archive", obsId, e);
 			throw new APIException("Failed to purge archived obs", e);
+		}
+	}
+
+	private void purgeComplexDataFromArchive(Session session, Integer obsId) {
+		List<Object[]> rows = session
+		        .createQuery("SELECT a.concept, a.valueComplex FROM ObsArchive a WHERE a.obsId = :obsId", Object[].class)
+		        .setParameter("obsId", obsId).setMaxResults(1).list();
+		if (rows.isEmpty()) {
+			return;
+		}
+		Object[] row = rows.get(0);
+		Concept concept = (Concept) row[0];
+		String valueComplex = (String) row[1];
+		if (concept == null || valueComplex == null || valueComplex.isEmpty()) {
+			return;
+		}
+
+		String handlerName = null;
+		if (concept instanceof ConceptComplex) {
+			handlerName = ((ConceptComplex) concept).getHandler();
+		} else {
+			ConceptComplex cc = Context.getConceptService().getConceptComplex(concept.getConceptId());
+			if (cc != null) {
+				handlerName = cc.getHandler();
+			}
+		}
+
+		if (handlerName != null) {
+			ComplexObsHandler handler = Context.getObsService().getHandler(handlerName);
+			if (handler != null) {
+				Obs dummyObs = new Obs();
+				dummyObs.setObsId(obsId);
+				dummyObs.setConcept(concept);
+				dummyObs.setValueComplex(valueComplex);
+				try {
+					if (!handler.purgeComplexData(dummyObs)) {
+						log.warn("purgeComplexData returned false for archived Obs ID: {}", obsId);
+					}
+				} catch (Exception e) {
+					log.warn("Failed to purge complex data for archived Obs ID: {}", obsId, e);
+				}
+			}
 		}
 	}
 }
