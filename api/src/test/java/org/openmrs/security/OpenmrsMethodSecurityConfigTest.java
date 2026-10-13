@@ -21,6 +21,9 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -63,6 +66,20 @@ public class OpenmrsMethodSecurityConfigTest extends BaseContextSensitiveTest {
 		    () -> preAuthorizeTestService.postAuthorizedRequiringGetConcepts());
 		assertEquals(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { PrivilegeConstants.GET_CONCEPTS }, Locale.getDefault()), exception.getMessage());
+	}
+
+	@Test
+	public void namedDenial_shouldBeSerializable() {
+		Context.getUserContext().logout();
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
+		    () -> preAuthorizeTestService.requireGetConcepts());
+
+		// a controller with no handler of its own renders the denial as the response body, through
+		// WebConfig's SimpleMappingExceptionResolver and MappingJackson2JsonView. Carrying the
+		// delegate's ExpressionAuthorizationDecision instead of a plain one walks Jackson from the SpEL
+		// expression into its evaluation context, where it fails on StandardTypeConverter - so the
+		// caller gets that failure rather than the denial, and nothing in the privilege path notices
+		assertDoesNotThrow(() -> new ObjectMapper().writeValueAsString(exception));
 	}
 
 	@Test
