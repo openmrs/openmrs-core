@@ -15,6 +15,7 @@ import org.openmrs.api.context.Daemon;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.authorization.AuthorizationManagerFactory;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -40,13 +41,14 @@ import org.springframework.security.core.Authentication;
  * stripping, this does it instead: {@code hasRole('X')} and {@code hasRole('ROLE_X')} both mean the
  * role {@code X}, and a role genuinely named {@code ROLE_X} needs {@code access(...)}.
  * <p>
- * Misses are recorded with {@link MissingPrivilegeRecorder} so a denial still names the privilege,
- * as {@code hasPermission} denials do (see {@link PrivilegeNamingAuthorizationManager}); the
- * managers cannot carry the message themselves, because {@code SecurityExpressionRoot} reduces
- * their result to a boolean. Multi-privilege checks short-circuit: {@code Context.hasPrivilege}
- * notifies every {@link org.openmrs.PrivilegeListener} per call, so a redundant check would report
- * a denial that blocked nothing, and naming the first missing privilege matches what
- * {@code AuthorizationAdvice} does for {@code requireAll=true}.
+ * Misses are recorded with {@link MissingPrivilegeRecorder} - a privilege not held, or an
+ * {@code isAuthenticated()} that denied - so a denial still names what was missing, as
+ * {@code hasPermission} denials do (see {@link PrivilegeNamingAuthorizationManager}); the managers
+ * cannot carry the message themselves, because {@code SecurityExpressionRoot} reduces their result
+ * to a boolean. Multi-privilege checks short-circuit: {@code Context.hasPrivilege} notifies every
+ * {@link org.openmrs.PrivilegeListener} per call, so a redundant check would report a denial that
+ * blocked nothing, and naming the first missing privilege matches what {@code AuthorizationAdvice}
+ * does for {@code requireAll=true}.
  *
  * @param <T> whatever the resulting managers authorize; ignored, since an OpenMRS privilege check
  *            depends only on the current thread's {@code UserContext}
@@ -72,6 +74,24 @@ public class OpenmrsAuthorizationManagerFactory<T> implements AuthorizationManag
 			}
 
 			return delegate.authorize(authentication, object);
+		};
+	}
+
+	/**
+	 * Decides {@code isAuthenticated()} as the inherited default does, and records a denial so that
+	 * {@link PrivilegeNamingAuthorizationManager} reports it the way {@code AuthorizationAdvice}
+	 * reports a no-value {@code @Authorized}, which {@code isAuthenticated()} translates.
+	 */
+	@Override
+	public AuthorizationManager<T> authenticated() {
+		AuthorizationManager<T> delegate = AuthorizationManagerFactory.super.authenticated();
+		return (authentication, object) -> {
+			AuthorizationResult result = delegate.authorize(authentication, object);
+			if (result != null && !result.isGranted()) {
+				MissingPrivilegeRecorder.recordMissingAuthentication();
+			}
+
+			return result;
 		};
 	}
 
