@@ -162,10 +162,12 @@ EOF
 # Supports any custom env variable with the OMRS_EXTRA_ prefix, which translates to a property without the 
 # OMRS_EXTRA_ prefix. The '_' is replaced with '.' and '__' with '_'. An all upper case name is lowercased,
 # while a name containing any lower case letter keeps its case, e.g. OMRS_EXTRA_mail_smtp_socketFactory_class
-# becomes mail.smtp.socketFactory.class
+# becomes mail.smtp.socketFactory.class. If several variables give the same property, the first in sorted
+# order is used and the others are ignored with a warning.
 EXTRA_VARS=(${!OMRS_EXTRA_@})
 if [[ -n "${EXTRA_VARS+x}" ]]; then
 	EXTRA_PROPERTIES=""
+	declare -A EXTRA_PROPERTY_SOURCES=()
 	for i in "${EXTRA_VARS[@]}"
 	do
 	  :
@@ -175,6 +177,11 @@ if [[ -n "${EXTRA_VARS+x}" ]]; then
 	  fi
 	  var=${var//_/.}
 	  var=${var//../_}
+	  if [[ -n "${EXTRA_PROPERTY_SOURCES[$var]+x}" ]]; then
+	    echo "Warning: $i and ${EXTRA_PROPERTY_SOURCES[$var]} both set property $var. Ignoring $i."
+	    continue
+	  fi
+	  EXTRA_PROPERTY_SOURCES[$var]=$i
 	  EXTRA_PROPERTIES+="${var}=${!i}\n"
 	done
 	
