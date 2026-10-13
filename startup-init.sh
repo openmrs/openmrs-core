@@ -135,26 +135,39 @@ fi
 # Build the JDBC URL using the above properties
 OMRS_DB_URL="${OMRS_DB_URL:-jdbc:${OMRS_DB_JDBC_PROTOCOL}://${OMRS_DB_HOSTNAME}:${OMRS_DB_PORT}/${OMRS_DB_NAME}${OMRS_DB_ARGS}${OMRS_DB_EXTRA_ARGS}}"
 
+# Escapes a value for a Java properties file, so that OpenMRS reads it exactly as given: backslashes, line breaks
+# and leading whitespace would otherwise be interpreted or dropped
+escape_property() {
+  local value=$1 bs='\'
+  value=${value//"$bs"/"$bs$bs"}
+  value=${value//$'\n'/"${bs}n"}
+  value=${value//$'\r'/"${bs}r"}
+  if [[ "$value" == [[:space:]]* ]]; then
+    value="${bs}${value}"
+  fi
+  printf '%s' "$value"
+}
+
 echo "Writing out $OMRS_SERVER_PROPERTIES_FILE"
 
 cat > $OMRS_SERVER_PROPERTIES_FILE << EOF
-admin_user_password=${OMRS_ADMIN_USER_PASSWORD}
-admin_password_locked=${OMRS_ADMIN_PASSWORD_LOCKED}
-auto_update_database=${OMRS_AUTO_UPDATE_DATABASE}
-connection.driver_class=${OMRS_DB_DRIVER_CLASS}
-connection.username=${OMRS_DB_USERNAME}
-connection.password=${OMRS_DB_PASSWORD}
-connection.url=${OMRS_DB_URL}
-create_database_user=${OMRS_CREATE_DATABASE_USER}
-create_tables=${OMRS_CREATE_TABLES}
-has_current_openmrs_database=${OMRS_HAS_CURRENT_OPENMRS_DATABASE}
-install_method=${OMRS_INSTALL_METHOD}
-module_web_admin=${OMRS_MODULE_WEB_ADMIN}
-module.allow_web_admin=${OMRS_MODULE_WEB_ADMIN}
+admin_user_password=$(escape_property "${OMRS_ADMIN_USER_PASSWORD}")
+admin_password_locked=$(escape_property "${OMRS_ADMIN_PASSWORD_LOCKED}")
+auto_update_database=$(escape_property "${OMRS_AUTO_UPDATE_DATABASE}")
+connection.driver_class=$(escape_property "${OMRS_DB_DRIVER_CLASS}")
+connection.username=$(escape_property "${OMRS_DB_USERNAME}")
+connection.password=$(escape_property "${OMRS_DB_PASSWORD}")
+connection.url=$(escape_property "${OMRS_DB_URL}")
+create_database_user=$(escape_property "${OMRS_CREATE_DATABASE_USER}")
+create_tables=$(escape_property "${OMRS_CREATE_TABLES}")
+has_current_openmrs_database=$(escape_property "${OMRS_HAS_CURRENT_OPENMRS_DATABASE}")
+install_method=$(escape_property "${OMRS_INSTALL_METHOD}")
+module_web_admin=$(escape_property "${OMRS_MODULE_WEB_ADMIN}")
+module.allow_web_admin=$(escape_property "${OMRS_MODULE_WEB_ADMIN}")
 
-property.hibernate.search.backend.type=${OMRS_SEARCH}
-property.hibernate.search.backend.analysis.configurer=${OMRS_SEARCH_CONFIG}
-property.hibernate.search.backend.uris=${OMRS_SEARCH_ES_URIS}
+property.hibernate.search.backend.type=$(escape_property "${OMRS_SEARCH}")
+property.hibernate.search.backend.analysis.configurer=$(escape_property "${OMRS_SEARCH_CONFIG}")
+property.hibernate.search.backend.uris=$(escape_property "${OMRS_SEARCH_ES_URIS}")
 property.hibernate.search.backend.discovery.enabled=true
 
 EOF
@@ -182,7 +195,7 @@ if [[ -n "${EXTRA_VARS+x}" ]]; then
 	    continue
 	  fi
 	  EXTRA_PROPERTY_SOURCES[$var]=$i
-	  EXTRA_PROPERTIES+=("${var}=${!i}")
+	  EXTRA_PROPERTIES+=("${var}=$(escape_property "${!i}")")
 	done
 	
 	printf '%s\n' "${EXTRA_PROPERTIES[@]}" >> "openmrs-extra.properties"
@@ -196,7 +209,7 @@ if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
   fi
 
   # Ensure admin.password.locked is set in runtime properties
-  echo "admin.password.locked=${OMRS_ADMIN_PASSWORD_LOCKED}" > openmrs-admin-locked.properties
+  printf 'admin.password.locked=%s\n' "$(escape_property "${OMRS_ADMIN_PASSWORD_LOCKED}")" > openmrs-admin-locked.properties
   awk -F= '!a[$1]++' openmrs-admin-locked.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
   mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
   rm openmrs-admin-locked.properties
