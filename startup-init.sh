@@ -90,38 +90,83 @@ OMRS_FRONTEND_DIR="$OMRS_DATA_DIR/frontend"
 OMRS_SERVER_PROPERTIES_FILE="$OMRS_HOME/$OMRS_WEBAPP_NAME-server.properties"
 OMRS_RUNTIME_PROPERTIES_FILE="$OMRS_DATA_DIR/$OMRS_WEBAPP_NAME-runtime.properties"
 
-# Succeeds if the given directory is, or contains, a mount point (mountinfo escapes \, space, tab and newline in octal)
-has_mount_point() {
-  local dir bs='\'
-  dir=$(cd "$1" 2>/dev/null && pwd -P) || return 1
-  dir=${dir//"$bs"/"${bs}134"}
-  dir=${dir// /"${bs}040"}
-  dir=${dir//$'\t'/"${bs}011"}
-  dir=${dir//$'\n'/"${bs}012"}
-  MOUNT_DIR=$dir awk '$5 == ENVIRON["MOUNT_DIR"] || index($5, ENVIRON["MOUNT_DIR"] "/") == 1 { found = 1; exit } END { exit !found }' /proc/self/mountinfo
+# Prints a path as /proc/self/mountinfo writes it, with \, space, tab and newline escaped in octal
+mountinfo_path() {
+  local path=$1 bs='\'
+  path=${path//"$bs"/"${bs}134"}
+  path=${path// /"${bs}040"}
+  path=${path//$'\t'/"${bs}011"}
+  path=${path//$'\n'/"${bs}012"}
+  printf '%s' "$path"
 }
-# allexport (-a) exports functions too; keep this one out of Tomcat's environment
-export -fn has_mount_point
+
+# Succeeds if the given path is a mount point
+is_mount_point() {
+  [[ $'\n'"$MOUNT_POINTS"$'\n' == *$'\n'"$(mountinfo_path "$1")"$'\n'* ]]
+}
+
+# Succeeds if there is a mount point below the given directory
+has_mount_point_below() {
+  [[ $'\n'"$MOUNT_POINTS"$'\n' == *$'\n'"$(mountinfo_path "$1")"/* ]]
+}
+
+# Deletes everything in the given directory except mount points, descending into directories that contain one
+clear_except_mount_points() {
+  local entry
+  for entry in "$1"/* "$1"/.[!.]* "$1"/..?*; do
+    [[ -e "$entry" || -L "$entry" ]] || continue
+    if is_mount_point "$entry"; then
+      echo "Keeping $entry, which is a mount point"
+    elif [[ -d "$entry" && ! -L "$entry" ]] && has_mount_point_below "$entry"; then
+      clear_except_mount_points "$entry"
+    else
+      rm -fR "$entry"
+    fi
+  done
+}
+
+# Copies a distribution folder into the data directory, unless the target can't be written to (e.g. a read-only mount)
+copy_distribution() {
+  [ -d "$1" ] || return 0
+  if [ ! -w "$2" ]; then
+    echo "Warning: $2 is not writable. Not copying $1 into it."
+    return 0
+  fi
+  # Copy preserving timestamps to avoid redeploys
+  cp -a "$1/." "$2"
+}
+
+# allexport (-a) exports functions too; keep these out of Tomcat's environment
+export -fn mountinfo_path is_mount_point has_mount_point_below clear_except_mount_points copy_distribution
 
 echo "Deleting modules, OWAs, configuration and frontend from OpenMRS"
 
-for dir in "$OMRS_MODULES_DIR" "$OMRS_OWA_DIR" "$OMRS_CONFIG_DIR" "$OMRS_FRONTEND_DIR"; do
-  if has_mount_point "$dir"; then
-    # Emptying it would delete files from the host, and fail on the mount point itself
-    echo "Warning: $dir is, or contains, a mount point. Leaving what is in it in place."
-  else
-    rm -fR "${dir:?}"
-    mkdir "$dir"
-  fi
-done
+# Mount points are kept: deleting what is in them would delete files from the host
+if MOUNT_POINTS=$(awk '{ print $5 }' /proc/self/mountinfo); then
+  for data_dir in "$OMRS_MODULES_DIR" "$OMRS_OWA_DIR" "$OMRS_CONFIG_DIR" "$OMRS_FRONTEND_DIR"; do
+    data_dir_real=$([[ -d "$data_dir" && ! -L "$data_dir" ]] && cd "$data_dir" && pwd -P || true)
+    if [[ -n "$data_dir_real" ]] && is_mount_point "$data_dir_real"; then
+      echo "Warning: $data_dir is a mount point. Leaving what is in it in place."
+    elif [[ -n "$data_dir_real" ]] && has_mount_point_below "$data_dir_real"; then
+      echo "$data_dir contains mount points. Deleting everything else in it."
+      clear_except_mount_points "$data_dir_real"
+    else
+      rm -fR "${data_dir:?}"
+      mkdir "$data_dir"
+    fi
+  done
+  unset data_dir data_dir_real
+else
+  echo "Warning: could not read mount points. Leaving modules, OWAs, configuration and frontend in place."
+fi
+unset MOUNT_POINTS
 
 echo "Loading distribution artifacts into OpenMRS"
 
-# Copy preserving timestamps to avoid redeploys
-[ -d "$OMRS_DISTRO_MODULES" ] && cp -a "$OMRS_DISTRO_MODULES/." "$OMRS_MODULES_DIR"
-[ -d "$OMRS_DISTRO_OWAS" ] && cp -a "$OMRS_DISTRO_OWAS/." "$OMRS_OWA_DIR"
-[ -d "$OMRS_DISTRO_CONFIG" ] && cp -a "$OMRS_DISTRO_CONFIG/." "$OMRS_CONFIG_DIR"
-[ -d "$OMRS_DISTRO_FRONTEND" ] && cp -a "$OMRS_DISTRO_FRONTEND/." "$OMRS_FRONTEND_DIR"
+copy_distribution "$OMRS_DISTRO_MODULES" "$OMRS_MODULES_DIR"
+copy_distribution "$OMRS_DISTRO_OWAS" "$OMRS_OWA_DIR"
+copy_distribution "$OMRS_DISTRO_CONFIG" "$OMRS_CONFIG_DIR"
+copy_distribution "$OMRS_DISTRO_FRONTEND" "$OMRS_FRONTEND_DIR"
 
 # Setup database configuration properties
 if [[ -z $OMRS_DB || "$OMRS_DB" == "mysql" ]]; then
