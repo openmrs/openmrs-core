@@ -690,6 +690,30 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ProgramWorkflowService#saveProgram(Program)
+	 */
+	@Test
+	public void saveProgram_shouldAddAWorkflowToAProgramWhoseNewWorkflowWasAlreadyFlushed() {
+		Program program = pws.getProgram(1);
+		ProgramWorkflow first = new ProgramWorkflow();
+		first.setConcept(cs.getConcept(4));
+		program.addWorkflow(first);
+		pws.saveProgram(program);
+		Context.flushSession();
+
+		ProgramWorkflow second = new ProgramWorkflow();
+		second.setConcept(cs.getConcept(5));
+		program.addWorkflow(second);
+		pws.saveProgram(program);
+		Context.flushSession();
+		Context.clearSession();
+
+		Program saved = pws.getProgram(1);
+		assertNotNull(saved.getWorkflowByName(cs.getConcept(4).getName().getName()));
+		assertNotNull(saved.getWorkflowByName(cs.getConcept(5).getName().getName()));
+	}
+
+	/**
 	 * @throws InterruptedException
 	 * @see ProgramWorkflowService#triggerStateConversion(Patient,Concept,Date)
 	 */
