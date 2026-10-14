@@ -7,6 +7,19 @@
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
 
+# Connection settings set explicitly, which are also applied to an existing runtime properties file
+DB_SETTINGS_FROM_ENV=()
+[[ -n "${OMRS_DB_USERNAME:-}${OMRS_CONFIG_CONNECTION_USERNAME:-}" ]] && DB_SETTINGS_FROM_ENV+=(OMRS_DB_USERNAME)
+[[ -n "${OMRS_DB_PASSWORD:-}${OMRS_CONFIG_CONNECTION_PASSWORD:-}" ]] && DB_SETTINGS_FROM_ENV+=(OMRS_DB_PASSWORD)
+for i in OMRS_DB OMRS_DB_URL OMRS_DB_HOSTNAME OMRS_DB_PORT OMRS_DB_NAME OMRS_DB_ARGS OMRS_DB_EXTRA_ARGS OMRS_DB_JDBC_PROTOCOL \
+  OMRS_CONFIG_DATABASE OMRS_CONFIG_CONNECTION_URL OMRS_CONFIG_CONNECTION_SERVER OMRS_CONFIG_CONNECTION_PORT \
+  OMRS_CONFIG_CONNECTION_DATABASE OMRS_CONFIG_CONNECTION_ARGS OMRS_CONFIG_CONNECTION_EXTRA_ARGS OMRS_CONFIG_JDBC_URL_PROTOCOL; do
+  if [[ -n "${!i:-}" ]]; then
+    DB_SETTINGS_FROM_ENV+=(OMRS_DB_URL)
+    break
+  fi
+done
+
 # ----------------------------------
 # Configurable environment variables
 OMRS_ADMIN_USER_PASSWORD=${OMRS_ADMIN_USER_PASSWORD:-Admin123}
@@ -211,6 +224,17 @@ if [[ -n "${EXTRA_VARS+x}" ]]; then
 fi
 
 if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
+  # Applied before the extra properties, so that OMRS_EXTRA_CONNECTION_* still wins as on first install
+  if [[ ${#DB_SETTINGS_FROM_ENV[@]} -gt 0 ]]; then
+    for i in "${DB_SETTINGS_FROM_ENV[@]}"; do
+      printf 'connection.%s=%s\n' "$(tr 'A-Z' 'a-z' <<< "${i#OMRS_DB_}")" "$(escape_property "${!i}")"
+    done > openmrs-connection.properties
+    echo "Updating $(cut -d= -f1 openmrs-connection.properties | paste -sd ' ') in $OMRS_RUNTIME_PROPERTIES_FILE from the environment."
+    awk -F= '!a[$1]++' openmrs-connection.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+    mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
+    rm openmrs-connection.properties
+  fi
+
   if [ -f "openmrs-extra.properties" ]; then
     echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Merging with extra properties."
     awk -F= '!a[$1]++' "openmrs-extra.properties" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
