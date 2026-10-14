@@ -19,6 +19,8 @@ for i in OMRS_DB OMRS_DB_URL OMRS_DB_HOSTNAME OMRS_DB_PORT OMRS_DB_NAME OMRS_DB_
     break
   fi
 done
+# The driver class goes with the URL, whose protocol depends on OMRS_DB
+[[ -n "${OMRS_DB_DRIVER_CLASS:-}" || "${DB_SETTINGS_FROM_ENV[*]-}" == *OMRS_DB_URL* ]] && DB_SETTINGS_FROM_ENV+=(OMRS_DB_DRIVER_CLASS)
 
 # ----------------------------------
 # Configurable environment variables
@@ -163,12 +165,12 @@ escape_property() {
 # allexport (-a) exports functions too; keep this one out of Tomcat's environment
 export -fn escape_property
 
-# Prints the entries of the given properties files, keeping the first for each key as Java parses keys
+# Prints the given properties files, leaving out entries of the last file whose key (as Java parses it) is in an earlier one
 merge_properties() {
   awk '
     function key(l) { sub(/^[ \t\f]+/, "", l); if (l == "" || l ~ /^[#!]/) return ""; sub(/[=: \t\f].*$/, "", l); return l }
     cont { if (keep) print; cont = /(^|[^\\])(\\\\)*\\$/; next }
-    { k = key($0); keep = (k == "" || !(k in seen)); seen[k]; if (keep) print; cont = (k != "" && /(^|[^\\])(\\\\)*\\$/) }
+    { k = key($0); keep = (k == "" || !(k in seen)); if (FILENAME != ARGV[ARGC - 1]) seen[k]; if (keep) print; cont = (k != "" && /(^|[^\\])(\\\\)*\\$/) }
   ' "$@"
 }
 export -fn merge_properties
