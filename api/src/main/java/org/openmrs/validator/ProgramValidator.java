@@ -61,9 +61,6 @@ public class ProgramValidator implements Validator {
 			if (existingProgram != null && !existingProgram.getUuid().equals(p.getUuid())) {
 				errors.rejectValue("name", "general.error.nameAlreadyInUse");
 			}
-			if (existingProgram != null && existingProgram.getUuid().equals(p.getUuid())) {
-				Context.evictFromSession(existingProgram);
-			}
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name");
 		}
 	}
