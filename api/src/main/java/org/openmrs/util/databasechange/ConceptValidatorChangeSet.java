@@ -494,7 +494,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 */
 	private List<Locale> getAllowedLocalesList(JdbcConnection connection) {
 		Statement stmt = null;
-		Set<Locale> allowedLocales = new LinkedHashSet<>();
+		Set<Locale> localeSet = new LinkedHashSet<>();
 
 		try {
 			//get the default locale
@@ -515,7 +515,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				}
 			}
 
-			allowedLocales.add(defaultLocale);
+			localeSet.add(defaultLocale);
 
 			//get the locale.allowed.list
 			ResultSet rsAllowedLocales = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
@@ -527,7 +527,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					String[] localesArray = allowedLocaleStr.split(",");
 					for (String localeStr : localesArray) {
 						if (localeStr.trim().length() > 1) {
-							allowedLocales.add(LocaleUtility.fromSpecification(localeStr.trim()));
+							localeSet.add(LocaleUtility.fromSpecification(localeStr.trim()));
 						} else {
 							updateWarnings.add(
 							    "'" + localeStr + "' is an invalid value for the global property locale.allowed.list");
@@ -550,9 +550,9 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		}
 
 		//if it isn't among
-		allowedLocales.add(new Locale("en"));
+		localeSet.add(new Locale("en"));
 
-		return new ArrayList<>(allowedLocales);
+		return new ArrayList<>(localeSet);
 	}
 
 	/**

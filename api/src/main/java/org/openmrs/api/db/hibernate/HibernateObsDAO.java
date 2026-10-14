@@ -10,6 +10,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -343,31 +344,31 @@ public class HibernateObsDAO implements ObsDAO {
 
 		List<Predicate> predicates = new ArrayList<>();
 
-		if (whom != null && !whom.isEmpty()) {
+		if (isNotEmpty(whom)) {
 			predicates.add(root.get("person").in(whom));
 		}
 
-		if (encounters != null && !encounters.isEmpty()) {
+		if (isNotEmpty(encounters)) {
 			predicates.add(root.get("encounter").in(encounters));
 		}
 
-		if (questions != null && !questions.isEmpty()) {
+		if (isNotEmpty(questions)) {
 			predicates.add(root.get("concept").in(questions));
 		}
 
-		if (answers != null && !answers.isEmpty()) {
+		if (isNotEmpty(answers)) {
 			predicates.add(root.get("valueCoded").in(answers));
 		}
 
-		if (personTypes != null && !personTypes.isEmpty()) {
+		if (isNotEmpty(personTypes)) {
 			predicates.addAll(getCriteriaPersonModifier(cb, root, personTypes));
 		}
 
-		if (locations != null && !locations.isEmpty()) {
+		if (isNotEmpty(locations)) {
 			predicates.add(root.get("location").in(locations));
 		}
 
-		if (visits != null && !visits.isEmpty()) {
+		if (isNotEmpty(visits)) {
 			predicates.add(root.get("encounter").get("visit").in(visits));
 		}
 
@@ -383,7 +384,7 @@ public class HibernateObsDAO implements ObsDAO {
 			predicates.add(cb.lessThanOrEqualTo(root.get(OBS_DATETIME), toDate));
 		}
 
-		if (valueCodedNameAnswers != null && !valueCodedNameAnswers.isEmpty()) {
+		if (isNotEmpty(valueCodedNameAnswers)) {
 			predicates.add(root.get("valueCodedName").in(valueCodedNameAnswers));
 		}
 
@@ -398,9 +399,13 @@ public class HibernateObsDAO implements ObsDAO {
 		return predicates;
 	}
 
+	private static boolean isNotEmpty(Collection<?> collection) {
+		return collection != null && !collection.isEmpty();
+	}
+
 	private List<Order> createOrderList(CriteriaBuilder cb, Root<Obs> root, List<String> sortList) {
 		List<Order> orders = new ArrayList<>();
-		if (sortList != null && !sortList.isEmpty()) {
+		if (isNotEmpty(sortList)) {
 			for (String sort : sortList) {
 				if (StringUtils.isNotBlank(sort)) {
 					String fieldName = getSortField(sort);
