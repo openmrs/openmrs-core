@@ -90,6 +90,23 @@ OMRS_FRONTEND_DIR="$OMRS_DATA_DIR/frontend"
 OMRS_SERVER_PROPERTIES_FILE="$OMRS_HOME/$OMRS_WEBAPP_NAME-server.properties"
 OMRS_RUNTIME_PROPERTIES_FILE="$OMRS_DATA_DIR/$OMRS_WEBAPP_NAME-runtime.properties"
 
+# Stops startup if anything is mounted at or below a folder that is rebuilt from the distribution on every start
+fail_if_mounted() {
+  if [[ $'\n'"$MOUNT_POINTS"$'\n' == *$'\n'"$1"$'\n'* || $'\n'"$MOUNT_POINTS" == *$'\n'"$1"/* ]]; then
+    echo "Error: $1 is, or contains, a mount point. It is rebuilt from $2 on every start, so mount into $2 instead." >&2
+    exit 1
+  fi
+}
+# allexport (-a) exports functions too; keep this one out of Tomcat's environment
+export -fn fail_if_mounted
+
+MOUNT_POINTS=$(awk '{ print $5 }' /proc/self/mountinfo)
+fail_if_mounted "$OMRS_MODULES_DIR" "$OMRS_DISTRO_MODULES"
+fail_if_mounted "$OMRS_OWA_DIR" "$OMRS_DISTRO_OWAS"
+fail_if_mounted "$OMRS_CONFIG_DIR" "$OMRS_DISTRO_CONFIG"
+fail_if_mounted "$OMRS_FRONTEND_DIR" "$OMRS_DISTRO_FRONTEND"
+unset MOUNT_POINTS
+
 echo "Deleting modules, OWAs, configuration and frontend from OpenMRS"
 
 rm -fR "${OMRS_MODULES_DIR:?}"
