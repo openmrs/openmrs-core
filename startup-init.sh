@@ -90,16 +90,30 @@ OMRS_FRONTEND_DIR="$OMRS_DATA_DIR/frontend"
 OMRS_SERVER_PROPERTIES_FILE="$OMRS_HOME/$OMRS_WEBAPP_NAME-server.properties"
 OMRS_RUNTIME_PROPERTIES_FILE="$OMRS_DATA_DIR/$OMRS_WEBAPP_NAME-runtime.properties"
 
+# Succeeds if the given directory is, or contains, a mount point (mountinfo escapes \, space, tab and newline in octal)
+has_mount_point() {
+  local dir bs='\'
+  dir=$(cd "$1" 2>/dev/null && pwd -P) || return 1
+  dir=${dir//"$bs"/"${bs}134"}
+  dir=${dir// /"${bs}040"}
+  dir=${dir//$'\t'/"${bs}011"}
+  dir=${dir//$'\n'/"${bs}012"}
+  MOUNT_DIR=$dir awk '$5 == ENVIRON["MOUNT_DIR"] || index($5, ENVIRON["MOUNT_DIR"] "/") == 1 { found = 1; exit } END { exit !found }' /proc/self/mountinfo
+}
+# allexport (-a) exports functions too; keep this one out of Tomcat's environment
+export -fn has_mount_point
+
 echo "Deleting modules, OWAs, configuration and frontend from OpenMRS"
 
-rm -fR "${OMRS_MODULES_DIR:?}"
-mkdir "${OMRS_MODULES_DIR}"
-rm -fR "${OMRS_OWA_DIR:?}"
-mkdir "${OMRS_OWA_DIR}"
-rm -fR "${OMRS_CONFIG_DIR:?}"
-mkdir "${OMRS_CONFIG_DIR}"
-rm -fR "${OMRS_FRONTEND_DIR:?}"
-mkdir "${OMRS_FRONTEND_DIR}"
+for dir in "$OMRS_MODULES_DIR" "$OMRS_OWA_DIR" "$OMRS_CONFIG_DIR" "$OMRS_FRONTEND_DIR"; do
+  if has_mount_point "$dir"; then
+    # Emptying it would delete files from the host, and fail on the mount point itself
+    echo "Warning: $dir is, or contains, a mount point. Leaving what is in it in place."
+  else
+    rm -fR "${dir:?}"
+    mkdir "$dir"
+  fi
+done
 
 echo "Loading distribution artifacts into OpenMRS"
 
