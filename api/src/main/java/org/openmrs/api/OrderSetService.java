@@ -15,9 +15,11 @@ import org.openmrs.OrderSet;
 import org.openmrs.OrderSetAttribute;
 import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderSetDAO;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Order Sets.
@@ -45,7 +47,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ORDER_SETS })
+	@PreAuthorize("hasPermission(#orderSet, '" + PrivilegeConstants.MANAGE_ORDER_SETS + "')")
 	OrderSet saveOrderSet(OrderSet orderSet) throws APIException;
 
 	/**
@@ -57,7 +59,8 @@ public interface OrderSetService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_SETS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDER_SETS + "')")
 	List<OrderSet> getOrderSets(boolean includeRetired) throws APIException;
 
 	/**
@@ -69,7 +72,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	@PreAuthorize("hasPermission(#orderSetId, 'OrderSet', '" + PrivilegeConstants.GET_ORDER_SETS + "')")
 	OrderSet getOrderSet(Integer orderSetId) throws APIException;
 
 	/**
@@ -81,7 +84,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	@PreAuthorize("hasPermission(#orderSetUuid, 'OrderSet', '" + PrivilegeConstants.GET_ORDER_SETS + "')")
 	OrderSet getOrderSetByUuid(String orderSetUuid) throws APIException;
 
 	/**
@@ -94,7 +97,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ORDER_SETS })
+	@PreAuthorize("hasPermission(#orderSet, '" + PrivilegeConstants.MANAGE_ORDER_SETS + "')")
 	OrderSet retireOrderSet(OrderSet orderSet, String retireReason) throws APIException;
 
 	/**
@@ -106,7 +109,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ORDER_SETS })
+	@PreAuthorize("hasPermission(#orderSet, '" + PrivilegeConstants.MANAGE_ORDER_SETS + "')")
 	OrderSet unretireOrderSet(OrderSet orderSet) throws APIException;
 
 	/**
@@ -120,7 +123,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	@PreAuthorize("hasPermission(#uuid, 'OrderSetMember', '" + PrivilegeConstants.GET_ORDER_SETS + "')")
 	OrderSetMember getOrderSetMemberByUuid(String uuid);
 
 	/**
@@ -134,7 +137,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @should get the order set attribute with the given uuid
 	 * @should return null if no order set attribute has the given uuid
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	@PreAuthorize("hasPermission(#uuid, 'OrderSetAttribute', '" + PrivilegeConstants.GET_ORDER_SETS + "')")
 	OrderSetAttribute getOrderSetAttributeByUuid(String uuid);
 
 	/**
@@ -146,7 +149,8 @@ public interface OrderSetService extends OpenmrsService {
 	 * @since 2.4.0
 	 * @should return all orderSet attribute types including retired ones
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	List<OrderSetAttributeType> getAllOrderSetAttributeTypes();
 
 	/**
@@ -160,7 +164,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @should return the orderSet attribute type with the given id
 	 * @should return null if no orderSet attribute type exists with the given id
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#id, 'OrderSetAttributeType', '" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	OrderSetAttributeType getOrderSetAttributeType(Integer id);
 
 	/**
@@ -174,7 +178,8 @@ public interface OrderSetService extends OpenmrsService {
 	 * @should return the orderSet attribute type with the given uuid
 	 * @should return null if no orderSet attribute type exists with the given uuid
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#uuid, 'OrderSetAttributeType', '" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES
+	        + "')")
 	OrderSetAttributeType getOrderSetAttributeTypeByUuid(String uuid);
 
 	/**
@@ -188,7 +193,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @should create a new orderSet attribute type
 	 * @should edit an existing orderSet attribute type
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#orderSetAttributeType, '" + PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	OrderSetAttributeType saveOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
 
 	/**
@@ -201,7 +206,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @since 2.4.0
 	 * @should retire a orderSet attribute type
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#orderSetAttributeType, '" + PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	OrderSetAttributeType retireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType, String reason);
 
 	/**
@@ -214,7 +219,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @since 2.4.0
 	 * @should unretire a retired orderSet attribute type
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#orderSetAttributeType, '" + PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	OrderSetAttributeType unretireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
 
 	/**
@@ -226,7 +231,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * @since 2.4.0
 	 * @should completely remove an order set attribute type
 	 */
-	@Authorized(PrivilegeConstants.PURGE_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#orderSetAttributeType, '" + PrivilegeConstants.PURGE_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	void purgeOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
 
 	/**
@@ -240,7 +245,8 @@ public interface OrderSetService extends OpenmrsService {
 	 * @should return the orderSet attribute type with the specified name
 	 * @should return null if no orderSet attribute type exists with the specified name
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	OrderSetAttributeType getOrderSetAttributeTypeByName(String orderSetAttributeTypeName);
 
 }

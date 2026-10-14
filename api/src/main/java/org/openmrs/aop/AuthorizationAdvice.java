@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.util.PrivilegeConstants;
@@ -36,7 +37,6 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreFilter;
-import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -216,7 +216,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	}
 
 	/**
-	 * Throws an {@link AuthorizationDeniedException} stating why the user failed
+	 * Throws an {@link APIAuthenticationException} stating why the user failed
 	 *
 	 * @param user authenticated user
 	 * @param method acting method
@@ -224,12 +224,12 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 */
 	private void throwUnauthorized(User user, Method method, Collection<String> attrs) {
 		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
-		throw new AuthorizationDeniedException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
+		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { StringUtils.join(attrs, ",") }, Locale.getDefault()));
 	}
 
 	/**
-	 * Throws an {@link AuthorizationDeniedException} stating why the user failed
+	 * Throws an {@link APIAuthenticationException} stating why the user failed
 	 *
 	 * @param user authenticated user
 	 * @param method acting method
@@ -237,20 +237,19 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 */
 	private void throwUnauthorized(User user, Method method, String attr) {
 		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
-		throw new AuthorizationDeniedException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
+		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { attr }, Locale.getDefault()));
 	}
 
 	/**
-	 * Throws an {@link AuthorizationDeniedException} stating why the user failed
+	 * Throws an {@link APIAuthenticationException} stating why the user failed
 	 *
 	 * @param user authenticated user
 	 * @param method acting method
 	 */
 	private void throwUnauthorized(User user, Method method) {
 		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
-		throw new AuthorizationDeniedException(
-		        Context.getMessageSourceService().getMessage("error.aunthenticationRequired"));
+		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.aunthenticationRequired"));
 	}
 
 	/**
