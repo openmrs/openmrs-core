@@ -92,7 +92,9 @@ OMRS_RUNTIME_PROPERTIES_FILE="$OMRS_DATA_DIR/$OMRS_WEBAPP_NAME-runtime.propertie
 
 # Stops startup if anything is mounted at or below a folder that is rebuilt from the distribution on every start
 fail_if_mounted() {
-  if [[ $'\n'"$MOUNT_POINTS"$'\n' == *$'\n'"$1"$'\n'* || $'\n'"$MOUNT_POINTS" == *$'\n'"$1"/* ]]; then
+  local dir
+  dir=$(realpath -m "$1")
+  if [[ $'\n'"$MOUNT_POINTS"$'\n' == *$'\n'"$dir"$'\n'* || $'\n'"$MOUNT_POINTS" == *$'\n'"$dir"/* ]]; then
     echo "Error: $1 is, or contains, a mount point. It is rebuilt from $2 on every start, so mount into $2 instead." >&2
     exit 1
   fi
