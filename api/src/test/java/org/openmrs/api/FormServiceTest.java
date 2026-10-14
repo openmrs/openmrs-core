@@ -195,7 +195,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		assertTrue(field1.getFieldType().equals(fieldtype2));
 		assertTrue(field1.getTableName().equals(table2));
 		assertTrue(field1.getAttributeName().equals(attr2));
-		assertTrue(field1.getSelectMultiple().equals(multi2));
+		assertTrue(field1.getSelectMultiple() == multi2);
 
 		//testing deletion
 

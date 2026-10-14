@@ -305,17 +305,19 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#isDirty()
-	 * @deprecated as of 2.0, use {@link #getDirty()}
 	 */
-	@Deprecated
 	@JsonIgnore
 	@Override
 	public boolean isDirty() {
-		return getDirty();
+		return dirty;
 	}
 
+	/**
+	 * @deprecated as of 2.0, use {@link #isDirty()}
+	 */
+	@Deprecated
 	public boolean getDirty() {
-		return dirty;
+		return isDirty();
 	}
 
 	/**

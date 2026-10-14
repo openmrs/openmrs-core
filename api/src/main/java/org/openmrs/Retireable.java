@@ -27,18 +27,21 @@ import java.util.Date;
 public interface Retireable extends OpenmrsObject {
 
 	/**
-	 * @return Boolean - whether of not this object is retired
-	 * @deprecated as of 2.0, use {@link #getRetired()}
+	 * @return boolean - whether of not this object is retired
+	 */
+	public boolean isRetired();
+
+	/**
+	 * @return true if this object is retired and otherwise false
+	 * @deprecated use {@link #isRetired()}
 	 */
 	@Deprecated
-	public Boolean isRetired();
-
-	public Boolean getRetired();
+	public boolean getRetired();
 
 	/**
 	 * @param retired - whether of not this object is retired
 	 */
-	public void setRetired(Boolean retired);
+	public void setRetired(boolean retired);
 
 	/**
 	 * @return User - the user who retired the object

@@ -53,10 +53,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
- * although that person may have other user accounts. Users have login credentials
- * (username/password) and can have special user properties. User properties are just simple
- * key-value pairs for either quick info or display specific info that needs to be persisted (like
+ * Defines a User Account in the system. This account belongs to a
+ * {@link Person} in the system,
+ * although that person may have other user accounts. Users have login
+ * credentials
+ * (username/password) and can have special user properties. User properties are
+ * just simple
+ * key-value pairs for either quick info or display specific info that needs to
+ * be persisted (like
  * locale preferences, search options, etc)
  */
 
@@ -164,8 +168,10 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	}
 
 	/**
-	 * This method shouldn't be used directly. Use org.openmrs.api.context.Context#hasPrivilege so that
-	 * anonymous/authenticated/proxy privileges are all included Return true if this user has the
+	 * This method shouldn't be used directly. Use
+	 * org.openmrs.api.context.Context#hasPrivilege so that
+	 * anonymous/authenticated/proxy privileges are all included Return true if this
+	 * user has the
 	 * specified privilege
 	 *
 	 * @param privilege
@@ -207,10 +213,12 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	/**
 	 * Checks if this user has the given String role
 	 *
-	 * @param r String name of a role to check
-	 * @param ignoreSuperUser If this is false, then this method will always return true for a
-	 *            superuser.
-	 * @return Returns true if the user has the given role, or if ignoreSuperUser is false and the user
+	 * @param r               String name of a role to check
+	 * @param ignoreSuperUser If this is false, then this method will always return
+	 *                        true for a
+	 *                        superuser.
+	 * @return Returns true if the user has the given role, or if ignoreSuperUser is
+	 *         false and the user
 	 *         is a superUser
 	 */
 	public boolean hasRole(String r, boolean ignoreSuperUser) {
@@ -230,10 +238,12 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	}
 
 	/**
-	 * Checks if the user has a given role. Role name comparisons are not case sensitive.
+	 * Checks if the user has a given role. Role name comparisons are not case
+	 * sensitive.
 	 * <p>
 	 * <strong>Should</strong> return true if the user has the given role<br/>
-	 * <strong>Should</strong> return false if the user does not have the given role<br/>
+	 * <strong>Should</strong> return false if the user does not have the given
+	 * role<br/>
 	 * <strong>Should</strong> be case insensitive
 	 *
 	 * @param roleName the name of the role to check
@@ -249,7 +259,8 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	}
 
 	/**
-	 * Get <i>all</i> privileges this user has. This delves into all of the roles that a person has,
+	 * Get <i>all</i> privileges this user has. This delves into all of the roles
+	 * that a person has,
 	 * appending unique privileges
 	 *
 	 * @return Collection of complete Privileges this user has
@@ -273,7 +284,8 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	// Property accessors
 
 	/**
-	 * Returns all roles attributed to this user by expanding the role list to include the parents of
+	 * Returns all roles attributed to this user by expanding the role list to
+	 * include the parents of
 	 * the assigned roles
 	 *
 	 * @return all roles (inherited from parents and given) for this user
@@ -540,7 +552,8 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	}
 
 	/**
-	 * Get prop property from this user's properties. If prop is not found in properties, return empty
+	 * Get prop property from this user's properties. If prop is not found in
+	 * properties, return empty
 	 * string
 	 *
 	 * @param prop
@@ -555,7 +568,8 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	}
 
 	/**
-	 * Get prop property from this user's properties. If prop is not found in properties, return
+	 * Get prop property from this user's properties. If prop is not found in
+	 * properties, return
 	 * <code>defaultValue</code>
 	 *
 	 * @param prop
@@ -619,7 +633,7 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 		String proficientLocalesProperty = getUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES);
 
 		if ((proficientLocales == null)
-		        || (!OpenmrsUtil.nullSafeEquals(parsedProficientLocalesProperty, proficientLocalesProperty))) {
+				|| (!OpenmrsUtil.nullSafeEquals(parsedProficientLocalesProperty, proficientLocalesProperty))) {
 			parsedProficientLocalesProperty = proficientLocalesProperty;
 			proficientLocales = new ArrayList<>();
 			if (proficientLocalesProperty != null) {
@@ -631,9 +645,11 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 							proficientLocales.add(proficientLocale);
 							if (StringUtils.isNotEmpty(proficientLocale.getCountry())) {
 								// add the language also
-								Locale languageOnlyLocale = LocaleUtility.fromSpecification(proficientLocale.getLanguage());
+								Locale languageOnlyLocale = LocaleUtility
+										.fromSpecification(proficientLocale.getLanguage());
 								if (!proficientLocales.contains(languageOnlyLocale)) {
-									proficientLocales.add(LocaleUtility.fromSpecification(proficientLocale.getLanguage()));
+									proficientLocales
+											.add(LocaleUtility.fromSpecification(proficientLocale.getLanguage()));
 								}
 							}
 						}
@@ -705,17 +721,21 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	}
 
 	@Override
-	public Boolean isRetired() {
+	public boolean isRetired() {
 		return retired;
 	}
 
+	/**
+	 * @deprecated as of 2.0, use {@link #isRetired()}
+	 */
 	@Override
-	public Boolean getRetired() {
-		return retired;
+	@Deprecated(since = "2.0")
+	public boolean getRetired() {
+		return isRetired();
 	}
 
 	@Override
-	public void setRetired(Boolean retired) {
+	public void setRetired(boolean retired) {
 		this.retired = retired;
 	}
 
