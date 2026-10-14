@@ -29,6 +29,7 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
@@ -205,7 +206,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('M')", obs));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -215,7 +216,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('M')", obs));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -223,7 +224,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('M')", obs));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -256,8 +257,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
-		    "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", obs));
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -270,8 +271,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
-		    "($patient.getAge() > 1 && $patient.getAge() < 3) || $patient.getGender().equals('M')", obs));
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("($patient.getAge() > 1 && $patient.getAge() < 3) || $patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -284,8 +285,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
-		    "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", obs));
+		assertFalse(conceptReferenceRangeUtility
+		        .evaluateCriteria("$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -298,8 +299,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
-		    "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", obs));
+		assertFalse(conceptReferenceRangeUtility
+		        .evaluateCriteria("$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -307,7 +308,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
 		    () -> conceptReferenceRangeUtility.evaluateCriteria(
-		        "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", (Obs) null));
+		        "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender() == 'M'", (Obs) null));
 
 		assertEquals("Failed to evaluate criteria with reason: Obs is null", thrown.getMessage());
 	}
@@ -357,13 +358,14 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
 		        .thenReturn(Collections.singletonList(obs));
 
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('F') "
-		        + "&& $fn.getLatestObs('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient).getValueText().equals('PREGNANT')",
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$patient.getGender() == 'F' "
+		            + "&& $fn.getLatestObs('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient).getValueText() == 'PREGNANT'",
 		    obs));
 	}
 
 	@Test
-	public void testObsValueMatch_shouldReturnTrueIfPersonAttributeMatch() {
+	public void testSandbox_shouldBlockGettersThatTakeArguments() {
 		PersonAttributeType personAttributeType = new PersonAttributeType();
 		personAttributeType.setName("Race");
 		personAttributeType.setSearchable(true);
@@ -376,10 +378,9 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		obs.setValueText("PREGNANT");
 
-		assertTrue(
-		    conceptReferenceRangeUtility.evaluateCriteria("$patient.getAttribute('Race').getValue() == 'Maasai'", obs));
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility
+		        .evaluateCriteria("$patient.getAttribute('Race').getValue() == 'Maasai'", obs));
 	}
 
 	@Test
@@ -1049,6 +1050,158 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		assertThrows(APIException.class,
 		    () -> conceptReferenceRangeUtility.evaluateCriteria("$fn.evaluateCriteria('$patient.getAge() > 0', $obs)", obs));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockSetters() {
+		person.setDead(false);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.setDead(true) || true", obs));
+		assertFalse(person.getDead());
+	}
+
+	@Test
+	public void testSandbox_shouldBlockCollectionMutation() {
+		person.addName(new PersonName("John", null, "Doe"));
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.getNames().clear() == null", obs));
+		assertEquals(1, person.getNames().size());
+	}
+
+	@Test
+	public void testSandbox_shouldBlockRoleMutationThroughEncounterCreator() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		int roleCount = encounter.getCreator().getRoles().size();
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility
+		        .evaluateCriteria("$encounter.creator.getRoles().add($encounter.creator.getRoles()) || true", obs));
+		assertEquals(roleCount, encounter.getCreator().getRoles().size());
+	}
+
+	@Test
+	public void testSandbox_shouldBlockRoleRemovalThroughObsEncounter() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		int roleCount = encounter.getCreator().getRoles().size();
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$obs.encounter.creator.roles.clear() == null", obs));
+		assertEquals(roleCount, encounter.getCreator().getRoles().size());
+	}
+
+	@Test
+	public void testSandbox_shouldBlockMapAssignment() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility
+		        .evaluateCriteria("$encounter.creator.userProperties['sandbox'] = 'escaped'", obs));
+		assertFalse(encounter.getCreator().getUserProperties().containsKey("sandbox"));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockPropertyAssignment() {
+		person.setDead(false);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("($patient.dead = true) == true", obs));
+		assertFalse(person.getDead());
+	}
+
+	@Test
+	public void testSandbox_shouldBlockGetAgeWithDateArgument() {
+		calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -5);
+		person.setBirthdate(calendar.getTime());
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.getAge($date) > 1", obs));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockHibernateProxyAccess() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility
+		        .evaluateCriteria("$encounter.creator.getHibernateLazyInitializer().getSession() != null", obs));
+	}
+
+	@Test
+	public void testSupported_shouldAllowIsAccessors() {
+		person.setDead(false);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.isDead() == false", obs));
+	}
+
+	@Test
+	public void testSupported_shouldAllowHasAccessors() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$obs.hasGroupMembers() == false", obs));
+	}
+
+	@Test
+	public void testSupported_shouldAllowPropertyNavigation() {
+		person.setGender("M");
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.gender == 'M'", obs));
+	}
+
+	@Test
+	public void testSupported_shouldAllowChainedZeroArgumentGetters() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		assertTrue(
+		    conceptReferenceRangeUtility.evaluateCriteria("$obs.getEncounter().getCreator().getUsername() == 'admin'", obs));
+	}
+
+	@Test
+	public void testSupported_shouldAllowZeroArgumentCollectionAccessors() {
+		person.addName(new PersonName("John", null, "Doe"));
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getNames().isEmpty() == false", obs));
 	}
 
 	private Obs buildObs() {
