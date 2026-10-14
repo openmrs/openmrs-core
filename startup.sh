@@ -81,10 +81,12 @@ if [ "${OMRS_OTEL_ENABLED:-false}" = "true" ]; then
   CATALINA_OPTS="$CATALINA_OPTS -javaagent:/openmrs/java-agents/opentelemetry-javaagent.jar"
 fi
 
-cat > $TOMCAT_SETENV_FILE << EOF
-export JAVA_OPTS="$JAVA_OPTS"
-export CATALINA_OPTS="$CATALINA_OPTS"
-EOF
+# Single-quoted, so catalina.sh's eval is the only shell interpretation
+SQ="'"
+{
+  printf "export JAVA_OPTS='%s'\n" "${JAVA_OPTS//"$SQ"/"$SQ\\$SQ$SQ"}"
+  printf "export CATALINA_OPTS='%s'\n" "${CATALINA_OPTS//"$SQ"/"$SQ\\$SQ$SQ"}"
+} > "$TOMCAT_SETENV_FILE"
 
 echo "Starting up OpenMRS..."
 
