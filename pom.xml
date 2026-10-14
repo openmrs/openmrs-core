@@ -112,6 +112,12 @@
 					<version>3.16.0</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
+						<!-- Retains real method parameter names in compiled bytecode, so Spring Security's
+						     #paramName SpEL bindings (see @PreAuthorize/@PostAuthorize usages) resolve
+						     without needing an explicit @P annotation on every referenced parameter -
+						     required in particular for interface methods, which have no method body for
+						     the debug-info-based discovery fallback to read. -->
+						<parameters>true</parameters>
 					</configuration>
 				</plugin>
 				<plugin>
