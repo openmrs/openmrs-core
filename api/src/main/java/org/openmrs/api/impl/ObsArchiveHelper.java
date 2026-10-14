@@ -255,6 +255,17 @@ public class ObsArchiveHelper {
 		}
 	}
 
+	/**
+	 * Checks if there are any archived observations for the given concept.
+	 * <p>
+	 * NOTE: Intentionally skips the {@link #doesArchiveHaveData()} gate and does not catch
+	 * {@link HibernateException} to return false. Unlike clinical lookups, changing a concept datatype
+	 * is a critical, infrequent metadata operation. Bypassing the cache ensures strong consistency
+	 * directly against the database even during the multi-node cache staleness window, preventing
+	 * irreversible dictionary corruption. Propagating database exceptions ensures an unsafe datatype
+	 * modification is never permitted on error.
+	 * </p>
+	 */
 	public boolean hasArchivedObs(Concept concept) {
 		if (concept == null || concept.getConceptId() == null) {
 			return false;
@@ -267,6 +278,18 @@ public class ObsArchiveHelper {
 		});
 	}
 
+	/**
+	 * Checks if there are any archived observations referencing the given concept name as a coded value
+	 * name.
+	 * <p>
+	 * NOTE: Intentionally skips the {@link #doesArchiveHaveData()} gate and does not catch
+	 * {@link HibernateException} to return false. Concept name purging is a critical metadata operation
+	 * where dictionary integrity must be strictly guarded. Bypassing the cache ensures strong
+	 * consistency directly against the database across cluster replicas, preventing accidental purging
+	 * of names in use by archived observations. Propagating database exceptions ensures an unsafe purge
+	 * is never permitted on error.
+	 * </p>
+	 */
 	public boolean hasArchivedObs(ConceptName conceptName) {
 		if (conceptName == null || conceptName.getConceptNameId() == null) {
 			return false;
@@ -599,12 +622,8 @@ public class ObsArchiveHelper {
 				dummyObs.setObsId(obsId);
 				dummyObs.setConcept(concept);
 				dummyObs.setValueComplex(valueComplex);
-				try {
-					if (!handler.purgeComplexData(dummyObs)) {
-						log.warn("purgeComplexData returned false for archived Obs ID: {}", obsId);
-					}
-				} catch (Exception e) {
-					log.warn("Failed to purge complex data for archived Obs ID: {}", obsId, e);
+				if (!handler.purgeComplexData(dummyObs)) {
+					log.warn("purgeComplexData returned false for archived Obs ID: {}", obsId);
 				}
 			}
 		}

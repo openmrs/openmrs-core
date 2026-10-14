@@ -9,6 +9,8 @@
  */
 package org.openmrs.api;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +35,7 @@ import org.openmrs.api.impl.ObsArchiveHelper;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.obs.handler.AbstractHandler;
+import org.openmrs.obs.handler.TextHandler;
 import org.openmrs.scheduler.tasks.ObsArchivingTaskData;
 import org.openmrs.scheduler.tasks.ObsArchivingTaskHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
@@ -171,6 +174,15 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		assertFalse(obsArchiveHelper.isArchived(obsId), "obs " + obsId + " should NOT be in archive");
 		assertEquals(1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class, obsId),
 		    "obs " + obsId + " should be in active table");
+	}
+
+	private void setArchiveCache(Boolean hasData, long timestamp) throws Exception {
+		Field hasDataField = ObsArchiveHelper.class.getDeclaredField("archiveHasData");
+		hasDataField.setAccessible(true);
+		hasDataField.set(obsArchiveHelper, hasData);
+		Field timestampField = ObsArchiveHelper.class.getDeclaredField("archiveHasDataTimestamp");
+		timestampField.setAccessible(true);
+		timestampField.set(obsArchiveHelper, timestamp);
 	}
 
 	@AfterEach
@@ -1524,6 +1536,101 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 	}
 
 	@Test
+	public void purgeEncounter_shouldThrowAndRetainArchivedComplexObsWhenHandlerPurgeComplexDataThrows() throws Exception {
+		executeDataSet("org/openmrs/api/include/ObsServiceTest-complex.xml");
+		createdObsIds.add(44);
+		createdObsIds.add(45);
+		createdConceptIds.add(8473);
+		createdConceptIds.add(8474);
+
+		ComplexObsHandler originalHandler = obsService.getHandler("TextHandler");
+		ComplexObsHandler throwingHandler = new TextHandler() {
+
+			@Override
+			public boolean purgeComplexData(Obs obs) {
+				throw new UncheckedIOException(new IOException("Simulated storage purge failure"));
+			}
+		};
+
+		Integer obsId = null;
+		String key = null;
+
+		try {
+			// Create a fresh encounter
+			Encounter encounter = new Encounter();
+			encounter.setEncounterDatetime(new Date());
+			encounter.setPatient(Context.getPatientService().getPatient(7));
+			encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+			encounter.setLocation(Context.getLocationService().getLocation(1));
+			encounter = Context.getEncounterService().saveEncounter(encounter);
+			createdEncounterIds.add(encounter.getEncounterId());
+			int encounterId = encounter.getEncounterId();
+
+			Concept concept8474 = Context.getConceptService().getConcept(8474);
+			Obs complexObs = new Obs();
+			complexObs.setPerson(encounter.getPatient());
+			complexObs.setConcept(concept8474);
+			complexObs.setObsDatetime(new Date());
+			complexObs.setLocation(encounter.getLocation());
+			complexObs.setEncounter(encounter);
+			complexObs.setComplexData(
+			    new ComplexData("test_throw_purge.txt", "Sample text data for throw test".toCharArray()));
+			complexObs = obsService.saveObs(complexObs, "save complex obs for encounter");
+			createdObsIds.add(complexObs.getObsId());
+			obsId = complexObs.getObsId();
+
+			ComplexObsHandler handler = obsService.getHandler(complexObs);
+			assertNotNull(handler);
+			key = ((AbstractHandler) handler).parseDataKey(complexObs);
+			assertTrue(storageService.exists(key), "Stored complex file should exist before purge");
+
+			// Void and archive the complex obs
+			obsService.voidObs(complexObs, "test voiding");
+			Context.flushSession();
+			Context.clearSession();
+
+			ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+			archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+			assertArchived(obsId);
+			assertTrue(storageService.exists(key), "Stored complex file should still exist in archive");
+
+			Context.clearSession();
+
+			// Register failing handler under TextHandler
+			obsService.registerHandler("TextHandler", throwingHandler);
+
+			Encounter enc = Context.getEncounterService().getEncounter(encounterId);
+			assertNotNull(enc);
+			assertThrows(UncheckedIOException.class, () -> Context.getEncounterService().purgeEncounter(enc, true));
+
+			Context.clearSession();
+
+			// Verify the archive row, active encounter, and file are still retained for retry
+			assertTrue(obsArchiveHelper.isArchived(obsId),
+			    "Archived complex obs row should still exist when handler throws");
+			assertNotNull(Context.getEncounterService().getEncounter(encounterId), "Encounter should NOT be purged");
+			assertTrue(storageService.exists(key), "Stored complex file should NOT be deleted when handler throws");
+		} finally {
+			obsService.registerHandler("TextHandler", originalHandler);
+			try {
+				if (key != null && storageService.exists(key)) {
+					storageService.purgeData(key);
+				}
+			} catch (Exception ignored) {}
+			if (obsId != null) {
+				jdbcTemplate.update("DELETE FROM obs_reference_range_archive WHERE obs_id = ?", obsId);
+				jdbcTemplate.update("DELETE FROM obs_archive WHERE obs_id = ?", obsId);
+			}
+			jdbcTemplate.update("DELETE FROM obs WHERE obs_id IN (44, 45)");
+			jdbcTemplate.update("DELETE FROM concept_complex WHERE concept_id IN (8473, 8474)");
+			jdbcTemplate.update("DELETE FROM concept_name WHERE concept_id IN (8473, 8474)");
+			jdbcTemplate.update("DELETE FROM concept_description WHERE concept_id IN (8473, 8474)");
+			jdbcTemplate.update("DELETE FROM concept WHERE concept_id IN (8473, 8474)");
+		}
+	}
+
+	@Test
 	public void purgeOrder_shouldThrowWhenOrderHasArchivedObsAndCascadeIsFalse() throws Exception {
 		// Create a fresh order for this test to avoid modifying the standard test dataset
 		TestOrder order = new TestOrder();
@@ -1897,10 +2004,14 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 
 		assertArchived(obsId);
 
-		// 3. Verify hasAnyObservation returns true even though obs table is empty for this concept
+		// 3. Empty the cache to simulate a multi-node cluster where this node hasn't seen the sweep yet
+		setArchiveCache(false, System.currentTimeMillis());
+
+		// Verify hasAnyObservation returns true even though obs table is empty and cache is false
 		Context.clearSession();
 		concept = conceptService.getConcept(28);
-		assertTrue(conceptService.hasAnyObservation(concept));
+		assertTrue(conceptService.hasAnyObservation(concept),
+		    "hasAnyObservation should bypass the cache gate and query the database directly");
 
 		// 4. Attempt to change datatype (e.g., from Text to Coded) and save concept — should be refused
 		concept.setDatatype(conceptService.getConceptDatatypeByName("Coded"));
@@ -1938,9 +2049,13 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 
 		assertArchived(obsId);
 
-		// 3. Verify hasAnyObservation returns true for the conceptName
+		// 3. Empty the cache to simulate a multi-node cluster where this node hasn't seen the sweep yet
+		setArchiveCache(false, System.currentTimeMillis());
+
+		// Verify hasAnyObservation returns true for the conceptName even when cache is false
 		Context.clearSession();
-		assertTrue(conceptService.hasAnyObservation(conceptName));
+		assertTrue(conceptService.hasAnyObservation(conceptName),
+		    "hasAnyObservation should bypass the cache gate and query the database directly");
 
 		// 4. Attempt to purge the concept — should throw ConceptNameInUseException, not DB foreign key error
 		final Concept conceptToPurge = conceptService.getConceptByName("cd4 count");
