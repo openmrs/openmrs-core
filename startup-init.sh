@@ -163,6 +163,16 @@ escape_property() {
 # allexport (-a) exports functions too; keep this one out of Tomcat's environment
 export -fn escape_property
 
+# Prints the entries of the given properties files, keeping the first for each key as Java parses keys
+merge_properties() {
+  awk '
+    function key(l) { sub(/^[ \t\f]+/, "", l); if (l == "" || l ~ /^[#!]/) return ""; sub(/[=: \t\f].*$/, "", l); return l }
+    cont { if (keep) print; cont = /(^|[^\\])(\\\\)*\\$/; next }
+    { k = key($0); keep = (k == "" || !(k in seen)); seen[k]; if (keep) print; cont = (k != "" && /(^|[^\\])(\\\\)*\\$/) }
+  ' "$@"
+}
+export -fn merge_properties
+
 echo "Writing out $OMRS_SERVER_PROPERTIES_FILE"
 
 cat > $OMRS_SERVER_PROPERTIES_FILE << EOF
@@ -230,20 +240,20 @@ if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
       printf 'connection.%s=%s\n' "$(tr 'A-Z' 'a-z' <<< "${i#OMRS_DB_}")" "$(escape_property "${!i}")"
     done > openmrs-connection.properties
     echo "Updating $(cut -d= -f1 openmrs-connection.properties | paste -sd ' ') in $OMRS_RUNTIME_PROPERTIES_FILE from the environment."
-    awk -F= '!a[$1]++' openmrs-connection.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+    merge_properties openmrs-connection.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
     mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
     rm openmrs-connection.properties
   fi
 
   if [ -f "openmrs-extra.properties" ]; then
     echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Merging with extra properties."
-    awk -F= '!a[$1]++' "openmrs-extra.properties" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+    merge_properties "openmrs-extra.properties" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
     mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
   fi
 
   # Ensure admin.password.locked is set in runtime properties
   printf 'admin.password.locked=%s\n' "$(escape_property "${OMRS_ADMIN_PASSWORD_LOCKED}")" > openmrs-admin-locked.properties
-  awk -F= '!a[$1]++' openmrs-admin-locked.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+  merge_properties openmrs-admin-locked.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
   mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
   rm openmrs-admin-locked.properties
 else
