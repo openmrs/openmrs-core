@@ -265,8 +265,8 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 				}
 			}
 		}
-		if (conceptToValidate instanceof ConceptNumeric) {
-			Set<ConceptReferenceRange> referenceRanges = ((ConceptNumeric) conceptToValidate).getReferenceRanges();
+		if (conceptToValidate instanceof ConceptNumeric conceptNumeric) {
+			Set<ConceptReferenceRange> referenceRanges = conceptNumeric.getReferenceRanges();
 			if (CollectionUtils.isNotEmpty(referenceRanges)) {
 				int index = 0;
 				for (ConceptReferenceRange referenceRange : referenceRanges) {
