@@ -14,10 +14,10 @@ import org.openmrs.api.APIException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class HL7ServiceImplTest {
+class HL7ServiceImplTest {
 
 	@Test
-	public void getRefByUuid_shouldThrowExceptionForUnsupportedType() {
+	void getRefByUuid_shouldThrowExceptionForUnsupportedType() {
 		HL7ServiceImpl service = new HL7ServiceImpl();
 
 		APIException exception = assertThrows(APIException.class, () -> service.getRefByUuid(String.class, "test-uuid"));
@@ -26,7 +26,7 @@ public class HL7ServiceImplTest {
 	}
 
 	@Test
-	public void getRefByUuid_shouldHandleNullType() {
+	void getRefByUuid_shouldHandleNullType() {
 		HL7ServiceImpl service = new HL7ServiceImpl();
 
 		APIException exception = assertThrows(APIException.class, () -> service.getRefByUuid(null, "test-uuid"));
