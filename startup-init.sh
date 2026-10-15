@@ -33,7 +33,7 @@ OMRS_HAS_CURRENT_OPENMRS_DATABASE=${OMRS_HAS_CURRENT_OPENMRS_DATABASE:-true}
 OMRS_HOME=${OMRS_HOME:-'/openmrs'}
 # When Set to 'auto' disables installation wizard
 OMRS_INSTALL_METHOD=${OMRS_INSTALL_METHOD:-'auto'}
-# JVM startup parameters
+# JVM startup parameters, read by the shell like Tomcat's JAVA_OPTS: quote special characters, e.g. -Dkey='a$b'
 OMRS_JAVA_SERVER_OPTS=${OMRS_JAVA_SERVER_OPTS:-'-Dfile.encoding=UTF-8 -server -Djava.security.egd=file:/dev/./urandom -Djava.awt.headless=true -Djava.awt.headlesslib=true'}
 # Appended to JAVA_SERVER_OPTS
 OMRS_JAVA_MEMORY_OPTS=${OMRS_JAVA_MEMORY_OPTS:-'-XX:NewSize=128m'}
