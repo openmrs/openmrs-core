@@ -1204,6 +1204,50 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getNames().isEmpty() == false", obs));
 	}
 
+	@Test
+	public void findDisallowedMethodCalls_shouldReturnEmptyListForAllowedCriteria() throws Exception {
+		assertTrue(
+		    ConceptReferenceRangeUtility.findDisallowedMethodCalls("$patient.getAge() > 1 && $patient.isDead() == false "
+		            + "&& $fn.getDays($fn.getLatestObsDate('CIEL:1234', $patient)) > 3 && $obs.hasGroupMembers() == false")
+		            .isEmpty());
+	}
+
+	@Test
+	public void findDisallowedMethodCalls_shouldReportSetters() throws Exception {
+		assertEquals(Collections.singletonList("setDead(true)"),
+		    ConceptReferenceRangeUtility.findDisallowedMethodCalls("$patient.setDead(true) || true"));
+	}
+
+	@Test
+	public void findDisallowedMethodCalls_shouldReportGettersWithArguments() throws Exception {
+		assertEquals(Collections.singletonList("getAttribute('Race')"),
+		    ConceptReferenceRangeUtility.findDisallowedMethodCalls("$patient.getAttribute('Race') != null"));
+	}
+
+	@Test
+	public void findDisallowedMethodCalls_shouldReportCollectionMutatorsReachedThroughProperties() throws Exception {
+		assertEquals(Collections.singletonList("clear()"),
+		    ConceptReferenceRangeUtility.findDisallowedMethodCalls("$encounter.creator.roles.clear() == null"));
+	}
+
+	@Test
+	public void findDisallowedMethodCalls_shouldReportDisallowedCallsInsideHelperArguments() throws Exception {
+		assertEquals(Collections.singletonList("add(null)"), ConceptReferenceRangeUtility
+		        .findDisallowedMethodCalls("$fn.getDays($encounter.creator.getRoles().add(null)) > 1"));
+	}
+
+	@Test
+	public void findDisallowedMethodCalls_shouldNotReportMethodsCalledOnTheHelper() throws Exception {
+		assertTrue(ConceptReferenceRangeUtility.findDisallowedMethodCalls("$fn.isEnrolledInProgram('uuid', $patient, $date)")
+		        .isEmpty());
+	}
+
+	@Test
+	public void findDisallowedMethodCalls_shouldReportMethodsChainedAfterAHelperCall() throws Exception {
+		assertEquals(Collections.singletonList("setVoided(true)"), ConceptReferenceRangeUtility
+		        .findDisallowedMethodCalls("$fn.getLatestObs('CIEL:1234', $patient).setVoided(true) == null"));
+	}
+
 	private Obs buildObs() {
 		Concept concept = new Concept(5089);
 		concept.setDatatype(new ConceptDatatype(3));

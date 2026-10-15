@@ -4083,6 +4083,24 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ConceptService#saveConceptReferenceRange(ConceptReferenceRange)
+	 */
+	@Test
+	public void saveConceptReferenceRange_shouldFailIfCriteriaCallsADisallowedMethod() {
+		ConceptNumeric conceptNumeric = conceptService.getConceptNumeric(4090);
+
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setCriteria("$patient.setDead(true) || true");
+		conceptReferenceRange.setConceptNumeric(conceptNumeric);
+		conceptReferenceRange.setHiAbsolute(50.0);
+		conceptReferenceRange.setLowAbsolute(20.0);
+
+		ValidationException exception = assertThrows(ValidationException.class,
+		    () -> conceptService.saveConceptReferenceRange(conceptReferenceRange));
+		assertTrue(exception.getErrors().hasFieldErrors("criteria"));
+	}
+
+	/**
 	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
@@ -4098,6 +4116,32 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
 		conceptReferenceRange.setCriteria("$patient.getAge( >");
+		conceptReferenceRange.setConceptNumeric(conceptNumeric);
+		conceptReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+		conceptReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+		conceptNumeric.setReferenceRanges(Collections.singleton(conceptReferenceRange));
+
+		ValidationException exception = assertThrows(ValidationException.class,
+		    () -> conceptService.saveConcept(conceptNumeric));
+		assertTrue(exception.getErrors().hasFieldErrors("referenceRanges[0].criteria"));
+	}
+
+	/**
+	 * @see ConceptService#saveConcept(Concept)
+	 */
+	@Test
+	public void saveConcept_shouldFailIfAReferenceRangeCriteriaCallsADisallowedMethod() {
+		Context.setLocale(Locale.US);
+		ConceptNumeric conceptNumeric = new ConceptNumeric();
+		conceptNumeric.setDatatype(new ConceptDatatype(1));
+		conceptNumeric.setConceptClass(new ConceptClass(1));
+		conceptNumeric.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		conceptNumeric.addDescription(new ConceptDescription("some description", null));
+		conceptNumeric.setHiAbsolute(50.0);
+		conceptNumeric.setLowAbsolute(20.0);
+
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setCriteria("$encounter.creator.getRoles().clear() == null");
 		conceptReferenceRange.setConceptNumeric(conceptNumeric);
 		conceptReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
 		conceptReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());

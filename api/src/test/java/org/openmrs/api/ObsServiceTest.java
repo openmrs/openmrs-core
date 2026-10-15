@@ -2764,11 +2764,11 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	private void setReferenceRangeCriteriaForConcept4089(String criteria) {
-		ConceptReferenceRange range = Context.getConceptService()
-		        .getConceptReferenceRangeByUuid("d8ad3ceb-00a4-4484-a1ff-700f7ac3d10d");
-		range.setCriteria(criteria);
-		Context.getConceptService().saveConceptReferenceRange(range);
+		Context.getAdministrationService().executeSQL("UPDATE concept_reference_range SET criteria = '"
+		        + criteria.replace("'", "''") + "' WHERE uuid = 'd8ad3ceb-00a4-4484-a1ff-700f7ac3d10d'",
+		    false);
 		Context.flushSession();
+		Context.clearSession();
 	}
 
 	private Obs buildObservation() {
