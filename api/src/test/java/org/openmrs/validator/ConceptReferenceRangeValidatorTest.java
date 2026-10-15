@@ -27,7 +27,8 @@ public class ConceptReferenceRangeValidatorTest extends BaseContextSensitiveTest
 	@Test
 	public void validate_shouldFailIfTheConceptReferenceRangeObjectIsNull() {
 		Errors errors = new BindException(new ConceptReferenceRange(), "referenceRange");
-		assertThrows(IllegalArgumentException.class, () -> new ConceptReferenceRangeValidator().validate(null, errors));
+		ConceptReferenceRangeValidator validator = new ConceptReferenceRangeValidator();
+		assertThrows(IllegalArgumentException.class, () -> validator.validate(null, errors));
 	}
 
 	/**
