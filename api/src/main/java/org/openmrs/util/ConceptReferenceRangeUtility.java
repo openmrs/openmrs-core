@@ -44,8 +44,14 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.MethodExecutor;
 import org.springframework.expression.MethodResolver;
+import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelMessage;
+import org.springframework.expression.spel.SpelNode;
+import org.springframework.expression.spel.ast.CompoundExpression;
+import org.springframework.expression.spel.ast.MethodReference;
+import org.springframework.expression.spel.ast.PropertyOrFieldReference;
+import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.DataBindingMethodResolver;
 import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
@@ -85,6 +91,8 @@ public class ConceptReferenceRangeUtility {
 	 * expressions
 	 */
 	private static final ExpressionParser PARSER = new SpelExpressionParser();
+
+	private static final Pattern ACCESSOR_NAME = Pattern.compile("^(get|is|has)[A-Z]\\w*$");
 
 	/**
 	 * Static {@link org.springframework.expression.EvaluationContext} which is used to run evaluations.
@@ -176,6 +184,40 @@ public class ConceptReferenceRangeUtility {
 	}
 
 	/**
+	 * Finds the method calls in a criteria expression that the evaluation context refuses, using the
+	 * same rule as the method resolver: any method may be called on {@code $fn}, and only zero-argument
+	 * {@code get*}, {@code is*} and {@code has*} methods may be called on anything else. Calls are
+	 * judged by name and argument count, so a call that passes here can still fail at evaluation time
+	 * if the method does not exist on the actual target.
+	 *
+	 * @param criteria the criteria expression, already HTML-unescaped
+	 * @return the disallowed calls as they appear in the expression, in source order
+	 * @throws ParseException if the criteria is not a valid expression
+	 * @since 3.0.0
+	 */
+	public static List<String> findDisallowedMethodCalls(String criteria) throws ParseException {
+		List<String> disallowed = new ArrayList<>();
+		collectDisallowedMethodCalls(((SpelExpression) PARSER.parseExpression(criteria)).getAST(), false, disallowed);
+		return disallowed;
+	}
+
+	private static void collectDisallowedMethodCalls(SpelNode node, boolean onFunctions, List<String> disallowed) {
+		if (node instanceof MethodReference method
+		        && isDisallowedMethodCall(method.getName(), method.getChildCount(), onFunctions)) {
+			disallowed.add(method.toStringAST());
+		}
+		for (int i = 0; i < node.getChildCount(); i++) {
+			boolean childOnFunctions = i == 1 && node instanceof CompoundExpression
+			        && node.getChild(0) instanceof PropertyOrFieldReference reference && "$fn".equals(reference.getName());
+			collectDisallowedMethodCalls(node.getChild(i), childOnFunctions, disallowed);
+		}
+	}
+
+	private static boolean isDisallowedMethodCall(String name, int argumentCount, boolean onFunctions) {
+		return !onFunctions && (argumentCount != 0 || !ACCESSOR_NAME.matcher(name).matches());
+	}
+
+	/**
 	 * {@link MethodResolver} that restricts which methods a criteria expression may invoke.
 	 * <p>
 	 * A method call resolves only when either
@@ -193,8 +235,6 @@ public class ConceptReferenceRangeUtility {
 	 */
 	private static final class RestrictedMethodResolver implements MethodResolver {
 
-		private static final Pattern ACCESSOR_NAME = Pattern.compile("^(get|is|has)[A-Z]\\w*$");
-
 		private final MethodResolver delegate = DataBindingMethodResolver.forInstanceMethodInvocation();
 
 		@Override
@@ -205,9 +245,7 @@ public class ConceptReferenceRangeUtility {
 				throw new AccessException("Method '" + name + "' may not be called on a Hibernate proxy in criteria");
 			}
 
-			boolean allowed = targetObject instanceof CriteriaFunctions
-			        || (argumentTypes.isEmpty() && ACCESSOR_NAME.matcher(name).matches());
-			if (!allowed) {
+			if (isDisallowedMethodCall(name, argumentTypes.size(), targetObject instanceof CriteriaFunctions)) {
 				throw new AccessException("Method '" + name + "' is not allowed in criteria; only zero-argument "
 				        + "get*, is* and has* methods and $fn helper methods may be called");
 			}

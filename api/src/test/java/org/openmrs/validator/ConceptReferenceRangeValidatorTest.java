@@ -47,6 +47,18 @@ public class ConceptReferenceRangeValidatorTest extends BaseContextSensitiveTest
 	 * @see ConceptReferenceRangeValidator#validate(Object,Errors)
 	 */
 	@Test
+	public void validate_shouldFailIfTheCriteriaCallsADisallowedMethod() {
+		ConceptReferenceRange referenceRange = new ConceptReferenceRange();
+		referenceRange.setCriteria("$patient.setDead(true) || true");
+		Errors errors = new BindException(referenceRange, "referenceRange");
+		new ConceptReferenceRangeValidator().validate(referenceRange, errors);
+		assertTrue(errors.hasFieldErrors("criteria"));
+	}
+
+	/**
+	 * @see ConceptReferenceRangeValidator#validate(Object,Errors)
+	 */
+	@Test
 	public void validate_shouldPassIfTheCriteriaParses() {
 		ConceptReferenceRange referenceRange = new ConceptReferenceRange();
 		referenceRange.setCriteria("$patient.getAge() >= 1 && $patient.getAge() <= 70");

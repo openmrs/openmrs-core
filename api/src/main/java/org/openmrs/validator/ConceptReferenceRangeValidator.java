@@ -9,14 +9,15 @@
  */
 package org.openmrs.validator;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jspecify.annotations.NonNull;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.annotation.Handler;
-import org.springframework.expression.ExpressionParser;
+import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.springframework.expression.ParseException;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -29,8 +30,6 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { ConceptReferenceRange.class }, order = 50)
 public class ConceptReferenceRangeValidator implements Validator {
-
-	private static final ExpressionParser PARSER = new SpelExpressionParser();
 
 	/**
 	 * Determines if the command object being submitted is a valid type
@@ -47,6 +46,7 @@ public class ConceptReferenceRangeValidator implements Validator {
 	 * <p>
 	 * <strong>Should</strong> fail if the concept reference range object is null<br/>
 	 * <strong>Should</strong> fail if the criteria does not parse<br/>
+	 * <strong>Should</strong> fail if the criteria calls a disallowed method<br/>
 	 * <strong>Should</strong> pass if the criteria parses<br/>
 	 * <strong>Should</strong> pass if the criteria is html escaped and parses once unescaped<br/>
 	 * <strong>Should</strong> pass if the criteria is null<br/>
@@ -67,7 +67,13 @@ public class ConceptReferenceRangeValidator implements Validator {
 		}
 
 		try {
-			PARSER.parseExpression(StringEscapeUtils.unescapeHtml4(criteria));
+			List<String> disallowedCalls = ConceptReferenceRangeUtility
+			        .findDisallowedMethodCalls(StringEscapeUtils.unescapeHtml4(criteria));
+			if (!disallowedCalls.isEmpty()) {
+				String calls = String.join(", ", disallowedCalls);
+				errors.rejectValue("criteria", "ConceptReferenceRange.error.criteria.disallowedMethod",
+				    new Object[] { calls }, "Criteria calls methods that are not allowed: " + calls);
+			}
 		} catch (ParseException e) {
 			errors.rejectValue("criteria", "ConceptReferenceRange.error.criteria.invalid",
 			    new Object[] { e.getSimpleMessage() }, "Criteria is not a valid expression: " + e.getSimpleMessage());
