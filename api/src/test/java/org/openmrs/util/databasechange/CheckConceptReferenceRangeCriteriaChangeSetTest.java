@@ -57,6 +57,13 @@ public class CheckConceptReferenceRangeCriteriaChangeSetTest extends BaseContext
 	}
 
 	@Test
+	public void describeProblem_shouldFlagAssignmentsAsPossiblyModifyingData() {
+		String problem = CheckConceptReferenceRangeCriteriaChangeSet
+		        .describeProblem("$encounter.creator.userProperties['x'] = 'y'");
+		assertTrue(problem.contains("may modify data"));
+	}
+
+	@Test
 	public void findWarnings_shouldReportOnlyRangesWithProblems() throws Exception {
 		setCriteria("$encounter.creator.getRoles().clear() == null");
 

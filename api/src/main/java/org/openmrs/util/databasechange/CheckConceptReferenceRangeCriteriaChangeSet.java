@@ -35,7 +35,7 @@ import liquibase.resource.ResourceAccessor;
 
 /**
  * Reports stored concept reference range criteria that can no longer be evaluated because they call
- * methods the criteria sandbox refuses, or because they do not parse. Nothing is modified; each
+ * constructs the criteria sandbox refuses, or because they do not parse. Nothing is modified; each
  * offending range is registered as an update warning so it can be corrected after the upgrade.
  *
  * @since 3.0.0
@@ -83,24 +83,23 @@ public class CheckConceptReferenceRangeCriteriaChangeSet implements CustomTaskCh
 		if (StringUtils.isBlank(criteria)) {
 			return null;
 		}
-		List<String> disallowedCalls;
+		List<String> disallowed;
 		try {
-			disallowedCalls = ConceptReferenceRangeUtility
-			        .findDisallowedMethodCalls(StringEscapeUtils.unescapeHtml4(criteria));
+			disallowed = ConceptReferenceRangeUtility.findDisallowedConstructs(StringEscapeUtils.unescapeHtml4(criteria));
 		} catch (ParseException e) {
 			return "has criteria that does not parse (" + e.getSimpleMessage() + ") and must be corrected before "
 			        + "observations for this concept can be saved: " + criteria;
 		}
-		if (disallowedCalls.isEmpty()) {
+		if (disallowed.isEmpty()) {
 			return null;
 		}
-		String calls = String.join(", ", disallowedCalls);
-		if (disallowedCalls.stream().allMatch(call -> READ_ONLY_CALL.matcher(call).matches())) {
-			return "has criteria that can no longer be evaluated because it calls " + calls
+		String constructs = String.join(", ", disallowed);
+		if (disallowed.stream().allMatch(construct -> READ_ONLY_CALL.matcher(construct).matches())) {
+			return "has criteria that can no longer be evaluated because it calls " + constructs
 			        + ". Rewrite it using only zero-argument get*, is* and has* methods and $fn helper methods "
 			        + "so observations for this concept can be saved: " + criteria;
 		}
-		return "has criteria that calls methods which may modify data (" + calls + "). Until this release, the "
+		return "has criteria that may modify data (" + constructs + "). Until this release, the "
 		        + "expression ran on every observation saved for this concept with the saving user's permissions; "
 		        + "review who stored it and what it changed, then correct it: " + criteria;
 	}
