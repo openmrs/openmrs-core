@@ -7,6 +7,21 @@
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
 
+# Connection settings set explicitly, which are also applied to an existing runtime properties file
+DB_SETTINGS_FROM_ENV=()
+[[ -n "${OMRS_DB_USERNAME:-}${OMRS_CONFIG_CONNECTION_USERNAME:-}" ]] && DB_SETTINGS_FROM_ENV+=(OMRS_DB_USERNAME)
+[[ -n "${OMRS_DB_PASSWORD:-}${OMRS_CONFIG_CONNECTION_PASSWORD:-}" ]] && DB_SETTINGS_FROM_ENV+=(OMRS_DB_PASSWORD)
+for i in OMRS_DB OMRS_DB_URL OMRS_DB_HOSTNAME OMRS_DB_PORT OMRS_DB_NAME OMRS_DB_ARGS OMRS_DB_EXTRA_ARGS OMRS_DB_JDBC_PROTOCOL \
+  OMRS_CONFIG_DATABASE OMRS_CONFIG_CONNECTION_URL OMRS_CONFIG_CONNECTION_SERVER OMRS_CONFIG_CONNECTION_PORT \
+  OMRS_CONFIG_CONNECTION_DATABASE OMRS_CONFIG_CONNECTION_ARGS OMRS_CONFIG_CONNECTION_EXTRA_ARGS OMRS_CONFIG_JDBC_URL_PROTOCOL; do
+  if [[ -n "${!i:-}" ]]; then
+    DB_SETTINGS_FROM_ENV+=(OMRS_DB_URL)
+    break
+  fi
+done
+# The driver class goes with the URL, whose protocol depends on OMRS_DB
+[[ -n "${OMRS_DB_DRIVER_CLASS:-}" || "${DB_SETTINGS_FROM_ENV[*]-}" == *OMRS_DB_URL* ]] && DB_SETTINGS_FROM_ENV+=(OMRS_DB_DRIVER_CLASS)
+
 # ----------------------------------
 # Configurable environment variables
 OMRS_ADMIN_USER_PASSWORD=${OMRS_ADMIN_USER_PASSWORD:-Admin123}
@@ -145,6 +160,16 @@ escape_property() {
 # allexport (-a) exports functions too; keep this one out of Tomcat's environment
 export -fn escape_property
 
+# Prints the given properties files, leaving out entries of the last file whose key (as Java parses it) is in an earlier one
+merge_properties() {
+  awk '
+    function key(l) { sub(/^[ \t\f]+/, "", l); if (l == "" || l ~ /^[#!]/) return ""; sub(/[=: \t\f].*$/, "", l); return l }
+    cont { if (keep) print; cont = /(^|[^\\])(\\\\)*\\$/; next }
+    { k = key($0); keep = (k == "" || !(k in seen)); if (FILENAME != ARGV[ARGC - 1]) seen[k]; if (keep) print; cont = (k != "" && /(^|[^\\])(\\\\)*\\$/) }
+  ' "$@"
+}
+export -fn merge_properties
+
 echo "Writing out $OMRS_SERVER_PROPERTIES_FILE"
 
 cat > $OMRS_SERVER_PROPERTIES_FILE << EOF
@@ -206,15 +231,26 @@ if [[ -n "${EXTRA_VARS+x}" ]]; then
 fi
 
 if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
+  # Applied before the extra properties, so that OMRS_EXTRA_CONNECTION_* still wins as on first install
+  if [[ ${#DB_SETTINGS_FROM_ENV[@]} -gt 0 ]]; then
+    for i in "${DB_SETTINGS_FROM_ENV[@]}"; do
+      printf 'connection.%s=%s\n' "$(tr 'A-Z' 'a-z' <<< "${i#OMRS_DB_}")" "$(escape_property "${!i}")"
+    done > openmrs-connection.properties
+    echo "Updating $(cut -d= -f1 openmrs-connection.properties | paste -sd ' ') in $OMRS_RUNTIME_PROPERTIES_FILE from the environment."
+    merge_properties openmrs-connection.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+    mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
+    rm openmrs-connection.properties
+  fi
+
   if [ -f "openmrs-extra.properties" ]; then
     echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Merging with extra properties."
-    awk -F= '!a[$1]++' "openmrs-extra.properties" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+    merge_properties "openmrs-extra.properties" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
     mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
   fi
 
   # Ensure admin.password.locked is set in runtime properties
   printf 'admin.password.locked=%s\n' "$(escape_property "${OMRS_ADMIN_PASSWORD_LOCKED}")" > openmrs-admin-locked.properties
-  awk -F= '!a[$1]++' openmrs-admin-locked.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+  merge_properties openmrs-admin-locked.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
   mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
   rm openmrs-admin-locked.properties
 else
