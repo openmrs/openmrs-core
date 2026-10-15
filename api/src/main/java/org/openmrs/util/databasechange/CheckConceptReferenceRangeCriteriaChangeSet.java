@@ -112,10 +112,12 @@ public class CheckConceptReferenceRangeCriteriaChangeSet implements CustomTaskCh
 
 	@Override
 	public void setUp() throws SetupException {
+		// nothing to set up
 	}
 
 	@Override
 	public void setFileOpener(ResourceAccessor resourceAccessor) {
+		// no changelog resources are read by this change
 	}
 
 	@Override
