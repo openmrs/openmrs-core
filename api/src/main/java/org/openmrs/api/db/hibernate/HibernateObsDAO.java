@@ -10,8 +10,16 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -36,6 +44,7 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.Visit;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.parameter.ObsSearchCriteria;
@@ -78,6 +87,55 @@ public class HibernateObsDAO implements ObsDAO {
 	@Override
 	public void deleteObs(Obs obs) throws DAOException {
 		sessionFactory.getCurrentSession().remove(obs);
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObsVersionHistory(Obs)
+	 */
+	@Override
+	public List<Obs> getObsVersionHistory(Obs obs) {
+		if (obs == null) {
+			throw new APIException("Obs must not be null");
+		}
+		if (obs.getObsId() == null) {
+			throw new APIException("Obs must be committed before its version history can be retrieved");
+		}
+
+		// Use a recursive CTE to collect the obs_ids in the previousVersion chain, then load the Obs
+		// entities in one IN-clause query. MySQL (cte_max_recursion_depth) and MariaDB
+		// (max_recursive_iterations) stop a recursive CTE after 1000 iterations by default, so each query
+		// walks at most 1000 versions and the next one resumes from where it stopped, until the chain ends
+		// or loops back on itself.
+		String cteSql = "WITH RECURSIVE version_chain (obs_id, previous_version, depth) AS ("
+		        + "  SELECT obs_id, previous_version, 0 FROM obs WHERE obs_id = :startId UNION ALL"
+		        + "  SELECT o.obs_id, o.previous_version, vc.depth + 1 FROM obs o"
+		        + "  INNER JOIN version_chain vc ON o.obs_id = vc.previous_version WHERE vc.depth < 999)"
+		        + " SELECT obs_id, previous_version FROM version_chain ORDER BY depth";
+
+		Session session = sessionFactory.getCurrentSession();
+		Set<Integer> ids = new LinkedHashSet<>();
+		Set<Integer> visited = new HashSet<>();
+		Integer startId = obs.getObsId();
+		while (startId != null && visited.add(startId)) {
+			List<Object[]> rows = session.createNativeQuery(cteSql, Object[].class).setParameter("startId", startId).list();
+			for (Object[] row : rows) {
+				ids.add(((Number) row[0]).intValue());
+				startId = row[1] == null ? null : ((Number) row[1]).intValue();
+			}
+		}
+
+		if (ids.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<Obs> loaded = session
+		        .createQuery("FROM Obs o LEFT JOIN FETCH o.referenceRange WHERE o.obsId IN (:obsIds)", Obs.class)
+		        .setParameter("obsIds", ids).getResultList();
+		Map<Integer, Obs> byId = new HashMap<>();
+		for (Obs o : loaded) {
+			byId.put(o.getObsId(), o);
+		}
+		return ids.stream().map(byId::get).filter(Objects::nonNull).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	/**
