@@ -47,6 +47,7 @@ public class ConceptReferenceRangeValidator implements Validator {
 	 * <strong>Should</strong> fail if the concept reference range object is null<br/>
 	 * <strong>Should</strong> fail if the criteria does not parse<br/>
 	 * <strong>Should</strong> fail if the criteria calls a disallowed method<br/>
+	 * <strong>Should</strong> fail if the criteria assigns a value<br/>
 	 * <strong>Should</strong> pass if the criteria parses<br/>
 	 * <strong>Should</strong> pass if the criteria is html escaped and parses once unescaped<br/>
 	 * <strong>Should</strong> pass if the criteria is null<br/>
@@ -67,12 +68,12 @@ public class ConceptReferenceRangeValidator implements Validator {
 		}
 
 		try {
-			List<String> disallowedCalls = ConceptReferenceRangeUtility
-			        .findDisallowedMethodCalls(StringEscapeUtils.unescapeHtml4(criteria));
-			if (!disallowedCalls.isEmpty()) {
-				String calls = String.join(", ", disallowedCalls);
-				errors.rejectValue("criteria", "ConceptReferenceRange.error.criteria.disallowedMethod",
-				    new Object[] { calls }, "Criteria calls methods that are not allowed: " + calls);
+			List<String> disallowed = ConceptReferenceRangeUtility
+			        .findDisallowedConstructs(StringEscapeUtils.unescapeHtml4(criteria));
+			if (!disallowed.isEmpty()) {
+				String constructs = String.join(", ", disallowed);
+				errors.rejectValue("criteria", "ConceptReferenceRange.error.criteria.disallowed",
+				    new Object[] { constructs }, "Criteria contains expressions that are not allowed: " + constructs);
 			}
 		} catch (ParseException e) {
 			errors.rejectValue("criteria", "ConceptReferenceRange.error.criteria.invalid",

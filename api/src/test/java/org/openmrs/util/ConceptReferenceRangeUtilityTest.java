@@ -35,6 +35,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.expression.ParseException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -1205,47 +1206,95 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void findDisallowedMethodCalls_shouldReturnEmptyListForAllowedCriteria() throws Exception {
+	public void findDisallowedConstructs_shouldReturnEmptyListForAllowedCriteria() throws Exception {
 		assertTrue(
-		    ConceptReferenceRangeUtility.findDisallowedMethodCalls("$patient.getAge() > 1 && $patient.isDead() == false "
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("$patient.getAge() > 1 && $patient.isDead() == false "
 		            + "&& $fn.getDays($fn.getLatestObsDate('CIEL:1234', $patient)) > 3 && $obs.hasGroupMembers() == false")
 		            .isEmpty());
 	}
 
 	@Test
-	public void findDisallowedMethodCalls_shouldReportSetters() throws Exception {
+	public void findDisallowedConstructs_shouldReportSetters() throws Exception {
 		assertEquals(Collections.singletonList("setDead(true)"),
-		    ConceptReferenceRangeUtility.findDisallowedMethodCalls("$patient.setDead(true) || true"));
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("$patient.setDead(true) || true"));
 	}
 
 	@Test
-	public void findDisallowedMethodCalls_shouldReportGettersWithArguments() throws Exception {
+	public void findDisallowedConstructs_shouldReportGettersWithArguments() throws Exception {
 		assertEquals(Collections.singletonList("getAttribute('Race')"),
-		    ConceptReferenceRangeUtility.findDisallowedMethodCalls("$patient.getAttribute('Race') != null"));
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("$patient.getAttribute('Race') != null"));
 	}
 
 	@Test
-	public void findDisallowedMethodCalls_shouldReportCollectionMutatorsReachedThroughProperties() throws Exception {
+	public void findDisallowedConstructs_shouldReportCollectionMutatorsReachedThroughProperties() throws Exception {
 		assertEquals(Collections.singletonList("clear()"),
-		    ConceptReferenceRangeUtility.findDisallowedMethodCalls("$encounter.creator.roles.clear() == null"));
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("$encounter.creator.roles.clear() == null"));
 	}
 
 	@Test
-	public void findDisallowedMethodCalls_shouldReportDisallowedCallsInsideHelperArguments() throws Exception {
+	public void findDisallowedConstructs_shouldReportDisallowedCallsInsideHelperArguments() throws Exception {
 		assertEquals(Collections.singletonList("add(null)"), ConceptReferenceRangeUtility
-		        .findDisallowedMethodCalls("$fn.getDays($encounter.creator.getRoles().add(null)) > 1"));
+		        .findDisallowedConstructs("$fn.getDays($encounter.creator.getRoles().add(null)) > 1"));
 	}
 
 	@Test
-	public void findDisallowedMethodCalls_shouldNotReportMethodsCalledOnTheHelper() throws Exception {
-		assertTrue(ConceptReferenceRangeUtility.findDisallowedMethodCalls("$fn.isEnrolledInProgram('uuid', $patient, $date)")
+	public void findDisallowedConstructs_shouldNotReportMethodsCalledOnTheHelper() throws Exception {
+		assertTrue(ConceptReferenceRangeUtility.findDisallowedConstructs("$fn.isEnrolledInProgram('uuid', $patient, $date)")
 		        .isEmpty());
 	}
 
 	@Test
-	public void findDisallowedMethodCalls_shouldReportMethodsChainedAfterAHelperCall() throws Exception {
+	public void findDisallowedConstructs_shouldReportMethodsChainedAfterAHelperCall() throws Exception {
 		assertEquals(Collections.singletonList("setVoided(true)"), ConceptReferenceRangeUtility
-		        .findDisallowedMethodCalls("$fn.getLatestObs('CIEL:1234', $patient).setVoided(true) == null"));
+		        .findDisallowedConstructs("$fn.getLatestObs('CIEL:1234', $patient).setVoided(true) == null"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportAssignments() throws Exception {
+		assertEquals(Collections.singletonList("$patient.dead=true"),
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("($patient.dead = true) == true"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportIndexedAssignments() throws Exception {
+		assertEquals(1,
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("$encounter.creator.userProperties['x'] = 'y'").size());
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportIncrementsAndDecrements() throws Exception {
+		assertEquals(2,
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("$obs.valueNumeric++ > $obs.valueNumeric--").size());
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportTypeReferences() throws Exception {
+		assertEquals(Collections.singletonList("T(java.lang.Runtime)"),
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("T(java.lang.Runtime).getRuntime() != null"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportConstructorCalls() throws Exception {
+		assertEquals(Collections.singletonList("new java.util.ArrayList()"),
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("new java.util.ArrayList().isEmpty()"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportBeanReferences() throws Exception {
+		assertEquals(Collections.singletonList("@systemProperties"),
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("@systemProperties != null"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldThrowParseExceptionForCriteriaThatDoesNotParse() {
+		assertThrows(ParseException.class,
+		    () -> ConceptReferenceRangeUtility.findDisallowedConstructs("$patient.getAge( >"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldThrowParseExceptionForCriteriaOverTheParserLengthLimit() {
+		String criteria = "$patient.getAge() > 1" + " && $patient.getAge() > 1".repeat(500);
+		assertThrows(ParseException.class, () -> ConceptReferenceRangeUtility.findDisallowedConstructs(criteria));
 	}
 
 	private Obs buildObs() {

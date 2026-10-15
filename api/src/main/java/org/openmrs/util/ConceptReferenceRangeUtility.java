@@ -48,9 +48,15 @@ import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelMessage;
 import org.springframework.expression.spel.SpelNode;
+import org.springframework.expression.spel.ast.Assign;
+import org.springframework.expression.spel.ast.BeanReference;
 import org.springframework.expression.spel.ast.CompoundExpression;
+import org.springframework.expression.spel.ast.ConstructorReference;
 import org.springframework.expression.spel.ast.MethodReference;
+import org.springframework.expression.spel.ast.OpDec;
+import org.springframework.expression.spel.ast.OpInc;
 import org.springframework.expression.spel.ast.PropertyOrFieldReference;
+import org.springframework.expression.spel.ast.TypeReference;
 import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.DataBindingMethodResolver;
@@ -184,32 +190,44 @@ public class ConceptReferenceRangeUtility {
 	}
 
 	/**
-	 * Finds the method calls in a criteria expression that the evaluation context refuses, using the
-	 * same rule as the method resolver: any method may be called on {@code $fn}, and only zero-argument
-	 * {@code get*}, {@code is*} and {@code has*} methods may be called on anything else. Calls are
-	 * judged by name and argument count, so a call that passes here can still fail at evaluation time
-	 * if the method does not exist on the actual target.
+	 * Finds everything in a criteria expression that the evaluation context refuses, so that criteria
+	 * can be checked before they are stored. Reported are method calls outside the resolver's rule (any
+	 * method may be called on {@code $fn}; only zero-argument {@code get*}, {@code is*} and
+	 * {@code has*} methods may be called on anything else), assignments, increments and decrements,
+	 * type references, constructor calls and bean references. Method calls are judged by name and
+	 * argument count, so a call that passes here can still fail at evaluation time if the method does
+	 * not exist on the actual target.
 	 *
 	 * @param criteria the criteria expression, already HTML-unescaped
-	 * @return the disallowed calls as they appear in the expression, in source order
+	 * @return the disallowed constructs rendered from the parsed expression, in source order
 	 * @throws ParseException if the criteria is not a valid expression
 	 * @since 3.0.0
 	 */
-	public static List<String> findDisallowedMethodCalls(String criteria) throws ParseException {
+	public static List<String> findDisallowedConstructs(String criteria) throws ParseException {
+		SpelNode ast;
+		try {
+			ast = ((SpelExpression) PARSER.parseExpression(criteria)).getAST();
+		} catch (SpelEvaluationException e) {
+			throw new ParseException(e.getPosition(), e.getSimpleMessage(), e);
+		}
 		List<String> disallowed = new ArrayList<>();
-		collectDisallowedMethodCalls(((SpelExpression) PARSER.parseExpression(criteria)).getAST(), false, disallowed);
+		collectDisallowedConstructs(ast, false, disallowed);
 		return disallowed;
 	}
 
-	private static void collectDisallowedMethodCalls(SpelNode node, boolean onFunctions, List<String> disallowed) {
-		if (node instanceof MethodReference method
-		        && isDisallowedMethodCall(method.getName(), method.getChildCount(), onFunctions)) {
-			disallowed.add(method.toStringAST());
+	private static void collectDisallowedConstructs(SpelNode node, boolean onFunctions, List<String> disallowed) {
+		if (node instanceof MethodReference method) {
+			if (isDisallowedMethodCall(method.getName(), method.getChildCount(), onFunctions)) {
+				disallowed.add(method.toStringAST());
+			}
+		} else if (node instanceof Assign || node instanceof OpInc || node instanceof OpDec || node instanceof TypeReference
+		        || node instanceof ConstructorReference || node instanceof BeanReference) {
+			disallowed.add(node.toStringAST());
 		}
 		for (int i = 0; i < node.getChildCount(); i++) {
 			boolean childOnFunctions = i == 1 && node instanceof CompoundExpression
 			        && node.getChild(0) instanceof PropertyOrFieldReference reference && "$fn".equals(reference.getName());
-			collectDisallowedMethodCalls(node.getChild(i), childOnFunctions, disallowed);
+			collectDisallowedConstructs(node.getChild(i), childOnFunctions, disallowed);
 		}
 	}
 
