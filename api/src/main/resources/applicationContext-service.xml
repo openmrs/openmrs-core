@@ -41,7 +41,7 @@
 		<constructor-arg index="0" value="16" />
 		<constructor-arg index="1" value="32" />
 		<constructor-arg index="2" value="#{T(org.openmrs.spring.PasswordEncoders).parallelismWorkFactor('${security.argon2.parallelism:1}')}" />
-		<constructor-arg index="3" value="#{T(org.openmrs.spring.PasswordEncoders).memoryWorkFactor('${security.argon2.memory:19456}')}" />
+		<constructor-arg index="3" value="#{T(org.openmrs.spring.PasswordEncoders).memoryWorkFactor('${security.argon2.memory:16384}')}" />
 		<constructor-arg index="4" value="#{T(org.openmrs.spring.PasswordEncoders).iterationsWorkFactor('${security.argon2.iterations:2}')}" />
 	</bean>
 	<bean id="openmrsPasswordEncoder" class="org.openmrs.spring.OpenmrsDelegatingPasswordEncoder">

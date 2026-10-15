@@ -131,7 +131,7 @@ class OpenmrsPasswordEncoderBeanTest {
 	}
 
 	/**
-	 * @return the parameter segment of a PHC string, e.g. {@code m=19456,t=2,p=1}
+	 * @return the parameter segment of a PHC string, e.g. {@code m=16384,t=2,p=1}
 	 */
 	private static String workFactorsOf(String phcHash) {
 		int start = phcHash.indexOf("v=19$") + "v=19$".length();

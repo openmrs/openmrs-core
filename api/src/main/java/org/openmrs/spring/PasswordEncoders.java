@@ -43,11 +43,10 @@ public final class PasswordEncoders {
 	/**
 	 * Defaults for the three tunable work factors. The {@code openmrsPasswordEncoder} bean takes
 	 * these from {@code security.argon2.*} in {@code openmrs-runtime.properties}, so an
-	 * administrator can raise them without a rebuild. The memory default is 19456 KiB rather than
-	 * Spring's 16384 because it is the floor OWASP recommends for Argon2id.
+	 * administrator can raise them without a rebuild.
 	 */
 	private static final int DEFAULT_PARALLELISM = 1;
-	private static final int DEFAULT_MEMORY = 19456;
+	private static final int DEFAULT_MEMORY = 1 << 14;
 	private static final int DEFAULT_ITERATIONS = 2;
 
 	/**

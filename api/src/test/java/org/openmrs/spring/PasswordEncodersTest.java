@@ -28,7 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 class PasswordEncodersTest {
 
 	/**
-	 * The parameter segment of a PHC string, e.g. {@code m=19456,t=2,p=1}, which is the only part
+	 * The parameter segment of a PHC string, e.g. {@code m=16384,t=2,p=1}, which is the only part
 	 * that varies with the work factors: the salt and hash are random per encode.
 	 */
 	private static String paramsOf(String phcHash) {
@@ -48,16 +48,14 @@ class PasswordEncodersTest {
 	 * The no-context encoder hard-codes the work factors, while the {@code openmrsPasswordEncoder}
 	 * bean takes them from {@code security.argon2.*} in {@code openmrs-runtime.properties}. The two
 	 * definitions have to agree, so this pins the values the bean falls back to when those
-	 * properties are absent. Note that Spring's own
-	 * {@code Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8()} is deliberately not the
-	 * reference: it uses m=16384, whereas OpenMRS ships the OWASP-recommended m=19456.
-	 * {@code OpenmrsPasswordEncoderBeanTest} checks the two definitions against each other.
+	 * properties are absent. {@code OpenmrsPasswordEncoderBeanTest} checks the two definitions
+	 * against each other.
 	 */
 	@Test
-	void noContextEncoder_shouldUseTheOwaspRecommendedArgon2WorkFactors() {
+	void noContextEncoder_shouldUseTheConfiguredDefaultArgon2WorkFactors() {
 		PasswordEncoder argon2 = PasswordEncoders.supportedEncoders().get(PasswordEncoders.ARGON2_ID);
 
-		assertEquals("m=19456,t=2,p=1", paramsOf(argon2.encode("password")));
+		assertEquals("m=16384,t=2,p=1", paramsOf(argon2.encode("password")));
 	}
 
 	@Test
