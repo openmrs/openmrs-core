@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,15 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelMessage;
+import org.springframework.expression.spel.SpelNode;
+import org.springframework.expression.spel.ast.BeanReference;
+import org.springframework.expression.spel.ast.ConstructorReference;
+import org.springframework.expression.spel.ast.Indexer;
+import org.springframework.expression.spel.ast.MethodReference;
+import org.springframework.expression.spel.ast.OperatorMatches;
+import org.springframework.expression.spel.ast.PropertyOrFieldReference;
+import org.springframework.expression.spel.ast.TypeReference;
+import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.DataBindingMethodResolver;
 import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
@@ -75,9 +85,70 @@ public class ConceptReferenceRangeUtility {
 	        .forPropertyAccessors(new MapAccessor(), DataBindingPropertyAccessor.forReadOnlyAccess())
 	        .withMethodResolvers(DataBindingMethodResolver.forInstanceMethodInvocation()).build();
 
+	/**
+	 * Method names a criteria expression is permitted to invoke. Allow-list of the {@code $fn} helper
+	 * API ({@link CriteriaFunctions}), a curated set of scalar/value accessors on the bound domain
+	 * objects, and String equality only. It deliberately excludes String inspection methods
+	 * (startsWith, charAt, substring, length, compareTo, getBytes, ...) and arbitrary getters, which
+	 * together with the node checks in {@link #validateNode} stop a stored criteria from being used as
+	 * a blind data-exfiltration oracle over the bound patient graph.
+	 */
+	private static final Set<String> ALLOWED_METHODS = Set.of("getLatestObs", "getCurrentHour", "getCurrentObs",
+	    "getLatestObsDate", "isObsValueCodedAnswer", "getObsDays", "getObsWeeks", "getObsMonths", "getObsYears",
+	    "getDaysBetween", "getWeeksBetween", "getMonthsBetween", "getYearsBetween", "getDays", "getWeeks", "getMonths",
+	    "getYears", "isEnrolledInProgram", "isInProgramState", "getAge", "getAgeInMonths", "getAgeInWeeks", "getAgeInDays",
+	    "getGender", "getAttribute", "getValue", "getValueNumeric", "getValueBoolean", "getValueText", "getValueDate",
+	    "getValueDatetime", "getValueCoded", "getValueAsString", "equals", "equalsIgnoreCase");
+
+	/**
+	 * Property names that must not be reachable even through property syntax, because they expose a
+	 * non-value capability rather than a bound value. Read-only property access invokes JavaBean
+	 * getters directly and so is not covered by {@link #ALLOWED_METHODS}: {@code class} is the
+	 * reflection gateway (also blocked at evaluation), while {@code bytes} and {@code length} recover a
+	 * String's raw bytes and its length, circumventing the deliberate {@code getBytes}/{@code length}
+	 * exclusions from the allowed methods (e.g. {@code $patient.uuid.bytes.length} would otherwise leak
+	 * a value's length). Matched case-insensitively because SpEL resolves a getter from the capitalized
+	 * property name, so both {@code bytes} and {@code Bytes} reach {@code getBytes()}.
+	 */
+	private static final Set<String> DENIED_PROPERTIES = Set.of("class", "bytes", "length");
+
 	private final CriteriaFunctions functions = new CriteriaFunctions();
 
 	public ConceptReferenceRangeUtility() {
+	}
+
+	private static Expression parseAndValidate(String criteria) {
+		SpelExpression expression = (SpelExpression) PARSER.parseExpression(criteria);
+		validateNode(expression.getAST());
+		return expression;
+	}
+
+	/**
+	 * Rejects expression constructs that let a stored criteria escape the intended "read a few values
+	 * and compare them" surface: constructor calls, type references, bean references, indexing
+	 * (including into strings, e.g. {@code $patient.uuid[0]}), the {@code matches} regex operator (a
+	 * string-inspection primitive equivalent to the blocked String methods, and also a ReDoS vector),
+	 * any method outside {@link #ALLOWED_METHODS}, and any property in {@link #DENIED_PROPERTIES}
+	 * (which would otherwise reach a getter, e.g. {@code getBytes()}, that the method allow-list
+	 * excludes).
+	 */
+	private static void validateNode(SpelNode node) {
+		if (node instanceof ConstructorReference || node instanceof TypeReference || node instanceof BeanReference
+		        || node instanceof Indexer || node instanceof OperatorMatches) {
+			throw new IllegalArgumentException(
+			        "Criteria may not use constructors, type references, bean references, indexing or regex matching");
+		}
+		if (node instanceof MethodReference && !ALLOWED_METHODS.contains(((MethodReference) node).getName())) {
+			throw new IllegalArgumentException("Criteria may not call method: " + ((MethodReference) node).getName());
+		}
+		if (node instanceof PropertyOrFieldReference
+		        && DENIED_PROPERTIES.contains(((PropertyOrFieldReference) node).getName().toLowerCase(Locale.ROOT))) {
+			throw new IllegalArgumentException(
+			        "Criteria may not read property: " + ((PropertyOrFieldReference) node).getName());
+		}
+		for (int i = 0; i < node.getChildCount(); i++) {
+			validateNode(node.getChild(i));
+		}
 	}
 
 	/**
@@ -137,7 +208,7 @@ public class ConceptReferenceRangeUtility {
 		root.put("$date", context.getDate());
 
 		try {
-			Expression expression = EXPRESSION_CACHE.get(criteria, PARSER::parseExpression);
+			Expression expression = EXPRESSION_CACHE.get(criteria, ConceptReferenceRangeUtility::parseAndValidate);
 			Boolean result = expression.getValue(EVAL_CONTEXT, root, Boolean.class);
 			return result != null && result;
 		} catch (SpelEvaluationException e) {
