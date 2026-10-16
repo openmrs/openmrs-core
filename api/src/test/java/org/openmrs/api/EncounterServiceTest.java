@@ -40,6 +40,7 @@ import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -1080,6 +1081,132 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertTrue(voidedDiagnoses.getVoided());
 		assertEquals("Just Testing", voidedDiagnoses.getVoidReason());
 		assertTrue(encounter.getVoided());
+	}
+
+	/**
+	 * @see EncounterService#voidEncounter(Encounter,String)
+	 */
+	@Test
+	public void voidEncounter_shouldCascadeVoidToEncounterProviders() {
+		EncounterService encounterService = Context.getEncounterService();
+
+		Encounter encounter = encounterService.getEncounter(1);
+		assertFalse(encounter.getVoided());
+		EncounterProvider encounterProvider = encounter.getEncounterProviders().iterator().next();
+		assertFalse(encounterProvider.getVoided());
+
+		encounterService.voidEncounter(encounter, "Just Testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		encounter = encounterService.getEncounter(1);
+		encounterProvider = getEncounterProvider(1, encounterProvider.getUuid());
+		assertTrue(encounterProvider.getVoided());
+		assertEquals("Just Testing", encounterProvider.getVoidReason());
+		assertNotNull(encounterProvider.getVoidedBy());
+		assertEquals(encounter.getDateVoided().getTime(), encounterProvider.getDateVoided().getTime());
+		assertTrue(encounter.getActiveEncounterProviders().isEmpty());
+	}
+
+	/**
+	 * @see EncounterService#voidEncounter(Encounter,String)
+	 */
+	@Test
+	public void voidEncounter_shouldNotCascadeFromEncounterProvidersToTheProvider() {
+		EncounterService encounterService = Context.getEncounterService();
+		ProviderService providerService = Context.getProviderService();
+
+		Encounter encounter = encounterService.getEncounter(1);
+		EncounterProvider encounterProvider = encounter.getEncounterProviders().iterator().next();
+		Provider provider = encounterProvider.getProvider();
+		assertFalse(provider.getRetired());
+		assertFalse(provider.getPerson().getVoided());
+
+		encounterService.voidEncounter(encounter, "Just Testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		// the encounter_provider is voided...
+		assertTrue(getEncounterProvider(1, encounterProvider.getUuid()).getVoided());
+
+		// ...but the provider it links to is untouched
+		provider = providerService.getProviderByUuid(provider.getUuid());
+		assertFalse(provider.getRetired());
+		assertNull(provider.getRetireReason());
+		assertNull(provider.getRetiredBy());
+		assertNull(provider.getDateRetired());
+		assertFalse(provider.getPerson().getVoided());
+	}
+
+	/**
+	 * @see EncounterService#voidEncounter(Encounter,String)
+	 */
+	@Test
+	public void voidEncounter_shouldNotChangeVoidDetailsOfAPreviouslyRemovedEncounterProvider() {
+		EncounterService encounterService = Context.getEncounterService();
+
+		Encounter encounter = encounterService.getEncounter(1);
+		EncounterProvider removedProvider = encounter.getEncounterProviders().iterator().next();
+		Date dateRemoved = removedProvider.getDateCreated();
+		removedProvider.setVoided(true);
+		removedProvider.setVoidedBy(Context.getAuthenticatedUser());
+		removedProvider.setDateVoided(dateRemoved);
+		removedProvider.setVoidReason("removed earlier");
+		encounterService.saveEncounter(encounter);
+
+		encounterService.voidEncounter(encounter, "Just Testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		removedProvider = getEncounterProvider(1, removedProvider.getUuid());
+		assertTrue(removedProvider.getVoided());
+		assertEquals("removed earlier", removedProvider.getVoidReason());
+		assertEquals(dateRemoved.getTime(), removedProvider.getDateVoided().getTime());
+	}
+
+	/**
+	 * @see EncounterService#unvoidEncounter(Encounter)
+	 */
+	@Test
+	public void unvoidEncounter_shouldCascadeUnvoidOnlyToEncounterProvidersVoidedWithTheEncounter() {
+		EncounterService encounterService = Context.getEncounterService();
+
+		// remove the existing provider and add a new one in a different role
+		Encounter encounter = encounterService.getEncounter(1);
+		EncounterProvider removedProvider = encounter.getEncounterProviders().iterator().next();
+		Date dateRemoved = removedProvider.getDateCreated();
+		removedProvider.setVoided(true);
+		removedProvider.setVoidedBy(Context.getAuthenticatedUser());
+		removedProvider.setDateVoided(dateRemoved);
+		removedProvider.setVoidReason("removed earlier");
+		EncounterRole otherRole = new EncounterRole();
+		otherRole.setName("other role");
+		otherRole = encounterService.saveEncounterRole(otherRole);
+		encounter.addProvider(otherRole, removedProvider.getProvider());
+		encounterService.saveEncounter(encounter);
+
+		encounterService.voidEncounter(encounter, "Just Testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		encounter = encounterService.getEncounter(1);
+		encounterService.unvoidEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		encounter = encounterService.getEncounter(1);
+		assertFalse(encounter.getVoided());
+		assertEquals(1, encounter.getActiveEncounterProviders().size());
+		assertEquals(otherRole, encounter.getActiveEncounterProviders().iterator().next().getEncounterRole());
+
+		removedProvider = getEncounterProvider(1, removedProvider.getUuid());
+		assertTrue(removedProvider.getVoided());
+		assertEquals("removed earlier", removedProvider.getVoidReason());
+	}
+	
+	private EncounterProvider getEncounterProvider(Integer encounterId, String uuid) {
+		return Context.getEncounterService().getEncounter(encounterId).getEncounterProviders().stream()
+		        .filter(ep -> ep.getUuid().equals(uuid)).findFirst().orElseThrow(AssertionError::new);
 	}
 
 	/**
@@ -2426,7 +2553,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 		encounterService.voidEncounter(encounter, "reason");
 
+		// the encounter_provider is voided along with the encounter, but the provider is still
+		// retrievable and is restored when the encounter is unvoided (TRUNK-3333)
 		encounter = encounterService.getEncounter(encounter.getEncounterId());
+		assertEquals(0, encounter.getProvidersByRoles().size());
+		assertEquals(1, encounter.getProvidersByRoles(true).size());
+		assertFalse(Context.getProviderService().getProvider(provider.getId()).getRetired());
+
+		encounterService.unvoidEncounter(encounter);
 		assertEquals(1, encounter.getProvidersByRoles().size());
 	}
 
