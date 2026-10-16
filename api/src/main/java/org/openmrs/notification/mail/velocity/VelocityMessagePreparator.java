@@ -14,6 +14,7 @@ import java.util.Properties;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
@@ -44,6 +45,13 @@ public class VelocityMessagePreparator implements MessagePreparator {
 			Properties props = new Properties();
 			props.put("runtime.log.logsystem.log4j.category", "velocity");
 			props.put("runtime.log.logsystem.log4j.logger", "velocity");
+			// Render templates with the SecureUberspector so that a template can never reach
+			// reflection-based code execution such as
+			// $obj.class.forName('java.lang.Runtime').getRuntime().exec(...). It blocks the reflective
+			// method calls used to load arbitrary classes and obtain a Runtime/ProcessBuilder, removing
+			// the server-side template injection -> remote code execution primitive that the default
+			// UberspectImpl exposes for any object placed in the rendering context.
+			props.put(RuntimeConstants.UBERSPECT_CLASSNAME, "org.apache.velocity.util.introspection.SecureUberspector");
 			engine.init(props);
 		} catch (Exception e) {
 			log.error("Failed to create velocity engine " + e.getMessage(), e);
