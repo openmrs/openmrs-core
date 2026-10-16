@@ -117,4 +117,3 @@ The following are internal OpenMRS components licensed under the [Mozilla Public
 - OpenMRS Tools (`org.openmrs.tools:openmrs-tools`)
 - OpenMRS Web (`org.openmrs.web:openmrs-web`)
 - OpenMRS Webapp (`org.openmrs.web:openmrs-webapp`)
-- OpenMRS Liquibase Extensions (`org.openmrs.liquibase.ext:type-converter`)
