@@ -22,6 +22,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -449,6 +450,19 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			encounter.setDateVoided(new Date());
 		}
 		encounter.setVoidReason(reason);
+
+		// encounter providers are normally voided by the AOP void handlers, but this method can also be called
+		// from within the API (e.g. transferEncounter), which bypasses AOP. Uses the encounter's dateVoided so
+		// that the unvoid handler can match them up
+		for (EncounterProvider encounterProvider : encounter.getEncounterProviders()) {
+			if (!encounterProvider.getVoided()) {
+				encounterProvider.setVoided(true);
+				encounterProvider.setVoidedBy(encounter.getVoidedBy());
+				encounterProvider.setDateVoided(encounter.getDateVoided());
+				encounterProvider.setVoidReason(reason);
+			}
+		}
+
 		Context.getEncounterService().saveEncounter(encounter);
 		return encounter;
 	}
