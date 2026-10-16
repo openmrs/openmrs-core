@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+import org.openmrs.annotation.Independent;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -96,6 +98,18 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH })
 	private Set<Role> roles;
+
+	/**
+	 * The locations this user has been assigned to. An empty set means the user is unrestricted, not
+	 * that the user has no locations available; see
+	 * {@link org.openmrs.api.UserService#getAllowedLocationsByTag(User, LocationTag)}.
+	 *
+	 * @since 2.9.0
+	 */
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "user_location", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "location_id"))
+	@Independent
+	private Set<Location> assignedLocations = new LinkedHashSet<>();
 
 	@ElementCollection
 	@CollectionTable(name = "user_property", joinColumns = @JoinColumn(name = "user_id", nullable = false))
@@ -350,6 +364,22 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 		}
 
 		return this;
+	}
+
+	/**
+	 * @return the locations this user is assigned to, empty when the user is unrestricted
+	 * @since 2.9.0
+	 */
+	public Set<Location> getAssignedLocations() {
+		return assignedLocations;
+	}
+
+	/**
+	 * @param assignedLocations the locations to assign this user to
+	 * @since 2.9.0
+	 */
+	public void setAssignedLocations(Set<Location> assignedLocations) {
+		this.assignedLocations = assignedLocations;
 	}
 
 	/**
